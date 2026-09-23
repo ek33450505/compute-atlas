@@ -12,12 +12,12 @@
   "waterStress": {
     "attribution": "WRI Aqueduct 4.0 (CC BY 4.0)",
     "license": "CC-BY-4.0",
-    "total": 2151,
+    "total": 2172,
     "distribution": {
-      "Extremely High (>80%)": 285,
+      "Extremely High (>80%)": 297,
       "High (40-80%)": 371,
-      "Medium - High (20-40%)": 490,
-      "Low - Medium (10-20%)": 338,
+      "Medium - High (20-40%)": 496,
+      "Low - Medium (10-20%)": 341,
       "Low (<10%)": 646,
       "Arid and Low Water Use": 21
     }
@@ -25,11 +25,11 @@
   "groundwaterDecline": {
     "attribution": "WRI Aqueduct 4.0 (CC BY 4.0)",
     "license": "CC-BY-4.0",
-    "total": 604,
+    "total": 619,
     "distribution": {
       "High (4-8 cm/y)": 103,
-      "Medium - High (2-4 cm/y)": 38,
-      "Low - Medium (0-2 cm/y)": 457,
+      "Medium - High (2-4 cm/y)": 43,
+      "Low - Medium (0-2 cm/y)": 467,
       "Low (<0 cm/y)": 6
     }
   },

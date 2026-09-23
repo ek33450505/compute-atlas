@@ -260,6 +260,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "5c-data-centers-phx01-phoenix-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "5c-group-vultr-prime-ohio-springfield-oh": {
     "nearestWater": {
       "name": "Goose Creek",
@@ -1224,6 +1238,20 @@
     },
     "aquifer": {
       "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "aligned-peoria-campus-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -2482,6 +2510,20 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "arizona-land-consulting-balterra-tonopah-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "arizona-land-consulting-camelback-creek-tonopah-az": {
@@ -7453,6 +7495,12 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "cloverleaf-bluestem-tonganoxie-ks": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "cloverleaf-carlton-kewaunee-county-wi": {
     "nearestWater": {
       "name": "East Twin River",
@@ -7527,6 +7575,20 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "cloverleaf-pumpkin-technology-campus-harlem-ga": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "cloverleaf-red-clay-lowndes-al": {
@@ -8622,6 +8684,20 @@
     "groundwaterDecline": {
       "cat": 1,
       "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "copia-maricopa-energy-center-harquahala-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
@@ -9800,6 +9876,20 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "cyrusone-chandler-phx1-phx8-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "cyrusone-chi1-chi3-aurora-il": {
     "nearestWater": {
       "name": "Waubonsie Creek",
@@ -9942,6 +10032,20 @@
     "aquifer": {
       "name": "Texas Coastal Uplands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "cyrusone-mesa-elliot-ellsworth-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "cyrusone-nas-lemoore-ca": {
@@ -13442,6 +13546,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "eagle-rock-pine-ridge-tech-park-twiggs-ga": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "east-kentucky-network-ivel-floyd-ky": {
     "waterStress": {
       "cat": 2,
@@ -13943,6 +14061,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "edgeconnex-union-city-campus-fulton-ga": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "edgeconnex-west-valley-city-ut": {
     "nearestWater": {
       "name": "Decker Lake",
@@ -13979,6 +14107,20 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "edgecore-dobson-farms-east-florence-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "edgecore-mesa-az": {
@@ -21158,6 +21300,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "iron-mountain-azp-3-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "iron-mountain-azs-1-az": {
     "nearestWater": {
       "name": "Cave Creek",
@@ -24783,6 +24939,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "microsoft-east-point-ben-hill-road-ga": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "microsoft-east-wenatchee-wa": {
     "nearestWater": {
       "name": "Columbia River",
@@ -25294,6 +25460,16 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "microsoft-palmetto-fulton-ga": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "microsoft-panhandle-road-mecklenburg-va": {
@@ -28358,6 +28534,20 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "orsted-eleven-mile-solar-center-pinal-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "otava-ann-arbor-mi": {
     "nearestWater": {
       "name": "Huron River",
@@ -29562,6 +29752,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "premier-project-arrowhead-irwin-ga": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "prime-1231-comstock-santa-clara-ca": {
     "nearestWater": {
       "name": "Saratoga Creek",
@@ -30051,6 +30255,16 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "project-turbo-llc-project-azalea-thomson-ga": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "project-turbo-okelly-road-gainesville-ga": {
@@ -32391,6 +32605,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "ryan-companies-florence-tech-park-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "ryan-companies-project-swan-lakeland-fl": {
     "nearestWater": {
       "name": "Lake Bonnet",
@@ -32408,6 +32636,20 @@
     "groundwaterDecline": {
       "cat": 1,
       "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "ryan-companies-southwest-crossing-data-park-eloy-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "ryan-stuart-summit-point-jefferson-county-wv": {
@@ -32835,6 +33077,20 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "sahuarita-holdings-project-gravel-pima-county-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "salcido-broadway-grant-county-wa": {
@@ -36684,6 +36940,16 @@
     "aquifer": {
       "name": "Valley And Ridge Carbonate-rock Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "tc-atlanta-development-winston-douglas-ga": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "tcdc-ector-county-tx": {

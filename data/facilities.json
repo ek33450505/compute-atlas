@@ -677,8 +677,12 @@
       "lon": -81.7440222,
       "city": "Statesboro",
       "county": "Bulloch",
+      "street": "6539 Burkhalter Road",
       "state": "GA",
       "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 99
     },
     "announcedDate": "2026-08-18",
     "statusHistory": [
@@ -696,15 +700,89 @@
         "publisher": "Statesboro Herald",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://www.statesboroherald.com/local/eleven-citizens-and-nonprofit-group-file-legal-challenge-to-statesboro-data-center-rezoning/",
+        "label": "Eleven citizens and nonprofit group file legal challenge to Statesboro data center rezoning",
+        "publisher": "Statesboro Herald",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-23",
     "notes": "Two-story building of roughly 230,000 sq ft plus a 3/4-acre reserved Georgia Power substation site. The concept plan describes 40-90 MW and the developers applied to Georgia Power for a maximum of 99 MW; no single figure is asserted here. Owners named as Bobby Bagwell and Charles C. Way; the site is being zoned speculatively. Coordinates are approximate to Burkhalter Road pending parcel confirmation.",
     "water": {
       "coolingType": "closed_loop"
     },
     "investmentUsd": 1200000000,
     "landAcres": 27,
+    "community": {
+      "status": "litigation",
+      "notes": "Coastal Communities United and eleven individual petitioners filed a petition for review and request for declaratory judgment in Bulloch County Superior Court on 2026-09-17, challenging the 3-2 city council rezoning of 2026-08-18 from R-4 residential to O office/business. The petition argues a 99 MW facility falls within the city's own hyperscale definition, which the city declared unlawful to build inside city limits, and raises watershed and Floridan Aquifer impacts from water use and cooling-system wastewater seepage, plus noise, vibration and traffic.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "5c-data-centers-phx01-phoenix-az",
+    "name": "5C Data Centers PHX01",
+    "operator": "5C Data Centers",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.4703256,
+      "lon": -112.1204899,
+      "city": "Phoenix",
+      "county": "Maricopa County",
+      "street": "2802 W Palm Lane",
+      "postalCode": "85009",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "announcedDate": "2024-09-18",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-23",
+        "note": "First building of 5C's Phoenix campus, listed as under construction with a 2026 planned live date.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/5c-data-centers-announces-new-data-center-region-in-phoenix-arizona-302252217.html",
+        "label": "5C Data Centers Announces New Data Center Region in Phoenix, Arizona",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gpec.org/news/5c-data-centers-new-data-center-region-in-phoenix/",
+        "label": "5C Data Centers announces new data center region in Phoenix",
+        "publisher": "Greater Phoenix Economic Council",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/5cdc-phoenix-phx01",
+        "label": "5CDC: Phoenix PHX01 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-23",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "140,000 sq ft first building, roughly three miles west of downtown Phoenix; described as the first building of a 5C campus.",
+    "energy": {
+      "utility": "Arizona Public Service (APS)"
+    },
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Operator describes \"adiabatic trim cooling and heat-tolerant coolant inlet temperatures\" to minimise power and water consumption, with direct-to-chip liquid cooling supported at up to 132kW per cabinet. Classified hybrid because adiabatic trim switches between dry and evaporative-assist modes; not independently verified."
+    },
     "facilityType": "data_center"
   },
   {
@@ -3677,6 +3755,42 @@
     "landAcres": 27,
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "aligned-peoria-campus-az",
+    "name": "Aligned Data Centers Peoria Campus",
+    "operator": "Aligned Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.5594634,
+      "lon": -112.2201382,
+      "city": "Peoria",
+      "county": "Maricopa County",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-23",
+        "note": "Planning documents filed with the City of Peoria for a two-building, ~916,000 sq ft campus on 95 acres.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.abc15.com/news/business/aligned-data-centers-moves-ahead-with-two-building-campus-in-peoria",
+        "label": "Aligned Data Centers moves ahead with two-building campus in Peoria",
+        "publisher": "ABC15 Arizona",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Site at 75th Avenue and Butler Drive inside an existing Peoria industrial park whose zoning already permits data center use. Coordinate derived from the OSM geometries of the two named roads; treat as an approximate intersection pin, not a parcel.",
+    "landAcres": 95,
+    "facilityType": "data_center"
   },
   {
     "id": "aligned-phx-01-02-03-az",
@@ -7528,9 +7642,16 @@
         "publisher": "KTAR",
         "retrievedAt": "2026-07-15",
         "kind": "press"
+      },
+      {
+        "url": "https://azbex.com/planning-development/aps-uses-growth-pays-for-growth-model-to-develop-new-natural-gas-plant/",
+        "label": "APS Uses 'Growth Pays For Growth' Model to Develop New Natural Gas Plant",
+        "publisher": "AZBEX",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-15",
+    "lastUpdated": "2026-09-23",
     "notes": "Proposed ~2 GW natural gas generation project west of Gila Bend whose Phase 2 subscription model is explicitly structured to serve extra-large data center load. Coordinates are an approximate geocode west of Gila Bend, not a siting-confirmed point; project subject to Arizona Corporation Commission / siting review.",
     "energy": {
       "utility": "Arizona Public Service",
@@ -7941,6 +8062,42 @@
       "notes": "Wilmington City Council rezoned the 500 acres on a 5-2 vote on February 19, 2026; one council member urged slowing the process and opponents said they were organizing a ballot-referendum legal challenge.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "arizona-land-consulting-balterra-tonopah-az",
+    "name": "Balterra",
+    "operator": "Arizona Land Consulting",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.508197,
+      "lon": -112.9369267,
+      "city": "Tonopah",
+      "county": "Maricopa County",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-23",
+        "note": "Maricopa County Board of Supervisors approved the rezoning on September 2, 2026; no development plans submitted yet and administrative review is still required before construction.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://azbex.com/planning-development/tonopah-mixed-use-development-rezoning/",
+        "label": "Dual Plans Will Create Massive W. Valley Mixed-Use",
+        "publisher": "AZBEX",
+        "retrievedAt": "2026-09-23",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "593-acre master plan on the east side of 411th Avenue near Tonopah, immediately across from the same applicant's Camelback Creek site. Approved uses include data centers alongside an amusement park, indoor theme park, hotel, restaurant, retail, multifamily and a film production studio, so the data center share of the site is not yet defined. Coordinate is the OSM 411th Avenue / Camelback Road intersection on the site's western edge.",
+    "landAcres": 593,
     "facilityType": "data_center"
   },
   {
@@ -9164,7 +9321,7 @@
     "id": "atlas-project-springbank-adairsville-ga",
     "name": "Project Springbank (Atlas Development Bartow County Campus)",
     "operator": "Atlas Development LLC",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 34.369,
@@ -9185,6 +9342,12 @@
         "date": "2025-02",
         "note": "Preliminary plans disclosed in a Development of Regional Impact filing; rezoning from A-1 to I-1 still required.",
         "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-09-23",
+        "note": "Atlas Development withdrew the Project Springbank rezoning application on 2025-05-13, the day before Bartow County's sole commissioner was to rule, after the county planning commission voted 6-1 on 2025-04-28 to recommend denial. Under county rules Atlas would have to wait six months to resubmit the same application; no refiling was found.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -9201,9 +9364,23 @@
         "publisher": "Connect CRE",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/springbank-data-center-application-withdrawn/article_4038268b-78d8-5d26-9e10-2bf514aac3a3.html",
+        "label": "Springbank data center application withdrawn",
+        "publisher": "Daily Tribune News (Cartersville)",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox5atlanta.com/news/bartow-county-data-center-barnsley-resort-residents-oppose",
+        "label": "Bartow County planning commission votes to recommend denying data center rezoning request",
+        "publisher": "FOX 5 Atlanta",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-23",
     "notes": "Six buildings of about 379,000 sq ft each (2.27M sq ft total), each drawing up to 78 MW for a 432 MW campus total. Anticipated completion December 2031. No named end-user operator is attached to the project. Public-reception check (2026-09-10): Checked the original Northwest Georgia News piece (2026-09-10); it covers the Development of Regional Impact filing and a site plan from Bartow County's community development director, plus a competitor CEO's skepticism about demand forecasts being overstated -- not local resident opposition or support. No public hearing, resident reaction, or elected-official statement about this specific project was found in this source.",
     "water": {
       "coolingType": "closed_loop"
@@ -14231,7 +14408,7 @@
         "url": "https://www.pima.gov/3552/Project-Blue-FAQ",
         "label": "Pima County official Project Blue FAQ, Economic Impact Study section — \"180 new full-time, permanent jobs created by the third year of operations in 2029.\"",
         "publisher": "Pima County, Arizona",
-        "retrievedAt": "2026-09-10",
+        "retrievedAt": "2026-09-23",
         "kind": "filing"
       },
       {
@@ -14242,7 +14419,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-23",
     "notes": "Unincorporated Pima County, west of Houghton Rd, near Tucson. 500-700MW planned across 13M sq ft (a range, so omitted from capacityMw). AWS confirmed as end-customer via an NDA obtained by AZ Luminaria. Distinct site from Beale Infrastructure's Fremont Peak Properties/Luckett Road project in the Town of Marana (also AZ, also tracked this session) - same developer family, different parcel. Coordinates are approximate. The 180 permanent jobs figure is a projection for the third year of operations in 2029, published by Pima County and by the developer. Beale's own letter of 2025-09-17 adds a qualifier the county FAQ omits: the figure \"include[s] full-time contractors and support personnel\", and at least 75 of the roles will be directly employed by the end user. Beale has also stated it \"is not asking for property tax incentives, often a necessary component of a data center project's cost competitiveness\", and the utility agreement with Tucson Electric Power carries no financial incentives or discounts — unusual for a project of this size, and the reason subsidies are recorded as absent rather than merely unsearched.",
     "energy": {
       "source": "grid",
@@ -22108,10 +22285,18 @@
         "publisher": "CleanSpark, Inc. / SEC EDGAR",
         "retrievedAt": "2026-08-05",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1001601/000149315226021724/form10-q.htm",
+        "label": "MGT Capital Investments, Inc. Form 10-Q — sale of the LaFayette, Georgia mining and hosting facility to CSRE Properties LLC",
+        "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
+        "retrievedAt": "2026-09-23",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-09-23",
     "notes": "Brand-new 2025 CleanSpark site (not GRIID-related): on 2025-05-13 subsidiary CSRE Properties, LLC acquired real estate and 'certain mining related infrastructures' in LaFayette, GA from MGT Capital Investments, Inc. for a combined $1.413M. No MW figure disclosed for this specific site; Georgia capacity reported only in aggregate (620 MW / 27.02 EH/s across ten GA cities as of 2025-09-30). Sourced solely to the 10-K - a completed SEC-disclosed transaction, no dedicated press release.",
+    "landAcres": 6,
     "facilityType": "crypto_mining",
     "mining": {
       "hardwareType": "asic",
@@ -22491,9 +22676,16 @@
         "publisher": "CleanSpark, Inc. / SEC EDGAR",
         "retrievedAt": "2026-08-05",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.gpb.org/news/2025/12/04/the-costs-of-crypto-mining-in-georgia-will-it-be-regulated-along-new-data-center",
+        "label": "The costs of crypto mining in Georgia. Will it be regulated along with new data center rules?",
+        "publisher": "Georgia Public Broadcasting",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-09-23",
     "notes": "Acquired Aug 6, 2021 for $6.55M; ~87,000 sq ft former Sprint/Nextel data center, immersion-cooled. Confirmed still operating as of the FY2025 10-K (named as miner-collateral location alongside College Park). 20 MW figure is from the 2021 acquisition announcement, not independently restated in the FY2025 10-K (which only gives the GA aggregate of 620 MW / 15 locations).",
     "facilityType": "crypto_mining",
     "mining": {
@@ -22567,6 +22759,9 @@
       "state": "GA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 250
+    },
     "announcedDate": "2022-10-08",
     "statusHistory": [],
     "sources": [
@@ -22576,9 +22771,16 @@
         "publisher": "CleanSpark, Inc. / SEC EDGAR",
         "retrievedAt": "2026-08-05",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.gpb.org/news/2025/12/04/the-costs-of-crypto-mining-in-georgia-will-it-be-regulated-along-new-data-center",
+        "label": "The costs of crypto mining in Georgia. Will it be regulated along with new data center rules?",
+        "publisher": "Georgia Public Broadcasting",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-09-23",
     "notes": "Acquired Oct 8, 2022 from Mawson Infrastructure Group subsidiaries; ~16.35 leased acres plus an additional purchase of the same acreage plus ~10 more acres from the Development Authority of Washington County (per FY2024 10-K). Buyer entity CSRE Properties Sandersville, LLC (this same entity later served as buyer for the unrelated Twin City, GA acquisition — entity name is not 1:1 with site name). No per-site MW disclosed in the 10-K; folded into the GA aggregate of 620 MW / 15 locations.",
     "facilityType": "crypto_mining",
     "mining": {
@@ -23503,6 +23705,84 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cloverleaf-bluestem-tonganoxie-ks",
+    "name": "Project Bluestem",
+    "operator": "Cloverleaf Infrastructure",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.1097,
+      "lon": -95.0877,
+      "city": "Tonganoxie",
+      "county": "Leavenworth",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://bluestemdatacenter.com/",
+        "label": "Home - Project Bluestem",
+        "publisher": "Cloverleaf Infrastructure",
+        "retrievedAt": "2026-09-23",
+        "kind": "other"
+      },
+      {
+        "url": "https://bluestemdatacenter.com/faqs/",
+        "label": "FAQs - Project Bluestem",
+        "publisher": "Cloverleaf Infrastructure",
+        "retrievedAt": "2026-09-23",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/kansas/johnson-county/leavenworth-county-to-host-special-meeting-for-neighbor-input-on-1-000-acre-data-center-proposal",
+        "label": "Leavenworth County to host special meeting for neighbor input on 1,000-acre data center proposal",
+        "publisher": "KSHB 41 Kansas City",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www2.ljworld.com/news/general-news/2026/sep/18/more-than-1000-people-attend-tonganoxie-meeting-to-oppose-proposed-data-center/",
+        "label": "More than 1,000 people attend Tonganoxie meeting to oppose proposed data center",
+        "publisher": "Lawrence Journal-World",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/09/tonganoxie-neighbors-brace-as-data-center-plan-doubles-its-power-demand/",
+        "label": "Tonganoxie neighbors brace as data center plan doubles its power demand",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Proposed hyperscale data center campus on the former Tailgate Ranch in unincorporated Leavenworth County, south of Tonganoxie and south of the Tonganoxie Business Park, near the Tonganoxie/Eudora interchange on I-70. Reported as roughly 1,000 acres (KSHB; the Lawrence Journal-World writes \"more than 1,000 acres\" and the community lead that surfaced this record claimed 1,100 acres — no source seen states 1,100, so 1,000 is recorded and the discrepancy is noted here). KSHB reports 330 acres set aside for permanent land conservation. The planned capacity recorded here is the reported ceiling: a revised proposal submitted after Leavenworth County's data center moratorium expired in August 2026 roughly doubled the project's electricity demand to \"up to 1.2 gigawatts\" and added an on-site gas power plant; a lower figure appears in one Journal-World reference (\"600-watt data center\", evidently a units error in the source) and is not used. Location precision is approximate: no source seen states coordinates, a street address or a parcel, so the pin is the Tonganoxie town centroid (OpenStreetMap/Nominatim) and the actual footprint lies some distance south of it. Cloverleaf Infrastructure, a Houston-based developer founded by former Microsoft energy executives, describes itself as a site-preparation developer that will introduce an end user later; no hyperscale tenant has been named. Cloverleaf's own site describes a \"multi-billion-dollar taxable investment\" but states no dollar figure, so investmentUsd is omitted. As of 2026-09-23 the project is conceptual: Cloverleaf's FAQ states no formal applications have been submitted to local jurisdictions, and the county's data center planning and zoning regulations are not finalized.",
+    "energy": {
+      "utility": "Evergy",
+      "notes": "Cloverleaf states Evergy is conducting a power study for the project and that the developer will fund any power and transmission upgrades required. The revised proposal adds an on-site gas power plant; Cloverleaf's FAQ frames on-site generation as being evaluated to supply the grid rather than the project directly, while local reporting describes the gas plant as sited near Tonganoxie's schools. On-site nuclear is explicitly not under consideration. energy.source is left unset because the grid/on-site split is unresolved in the sources."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer claim, not independently verified: Cloverleaf states a closed-loop cooling system requiring a one-time fill, with day-to-day water use limited to domestic purposes (sinks, toilets, kitchens, sprinklers) and comparable to a typical office building. Water use is among the concerns residents raised at the September 2026 public forum."
+    },
+    "landAcres": 1000,
+    "jobs": {
+      "construction": 1000,
+      "permanent": 200,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Organized local opposition. More than 1,000 people attended a Leavenworth County special meeting at the Tonganoxie Fairgrounds on 2026-09-16 for neighbor input; roughly 65 residents spoke and comments were predominantly against the project. Two opposition groups are named in reporting: the Tongie Data Center Watch Dog Group and Citizens Against Bluestem. Residents previously petitioned for an 18-month moratorium on data centers, and a temporary moratorium expired in August 2026. Stated concerns include noise, energy use, water use, property values, waste heat, and the site's proximity — reported as 1 to 1.5 miles — to Tonganoxie's elementary and middle schools and a nursing home.",
+      "sourceIndex": 3
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cloverleaf-carlton-kewaunee-county-wi",
     "name": "Cloverleaf Carlton Data Center Site (Kewaunee County)",
     "operator": "Cloverleaf Infrastructure",
@@ -23734,6 +24014,68 @@
     "community": {
       "status": "contested",
       "notes": "Piedmont Planning Commission recommended the City Council DENY the 'Project Open Sky' PUD rezoning pending additional information; Council vote rescheduled to late July 2026 — approval not yet granted as of this writing."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cloverleaf-pumpkin-technology-campus-harlem-ga",
+    "name": "Pumpkin Technology Campus",
+    "operator": "Cloverleaf Infrastructure (applicant Piedmont DevCo LLC), with Pumpkin Center Properties / the Prather Company",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.4145834,
+      "lon": -82.3126237,
+      "city": "Harlem",
+      "county": "Columbia",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-12",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12",
+        "note": "Rezoning application filed to convert four parcels from Planned Unit Development to Data Center (D-C) district.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-02-03",
+        "note": "Columbia County commissioners approved the rezoning.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://theaugustapress.com/data-center-project-proposed-along-appling-harlem-road/",
+        "label": "Data center project proposed along Appling Harlem Road",
+        "publisher": "The Augusta Press",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wrdw.com/2026/02/04/columbia-co-data-centers-get-zoning-approval-face-additional-steps-before-construction/",
+        "label": "Columbia Co. data centers get zoning approval, face additional steps before construction",
+        "publisher": "WRDW-TV",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/cloverleaf-pumpkin-tech-campus",
+        "label": "Cloverleaf: Pumpkin Tech Campus Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Four data center buildings exceeding 717,000 sq ft each, two 180,000 sq ft warehouses, office space, an on-site electrical substation and stormwater ponds on roughly 420 acres along I-20 and Appling Harlem Road. Permanent employment is reported as a 200–300 range, so no single figure is recorded. Zoning approval is the first of several steps: site/building plans, a land-disturbance application and a Georgia Power letter confirming it can serve the load are still outstanding. Distinct from White Oak Technology Park in Appling, which Columbia County approved the same night. Coordinates are the Harlem city centroid (OSM Nominatim), not a parcel.",
+    "investmentUsd": 1000000000,
+    "landAcres": 420,
+    "jobs": {
+      "construction": 1500,
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -26848,6 +27190,66 @@
         "w-holdings-energy-generation-technology-campus-maricopa-az"
       ],
       "notes": "Reported as up to 550 MW of solar plus up to 500 MW of gas-fired generation (the 1,050 MW recorded in capacityMw), alongside up to 550 MW of battery storage, which is storage rather than generation and is not counted. Developed as Griffin Energy, LLC; the underlying landowner entity is Stanfield 1295, LLC (W Holdings). Sources state the power is intended to supply a planned data center campus."
+    }
+  },
+  {
+    "id": "copia-maricopa-energy-center-harquahala-az",
+    "name": "Maricopa Energy Center",
+    "operator": "Copia Power",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.5136112,
+      "lon": -113.1797958,
+      "county": "Maricopa County",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 550
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-23",
+        "note": "Construction financed and underway in two phases, with commercial operation expected 2026–2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.energy-storage.news/copia-closes-on-us171-billion-for-2200mwh-arizona-centre/",
+        "label": "Copia closes on US$1.71 billion debt facility for 2,200MWh Arizona energy centre",
+        "publisher": "Energy-Storage.news",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.maricopaenergycenter.com/",
+        "label": "Maricopa Energy Center — project site",
+        "publisher": "Copia Power",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Maricopa+Energy+Center%2C+Arizona&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim — Maricopa Energy Center industrial landuse, Maricopa County, AZ",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-23",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "The US$1.71bn figure is a construction debt facility, not a stated project capital cost, so investmentUsd is left unset. Coordinate is Nominatim's representative point for the OSM landuse polygon named \"Maricopa Energy Center\".",
+    "energy": {
+      "source": "solar",
+      "utility": "Arizona Public Service (APS)"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Arizona Public Service (APS)",
+      "notes": "550 MW solar PV co-located with a 2,200 MWh battery energy storage system in the Harquahala Valley of west Maricopa County, built in two phases under 20-year power purchase agreements with APS and interconnecting via 500 kV lines to APS's Delaney substation. Arizona Corporation Commission Certificate of Environmental Compatibility granted December 2022; county Comprehensive Plan amendments (CPA2020002, CPA2023011) and zone change (Z2023133) approved. Copia closed a US$1.71bn construction debt facility in March 2025; commercial operation expected 2026–2027."
     }
   },
   {
@@ -30689,6 +31091,56 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cyrusone-chandler-phx1-phx8-az",
+    "name": "CyrusOne Chandler Campus (PHX1–PHX8)",
+    "operator": "CyrusOne",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.2709074,
+      "lon": -111.8819248,
+      "city": "Chandler",
+      "county": "Maricopa County",
+      "street": "2335 S Ellis Street",
+      "postalCode": "85286",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 169
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-23",
+        "note": "Operator lists eight operational facilities (PHX1–PHX8) totalling 169 MW and 2 million sq ft of technical space.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/chandler-arizona",
+        "label": "Chandler, AZ: PHX1–PHX8 | CyrusOne",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=2335+S+Ellis+St%2C+Chandler%2C+AZ&format=json&limit=2&addressdetails=1",
+        "label": "OpenStreetMap/Nominatim — buildings named PHX1 and PHX8 at 2335 South Ellis Street, Chandler, AZ",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-23",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "CyrusOne's original Phoenix-market campus, first building opened 2012; roughly 85 acres.",
+    "water": {
+      "notes": "Operator describes the campus cooling as \"indirect evaporative backed by chilled water plant\" with multiple 500-ton chillers, while also claiming \"no water consumption for cooling\" and net-positive water status. The two statements are not reconciled on the page, so no coolingType is asserted here."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cyrusone-chi1-chi3-aurora-il",
     "name": "CyrusOne CHI1-CHI3 (Aurora)",
     "operator": "CyrusOne",
@@ -31115,6 +31567,52 @@
     ],
     "lastUpdated": "2026-08-26",
     "notes": "Phase 1 (380MW) is under construction adjacent to Calpine's Freestone Energy Center at 1366 FM488, Fairfield, targeted operational Q4 2026; Calpine holds an exclusive agreement to also supply Phase 2 (an additional 380MW, planned total 760MW). Not previously tracked -- no existing Freestone County entries.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cyrusone-mesa-elliot-ellsworth-az",
+    "name": "CyrusOne Mesa Campus (Mesa Elliot Technology Park)",
+    "operator": "CyrusOne",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.3500866,
+      "lon": -111.6358128,
+      "city": "Mesa",
+      "county": "Maricopa County",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 198
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-23",
+        "note": "Second Phoenix-market campus; Mesa planning officials recommended the project for approval in August 2024, with up to five two-story buildings planned.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.commercialsearch.com/news/cyrusone-acquires-70-acre-site-for-2nd-phoenix-facility/",
+        "label": "CyrusOne Acquires Site for 2nd Phoenix Facility",
+        "publisher": "Commercial Property Executive / CommercialSearch",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/cyrusone-mesa",
+        "label": "CyrusOne Mesa Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-23",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Site at the junction of Elliot and Ellsworth Roads inside the ~270-acre Mesa Elliot Technology Park. Coordinate is the OSM Elliot/Ellsworth intersection, not a parcel centroid. Acreage is reported as 62 acres in later coverage and 68.2 acres in the 2018 acquisition report.",
+    "landAcres": 62,
     "facilityType": "data_center"
   },
   {
@@ -31733,6 +32231,7 @@
       "lon": -84.6693,
       "city": "Palmetto",
       "county": "Coweta",
+      "street": "300 Johnson Circle",
       "state": "GA",
       "precision": "approximate"
     },
@@ -31758,14 +32257,22 @@
         "publisher": "DeSmog",
         "retrievedAt": "2026-08-28",
         "kind": "press"
+      },
+      {
+        "url": "https://www.times-herald.com/data_center/where-cowetas-five-proposed-data-centers-stand/article_55ee204a-0e00-43e4-9ad1-78c92b679d06.html",
+        "label": "Where Coweta's five proposed data centers stand",
+        "publisher": "The Newnan Times-Herald",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-28",
+    "lastUpdated": "2026-09-23",
     "notes": "Eight buildings planned, completion projected 2036. Distinct from the tracked T5 @ Atlanta IV, which is also at Palmetto but a different operator, site and jurisdiction (Fulton County).",
     "water": {
       "coolingType": "air",
       "notes": "Reported as air-cooled rather than water-cooled."
     },
+    "investmentUsd": 1000000000,
     "landAcres": 320,
     "community": {
       "status": "opposed",
@@ -40896,6 +41403,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "eagle-rock-pine-ridge-tech-park-twiggs-ga",
+    "name": "Pine Ridge Tech Park",
+    "operator": "Eagle Rock Partners",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.6467914,
+      "lon": -83.4351636,
+      "county": "Twiggs",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 900
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-09-18",
+        "note": "Twiggs County Commission voted unanimously to rezone roughly 300 acres from agricultural to commercial.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gpb.org/news/2025/09/19/rural-twiggs-county-approves-rezoning-for-data-center-city-sized-appetite-for-power",
+        "label": "Rural Twiggs County approves rezoning for a data center with a city-sized appetite for power",
+        "publisher": "Georgia Public Broadcasting",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.govtech.com/products/residents-sue-georgia-county-over-data-center-plans",
+        "label": "Residents Sue Georgia County Over Data Center Plans",
+        "publisher": "Government Technology",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Up to nine buildings, three substations and two retention ponds on roughly 300 acres of Weyerhaeuser-owned timberland near the Ocmulgee River, served by twin 230 kV lines. Reported 900 MW demand. No corporate lessee had been named at rezoning. Projected taxable value of $2bn is a tax-base figure, not a stated investment, so investmentUsd is omitted. Coordinates are the Twiggs County centroid (OSM Nominatim) — the site is near the county's western river edge, so the pin is indicative only.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Reported as an enclosed-loop cooling system requiring a one-time draw of millions of gallons; no ongoing consumption figure is published."
+    },
+    "landAcres": 300,
+    "community": {
+      "status": "litigation",
+      "notes": "Twiggs County residents sued in Twiggs County Superior Court on 2025-09-26 to cancel the rezoning, alleging the county posted the hearing notice on the wrong property with an incorrect date and approved a Development of Regional Impact without the required Middle Georgia Regional Commission review.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "east-kentucky-network-ivel-floyd-ky",
     "name": "East Kentucky Network Data Center",
     "operator": "East Kentucky Network, LLC",
@@ -42192,6 +42753,65 @@
     "facilityType": "data_center"
   },
   {
+    "id": "edgeconnex-union-city-campus-fulton-ga",
+    "name": "Union City Data Center Campus (EdgeConneX / TA Realty)",
+    "operator": "EdgeConneX (campus investment and operations with TA Realty; land owned by Microsoft, site development by Burr Computer Environments)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.5870558,
+      "lon": -84.5424299,
+      "city": "Union City",
+      "county": "Fulton",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 324
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2024",
+        "note": "Phase 1 construction began late 2024; all three phases required to be complete no later than 2032 under the development authority's motion.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/microsoft-union-city-campus",
+        "label": "Microsoft: Union City Campus Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/hyperscale/article/55126626/details-emerge-on-microsofts-18-billion-investment-in-atlanta-data-centers-amid-tax-development-wrangles",
+        "label": "Details Emerge On Microsoft's $1.8 Billion Investment In Atlanta Data Centers Amid Tax, Development Wrangles",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Three buildings of roughly 612,000 sq ft each (campus over 2 million sq ft) on 136 acres Microsoft bought in April 2024 for $53.5m. Operator is recorded as EdgeConneX rather than Microsoft because the fetched sources describe Microsoft as the landowner while EdgeConneX and TA Realty lead investment and operations — ownership and operation diverge here. Construction employment is reported as a 400–600 range, so only the permanent figure is recorded. Building 1 is designated AT11 by EdgeConneX; this is NOT Digital Realty's separately tracked ATL11. Coordinates are the Union City centroid (OSM Nominatim); one source lists the mailing address as College Park 30349.",
+    "subsidies": [
+      {
+        "program": "Development Authority of Fulton County tax abatement (10 years)",
+        "amountUsd": 75000000,
+        "jurisdiction": "Fulton County, Georgia",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 1842000000,
+    "landAcres": 136,
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "edgeconnex-west-valley-city-ut",
     "name": "EdgeConneX SLC01",
     "operator": "EdgeConneX",
@@ -42276,6 +42896,45 @@
       "notes": "Air-cooled, closed-loop system; operator states a water usage effectiveness rating below 0.01 L/kWh."
     },
     "landAcres": 120,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "edgecore-dobson-farms-east-florence-az",
+    "name": "Dobson Farms East",
+    "operator": "EdgeCore Digital Infrastructure",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.1183,
+      "lon": -111.4733,
+      "city": "Florence",
+      "county": "Pinal County",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 720
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-23",
+        "note": "Included in the Florence Town Council's unanimous October 7, 2025 rezoning of 1,619 Dobson Farms acres from residential to industrial.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pinalpost.com/florence-approves-data-centers-on-1619-acres-as-dobson-farms-becomes-major-tech-park/",
+        "label": "Florence Approves Data Centers on 1,619 Acres as Dobson Farms Becomes Major Tech Park",
+        "publisher": "Pinal Post",
+        "retrievedAt": "2026-09-23",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "239 acres at the northeast corner of Arizona Farms Road and Attaway Road; conceptual plan shows ten two-story data center buildings of roughly 332,100 sq ft each at about 72 MW apiece, which the source states as 720 MW total. EdgeCore appears as the party behind the concept plans, not yet as a confirmed owner of record. Coordinate derived from the OSM geometries of Arizona Farms Road and Attaway Road.",
+    "landAcres": 239,
     "facilityType": "data_center"
   },
   {
@@ -55578,8 +56237,12 @@
       "lon": -85.0313269,
       "city": "LaGrange",
       "county": "Troup",
+      "street": "411 Pegasus Parkway",
       "state": "GA",
       "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
     },
     "statusHistory": [],
     "sources": [
@@ -55596,9 +56259,16 @@
         "publisher": "Google",
         "retrievedAt": "2026-08-08",
         "kind": "other"
+      },
+      {
+        "url": "https://www.irecruit.co/insights/google-files-expand-lagrange-data-center-campus",
+        "label": "Google files to expand LaGrange data center campus (DRI for PRL2, filed by KDC)",
+        "publisher": "iRecruit",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-23",
     "notes": "Announced by Google in 2026 as a planned new Georgia data center. No capacity, investment figure, or construction timeline has been published. Coordinates are the LaGrange city centroid (approximate).",
     "facilityType": "data_center"
   },
@@ -64692,6 +65362,54 @@
     "lastUpdated": "2026-07-26",
     "notes": "Confirmed operational at 4802 East Van Buren Street, Phoenix, AZ 85008; part of a 39-acre AZP campus (AZP-1/2 = 89MW total). North America's first BREEAM-certified data center.",
     "landAcres": 39,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "iron-mountain-azp-3-az",
+    "name": "Iron Mountain AZP-3",
+    "operator": "Iron Mountain",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.4565458,
+      "lon": -111.9719014,
+      "city": "Phoenix",
+      "county": "Maricopa County",
+      "street": "5101 E Roosevelt Street",
+      "postalCode": "85008",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 36
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-23",
+        "note": "Listed as an operational facility on Iron Mountain's Phoenix locations page alongside AZP-1 and AZP-2.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ironmountain.com/data-centers/locations/na/phoenix",
+        "label": "Phoenix Data Centers | Colocation in Phoenix — Iron Mountain",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/iron-mountain-azp3",
+        "label": "Iron Mountain: AZP3 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-23",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Third building on Iron Mountain's Phoenix campus; developed on a 10-acre parcel purchased with a 50+ MVA substation.",
+    "landAcres": 10,
     "facilityType": "data_center"
   },
   {
@@ -76721,6 +77439,55 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "microsoft-east-point-ben-hill-road-ga",
+    "name": "Microsoft East Point Data Center (Ben Hill Road)",
+    "operator": "Microsoft",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.6465885,
+      "lon": -84.5173738,
+      "city": "East Point",
+      "county": "Fulton",
+      "street": "Ben Hill Road",
+      "postalCode": "30349",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025",
+        "note": "First phase — one data center building, a power substation, privacy screening, support facilities and landscaping.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/microsoft-east-point",
+        "label": "Microsoft East Point Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://local.microsoft.com/blog/understanding-microsoft-datacenters-in-fulton-county/",
+        "label": "Understanding Microsoft datacenters in South Fulton County",
+        "publisher": "Microsoft Local",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "125-acre campus on Ben Hill Road, part of Microsoft's East US 3 region alongside Palmetto (Fulton) and Douglasville (Douglas). Coordinates are the OSM geocode for Ben Hill Road in the 30349 ZIP — a road midpoint, not a parcel; the road spans a distance, so treat the pin as indicative. Microsoft confirmed in August 2026 that it is working with Fulton and Douglas counties to unwind local tax-incentive agreements covering East Point, Palmetto and Douglasville; the incentive detail is not recorded here because no per-site figure was confirmed on a fetched page.",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Microsoft states its South Fulton County datacenters use direct evaporative cooling that consumes zero water for cooling below 29.4 °C, limiting water use for cooling to under 15% of the year — a seasonal wet/dry design."
+    },
+    "landAcres": 125,
+    "facilityType": "data_center"
+  },
+  {
     "id": "microsoft-east-wenatchee-wa",
     "name": "Microsoft East Wenatchee Data Center",
     "operator": "Microsoft",
@@ -78848,6 +79615,52 @@
     "facilityType": "data_center"
   },
   {
+    "id": "microsoft-palmetto-fulton-ga",
+    "name": "Microsoft Palmetto Data Center",
+    "operator": "Microsoft",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.5178907,
+      "lon": -84.6696549,
+      "city": "Palmetto",
+      "county": "Fulton",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2024-04",
+        "note": "Construction began April 2024 with Turner Construction as general contractor.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://local.microsoft.com/blog/palmetto-datacenter-construction-update/",
+        "label": "Palmetto datacenter construction update",
+        "publisher": "Microsoft Local",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://local.microsoft.com/blog/understanding-microsoft-datacenters-in-fulton-county/",
+        "label": "Understanding Microsoft datacenters in South Fulton County",
+        "publisher": "Microsoft Local",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Microsoft's own July 2024 community update gives an April 2024 construction start and a target completion at the beginning of October 2025. No source fetched this session confirms the site is in service, so status is left at under_construction rather than promoted — a maintainer should re-check. Secondary reporting cites a 250,000 sq ft building, a $420m Development Authority of Fulton County bond and a $14m ten-year abatement; none of those were confirmed on a fetched page, so they are omitted. Coordinates are the Palmetto city centroid (OSM Nominatim); the site is reported as roughly two miles northeast of the city.",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Microsoft states its South Fulton County datacenters use direct evaporative cooling that consumes zero water for cooling below 29.4 °C, limiting water use for cooling to under 15% of the year — a seasonal wet/dry design."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "microsoft-panhandle-road-mecklenburg-va",
     "name": "Microsoft Panhandle Road Campus (AVC17 expansion)",
     "operator": "Microsoft",
@@ -80693,13 +81506,21 @@
         "publisher": "Griffin Daily News",
         "retrievedAt": "2026-08-28",
         "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/spalding-county-commissioners-hold-hearing-144445610.html",
+        "label": "Spalding County commissioners hold hearing on data center development (Project Spalding)",
+        "publisher": "Griffin Daily News (via Yahoo News)",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-28",
+    "lastUpdated": "2026-09-23",
     "notes": "Spalding County's first approved data center campus: three two-story buildings (two at 936,460 sq ft, one at 686,737 sq ft) totalling 2,559,500 sq ft, plus two detached administrative buildings. Property owner listed as Alan R. Mobley. Build-out scheduled for 2030; estimated local tax revenue at build-out $26.859M. As of April 2026 none of Spalding's approved campuses had requested a land disturbance permit.",
     "energy": {
       "notes": "Approved site plan includes a power substation and a proposed on-site solar farm."
     },
+    "investmentUsd": 1800000000,
     "landAcres": 132.9,
     "facilityType": "data_center"
   },
@@ -84394,6 +85215,9 @@
       "state": "GA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 120
+    },
     "statusHistory": [
       {
         "status": "permitted",
@@ -84409,16 +85233,25 @@
         "publisher": "97.5 Glory FM (WGTJ)",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.co.uk/news-releases/northern-data-group-to-develop-best-in-class-us-data-center-for-high-performance-computing-302321720.html",
+        "label": "Northern Data Group to Develop Best-in-Class U.S. Data Center for High Performance Computing",
+        "publisher": "PR Newswire (Northern Data Group)",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-23",
     "notes": "Sited in the Maysville Industrial Park in Jackson County (Maysville straddles the Jackson/Banks county line). Investment and megawatt figures circulating in regional coverage could not be retrieved from a primary page this session and are not recorded. Coordinates are approximate to Maysville.",
+    "landAcres": 63,
     "community": {
       "status": "contested",
       "notes": "A Planning and Zoning Board informational session was scheduled for 2026-05-18, rescheduled to 2026-06-01 and then cancelled, drawing sustained resident objections about process and transparency.",
       "sourceIndex": 0
     },
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "northern-data-pryor-ok",
@@ -84916,11 +85749,11 @@
         "url": "https://www.prnewswire.com/news-releases/novva-data-centers-announces-new-campus-in-mesa-302227476.html",
         "label": "Novva Data Centers Announces New Campus in Mesa",
         "publisher": "PR Newswire / Novva Data Centers",
-        "retrievedAt": "2026-09-10",
+        "retrievedAt": "2026-09-23",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-23",
     "notes": "Located near Ellsworth and Warner roads, southeast Mesa. Five data halls, 1.3M sq ft data hall space, 200,000 sq ft office, two-phase buildout over ~10 years. Sixth Novva campus nationally, first in Arizona. Architectural design honors Hohokam heritage. Coordinates approximate. Public-reception check (2026-09-10): Checked Novva's own announcement page (2026-09-10); it markets design amenities ('dedicated acreage offering public pathways for the community') but documents no actual public hearing, resident feedback, or official statement of support/opposition. No community-reception record found in this source.",
     "energy": {
       "source": "solar",
@@ -86968,9 +87801,16 @@
         "publisher": "WTOC",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wtoc.com/2026/09/16/state-reveals-full-dri-report-openais-data-center-project/",
+        "label": "State reveals full DRI report on OpenAI's Effingham County data center project",
+        "publisher": "WTOC-TV",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-23",
     "notes": "Four data center buildings on roughly 1,400 acres inside the 2,600-acre Savannah Gateway Industrial Hub near Rincon. Effingham County values the project at $20B; OpenAI's VP of Compute Strategy has said full build-out will exceed $30B. Permanent staffing is described as ~400 at the 2028 opening rising to about 1,000 by 2032. Part of OpenAI's Stargate program.",
     "energy": {
       "source": "grid",
@@ -86979,6 +87819,7 @@
     },
     "water": {
       "coolingType": "closed_loop",
+      "reportedMgd": 0.03,
       "notes": "County materials describe a closed-loop cooling system drawing treated surface water only — not groundwater or the Floridan aquifer. The DRI form itself left water-use figures blank."
     },
     "subsidies": [
@@ -88352,6 +89193,71 @@
     "notes": "DOE Office of Science user facility housing Frontier (exascale HPC used for simulation and AI training/analysis) and, from 2028, the Discovery supercomputer for the DOE Genesis Mission. Facility power draw and floor area are not stated on the fetched pages, so no capacity is asserted. Distinct from the tracked DOE Oak Ridge Reservation AI data center lease sites.",
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "orsted-eleven-mile-solar-center-pinal-az",
+    "name": "Eleven Mile Solar Center",
+    "operator": "Ørsted",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.8599359,
+      "lon": -111.5933508,
+      "city": "Coolidge",
+      "county": "Pinal County",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 300
+    },
+    "announcedDate": "2023-12",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-23",
+        "note": "Commissioned October 2024.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://us.orsted.com/news-archive/2023/12/meta-teams-up-with-srp-and-orsted-to-support-data-center-with-clean-energy-from-new-solar-and-battery-project",
+        "label": "Meta Teams Up with SRP and Ørsted to Support Data Center with Clean Energy from New Solar and Battery Project",
+        "publisher": "Ørsted",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nsenergybusiness.com/projects/eleven-mile-solar-center-arizona-us/",
+        "label": "Eleven Mile Solar Center, Arizona, US",
+        "publisher": "NS Energy",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Eleven+Mile+Solar+Center%2C+Pinal+County%2C+Arizona&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim — Eleven Mile Solar Center industrial landuse, Pinal County, AZ",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-23",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Coordinate is Nominatim's representative point for the OSM landuse polygon named \"Eleven Mile Solar Center\", not a surveyed centroid.",
+    "energy": {
+      "source": "solar",
+      "utility": "Salt River Project"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "poweredFacilityIds": [
+        "meta-mesa-az"
+      ],
+      "notes": "300 MW solar PV co-located with a 300 MW / 1,200 MWh (4-hour) battery storage system across more than 2,000 acres, using roughly 857,000 single-axis-tracker panels. Commissioned October 2024 and described as the largest co-located solar-plus-storage project on SRP's grid. Under a December 2023 supply agreement the majority of the solar output is allocated to Meta's Mesa data center, with excess going to SRP customers. Ørsted sold a 50% equity stake to Energy Capital Partners in December 2024, so current ownership is a 50/50 joint venture."
+    }
   },
   {
     "id": "otava-ann-arbor-mi",
@@ -92063,6 +92969,52 @@
     }
   },
   {
+    "id": "premier-project-arrowhead-irwin-ga",
+    "name": "Project Arrowhead (Premier Data Center Development Irwin County Campus)",
+    "operator": "Premier Data Center Development, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.6224192,
+      "lon": -83.3351929,
+      "city": "Mystic",
+      "county": "Irwin",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1250
+    },
+    "announcedDate": "2026-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04",
+        "note": "Development of Regional Impact application filed with the Georgia Department of Community Affairs.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/plans-filed-for-1-2gw-data-center-campus-in-irwin-county-georgia",
+        "label": "Plans Filed for 1.2GW Data Center Campus in Irwin County, Georgia",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Five-building campus totalling 4.22 million sq ft on approximately 1,000 acres outside Mystic. First phase targeted 2030, full build-out 2034. The $6bn figure is stated as an upper bound (\"up to $6 billion\"), not a committed investment. Part of the land was previously earmarked for the Irwin Forward Tech Park proposal, withdrawn in March 2026. A DRI filing is a review trigger, not an approval — no rezoning or interconnection award is confirmed. Coordinates are the Mystic community centroid (OSM Nominatim), not a parcel.",
+    "energy": {
+      "source": "grid",
+      "utility": "Georgia Power",
+      "notes": "Georgia Power is conducting an energy study for the project; no interconnection agreement is reported."
+    },
+    "investmentUsd": 6000000000,
+    "landAcres": 1000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "prime-1231-comstock-santa-clara-ca",
     "name": "Prime Data Centers 1231 Comstock Street",
     "operator": "Prime Data Centers (1231 Comstock Property LLC)",
@@ -93664,6 +94616,52 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "project-turbo-llc-project-azalea-thomson-ga",
+    "name": "Project Azalea (Thomson Data Center Campus)",
+    "operator": "Project Turbo, LLC (developer; end user undisclosed)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.4663248,
+      "lon": -82.5026089,
+      "city": "Thomson",
+      "county": "McDuffie",
+      "street": "Randall Hunt Road",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-03-18",
+        "note": "McDuffie County commissioners voted 4-1 to approve, after a planning commission recommendation earlier that month.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/200-acre-project-azalea-data-center-approved-near-augusta-georgia",
+        "label": "200-acre \"Project Azalea\" Data Center Approved Near Augusta, Georgia",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Six data center buildings at 2660–2358 Randall Hunt Road, Thomson; potential completion 2029. Developed by Project Turbo, LLC, the same entity behind the separately tracked Gainesville/Hall County proposal — this is a distinct McDuffie County site, not that project. Coordinates are the Thomson city centroid (OSM Nominatim); the street is recorded without a number because the parcels span an address range.",
+    "energy": {
+      "source": "grid",
+      "utility": "Jefferson Energy",
+      "notes": "Planned 400 MW supply from Jefferson Energy. The Central Savannah River Area Regional Commission's DRI report states sufficient energy supply is not currently available to serve the project; studies are ongoing with Georgia Power, Georgia Transmission Corporation and the EMC."
+    },
+    "investmentUsd": 1000000000,
+    "landAcres": 200,
+    "facilityType": "data_center"
   },
   {
     "id": "project-turbo-okelly-road-gainesville-ga",
@@ -95418,9 +96416,23 @@
         "label": "Riverdale Standard — Early County Georgia Data Center Ordinance Vote",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wtvy.com/2026/07/14/early-county-approves-new-data-center-ordinance-amid-concerns/",
+        "label": "Early County approves new data center ordinance amid concerns",
+        "publisher": "WTVY-TV",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wtvy.com/2026/08/11/blakely-approves-agreement-with-qts-data-centers-related-proposed-facility/",
+        "label": "Blakely approves agreement with QTS Data Centers related to proposed facility",
+        "publisher": "WTVY-TV",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-23",
     "notes": "Project Blue Hole in Blakely, Early County; DRI filed 2026, ~12M sq ft at full buildout by ~2035. ~1 GW+ is an estimate of ultimate scale (in notes). Coordinates are the Blakely area centroid. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "energy": {
       "source": "grid"
@@ -96036,6 +97048,7 @@
       "lon": -82.0105,
       "city": "Augusta",
       "county": "Richmond",
+      "street": "Gordon Highway",
       "state": "GA",
       "precision": "exact"
     },
@@ -96066,7 +97079,7 @@
         "url": "https://www.wrdw.com/2026/06/02/augustans-urge-city-leaders-put-data-centers-hold/",
         "label": "Augustans urge city leaders to put data centers on hold",
         "publisher": "WRDW",
-        "retrievedAt": "2026-07-08",
+        "retrievedAt": "2026-09-23",
         "kind": "press"
       },
       {
@@ -96083,7 +97096,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-09-23",
     "notes": "Project Eisenhower in Augusta, Richmond County — 6 buildings across ~170 acres, $2B+ project. Rezoned 2024-25 with preliminary grading underway. Estimated 300-500 MW (not officially disclosed — omitted from capacity). Coordinates are the Augusta area centroid. The ~$2B figure is a developer projection from a 2024 zoning hearing (building permits not yet issued) -> investmentUsd omitted. QTS projects ~1,000 construction and ~160-220 permanent jobs (projections) -> jobs honest-zero. Georgia's high-technology data-center sales-tax exemption and an Augusta EDA bond/PILOT are available programs, but no confirmed award for this campus was found -> subsidy honest-zero. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "energy": {
       "source": "grid",
@@ -100872,6 +101885,42 @@
     }
   },
   {
+    "id": "ryan-companies-florence-tech-park-az",
+    "name": "Florence Tech Park",
+    "operator": "Ryan Companies US, Inc.",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.1477,
+      "lon": -111.4733,
+      "city": "Florence",
+      "county": "Pinal County",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-23",
+        "note": "Florence Town Council voted 7-0 on October 7, 2025 (Ordinances 766-25 through 769-25) to rezone 1,619 acres of the former Dobson Farms master-planned community from residential to industrial; detailed engineering and site planning still to follow.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pinalpost.com/florence-approves-data-centers-on-1619-acres-as-dobson-farms-becomes-major-tech-park/",
+        "label": "Florence Approves Data Centers on 1,619 Acres as Dobson Farms Becomes Major Tech Park",
+        "publisher": "Pinal Post",
+        "retrievedAt": "2026-09-23",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "780 acres at the southeast corner of Judd Road and Attaway Road; concept shows five data centers, two office buildings and one general industrial building, with final counts subject to site planning. Coordinate derived from the OSM geometries of Judd Road and Attaway Road. Power demand for the three Dobson Farms cases combined approaches 1 GW; no per-site MW is stated for this parcel, so capacityMw is left unset.",
+    "landAcres": 780,
+    "facilityType": "data_center"
+  },
+  {
     "id": "ryan-companies-project-swan-lakeland-fl",
     "name": "Project Swan",
     "operator": "Ryan Companies (end operator TBD)",
@@ -100958,6 +102007,46 @@
       "notes": "More than 50 residents attended the June 1, 2026 Lakeland City Commission meeting to oppose the proposed 'Project Swan' hyperscale data center, with 18 speaking against it during audience comments. Resident Magdalene DuPree called the project 'a bad fit' and objected to a facility 'extracting value from us.' A grassroots petition campaign and coalition rally pushed the City Commission to consider a temporary data-center moratorium. No organized support for the project was documented in coverage reviewed.",
       "sourceIndex": 3
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ryan-companies-southwest-crossing-data-park-eloy-az",
+    "name": "Southwest Crossing Data Park",
+    "operator": "Ryan Companies US, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.7783292,
+      "lon": -111.6023,
+      "city": "Eloy",
+      "county": "Pinal County",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-23",
+        "note": "Eloy Planning and Zoning Commission recommended approval on January 15, 2025 of a rezoning to General Industrial with a Planned Area Development overlay; no final council action sourced.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://azbex.com/planning-development/ryan-companies-2msf-industrial-plan-pivots-to-687m-data-center/",
+        "label": "Ryan Companies 2MSF Industrial Plan Pivots to $687M Data Center",
+        "publisher": "AZBEX",
+        "retrievedAt": "2026-09-23",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "122 acres at the southeast corner of Houser and Estrella roads east of Interstate 10; three buildings totalling more than 855,000 sq ft at 400 MW. The $687.5M figure is stated as construction cost for this site specifically. Coordinate derived from the OSM geometries of Houser Road and Estrella Road.",
+    "investmentUsd": 687500000,
+    "landAcres": 122,
     "facilityType": "data_center"
   },
   {
@@ -102212,6 +103301,43 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "sahuarita-holdings-project-gravel-pima-county-az",
+    "name": "Project Gravel",
+    "operator": "Sahuarita Holdings, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.9357724,
+      "lon": -110.9997989,
+      "county": "Pima County",
+      "street": "2480 W Twin Buttes Road",
+      "postalCode": "85629",
+      "state": "AZ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-23",
+        "note": "Eight-building, ~203,000 sq ft-per-building campus under evaluation on 160 acres of unincorporated Pima County land west of Sahuarita; contractors assessing environmental, floodplain and cultural conditions.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://tucson.com/news/local/government-politics/article_88b66e8c-6502-49de-832e-7cba5f958a77.html",
+        "label": "New 160-acre data center proposed in Sahuarita",
+        "publisher": "Arizona Daily Star (tucson.com)",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Landowner is Sahuarita Holdings, LLC, a subsidiary of Idaho-based W.R. Henderson Construction; the eventual data center operator has not been disclosed. Pima County was weighing a 120-day data center moratorium at the time of reporting. Coordinate is a road-level geocode of W Twin Buttes Road, so the pin is approximate within the road's length.",
+    "landAcres": 160,
+    "facilityType": "data_center"
   },
   {
     "id": "salcido-broadway-grant-county-wa",
@@ -107058,14 +108184,26 @@
         "publisher": "Utility Dive",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.energytech.com/infrastructure/article/55405088/srps-marigold-energy-center-combining-16-gw-of-solar-battery-storage-and-gas-fired-generation",
+        "label": "SRP's Marigold Energy Center Combining 1.6-GW+ of Solar, Battery Storage and Gas-Fired Generation",
+        "publisher": "Energy Tech",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-23",
     "notes": "Proposed near Stanfield in Pinal County, roughly 45 miles south of Phoenix, to serve growing demand in Maricopa and Pinal counties. SRP has not named a specific offtaker; the data-center link is SRP's stated load-growth rationale, not a signed campus-level agreement.",
     "energy": {
       "source": "mixed",
       "utility": "Salt River Project",
       "notes": "600 MW solar, 400 MW of lithium-ion battery storage at 8-hour duration, and up to 675 MW of natural gas generation intended for peak hours, plus a new substation and about four miles of 230 kV transmission line."
+    },
+    "jobs": {
+      "construction": 400,
+      "permanent": 45,
+      "sourceIndex": 2
     },
     "facilityType": "power_generation",
     "generation": {
@@ -112445,6 +113583,7 @@
       "lon": -84.724,
       "city": "Palmetto",
       "county": "Fulton",
+      "street": "Weldon Road at Palmetto-Tyrone Road",
       "state": "GA",
       "precision": "exact"
     },
@@ -112508,9 +113647,16 @@
         "publisher": "T5 Data Centers, via Internet Archive Wayback Machine",
         "retrievedAt": "2026-09-10",
         "kind": "other"
+      },
+      {
+        "url": "https://www.times-herald.com/data_center/where-cowetas-five-proposed-data-centers-stand/article_55ee204a-0e00-43e4-9ad1-78c92b679d06.html",
+        "label": "Where Coweta's five proposed data centers stand (Project Pegasus / T5@Atlanta IV, LP)",
+        "publisher": "The Newnan Times-Herald",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-23",
     "notes": "City discrepancy: the ledger cited Fairburn, but T5's own page and PR Newswire list Palmetto, GA; DCD describes it as Fairburn/Fulton County with a 91-acre site in Palmetto - site is on the Fairburn/Palmetto border in South Fulton County (I-85 and Gullatt Rd). Capacity: T5's page lists '200 MW available' (Phase 1) while the Aug 2024 land-acquisition PR cites '300 MW' campus total - 300 MW recorded as planned. No tenant disclosed (T5 is a wholesale/build-to-suit developer targeting hyperscalers; page cites AI/liquid-cooling suitability). Phase 1 construction targeted Q2 2027; on-site substation expected 2026. No investment or jobs figure disclosed. Coordinates approximate (I-85/Gullatt Rd corridor).",
     "energy": {
       "source": "grid",
@@ -112520,6 +113666,7 @@
       "coolingType": "hybrid",
       "notes": "Air and liquid cooling designed for high-density AI workloads."
     },
+    "investmentUsd": 1500000000,
     "landAcres": 91,
     "community": {
       "status": "unknown"
@@ -113322,9 +114469,23 @@
         "publisher": "Arizona's Family (AZFamily)",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.abc15.com/news/local-news/very-disappointed-maricopa-county-supervisors-approve-controversial-data-center",
+        "label": "'Very disappointed': Maricopa County supervisors approve controversial data center",
+        "publisher": "ABC15 Arizona",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.watereducation.org/aquafornia-news/controversial-surprise-data-center-clears-environmental-review",
+        "label": "Controversial Surprise data center clears environmental review",
+        "publisher": "Water Education Foundation (Aquafornia)",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-23",
     "notes": "Unincorporated Maricopa County near Surprise, AZ, north of Luke AFB. Construction targeted Q3 2026, first building online 2028. Coordinates are approximate. Coordinates corrected 2026-08-31 to the filed parcel (501-43-016A) in the southwest quarter of Section 28, Township 3 North, Range 1 West. The previously stored point fell roughly 8.2 miles NNW, in a different township. The 160-acre parcel holds the turbine yard, the data center buildings and the APS substation together, so a single approximate point represents the whole campus.",
     "energy": {
       "source": "on_site_gas",
@@ -113972,6 +115133,47 @@
     "community": {
       "status": "supported",
       "notes": "Unanimous planning-commission recommendation (May 2025) followed by county approval (June 2025)."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tc-atlanta-development-winston-douglas-ga",
+    "name": "Winston Data Center (Waldrop Farms)",
+    "operator": "TC Atlanta Development",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.725108,
+      "lon": -84.8249382,
+      "city": "Winston",
+      "county": "Douglas",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-02-04",
+        "note": "Douglas County Planning and Zoning Board and Board of Commissioners each approved the rezoning and land-use amendment 4-0 with one abstention, subject to conditions.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/douglas-county-commissioners-approve-data-210537294.html",
+        "label": "Douglas County commissioners approve data center plans with extra conditions",
+        "publisher": "WSB-TV (via Yahoo News)",
+        "retrievedAt": "2026-09-23",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-23",
+    "notes": "Two data center buildings and one substation on the former Waldrop Farms property in the Winston community between Douglasville and Villa Rica; part of a 165-acre site was amended from suburban-living / parks-recreation-conservation to commerce-center land use. County analysis projects $2.4m in annual tax revenue rising to $96m over ten years — a revenue projection, not an investment figure, so investmentUsd is omitted. Coordinates are the Winston community centroid (OSM Nominatim), not a parcel.",
+    "landAcres": 165,
+    "community": {
+      "status": "contested",
+      "notes": "County staff recommended denial and the item was tabled twice. Opponents cited proximity to an elementary school and a park, environmental impact and child safety. The Planning and Zoning Board and the Board of Commissioners each voted 4-0 to approve, with Chairwoman Romona Jackson Jones abstaining, adding conditions on community-matching aesthetics, bike/pedestrian/transit facilities, county sewer and water connection, a post-construction heavy-vehicle ban, and a rezoning tied to the property rather than the project.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -124654,7 +125856,7 @@
       "source": "mixed",
       "utility": "Memphis Light Gas & Water (MLGW) / TVA",
       "onSiteGenerationMw": 422,
-      "notes": "About 35 on-site natural-gas turbines (a combined 422 MW per SELC and aerial imagery) supplement a 150 MW grid substation and Tesla Megapack storage. The Shelby County Health Department permitted only 15 turbines; an SELC/NAACP appeal stays that permit. xAI said the Phase-I temporary turbines would be demobilized after grid connection, but 2025 aerial imagery shows 35 on site."
+      "notes": "About 35 on-site natural-gas turbines (a combined 422 MW per SELC and aerial imagery) supplement a 150 MW grid substation and Tesla Megapack storage. The Shelby County Health Department permitted only 15 turbines; the SELC/NAACP/Young, Gifted & Green appeal of that permit was dismissed as moot by the Memphis and Shelby County Air Pollution Control Board on a 6-1 vote on 2025-12-15 (after the health department and xAI argued most turbines had been removed), ending the appeal-triggered stay and leaving the permit in force; press at the time reported 12 SCR-equipped turbines still active and a permit expiring 2027-01-02. TVA's board voted unanimously on 2026-02-11 to approve an additional 150 MW of firm power, which would double the approved grid allocation to about 300 MW; that approval is contingent on contractual, financial and operational requirements and is a ceiling, not delivered power — as of 2026-09-23 no source reports the second increment energized, and the site is still described as taking 150 MW from the grid. xAI said the Phase-I temporary turbines would be demobilized after grid connection, but 2025 aerial imagery shows 35 on site."
     },
     "water": {
       "coolingType": "evaporative",
