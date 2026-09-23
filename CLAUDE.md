@@ -155,6 +155,34 @@ ever ran inside the automated workflow, so a maintainer syncing by hand bypassed
 The reverse direction is deliberately NOT asserted: retiring a facility needs a raw Neon delete
 and legitimately leaves a stale siting entry behind.
 
+⚠️ **The ONE sanctioned `--skip-nhd` exception, and its price** (2026-09-22). When USGS NHD is
+*degraded rather than down*, the full pass neither finishes nor aborts: `build-map-data.mjs`'s
+`NHD_CONSECUTIVE_FAILURE_BUDGET = 10` counts **failures** and is blind to **latency**, so 200-OK
+responses arriving 30x slow keep it grinding (measured 473ms..14.5s on identical queries; the run
+was cancelled at 2h05m against a 6h job cap). Worse, finishing would not have helped: the full path
+rebuilds `computeSitingContext` from scratch and never merges the existing file, so scattered
+timeouts null `nearestWater` on EXISTING records and the additive guard discards everything.
+In that case publish in two stages: (1) `build:mapdata -- --skip-nhd` now — that branch seeds every
+id and merges `{...existing[id], ...envContext[id]}`, so it is *structurally* additive and new
+records still get waterStress/aquifer/groundwaterDecline; (2) a full `build:mapdata` once NHD is
+healthy, to backfill `nearestWater`/`nearestTransmission`.
+⛔ **Stage 2 is not test-covered** — `siting-context.test.ts` asserts an ENTRY exists, not that it
+carries NHD fields, so nothing goes red while it is outstanding. Track it explicitly and verify with
+```bash
+python3 -c "
+import json
+s=json.load(open('data/siting-context.json'))
+f={x['id']:x for x in json.load(open('data/facilities.json'))}
+off={'HI','AK','GU','MP','PR','VI'}
+print(sum(1 for i,v in s.items() if 'nearestWater' not in v
+          and f.get(i,{}).get('location',{}).get('state') not in off))"
+```
+Expect **79** now, **0** after stage 2. ⚠️ The non-CONUS exclusion is REQUIRED: 19 facilities
+(HI 6 · AK 4 · GU 4 · MP 2 · PR 2 · VI 1) legitimately have no NHD match because NHD is CONUS-only,
+so an unscoped count reads 98 and can never reach 0.
+Do NOT treat this as general permission to
+use `--skip-nhd` on a wave — the paragraph above is still the rule.
+
 Why it matters: the site reads Neon live, so data never needed a build. Editing the
 file and shipping it through git made every correction a Vercel deploy, and left
 drift (`check:drift`, the `neon-sync` workflow) to be detected and repaired
