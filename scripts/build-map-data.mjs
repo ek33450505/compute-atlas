@@ -129,6 +129,33 @@ const NHD_RING_STEPS_DEG = [0.15, 0.4, 0.9, 1.8];
 const NHD_REQUEST_DELAY_MS = 150;
 const NHD_CONSECUTIVE_FAILURE_BUDGET = 10; // abort if the service looks down
 
+// --- NHD pre-flight -------------------------------------------------------
+// NHD_CONSECUTIVE_FAILURE_BUDGET cannot catch a degraded service: it only
+// increments when BOTH layers fail for one facility and RESETS on any success,
+// so intermittent failure keeps it near zero, and it counts failures while
+// being blind to latency. On 2026-09-23 a run ground for ~6h to 1900/2167 with
+// throughput decaying 0.83 -> 0.167 -> 0.006 facilities/sec and never aborted.
+// The pre-flight answers the cheap question first: does a REAL query work now?
+const NHD_PREFLIGHT_LAT = 39.1097; // Kansas, CONUS interior — dense named NHD coverage
+const NHD_PREFLIGHT_LON = -95.0877;
+// Ring 0 ONLY, deliberately: this is a fast liveness check, not a load test.
+// KNOWN GAP: the build escalates through NHD_RING_STEPS_DEG (0.15/0.4/0.9/1.8)
+// and the larger envelopes return far more geometry, so a service that is
+// healthy at ring 0 but collapses at ring 3 PASSES this pre-flight. That is not
+// the 2026-09-23 shape (total unavailability at every ring), so it does not
+// undermine the check — but do not read a green pre-flight as "all rings fine".
+// Mid-run degradation is likewise still unprotected: NHD_CONSECUTIVE_FAILURE_BUDGET
+// resets on any success and counts failures while being blind to latency.
+const NHD_PREFLIGHT_HALF_DEG = 0.15; // ring 0, the envelope the build uses most
+// Fail in seconds, not minutes — this is a liveness probe, not build work.
+const NHD_PREFLIGHT_TIMEOUT_MS = 12_000;
+// Latency ceiling: a healthy ring-0 query returns in well under 1s (measured
+// 473ms on a healthy service). 8s is ~17x that — comfortably clear of ordinary
+// jitter, but far below the 14.5s responses seen while the service was degraded.
+// Scoring slow-but-200 as a FAILURE is the whole point: today's run never
+// aborted precisely because "eventually answered" was treated as success.
+const NHD_PREFLIGHT_LATENCY_CEILING_MS = 8_000;
+
 const BUDGETS = {
   water: 1.5 * 1024 * 1024,
   power: 1.9 * 1024 * 1024, // stay comfortably under the ~2MB target
@@ -163,11 +190,15 @@ const FACILITIES_PATH = resolve(repoRoot, 'data', 'facilities.json');
 // ---------------------------------------------------------------------------
 // Fetch helpers
 // ---------------------------------------------------------------------------
-export async function fetchJSON(url, { label = url, retries = 1 } = {}) {
+export async function fetchJSON(url, { label = url, retries = 1, timeoutMs = null } = {}) {
   let lastErr;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const res = await fetch(url);
+      // `timeoutMs` aborts the request itself rather than racing a timer beside
+      // it: a hung socket that loses the race would otherwise keep running and
+      // keep its connection open. Opt-in, so the long build path keeps its
+      // existing (unbounded) patience unchanged.
+      const res = await fetch(url, timeoutMs ? { signal: AbortSignal.timeout(timeoutMs) } : undefined);
       if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
       const body = await res.json();
       // ArcGIS REST services report failures in the response BODY with an HTTP
@@ -563,8 +594,13 @@ function isPointInPolygonGeometry(pt, geometry) {
   return false;
 }
 
-/** Query one NHD layer within an envelope around [lat,lon]. Returns { ok, features }. */
-async function nhdQueryLayer(layer, lat, lon, halfDeg) {
+/**
+ * The exact query URL the build depends on. Shared with preflightNHD() on
+ * purpose: a pre-flight that probes a DIFFERENT URL than the build is a false
+ * green, which is precisely how the service root fooled us (2026-09-23 — root
+ * metadata answered 200 in 307-441ms while every real query timed out or 502'd).
+ */
+function nhdQueryURL(layer, lat, lon, halfDeg) {
   const geometry = JSON.stringify({
     xmin: lon - halfDeg,
     ymin: lat - halfDeg,
@@ -572,7 +608,12 @@ async function nhdQueryLayer(layer, lat, lon, halfDeg) {
     ymax: lat + halfDeg,
     spatialReference: { wkid: 4326 },
   });
-  const url = `${NHD_BASE}/${layer}/query?where=${encodeURIComponent(NHD_NAMED_WHERE)}&geometry=${encodeURIComponent(geometry)}&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=GNIS_NAME&returnGeometry=true&f=geojson`;
+  return `${NHD_BASE}/${layer}/query?where=${encodeURIComponent(NHD_NAMED_WHERE)}&geometry=${encodeURIComponent(geometry)}&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=GNIS_NAME&returnGeometry=true&f=geojson`;
+}
+
+/** Query one NHD layer within an envelope around [lat,lon]. Returns { ok, features }. */
+async function nhdQueryLayer(layer, lat, lon, halfDeg) {
+  const url = nhdQueryURL(layer, lat, lon, halfDeg);
   await nhdPoliteDelay();
   try {
     const data = await fetchJSON(url, { label: `NHD layer ${layer} @ ${lat.toFixed(3)},${lon.toFixed(3)} D=${halfDeg}`, retries: 1 });
@@ -581,6 +622,104 @@ async function nhdQueryLayer(layer, lat, lon, halfDeg) {
     console.error(`  [warn] NHD layer ${layer} permanently failed at (${lat.toFixed(3)},${lon.toFixed(3)}) D=${halfDeg}: ${err.message}`);
     return { ok: false, features: [] };
   }
+}
+
+/**
+ * Fail-fast liveness probe for USGS NHD, run before any expensive build work.
+ *
+ * Issues a REAL query against BOTH layers the build depends on — layer 4
+ * (flowlines) and layer 10 (waterbodies) — because on 2026-09-23 layer 10
+ * failed independently of layer 4, so probing one proves nothing about the
+ * other. It never probes the service ROOT: root metadata answered HTTP 200 in
+ * 307-441ms throughout that outage while every real query failed.
+ *
+ * Returns a structured result rather than throwing, so it is testable and the
+ * caller owns the policy decision:
+ *   { ok: boolean, results: [{ layer, ok, ms, error }] }
+ *
+ * `now` is injectable so the latency ceiling can be tested without sleeping.
+ */
+export async function preflightNHD({
+  lat = NHD_PREFLIGHT_LAT,
+  lon = NHD_PREFLIGHT_LON,
+  halfDeg = NHD_PREFLIGHT_HALF_DEG,
+  timeoutMs = NHD_PREFLIGHT_TIMEOUT_MS,
+  latencyCeilingMs = NHD_PREFLIGHT_LATENCY_CEILING_MS,
+  now = () => Date.now(),
+} = {}) {
+  /** One attempt at one layer. { ok } here means "answered with a valid shape", NOT "fast enough". */
+  const probe = async (layer) => {
+    const startedAt = now();
+    try {
+      // retries: 0 — a probe that retries is no longer fast, and a service that
+      // needs a retry to answer one small query is exactly what we are catching.
+      // (The ONE re-probe below is latency-only and deliberately not this.)
+      const data = await fetchJSON(nhdQueryURL(layer, lat, lon, halfDeg), {
+        label: `NHD pre-flight layer ${layer}`,
+        retries: 0,
+        timeoutMs,
+      });
+      // Liveness, not content: assert the geojson SHAPE, not that features were
+      // found. An empty envelope is a legitimate answer; a missing `features`
+      // array is not an answer at all.
+      if (!data || !Array.isArray(data.features)) {
+        throw new Error('response carried no `features` array');
+      }
+      return { answered: true, ms: now() - startedAt, error: null };
+    } catch (err) {
+      return { answered: false, ms: now() - startedAt, error: err instanceof Error ? err.message : String(err) };
+    }
+  };
+
+  const results = [];
+  // Ring 0 only, both layers — see NHD_PREFLIGHT_HALF_DEG for the known gap
+  // (a service that degrades only on the wider rings passes this probe).
+  for (const layer of [NHD_FLOWLINE_LAYER, NHD_WATERBODY_LAYER]) {
+    const first = await probe(layer);
+
+    if (!first.answered) {
+      // HARD failure (timeout, 502, no `features`). Never re-probed: a service
+      // that is down must still fail in seconds, and retrying it restores
+      // exactly the patience this check exists to remove.
+      results.push({ layer, ok: false, ms: first.ms, error: first.error });
+      continue;
+    }
+
+    if (first.ms <= latencyCeilingMs) {
+      results.push({ layer, ok: true, ms: first.ms, error: null });
+      continue;
+    }
+
+    // LATENCY-ONLY rejection: the query genuinely succeeded and was rejected
+    // solely on the ceiling. A cold ArcGIS connection pool can make a first
+    // query take seconds, so aborting on one sample would be a false abort — a
+    // failure mode this pre-flight would itself have introduced. Re-probe ONCE
+    // and take the faster of the two samples as the verdict.
+    const second = await probe(layer);
+
+    if (!second.answered) {
+      results.push({
+        layer,
+        ok: false,
+        ms: second.ms,
+        error: `re-probe after a slow first attempt (${first.ms}ms) failed: ${second.error}`,
+      });
+      continue;
+    }
+
+    const ms = Math.min(first.ms, second.ms);
+    if (ms <= latencyCeilingMs) {
+      results.push({ layer, ok: true, ms, error: null });
+      continue;
+    }
+    results.push({
+      layer,
+      ok: false,
+      ms,
+      error: `responded in ${ms}ms (faster of 2 attempts: ${first.ms}ms, ${second.ms}ms), over the ${latencyCeilingMs}ms ceiling (service degraded)`,
+    });
+  }
+  return { ok: results.every((r) => r.ok), results };
 }
 
 /**
@@ -1008,6 +1147,44 @@ function computeDistribution(sitingContext, fieldName) {
 // ---------------------------------------------------------------------------
 async function main() {
   const skipNHD = process.argv.slice(2).includes('--skip-nhd');
+
+  // --skip-nhd makes NO NHD calls at all, so it must NOT pre-flight: that path
+  // is the documented fallback DURING an outage and has to keep working when
+  // the probe would fail. Breaking this would have blocked the 2026-09-23 wave.
+  if (!skipNHD) {
+    const preflight = await preflightNHD();
+    for (const r of preflight.results) {
+      console.log(
+        `NHD pre-flight layer ${r.layer}: ${r.ok ? 'ok' : 'FAILED'} in ${r.ms}ms${r.error ? ` — ${r.error}` : ''}`,
+      );
+    }
+    if (!preflight.ok) {
+      const failed = preflight.results.filter((r) => !r.ok);
+      console.error(
+        [
+          '',
+          'NHD pre-flight FAILED — aborting before any expensive work.',
+          ...failed.map((r) => `  layer ${r.layer}: ${r.error} (measured ${r.ms}ms)`),
+          '',
+          'USGS NHD is down or degraded. Do NOT retry the full pass — a degraded',
+          'service answers slowly rather than failing, which is what let a run grind',
+          'for 6h and still lose data.',
+          '',
+          'Documented fallback: re-run with --skip-nhd. That path makes no NHD calls,',
+          'merges into the existing siting-context.json, and still fills',
+          'waterStress/aquifer/groundwaterDecline for new records.',
+          '',
+          'PRICE OF --skip-nhd: it leaves nearestWater/nearestTransmission UNSET on',
+          'new records, and nothing in the test suite goes red while that is',
+          'outstanding (siting-context.test.ts asserts an ENTRY exists, not that it',
+          'carries NHD fields). A full build:mapdata is still OWED once NHD is',
+          'healthy — track it explicitly.',
+        ].join('\n'),
+      );
+      process.exitCode = 1;
+      return;
+    }
+  }
 
   const facilities = JSON.parse(readFileSync(FACILITIES_PATH, 'utf8'));
   console.log(`Loaded ${facilities.length} facilities from ${FACILITIES_PATH}`);
