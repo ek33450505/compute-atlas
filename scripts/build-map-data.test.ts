@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 
 import {
   fetchJSON,
+  preflightNHD,
   propGNISName,
   ISLAND_GRID_BBOX,
   nearestFromCandidates,
@@ -205,5 +206,240 @@ describe("island-grid reachability guard", () => {
     const [, , prMaxX] = ISLAND_GRID_BBOX.PR;
     const [viMinX] = ISLAND_GRID_BBOX.VI;
     expect(prMaxX).toBeLessThan(viMinX);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// NHD pre-flight
+// ---------------------------------------------------------------------------
+
+/** Response spec per NHD layer id, keyed by the layer number in the URL. */
+type LayerSpec = { status?: number; body?: unknown; networkError?: string };
+
+function layerOf(url: string): string {
+  return /MapServer\/(\d+)\/query/.exec(url)?.[1] ?? "?";
+}
+
+/** Stub fetch so each NHD layer can succeed or fail INDEPENDENTLY. */
+function stubNHD(per: Record<string, LayerSpec>) {
+  const fn = vi.fn(async (url: string) => {
+    const spec = per[layerOf(url)];
+    if (!spec) throw new Error(`test stub: unexpected NHD layer in ${url}`);
+    if (spec.networkError) throw new Error(spec.networkError);
+    const status = spec.status ?? 200;
+    return {
+      ok: status >= 200 && status < 300,
+      status,
+      statusText: status === 200 ? "OK" : "Error",
+      json: async () => spec.body ?? { type: "FeatureCollection", features: [] },
+    };
+  });
+  vi.stubGlobal("fetch", fn);
+  return fn;
+}
+
+/**
+ * Like stubNHD, but each layer gets a SEQUENCE of specs consumed one per call —
+ * the only way to express "slow, then gone" across a re-probe. Running past the
+ * end of a layer's sequence throws rather than repeating the last spec, so an
+ * unexpected extra call is a test failure, not a silent pass.
+ */
+function stubNHDSequence(per: Record<string, LayerSpec[]>) {
+  const calls: Record<string, number> = {};
+  const fn = vi.fn(async (url: string) => {
+    const layer = layerOf(url);
+    const seq = per[layer];
+    if (!seq) throw new Error(`test stub: unexpected NHD layer in ${url}`);
+    const i = calls[layer] ?? 0;
+    calls[layer] = i + 1;
+    const spec = seq[i];
+    if (!spec) throw new Error(`test stub: layer ${layer} called ${i + 1}x, only ${seq.length} spec(s) given`);
+    if (spec.networkError) throw new Error(spec.networkError);
+    const status = spec.status ?? 200;
+    return {
+      ok: status >= 200 && status < 300,
+      status,
+      statusText: status === 200 ? "OK" : "Error",
+      json: async () => spec.body ?? { type: "FeatureCollection", features: [] },
+    };
+  });
+  vi.stubGlobal("fetch", fn);
+  return fn;
+}
+
+/**
+ * Injectable clock: preflightNHD calls now() twice per ATTEMPT (start, end), so a
+ * 4-element sequence controls both layers' measured latency. A latency-only
+ * rejection re-probes that layer once, consuming two MORE readings — budget for
+ * them or the sequence runs off its end (clock() then repeats its last value,
+ * which reads as a 0ms attempt). Tests must never really sleep 8 seconds — a
+ * test that does gets deleted.
+ */
+function clock(seq: number[]) {
+  let i = 0;
+  return () => seq[Math.min(i++, seq.length - 1)];
+}
+
+// A fresh clock per call — `clock` is stateful, so sharing one instance across
+// tests would leak its position and quietly zero the measured latencies.
+const fast = () => clock([0, 120, 120, 240]);
+
+describe("preflightNHD", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("passes when both layers answer a real query quickly", async () => {
+    stubNHD({ "4": {}, "10": {} });
+    const res = await preflightNHD({ now: fast() });
+    expect(res.ok).toBe(true);
+    expect(res.results.map((r) => r.layer)).toEqual([4, 10]);
+    expect(res.results.every((r) => r.ok)).toBe(true);
+  });
+
+  it("probes a real QUERY on both layers, never the service root", async () => {
+    // The root answered HTTP 200 in 307-441ms all through the 2026-09-23 outage
+    // while every real query timed out or 502'd. Probing it is a false green.
+    const fn = stubNHD({ "4": {}, "10": {} });
+    await preflightNHD({ now: fast() });
+    expect(fn).toHaveBeenCalledTimes(2);
+    const urls = fn.mock.calls.map((c) => String(c[0]));
+    expect(urls.map(layerOf).sort()).toEqual(["10", "4"]);
+    for (const url of urls) {
+      expect(url).toContain("/query?");
+      expect(url).toContain("f=geojson");
+      expect(url).toContain("outFields=GNIS_NAME");
+      expect(url).not.toMatch(/MapServer\?/);
+    }
+  });
+
+  it("fails when layer 4 fails", async () => {
+    stubNHD({ "4": { status: 502 }, "10": {} });
+    const res = await preflightNHD({ now: fast() });
+    expect(res.ok).toBe(false);
+    const failed = res.results.filter((r) => !r.ok);
+    expect(failed.map((r) => r.layer)).toEqual([4]);
+    expect(failed[0].error).toMatch(/502/);
+  });
+
+  it("fails when layer 10 fails even though layer 4 succeeds", async () => {
+    // The case that matters: on 2026-09-23 layer 10 (waterbodies) failed
+    // INDEPENDENTLY of layer 4, so a one-layer probe proves nothing.
+    stubNHD({ "4": {}, "10": { networkError: "fetch failed" } });
+    const res = await preflightNHD({ now: fast() });
+    expect(res.ok).toBe(false);
+    expect(res.results.find((r) => r.layer === 4)?.ok).toBe(true);
+    const failed = res.results.filter((r) => !r.ok);
+    expect(failed.map((r) => r.layer)).toEqual([10]);
+    expect(failed[0].error).toMatch(/fetch failed/);
+  });
+
+  it("fails a slow-but-200 response that exceeds the latency ceiling", async () => {
+    // Both layers return a perfectly valid 200 body. The ONLY fault is latency
+    // — the exact shape that let the 6h run keep grinding instead of aborting.
+    // Layer 4 is slow TWICE (9000ms, then 9000ms again on the re-probe) because
+    // a single slow sample only earns a retry, not a verdict.
+    stubNHD({ "4": {}, "10": {} });
+    const res = await preflightNHD({ now: clock([0, 9000, 9000, 18_000, 18_000, 18_120]) });
+    expect(res.ok).toBe(false);
+    const slow = res.results.find((r) => r.layer === 4);
+    expect(slow?.ok).toBe(false);
+    expect(slow?.ms).toBe(9000);
+    expect(slow?.error).toMatch(/ceiling/);
+    // The fast layer is unaffected — this is a per-layer verdict, not a blanket
+    // "the whole probe took too long".
+    expect(res.results.find((r) => r.layer === 10)?.ok).toBe(true);
+  });
+
+  it("records the measured latency so the abort message can state it", async () => {
+    stubNHD({ "4": {}, "10": {} });
+    const res = await preflightNHD({ now: clock([0, 120, 120, 240]) });
+    expect(res.results.map((r) => r.ms)).toEqual([120, 120]);
+  });
+
+  it("fails a 200 whose body carries no feature array", async () => {
+    stubNHD({ "4": { body: { type: "FeatureCollection" } }, "10": {} });
+    const res = await preflightNHD({ now: fast() });
+    expect(res.ok).toBe(false);
+    expect(res.results.find((r) => r.layer === 4)?.error).toMatch(/features/);
+  });
+
+  it("returns a result instead of throwing, so the caller owns the policy", async () => {
+    stubNHD({ "4": { networkError: "ECONNRESET" }, "10": { networkError: "ECONNRESET" } });
+    await expect(preflightNHD({ now: fast() })).resolves.toMatchObject({ ok: false });
+  });
+
+  it("re-probes ONCE on a latency-only rejection and takes the faster sample", async () => {
+    // A cold ArcGIS connection pool can make the FIRST query take seconds. With
+    // retries: 0 and an 8s ceiling that is a plausible false abort — the
+    // pre-flight blocking a healthy build, a failure mode this check would have
+    // introduced itself. Layer 4: 9000ms, then 300ms on the re-probe.
+    const fn = stubNHD({ "4": {}, "10": {} });
+    const res = await preflightNHD({
+      now: clock([0, 9000, 9000, 9300, 9300, 9420]),
+    });
+    expect(res.ok).toBe(true);
+    const four = res.results.find((r) => r.layer === 4);
+    expect(four?.ok).toBe(true);
+    // The FASTER sample is what gets recorded — the log must not claim we
+    // measured 9000ms and passed anyway.
+    expect(four?.ms).toBe(300);
+    expect(four?.error).toBeNull();
+    // Exactly one extra call, for layer 4 only.
+    expect(fn.mock.calls.map((c) => layerOf(String(c[0])))).toEqual(["4", "4", "10"]);
+  });
+
+  it("fails when BOTH samples are over the ceiling, and says so in the message", async () => {
+    // Layer 4: 9000ms then 8500ms. Still degraded; the verdict stands.
+    stubNHD({ "4": {}, "10": {} });
+    const res = await preflightNHD({
+      now: clock([0, 9000, 9000, 17_500, 17_500, 17_620]),
+    });
+    expect(res.ok).toBe(false);
+    const four = res.results.find((r) => r.layer === 4);
+    expect(four?.ok).toBe(false);
+    expect(four?.ms).toBe(8500);
+    expect(four?.error).toMatch(/ceiling/);
+    // The message must state WHICH sample it is reporting, or the log is
+    // misleading about what was actually measured.
+    expect(four?.error).toMatch(/faster of 2 attempts/);
+    expect(four?.error).toContain("9000ms");
+    expect(res.results.find((r) => r.layer === 10)?.ok).toBe(true);
+  });
+
+  it("does NOT re-probe a hard failure — a 502 is answered in one call", async () => {
+    // This is the assertion that pins "only LATENCY-only failures retry". A
+    // service that is down must still fail in seconds; retrying it restores the
+    // patience this check exists to remove.
+    const fn = stubNHD({ "4": { status: 502 }, "10": {} });
+    const res = await preflightNHD({ now: fast() });
+    expect(res.ok).toBe(false);
+    const layer4Calls = fn.mock.calls.filter((c) => layerOf(String(c[0])) === "4");
+    expect(layer4Calls).toHaveLength(1);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it("does NOT re-probe a 200 that carries no feature array", async () => {
+    // Same rule, the other hard-failure shape: the response is not an answer,
+    // so a second identical non-answer buys nothing.
+    const fn = stubNHD({ "4": { body: { type: "FeatureCollection" } }, "10": {} });
+    const res = await preflightNHD({ now: fast() });
+    expect(res.ok).toBe(false);
+    const layer4Calls = fn.mock.calls.filter((c) => layerOf(String(c[0])) === "4");
+    expect(layer4Calls).toHaveLength(1);
+    expect(res.results.find((r) => r.layer === 4)?.error).toMatch(/features/);
+  });
+
+  it("reports the hard failure when a re-probe after a slow first attempt dies", async () => {
+    // Slow, then gone. The verdict must name the ACTUAL fault (the failure),
+    // not a latency ceiling the second attempt never reached.
+    stubNHDSequence({ "4": [{}, { networkError: "fetch failed" }], "10": [{}] });
+    const res = await preflightNHD({ now: clock([0, 9000, 9000, 9120, 9120, 9240]) });
+    expect(res.ok).toBe(false);
+    const four = res.results.find((r) => r.layer === 4);
+    expect(four?.ok).toBe(false);
+    expect(four?.error).toMatch(/fetch failed/);
+    expect(four?.error).toMatch(/9000ms/); // the slow first attempt is still stated
+    expect(four?.error).not.toMatch(/ceiling/);
   });
 });
