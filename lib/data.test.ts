@@ -1910,8 +1910,8 @@ describe("getCryptoMiningStats", () => {
     // expression the implementation uses — snapshotted from the live dataset.
     const expected = [
       "AK", "AL", "AR", "CO", "FL", "GA", "IA", "ID", "IL", "IN", "KS", "KY",
-      "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NM", "NY", "OH", "OK",
-      "OR", "PA", "SC", "SD", "TN", "TX", "VA", "WA", "WI", "WV", "WY",
+      "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NM", "NV", "NY", "OH",
+      "OK", "OR", "PA", "SC", "SD", "TN", "TX", "VA", "WA", "WI", "WV", "WY",
     ];
     const { stateCodes } = await getCryptoMiningStats();
     expect(stateCodes).toEqual(expected);

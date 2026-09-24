@@ -1939,6 +1939,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "american-express-whitsett-guilford-county-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "american-tower-edc-oklahoma-city-ok": {
     "nearestWater": {
       "name": "Spring Creek",
@@ -5467,6 +5477,20 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "blusky-ai-wells-elko-county-nv": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "bny-mellon-tennessee-processing-center-nashville-tn": {
     "nearestWater": {
       "name": "Pages Branch",
@@ -6071,6 +6095,20 @@
       "label": "Low (<10%)"
     }
   },
+  "cc-communications-fallon-churchill-county-nv": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "cde-acquisitions-project-atlas-south-whitehall-lehigh-pa": {
     "nearestWater": {
       "name": "Jordan Creek",
@@ -6398,6 +6436,26 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "centra-rno1-south-virginia-reno-nv": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "centra-rno2-keystone-reno-nv": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "centrilogic-rochester-ny": {
     "nearestWater": {
       "name": "Erie Canal",
@@ -6426,6 +6484,16 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "charter-spectrum-charlotte-national-data-center-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "chestnut-river-holyoke-ma": {
@@ -8297,6 +8365,20 @@
       "label": "High (40-80%)"
     }
   },
+  "coloxchange-north-las-vegas-nv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "comanche-circle-sailfish-hood-county-tx": {
     "nearestWater": {
       "name": "Comanche Creek",
@@ -8531,6 +8613,12 @@
     "aquifer": {
       "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "connect-data-centers-reno-north-valleys-nv": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     }
   },
   "consolidated-communications-manchester-nh": {
@@ -10276,6 +10364,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "cyrusone-raleigh-durham-i-durham-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "cyrusone-sangamon-talkington-township-il": {
     "nearestWater": {
       "name": "South Fork Lick Creek",
@@ -11356,6 +11454,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "dc-blox-high-point-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "dc-blox-huntsville-al": {
     "nearestWater": {
       "name": "Indian Creek",
@@ -12184,6 +12292,16 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "digital-realty-clt10-charlotte-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "digital-realty-cornelius-pass-cornell-hillsboro-or": {
@@ -13455,6 +13573,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "duke-energy-smith-energy-complex-richmond-county-nc": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "dulles-cloud-south-gainesville-prince-william-va": {
     "nearestWater": {
       "name": "Catharpin Creek",
@@ -13487,6 +13619,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "dynamic-quest-greensboro-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "eagle-mountain-data-oc1-anaheim-ca": {
@@ -13648,6 +13790,16 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "eco-tip-west-moncure-chatham-county-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "eco-yotta-oneonta-ny": {
@@ -18155,6 +18307,16 @@
       "label": "Low (<10%)"
     }
   },
+  "giga-data-centers-mooresville-nc": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "gigaland-data-centers-remington-fauquier-va": {
     "nearestWater": {
       "name": "Craig Run",
@@ -21630,6 +21792,20 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "isp-net-las-vegas-fremont-nv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "ite-guam-harmon-gu": {},
   "ite-saipan-susupe-mp": {},
   "its-monticello-ia": {
@@ -22056,6 +22232,16 @@
     "aquifer": {
       "name": "Ordovician Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "kyndryl-research-triangle-park-durham-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "la-rosa-holdings-saint-cloud-fl": {
@@ -23027,6 +23213,30 @@
       "label": "High (40-80%)"
     }
   },
+  "lumen-greensboro-1-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "lumen-las-vegas-1-aerojet-nv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "lumen-madison-1-wi": {
     "nearestWater": {
       "name": "Lake Monona",
@@ -23476,6 +23686,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "mapletree-5150-mccrimmon-morrisville-nc": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "mapletree-riverwood-pewaukee-wi": {
     "nearestWater": {
       "name": "Pewaukee River",
@@ -23661,6 +23881,16 @@
     "aquifer": {
       "name": "Edwards-trinity Aquifer System",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "mark-iv-victory-district-gas-generation-fernley-nv": {
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "markley-boston-summer-street-ma": {
@@ -28253,6 +28483,20 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "oppidan-paradise-post-road-clark-county-nv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "oppidan-rockpoint-865-embedded-way-san-jose-ca": {
     "nearestWater": {
       "name": "Coyote Creek",
@@ -32407,6 +32651,16 @@
       "rock": "Sandstone"
     }
   },
+  "roller-network-reno-nv": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "roswell-information-park-chaves-county-nm": {
     "nearestWater": {
       "name": "Rio Hondo",
@@ -33528,6 +33782,20 @@
     },
     "aquifer": {
       "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "sarcobatus-solar-scottys-junction-nye-county-nv": {
+    "waterStress": {
+      "cat": -1,
+      "label": "Arid and Low Water Use"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -36294,6 +36562,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "switch-las-vegas-15-nv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "switch-las-vegas-5-nv": {
     "nearestWater": {
       "name": "Flamingo Wash",
@@ -37646,6 +37928,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "tierpoint-charlotte-north-myers-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "tierpoint-dallas-allen-tx": {
     "nearestWater": {
       "name": "Cottonwood Creek",
@@ -37863,6 +38155,26 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "tierpoint-raleigh-departure-drive-nc": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "tierpoint-raleigh-rtp-durham-nc": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "tierpoint-russell-street-baltimore-md": {
@@ -38094,6 +38406,20 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "tpx-communications-las-vegas-nv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "tract-altoona-ia": {

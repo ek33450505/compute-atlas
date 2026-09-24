@@ -6147,6 +6147,57 @@
     }
   },
   {
+    "id": "american-express-whitsett-guilford-county-nc",
+    "name": "American Express Whitsett Data Center (IPC2)",
+    "operator": "American Express",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0712466,
+      "lon": -79.5644686,
+      "city": "Whitsett",
+      "county": "Guilford County",
+      "street": "5301 McConnell Road",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 30
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/american-express-ipc2-whitsett-nc",
+        "label": "American Express IPC2 Whitsett NC — facility record (194 acres in Rock Creek Center, operational since 2010, PUE 1.64)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/winston-salem-greensboro",
+        "label": "Winston-Salem / Greensboro data center market — facility table (American Express IPC2 Whitsett, 30.0 MW, 493,573 sq ft)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=Whitsett%2C%20Guilford%20County%2C%20North%20Carolina",
+        "label": "OpenStreetMap Nominatim — Whitsett, Guilford County, NC",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Corporate (enterprise-owned) data center on a 194-acre site in the Rock Creek Center business park, about seven miles east of Greensboro; operational since 2010. COORDINATE CAVEAT: the street address 5301 McConnell Road, Whitsett did not resolve in OpenStreetMap, so the pin is the Whitsett municipal centroid and precision is 'approximate' — it needs parcel confirmation before it should be treated as a footprint.",
+    "landAcres": 194,
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.64,
+      "waterStress": "unknown"
+    }
+  },
+  {
     "id": "american-tower-edc-oklahoma-city-ok",
     "name": "American Tower EDC Oklahoma (Oklahoma City)",
     "operator": "American Tower",
@@ -6834,6 +6885,8 @@
       "lon": -119.554805,
       "city": "Sparks",
       "county": "Washoe",
+      "street": "21905 Reno Technology Parkway East",
+      "postalCode": "89434",
       "state": "NV",
       "precision": "approximate"
     },
@@ -6894,9 +6947,16 @@
         "publisher": "The Nevada Independent",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/reno",
+        "label": "Northern Nevada data center directory (Apple Sparks campus, 21905 Reno Technology Pkwy E)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-24",
     "notes": "Apple data center at 21505 Reno Technology Parkway W, Sparks, Washoe County — the first data center built at the Reno Technology Park, opened December 2012. Per Apple's July 2024 letter in a Nevada GOED tax-abatement board packet, the campus had grown to four data-center buildings plus a power substation across 1,700 acres, with 200+ staff; Apple committed to further investment (a 2024 expansion capex of ~$742M over 5 years / ~$992M over 10 years is documented in the GOED filing). No site-specific IT-load MW is disclosed. Coordinates are an address-level geocode (ArcGIS, exact-address match); a county-parcel pass could upgrade precision to exact.",
     "energy": {
       "source": "solar",
@@ -13199,7 +13259,7 @@
         "url": "https://www.deq.nc.gov/news/press-releases/2026/06/26/deq-announces-joint-public-hearing-amazon-data-center-and-duke-energy-air-quality-permits-richmond",
         "label": "DEQ announces joint public hearing on Amazon data center and Duke Energy air quality permits in Richmond County",
         "publisher": "North Carolina Department of Environmental Quality",
-        "retrievedAt": "2026-08-29",
+        "retrievedAt": "2026-09-24",
         "kind": "permit"
       },
       {
@@ -13208,9 +13268,16 @@
         "publisher": "WUNC",
         "retrievedAt": "2026-08-29",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wral.com/news/local/why-one-north-carolina-county-said-yes-to-amazon-10-billion-dollar-data-center-july-2026/",
+        "label": "Why one North Carolina county said yes to Amazon's $10 billion data center",
+        "publisher": "WRAL",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-29",
+    "lastUpdated": "2026-09-24",
     "notes": "Energy Way Industrial Park, Rockingham, NC. Up to 20 buildings each 200,000-225,000 sq ft at full build. No state incentives; only local county tax breaks. MW capacity not publicly disclosed. Coordinates are Rockingham city centroid. Original secondary source (richmondnc.com/CivicAlerts.aspx?AID=168) returned HTTP 404 and was replaced with Business NC article. poweredBy field removed: DCD reports the method of powering has not been publicly confirmed.",
     "energy": {
       "source": "grid",
@@ -13218,6 +13285,7 @@
       "notes": "Sited adjacent to Duke Energy Sherwood H. Smith Jr. energy complex (2.24 GW natural gas capacity). Per Data Center Dynamics, how the data center will be powered has not been publicly revealed; Duke Energy is the regional utility but the facility's energy arrangement is unconfirmed."
     },
     "water": {
+      "coolingType": "hybrid",
       "notes": "Energy and water usage figures were made confidential under the county's April 2025 incentive agreement for 'Project Blue Marlin' and are not publicly disclosed."
     },
     "subsidies": [
@@ -17745,6 +17813,56 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "blusky-ai-wells-elko-county-nv",
+    "name": "BluSky AI Wells Modular Data Center",
+    "operator": "BluSky AI Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.108813,
+      "lon": -114.956386,
+      "city": "Wells",
+      "county": "Elko",
+      "street": "1120 Hacienda Ranch Road",
+      "postalCode": "89835",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-08-28",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-28",
+        "note": "Non-binding letter of intent announced to lease approximately 2 acres at the White Cloud facility from White Cloud Botanicals LLC and Snake River Development LLC; initial 10-year term commencing on first-unit operation with two optional 5-year extensions. Terms remain subject to a definitive lease.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.globenewswire.com/news-release/2025/08/28/3140872/29006/en/BluSky-AI-Inc-Announces-Non-Binding-Letter-of-Intent-to-Lease-Strategic-Site-in-Wells-Nevada.html",
+        "label": "BluSky AI Inc. Announces Non-Binding Letter of Intent to Lease Strategic Site in Wells, Nevada",
+        "publisher": "GlobeNewswire / BluSky AI Inc.",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12) — BluSky AI listed as Elko County's sole planned data center, LOI stage",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Modular data service units on concrete pads with fencing, modular office/process facilities and underground utility connections — minimal site improvement rather than a constructed hall. Status is deliberately held at 'proposed': the LOI is explicitly non-binding and, as of the Nevada LCB's May 2026 memo, the project was still at LOI stage. No capacity in MW is asserted; 2,700 kVA is the site's existing transformer capacity, not a facility load. Coordinate resolves only to Hacienda Ranch Road in Wells, not to a parcel.",
+    "energy": {
+      "utility": "Wells Rural Electric",
+      "notes": "Site has no less than 2,700 kVA of existing electrical transformer capacity; additional capacity is contingent on contracting with Wells Rural Electric."
+    },
+    "landAcres": 2,
+    "facilityType": "data_center"
+  },
+  {
     "id": "bny-mellon-tennessee-processing-center-nashville-tn",
     "name": "BNY Mellon Tennessee Processing Center (Nashville)",
     "operator": "BNY Mellon",
@@ -19572,6 +19690,50 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cc-communications-fallon-churchill-county-nv",
+    "name": "CC Communications Fallon Data Center",
+    "operator": "CC Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.474979,
+      "lon": -118.777657,
+      "city": "Fallon",
+      "county": "Churchill",
+      "street": "50 W Williams Avenue",
+      "postalCode": "89406",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-24",
+        "note": "Listed as an operational colocation facility with generator, UPS, automatic fire suppression and environmental controls.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacentercatalog.com/usa/cc-communications",
+        "label": "CC Communications Data Center, Fallon, Nevada",
+        "publisher": "Data Center Catalog",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/reno",
+        "label": "Northern Nevada data center directory (CC Communications, 50 W Williams Ave, Fallon)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Colocation and managed-hosting facility run by the locally owned Churchill County telecommunications provider, about 60 miles east of Reno. Small and long-established rather than part of the current AI buildout; included because it is a real, addressable data center in a county the projection otherwise covers only with geothermal generation records.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cde-acquisitions-project-atlas-south-whitehall-lehigh-pa",
     "name": "Project Atlas Data Center Campus (South Whitehall Township)",
     "operator": "CDE Acquisitions, LLC",
@@ -20371,6 +20533,131 @@
     "facilityType": "data_center"
   },
   {
+    "id": "centra-rno1-south-virginia-reno-nv",
+    "name": "CENTRA RNO1 (200 South Virginia)",
+    "operator": "CENTRA Digital Interconnect",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.523253,
+      "lon": -119.811751,
+      "city": "Reno",
+      "county": "Washoe",
+      "street": "200 S Virginia Street",
+      "postalCode": "89501",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-24",
+        "note": "Listed as an active facility in PeeringDB and in facility directories; the Nevada Legislative Counsel Bureau lists CENTRA among Washoe County's operational data centers.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=NV&limit=200",
+        "label": "PeeringDB facility registry — Nevada (CENTRA RNO01, 200 S Virginia St, status ok)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/reno",
+        "label": "Reno, Nevada data center directory (CENTRA Reno RNO1, 200 S Virginia St)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12)",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Downtown Reno carrier hotel / interconnection facility in the Basin Street Properties building at 200 S Virginia St; PeeringDB carries both the building (Basin Street Properties) and CENTRA's facility at the same address, recorded here as one site under the data center operator. Distinct from CENTRA's RNO2 on Keystone Avenue. PeeringDB's own coordinate (39.522999, -119.811358) and a US Census address geocode agree to within about 45 m.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "centra-rno2-keystone-reno-nv",
+    "name": "CENTRA RNO2 (Keystone Data Center)",
+    "operator": "CENTRA Digital Interconnect",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.525542,
+      "lon": -119.82612,
+      "city": "Reno",
+      "county": "Washoe",
+      "street": "265 Keystone Avenue",
+      "postalCode": "89503",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-01-15",
+        "note": "Conditional use permit approved by the Reno Planning Commission; no appeals were filed.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-06",
+        "note": "Building permit issued after the 2025-09-11 geotechnical approval; more than 30 soils/compaction inspections during footing work, extended-hours concrete pours approved for May and June 2026, and the final setback/soil/compaction letter approved in June 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.reno.gov/Documents/Business%20and%20Development/Development%20Services/Keystone%20Data%20Center%20Frequently%20Asked%20Questions.pdf?t=202606291145300",
+        "label": "Keystone Data Center Frequently Asked Questions (updated 2026-07-28)",
+        "publisher": "City of Reno",
+        "retrievedAt": "2026-09-24",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.centradigital.com/data-centers/rno2",
+        "label": "CENTRA RNO2 — Reno, NV facility page",
+        "publisher": "CENTRA Digital Interconnect",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/reno",
+        "label": "Reno, Nevada data center directory (CENTRA Reno RNO2, 265 Keystone Ave)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12)",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "CENTRA's own facility page advertises 4.4 MW available in Q4 2026, liquid-cooling-enabled to 150 kW per cabinet, air-cooled chillers and a target PUE of 1.35 or better. Capacity figures in circulation conflict (3 MW ramping to 6.67 MW as presented to the Planning Commission in January 2025, versus 12 MW advertised later), so no capacityMw value is asserted here. Site is split-zoned Industrial/General Commercial and not adjacent to residentially zoned land, which is why Reno's residential property-line noise standard does not apply.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "City of Reno's project FAQ describes rooftop chillers and a glycol-based cooling circuit (propylene glycol, with ethylene glycol in some designs), i.e. a recirculating circuit rejecting heat to air rather than an evaporative tower. TMRPA puts the site at roughly 0.29 acre-feet per MW; Nevada LCB puts expected use at approximately 651,000 gallons a year. A cooling-system change was reviewed at building-permit stage with TMWA confirming no significant increase in water demand."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The City of Reno published a standing FAQ for this project specifically because of 'increased public inquiries', covering noise, construction hours, notification, generator emissions and power-demand growth. Conditions of approval require a 15-ft acoustically absorptive barrier around all rooftop chillers to hold equipment noise to ~43 dBA at the property line against a 53 dBA nighttime ambient.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "centrilogic-rochester-ny",
     "name": "Centrilogic Rochester Data Center",
     "operator": "Centrilogic",
@@ -20516,6 +20803,54 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "charter-spectrum-charlotte-national-data-center-nc",
+    "name": "Spectrum Charlotte National Data Center",
+    "operator": "Charter Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.1440029,
+      "lon": -80.918404,
+      "city": "Charlotte",
+      "county": "Mecklenburg County",
+      "street": "7910 Crescent Executive Drive",
+      "postalCode": "28217",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 15
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/spectrum-charlotte-national-data-center",
+        "label": "Spectrum Charlotte National Data Center — facility record (178,000 sq ft data center, 1,600 racks, four 12,000 sq ft data halls, $82M investment)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/charlotte",
+        "label": "Charlotte data center market — facility table (Spectrum Charlotte National Data Center, 15.0 MW)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=7910%20Crescent%20Executive%20Drive%2C%20Charlotte%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 7910 Crescent Executive Drive, Charlotte, Mecklenburg County, NC 28217",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Originally built by Time Warner Cable; now operated by Charter Communications (Spectrum) following the TWC acquisition — the source is authoritative about who BUILT it, and current operation is attributed to Charter on that basis. 178,000 sq ft data center plus a 103,500 sq ft administrative building.",
+    "investmentUsd": 82000000,
+    "facilityType": "data_center"
   },
   {
     "id": "chestnut-river-holyoke-ma",
@@ -25923,7 +26258,7 @@
     "id": "colovore-reno-1-storey-county-nv",
     "name": "Colovore Reno 1 (RN01)",
     "operator": "Colovore",
-    "status": "permitted",
+    "status": "under_construction",
     "confidence": "confirmed",
     "location": {
       "lat": 39.5341121,
@@ -25942,6 +26277,12 @@
         "date": "2025-12-24",
         "note": "NDEP Bureau of Air Pollution Control issued a preliminary determination to approve new Class II Air Quality Operating Permit AP7374-5002 (FIN A2675) for the Colovore Reno 1 LLC facility.",
         "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-09-24",
+        "note": "Colovore and King Street announced groundbreaking on RN01 in February 2025, describing the facility as under construction. As of the company's 2026-08-05 abatement filing with the Nevada Governor's Office of Economic Development, Colovore expected to begin operations in Storey County by the fourth quarter of 2026 — construction ongoing, not yet operational.",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -25972,9 +26313,30 @@
         "publisher": "Nevada Division of Environmental Protection",
         "retrievedAt": "2026-09-11",
         "kind": "permit"
+      },
+      {
+        "url": "https://goed.nv.gov/wp-content/uploads/2026/07/5-C.-Colovore-Reno-1-LLC-Board-Packet.pdf",
+        "label": "Colovore Reno 1 LLC — GOED Board Packet, August 5, 2026 (company profile and EDAWN support letter)",
+        "publisher": "Nevada Governor's Office of Economic Development",
+        "retrievedAt": "2026-09-24",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://baxtel.com/news/colovore-begins-work-on-reno-data-center",
+        "label": "Colovore Begins Work on Reno Data Center (groundbreaking week of 2025-02-19)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://goed.nv.gov/wp-content/uploads/2026/07/5-C.-Colovore-Reno-1-LLC-Board-Packet.pdf",
+        "label": "Colovore Reno 1 LLC — GOED Board Packet, August 5, 2026",
+        "publisher": "Nevada Governor's Office of Economic Development",
+        "retrievedAt": "2026-09-24",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-11",
+    "lastUpdated": "2026-09-24",
     "notes": "Air permit places the project on the southeast corner of Italy Drive and SR 439, about 2.8 miles south of the I-80/439 interchange, in Section 11, T19N, R22E MDB&M (Air Quality Hydrographic Area 83, Tracy Segment). GOED approved $4,076,970 in abatements in August 2026 against a stated $30 million in capital-equipment investment and 10 jobs at an average $59/hour within five years; the $30M is an equipment figure, not total site capex, so it is not recorded as investmentUsd. Capacity is not recorded: no source read this session states a site MW figure.",
     "energy": {
       "source": "grid",
@@ -25999,6 +26361,50 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "coloxchange-north-las-vegas-nv",
+    "name": "ColoXchange Las Vegas Data Center",
+    "operator": "ColoXchange",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.231699,
+      "lon": -115.102555,
+      "city": "North Las Vegas",
+      "county": "Clark",
+      "street": "3422 Neeham Road",
+      "postalCode": "89030",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-24",
+        "note": "Listed by the Nevada Legislative Counsel Bureau among Clark County's operational data centers; carried as an active facility at 3422 Neeham Rd in Las Vegas directories.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12)",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/las-vegas",
+        "label": "Las Vegas, Nevada data center directory (ColoXchange Las Vegas, 3422 Neeham Rd)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Small North Las Vegas colocation facility. No capacity asserted: the only megawatt figure found (1 MW) came from a search-results summary of a directory page that could not be retrieved this session.",
+    "facilityType": "data_center"
   },
   {
     "id": "comanche-circle-sailfish-hood-county-tx",
@@ -26521,6 +26927,7 @@
       "lon": -80.8873,
       "city": "Statesville",
       "county": "Iredell",
+      "street": "Stamey Farm Road",
       "state": "NC",
       "precision": "exact"
     },
@@ -26557,13 +26964,28 @@
         "label": "WBTV — \"Statesville City Council approves rezoning request for new data center\"",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/compass-statesville-nc",
+        "label": "Compass: Statesville, NC — facility record (Stamey Farm Rd, 333 acres, 1.34M sq ft, powered by adjacent Duke Energy substation)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.governing.com/infrastructure/north-carolina-city-approves-massive-data-center-despite-local-opposition",
+        "label": "North Carolina City Approves Massive Data Center Despite Local Opposition",
+        "publisher": "Governing",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-09-24",
     "notes": "333-acre site in Statesville, Iredell County; five buildings, ~500 MW (per JLL marketing), near a Duke Energy substation. Rezoned Sept 2025; Duke's Feb 2026 8-K referenced ~4.5 GW of contracted large load including Compass and Microsoft. Coordinates are the Statesville area centroid.",
     "energy": {
       "source": "grid",
-      "utility": "Duke Energy"
+      "utility": "Duke Energy",
+      "notes": "Campus is to be served by an adjacent Duke Energy substation; forty backup generators per building are planned."
     },
     "landAcres": 333,
     "community": {
@@ -26721,6 +27143,79 @@
     ],
     "lastUpdated": "2026-09-21",
     "notes": "99,000 sq ft single-story data center developed by Connect Data Centers, the data center division of Minnesota-based Oppidan Investment Company. Pin is a road-level geocode of the stated address (parcel not confirmed). Distinct from EdgeConneX EDCMEM01 at 4005 S. Mendenhall Rd and Merkle Standard at 4545 S. Mendenhall Rd.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "connect-data-centers-reno-north-valleys-nv",
+    "name": "Connect Reno Data Center (Oppidan North Valleys)",
+    "operator": "Connect Data Centers (Oppidan Investment Company)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.612118,
+      "lon": -119.87322,
+      "city": "Reno",
+      "county": "Washoe",
+      "street": "9630 N Virginia Street",
+      "postalCode": "89506",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 5
+    },
+    "announcedDate": "2024-12",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-12",
+        "note": "Conditional use permit application filed with the City of Reno for a 5 MW, ~61,600 sq ft data center on 7 acres at 9630 N. Virginia St.; Ward 4 advisory board 2024-12-19, Planning Commission 2025-01-02.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2025",
+        "note": "Conditional use permit approved; TMRPA and the Nevada Legislative Counsel Bureau both list the project as approved/planned in Washoe County.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://nevbex.com/2024/12/10/5mw-data-center-planned-near-reno/",
+        "label": "5MW Data Center Planned Near Reno",
+        "publisher": "NVBEX",
+        "retrievedAt": "2026-09-24",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.tmrpa.org/energy-and-data-centers/",
+        "label": "Energy and Data Centers — regional engagement (Oppidan listed as approved, evaporative cooling)",
+        "publisher": "Truckee Meadows Regional Planning Agency",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12)",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/reno",
+        "label": "Reno, Nevada data center directory (Connect Reno, N Virginia St & Stead Blvd)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Approximately 61,600 sq ft single-storey building, ~53,000 sq ft of which is server space, with a generator yard sized for later phases. Applicant-stated staffing is 10-12 people on site at peak. Filed by Oppidan Investment Company; the operating brand on facility directories is Connect Data Centers, Oppidan's data center affiliate. Coordinate is an address-level geocode of 9630 N Virginia St, not a parcel-confirmed footprint.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Truckee Meadows Regional Planning Agency characterises the Oppidan/Connect Reno project as evaporative-cooled, at roughly 1.6 acre-feet of water per MW — the highest per-MW water intensity of the three approved Reno projects it compares. Nevada LCB puts the site's expected use at approximately 2.6 million gallons a year."
+    },
+    "landAcres": 7,
     "facilityType": "data_center"
   },
   {
@@ -32282,6 +32777,53 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cyrusone-raleigh-durham-i-durham-nc",
+    "name": "CyrusOne Raleigh-Durham I (DUR1)",
+    "operator": "CyrusOne",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.9353037,
+      "lon": -78.8810471,
+      "city": "Durham",
+      "county": "Durham County",
+      "street": "2223 Northeast Creek Parkway",
+      "postalCode": "27713",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 50
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/cyrusone-raleigh-durham-i",
+        "label": "CyrusOne Raleigh-Durham I — facility record (420,000 sq ft building, Phase 1 completed September 2013, acquired from Sentinel Data Centers February 2017)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/raleigh",
+        "label": "Raleigh data center market — facility table (CyrusOne Raleigh-Durham I, 50.0 MW)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=2223%20Northeast%20Creek%20Parkway%2C%20Durham%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 'DUR1', 2223 Northeast Creek Parkway, Research Triangle Park, Durham County, NC 27713",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "420,000 sq ft building in Research Triangle Park, converted from a former Silver Line Windows plant; 220,000 sq ft gross colocation at full build-out. Built by Sentinel Data Centers (Phase 1, 2013) and acquired by CyrusOne in February 2017 — current operator recorded as CyrusOne on that basis. The OpenStreetMap building at this address is independently tagged 'DUR1', corroborating the pin. The source page's 'Wake County' field is wrong; the address is in Durham County.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cyrusone-sangamon-talkington-township-il",
     "name": "CyrusOne Sangamon County Data Center Campus",
     "operator": "CyrusOne",
@@ -35166,6 +35708,84 @@
     "aiClassification": "likely"
   },
   {
+    "id": "dc-blox-high-point-nc",
+    "name": "DC BLOX High Point Data Center",
+    "operator": "DC BLOX",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0537978,
+      "lon": -79.9518696,
+      "city": "High Point",
+      "county": "Guilford County",
+      "street": "4131 Sheraton Court",
+      "postalCode": "27410",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 18
+    },
+    "announcedDate": "2021-05-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2021-05-05",
+        "note": "DC BLOX announced acquisition of the 14-acre tract at 4131 Sheraton Court in Piedmont Centre business park for a Tier III multi-tenant data center.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-07-19",
+        "note": "Tracked as cancelled; DC BLOX's own campus list no longer includes any North Carolina site and its High Point announcement page now returns HTTP 410 Gone.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.highpointnc.gov/DocumentCenter/View/16687/DC-BLOX-and-HPEDC_Press-Release_FINAL-5-5-21",
+        "label": "DC BLOX Chooses High Point for $305 Million Data Center (High Point EDC news release, May 5, 2021)",
+        "publisher": "High Point Economic Development Corporation",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://servercountry.org/data/projects/dc-blox-high-point-data-center-nc/",
+        "label": "DC BLOX High Point Data Center — project record, status canceled 2026-07-19",
+        "publisher": "Server Country",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.dcblox.com/data-centers/high-point/",
+        "label": "DC BLOX data center portfolio — current campus list (no North Carolina location)",
+        "publisher": "DC BLOX",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=4131%20Sheraton%20Court%2C%20High%20Point%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 4131 Sheraton Court, High Point, Guilford County, NC 27410",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "SOURCE CONFLICT, flagged for human review: two commercial directories (baxtel, datacentermap) list this site as operational since 2022, while Server Country records it cancelled on 2026-07-19. The tiebreakers used here are DC BLOX's own portfolio page, which lists ten campuses and none in North Carolina, and the fact that its own 2021 High Point announcement URL now returns HTTP 410. investmentUsd is the announced $305M ceiling, which the EDC release itemises as >$40M real property + >$9.6M DC BLOX personal property + >$255.4M 'induced customer investment' from tenant equipment — it is NOT $305M of developer capex. The incentives were authorised unanimously in October 2020; no dollar amount was published.",
+    "subsidies": [
+      {
+        "program": "Performance-based economic development incentives (City of High Point and Guilford County)",
+        "jurisdiction": "City of High Point / Guilford County, North Carolina",
+        "year": "2020",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 305000000,
+    "landAcres": 14,
+    "facilityType": "data_center"
+  },
+  {
     "id": "dc-blox-huntsville-al",
     "name": "DC BLOX Huntsville Data Center",
     "operator": "DC BLOX",
@@ -37817,6 +38437,50 @@
     ],
     "lastUpdated": "2026-09-12",
     "notes": "Two Digital Realty buildings in Clifton, NJ, both confirmed via the operator's own site pages: EWR20 at 100 Delawanna Avenue (183,000 sq ft, 7 stories, N+1 power/cooling, operator states it is 100% renewable-energy powered) and EWR21 at 2 Peekay Drive (215,000 sq ft, 3 stories, N+1 UPS, onsite substation with 2N utility redundancy, LEED Platinum, ~37 miles from Manhattan). Represented as a single record (precision representative_multi_site) because neither operator page gave a distinguishable parcel-level geocode for the two buildings and no independent source was fetched to separate them; location used is Clifton's town center. Both buildings carry SOC2/SOC3/PCI-DSS/ISO 9001/ISO 14001/ISO 27001 certification per the operator.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-clt10-charlotte-nc",
+    "name": "Digital Realty CLT10 (113 North Myers Street)",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.221452,
+      "lon": -80.8359211,
+      "city": "Charlotte",
+      "county": "Mecklenburg County",
+      "street": "113 North Myers Street",
+      "postalCode": "28202",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/digital-realty-clt10",
+        "label": "Digital Realty CLT10 — facility record (113 North Myers Street, 29,200 sq ft gross colocation)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/charlotte",
+        "label": "Charlotte data center market — facility table (Digital Realty CLT10, operational)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=113%20North%20Myers%20Street%2C%20Charlotte%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 113 North Myers Street, Charlotte, Mecklenburg County, NC 28202",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Purpose-built uptown Charlotte colocation facility, 29,200 sq ft gross colocation. Distinct site from the tracked digital-realty-charlotte-nc record, which is the 156-acre Moores Chapel campus in west Charlotte.",
     "facilityType": "data_center"
   },
   {
@@ -40523,6 +41187,8 @@
       "lon": -80.267,
       "city": "Rural Hall",
       "county": "Forsyth",
+      "street": "8084 Glade Street",
+      "postalCode": "27045",
       "state": "NC",
       "precision": "exact"
     },
@@ -40554,10 +41220,29 @@
         "publisher": "Rural Hall Info",
         "retrievedAt": "2026-09-10",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/drox-greensboro-campus",
+        "label": "Drox: Greensboro Campus — facility record (8084 Glade St, Rural Hall; 'Project Iron Spur'; 129 acres; four buildings; dedicated Duke Energy substation)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=8084%20Glade%20Street%2C%20Rural%20Hall%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 8084 Glade Street, Rural Hall, Forsyth County, NC 27045",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-07-30",
+    "lastUpdated": "2026-09-24",
     "notes": "Coordinates are approximate for Rural Hall, NC.",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy",
+      "notes": "Campus plan included a dedicated Duke Energy substation plus rows of diesel backup generators."
+    },
     "investmentUsd": 3000000000,
     "landAcres": 129,
     "community": {
@@ -41195,6 +41880,46 @@
     }
   },
   {
+    "id": "duke-energy-smith-energy-complex-richmond-county-nc",
+    "name": "Sherwood H. Smith Jr. Energy Complex",
+    "operator": "Duke Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.8386885,
+      "lon": -79.7397523,
+      "city": "Hamlet",
+      "county": "Richmond County",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.publicradioeast.org/2026-09-21/nc-utilities-commission-denies-duke-energy-gas-plant",
+        "label": "In rare step, NC Utilities Commission denies Duke Energy permission to build new gas plant",
+        "publisher": "Public Radio East",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=Smith%20Energy%20Complex%2C%20Richmond%20County%2C%20North%20Carolina",
+        "label": "OpenStreetMap Nominatim — industrial landuse polygon 'Sherwood H Smith Jr Energy Complex', Richmond County, NC",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Existing Duke Energy generating station near Hamlet, Richmond County — distinct from the 57-engine 'bridge power' installation permitted on Amazon's Energy Way Tech Campus property (tracked separately). Capacity is deliberately left unset: the sources give 1.08 GW for the combined-cycle units and 'up to 820 MW' for the five combustion turbines, and summing an upper bound with a firm figure would publish a derived number. Coordinates are the centroid of the OpenStreetMap industrial-landuse polygon carrying the complex's name.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 7,
+      "notes": "Per Public Radio East (Sept 2026): two combined-cycle gas units totalling 1.08 GW plus five combustion turbines adding up to 820 MW. A proposed SIXTH unit — a 255 MW simple-cycle combustion turbine estimated at $584 million — was DENIED a certificate of public convenience and necessity by the N.C. Utilities Commission on Sept 18, 2026 (announced Sept 21); commissioners found the application premature and cited uncertainty over data-center load (~70% of projected growth) and cost allocation. Duke said it is reviewing the decision."
+    }
+  },
+  {
     "id": "dulles-cloud-south-gainesville-prince-william-va",
     "name": "Dulles Cloud South (Dulles South Innovation Center)",
     "operator": "Undisclosed",
@@ -41250,6 +41975,50 @@
     ],
     "lastUpdated": "2026-09-12",
     "notes": "Single-source finding (Baxtel directory): address and 'fully operational' status stated; no square footage, capacity, or tenant detail available. A modest-scale, regionally-focused ISP colocation site rather than a hyperscale or wholesale facility. OSM matches a house/building at this exact address (way/18863019) with no business name attached, consistent with but not independently confirming the listing.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "dynamic-quest-greensboro-nc",
+    "name": "Dynamic Quest Greensboro Data Center",
+    "operator": "Dynamic Quest",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0497669,
+      "lon": -79.881654,
+      "city": "Greensboro",
+      "county": "Guilford County",
+      "street": "4821 Koger Boulevard",
+      "postalCode": "27407",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/dynamic-quest-greensboro",
+        "label": "Dynamic Quest Greensboro — facility record (4821 Koger Blvd, operational)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/winston-salem-greensboro",
+        "label": "Winston-Salem / Greensboro data center market — facility table (Dynamic Quest Greensboro)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=4821%20Koger%20Boulevard%2C%20Greensboro%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 4821 Koger Boulevard, Greensboro, Guilford County, NC 27407",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Small managed-services colocation facility operated by Dynamic Quest, a North Carolina IT services company. No MW or square footage is published; both are deliberately omitted rather than estimated.",
     "facilityType": "data_center"
   },
   {
@@ -41725,6 +42494,64 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "eco-tip-west-moncure-chatham-county-nc",
+    "name": "Triangle Innovation Point West Data Center Campus",
+    "operator": "Eco TIP West LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.6224994,
+      "lon": -79.0783143,
+      "city": "Moncure",
+      "county": "Chatham County",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 750
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-25",
+        "note": "Developer litigation over the Chatham County moratorium; no construction approval in hand.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://chathamjournal.com/2026/04/25/developer-sues-chatham-county-the-data-center-pause-that-may-define-ncs-ai-era/",
+        "label": "Developer sues Chatham County: the data center pause that may define NC's AI era",
+        "publisher": "Chatham Journal Newspaper",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://gpuleaseindex.com/readiness/nc-data-center-moratoriums",
+        "label": "North Carolina Data Center Moratorium Map & Tracker — Chatham County entry (Eco TIP West, 750 MW)",
+        "publisher": "GPU Lease Index",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=Moncure%2C%20Chatham%20County%2C%20North%20Carolina",
+        "label": "OpenStreetMap Nominatim — Moncure, Chatham County, NC",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Eco TIP West LLC was founded in 2020 by Kirk J. Bradley, chairman/CEO of Lee-Moore Capital Company; the wider Triangle Innovation Point park is a Lee-Moore / Samet joint venture. Coordinates are the Moncure community centroid, NOT a parcel-confirmed pin — the sources place the ~400-acre heavy-industrial tract in Moncure without giving a street address. The $11M figure reported in coverage is the developer's own predevelopment spend, not a site investment, so investmentUsd is deliberately unset.",
+    "landAcres": 400,
+    "community": {
+      "status": "litigation",
+      "notes": "Eco TIP West sued Chatham County in Superior Court in April 2026, seeking a declaration that the county's 12-month data-center moratorium (adopted Feb 11, 2026; expires Feb 11, 2027) is illegal and void. The developer argues the campus was permitted by right under existing Heavy Industrial zoning.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "eco-yotta-oneonta-ny",
@@ -50003,7 +50830,7 @@
     "id": "fleet-peru-ridge-self-generation-storey-county-nv",
     "name": "Fleet Data Centers Peru Ridge Self-Generation Project",
     "operator": "Fleet Data Centers",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 39.5312,
@@ -50022,6 +50849,12 @@
         "date": "2026-04-20",
         "note": "Application filed with Nevada state energy regulators; air-quality permit application submitted to the Nevada Division of Environmental Protection.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-24",
+        "note": "The Public Utilities Commission of Nevada approved the 218 MW Peru Ridge Self-Generation Project at a special meeting on 2026-09-18, together with Fleet's South Valley facility — the first methane gas-fired electricity supply approved specifically for data center use in Nevada. Approval is conditional on Nevada Division of Environmental Protection air permits and Storey County approvals; PUCN noted that denial of the required air permits would prevent construction authorisation.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -50038,9 +50871,30 @@
         "publisher": "The Nevada Independent",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://news.constructconnect.com/nevada-regulators-approve-362-mw-of-temporary-power-projects-for-data-centers",
+        "label": "Nevada Regulators Approve 362 MW of Temporary Power Projects for Data Centers",
+        "publisher": "ConstructConnect",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://news.constructconnect.com/nevada-regulators-approve-362-mw-of-temporary-power-projects-for-data-centers",
+        "label": "Nevada Regulators Approve 362 MW of Temporary Power Projects for Data Centers",
+        "publisher": "ConstructConnect",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/09/nevada-regulators-approve-storey-county-gas-plants-despite-two-hours-of-public-pushback/",
+        "label": "Nevada Regulators Approve Storey County Gas Plants Despite Two Hours of Public Pushback",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-24",
     "notes": "Dedicated, temporary on-site generation proposed for Fleet's Peru Ridge data center campus on Peru Drive in the Tahoe Reno Industrial Center. Coordinates are an approximate geocode of Peru Drive in Storey County, not a parcel-confirmed point.",
     "energy": {
       "source": "on_site_gas",
@@ -50065,7 +50919,7 @@
     "id": "fleet-south-valley-self-generation-storey-county-nv",
     "name": "Fleet Data Centers South Valley Self-Generation Project",
     "operator": "Fleet Data Centers",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 39.5101,
@@ -50084,6 +50938,12 @@
         "date": "2026-04-20",
         "note": "Application filed with Nevada state energy regulators for temporary self-generation; air-quality permit application also submitted to the Nevada Division of Environmental Protection.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-24",
+        "note": "The Public Utilities Commission of Nevada approved the 144 MW South Valley Temporary Power Generation Facility at a special meeting on 2026-09-18, alongside Fleet's 218 MW Peru Ridge project (362 MW combined). Structured as behind-the-meter generation expected to run two to three years until NV Energy can deliver permanent utility service. Approval is conditional on Nevada Division of Environmental Protection air permits and Storey County approvals.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -50100,9 +50960,23 @@
         "publisher": "The Nevada Independent",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://news.constructconnect.com/nevada-regulators-approve-362-mw-of-temporary-power-projects-for-data-centers",
+        "label": "Nevada Regulators Approve 362 MW of Temporary Power Projects for Data Centers",
+        "publisher": "ConstructConnect",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/09/nevada-regulators-approve-storey-county-gas-plants-despite-two-hours-of-public-pushback/",
+        "label": "Nevada Regulators Approve Storey County Gas Plants Despite Two Hours of Public Pushback",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-24",
     "notes": "Dedicated, temporary on-site generation proposed to power Fleet's South Valley data center campus at the southern end of USA Parkway in the Tahoe Reno Industrial Center. Construction reported as early 2027 through end of 2027. Coordinates are an approximate geocode of USA Parkway in Storey County, not a parcel-confirmed point.",
     "energy": {
       "source": "on_site_gas",
@@ -51950,13 +52824,14 @@
         "url": "https://www.salisburypost.com/2026/04/15/salisbury-presents-proposed-henderson-grove-church-road-data-center-to-community-members-faces-concerns/",
         "label": "Salisbury presents proposed Henderson Grove Church Road data center to community members, faces concerns",
         "publisher": "Salisbury Post",
-        "retrievedAt": "2026-08-19",
+        "retrievedAt": "2026-09-24",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-09-24",
     "notes": "Developed by Trammell Crow Company with Flexential named as the end user. Distinct from the three tracked Flexential NC sites (Charlotte North, Charlotte South, Raleigh).",
     "energy": {
+      "source": "grid",
       "utility": "Duke Energy",
       "notes": "Estimated peak electricity usage of 55 MW, described as approved by Duke Energy."
     },
@@ -54361,6 +55236,56 @@
     "lastUpdated": "2026-09-13",
     "notes": "Recorded as rumored: two trackers list a 600 MW southwest-Indiana proposal, one attributing it to Gibson County and one to 'Gibson/Posey County', and no county filing or local news naming a Gibson County site was found this session. Kept separate from posey-county-boberg-road-data-center-in, which is a specific, separately sourced Posey County site the commissioners rejected; if a primary source later ties the 600 MW figure to Boberg Road these should be merged. Coordinates are the Gibson County centroid.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "giga-data-centers-mooresville-nc",
+    "name": "GIGA Data Centers Mooresville Campus",
+    "operator": "GIGA Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.5634941,
+      "lon": -80.8280378,
+      "city": "Mooresville",
+      "county": "Iredell County",
+      "street": "1035 Mecklenburg Highway",
+      "postalCode": "28115",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 60
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/giga-charlotte-mooresville",
+        "label": "GIGA Charlotte (Mooresville) — facility record (60 MW, 165,800 sq ft, opened June 2019, 21 acres, PUE 1.15)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=1035%20Mecklenburg%20Highway%2C%20Mooresville%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 1035 Mecklenburg Highway, Mooresville, Iredell County, NC 28115",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Opened June 2019 on the site of a former racing facility; 165,800 sq ft. investmentUsd is the stated $20M construction cost; the 21-acre land parcel was purchased separately for $9.5M. COUNTY CORRECTION: the source lists 'Mecklenburg' (evidently from the street name, Mecklenburg Highway) — the address geocodes to Iredell County, which is recorded here. Distinct site from the cancelled Tract Mooresville campus already tracked.",
+    "water": {
+      "coolingType": "hybrid",
+      "notes": "Operator's proprietary 'WindChill' module uses adiabatic (evaporative-assist) cooling combined with fresh-air circulation and negative air-pressure management — i.e. it switches between wet and dry modes rather than running a continuous evaporative circuit."
+    },
+    "investmentUsd": 20000000,
+    "landAcres": 21,
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.15,
+      "waterStress": "unknown"
+    }
   },
   {
     "id": "gigaland-data-centers-remington-fauquier-va",
@@ -58854,14 +59779,24 @@
         "publisher": "Nevada Governor's Office of Economic Development",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12), water usage section",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-24",
     "notes": "Built in 2021 in the Tahoe Reno Industrial Center area; Google began powering the campus with geothermal energy in 2023. Google reports more than $6 billion invested in Nevada since this campus was built. Google publishes no street address — the coordinate is the Storey County centroid (approximate).",
     "energy": {
       "source": "other",
       "utility": "NV Energy",
       "notes": "Google states it began using geothermal energy to power the Storey County data center campus in 2023, supplied through NV Energy under its enhanced-geothermal arrangement with Fervo Energy."
+    },
+    "water": {
+      "notes": "Per Google's own environmental reporting as summarised by the Nevada Legislative Counsel Bureau: the Storey County facility withdrew 1.9 million gallons and consumed 200,000 gallons in 2023, and used 14.9 million gallons while consuming 1.5 million gallons in 2024. Figures are annual totals for the site, not a daily rate, and are not converted here."
     },
     "investmentUsd": 600000000,
     "facilityType": "data_center"
@@ -66201,6 +67136,57 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "isp-net-las-vegas-fremont-nv",
+    "name": "isp.net Las Vegas Data Center (DC1)",
+    "operator": "isp.net",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.160035,
+      "lon": -115.119051,
+      "city": "Las Vegas",
+      "county": "Clark",
+      "street": "2595 Fremont Street",
+      "postalCode": "89104",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-24",
+        "note": "Operator's own colocation page lists 2595 Fremont Street as an operating Las Vegas facility; the Nevada Legislative Counsel Bureau lists ISP.Net among Clark County's operational data centers.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.isp.net/colocation-las-vegas",
+        "label": "Colocation Las Vegas — isp.net facility page",
+        "publisher": "isp.net",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12)",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/las-vegas",
+        "label": "Las Vegas, Nevada data center directory (isp.net, 2595 Fremont Street)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Carrier-neutral colocation facility; the operator states it runs two Las Vegas facilities connected by private fibre and licensed microwave, of which only this address is published on its site. A second site (DC2) is referenced by directories but is not recorded here because the operator does not publish its address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "ite-guam-harmon-gu",
     "name": "IT&E Guam Data Center",
     "operator": "IT&E",
@@ -67610,6 +68596,53 @@
       "unitCount": 1,
       "notes": "645 MW (net summer rating) natural gas combined-cycle unit at KU's E.W. Brown Generating Station; estimated cost $1.38 billion, targeted in service 2030."
     }
+  },
+  {
+    "id": "kyndryl-research-triangle-park-durham-nc",
+    "name": "Kyndryl Research Triangle Park Data Center",
+    "operator": "Kyndryl",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.9125498,
+      "lon": -78.8580709,
+      "city": "Durham",
+      "county": "Durham County",
+      "street": "3039 East Cornwallis Road",
+      "postalCode": "27703",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 7.4
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/kyndryl-research-triangle-park",
+        "label": "Kyndryl Research Triangle Park — facility record (132,000 sq ft white space, dual 100 kV feeds, eleven 2.5 MW standby generators)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/raleigh",
+        "label": "Raleigh data center market — facility table (Kyndryl Research Triangle Park, 7.4 MW)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=3039%20East%20Cornwallis%20Road%2C%20Durham%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 3039 East Cornwallis Road, Research Triangle Park, Durham County, NC 27703",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Kyndryl 'Design Level 3' facility in Research Triangle Park with FedRAMP, ISO 27001 and SOC 2 Type II authorisations. Cooling is not recorded: the source describes three 1,300-ton water-cooled chillers but does not say whether heat is ultimately rejected evaporatively, and the coolingType tie-breaker cannot be applied without that. The source page labels the city 'Raleigh, Wake County'; the address is in Durham County.",
+    "facilityType": "data_center"
   },
   {
     "id": "la-rosa-holdings-saint-cloud-fl",
@@ -70661,6 +71694,94 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumen-greensboro-1-nc",
+    "name": "Lumen Greensboro 1",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.029221,
+      "lon": -79.79393,
+      "city": "Greensboro",
+      "county": "Guilford County",
+      "street": "201 Creek Ridge Road",
+      "postalCode": "27406",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-greensboro-1",
+        "label": "Lumen Greensboro 1 — facility record (201 Creek Ridge Rd, operational)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/winston-salem-greensboro",
+        "label": "Winston-Salem / Greensboro data center market — facility table (Lumen Greensboro 1 and 2)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=201%20Creek%20Ridge%20Road%2C%20Greensboro%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 201 Creek Ridge Road, Greensboro, Guilford County, NC 27406",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Carrier-network colocation site inherited from the CenturyLink / Level 3 merger. A sibling 'Lumen Greensboro 2' is listed in the same market table but its street address was not retrieved this session, so it is not emitted. No MW published.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-las-vegas-1-aerojet-nv",
+    "name": "Lumen Las Vegas 1",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.237249,
+      "lon": -115.116814,
+      "city": "North Las Vegas",
+      "county": "Clark",
+      "street": "1 Aerojet Way",
+      "postalCode": "89030",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-24",
+        "note": "Listed by the Nevada Legislative Counsel Bureau among Clark County's operational data centers; carried as an active facility at 1 Aerojet Way North in Las Vegas directories.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12)",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/las-vegas",
+        "label": "Las Vegas, Nevada data center directory (Lumen Las Vegas 1, 1 Aerojet Way North)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Operator named as Lumen Technologies on the strength of the directory and legislative listings; the site is a legacy carrier facility, so current ownership should be re-verified before any ownership claim is published. The Nevada LCB also lists Lumen as operational in Washoe County — that separate site is not recorded here because no address for it could be retrieved.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumen-madison-1-wi",
     "name": "Lumen Madison 1",
     "operator": "Lumen Technologies",
@@ -71720,6 +72841,50 @@
     "aiClassification": "likely"
   },
   {
+    "id": "mapletree-5150-mccrimmon-morrisville-nc",
+    "name": "Mapletree 5150 McCrimmon Data Center",
+    "operator": "Mapletree Redwood Data Centre Trust",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.8505281,
+      "lon": -78.8291431,
+      "city": "Morrisville",
+      "county": "Wake County",
+      "street": "5150 McCrimmon Parkway",
+      "postalCode": "27560",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/mapletree-5150-mccrimmon",
+        "label": "Mapletree 5150 McCrimmon — facility record (5150 McCrimmon Pkwy, operational)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/raleigh",
+        "label": "Raleigh data center market — facility table (Mapletree: 5150 McCrimmon)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=5150%20McCrimmon%20Parkway%2C%20Morrisville%2C%20NC",
+        "label": "OpenStreetMap Nominatim — 5150 McCrimmon Parkway, Morrisville, Wake County, NC 27560",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Owner-operated facility held by Mapletree's data centre trust. The source lists the city as 'Raleigh'; the address geocodes to Morrisville, Wake County, which is what is recorded here. No MW or square footage published.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "mapletree-riverwood-pewaukee-wi",
     "name": "N15W24250 Riverwood Drive Data Centre (Pewaukee)",
     "operator": "Mapletree Redwood Data Centre Trust",
@@ -72189,6 +73354,53 @@
     },
     "environmental": {
       "carbonIntensityBasis": "grid_average"
+    }
+  },
+  {
+    "id": "mark-iv-victory-district-gas-generation-fernley-nv",
+    "name": "Victory Logistics District On-Site Gas Generation",
+    "operator": "Mark IV Capital",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.623925,
+      "lon": -119.201518,
+      "city": "Fernley",
+      "county": "Lyon",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1800
+    },
+    "announcedDate": "2026-01-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-14",
+        "note": "Presented to the Fernley Planning Commission at conceptual stage. Designs are preliminary, no formal permits have been filed, and the developer stated each entitlement step will include a public hearing. Permitting and air-quality monitoring are being coordinated with NV Energy and state and federal regulators.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://citizenportal.ai/articles/7805588/nevada/lyon-county/fernley/mark-iv-capital-outlines-large-gas-fired-power-plan-for-fernley-logistics-district",
+        "label": "Mark IV Capital outlines large gas-fired power plan for Fernley logistics district",
+        "publisher": "Citizen Portal",
+        "retrievedAt": "2026-09-24",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "The Victory Logistics District is a roughly 4,300-4,500 acre master-planned industrial development in Fernley; Microsoft's separately tracked 300-acre Fernley campus sits inside it. This record is the district-wide generation project, not any single tenant's plant. Conceptual stage with no permit application on file — treat capacity as a developer projection, not an authorised figure. Coordinate is the Nevada Pacific Parkway spine of the district; the generation site within it has not been fixed publicly.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Modular gas-fired generation intended to serve industrial and data center tenants inside the district. The developer is also advancing a Great Basin gas pipeline in federal pre-application review and has created a 'Victory power district' for local service, with a franchise revenue share pledged to the City of Fernley."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Phased build described to the Fernley Planning Commission with a first phase of roughly 225 MW around 2028 and a total of approximately 1.8 GW by 2031; estimated cost $500 million for the initial phase and $3.5 billion at full buildout. The individual phase figures reported do not sum to the stated 1.8 GW total, so only the total is recorded as capacity."
     }
   },
   {
@@ -82336,12 +83548,27 @@
         "publisher": "WRAL",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wral.com/news/investigates/north-carolina-data-center-costs-electricity-water-air-quality-questions-february-2026/",
+        "label": "The hidden costs of North Carolina's data center boom (New Hill Digital Campus figures)",
+        "publisher": "WRAL",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-03-05",
+    "lastUpdated": "2026-09-24",
     "notes": "Proposed 300 MW digital campus in New Hill, Wake County. Single-tracker source → confidence reported. Coordinates are the New Hill area centroid.",
     "energy": {
       "source": "grid"
+    },
+    "water": {
+      "notes": "Developer-stated demand for the proposed campus: peak up to 1,000,000 gallons per day, averaging 300,000-450,000 gallons per day. reportedMgd is deliberately left unset because the source gives a peak and an average range rather than one figure, and recording either alone would misstate the other."
+    },
+    "landAcres": 200,
+    "jobs": {
+      "permanent": 275,
+      "sourceIndex": 3
     },
     "community": {
       "status": "opposed",
@@ -85894,9 +87121,16 @@
         "publisher": "Novva Data Centers",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/nevada",
+        "label": "Data Centers in Nevada — project list (Novva Tahoe Reno, 60 MW, Storey County)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-09-24",
     "notes": "300,000 sq ft, 60 MW data center on a 20-acre campus at 1 Astro Way in the Tahoe-Reno Industrial Center (McCarran / Storey County). Six 10 MW data halls served by an on-campus 100 MW NV Energy substation; water-free direct-to-chip cooling. Coordinates are an approximate TRIC-area geocode (exact parcel point not published).",
     "energy": {
       "source": "grid",
@@ -88386,6 +89620,47 @@
     ],
     "lastUpdated": "2026-09-16",
     "notes": "60,000 sq ft, 5 MW LEED-certified data center delivered design-build by The Weitz Company for developer Oppidan. Construction started summer 2023 and completed May 2024. Oppidan's first data center in Iowa, and the model for its larger Cedar Rapids project. A street address (5900 Thornton Ave) appears in third-party listings but could not be confirmed on a page fetched this session, so it is not recorded here.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "oppidan-paradise-post-road-clark-county-nv",
+    "name": "Oppidan Post Road Data Center (Paradise)",
+    "operator": "Oppidan Investment Company",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.07533,
+      "lon": -115.20061,
+      "city": "Paradise",
+      "county": "Clark",
+      "street": "4460 W Post Road",
+      "postalCode": "89118",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 5
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-03-04",
+        "note": "Approved with conditions by the Clark County Planning Commission, including two waivers of development standards and a design review; conditions include FAA notification, a drainage study, and commencement of construction within two years.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://nevbex.com/2025/03/10/oppidan-paradise-data-center-approval/",
+        "label": "Clark County Planning Commission Approves Five-Megawatt Data Center",
+        "publisher": "NVBEX",
+        "retrievedAt": "2026-09-24",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Single-storey 61,600 sq ft building (about 6,300 sq ft of office), 29 ft tall, on 9.5 developed acres of a 12.3-acre site; battery storage and electrical rooms at the western end. Property owner of record is Post Road Capital Real Estate Fund LP. Distinct from Oppidan's separate 5 MW Reno (North Valleys) project. Single-source, hence confidence 'reported'. Coordinate is interpolated between US Census-geocoded anchor addresses on the same block of W Post Road (4275, 4310, 4555, 4625) because neither Census nor Nominatim resolves 4460 directly; a plain street-centroid geocode placed it about 1 km off.",
+    "landAcres": 12.3,
     "facilityType": "data_center"
   },
   {
@@ -101279,6 +102554,57 @@
     }
   },
   {
+    "id": "roller-network-reno-nv",
+    "name": "Roller Network Reno Data Center",
+    "operator": "Roller Network LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.469161,
+      "lon": -119.770958,
+      "city": "Reno",
+      "county": "Washoe",
+      "street": "3545 Airway Drive, Suite 114",
+      "postalCode": "89511",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-24",
+        "note": "Active facility record in PeeringDB; the Nevada Legislative Counsel Bureau lists Roller Network among Washoe County's operational data centers, confirmed against the company's own website.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=NV&limit=200",
+        "label": "PeeringDB facility registry — Nevada (Roller Network, 3545 Airway Dr Suite 114, status ok)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12)",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/reno",
+        "label": "Reno, Nevada data center directory (Roller Network, 3545 Airway Dr)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Small operator-run colocation and network facility in south Reno; the Nevada LCB memo explicitly flags it as small-scale. PeeringDB's coordinate (39.469306, -119.76983) and a US Census address geocode agree to within about 120 m.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "roswell-information-park-chaves-county-nm",
     "name": "Roswell Information Park",
     "operator": "Roswell Information Park LLC (developer Sustany LLC)",
@@ -104426,6 +105752,49 @@
     "generation": {
       "technology": "natural_gas",
       "notes": "Dual-fuel simple-cycle combustion turbines capable of running on natural gas or fuel oil. Santee Cooper's board-approval release (2025-10-24) described this as two units of 40-60 MW each (80-120 MW total) at an expected construction cost of $293 million; the utility's own generation-projects listing page gives a headline figure of 100 MW. Planned in-service for the 2027-2028 winter season."
+    }
+  },
+  {
+    "id": "sarcobatus-solar-scottys-junction-nye-county-nv",
+    "name": "Sarcobatus Solar Project (off-grid bitcoin mining)",
+    "operator": "Tesla Solar LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.298826,
+      "lon": -117.052767,
+      "city": "Scotty's Junction",
+      "county": "Nye",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-01-21",
+        "note": "Preliminary development plan approved by the Nye County Commission. Tracking arrays originally proposed at 38 ft were revised to fixed arrays under 25 ft to comply with county code. One commissioner recused himself citing a business relationship with the developer.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://basinandrangewatch.substack.com/p/new-threat-to-the-desert-unlocked",
+        "label": "New Threat to the Desert Unlocked: Solar-Powered Distributed Data Centers and Cryptomining",
+        "publisher": "Basin and Range Watch",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Sited in Sarcobatus Flat on the east side of US 95 at Scotty's Junction, near Death Valley National Park. The developer 'Tesla Solar LLC' has no affiliation with the vehicle manufacturer, per the source. Single-source, hence confidence 'reported'; 'permitted' reflects a preliminary development plan approval only, not a completed permit set. No MW figure is asserted — none was stated. Coordinate is the Scotty's Junction settlement, not a surveyed project boundary.",
+    "energy": {
+      "source": "solar",
+      "notes": "Entirely off-grid: solar arrays feed data servers on site, with all power used internally and no grid interconnection. Data is relayed by Starlink satellite rather than fibre. Water is trucked in for dust control only, with no on-site wells."
+    },
+    "landAcres": 800,
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "behind_meter"
     }
   },
   {
@@ -112506,7 +113875,7 @@
         "url": "https://www.prnewswire.com/news-releases/switch-tahoe-reno-now-open-largest-most-advanced-data-center-campus-in-the-world-300407648.html",
         "label": "Switch TAHOE RENO Now Open: Largest, Most Advanced Data Center Campus in the World",
         "publisher": "PR Newswire (Switch)",
-        "retrievedAt": "2026-08-14",
+        "retrievedAt": "2026-09-24",
         "kind": "press"
       },
       {
@@ -112524,7 +113893,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-11",
+    "lastUpdated": "2026-09-24",
     "energy": {
       "source": "solar",
       "utility": "NV Energy (grid interconnect)",
@@ -112870,6 +114239,50 @@
     ],
     "lastUpdated": "2026-08-29",
     "notes": "Located about 0.70 miles from the Switch Las Vegas CORE Campus and 0.10 miles from Switch Las Vegas 15. Capacity is deliberately omitted: sources conflict badly, with one directory listing 100 MW and another 495 MW, the latter appearing to be the whole-campus figure Switch publishes for 'The Core'. No MW value was read on a Switch page for this building.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "switch-las-vegas-15-nv",
+    "name": "Switch Las Vegas 15",
+    "operator": "Switch",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.063373,
+      "lon": -115.220362,
+      "city": "Las Vegas",
+      "county": "Clark",
+      "street": "5660 W Badura Avenue",
+      "postalCode": "89118",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-24",
+        "note": "Listed as a fully operational facility on the Switch Las Vegas CORE Campus, year built 2022.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/switch-las-vegas-15",
+        "label": "Switch: Las Vegas 15 Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/las-vegas",
+        "label": "Las Vegas, Nevada data center directory (Switch LAS VEGAS 15, 5660 Badura Ave)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Part of Switch's Las Vegas CORE Campus, which the company describes as eleven operating data centers with up to 495 MW at completion. The projection already carries Switch Las Vegas 5, 7, 9, 10, 11, 12, 14 and 19 as separate building-level records, so LAS 15 is modelled the same way rather than folded into a campus record. Address confirmed at 5660 W Badura Ave via a US Census exact-address geocode; one directory lists 6050 Badura Ave for this building, which geocodes about 300 m west.",
     "facilityType": "data_center"
   },
   {
@@ -117522,6 +118935,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "tierpoint-charlotte-north-myers-nc",
+    "name": "TierPoint Charlotte - North Myers",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.221531,
+      "lon": -80.8358072,
+      "city": "Charlotte",
+      "county": "Mecklenburg County",
+      "street": "125 North Myers Street",
+      "postalCode": "28202",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/north-carolina/",
+        "label": "TierPoint North Carolina data centers — operator location list (Charlotte North Myers, 125 North Myers Street)",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=125%20North%20Myers%20Street%2C%20Charlotte%2C%20NC%2028202",
+        "label": "OpenStreetMap Nominatim — 125 North Myers Street, Charlotte, Mecklenburg County, NC 28202",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "One of four North Carolina data centers listed on TierPoint's own site; the tracked record tierpoint-charlotte-center-park-nc is a different Charlotte building (1805 Center Park Drive). TierPoint publishes a combined 230,000 sq ft NC footprint but no per-site MW or square footage.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "tierpoint-dallas-allen-tx",
     "name": "TierPoint Dallas-Allen",
     "operator": "TierPoint",
@@ -118057,6 +119507,87 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "tierpoint-raleigh-departure-drive-nc",
+    "name": "TierPoint Raleigh (Departure Drive)",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.8543896,
+      "lon": -78.595815,
+      "city": "Raleigh",
+      "county": "Wake County",
+      "street": "5301 Departure Drive",
+      "postalCode": "27616",
+      "state": "NC",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/north-carolina/",
+        "label": "TierPoint North Carolina data centers — operator location list (Raleigh, 5301 Departure Drive)",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=5301%20Departure%20Drive%2C%20Raleigh%2C%20NC%2027616",
+        "label": "OpenStreetMap Nominatim — 5301 Departure Drive, Raleigh, Wake County, NC 27616",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Listed on TierPoint's own North Carolina page. Capacity deliberately unset: a third-party directory lists 10 MW for a 'Tierpoint Raleigh Data Center' but the operator publishes no per-site figure, and the two cannot be reconciled from the pages read.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tierpoint-raleigh-rtp-durham-nc",
+    "name": "TierPoint Raleigh - RTP",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.9248595,
+      "lon": -78.852029,
+      "city": "Durham",
+      "county": "Durham County",
+      "street": "99 T.W. Alexander Drive",
+      "postalCode": "27709",
+      "state": "NC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/north-carolina/",
+        "label": "TierPoint North Carolina data centers — operator location list (Raleigh-RTP, 99 TW Alexander Drive, Durham, NC 27709)",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/tierpoint-raleigh-rtp",
+        "label": "TierPoint Raleigh-RTP — facility record",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=jsonv2&q=T.W.%20Alexander%20Drive%2C%20Durham%20County%2C%20North%20Carolina",
+        "label": "OpenStreetMap Nominatim — T.W. Alexander Drive, Research Triangle Park, Durham County, NC",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-09-24",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "COORDINATE CAVEAT: the house number 99 did not resolve, so the pin is a STREET-level geocode of T.W. Alexander Drive in Research Triangle Park and precision is 'approximate' — a street fallback can sit a kilometre or more from the building, and this needs parcel confirmation. Separately flagged: a third-party directory lists 'Compass: Durham, NC' at this same address, which cannot be right for two different operators' buildings; that Compass listing was therefore NOT emitted as a candidate.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "tierpoint-russell-street-baltimore-md",
     "name": "TierPoint Baltimore (Russell Street)",
     "operator": "TierPoint",
@@ -118542,7 +120073,7 @@
     "id": "townsite-solar-2-boulder-city-nv",
     "name": "Townsite Solar 2 Boulder City Data Center",
     "operator": "Townsite Solar 2 LLC",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 35.9787649,
@@ -118562,6 +120093,12 @@
         "date": "2026-07-06",
         "note": "Townsite Solar 2 withdrew its application to build on approximately 88.5 acres of Boulder City-owned land; reporting indicates the developer intends to pursue a nearby federally owned parcel instead.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-24",
+        "note": "The Bureau of Land Management approved the Townsite Data Center in June 2026 on 88.5 acres of federal land in Eldorado Valley inside Boulder City limits — reported as the first data center ever approved on public lands. The approval stands but is currently stayed: on 2026-09-01 the Interior Board of Land Appeals granted a stay halting construction pending administrative appeal, finding BLM likely violated environmental law by reusing the 2023 environmental review of a 19 MW solar project on the same site. BLM's administrative record was due 2026-09-21 with expedited briefing to follow. Separately, TS2 withdrew its application for the adjacent city-owned site on 2026-07-06.",
+        "sourceIndex": 6
       }
     ],
     "sources": [
@@ -118592,9 +120129,44 @@
         "publisher": "KJZZ",
         "retrievedAt": "2026-09-11",
         "kind": "press"
+      },
+      {
+        "url": "https://www.enr.com/articles/63613-federal-board-halts-167-mw-nevada-data-center-approval",
+        "label": "Federal Board Halts 167-MW Nevada Data Center Approval",
+        "publisher": "Engineering News-Record",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://biologicaldiversity.org/w/news/press-releases/appeal-challenges-public-lands-data-center-in-nevada-2026-07-27/",
+        "label": "Appeal Challenges Public Lands Data Center in Nevada",
+        "publisher": "Center for Biological Diversity",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.enr.com/articles/63613-federal-board-halts-167-mw-nevada-data-center-approval",
+        "label": "Federal Board Halts 167-MW Nevada Data Center Approval",
+        "publisher": "Engineering News-Record",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://biologicaldiversity.org/w/news/press-releases/appeal-challenges-public-lands-data-center-in-nevada-2026-07-27/",
+        "label": "Appeal Challenges Public Lands Data Center in Nevada",
+        "publisher": "Center for Biological Diversity",
+        "retrievedAt": "2026-09-24",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.bcnv.org/1170/Data-Centers",
+        "label": "Data Centers — Boulder City official page (TS2 city-site application withdrawn 2026-07-06)",
+        "publisher": "City of Boulder City, Nevada",
+        "retrievedAt": "2026-09-24",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-11",
+    "lastUpdated": "2026-09-24",
     "notes": "Proposed as two warehouse-style server buildings plus a 230 kV substation, battery energy storage and perimeter fencing, maximum 40-foot height with dark-sky-compliant lighting. The city page states 200-300 construction/testing jobs and 25-40 permanent technical positions; these ranges are not recorded as point values in the jobs field. Reported as a joint venture of Skylar Capital, Arevon Energy and Overwatch Capital, but that ownership was read only in a search summary and is not asserted here. Status is kept at proposed rather than cancelled: the withdrawal was of the city-land application, not of the project.",
     "energy": {
       "source": "grid",
@@ -118692,6 +120264,50 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "tpx-communications-las-vegas-nv",
+    "name": "TPx Las Vegas Data Center",
+    "operator": "TPx Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.068452,
+      "lon": -115.139451,
+      "city": "Las Vegas",
+      "county": "Clark",
+      "street": "1181 Grier Drive",
+      "postalCode": "89119",
+      "state": "NV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-24",
+        "note": "Listed by the Nevada Legislative Counsel Bureau among Clark County's operational data centers, confirmed by LCB against the company's own website; carried as an active facility in Las Vegas directories.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.leg.state.nv.us/App/InterimCommittee/REL/Document/33075",
+        "label": "Memo: Data Centers — Background Information (revised 2026-05-12)",
+        "publisher": "Nevada Legislative Counsel Bureau, Research Division",
+        "retrievedAt": "2026-09-24",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.godatacenters.com/data-centers/nevada/las-vegas",
+        "label": "Las Vegas, Nevada data center directory (TPx Las Vegas, 1181 Grier Dr)",
+        "publisher": "goDataCenters",
+        "retrievedAt": "2026-09-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-24",
+    "notes": "Colocation facility near Harry Reid International Airport, in the same corridor as the tracked DataBank LAS1, EdgeConneX EDCLAS01 and Fiberhub LAS1 records but at a distinct address and under a distinct operator.",
+    "facilityType": "data_center"
   },
   {
     "id": "tract-altoona-ia",
@@ -119444,7 +121060,7 @@
         "url": "https://www.tract.com/project/peru-shelf/",
         "label": "Tract - Peru Shelf Technology Park project page (686 total acres, 810 MW, Storey County / Tahoe-Reno Industrial Center)",
         "publisher": "Tract",
-        "retrievedAt": "2026-09-11",
+        "retrievedAt": "2026-09-24",
         "kind": "other"
       },
       {
@@ -119462,7 +121078,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-11",
+    "lastUpdated": "2026-09-24",
     "notes": "Parcels range from 183 to 277 acres; zoned for by-right data center use with 125-foot building height allowances. Distinct from Tract's Peru Ridge (517 acres / 230 MW), South Valley (1,534 acres / 1,215 MW), Sapphire (1,063 acres / 700 MW, the Silver Springs campus) and Virginia Highlands (8,590 acres / 2,500 MW) projects. Coordinates are an OpenStreetMap Peru Drive road point, not a parcel-confirmed location.",
     "landAcres": 686,
     "facilityType": "data_center"
@@ -119680,7 +121296,7 @@
         "url": "https://www.tract.com/project/virginia-highlands/",
         "label": "Virginia Highlands - Tract project page (8,590 acres, 11 parcels, 2,500 MW, owned and in development)",
         "publisher": "Tract",
-        "retrievedAt": "2026-08-29",
+        "retrievedAt": "2026-09-24",
         "kind": "other"
       },
       {
@@ -119691,7 +121307,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-24",
     "notes": "Land is positioned between the Tahoe-Reno Industrial Center and the Virginia City Highlands, just southeast of Lockwood, with parcels ranging from 250 to 1,200 acres and existing industrial zoning. This is a land-and-power park with no named tenant or building programme disclosed; the 2,500 MW is Tract's stated site capacity, not a built or contracted figure. Coordinates are the Lockwood reference point, not a parcel boundary. Distinct from Tract's Silver Springs / Sapphire site in Lyon County, which the tracker already carries. Public-reception check (2026-09-10): The 8,590-acre Storey County site (between the Tahoe-Reno Industrial Center and Virginia City Highlands, southeast of Lockwood) was already zoned industrial with data centers as a pre-approved use at acquisition (2024-06-18), consistent with Storey County/TRIC's long-standing industrial-friendly zoning posture. Checked: Tract's own project page and its 2024 acquisition press release -- neither mentions a public hearing, county-official statement, or any resident opposition/support specific to this parcel.",
     "landAcres": 8590,
     "facilityType": "data_center",
