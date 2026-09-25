@@ -129,6 +129,38 @@ const NHD_RING_STEPS_DEG = [0.15, 0.4, 0.9, 1.8];
 const NHD_REQUEST_DELAY_MS = 150;
 const NHD_CONSECUTIVE_FAILURE_BUDGET = 10; // abort if the service looks down
 
+// --- NHD mid-run throughput guard ------------------------------------------
+// NHD_CONSECUTIVE_FAILURE_BUDGET counts FAILURES and resets to 0 on any
+// success, so it is blind to a dependency that keeps answering successfully,
+// every time, just far too slowly to finish. On 2026-09-23 a run's throughput
+// decayed 0.83 -> 0.167 -> 0.006 facilities/sec and this guard never moved —
+// too healthy to abort, too slow to finish. assessThroughput() (below, near
+// computeSitingContext) asks the real question instead: can this run still
+// complete inside the CI job budget? It is measured over a ROLLING window
+// (elapsed time for the last NHD_THROUGHPUT_WINDOW facilities only), never a
+// cumulative average since the run's start — a cumulative average is dragged
+// up by a healthy warm-up and would hide exactly this kind of decay.
+const NHD_THROUGHPUT_WINDOW = 50; // facilities per measurement window
+const NHD_THROUGHPUT_GRACE = 100; // warm-up; do not judge before this many
+const NHD_MAX_PROJECTED_HOURS = 5; // GitHub's default job cap is 6h and this
+                                    // script sets no timeout-minutes, so a run
+                                    // projected past this cannot land.
+
+// Shared between the pre-flight abort (service down before any work starts)
+// and the throughput-guard abort (service degrading mid-run) — both name the
+// same documented recovery path, so the guidance text lives in one place.
+const NHD_SKIP_FALLBACK_GUIDANCE = [
+  'Documented fallback: re-run with --skip-nhd. That path makes no NHD calls,',
+  'merges into the existing siting-context.json, and still fills',
+  'waterStress/aquifer/groundwaterDecline for new records.',
+  '',
+  'PRICE OF --skip-nhd: it leaves nearestWater/nearestTransmission UNSET on',
+  'new records, and nothing in the test suite goes red while that is',
+  'outstanding (siting-context.test.ts asserts an ENTRY exists, not that it',
+  'carries NHD fields). A full build:mapdata is still OWED once NHD is',
+  'healthy — track it explicitly.',
+];
+
 // --- NHD pre-flight -------------------------------------------------------
 // NHD_CONSECUTIVE_FAILURE_BUDGET cannot catch a degraded service: it only
 // increments when BOTH layers fail for one facility and RESETS on any success,
@@ -144,8 +176,9 @@ const NHD_PREFLIGHT_LON = -95.0877;
 // healthy at ring 0 but collapses at ring 3 PASSES this pre-flight. That is not
 // the 2026-09-23 shape (total unavailability at every ring), so it does not
 // undermine the check — but do not read a green pre-flight as "all rings fine".
-// Mid-run degradation is likewise still unprotected: NHD_CONSECUTIVE_FAILURE_BUDGET
-// resets on any success and counts failures while being blind to latency.
+// Mid-run degradation is a SEPARATE guard (see NHD_THROUGHPUT_WINDOW /
+// assessThroughput below), because NHD_CONSECUTIVE_FAILURE_BUDGET resets on
+// any success and counts failures while being blind to latency.
 const NHD_PREFLIGHT_HALF_DEG = 0.15; // ring 0, the envelope the build uses most
 // Fail in seconds, not minutes — this is a liveness probe, not build work.
 const NHD_PREFLIGHT_TIMEOUT_MS = 12_000;
@@ -155,6 +188,21 @@ const NHD_PREFLIGHT_TIMEOUT_MS = 12_000;
 // Scoring slow-but-200 as a FAILURE is the whole point: today's run never
 // aborted precisely because "eventually answered" was treated as success.
 const NHD_PREFLIGHT_LATENCY_CEILING_MS = 8_000;
+
+// One coordinate is a Bernoulli trial, not a measurement. On 2026-09-24, 3 of
+// 6 spread CONUS coords timed out while others answered in under a second;
+// the single-coord pre-flight above passed and the run then ground 2h05m
+// before being cancelled. Spread these across distinct regions so a regional
+// outage cannot hide behind one healthy probe. Used by preflightNHDQuorum(),
+// which wraps preflightNHD() (kept above exactly as-is, as the single-
+// coordinate primitive) into a sequential, fail-fast multi-coordinate check.
+const NHD_PREFLIGHT_COORDS = [
+  { label: 'KS interior',   lat: 39.1097,  lon: -95.0877  },
+  { label: 'PA northeast',  lat: 41.5045,  lon: -75.5341  },
+  { label: 'NC piedmont',   lat: 35.7796,  lon: -78.6382  },
+  { label: 'AZ basin',      lat: 33.4484,  lon: -112.0740 },
+  { label: 'OR Willamette', lat: 45.5152,  lon: -122.6784 },
+];
 
 const BUDGETS = {
   water: 1.5 * 1024 * 1024,
@@ -723,11 +771,62 @@ export async function preflightNHD({
 }
 
 /**
+ * Quorum wrapper around preflightNHD(): probes several geographically spread
+ * coordinates (NHD_PREFLIGHT_COORDS) instead of one. preflightNHD() itself is
+ * left completely unchanged above — this wraps it as the single-coordinate
+ * primitive it already is.
+ *
+ * Sequential and FAIL-FAST: the first coordinate that fails stops the probe
+ * immediately, without touching the rest. A service that cannot answer one
+ * spread coordinate will not finish the multi-hour build either, and patience
+ * is exactly what this check exists to remove. On a healthy service each
+ * coordinate costs well under a second, so probing every coordinate in the
+ * list costs a few seconds against a job measured in hours.
+ *
+ * `probe` is injectable (defaults to preflightNHD) so tests can stub it
+ * directly instead of mocking the network; any extra options (`now`,
+ * `timeoutMs`, etc.) are forwarded to every probe call.
+ *
+ * Returns { ok, results, failedAt }: `results` holds one entry per coordinate
+ * ACTUALLY probed (in call order, stopping at the first failure), each
+ * carrying that coordinate's per-layer results so an abort message can name
+ * both the coordinate and the measured latency/error. `failedAt` is the
+ * failing coordinate's label, or null when every probed coordinate passed.
+ */
+export async function preflightNHDQuorum({
+  coords = NHD_PREFLIGHT_COORDS,
+  probe = preflightNHD,
+  ...opts
+} = {}) {
+  const results = [];
+  for (const { label, lat, lon } of coords) {
+    const outcome = await probe({ lat, lon, ...opts });
+    results.push({ label, lat, lon, ok: outcome.ok, results: outcome.results });
+    if (!outcome.ok) {
+      return { ok: false, results, failedAt: label };
+    }
+  }
+  return { ok: true, results, failedAt: null };
+}
+
+/**
  * Per-facility nearest water via live NHD queries: named small-scale flowlines
  * (rivers/streams, layer 4) and waterbodies (lakes/reservoirs, layer 10), expanding the search
- * ring until at least one feature is found. Returns { nearest, allFailed }.
+ * ring until at least one feature is found. Returns { nearest, allFailed, absenceConfirmed }.
+ *
+ * `absenceConfirmed` says whether a null `nearest` can be trusted as genuine
+ * absence, as opposed to a symptom of a failed query — a failed query returns
+ * `features: []`, byte-identical to a real "nothing here" answer, so the two
+ * are otherwise indistinguishable to the caller. It is scoped to the ring
+ * where the loop CONCLUDES, not "any ring ever": the rings are strict spatial
+ * supersets (each halfDeg step grows the same envelope around the same
+ * point), so an early-ring failure followed by a clean wider-ring answer is
+ * still a trustworthy "not found" — the wider query subsumes the narrower
+ * failed one. Both layers must have succeeded at the terminating ring:
+ * flowlines and waterbodies are disjoint feature sets, so a failed waterbody
+ * query means lakes were never checked and absence is not established.
  */
-async function nearestWaterViaNHD(lat, lon) {
+export async function nearestWaterViaNHD(lat, lon) {
   const pt = turfPoint([lon, lat]);
   let anySuccess = false;
 
@@ -736,12 +835,13 @@ async function nearestWaterViaNHD(lat, lon) {
     const flowRes = await nhdQueryLayer(NHD_FLOWLINE_LAYER, lat, lon, halfDeg);
     const waterRes = await nhdQueryLayer(NHD_WATERBODY_LAYER, lat, lon, halfDeg);
     if (flowRes.ok || waterRes.ok) anySuccess = true;
+    const bothOk = flowRes.ok && waterRes.ok;
 
     const flow = flowRes.features;
     const water = waterRes.features;
     if (flow.length === 0 && water.length === 0) {
       if (ring < NHD_RING_STEPS_DEG.length - 1) continue; // expand and retry
-      return { nearest: null, allFailed: !anySuccess };
+      return { nearest: null, allFailed: !anySuccess, absenceConfirmed: bothOk };
     }
 
     let best = null;
@@ -781,9 +881,14 @@ async function nearestWaterViaNHD(lat, lon) {
       }
     }
 
-    return { nearest: best, allFailed: false };
+    // best === null here means features WERE returned but no segment could be
+    // measured (every pointToLineDistance threw) — a measurement failure, not
+    // a confirmed absence, so it must not clear good data.
+    return { nearest: best, allFailed: false, absenceConfirmed: best !== null };
   }
-  return { nearest: null, allFailed: !anySuccess };
+  // Effectively dead: the last-ring iteration above always returns. Kept as a
+  // fail-safe that never claims a confirmed absence.
+  return { nearest: null, allFailed: !anySuccess, absenceConfirmed: false };
 }
 
 // ---------------------------------------------------------------------------
@@ -1048,15 +1153,175 @@ function computeEnvironmentalContext(facilities, aqueductCandidates, aquiferCand
 // ---------------------------------------------------------------------------
 // Siting context (per-facility nearest water / transmission)
 // ---------------------------------------------------------------------------
-async function computeSitingContext(facilities, powerCandidates) {
+
+/**
+ * Decide one facility's nearestWater, given a live lookup outcome and whatever
+ * the existing siting-context.json holds for it.
+ *
+ * The gate is `absenceConfirmed`, NOT `allFailed`. `allFailed` is true only
+ * when NO ring answered at all, but a query that fails only on the ring where
+ * the loop concludes is just as untrustworthy: it returns `features: []`,
+ * byte-identical to a genuine "nothing here" answer, so treating it as
+ * authoritative silently clears a good value (2026-09-22) — and under
+ * SCATTERED degradation this is the common case, not an edge case, since a
+ * facility with no nearby water at ring 0 escalates into the larger, slower
+ * queries most likely to fail. `absenceConfirmed !== true` is checked (not
+ * `=== false`), so a malformed or missing field fails OPEN toward
+ * preservation, matching this module's preserve-by-default bias. A lookup
+ * that genuinely answered and found nothing (`absenceConfirmed: true`) is
+ * different and authoritative — a corrected coordinate must still be able to
+ * clear a stale value.
+ *
+ * Returns { value, carriedForward }. `value` is undefined when the entry should
+ * carry no nearestWater at all.
+ */
+export function resolveNearestWater(waterOutcome, existingEntry) {
+  if (waterOutcome.nearest) {
+    return {
+      value: {
+        name: waterOutcome.nearest.name ?? null,
+        kind: waterOutcome.nearest.kind,
+        distanceMi: Math.round(waterOutcome.nearest.dist * 10) / 10,
+      },
+      carriedForward: false,
+    };
+  }
+  if (waterOutcome.absenceConfirmed !== true && existingEntry?.nearestWater) {
+    return { value: existingEntry.nearestWater, carriedForward: true };
+  }
+  return { value: undefined, carriedForward: false };
+}
+
+/**
+ * Decide whether a run projected from the CURRENT measurement window can
+ * still finish inside the job's time budget. Pure: takes measurements,
+ * returns a verdict — no clock, no sleeping, fully testable (mirrors the
+ * resolveNearestWater pattern above: policy lives in a pure function, the
+ * caller owns wiring/timing).
+ *
+ * A RATE guard, deliberately, sitting BESIDE NHD_CONSECUTIVE_FAILURE_BUDGET
+ * rather than replacing it: a failure-count guard is blind to a dependency
+ * that answers correctly every time but ten times too slowly (2026-09-23:
+ * 0.83 -> 0.006 facilities/sec, and the failure-count guard never moved).
+ *
+ * `windowElapsedMs` MUST be the elapsed time for THIS window only (a rolling
+ * measurement) — a cumulative average since the run's start is dragged up by
+ * a healthy warm-up and would hide exactly the decay this guard exists to
+ * catch.
+ *
+ * Contract:
+ *   - A non-finite or non-positive `windowElapsedMs` can't produce a rate at
+ *     all (division by zero or worse) — never abort on a bad measurement.
+ *   - `processed < graceFacilities` — warm-up: never JUDGE the run yet, but
+ *     still report the measured rate so a caller can log it.
+ *   - A zero (or non-finite) rate past the grace period means real time
+ *     elapsed with NO progress — a stalled service. This is a hard abort
+ *     (`ok: false`), not an accidental Infinity/NaN.
+ *   - Otherwise: ratePerSec = windowSize / (windowElapsedMs / 1000),
+ *     projectedHours = (total - processed) / ratePerSec / 3600,
+ *     ok = projectedHours <= maxProjectedHours.
+ */
+export function assessThroughput({
+  processed,
+  total,
+  windowElapsedMs,
+  windowSize,
+  graceFacilities,
+  maxProjectedHours,
+}) {
+  if (!Number.isFinite(windowElapsedMs) || windowElapsedMs <= 0) {
+    return { ok: true, ratePerSec: null, projectedHours: null };
+  }
+
+  const ratePerSec = windowSize / (windowElapsedMs / 1000);
+
+  if (processed < graceFacilities) {
+    return { ok: true, ratePerSec, projectedHours: null };
+  }
+
+  if (!Number.isFinite(ratePerSec) || ratePerSec <= 0) {
+    // Elapsed real time with zero (or non-finite) progress is a stalled
+    // service, not a bad measurement — abort outright rather than let the
+    // division below produce Infinity/NaN and slip past the ok check by
+    // accident.
+    return { ok: false, ratePerSec: 0, projectedHours: Infinity };
+  }
+
+  const projectedHours = (total - processed) / ratePerSec / 3600;
+  return { ok: projectedHours <= maxProjectedHours, ratePerSec, projectedHours };
+}
+
+/**
+ * Roll the throughput measurement window.
+ *
+ * ROLLING, not cumulative, and that distinction is the whole guard:
+ * assessThroughput() divides a FIXED windowSize by the elapsed time it is
+ * handed, so an elapsed time that accumulates from the run's start makes the
+ * computed rate decay on a perfectly healthy service and eventually aborts a
+ * good run. Only the elapsed time of the LAST window describes the service's
+ * current speed, which is what detects decay (2026-09-23: 0.83 -> 0.167 ->
+ * 0.006 facilities/sec).
+ *
+ * Pure: no clock reads, no I/O — mirrors the assessThroughput/
+ * resolveNearestWater pattern (the decision lives in a pure function, the
+ * caller owns wiring/timing). Extracted specifically because this bookkeeping
+ * used to live inline in computeSitingContext, where a mutation deleting the
+ * `windowStartedAt = now()` reset failed zero tests — nothing exercised the
+ * reset itself, only assessThroughput's math given already-correct inputs.
+ *
+ * Contract:
+ *   - `isBoundary` is true only when `processed` is a POSITIVE multiple of
+ *     `windowSize` (processed === 0 is never a boundary — the run must not
+ *     judge before any work has happened).
+ *   - `windowElapsedMs` is `nowMs - windowStartedAt`, computed ONLY at a
+ *     boundary; `null` otherwise (not a meaningful measurement between
+ *     boundaries — callers must not read it then).
+ *   - `windowStartedAt` is the value the caller MUST carry forward: `nowMs`
+ *     AT a boundary (the reset — this is the rolling property this function
+ *     exists to guarantee), and the unchanged incoming `windowStartedAt`
+ *     every other time. A caller that ignores this return value and keeps
+ *     the original `windowStartedAt` reintroduces the cumulative-window bug.
+ *   - `windowSize <= 0` can never define a real window: always
+ *     `isBoundary: false`, `windowElapsedMs: null`, `windowStartedAt`
+ *     unchanged — an inert no-op rather than a modulo/divide-by-zero risk.
+ */
+export function nextThroughputWindow({ processed, windowSize, windowStartedAt, nowMs }) {
+  const isBoundary = windowSize > 0 && processed > 0 && processed % windowSize === 0;
+  if (!isBoundary) {
+    return { isBoundary: false, windowElapsedMs: null, windowStartedAt };
+  }
+  return { isBoundary: true, windowElapsedMs: nowMs - windowStartedAt, windowStartedAt: nowMs };
+}
+
+async function computeSitingContext(facilities, powerCandidates, existingContext = {}, { now = () => Date.now() } = {}) {
   console.log('\n=== Siting context (per-facility nearest water/transmission) ===');
   const result = {};
   let consecutiveNHDFailures = 0;
+  let carriedForwardCount = 0;
+  let unconfirmedAbsenceCount = 0;
   let processed = 0;
+  let windowStartedAt = now(); // rolling — reset every NHD_THROUGHPUT_WINDOW facilities, never cumulative
 
-  for (const facility of facilities) {
+  // Pre-filter to facilities with usable coordinates ONCE, before the loop,
+  // rather than skipping inline (via `continue`) and reconciling a separate
+  // skip counter against `facilities.length` afterwards. A tracked skip
+  // counter is two numbers that can drift apart again; filtering once removes
+  // the possibility of drift structurally. This matters because `total` below
+  // feeds assessThroughput's `remaining = total - processed` — handing it the
+  // RAW facilities.length (which includes facilities that are never
+  // processed because they lack coordinates) understates completed progress
+  // and overstates remaining work, biasing the guard toward projecting a
+  // longer finish and aborting a run that would have completed fine. A false
+  // abort is worse than no guard: the first one teaches everyone watching the
+  // pipeline to ignore it. Dormant today (0 of the live dataset lacks
+  // coordinates) but latent otherwise.
+  const sitedFacilities = facilities.filter((facility) => {
     const { lat, lon } = facility.location ?? {};
-    if (typeof lat !== 'number' || typeof lon !== 'number') continue;
+    return typeof lat === 'number' && typeof lon === 'number';
+  });
+
+  for (const facility of sitedFacilities) {
+    const { lat, lon } = facility.location ?? {};
     const pt = turfPoint([lon, lat]);
     const searchBBox = searchBBoxFor(lat, lon, NEAREST_CAP_MILES);
 
@@ -1070,6 +1335,12 @@ async function computeSitingContext(facilities, powerCandidates) {
       }
     } else {
       consecutiveNHDFailures = 0;
+    }
+    // Scale-of-degradation signal, independent of whether a prior value
+    // existed to carry forward: a facility with no water AND no confirmed
+    // absence is one we could not verify this run, full stop.
+    if (!waterOutcome.nearest && waterOutcome.absenceConfirmed !== true) {
+      unconfirmedAbsenceCount++;
     }
 
     // An isolated island grid cannot reach a line outside its own system, no
@@ -1085,12 +1356,13 @@ async function computeSitingContext(facilities, powerCandidates) {
     );
 
     const entry = {};
-    if (waterOutcome.nearest) {
-      entry.nearestWater = {
-        name: waterOutcome.nearest.name ?? null,
-        kind: waterOutcome.nearest.kind,
-        distanceMi: Math.round(waterOutcome.nearest.dist * 10) / 10,
-      };
+    const { value: nearestWater, carriedForward } = resolveNearestWater(
+      waterOutcome,
+      existingContext[facility.id]
+    );
+    if (nearestWater !== undefined) {
+      entry.nearestWater = nearestWater;
+      if (carriedForward) carriedForwardCount++;
     }
     if (nearestTransmission) {
       entry.nearestTransmission = {
@@ -1103,9 +1375,82 @@ async function computeSitingContext(facilities, powerCandidates) {
     }
 
     processed++;
-    if (processed % 50 === 0) console.log(`  ... ${processed}/${facilities.length} facilities processed`);
+    if (processed % 50 === 0) console.log(`  ... ${processed}/${sitedFacilities.length} facilities processed`);
+
+    const windowRoll = nextThroughputWindow({
+      processed,
+      windowSize: NHD_THROUGHPUT_WINDOW,
+      windowStartedAt,
+      nowMs: now(),
+    });
+    // Unconditional and load-bearing: nextThroughputWindow returns
+    // windowStartedAt UNCHANGED except at a boundary, where it returns the
+    // reset value — this single assignment IS the rolling-window property
+    // (see nextThroughputWindow's doc comment). Dropping this line
+    // reintroduces the cumulative-from-start bug at the wiring layer instead
+    // of inside the pure function.
+    windowStartedAt = windowRoll.windowStartedAt;
+
+    if (windowRoll.isBoundary) {
+      const assessment = assessThroughput({
+        processed,
+        total: sitedFacilities.length,
+        windowElapsedMs: windowRoll.windowElapsedMs,
+        windowSize: NHD_THROUGHPUT_WINDOW,
+        graceFacilities: NHD_THROUGHPUT_GRACE,
+        maxProjectedHours: NHD_MAX_PROJECTED_HOURS,
+      });
+      if (assessment.ratePerSec !== null) {
+        const projectedStr = assessment.projectedHours !== null
+          ? `, projected ${Number.isFinite(assessment.projectedHours) ? assessment.projectedHours.toFixed(2) : 'unbounded'}h to finish`
+          : '';
+        console.log(`  [throughput] window rate ${assessment.ratePerSec.toFixed(4)}/sec${projectedStr}`);
+      }
+      if (!assessment.ok) {
+        throw new Error(
+          [
+            '',
+            `NHD throughput guard FAILED — measured ${assessment.ratePerSec.toFixed(4)} facilities/sec`,
+            `over the last ${NHD_THROUGHPUT_WINDOW} facilities, projecting ${
+              Number.isFinite(assessment.projectedHours) ? assessment.projectedHours.toFixed(1) : 'unbounded'
+            } more hours to process the remaining ${sitedFacilities.length - processed} of ${sitedFacilities.length}`,
+            `facilities (${processed} processed so far).`,
+            '',
+            'USGS NHD is answering but too slowly for this run to land inside the CI job',
+            'budget. Do NOT retry the full pass — this is the same degraded-service shape',
+            'that let a run grind for 6h and still lose data.',
+            '',
+            ...NHD_SKIP_FALLBACK_GUIDANCE,
+          ].join('\n'),
+        );
+      }
+    }
   }
+  // M is deliberately `facilities.length` here (the full input), not
+  // `sitedFacilities.length` (the progress log's denominator, scoped to what
+  // this run actually iterated) — this line reports dataset coverage: how
+  // much of everything on disk has a siting-context entry, including any
+  // facility that can never get one because it has no coordinates. That is a
+  // different question from "how far did this run get through its own
+  // queue", which is what the progress log answers. Not silently
+  // inconsistent with it — they measure different things, and this comment
+  // says so.
   console.log(`  computed siting context for ${Object.keys(result).length}/${facilities.length} facilities`);
+  if (carriedForwardCount > 0) {
+    console.log(
+      `  preserved nearestWater for ${carriedForwardCount} facilities whose live NHD lookup failed (degraded run — values carried forward from the existing siting-context.json, not freshly verified)`
+    );
+  }
+  if (unconfirmedAbsenceCount > 0) {
+    // States the SCALE of the degradation, not just the saves: carriedForwardCount
+    // is the subset of this that had a prior value to preserve. The remainder
+    // recorded no nearestWater at all this run and should be re-verified once
+    // NHD is healthy — a zero here during a degraded run is what silently lost
+    // data on 2026-09-22.
+    console.log(
+      `  [warn] ${unconfirmedAbsenceCount} facilities had UNCONFIRMED water absence this run (NHD degraded at the terminating ring) — ${carriedForwardCount} preserved from the prior siting-context.json, ${unconfirmedAbsenceCount - carriedForwardCount} recorded no nearestWater and should be re-verified`
+    );
+  }
   return result;
 }
 
@@ -1152,33 +1497,28 @@ async function main() {
   // is the documented fallback DURING an outage and has to keep working when
   // the probe would fail. Breaking this would have blocked the 2026-09-23 wave.
   if (!skipNHD) {
-    const preflight = await preflightNHD();
-    for (const r of preflight.results) {
-      console.log(
-        `NHD pre-flight layer ${r.layer}: ${r.ok ? 'ok' : 'FAILED'} in ${r.ms}ms${r.error ? ` — ${r.error}` : ''}`,
-      );
+    const preflight = await preflightNHDQuorum();
+    for (const coord of preflight.results) {
+      for (const r of coord.results) {
+        console.log(
+          `NHD pre-flight [${coord.label}] layer ${r.layer}: ${r.ok ? 'ok' : 'FAILED'} in ${r.ms}ms${r.error ? ` — ${r.error}` : ''}`,
+        );
+      }
     }
     if (!preflight.ok) {
-      const failed = preflight.results.filter((r) => !r.ok);
+      const failedCoord = preflight.results.find((c) => c.label === preflight.failedAt);
+      const failed = failedCoord.results.filter((r) => !r.ok);
       console.error(
         [
           '',
-          'NHD pre-flight FAILED — aborting before any expensive work.',
+          `NHD pre-flight FAILED at coordinate [${failedCoord.label}] (lat ${failedCoord.lat}, lon ${failedCoord.lon}) — aborting before any expensive work.`,
           ...failed.map((r) => `  layer ${r.layer}: ${r.error} (measured ${r.ms}ms)`),
           '',
           'USGS NHD is down or degraded. Do NOT retry the full pass — a degraded',
           'service answers slowly rather than failing, which is what let a run grind',
           'for 6h and still lose data.',
           '',
-          'Documented fallback: re-run with --skip-nhd. That path makes no NHD calls,',
-          'merges into the existing siting-context.json, and still fills',
-          'waterStress/aquifer/groundwaterDecline for new records.',
-          '',
-          'PRICE OF --skip-nhd: it leaves nearestWater/nearestTransmission UNSET on',
-          'new records, and nothing in the test suite goes red while that is',
-          'outstanding (siting-context.test.ts asserts an ENTRY exists, not that it',
-          'carries NHD fields). A full build:mapdata is still OWED once NHD is',
-          'healthy — track it explicitly.',
+          ...NHD_SKIP_FALLBACK_GUIDANCE,
         ].join('\n'),
       );
       process.exitCode = 1;
@@ -1201,7 +1541,26 @@ async function main() {
   let droughtResult = null;
 
   if (skipNHD) {
-    const existing = JSON.parse(readFileSync(SITING_CONTEXT_OUT, 'utf8'));
+    let existing;
+    try {
+      existing = JSON.parse(readFileSync(SITING_CONTEXT_OUT, 'utf8'));
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        throw new Error(
+          `--skip-nhd requires an existing ${SITING_CONTEXT_OUT} to merge into, but none was found. ` +
+          '--skip-nhd only refreshes environmental fields (waterStress/aquifer/groundwaterDecline) on ' +
+          'top of a prior NHD pass — it cannot be used for a first-ever build. Run without --skip-nhd ' +
+          `once (a full NHD build) to create the initial file, or restore a committed copy of ${SITING_CONTEXT_OUT}.`
+        );
+      }
+      throw new Error(
+        `--skip-nhd could not read/parse the existing ${SITING_CONTEXT_OUT}${err.code ? ` (${err.code})` : ''}: ${err.message}. ` +
+        '--skip-nhd merges into that file and cannot proceed without a valid one. The file exists, but this ' +
+        'could be a parse error (corrupted/truncated JSON) or something else entirely, such as a permissions ' +
+        'error — see the error above for the real cause. Restore a known-good committed copy, or fix access ' +
+        'to the file, before retrying.'
+      );
+    }
     sitingContext = {};
     // Seed the id set with EVERY facility, not just the ones a dataset matched:
     // a facility that matched nothing is recorded as `{}` on purpose. NHD,
@@ -1224,7 +1583,24 @@ async function main() {
     powerResult = await buildPower();
     droughtResult = await buildDrought();
 
-    const nhdContext = await computeSitingContext(facilities, powerResult.powerCandidates);
+    let existingSitingContext = {};
+    try {
+      existingSitingContext = JSON.parse(readFileSync(SITING_CONTEXT_OUT, 'utf8'));
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        // NOT fake-success-ok: a file that exists but fails to read or parse is
+        // a corrupted/truncated committed artifact, not "first-ever build".
+        // Silently falling back to {} here would disable carry-forward for
+        // EVERY facility with no warning at all — this is a whole-artifact
+        // integrity check, unlike the benign per-item geometry skips elsewhere
+        // in this file that legitimately use this same comment tag.
+        console.error(
+          `  [warn] could not read/parse ${SITING_CONTEXT_OUT}, proceeding with no carry-forward data: ${err.message}`
+        );
+      }
+      /* fake-success-ok: ENOENT only — first-ever build has no prior siting-context.json to carry forward from. */
+    }
+    const nhdContext = await computeSitingContext(facilities, powerResult.powerCandidates, existingSitingContext);
     sitingContext = {};
     // Seed the id set with EVERY facility, not just the ones a dataset matched:
     // a facility that matched nothing is recorded as `{}` on purpose. NHD,
