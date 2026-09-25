@@ -3,11 +3,14 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   fetchJSON,
   preflightNHD,
+  preflightNHDQuorum,
   propGNISName,
   ISLAND_GRID_BBOX,
   nearestFromCandidates,
   resolveNearestWater,
   nearestWaterViaNHD,
+  assessThroughput,
+  nextThroughputWindow,
 } from "./build-map-data.mjs";
 import { point as turfPoint, lineString } from "@turf/helpers";
 
@@ -610,5 +613,320 @@ describe("resolveNearestWater", () => {
     const waterOutcome = { nearest: null, allFailed: true, absenceConfirmed: false };
     expect(resolveNearestWater(waterOutcome, undefined)).toEqual({ value: undefined, carriedForward: false });
     expect(resolveNearestWater(waterOutcome, null)).toEqual({ value: undefined, carriedForward: false });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// preflightNHDQuorum — multi-coordinate quorum wrapper around preflightNHD
+// ---------------------------------------------------------------------------
+
+describe("preflightNHDQuorum", () => {
+  const testCoords = [
+    { label: "A", lat: 1, lon: 1 },
+    { label: "B", lat: 2, lon: 2 },
+    { label: "C", lat: 3, lon: 3 },
+  ];
+
+  const okOutcome = { ok: true, results: [{ layer: 4, ok: true, ms: 100, error: null }] };
+  const failOutcome = (ms = 9000, error = "responded too slowly (ceiling)") => ({
+    ok: false,
+    results: [
+      { layer: 4, ok: false, ms, error },
+      { layer: 10, ok: true, ms: 150, error: null },
+    ],
+  });
+
+  it("passes when every coordinate passes, probing each exactly once", async () => {
+    const probe = vi.fn(async () => okOutcome);
+    const res = await preflightNHDQuorum({ coords: testCoords, probe });
+    expect(res.ok).toBe(true);
+    expect(res.failedAt).toBeNull();
+    expect(probe).toHaveBeenCalledTimes(testCoords.length);
+    expect(res.results.map((c) => c.label)).toEqual(["A", "B", "C"]);
+  });
+
+  it("fails fast on the FIRST coordinate — the probe is called exactly once", async () => {
+    const probe = vi.fn(async () => failOutcome());
+    const res = await preflightNHDQuorum({ coords: testCoords, probe });
+    expect(res.ok).toBe(false);
+    expect(res.failedAt).toBe("A");
+    // Pins fail-fast as REAL, not incidental: a probe that (wrongly) kept
+    // going after the first failure would have called this 2 or 3 times.
+    expect(probe).toHaveBeenCalledTimes(1);
+  });
+
+  it("fails on a MIDDLE coordinate and never probes the ones after it", async () => {
+    const probe = vi
+      .fn()
+      .mockResolvedValueOnce(okOutcome)
+      .mockResolvedValueOnce(failOutcome())
+      .mockResolvedValueOnce(okOutcome); // must never be consumed — coordinate C is never reached
+    const res = await preflightNHDQuorum({ coords: testCoords, probe });
+    expect(res.ok).toBe(false);
+    expect(res.failedAt).toBe("B");
+    expect(probe).toHaveBeenCalledTimes(2);
+    expect(res.results.map((c) => c.label)).toEqual(["A", "B"]);
+  });
+
+  it("carries the failing coordinate's per-layer latency/error for the abort message", async () => {
+    const probe = vi.fn(async () => failOutcome(9000, "responded in 9000ms, over the 8000ms ceiling"));
+    const res = await preflightNHDQuorum({ coords: testCoords, probe });
+    const failedEntry = res.results.find((c) => c.label === res.failedAt);
+    expect(failedEntry?.results).toEqual([
+      { layer: 4, ok: false, ms: 9000, error: "responded in 9000ms, over the 8000ms ceiling" },
+      { layer: 10, ok: true, ms: 150, error: null },
+    ]);
+  });
+
+  it("ships a default coordinate list with >=5 geographically distinct entries", async () => {
+    // No `coords` override — exercises the TRUE default NHD_PREFLIGHT_COORDS,
+    // proving `coords` is genuinely optional. `probe` is still stubbed so
+    // this never touches the network.
+    const probe = vi.fn(async () => okOutcome);
+    const res = await preflightNHDQuorum({ probe });
+    expect(res.ok).toBe(true);
+    expect(res.results.length).toBeGreaterThanOrEqual(5);
+    const lats = res.results.map((c) => c.lat);
+    const lons = res.results.map((c) => c.lon);
+    // No two coordinates may share a lat OR a lon — a copy-paste duplicate
+    // must not silently reduce the geographic spread this guard depends on.
+    expect(new Set(lats).size).toBe(lats.length);
+    expect(new Set(lons).size).toBe(lons.length);
+    // No two coordinates may share a label either — main() resolves the
+    // failing coordinate via `.find((c) => c.label === preflight.failedAt)`,
+    // so a duplicate label would make it name (and report the latency of)
+    // the WRONG coordinate at exactly the moment someone is debugging an
+    // outage, turning a diagnostic into a lie.
+    const labels = res.results.map((c) => c.label);
+    expect(new Set(labels).size).toBe(labels.length);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// assessThroughput — pure mid-run throughput/decay guard
+// ---------------------------------------------------------------------------
+
+describe("assessThroughput", () => {
+  it("passes when the measured rate keeps the run comfortably inside the budget", () => {
+    // 50 facilities in 60,000ms = 0.833/sec — the healthy START of the
+    // 2026-09-23 run, before it collapsed.
+    const res = assessThroughput({
+      processed: 500,
+      total: 1000,
+      windowElapsedMs: 60_000,
+      windowSize: 50,
+      graceFacilities: 100,
+      maxProjectedHours: 5,
+    });
+    expect(res.ok).toBe(true);
+    expect(res.ratePerSec).toBeCloseTo(0.8333, 3);
+  });
+
+  it("aborts when the rolling window's rate projects past maxProjectedHours", () => {
+    // ROLLING-window numbers: the last 50 facilities took 5,000,000ms, i.e. a
+    // measured 0.01 facilities/sec over THAT recent window only.
+    const res = assessThroughput({
+      processed: 500,
+      total: 1000,
+      windowElapsedMs: 5_000_000,
+      windowSize: 50,
+      graceFacilities: 100,
+      maxProjectedHours: 5,
+    });
+    expect(res.ok).toBe(false);
+    // Hand-computed, NOT re-derived with the implementation's own expression
+    // (that would be tautological): 500 facilities remain; at 0.01/sec that
+    // is 50,000 seconds = 13 hours 53 minutes 20 seconds
+    // = 13 + 53/60 + 20/3600 ~= 13.8889 hours.
+    expect(res.projectedHours).toBeCloseTo(13.8889, 3);
+
+    // DISCRIMINATES rolling from cumulative-average — the exact property Part
+    // B exists to pin. If the SAME 500-processed point were instead measured
+    // CUMULATIVELY since the run's start (500 facilities in 1,000,000ms
+    // total — plausible if the first ~450 were fast and only a recent window
+    // collapsed), the blended rate looks like a healthy 0.5/sec and the run
+    // reads as fine. That is the exact false negative a cumulative-average
+    // guard produces, and why computeSitingContext's wiring MUST feed this
+    // function a per-window (rolling) elapsed time, never a since-start
+    // cumulative one. These two calls give DIFFERENT verdicts on purpose.
+    const cumulativeStyle = assessThroughput({
+      processed: 500,
+      total: 1000,
+      windowElapsedMs: 1_000_000,
+      windowSize: 500,
+      graceFacilities: 100,
+      maxProjectedHours: 5,
+    });
+    expect(cumulativeStyle.ok).toBe(true);
+  });
+
+  it("does not judge before the warm-up grace period, even at a catastrophic rate", () => {
+    const res = assessThroughput({
+      processed: 10,
+      total: 1000,
+      windowElapsedMs: 10_000_000, // would be catastrophic if judged
+      windowSize: 5,
+      graceFacilities: 100,
+      maxProjectedHours: 5,
+    });
+    expect(res.ok).toBe(true);
+  });
+
+  it("does not abort on a bad (zero) elapsed-time measurement", () => {
+    const res = assessThroughput({
+      processed: 500,
+      total: 1000,
+      windowElapsedMs: 0,
+      windowSize: 50,
+      graceFacilities: 100,
+      maxProjectedHours: 5,
+    });
+    expect(res.ok).toBe(true);
+  });
+
+  it("treats a stalled window (time elapsed, zero facilities progressed) as a hard abort, not Infinity/NaN weirdness", () => {
+    const res = assessThroughput({
+      processed: 500,
+      total: 1000,
+      windowElapsedMs: 60_000, // a full minute elapsed...
+      windowSize: 0,           // ...but the window made no progress at all
+      graceFacilities: 100,
+      maxProjectedHours: 5,
+    });
+    expect(res.ok).toBe(false);
+    expect(res.ratePerSec).toBe(0);
+    expect(res.projectedHours).toBe(Infinity);
+  });
+
+  it("REGRESSION 2026-09-23: 2,228 facilities, ~1,900 processed, 0.006/sec window rate — the old consecutive-failure guard never moved", () => {
+    // Real incident numbers. NHD_CONSECUTIVE_FAILURE_BUDGET counts FAILED
+    // lookups and resets to 0 on any success; every one of these queries
+    // eventually answered, so that guard's counter stayed at 0 throughout —
+    // the decay was invisible to it BY CONSTRUCTION. This guard catches it
+    // because it measures RATE, not failure count.
+    const res = assessThroughput({
+      processed: 1900,
+      total: 2228,
+      windowElapsedMs: 10_000_000, // 60 facilities in 10,000s = 0.006/sec
+      windowSize: 60,
+      graceFacilities: 100,
+      maxProjectedHours: 5,
+    });
+    expect(res.ratePerSec).toBeCloseTo(0.006, 5);
+    expect(res.ok).toBe(false);
+    // Hand-computed: 328 facilities remain; at 0.006/sec that is 54,666.67
+    // seconds = 15 hours 11 minutes 6.67 seconds ~= 15.1852 hours.
+    expect(res.projectedHours).toBeCloseTo(15.1852, 3);
+
+    // Same discrimination as the previous test, grounded in THIS incident's
+    // own reported shape (throughput decaying 0.83 -> 0.167 -> 0.006/sec): a
+    // CUMULATIVE average across all 1,900 processed facilities (1,900 in
+    // 3,800,000ms = a blended 0.5/sec, plausible given the fast early portion
+    // of the run) reads as comfortably healthy and would NOT have aborted —
+    // only the rolling, recent-window measurement catches the collapse.
+    const cumulativeStyle = assessThroughput({
+      processed: 1900,
+      total: 2228,
+      windowElapsedMs: 3_800_000,
+      windowSize: 1900,
+      graceFacilities: 100,
+      maxProjectedHours: 5,
+    });
+    expect(cumulativeStyle.ok).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// nextThroughputWindow — pure window-boundary/reset bookkeeping that feeds
+// assessThroughput above. Extracted from computeSitingContext because a
+// mutation removing the `windowStartedAt = now()` reset (making the window
+// cumulative-from-start instead of rolling) previously survived ALL tests:
+// nothing asserted the reset itself, only assessThroughput's math given
+// pre-computed inputs. This block pins the reset directly.
+// ---------------------------------------------------------------------------
+
+describe("nextThroughputWindow", () => {
+  it("is not a boundary when processed is not a multiple of windowSize, and returns windowStartedAt unchanged", () => {
+    const res = nextThroughputWindow({
+      processed: 37,
+      windowSize: 50,
+      windowStartedAt: 1_000,
+      nowMs: 90_000,
+    });
+    expect(res.isBoundary).toBe(false);
+    expect(res.windowStartedAt).toBe(1_000);
+    expect(res.windowElapsedMs).toBeNull();
+  });
+
+  it("ROLLING not cumulative: at a boundary, windowStartedAt resets to nowMs, NOT the incoming value — a cumulative window makes the measured rate decay on a perfectly healthy run", () => {
+    const incomingStart = 1_000;
+    const nowMs = 61_000;
+    const res = nextThroughputWindow({
+      processed: 50,
+      windowSize: 50,
+      windowStartedAt: incomingStart,
+      nowMs,
+    });
+    expect(res.isBoundary).toBe(true);
+    // Both halves, asserted explicitly with distinct values so neither can
+    // pass by accident: the reset value IS nowMs, and is NOT the incoming one.
+    expect(res.windowStartedAt).toBe(nowMs);
+    expect(res.windowStartedAt).not.toBe(incomingStart);
+  });
+
+  it("consecutive boundaries measure only their OWN window's elapsed time, never a running total", () => {
+    const windowSize = 50;
+    let windowStartedAt = 0;
+
+    // Window 1: 1,000ms elapsed.
+    let res = nextThroughputWindow({ processed: 50, windowSize, windowStartedAt, nowMs: 1_000 });
+    expect(res.isBoundary).toBe(true);
+    expect(res.windowElapsedMs).toBe(1_000);
+    windowStartedAt = res.windowStartedAt;
+
+    // Window 2: 5,000ms elapsed. A cumulative (buggy) implementation would
+    // read 1,000 + 5,000 = 6,000 here because it never reset windowStartedAt.
+    res = nextThroughputWindow({ processed: 100, windowSize, windowStartedAt, nowMs: 1_000 + 5_000 });
+    expect(res.isBoundary).toBe(true);
+    expect(res.windowElapsedMs).toBe(5_000);
+    windowStartedAt = res.windowStartedAt;
+
+    // Window 3: 20,000ms elapsed. A cumulative implementation would read
+    // 1,000 + 5,000 + 20,000 = 26,000 here.
+    res = nextThroughputWindow({ processed: 150, windowSize, windowStartedAt, nowMs: 1_000 + 5_000 + 20_000 });
+    expect(res.isBoundary).toBe(true);
+    expect(res.windowElapsedMs).toBe(20_000);
+  });
+
+  it("processed: 0 is never a boundary (0 is a multiple of everything; the run must not judge before any work)", () => {
+    const res = nextThroughputWindow({
+      processed: 0,
+      windowSize: 50,
+      windowStartedAt: 5_000,
+      nowMs: 5_000,
+    });
+    expect(res.isBoundary).toBe(false);
+    expect(res.windowStartedAt).toBe(5_000);
+  });
+
+  it("windowSize <= 0 can never divide/modulo by zero: always inert, never a boundary, windowStartedAt unchanged", () => {
+    const zero = nextThroughputWindow({
+      processed: 50,
+      windowSize: 0,
+      windowStartedAt: 5_000,
+      nowMs: 999_000,
+    });
+    expect(zero.isBoundary).toBe(false);
+    expect(zero.windowElapsedMs).toBeNull();
+    expect(zero.windowStartedAt).toBe(5_000);
+
+    const negative = nextThroughputWindow({
+      processed: 50,
+      windowSize: -10,
+      windowStartedAt: 5_000,
+      nowMs: 999_000,
+    });
+    expect(negative.isBoundary).toBe(false);
+    expect(negative.windowStartedAt).toBe(5_000);
   });
 });
