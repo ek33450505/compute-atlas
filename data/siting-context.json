@@ -2408,6 +2408,26 @@
       "rock": "Carbonate-rock"
     }
   },
+  "archbald-i-campus-1-eynon-jermyn-road-lackawanna-pa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "archbald-i-campus-2-washington-avenue-lackawanna-pa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "archer-datacenter-faribault-mn": {
     "nearestWater": {
       "name": "Cannon River",
@@ -5031,6 +5051,16 @@
     },
     "aquifer": {
       "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "blakely-borough-data-center-lackawanna-pa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
     }
   },
@@ -11807,6 +11837,16 @@
     "aquifer": {
       "name": "Floridan Aquifer System",
       "rock": "Carbonate-rock"
+    }
+  },
+  "depg-smithfield-gateway-data-center-monroe-pa": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "dermody-kramers-lane-louisville-jefferson-ky": {
@@ -21091,6 +21131,16 @@
       "label": "Low (<10%)"
     }
   },
+  "iep-hummingbird-data-center-campus-greene-county-pa": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "iep-hummingbird-power-plant-greene-county-pa": {
     "nearestWater": {
       "name": "Monongahela River",
@@ -22194,6 +22244,12 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "klondike-wyalusing-data-center-bradford-pa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "komo-plaza-seattle-wa": {
@@ -28889,6 +28945,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "pa-data-center-partners-granville-township-mifflin-pa": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "panama-energy-center-lancaster-ne": {
     "nearestWater": {
       "name": "Clatonia Creek",
@@ -29162,6 +29228,12 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "pennsylvania-glacial-till-caughbaugh-road-tobyhanna-monroe-pa": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "penzance-1500-gateway-fredericksburg-va": {
@@ -29478,6 +29550,16 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "pnk-great-stream-commons-gregg-township-union-pa": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "pnnl-ai-data-center-richland-wa": {
@@ -30824,6 +30906,16 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "prospect-rd-misty-hollow-forward-township-butler-pa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "provident-chesterton-porter-county-in": {
@@ -38798,6 +38890,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "tron-usa-ai-campus-titus-station-cumru-berks-pa": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "truss-energy-carpenter-wy": {
     "nearestWater": {
       "name": "Porter Creek",
@@ -40720,6 +40822,12 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "wyalusing-energy-center-bradford-pa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "wylie-capital-broadway-merrillville-in": {
