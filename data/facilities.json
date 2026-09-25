@@ -4200,7 +4200,7 @@
         "url": "https://www.globenewswire.com/news-release/2026/09/10/3359602/0/en/aligned-data-centers-and-shippingport-community-mark-revitalization-of-legacy-energy-site-with-groundbreaking-of-2-gw-project-phoenix-campus.html",
         "label": "Aligned Data Centers and Shippingport Community Mark Revitalization of Legacy Energy Site with Groundbreaking of 2 GW \"Project Phoenix\" Campus",
         "publisher": "Aligned Data Centers (GlobeNewswire)",
-        "retrievedAt": "2026-09-12",
+        "retrievedAt": "2026-09-25",
         "kind": "press"
       },
       {
@@ -4211,7 +4211,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-25",
     "notes": "Two natural-gas-powered buildings in a 660-acre industrial park; construction potentially starting later 2026.",
     "energy": {
       "source": "on_site_gas",
@@ -7761,6 +7761,95 @@
     ],
     "lastUpdated": "2026-09-21",
     "notes": "50,176 sq ft facility with 15,000 sq ft of raised floor and 2.0 MW per Inflect; former Peer 1 Hosting site. Aptum's own Miami page returned 429 and is not cited.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "archbald-i-campus-1-eynon-jermyn-road-lackawanna-pa",
+    "name": "Archbald I Campus 1 Data Center (Eynon Jermyn Road)",
+    "operator": "Archbald I LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5095,
+      "lon": -75.5661,
+      "city": "Archbald",
+      "county": "Lackawanna",
+      "street": "Eynon Jermyn Road",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-22",
+        "note": "Zoning permit application filed with Archbald Borough for 18 data center buildings on about 408 acres beginning roughly 40 feet north of Ed Staback Regional Park, with entrances on Business Route 6 and Eynon Jermyn Road.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/articles/developer-applies-22-more-data-035900249.html",
+        "label": "Developer applies for 22 more data center buildings in Archbald",
+        "publisher": "The Times-Tribune (via Yahoo News)",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/archbald-i-llc-campus-2",
+        "label": "Archbald I LLC: Campus 2 (project listing, covers both campuses)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "18 buildings, each up to 55 feet tall with a 150,000 sq ft footprint and a 75,000 sq ft generator yard; 720 parking spaces. Two buildings would sit within 125 feet of Ed Staback Regional Park and Archbald Pothole State Park. The company behind Archbald I LLC is not publicly identified. Distinct from the tracked Project Gravity, Wildcat Ridge and Five Up Realty / Project Boson sites in the same borough. Coordinates are the north edge of Ed Staback Regional Park, the only locational anchor given.",
+    "landAcres": 408,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "archbald-i-campus-2-washington-avenue-lackawanna-pa",
+    "name": "Archbald I Campus 2 Data Center (Eynon Jermyn Road at Washington Avenue)",
+    "operator": "Archbald I LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5149,
+      "lon": -75.5554,
+      "city": "Archbald",
+      "county": "Lackawanna",
+      "street": "Eynon Jermyn Road",
+      "postalCode": "18433",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-22",
+        "note": "Zoning permit application filed with Archbald Borough for four data center buildings on about 66 acres near the Archbald–Jermyn border at the junction of Eynon Jermyn Road and Washington Avenue.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/articles/developer-applies-22-more-data-035900249.html",
+        "label": "Developer applies for 22 more data center buildings in Archbald",
+        "publisher": "The Times-Tribune (via Yahoo News)",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/archbald-i-llc-campus-2",
+        "label": "Archbald I LLC: Campus 2",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Four buildings, each up to 70 feet tall with a 150,000 sq ft footprint (~600,000 sq ft total); 160 parking spaces; a secondary access road would extend into Jermyn near Lackawanna and Gibson streets. The company behind Archbald I LLC is not publicly identified. Coordinates are a geocoded point on Eynon Jermyn Road near the Jermyn border.",
+    "landAcres": 66,
     "facilityType": "data_center"
   },
   {
@@ -16512,6 +16601,47 @@
     }
   },
   {
+    "id": "blakely-borough-data-center-lackawanna-pa",
+    "name": "Blakely Borough Data Center (withdrawn)",
+    "operator": "Undisclosed developer (Blakely rezoning applicant)",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.4809,
+      "lon": -75.5946,
+      "city": "Blakely",
+      "county": "Lackawanna",
+      "postalCode": "18452",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025-09-15",
+        "note": "Developers retracted their zoning-change application days before the scheduled hearing, which was then cancelled, amid community opposition. They indicated they would still pursue tree removal and a materials storage pad under existing zoning — a reading the borough manager disputes.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://fox56.com/news/local/blakely-borough-data-center-plans-scrapped-amid-community-pushback-borough-responds",
+        "label": "Blakely Borough data center plans scrapped amid community pushback, Borough responds",
+        "publisher": "Fox56 / WOLF",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Recorded as a withdrawn proposal. The applicant company, acreage and capacity were not disclosed in the cited source, so those fields are omitted rather than estimated. Coordinates are the Blakely borough point; the parcel was not identified publicly.",
+    "community": {
+      "status": "opposed",
+      "notes": "Sustained resident opposition with lawn signs and petitions; the borough manager credited residents' activism after the application was retracted.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "blockchain-digital-infrastructure-collin-county-tx",
     "name": "BlockchAIn Collin County AI GPU Hosting Site",
     "operator": "BlockchAIn Digital Infrastructure, Inc.",
@@ -19764,11 +19894,32 @@
         "publisher": "WFMZ-TV 69 News",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://www.lehighvalleypublicmedia.org/news/local/residents-push-for-public-hearing-as-south-whitehall-takes-new-look-at-hyperscale-data-center/",
+        "label": "Residents push for public hearing as South Whitehall takes new look at hyperscale data center",
+        "publisher": "Lehigh Valley Public Media",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-25",
     "notes": "Three parcels at 2493, 2807 and 2747 N. Cedar Crest Boulevard totalling 410 acres across from Parkland High School, owned by Jeras Corporation, with CDE Acquisitions, LLC of Atlanta as applicant. The revised program is three data center buildings of 492,285 sq ft each plus a 40,680 sq ft administration building and a 39,167 sq ft warehouse, 1,556,702 sq ft in total - down from six buildings over 5 million sq ft. Parking drops from 966 to 399 spaces and weekday trips from 3,865 to 1,154. Includes an on-site electrical substation, emergency generators and a private septic field, with a water main extension requested along Ritter Road. Three barns are to be restored and dedicated to the township; a brick house and farmstead would be removed. Stated construction start November 2029, completion April 2030.",
+    "energy": {
+      "utility": "PPL",
+      "notes": "Would be served by a new PPL substation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling requiring no municipal water; the developer says it would avoid over 2.8 billion gallons a year compared with evaporative cooling."
+    },
+    "investmentUsd": 9000000000,
     "landAcres": 410,
+    "community": {
+      "status": "opposed",
+      "notes": "The South Whitehall Civic Alliance opposes the project outright — \"The only acceptable outcome is no data center\" — and has pledged to fight it up to the Pennsylvania Supreme Court. Three buildings of roughly 500,000 sq ft each are proposed 1,700 feet from Parkland High School.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -37022,6 +37173,41 @@
     "facilityType": "data_center"
   },
   {
+    "id": "depg-smithfield-gateway-data-center-monroe-pa",
+    "name": "Smithfield Gateway Data Center",
+    "operator": "DEPG Mosier Associates LP / DEPG of Shawnee II LP",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.0206,
+      "lon": -75.1778,
+      "city": "East Stroudsburg",
+      "county": "Monroe",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-21",
+        "note": "Conditional-use application for a single two-story 250,000 sq ft data center building filed with Smithfield Township on parcels 16.8.2.7 and 16.8.2.7-2 within the Smithfield Gateway development; engineer responses and resubmission documents on file, hearing dates pending.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://smithfieldtownship.com/odp/gatewaydc/",
+        "label": "Smithfield Gateway Data Center – Conditional Use (township application page)",
+        "publisher": "Smithfield Township, Monroe County",
+        "retrievedAt": "2026-09-25",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "The conditional-use application describes a single two-story 250,000 sq ft building; a related sketch plan for Phases 1B/2A/2B shows two data center structures of 125,000 sq ft footprint each plus a power substation. Acreage and capacity (MW) are not stated in the township filing. Coordinates are a geocoded point on Route 209 (Milford Road) near the Smithfield Gateway development, not a parcel-confirmed footprint.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "dermody-kramers-lane-louisville-jefferson-ky",
     "name": "Dermody Properties Kramers Lane Data Center",
     "operator": "Dermody Properties (DPIF4 KY 6 KRAMERS, LLC)",
@@ -40518,7 +40704,7 @@
     "id": "diversified-longhorn-pad-a-horton-township-elk-pa",
     "name": "Longhorn Pad A Wellhead Bitcoin Mine",
     "operator": "Diversified Production LLC",
-    "status": "operational",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 41.2816445,
@@ -40535,6 +40721,12 @@
         "date": "2022-10",
         "note": "Mines were powered up in October 2022 before permits were in hand; DEP issued a notice of violation for breaching state air pollution and noise law, and approved the permit in December 2022.",
         "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-09-25",
+        "note": "The wellhead bitcoin mine at Longhorn Pad A has been shut down and the site vacated. A PA DEP inspection on 2025-03-04 found the crypto-mining generators and tanks removed and only empty metallic sheds on the gravel pad; DEP issued a notice of violation on 2025-03-10 and gave Diversified until September 2025 to plug the wells, stating the wells are not equipped for production. The operation had run roughly two years from December 2022, without the required air quality permit.",
+        "sourceIndex": 1
       }
     ],
     "sources": [
@@ -40544,9 +40736,16 @@
         "publisher": "Capital & Main",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://capitalandmain.com/fracking-powered-crypto-mine-in-pennsylvania-shuts-down-without-word-to-regulators",
+        "label": "Fracking-Powered Crypto Mine in Pennsylvania Shuts Down Without Word to Regulators",
+        "publisher": "Capital & Main",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-25",
     "notes": "Diversified Production LLC (a Diversified Energy PLC subsidiary) acquired the wells in November 2020, applied to mine bitcoin in June 2022 and powered up that October before the permit was issued. A sibling site, Longhorn Pad C, drew its own violation in March 2023 with permits approved in May 2023. Horton Township adopted a bitcoin mining ordinance requiring a fully enclosed building, under 50 decibels at the property line, and local permitting. As of the June 2024 source, DEP said full-time operation had not begun because permit-required sound mitigation had not been installed - so 'operational' here reflects an operating but intermittently run site, not full-rate production. No engine count, miner count or MW rating is published. Coordinate is a township-centroid geocode.",
     "energy": {
       "source": "on_site_gas",
@@ -63824,9 +64023,16 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://technical.ly/civics/homer-city-indiana-county-pennsylvania-data-center-permit-approval/",
+        "label": "PA OKs air permit for Homer City gas plant fueling data centers",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-25",
     "notes": "Dedicated on-site power generation for the co-located Homer City Energy Campus data centers (tracked separately as homer-city-energy-campus-pa). Redevelopment of Pennsylvania's largest former coal plant into up to 4.5 GW of natural-gas generation via seven GE Vernova turbines; PA DEP air-quality plan approval issued 2025-11-20, first power targeted 2027. Same-site companion to the data-center record.",
     "energy": {
       "source": "on_site_gas",
@@ -65154,6 +65360,55 @@
     "facilityType": "data_center"
   },
   {
+    "id": "iep-hummingbird-data-center-campus-greene-county-pa",
+    "name": "Project Hummingbird Data Center Campus (former Robena Mine)",
+    "operator": "International Electric Power",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.79,
+      "lon": -79.92,
+      "city": "Greensboro",
+      "county": "Greene",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "poweredBy": "Project Hummingbird behind-the-meter natural gas generation",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-25",
+        "note": "Greene County Planning Commission approved the first phase of site reclamation work in December; earthwork is underway at the former Robena Mine site. The compute campus itself has no land development approval yet and could go online as early as 2029.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.observer-reporter.com/news/local-news/2026/sep/25/monongahela-township-residents-seek-more-chances-for-input-on-data-center-project/",
+        "label": "Monongahela Township residents seek more chances for input on data center project",
+        "publisher": "Observer-Reporter",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "The compute campus at the 1,400-acre former Robena Mine site, distinct from the tracked Project Hummingbird power plant record. IEP has been in discussions with hyperscale customers; no tenant is named. Coordinates match the sibling power-plant record for the same site and are approximate.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Powered behind the meter by two on-site natural gas turbines generating a combined 910 MW, with an existing grid connection as backup."
+    },
+    "water": {
+      "notes": "Essential Utilities plans a facility to treat 18 million gallons a day drawn from the Monongahela River, serving both the power generation facilities and the data center cooling systems; no data-center-only withdrawal figure is published."
+    },
+    "landAcres": 1400,
+    "community": {
+      "status": "mixed",
+      "notes": "Monongahela Township residents are asking for later meeting times, more frequent committee meetings and meaningful input into community-benefits-agreement terms, road and school funding, and ongoing air and water testing.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "iep-hummingbird-power-plant-greene-county-pa",
     "name": "Project Hummingbird Power Plant",
     "operator": "International Electric Power",
@@ -65193,10 +65448,29 @@
         "publisher": "International Electric Power",
         "retrievedAt": "2026-08-31",
         "kind": "press"
+      },
+      {
+        "url": "https://www.observer-reporter.com/news/local-news/2026/sep/25/monongahela-township-residents-seek-more-chances-for-input-on-data-center-project/",
+        "label": "Monongahela Township residents seek more chances for input on data center project",
+        "publisher": "Observer-Reporter",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-25",
     "notes": "Tracked separately from the co-located compute campus (same pattern as the Homer City campus/generation split). The 944 MW is generation capacity, not the data center's IT load — do not sum the two records.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Two natural gas turbines generating a combined 910 MW at the former Robena Mine site, feeding the co-located data center behind the meter."
+    },
+    "water": {
+      "notes": "Essential Utilities plans a plant to treat 18 million gallons a day drawn from the Monongahela River, serving both the generation facilities and the data center cooling systems; no generation-only withdrawal figure is published."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Monongahela Township residents are asking for later board meeting times than the current 9 a.m., more frequent committee meetings, meaningful input on community-benefits-agreement terms, road and school funding, ongoing air and water quality testing, and nearby Hazmat response capability.",
+      "sourceIndex": 2
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -68467,6 +68741,48 @@
       "notes": "Cave City enacted a 12-month data-center zoning moratorium 2026-05-20. Developer Kentucky Industrial Alliance LLC sued the city 2026-06-08 in Barren District/Circuit Court, arguing its application should be reviewed under the zoning rules in place 2026-05-11 (before the moratorium) and separately challenging the city's annexation of the tract (alleging improper procedure involving a cemetery on the parcel). The two suits were consolidated; first hearing 2026-08-26, status conference set 2026-11-23, no ruling issued as of 2026-08-27. Site is ~10 miles from Mammoth Cave National Park; residents have raised water-resource and land-use concerns.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "klondike-wyalusing-data-center-bradford-pa",
+    "name": "Klondike Wyalusing Data Center",
+    "operator": "KDI Wyalusing Power LLC (Klondike Digital Infrastructure / New Fortress Energy)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.6966,
+      "lon": -76.244,
+      "city": "Wyalusing",
+      "county": "Bradford",
+      "street": "US Route 6",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-10-09",
+        "note": "PA DEP issued an air quality plan approval for the Wyalusing Energy Center — eight natural gas turbines totalling 248 MW nameplate — serving the hyperscale data center on the 335-acre Route 6 property; permit effective through 2027-04-08. Bradford County adopted data center SALDO standards on 2026-07-09.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.northcentralpa.com/business/bradford-county-adopts-data-center-rules-wyalusing-hyperscale-projects-air-permit-issued/article_b09783c0-fc03-416b-b0a7-c6881f9616fd.html",
+        "label": "Bradford County adopts data center rules, Wyalusing hyperscale project's air permit issued",
+        "publisher": "NorthcentralPA.com",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "The exact position of the data center within the 335-acre parcel has not been disclosed, so coordinates are the Wyalusing Township point. The site previously held a 2019 air approval for an LNG processing plant that was never built and has expired. Permitted annual limits reported for the energy center: ~74 tons NOx, 93 tons CO, 92 tons PM, and just over 1.1 million tons CO2e — recorded here in notes rather than as emissions fields because the cited source is press coverage rather than the permit document itself.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 248,
+      "notes": "The permitted Wyalusing Energy Center comprises eight 31 MW natural gas combustion turbines (248 MW nameplate) plus a diesel emergency fire pump, of which up to 218 MW is designated for data center operations."
+    },
+    "landAcres": 335,
     "facilityType": "data_center"
   },
   {
@@ -82078,9 +82394,23 @@
         "publisher": "North Penn Now",
         "retrievedAt": "2026-08-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.suburbanrealtorsalliance.com/news/2026/05/08/montgomery-county/conshohocken-area-data-center-plans-resubmitted-in-plymouth-township/",
+        "label": "Conshohocken area data center plans resubmitted in Plymouth Township",
+        "publisher": "Suburban Realtors Alliance",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nbcphiladelphia.com/news/local/proposed-data-center-faces-renewed-opposition-in-plymouth-township/4444474/",
+        "label": "Plymouth Township data center fight continues",
+        "publisher": "NBC10 Philadelphia",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-25",
     "notes": "Proposed ~2 million sq ft hyperscale data center converting the former Cleveland-Cliffs/Alan Wood steel mill at 900 Conshohocken Road in the Connaughtown section of Plymouth Township, Montgomery County. Roughly 66-acre heavy-industrial parcel; developer Brian O'Neill (MLP Ventures) cites ~$9B investment and ~110 permanent jobs (~55 per shift). Coordinates are an approximate geocode of the cited street address.",
     "water": {
       "coolingType": "closed_loop"
@@ -83297,13 +83627,21 @@
         "publisher": "Williamsport Sun-Gazette",
         "retrievedAt": "2026-08-17",
         "kind": "press"
+      },
+      {
+        "url": "https://postindustrial.com/stories/data-center-developers-want-to-build-in-three-pa-communities-each-has-its-own-experience/",
+        "label": "Data center developers want to build in three PA communities. Each has its own experience.",
+        "publisher": "Postindustrial",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-09-25",
     "notes": "Three-building data center complex (two 14-pod facilities and one eight-pod facility) with water storage/treatment infrastructure along John Brady Drive in Muncy Township, eastern Lycoming County. Site engineering by Livic Civil; applicant Danko Holdings II/Fishlips LLC.",
     "energy": {
       "utility": "PPL Electric"
     },
+    "landAcres": 100,
     "community": {
       "status": "contested",
       "notes": "Neighbors on John Brady Drive strongly oppose; township is drafting a data center ordinance and seeking legal counsel.",
@@ -90852,6 +91190,43 @@
     }
   },
   {
+    "id": "pa-data-center-partners-granville-township-mifflin-pa",
+    "name": "Granville Township Data Center Campus (Loop Road)",
+    "operator": "PA Data Center Partners",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.5656,
+      "lon": -77.6176,
+      "city": "Lewistown",
+      "county": "Mifflin",
+      "street": "Loop Road",
+      "postalCode": "17029",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-11",
+        "note": "Plans for a six-building data center on farmland between Loop Road and the Mifflin County Industrial Park submitted to the Granville Township Planning Commission on 2026-07-10/11, two days before supervisors were to invoke a curative-amendment process that would have paused data center applications for 180 days.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/us/articles/plans-filed-mifflin-county-data-011151924.html",
+        "label": "Plans filed for Mifflin County data center days before planned moratorium vote",
+        "publisher": "ABC27 (via Yahoo News)",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Six buildings on farmland parcels either side of the Mifflin County Industrial Park. The developer's presentation claims $22.5 million in tax revenue to the county, school district and township — a developer projection, not an awarded incentive, so it is not recorded as a subsidy. Acreage and square footage are not stated in the cited source. Coordinates are a geocoded point on Loop Road in Granville Township.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "panama-energy-center-lancaster-ne",
     "name": "Panama Energy Center",
     "operator": "NextEra Energy Resources",
@@ -91668,6 +92043,58 @@
       "status": "litigation",
       "notes": "East Vincent Township supervisors unanimously rejected the conditional-use application on 2026-05-21; developer appealed on 2026-06-26 to the Chester County Court of Common Pleas.",
       "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "pennsylvania-glacial-till-caughbaugh-road-tobyhanna-monroe-pa",
+    "name": "Caughbaugh Road Data Center (Pennsylvania Glacial Till site)",
+    "operator": "Pennsylvania Glacial Till LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1345,
+      "lon": -75.6185,
+      "county": "Monroe",
+      "street": "Caughbaugh Road",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-16",
+        "note": "Tobyhanna Township supervisors approved a data center zoning overlay covering the 520-acre Pennsylvania Glacial Till property on Caughbaugh Road off Route 115, rezoning it from rural residential.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://fox56.com/news/local/tobyhanna-township-approves-second-data-center-zoning-overlay",
+        "label": "Tobyhanna Township approves second data center zoning overlay",
+        "publisher": "Fox56 / WOLF",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://fox56.com/news/local/tobyhanna-twp-public-hearing-draws-crowd-as-residents-challenge-zoning-ordinance",
+        "label": "Tobyhanna Twp. public hearing draws crowd as residents challenge zoning ordinance",
+        "publisher": "Fox56 / WOLF",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "520-acre site with active mining operations, next to the Lehigh River, surrounded by conservation land and including wetlands. Only a zoning overlay has been adopted — no land development application, capacity (MW) or tenant is public. Coordinates are a geocoded point on Caughbaugh Road, not a parcel-confirmed footprint.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The township overlay requires a closed-loop water system and a 70-decibel noise limit with pre- and post-construction sound studies."
+    },
+    "landAcres": 520,
+    "community": {
+      "status": "litigation",
+      "notes": "Residents filed a validity challenge to the overlay ordinance, arguing it is illegal spot zoning permitting industrial development in a rural residential district; zoning hearing board testimony continued into April 2026.",
+      "sourceIndex": 1
     },
     "facilityType": "data_center"
   },
@@ -92524,6 +92951,46 @@
     "generation": {
       "technology": "wind"
     }
+  },
+  {
+    "id": "pnk-great-stream-commons-gregg-township-union-pa",
+    "name": "PNK Great Stream Commons Data Center Campus (Allenwood)",
+    "operator": "PNK Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1161,
+      "lon": -76.9011,
+      "city": "Allenwood",
+      "county": "Union",
+      "street": "Enterprise Boulevard",
+      "postalCode": "17730",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-16",
+        "note": "Gregg Township supervisors concluded a three-part, six-hour public hearing on PNK Group's request for zoning changes and conditional-use approval for three data centers at Great Stream Commons; a decision is due by late October 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wkok.com/gregg-township-to-decide-data-center-proposal/",
+        "label": "Gregg Township To Decide Data Center Proposal",
+        "publisher": "WKOK",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Three data centers totalling roughly 1 million square feet and up to 300 MW: a conversion of a vacant warehouse at Great Stream Commons plus two new facilities. Data centers are not a listed use in the township ordinance, so a curative amendment and conditional use are required. Coordinates are a street-level geocode of Enterprise Boulevard in the industrial park.",
+    "facilityType": "data_center"
   },
   {
     "id": "pnnl-ai-data-center-richland-wa",
@@ -96983,6 +97450,49 @@
       "notes": "\"data center would use what is called a closed-loop cooling system, which is designed to circulate and reuse water.\""
     },
     "landAcres": 640,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "prospect-rd-misty-hollow-forward-township-butler-pa",
+    "name": "Misty Hollow Energy and Data Campus",
+    "operator": "Prospect RD LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.8079,
+      "lon": -80.0558,
+      "city": "Prospect",
+      "county": "Butler",
+      "street": "614 Prospect Road",
+      "postalCode": "16033",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-18",
+        "note": "Preliminary land development plan filed with Forward Township for a 1,000,000 sq ft data center, an 80,000 sq ft wastewater treatment facility, a 23,800 sq ft office building, ~10 acres of power station facilities and a security building; planning commission meeting set for 2026-09-19.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.butlereagle.com/20260918/massive-data-center-proposed-in-forward-township/",
+        "label": "Massive data center proposed in Forward Township",
+        "publisher": "Butler Eagle",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Two lots totalling about 274 acres (232.4 + 41.9) at 614 Prospect Road and an adjacent parcel, with a 416,000 sq ft future expansion area. Developer targets final approvals in early 2027 and completion as early as mid-2029. Capacity (MW), investment, jobs and tenant were not disclosed. Coordinates are the geocoded street address, not a parcel-confirmed footprint.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer states the data center is designed with a closed-loop cooling system intended to significantly limit water demand; a 16-inch private waterline would connect to an existing line near Prospect Road and Harmony Street Extension."
+    },
+    "landAcres": 274,
     "facilityType": "data_center"
   },
   {
@@ -121578,6 +122088,45 @@
     "aiClassification": "likely"
   },
   {
+    "id": "tron-usa-ai-campus-titus-station-cumru-berks-pa",
+    "name": "TRON USA AI Campus (former Titus Station)",
+    "operator": "Titus Development Company / Go Energy Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.2839,
+      "lon": -75.9372,
+      "city": "Reading",
+      "county": "Berks",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-19",
+        "note": "Titus Development Company announced a strategic agreement with Go Energy Group to redevelop the ~196-acre former Titus Station coal plant site in Cumru Township as the TRON USA AI Campus, starting with a 200 MW data center. Investment amounts, construction timelines and engineering plans are being withheld pending development and interconnection procedures.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://berksweekly.com/news/titus-station-redevelopment-project-in-berks-county-planned-as-ai-infrastructure-campus/",
+        "label": "Titus Station redevelopment project in Berks County planned as AI infrastructure campus",
+        "publisher": "Berks Weekly",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "The Titus Station coal plant was decommissioned in 2014. Cumru Township adopted a Data Center Overlay District (Ordinance 798) covering the property in April 2026; no land development plan had been filed as of that reporting. Only the announced first phase (200 MW) is recorded — larger long-term figures circulating in developer materials were not confirmed in the cited source. Coordinates are the Cumru Township point, not a parcel-confirmed footprint.",
+    "landAcres": 196,
+    "facilityType": "data_center"
+  },
+  {
     "id": "truss-energy-carpenter-wy",
     "name": "Truss Energy Carpenter Data Center",
     "operator": "Truss Energy",
@@ -127048,6 +127597,57 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "wyalusing-energy-center-bradford-pa",
+    "name": "Wyalusing Energy Center",
+    "operator": "KDI Wyalusing Power LLC (Klondike Digital Infrastructure / New Fortress Energy)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.6966,
+      "lon": -76.244,
+      "city": "Wyalusing",
+      "county": "Bradford",
+      "street": "US Route 6",
+      "state": "PA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 248
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-10-09",
+        "note": "PA DEP issued the air quality plan approval for the Wyalusing Energy Center; permit effective through 2027-04-08.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.northcentralpa.com/business/bradford-county-adopts-data-center-rules-wyalusing-hyperscale-projects-air-permit-issued/article_b09783c0-fc03-416b-b0a7-c6881f9616fd.html",
+        "label": "Bradford County adopts data center rules, Wyalusing hyperscale project's air permit issued",
+        "publisher": "NorthcentralPA.com",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Dedicated on-site generation for the co-located Klondike Wyalusing data center, recorded separately because it holds its own named air quality plan approval. Permitted annual limits reported in press coverage: ~74 tons NOx, 93 tons CO, 92 tons PM, just over 1.1 million tons CO2e — left out of the emissions fields because the permit document itself was not read. Coordinates are the Wyalusing Township point.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Eight natural gas combustion turbines of 31 MW each, plus a diesel emergency fire pump; the permit caps natural gas use at 18,560 million standard cubic feet and allows a maximum of 365 startup events annually."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "poweredFacilityIds": [
+        "klondike-wyalusing-data-center-bradford-pa"
+      ],
+      "unitCount": 8,
+      "notes": "Up to 218 MW of the 248 MW nameplate is designated for data center operations."
+    }
   },
   {
     "id": "wylie-capital-broadway-merrillville-in",
