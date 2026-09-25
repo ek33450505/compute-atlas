@@ -6,6 +6,8 @@ import {
   propGNISName,
   ISLAND_GRID_BBOX,
   nearestFromCandidates,
+  resolveNearestWater,
+  nearestWaterViaNHD,
 } from "./build-map-data.mjs";
 import { point as turfPoint, lineString } from "@turf/helpers";
 
@@ -441,5 +443,172 @@ describe("preflightNHD", () => {
     expect(four?.error).toMatch(/fetch failed/);
     expect(four?.error).toMatch(/9000ms/); // the slow first attempt is still stated
     expect(four?.error).not.toMatch(/ceiling/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// nearestWaterViaNHD ring escalation
+// ---------------------------------------------------------------------------
+
+/** A minimal NAMED flowline close enough to the query point that pointToLineDistance succeeds. */
+function namedFlowlineAt(lat: number, lon: number) {
+  return {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        properties: { GNIS_NAME: "Test Creek" },
+        geometry: {
+          type: "LineString",
+          coordinates: [
+            [lon - 0.01, lat],
+            [lon + 0.01, lat],
+          ],
+        },
+      },
+    ],
+  };
+}
+
+describe("nearestWaterViaNHD ring escalation", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("SILENT DATA LOSS regression: a terminating-ring failure after clean earlier rings must NOT read as confirmed absence", async () => {
+    // Rings 0-2 answer cleanly with zero features; ring 3 — the ring the loop
+    // CONCLUDES on — times out on BOTH layers. A failed query returns
+    // features:[], byte-identical to a successful-empty one, which is exactly
+    // what let this clear a good prior value on 2026-09-22. This test MUST
+    // fail against the pre-correction code (no `absenceConfirmed` field at
+    // all, so `toBe(false)` below fails against `undefined`).
+    stubNHDSequence({
+      "4": [{}, {}, {}, { networkError: "timeout" }, { networkError: "timeout" }],
+      "10": [{}, {}, {}, { networkError: "timeout" }, { networkError: "timeout" }],
+    });
+    const res = await nearestWaterViaNHD(40, -75);
+    expect(res.nearest).toBeNull();
+    expect(res.allFailed).toBe(false); // some ring DID answer — this is the trap allFailed missed
+    expect(res.absenceConfirmed).toBe(false); // must NOT be read as confirmed absence
+  });
+
+  it("an early-ring failure does not block a legitimate confirmed absence at a later ring", async () => {
+    // Ring 0 fails both layers; rings 1-3 answer cleanly with zero features.
+    // The rings are strict spatial supersets, so the clean wider answer
+    // subsumes the narrower failed one — this must still confirm absence.
+    stubNHDSequence({
+      "4": [{ networkError: "timeout" }, { networkError: "timeout" }, {}, {}, {}],
+      "10": [{ networkError: "timeout" }, { networkError: "timeout" }, {}, {}, {}],
+    });
+    const res = await nearestWaterViaNHD(40, -75);
+    expect(res.nearest).toBeNull();
+    expect(res.allFailed).toBe(false);
+    expect(res.absenceConfirmed).toBe(true);
+  });
+
+  it("the terminating ring's waterbody layer failing alone still blocks confirmed absence (lakes were never checked)", async () => {
+    // Flowlines answer clean-empty at every ring; waterbodies fail at every
+    // ring. By the terminating ring, flow says "no rivers" but water never
+    // answered, so absence cannot be confirmed even though a layer did.
+    stubNHDSequence({
+      "4": [{}, {}, {}, {}],
+      "10": [
+        { networkError: "timeout" }, { networkError: "timeout" },
+        { networkError: "timeout" }, { networkError: "timeout" },
+        { networkError: "timeout" }, { networkError: "timeout" },
+        { networkError: "timeout" }, { networkError: "timeout" },
+      ],
+    });
+    const res = await nearestWaterViaNHD(40, -75);
+    expect(res.nearest).toBeNull();
+    expect(res.allFailed).toBe(false); // flow answered every ring
+    expect(res.absenceConfirmed).toBe(false);
+  });
+
+  it("every query at every ring failing yields allFailed AND an unconfirmed absence", async () => {
+    const bothFail = Array(8).fill({ networkError: "timeout" });
+    stubNHDSequence({ "4": bothFail, "10": bothFail });
+    const res = await nearestWaterViaNHD(40, -75);
+    expect(res.nearest).toBeNull();
+    expect(res.allFailed).toBe(true);
+    expect(res.absenceConfirmed).toBe(false);
+  });
+
+  it("finds a feature at ring 0 and stops — wider rings are never queried", async () => {
+    const fn = stubNHD({
+      "4": { body: namedFlowlineAt(40, -75) },
+      "10": {},
+    });
+    const res = await nearestWaterViaNHD(40, -75);
+    expect(res.nearest).not.toBeNull();
+    expect(res.nearest?.name).toBe("Test Creek");
+    expect(res.nearest?.kind).toBe("river");
+    expect(res.absenceConfirmed).toBe(true);
+    // Exactly one call per layer — rings 1-3 were never reached.
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("resolveNearestWater", () => {
+  it("returns the fresh value with carriedForward: false when the lookup finds a feature", () => {
+    const waterOutcome = { nearest: { name: "Big Creek", kind: "river", dist: 3.14159 }, allFailed: false, absenceConfirmed: true };
+    const res = resolveNearestWater(waterOutcome, undefined);
+    expect(res).toEqual({
+      value: { name: "Big Creek", kind: "river", distanceMi: 3.1 },
+      carriedForward: false,
+    });
+  });
+
+  it("CLEARS a stale nearestWater when the lookup answers and finds nothing (absenceConfirmed: true)", () => {
+    // absenceConfirmed: true means NHD genuinely answered at this coordinate
+    // at the terminating ring. A corrected coordinate must be able to clear a
+    // stale value, so this must NOT carry forward even though an existing
+    // entry is present.
+    const waterOutcome = { nearest: null, allFailed: false, absenceConfirmed: true };
+    const existingEntry = { nearestWater: { name: "Old River", kind: "river", distanceMi: 5.2 } };
+    const res = resolveNearestWater(waterOutcome, existingEntry);
+    expect(res).toEqual({ value: undefined, carriedForward: false });
+  });
+
+  it("carries forward the prior nearestWater verbatim when absence is not confirmed, even though allFailed is false", () => {
+    // This is the exact regression shape: NOT every ring failed (allFailed:
+    // false), but the TERMINATING ring did, so absence was never confirmed.
+    // The old `allFailed === true` gate would have cleared this; the fix
+    // must not.
+    const waterOutcome = { nearest: null, allFailed: false, absenceConfirmed: false };
+    const existingEntry = { nearestWater: { name: "Old River", kind: "river", distanceMi: 5.2 } };
+    const res = resolveNearestWater(waterOutcome, existingEntry);
+    expect(res.carriedForward).toBe(true);
+    expect(res.value).toEqual(existingEntry.nearestWater);
+  });
+
+  it("fails OPEN to preservation when absenceConfirmed is missing entirely, even though allFailed is false", () => {
+    // A malformed or out-of-date waterOutcome (no absenceConfirmed key at
+    // all) must not be misread as confirmed absence — `!== true` must catch
+    // `undefined`, matching this module's preserve-by-default bias.
+    const waterOutcome = { nearest: null, allFailed: false };
+    const existingEntry = { nearestWater: { name: "Old River", kind: "river", distanceMi: 5.2 } };
+    const res = resolveNearestWater(waterOutcome, existingEntry);
+    expect(res.carriedForward).toBe(true);
+    expect(res.value).toEqual(existingEntry.nearestWater);
+  });
+
+  it("does not invent a value when absence is not confirmed and there is no existing entry", () => {
+    const waterOutcome = { nearest: null, allFailed: true, absenceConfirmed: false };
+    const res = resolveNearestWater(waterOutcome, undefined);
+    expect(res).toEqual({ value: undefined, carriedForward: false });
+  });
+
+  it("returns undefined when the existing entry has nearestTransmission but no nearestWater", () => {
+    const waterOutcome = { nearest: null, allFailed: true, absenceConfirmed: false };
+    const existingEntry = { nearestTransmission: { voltageKv: 230, distanceMi: 12.4 } };
+    const res = resolveNearestWater(waterOutcome, existingEntry);
+    expect(res).toEqual({ value: undefined, carriedForward: false });
+  });
+
+  it("is safe when existingEntry is undefined or null", () => {
+    const waterOutcome = { nearest: null, allFailed: true, absenceConfirmed: false };
+    expect(resolveNearestWater(waterOutcome, undefined)).toEqual({ value: undefined, carriedForward: false });
+    expect(resolveNearestWater(waterOutcome, null)).toEqual({ value: undefined, carriedForward: false });
   });
 });

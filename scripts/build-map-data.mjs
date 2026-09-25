@@ -725,9 +725,21 @@ export async function preflightNHD({
 /**
  * Per-facility nearest water via live NHD queries: named small-scale flowlines
  * (rivers/streams, layer 4) and waterbodies (lakes/reservoirs, layer 10), expanding the search
- * ring until at least one feature is found. Returns { nearest, allFailed }.
+ * ring until at least one feature is found. Returns { nearest, allFailed, absenceConfirmed }.
+ *
+ * `absenceConfirmed` says whether a null `nearest` can be trusted as genuine
+ * absence, as opposed to a symptom of a failed query — a failed query returns
+ * `features: []`, byte-identical to a real "nothing here" answer, so the two
+ * are otherwise indistinguishable to the caller. It is scoped to the ring
+ * where the loop CONCLUDES, not "any ring ever": the rings are strict spatial
+ * supersets (each halfDeg step grows the same envelope around the same
+ * point), so an early-ring failure followed by a clean wider-ring answer is
+ * still a trustworthy "not found" — the wider query subsumes the narrower
+ * failed one. Both layers must have succeeded at the terminating ring:
+ * flowlines and waterbodies are disjoint feature sets, so a failed waterbody
+ * query means lakes were never checked and absence is not established.
  */
-async function nearestWaterViaNHD(lat, lon) {
+export async function nearestWaterViaNHD(lat, lon) {
   const pt = turfPoint([lon, lat]);
   let anySuccess = false;
 
@@ -736,12 +748,13 @@ async function nearestWaterViaNHD(lat, lon) {
     const flowRes = await nhdQueryLayer(NHD_FLOWLINE_LAYER, lat, lon, halfDeg);
     const waterRes = await nhdQueryLayer(NHD_WATERBODY_LAYER, lat, lon, halfDeg);
     if (flowRes.ok || waterRes.ok) anySuccess = true;
+    const bothOk = flowRes.ok && waterRes.ok;
 
     const flow = flowRes.features;
     const water = waterRes.features;
     if (flow.length === 0 && water.length === 0) {
       if (ring < NHD_RING_STEPS_DEG.length - 1) continue; // expand and retry
-      return { nearest: null, allFailed: !anySuccess };
+      return { nearest: null, allFailed: !anySuccess, absenceConfirmed: bothOk };
     }
 
     let best = null;
@@ -781,9 +794,14 @@ async function nearestWaterViaNHD(lat, lon) {
       }
     }
 
-    return { nearest: best, allFailed: false };
+    // best === null here means features WERE returned but no segment could be
+    // measured (every pointToLineDistance threw) — a measurement failure, not
+    // a confirmed absence, so it must not clear good data.
+    return { nearest: best, allFailed: false, absenceConfirmed: best !== null };
   }
-  return { nearest: null, allFailed: !anySuccess };
+  // Effectively dead: the last-ring iteration above always returns. Kept as a
+  // fail-safe that never claims a confirmed absence.
+  return { nearest: null, allFailed: !anySuccess, absenceConfirmed: false };
 }
 
 // ---------------------------------------------------------------------------
@@ -1048,10 +1066,51 @@ function computeEnvironmentalContext(facilities, aqueductCandidates, aquiferCand
 // ---------------------------------------------------------------------------
 // Siting context (per-facility nearest water / transmission)
 // ---------------------------------------------------------------------------
-async function computeSitingContext(facilities, powerCandidates) {
+
+/**
+ * Decide one facility's nearestWater, given a live lookup outcome and whatever
+ * the existing siting-context.json holds for it.
+ *
+ * The gate is `absenceConfirmed`, NOT `allFailed`. `allFailed` is true only
+ * when NO ring answered at all, but a query that fails only on the ring where
+ * the loop concludes is just as untrustworthy: it returns `features: []`,
+ * byte-identical to a genuine "nothing here" answer, so treating it as
+ * authoritative silently clears a good value (2026-09-22) — and under
+ * SCATTERED degradation this is the common case, not an edge case, since a
+ * facility with no nearby water at ring 0 escalates into the larger, slower
+ * queries most likely to fail. `absenceConfirmed !== true` is checked (not
+ * `=== false`), so a malformed or missing field fails OPEN toward
+ * preservation, matching this module's preserve-by-default bias. A lookup
+ * that genuinely answered and found nothing (`absenceConfirmed: true`) is
+ * different and authoritative — a corrected coordinate must still be able to
+ * clear a stale value.
+ *
+ * Returns { value, carriedForward }. `value` is undefined when the entry should
+ * carry no nearestWater at all.
+ */
+export function resolveNearestWater(waterOutcome, existingEntry) {
+  if (waterOutcome.nearest) {
+    return {
+      value: {
+        name: waterOutcome.nearest.name ?? null,
+        kind: waterOutcome.nearest.kind,
+        distanceMi: Math.round(waterOutcome.nearest.dist * 10) / 10,
+      },
+      carriedForward: false,
+    };
+  }
+  if (waterOutcome.absenceConfirmed !== true && existingEntry?.nearestWater) {
+    return { value: existingEntry.nearestWater, carriedForward: true };
+  }
+  return { value: undefined, carriedForward: false };
+}
+
+async function computeSitingContext(facilities, powerCandidates, existingContext = {}) {
   console.log('\n=== Siting context (per-facility nearest water/transmission) ===');
   const result = {};
   let consecutiveNHDFailures = 0;
+  let carriedForwardCount = 0;
+  let unconfirmedAbsenceCount = 0;
   let processed = 0;
 
   for (const facility of facilities) {
@@ -1071,6 +1130,12 @@ async function computeSitingContext(facilities, powerCandidates) {
     } else {
       consecutiveNHDFailures = 0;
     }
+    // Scale-of-degradation signal, independent of whether a prior value
+    // existed to carry forward: a facility with no water AND no confirmed
+    // absence is one we could not verify this run, full stop.
+    if (!waterOutcome.nearest && waterOutcome.absenceConfirmed !== true) {
+      unconfirmedAbsenceCount++;
+    }
 
     // An isolated island grid cannot reach a line outside its own system, no
     // matter how close the straight line makes it look. Undefined for every
@@ -1085,12 +1150,13 @@ async function computeSitingContext(facilities, powerCandidates) {
     );
 
     const entry = {};
-    if (waterOutcome.nearest) {
-      entry.nearestWater = {
-        name: waterOutcome.nearest.name ?? null,
-        kind: waterOutcome.nearest.kind,
-        distanceMi: Math.round(waterOutcome.nearest.dist * 10) / 10,
-      };
+    const { value: nearestWater, carriedForward } = resolveNearestWater(
+      waterOutcome,
+      existingContext[facility.id]
+    );
+    if (nearestWater !== undefined) {
+      entry.nearestWater = nearestWater;
+      if (carriedForward) carriedForwardCount++;
     }
     if (nearestTransmission) {
       entry.nearestTransmission = {
@@ -1106,6 +1172,21 @@ async function computeSitingContext(facilities, powerCandidates) {
     if (processed % 50 === 0) console.log(`  ... ${processed}/${facilities.length} facilities processed`);
   }
   console.log(`  computed siting context for ${Object.keys(result).length}/${facilities.length} facilities`);
+  if (carriedForwardCount > 0) {
+    console.log(
+      `  preserved nearestWater for ${carriedForwardCount} facilities whose live NHD lookup failed (degraded run — values carried forward from the existing siting-context.json, not freshly verified)`
+    );
+  }
+  if (unconfirmedAbsenceCount > 0) {
+    // States the SCALE of the degradation, not just the saves: carriedForwardCount
+    // is the subset of this that had a prior value to preserve. The remainder
+    // recorded no nearestWater at all this run and should be re-verified once
+    // NHD is healthy — a zero here during a degraded run is what silently lost
+    // data on 2026-09-22.
+    console.log(
+      `  [warn] ${unconfirmedAbsenceCount} facilities had UNCONFIRMED water absence this run (NHD degraded at the terminating ring) — ${carriedForwardCount} preserved from the prior siting-context.json, ${unconfirmedAbsenceCount - carriedForwardCount} recorded no nearestWater and should be re-verified`
+    );
+  }
   return result;
 }
 
@@ -1224,7 +1305,24 @@ async function main() {
     powerResult = await buildPower();
     droughtResult = await buildDrought();
 
-    const nhdContext = await computeSitingContext(facilities, powerResult.powerCandidates);
+    let existingSitingContext = {};
+    try {
+      existingSitingContext = JSON.parse(readFileSync(SITING_CONTEXT_OUT, 'utf8'));
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        // NOT fake-success-ok: a file that exists but fails to read or parse is
+        // a corrupted/truncated committed artifact, not "first-ever build".
+        // Silently falling back to {} here would disable carry-forward for
+        // EVERY facility with no warning at all — this is a whole-artifact
+        // integrity check, unlike the benign per-item geometry skips elsewhere
+        // in this file that legitimately use this same comment tag.
+        console.error(
+          `  [warn] could not read/parse ${SITING_CONTEXT_OUT}, proceeding with no carry-forward data: ${err.message}`
+        );
+      }
+      /* fake-success-ok: ENOENT only — first-ever build has no prior siting-context.json to carry forward from. */
+    }
+    const nhdContext = await computeSitingContext(facilities, powerResult.powerCandidates, existingSitingContext);
     sitingContext = {};
     // Seed the id set with EVERY facility, not just the ones a dataset matched:
     // a facility that matched nothing is recorded as `{}` on purpose. NHD,
