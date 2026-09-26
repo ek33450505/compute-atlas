@@ -125,7 +125,14 @@ const columns: ColumnDef<Facility>[] = [
     id: "location",
     header: "Location",
     accessorFn: (f) => f.location.state,
-    cell: ({ row }) => formatLocation(row.original),
+    cell: ({ row }) => (
+      <span
+        className="block max-w-[180px] truncate"
+        title={formatLocation(row.original)}
+      >
+        {formatLocation(row.original)}
+      </span>
+    ),
   },
   {
     id: "capacity",

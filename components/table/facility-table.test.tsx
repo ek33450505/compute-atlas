@@ -143,6 +143,32 @@ describe("FacilityTable — row content", () => {
     expect(screen.getByText("Memphis, TN")).toBeInTheDocument();
   });
 
+  it("exposes the full location text via title while carrying the truncation class, for long location strings", () => {
+    // A standalone render (not `fixtures`) so this doesn't perturb the
+    // sort-order/row-count assertions elsewhere in this file, which key off
+    // the exact 4-facility fixture set.
+    const longLocationFacility: Facility = {
+      ...facilityAlpha,
+      id: "long-location-facility",
+      name: "Long Location Facility",
+      location: {
+        lat: 45.8,
+        lon: -119.7,
+        city: "Boardman area (Tower Road)",
+        state: "OR",
+        precision: "exact",
+      },
+    };
+    render(<FacilityTable facilities={[longLocationFacility]} />);
+
+    const locationText = screen.getByText("Boardman area (Tower Road), OR");
+    expect(locationText).toHaveAttribute(
+      "title",
+      "Boardman area (Tower Road), OR"
+    );
+    expect(locationText).toHaveClass("truncate", "max-w-[180px]");
+  });
+
   it("renders the facility type label", () => {
     render(<FacilityTable facilities={fixtures} />);
     expect(screen.getAllByText("Data center").length).toBeGreaterThan(0);

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import type { ReactNode } from "react";
+import { forwardRef, useEffect, useImperativeHandle } from "react";
+import type { ForwardedRef, ReactNode } from "react";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { HeroGlobe, type HeroPoint } from "./hero-globe";
@@ -23,15 +24,42 @@ vi.mock("next/navigation", () => ({
 }));
 
 // MapLibre can't render in jsdom (no WebGL) — mock react-map-gl/maplibre as
-// plain passthrough elements. Map/Source/Layer never fire onLoad/onClick
-// here, so this exercises mount/unmount and prop wiring, not the imperative
-// map lifecycle (getMap().setProjection, easeTo, etc. all guard themselves
-// with optional chaining and are covered by manual browser verification —
-// see the design-decision comment at the top of hero-globe.tsx).
+// plain passthrough elements. Map never fires onLoad/onClick on its own; the
+// scrim-padding tests below invoke the captured onLoad handler manually (via
+// capturedOnLoad) to exercise handleLoad's imperative calls (getMap()
+// .setPadding/.setProjection, mapRef.easeTo, etc.) without a real WebGL
+// context. Everything else about the map lifecycle stays covered by manual
+// browser verification only — see the design-decision comment at the top of
+// hero-globe.tsx.
+const fakeMapInstance = {
+  stop: vi.fn(),
+  setProjection: vi.fn(),
+  setPadding: vi.fn(),
+  getCanvas: vi.fn(() => ({
+    setAttribute: vi.fn(),
+    removeAttribute: vi.fn(),
+  })),
+};
+const fakeMapRef = {
+  easeTo: vi.fn(),
+  getMap: () => fakeMapInstance,
+};
+let capturedOnLoad: (() => void) | undefined;
+
 vi.mock("react-map-gl/maplibre", () => {
-  const Map = ({ children }: { children?: ReactNode }) => (
-    <div data-testid="mock-map">{children}</div>
-  );
+  const Map = forwardRef(function MockMap(
+    { children, onLoad }: { children?: ReactNode; onLoad?: () => void },
+    ref: ForwardedRef<typeof fakeMapRef>
+  ) {
+    // Reassigned in an effect (not during render) so this stays a pure
+    // render per the react-hooks/no-impure-render rule — capturedOnLoad is
+    // only ever read later, from inside a test.
+    useEffect(() => {
+      capturedOnLoad = onLoad;
+    });
+    useImperativeHandle(ref, () => fakeMapRef);
+    return <div data-testid="mock-map">{children}</div>;
+  });
   const Source = ({ children }: { children?: ReactNode }) => (
     <div>{children}</div>
   );
@@ -72,6 +100,12 @@ afterEach(() => {
   // Restore the global false-returning stub from vitest.setup.ts between tests.
   window.matchMedia = DEFAULT_MATCH_MEDIA as unknown as typeof window.matchMedia;
   vi.unstubAllGlobals();
+  fakeMapInstance.stop.mockClear();
+  fakeMapInstance.setProjection.mockClear();
+  fakeMapInstance.setPadding.mockClear();
+  fakeMapInstance.getCanvas.mockClear();
+  fakeMapRef.easeTo.mockClear();
+  capturedOnLoad = undefined;
 });
 
 // ---------------------------------------------------------------------------
@@ -119,6 +153,113 @@ describe("HeroGlobe", () => {
     })) as unknown as typeof window.matchMedia;
 
     expect(() => render(<HeroGlobe points={SAMPLE_POINTS} />)).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Scrim padding — the camera must be pushed south of the hero's parchment
+// scrim (see HERO_SCRIM_HEIGHT_RATIO in hero-globe.tsx), or the settled view
+// shows Mexico/the Caribbean instead of the contiguous US.
+// ---------------------------------------------------------------------------
+
+describe("HeroGlobe — scrim padding", () => {
+  // handleLoad's applyScrimPadding reads the container's rendered height via
+  // getBoundingClientRect(), which jsdom always reports as 0 — mock it
+  // per-test rather than relying on real layout, matching the
+  // getBoundingClientRect mocking convention already used in
+  // components/map/facility-map.test.tsx.
+  function mockContainerHeight(height: number) {
+    return vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockReturnValue({
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: height,
+        width: 0,
+        height,
+        x: 0,
+        y: 0,
+        toJSON: () => {},
+      } as DOMRect);
+  }
+
+  function lastPaddingTop(): number {
+    const call = fakeMapInstance.setPadding.mock.calls.at(-1) as
+      | [{ top: number }]
+      | undefined;
+    expect(call).toBeDefined();
+    return call![0].top;
+  }
+
+  it("gives the camera a non-zero top padding once the container has a measured height", () => {
+    mockContainerHeight(709);
+    render(<HeroGlobe points={SAMPLE_POINTS} />);
+
+    expect(typeof capturedOnLoad).toBe("function");
+    act(() => {
+      capturedOnLoad?.();
+    });
+
+    expect(fakeMapInstance.setPadding).toHaveBeenCalled();
+    expect(lastPaddingTop()).toBeGreaterThan(0);
+
+    vi.restoreAllMocks();
+  });
+
+  // Regression guard for the bug this fix replaces: a hardcoded 373px
+  // padding would pass the test above but stay constant regardless of the
+  // hero's actual rendered height at other viewport sizes.
+  it("scales the top padding with the container's measured height, rather than a fixed pixel value", () => {
+    mockContainerHeight(400);
+    const { unmount } = render(<HeroGlobe points={SAMPLE_POINTS} />);
+    act(() => {
+      capturedOnLoad?.();
+    });
+    const shortTop = lastPaddingTop();
+    unmount();
+    vi.restoreAllMocks();
+    fakeMapInstance.setPadding.mockClear();
+
+    mockContainerHeight(1200);
+    render(<HeroGlobe points={SAMPLE_POINTS} />);
+    act(() => {
+      capturedOnLoad?.();
+    });
+    const tallTop = lastPaddingTop();
+
+    expect(tallTop).toBeGreaterThan(shortTop);
+    vi.restoreAllMocks();
+  });
+
+  it("also applies the top padding on the reduced-motion (skipMotion) path, before its early return", () => {
+    window.matchMedia = ((query: string) => ({
+      ...DEFAULT_MATCH_MEDIA(query),
+      matches: query.includes("prefers-reduced-motion"),
+    })) as unknown as typeof window.matchMedia;
+    mockContainerHeight(709);
+
+    render(<HeroGlobe points={SAMPLE_POINTS} />);
+
+    // The mount/resize effect's synchronous measure() call already invoked
+    // applyScrimPadding once during render (before onLoad ever fires — see
+    // hero-globe.tsx), recording its own non-zero-top call. Clear it here so
+    // the assertion below can only be satisfied by handleLoad's OWN
+    // applyScrimPadding call: without this clear, the mount call alone keeps
+    // this test green even if handleLoad's call were deleted.
+    fakeMapInstance.setPadding.mockClear();
+
+    act(() => {
+      capturedOnLoad?.();
+    });
+
+    expect(fakeMapInstance.setPadding).toHaveBeenCalled();
+    expect(lastPaddingTop()).toBeGreaterThan(0);
+    // easeTo is the animated-path-only call; skipMotion must return before
+    // reaching it, so the padding fix must not depend on that call.
+    expect(fakeMapRef.easeTo).not.toHaveBeenCalled();
+
+    vi.restoreAllMocks();
   });
 });
 
