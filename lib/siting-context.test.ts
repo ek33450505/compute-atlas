@@ -74,7 +74,11 @@ describe("data-integrity: NHD backfill debt", () => {
   // successful full `npm run build:mapdata` should drive it to 0. Changing this
   // number must be a deliberate, reviewed edit — four consecutive waves grew this
   // debt silently because nothing asserted it.
-  const NHD_BACKFILL_DEBT_CEILING = 141;
+  // 141 -> 155 on 2026-09-25: the 5th consecutive --skip-nhd wave (+14 Illinois
+  // facilities, PR #348). NHD was scattered-degraded, not down — the quorum
+  // pre-flight correctly aborted the full pass at [PA northeast] while the old
+  // single-coordinate probe would have passed and ground for hours.
+  const NHD_BACKFILL_DEBT_CEILING = 155;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data
