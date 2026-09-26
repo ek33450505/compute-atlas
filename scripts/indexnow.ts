@@ -61,6 +61,13 @@
  *   npm run indexnow -- --submit           # actually POST the whole sitemap
  */
 
+import {
+  collectSitemapUrlsByFamily,
+  fetchSitemapXml,
+  isSitemapIndex,
+  parseLocs,
+} from "../lib/sitemap-urls";
+
 export const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 
 /**
@@ -187,50 +194,41 @@ export function buildPayload(urls: string[]): IndexNowPayload {
 /**
  * Reads the URL list from the live sitemap rather than rebuilding it here.
  *
- * `app/sitemap.ts` is a Neon-backed dynamic route with its own deliberate
- * submission rules (single-facility operator and county hubs are omitted —
- * see MIN_FACILITIES_FOR_OPERATOR_SITEMAP). Re-deriving that here would create a
- * second definition of "which URLs do we submit" that could silently drift from
- * the first. Fetching the rendered sitemap means there is exactly one.
+ * `lib/sitemap-routes.ts` builds the per-family route lists with their own
+ * deliberate submission rules (single-facility operator and county hubs are
+ * omitted — see MIN_FACILITIES_FOR_OPERATOR_SITEMAP). Re-deriving that here
+ * would create a second definition of "which URLs do we submit" that could
+ * silently drift from the first. Fetching the rendered sitemap means there is
+ * exactly one.
  *
- * Consequence worth stating: this reads PRODUCTION. URLs appear here only once
- * prod serves them (the sitemap's own ISR timer is 3600s), which is the same
- * constraint as the key file — you cannot announce a URL that does not exist yet.
+ * `/sitemap.xml` is a hand-written sitemap INDEX (`app/sitemap.xml/route.ts`)
+ * listing nine per-family children at `/sitemaps/<family>.xml`
+ * (`app/sitemaps/[family]/route.ts`) — it exists only because we hand-wrote
+ * it; Next.js itself has no `<sitemapindex>` support at all (verified against
+ * Next 16.3.3: the string appears nowhere in `node_modules/next/dist`, and
+ * `generateSitemaps()` produces `/sitemap/<id>.xml` routes instead of
+ * augmenting `/sitemap.xml`). So this follows the index via
+ * `collectSitemapUrlsByFamily` and flattens every child's URLs. A bare
+ * `<urlset>` (e.g. a direct child sitemap URL passed as the argument) is
+ * still handled directly — that path predates the index and remains correct
+ * for it.
+ *
+ * Consequence worth stating: this reads PRODUCTION. URLs appear here only
+ * once prod serves them (both the index and its children revalidate every
+ * 3600s), which is the same constraint as the key file — you cannot announce
+ * a URL that does not exist yet.
  */
 export async function collectSitemapUrls(sitemapUrl: string = SITEMAP_URL): Promise<string[]> {
-  const response = await fetch(sitemapUrl, { headers: { accept: "application/xml" } });
-  if (!response.ok) {
-    throw new Error(`Sitemap fetch failed: ${response.status} ${response.statusText} (${sitemapUrl})`);
-  }
-  const xml = await response.text();
-  // A sitemap INDEX also has <loc> entries — but they point at child sitemaps,
-  // not at pages, so parsing one here would silently announce a handful of
-  // .xml URLs and nothing else. This is a <urlset> today only because
-  // `app/sitemap.ts` has no `generateSitemaps()`; Next switches to an index
-  // the moment it gains one, which is a change nobody would think to make
-  // here. Fail loudly at that boundary instead of submitting nonsense.
-  if (/<sitemapindex[\s>]/i.test(xml)) {
-    throw new Error(
-      `${sitemapUrl} is a sitemap INDEX, not a <urlset> — app/sitemap.ts has gained ` +
-        "generateSitemaps(). Its <loc> entries are child sitemap URLs, not page URLs. " +
-        "Fetch each child sitemap and concatenate their URLs before submitting."
-    );
-  }
-  const locs = [...xml.matchAll(/<loc>([\s\S]*?)<\/loc>/g)].map((m) => decodeXml(m[1].trim()));
+  const xml = await fetchSitemapXml(sitemapUrl);
+
+  const locs = isSitemapIndex(xml)
+    ? (await collectSitemapUrlsByFamily(sitemapUrl, xml)).flatMap((f) => f.urls)
+    : parseLocs(xml);
+
   if (locs.length === 0) {
     throw new Error(`No <loc> entries found in ${sitemapUrl} — refusing to submit an empty list.`);
   }
   return locs.map(normalizeUrl);
-}
-
-/** The five predefined XML entities. `&amp;` is unescaped last so `&amp;lt;` survives as `&lt;`. */
-function decodeXml(value: string): string {
-  return value
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, "&");
 }
 
 /**

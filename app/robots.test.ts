@@ -7,6 +7,7 @@ import { describe, it, expect } from "vitest";
 import { resolveRobots } from "next/dist/build/webpack/loaders/metadata/resolve-route-data";
 import robots, { BLOCKED_AI_CRAWLERS } from "@/app/robots";
 import { siteConfig } from "@/lib/site";
+import { SITEMAP_FAMILY_IDS, SITEMAP_INDEX_URL, sitemapChildUrl } from "@/lib/sitemap-families";
 
 const CONTENT_SIGNAL = "search=yes,ai-train=no,use=reference";
 
@@ -33,7 +34,28 @@ describe("robots", () => {
 
   it("points at the site's sitemap.xml", () => {
     const result = robots();
-    expect(result.sitemap).toBe(`${siteConfig.url}/sitemap.xml`);
+    expect(result.sitemap).toContain(`${siteConfig.url}/sitemap.xml`);
+  });
+
+  it("lists the sitemap index plus every family child, derived from the registry, each exactly once", () => {
+    const result = robots();
+    const sitemap = result.sitemap;
+    expect(Array.isArray(sitemap)).toBe(true);
+    const sitemapList = sitemap as string[];
+
+    // Length pins the exact composition: the index + one entry per family,
+    // no more, no fewer — so a stray duplicate or a dropped family fails
+    // this even if the "contains" assertions below happen to still pass.
+    expect(sitemapList).toHaveLength(1 + SITEMAP_FAMILY_IDS.length);
+
+    expect(sitemapList).toContain(SITEMAP_INDEX_URL);
+    for (const id of SITEMAP_FAMILY_IDS) {
+      expect(sitemapList).toContain(sitemapChildUrl(id));
+    }
+
+    // Exactly once each — a duplicate entry would satisfy every assertion
+    // above while still being wrong.
+    expect(new Set(sitemapList).size).toBe(sitemapList.length);
   });
 
   it("does NOT block Google-Extended (regression guard: this dataset wants to be cited in Gemini/AI Overviews)", () => {

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { siteConfig } from "@/lib/site";
+import { SITEMAP_FAMILY_IDS, SITEMAP_INDEX_URL, sitemapChildUrl } from "@/lib/sitemap-families";
 
 // AI-crawler rules live here, in our own code, instead of being left to
 // Cloudflare's managed robots.txt block (Security -> Settings -> Bot
@@ -74,6 +74,11 @@ export default function robots(): MetadataRoute.Robots {
 
   return {
     rules,
-    sitemap: `${siteConfig.url}/sitemap.xml`,
+    // The index alone would be enough for Google (it fetches every child
+    // listed inside it), but listing the children too costs nothing here and
+    // helps crawlers that don't parse a sitemap index. Derived from the
+    // family registry rather than hardcoded, so a tenth family can't leave
+    // this list stale.
+    sitemap: [SITEMAP_INDEX_URL, ...SITEMAP_FAMILY_IDS.map(sitemapChildUrl)],
   };
 }

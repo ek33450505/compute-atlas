@@ -1,3 +1,13 @@
+/**
+ * Sitemap route-builder functions, moved here from `app/sitemap.ts`
+ * (2026-09-25). `app/sitemap.ts` is being replaced by a hand-written sitemap
+ * index route at `app/sitemap.xml/route.ts` plus per-family child sitemaps at
+ * `app/sitemaps/[family]/route.ts`. A Next.js metadata `app/sitemap.ts` and an
+ * `app/sitemap.xml/route.ts` route cannot coexist — verified against Next
+ * 16.3.3, which fails the build with `Conflicting route and metadata at
+ * /sitemap.xml`. These builders needed to live outside `app/sitemap.ts`
+ * before that replacement could proceed.
+ */
 import type { MetadataRoute } from "next";
 import {
   getAllFacilities,
@@ -15,8 +25,6 @@ import { METROS } from "@/lib/metros";
 import { GLOSSARY_TOPICS } from "@/lib/glossary";
 import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
-
-export const revalidate = 3600;
 
 /**
  * Most recent `lastUpdated` among the given facilities, as a `Date` — used
@@ -489,40 +497,5 @@ export async function buildLearnRoutes(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7,
     })),
-  ];
-}
-
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [
-    staticRoutes,
-    learnRoutes,
-    stateRoutes,
-    operatorRoutes,
-    stakeholderRoutes,
-    facilityRoutes,
-    statusRoutes,
-    metroRoutes,
-    countyRoutes,
-  ] = await Promise.all([
-    buildStaticRoutes(),
-    buildLearnRoutes(),
-    buildStateRoutes(),
-    buildOperatorRoutes(),
-    buildStakeholderRoutes(),
-    buildFacilityRoutes(),
-    buildStatusRoutes(),
-    buildMetroRoutes(),
-    buildCountyRoutes(),
-  ]);
-  return [
-    ...staticRoutes,
-    ...learnRoutes,
-    ...stateRoutes,
-    ...operatorRoutes,
-    ...stakeholderRoutes,
-    ...facilityRoutes,
-    ...statusRoutes,
-    ...metroRoutes,
-    ...countyRoutes,
   ];
 }
