@@ -84,6 +84,7 @@ export interface IndexStatusResult {
   verdict?: string;
   coverageState?: string;
   robotsTxtState?: string;
+  indexingState?: string;
   pageFetchState?: string;
   lastCrawlTime?: string;
 }
