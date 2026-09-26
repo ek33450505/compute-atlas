@@ -92,6 +92,26 @@
  * prints it — including the elapsed duration in plain words — when a real
  * run finishes.
  *
+ * ## Token lifetime, and a run that cannot finish
+ *
+ * Measured 2026-09-26: a 714-URL panel died at 500/714 after exactly 60
+ * minutes with a 401 `ACCESS_TOKEN_EXPIRED` — `fetchAccessToken` is called
+ * ONCE in `main`, and the token it returns lives ~1 hour (see
+ * `buildSignedJwt`'s `exp: now + 3600` in `check-googlebot-access.ts`). Real
+ * per-URL latency (~7s, dominated by the URL Inspection API itself, not
+ * `REQUEST_DELAY_MS`) means any panel over roughly 500 URLs is guaranteed to
+ * outlive one token, so `main` now refreshes proactively via
+ * `createTokenProvider` well before the ~1 hour lifetime
+ * (`TOKEN_REFRESH_THRESHOLD_MS`), plus retries a residual
+ * `ACCESS_TOKEN_EXPIRED` exactly once (`inspectWithRetry`) for clock skew at
+ * the edge. Separately: that same run produced ZERO artifact for ~500 spent
+ * live inspections, because the report was only ever written after a clean
+ * finish. `main` now writes whatever `byRoute` already holds — marked
+ * `partial: true` with the failure reason — the moment the inspection loop
+ * throws, then rethrows so the process still exits non-zero. A partial
+ * report must never be silently usable as a baseline; see the `partial` field
+ * on `IndexCensusReport`.
+ *
  * ## Reconciling candidates against the sitemap's own parsed total
  *
  * `main` compares the census's own candidate tally (`plan.totalCandidates`)
@@ -144,6 +164,7 @@ import {
   SITE_URL,
   type IndexStatusResult,
   type InspectionResult,
+  type ServiceAccountCredentials,
 } from "./check-googlebot-access";
 
 const HOST = "www.compute-atlas.com";
@@ -173,6 +194,24 @@ export const MIN_LARGE_FAMILY_SHARE = 15;
 
 /** Ceiling so no single large family (e.g. facilities, ~75% of all URLs) can consume the whole remaining budget. */
 export const MAX_LARGE_FAMILY_SHARE = 300;
+
+/**
+ * Proactive access-token refresh threshold. `fetchAccessToken`'s token lives
+ * ~1 hour (see `buildSignedJwt`'s `exp: now + 3600` in
+ * check-googlebot-access.ts); 45 minutes leaves comfortable margin before
+ * expiry for a census that spans far longer than one token's lifetime. See
+ * `createTokenProvider` and the module header's "Token lifetime" section.
+ */
+export const TOKEN_REFRESH_THRESHOLD_MS = 45 * 60 * 1000;
+
+/**
+ * Measured 2026-09-26 against this property: 500 inspections completed in 59
+ * minutes before the run died on ACCESS_TOKEN_EXPIRED — ~7s/URL end to end,
+ * dominated by the URL Inspection API's own latency, not by
+ * REQUEST_DELAY_MS. Used only to print an estimate in the dry-run plan; never
+ * used for pacing or scheduling.
+ */
+export const MEASURED_MS_PER_URL = 7_000;
 
 export const SAMPLING_STRATEGY_DESCRIPTION =
   "stratified-by-family: families at or under a whole-family ceiling are inspected in full; " +
@@ -236,6 +275,22 @@ export interface IndexCensusReport {
     firstInspectedAt: string;
     lastInspectedAt: string;
   };
+  /**
+   * Set only when the inspection loop threw before covering every planned
+   * URL (see `main`'s try/catch around the inspection loop) — a real
+   * 401/429/network failure mid-run, NOT a normal completed census. `byRoute`
+   * and `summary` above are computed over ONLY the URLs actually inspected
+   * before the failure, never the planned total (`sampled.totalInspected`
+   * still names the plan, so the shortfall is visible by comparing the two).
+   * Consumers that treat a report as a comparable baseline —
+   * `census-baseline.ts` and `census-diff.ts` — MUST check this field and
+   * refuse a partial report rather than silently baselining/diffing an
+   * undercount; that refusal is tracked separately and is deliberately NOT
+   * wired here.
+   */
+  partial?: true;
+  /** Why the run stopped early — the caught error's message. Only set when `partial` is true. */
+  partialReason?: string;
 }
 
 export interface CensusPlan {
@@ -545,6 +600,17 @@ export function formatDurationWords(ms: number): string {
 }
 
 /**
+ * Estimated wall-clock duration for inspecting `totalInspected` URLs, using
+ * `MEASURED_MS_PER_URL` (measured 2026-09-26 against this property — API
+ * latency, not `REQUEST_DELAY_MS`, is the binding constraint; see the module
+ * header). Printed in the dry-run plan so a maintainer can see e.g. "714 URLs
+ * ~ 83m" BEFORE starting, rather than discovering it an hour later.
+ */
+export function estimateDurationMs(totalInspected: number): number {
+  return totalInspected * MEASURED_MS_PER_URL;
+}
+
+/**
  * Guards that the census's own candidate tally and the number of `<loc>`
  * entries actually parsed from the child sitemaps have not diverged — see
  * the module header's "Reconciling candidates" section. Deliberately takes
@@ -573,11 +639,15 @@ function printPlan(plan: CensusPlan, totalParsedSitemapUrls: number): void {
     console.log(a.family.padEnd(16) + String(a.candidates).padStart(12) + String(a.allocated).padStart(12));
   }
   const quotaShare = ((plan.totalInspected / DAILY_QUOTA) * 100).toFixed(1);
+  const estimatedDuration = formatDurationWords(estimateDurationMs(plan.totalInspected));
   console.log(
     `\nTotal sitemap URLs parsed from the child sitemaps: ${totalParsedSitemapUrls}` +
       `\nTotal candidates across the sitemap: ${plan.totalCandidates}` +
       `\nTotal to inspect this run (selected for inspection): ${plan.totalInspected} ` +
       `(${quotaShare}% of the ${DAILY_QUOTA}/day quota)` +
+      `\nEstimated duration: ~${estimatedDuration} ` +
+      `(measured ~${(MEASURED_MS_PER_URL / 1000).toFixed(0)}s/URL against this property, 2026-09-26 — ` +
+      "dominated by URL Inspection API latency, not REQUEST_DELAY_MS)" +
       `\nOutput would be written to: ${OUTPUT_PATH}`
   );
 }
@@ -590,9 +660,87 @@ function defaultNow(): string {
   return new Date().toISOString();
 }
 
+/**
+ * Detects the ACCESS_TOKEN_EXPIRED shape `inspectUrl` throws once a token
+ * outlives the ~1 hour lifetime `buildSignedJwt` (check-googlebot-access.ts)
+ * signs into it — measured 2026-09-26, a 714-URL panel died on exactly this
+ * at 500/714. `inspectUrl` throws a plain Error whose message embeds the raw
+ * HTTP status and response body (`URL Inspection failed for <url>: 401
+ * <body>`), so detection is a substring check on both markers. This must stay
+ * narrow: any OTHER error (e.g. a 429 rate limit) is a real failure and must
+ * keep surfacing immediately, unretried — see `inspectWithRetry`.
+ */
+export function isAccessTokenExpiredError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return message.includes("401") && message.includes("ACCESS_TOKEN_EXPIRED");
+}
+
+export interface TokenProvider {
+  /** Returns a valid token, transparently refreshing when the cached one has aged past the threshold. */
+  getToken(): Promise<string>;
+  /** Unconditionally mints a fresh token and resets the age clock — the reactive retry-once-on-401 path (`inspectWithRetry`) uses this directly, bypassing the age check. */
+  refresh(): Promise<string>;
+}
+
+/**
+ * Wraps `fetchAccessToken` with a proactive refresh so a census far longer
+ * than one token's ~1 hour lifetime survives it — see the module header's
+ * "Token lifetime" section and `TOKEN_REFRESH_THRESHOLD_MS`. `nowMs` is
+ * injectable (tests use a fake sequence; real runs default to `Date.now`) so
+ * the threshold crossing is testable without waiting on a real clock.
+ */
+export function createTokenProvider(
+  creds: ServiceAccountCredentials,
+  deps: {
+    fetchAccessToken: typeof fetchAccessToken;
+    nowMs?: () => number;
+    refreshThresholdMs?: number;
+  }
+): TokenProvider {
+  const nowMs = deps.nowMs ?? Date.now;
+  const refreshThresholdMs = deps.refreshThresholdMs ?? TOKEN_REFRESH_THRESHOLD_MS;
+  let token: string | undefined;
+  let mintedAtMs = 0;
+
+  async function refresh(): Promise<string> {
+    token = await deps.fetchAccessToken(creds);
+    mintedAtMs = nowMs();
+    return token;
+  }
+
+  async function getToken(): Promise<string> {
+    if (token === undefined || nowMs() - mintedAtMs >= refreshThresholdMs) {
+      return refresh();
+    }
+    return token;
+  }
+
+  return { getToken, refresh };
+}
+
+/**
+ * Inspects one URL, with exactly one refresh-and-retry when the proactive
+ * threshold in `createTokenProvider` still missed an expiry (clock skew, or a
+ * token that expired mid-request). A SECOND consecutive
+ * ACCESS_TOKEN_EXPIRED on the same URL is a real failure, not more skew, and
+ * propagates rather than retrying again. Any other error (e.g. a 429
+ * rate limit) is never retried and propagates immediately, unchanged from
+ * before this fix.
+ */
+async function inspectWithRetry(tokenProvider: TokenProvider, url: string): Promise<InspectionResult> {
+  const token = await tokenProvider.getToken();
+  try {
+    return await inspectUrl(token, url);
+  } catch (err) {
+    if (!isAccessTokenExpiredError(err)) throw err;
+    const freshToken = await tokenProvider.refresh();
+    return await inspectUrl(freshToken, url);
+  }
+}
+
 export async function main(
   argv: string[],
-  deps: { now?: () => string } = {}
+  deps: { now?: () => string; nowMs?: () => number } = {}
 ): Promise<void> {
   const now = deps.now ?? defaultNow;
   const options = parseCliArgs(argv);
@@ -633,31 +781,44 @@ export async function main(
     process.exit(0);
   }
 
-  const accessToken = await fetchAccessToken(creds);
+  const tokenProvider = createTokenProvider(creds, { fetchAccessToken, nowMs: deps.nowMs });
 
   const byRoute: Record<string, RouteInspectionEntry> = {};
   let done = 0;
-  for (const [family, urls] of Object.entries(plan.selectionsByFamily)) {
-    for (const url of urls) {
-      // Sequential, never parallel — see REQUEST_DELAY_MS / the quota note
-      // in the file header. A 429 or any other non-2xx throws out of
-      // inspectUrl and stops this loop rather than being retried.
-      const result: InspectionResult = await inspectUrl(accessToken, url);
-      const status: IndexStatusResult = result.indexStatusResult;
-      byRoute[url] = {
-        family,
-        inspectedAt: now(),
-        coverageState: status.coverageState,
-        robotsTxtState: status.robotsTxtState,
-        indexingState: status.indexingState,
-        lastCrawlTime: status.lastCrawlTime,
-        pageFetchState: status.pageFetchState,
-        verdict: status.verdict,
-      };
-      done += 1;
-      if (done % 50 === 0) console.log(`  ...${done}/${plan.totalInspected} inspected`);
-      await sleep(REQUEST_DELAY_MS);
+  let loopError: unknown;
+  try {
+    for (const [family, urls] of Object.entries(plan.selectionsByFamily)) {
+      for (const url of urls) {
+        // Sequential, never parallel — see REQUEST_DELAY_MS / the quota note
+        // in the file header. A 429 or any other non-2xx throws out of
+        // inspectUrl and stops this loop rather than being retried — except
+        // an ACCESS_TOKEN_EXPIRED 401, which inspectWithRetry refreshes and
+        // retries exactly once (see its own header comment).
+        const result: InspectionResult = await inspectWithRetry(tokenProvider, url);
+        const status: IndexStatusResult = result.indexStatusResult;
+        byRoute[url] = {
+          family,
+          inspectedAt: now(),
+          coverageState: status.coverageState,
+          robotsTxtState: status.robotsTxtState,
+          indexingState: status.indexingState,
+          lastCrawlTime: status.lastCrawlTime,
+          pageFetchState: status.pageFetchState,
+          verdict: status.verdict,
+        };
+        done += 1;
+        if (done % 50 === 0) console.log(`  ...${done}/${plan.totalInspected} inspected`);
+        await sleep(REQUEST_DELAY_MS);
+      }
     }
+  } catch (err) {
+    // A run that dies partway must still leave a salvageable artifact — ~500
+    // live inspections were spent and produced NOTHING on 2026-09-26 because
+    // the report was only ever written after a clean finish (see the module
+    // header's "Token lifetime" section). Record the failure and fall
+    // through to the normal write path below with whatever byRoute already
+    // holds; rethrow once the partial report is safely on disk.
+    loopError = err;
   }
 
   const span = computeInspectionSpan(byRoute);
@@ -674,17 +835,36 @@ export async function main(
     byRoute,
     summary: buildSummary(byRoute),
     span,
+    ...(loopError !== undefined
+      ? {
+          partial: true as const,
+          partialReason: loopError instanceof Error ? loopError.message : String(loopError),
+        }
+      : {}),
   };
 
   mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
   writeFileSync(OUTPUT_PATH, JSON.stringify(report, null, 2) + "\n");
-  console.log(`\nWrote ${Object.keys(byRoute).length} inspection(s) to ${OUTPUT_PATH}`);
+
+  if (loopError !== undefined) {
+    console.error(
+      `\n::error::Census PARTIAL — inspected ${Object.keys(byRoute).length}/${plan.totalInspected} ` +
+        `planned URL(s) before the run failed. Wrote a partial report (partial: true) to ${OUTPUT_PATH}. ` +
+        `Reason: ${report.partialReason}`
+    );
+  } else {
+    console.log(`\nWrote ${Object.keys(byRoute).length} inspection(s) to ${OUTPUT_PATH}`);
+  }
   if (span) {
     const elapsedMs = Math.max(0, Date.parse(span.lastInspectedAt) - Date.parse(span.firstInspectedAt));
     console.log(
       `Inspection span: ${span.firstInspectedAt} -> ${span.lastInspectedAt} ` +
         `(inspected over ${formatDurationWords(elapsedMs)})`
     );
+  }
+
+  if (loopError !== undefined) {
+    throw loopError;
   }
 }
 

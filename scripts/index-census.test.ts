@@ -36,8 +36,11 @@ import {
   classifyCoverageState,
   computeFamilyAllocations,
   computeInspectionSpan,
+  createTokenProvider,
   DEFAULT_TOTAL_TARGET,
+  estimateDurationMs,
   formatDurationWords,
+  isAccessTokenExpiredError,
   main,
   MAX_LARGE_FAMILY_SHARE,
   OUTPUT_PATH,
@@ -45,6 +48,7 @@ import {
   reconcileSitemapTotals,
   selectStratifiedSample,
   SITEMAP_INDEX_URL,
+  TOKEN_REFRESH_THRESHOLD_MS,
   WHOLE_FAMILY_CEILING,
   type RouteInspectionEntry,
 } from "./index-census";
@@ -434,6 +438,90 @@ describe("reconcileSitemapTotals", () => {
 });
 
 // ---------------------------------------------------------------------------
+// isAccessTokenExpiredError — narrow detection so only the ACCESS_TOKEN_EXPIRED
+// shape is ever retried; a 429 or any other failure must propagate untouched.
+// ---------------------------------------------------------------------------
+describe("isAccessTokenExpiredError", () => {
+  it("recognizes the 401 ACCESS_TOKEN_EXPIRED shape inspectUrl throws", () => {
+    const err = new Error(
+      'URL Inspection failed for https://x: 401 {"error":{"code":401,"status":"UNAUTHENTICATED","reason":"ACCESS_TOKEN_EXPIRED"}}'
+    );
+    expect(isAccessTokenExpiredError(err)).toBe(true);
+  });
+
+  it("does not flag a differently-shaped error (e.g. a 429 rate limit)", () => {
+    const err = new Error("URL Inspection failed for https://x: 429 rate limited");
+    expect(isAccessTokenExpiredError(err)).toBe(false);
+  });
+
+  it("does not flag a 401 that isn't ACCESS_TOKEN_EXPIRED (e.g. a bad credential)", () => {
+    const err = new Error("URL Inspection failed for https://x: 401 invalid_grant");
+    expect(isAccessTokenExpiredError(err)).toBe(false);
+  });
+
+  it("does not flag a non-Error thrown value", () => {
+    expect(isAccessTokenExpiredError("some string")).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// createTokenProvider — proactive refresh threshold, driven by an injected
+// clock. Never real time: TOKEN_REFRESH_THRESHOLD_MS is ~45 minutes.
+// ---------------------------------------------------------------------------
+describe("createTokenProvider", () => {
+  const creds = { client_email: "x", private_key: "y" };
+
+  function fakeMs(sequence: number[]) {
+    let i = 0;
+    return () => sequence[Math.min(i++, sequence.length - 1)];
+  }
+
+  it("mints a token once and reuses it while its age stays under the refresh threshold", async () => {
+    const fetchAccessTokenMock = vi.fn().mockResolvedValue("token-1");
+    const provider = createTokenProvider(creds, {
+      fetchAccessToken: fetchAccessTokenMock,
+      nowMs: fakeMs([0, 1_000, TOKEN_REFRESH_THRESHOLD_MS - 1]),
+    });
+
+    const first = await provider.getToken();
+    const second = await provider.getToken();
+    const third = await provider.getToken();
+
+    expect([first, second, third]).toEqual(["token-1", "token-1", "token-1"]);
+    expect(fetchAccessTokenMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("refreshes once the elapsed age crosses the refresh threshold", async () => {
+    const fetchAccessTokenMock = vi.fn().mockResolvedValueOnce("token-1").mockResolvedValueOnce("token-2");
+    const provider = createTokenProvider(creds, {
+      fetchAccessToken: fetchAccessTokenMock,
+      nowMs: fakeMs([0, TOKEN_REFRESH_THRESHOLD_MS + 1]),
+    });
+
+    const first = await provider.getToken();
+    const second = await provider.getToken();
+
+    expect(first).toBe("token-1");
+    expect(second).toBe("token-2");
+    expect(fetchAccessTokenMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("refresh() unconditionally mints a new token and resets the age clock, bypassing the threshold check", async () => {
+    const fetchAccessTokenMock = vi.fn().mockResolvedValueOnce("token-1").mockResolvedValueOnce("token-2");
+    const provider = createTokenProvider(creds, {
+      fetchAccessToken: fetchAccessTokenMock,
+      nowMs: fakeMs([0, 1]),
+    });
+
+    await provider.getToken();
+    const refreshed = await provider.refresh();
+
+    expect(refreshed).toBe("token-2");
+    expect(fetchAccessTokenMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // main — dry run must make zero GSC calls; missing credential exits 0
 // ---------------------------------------------------------------------------
 describe("main", () => {
@@ -487,6 +575,16 @@ describe("main", () => {
     expect(out).toContain("DRY RUN — no Search Console API calls were made");
     expect(out).toMatch(/% of the 2000\/day quota/);
     expect(out).toContain(OUTPUT_PATH);
+  });
+
+  it("dry run plan prints an estimated wall-clock duration derived from measured per-URL throughput", async () => {
+    await main([]);
+    const out = printed();
+    const totalMatch = out.match(/Total to inspect this run \(selected for inspection\): (\d+)/);
+    expect(totalMatch).not.toBeNull();
+    const totalInspected = Number(totalMatch![1]);
+    const expectedDuration = formatDurationWords(estimateDurationMs(totalInspected));
+    expect(out).toContain(`Estimated duration: ~${expectedDuration}`);
   });
 
   // The untested throw path in main(): --family=<id> is a well-formed flag
@@ -617,6 +715,131 @@ describe("main", () => {
       expect(report.takenAt >= report.span.lastInspectedAt).toBe(true);
 
       expect(printed()).toMatch(/Inspection span: .* -> .* \(inspected over \d+m \d+s\)/);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Token refresh + ACCESS_TOKEN_EXPIRED retry, exercised through main()'s
+  // real inspection loop (mockInspectUrl / mockFetchAccessToken).
+  // ---------------------------------------------------------------------------
+  describe("access-token-expired retry during --run", () => {
+    function stubCredentialsAndToken() {
+      mockLoadCredentials.mockReturnValue({ client_email: "x", private_key: "y" });
+      mockFetchAccessToken.mockResolvedValue("fake-token");
+    }
+
+    function accessTokenExpiredError() {
+      return new Error(
+        'URL Inspection failed for https://x: 401 {"error":{"code":401,"status":"UNAUTHENTICATED","reason":"ACCESS_TOKEN_EXPIRED"}}'
+      );
+    }
+
+    it("refreshes and retries exactly once on a 401 ACCESS_TOKEN_EXPIRED, then continues the run", async () => {
+      stubCredentialsAndToken();
+      mockInspectUrl.mockRejectedValueOnce(accessTokenExpiredError()).mockResolvedValue({
+        inspectionUrl: "unused",
+        indexStatusResult: { coverageState: "Submitted and indexed" },
+      });
+
+      await main(["--run", "--family=static"]);
+
+      // 1 failed attempt + 1 retry on url #1, plus 2 more URLs = 4 inspectUrl calls.
+      expect(mockInspectUrl).toHaveBeenCalledTimes(4);
+      // 1 initial token + 1 reactive refresh on the 401.
+      expect(mockFetchAccessToken).toHaveBeenCalledTimes(2);
+
+      const [, writtenBody] = mockWriteFileSync.mock.calls[0];
+      const report = JSON.parse(String(writtenBody));
+      expect(Object.keys(report.byRoute)).toHaveLength(3);
+      expect(report.partial).toBeUndefined();
+    });
+
+    it("fails out rather than looping when a second consecutive 401 hits the same URL", async () => {
+      stubCredentialsAndToken();
+      mockInspectUrl.mockRejectedValueOnce(accessTokenExpiredError()).mockRejectedValueOnce(accessTokenExpiredError());
+
+      await expect(main(["--run", "--family=static"])).rejects.toThrow(/ACCESS_TOKEN_EXPIRED/);
+
+      // Both attempts land on url #1 — the loop never reaches url #2 or #3.
+      expect(mockInspectUrl).toHaveBeenCalledTimes(2);
+      const [, writtenBody] = mockWriteFileSync.mock.calls[0];
+      const report = JSON.parse(String(writtenBody));
+      expect(report.partial).toBe(true);
+      expect(report.partialReason).toMatch(/ACCESS_TOKEN_EXPIRED/);
+      expect(Object.keys(report.byRoute)).toHaveLength(0);
+    });
+
+    it("propagates a non-401 error (e.g. 429) immediately, with no retry", async () => {
+      stubCredentialsAndToken();
+      mockInspectUrl.mockRejectedValueOnce(new Error("URL Inspection failed for https://x: 429 rate limited"));
+
+      await expect(main(["--run", "--family=static"])).rejects.toThrow(/429/);
+
+      expect(mockInspectUrl).toHaveBeenCalledTimes(1);
+      // No reactive refresh for a non-token error.
+      expect(mockFetchAccessToken).toHaveBeenCalledTimes(1);
+      const [, writtenBody] = mockWriteFileSync.mock.calls[0];
+      const report = JSON.parse(String(writtenBody));
+      expect(report.partial).toBe(true);
+      expect(report.partialReason).toMatch(/429/);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Partial report on a mid-run failure — the loop must leave a salvageable
+  // artifact instead of spending quota and writing nothing (2026-09-26).
+  // ---------------------------------------------------------------------------
+  describe("partial report on a mid-run failure", () => {
+    it("writes a partial report covering only the URLs actually inspected before the loop threw", async () => {
+      mockLoadCredentials.mockReturnValue({ client_email: "x", private_key: "y" });
+      mockFetchAccessToken.mockResolvedValue("fake-token");
+      mockInspectUrl
+        .mockResolvedValueOnce({
+          inspectionUrl: "unused",
+          indexStatusResult: { coverageState: "Submitted and indexed" },
+        })
+        .mockResolvedValueOnce({
+          inspectionUrl: "unused",
+          indexStatusResult: { coverageState: "Discovered - currently not indexed" },
+        })
+        .mockRejectedValueOnce(new Error("URL Inspection failed for https://x: 500 boom"));
+
+      await expect(main(["--run", "--family=static"])).rejects.toThrow(/500 boom/);
+
+      expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
+      const [writtenPath, writtenBody] = mockWriteFileSync.mock.calls[0];
+      expect(writtenPath).toBe(OUTPUT_PATH);
+      const report = JSON.parse(String(writtenBody));
+      expect(report.partial).toBe(true);
+      expect(report.partialReason).toMatch(/500 boom/);
+      expect(Object.keys(report.byRoute)).toHaveLength(2);
+      expect(report.summary.byFamily.static).toEqual({
+        inspected: 2,
+        indexed: 1,
+        discovered_not_indexed: 1,
+        crawled_not_indexed: 0,
+        excluded: 0,
+        other: 0,
+      });
+      // The plan's own target is unchanged by the shortfall — comparing the
+      // two is how a reader sees the run didn't finish.
+      expect(report.sampled.totalInspected).toBe(3);
+    });
+
+    it("does not mark a completed run as partial", async () => {
+      mockLoadCredentials.mockReturnValue({ client_email: "x", private_key: "y" });
+      mockFetchAccessToken.mockResolvedValue("fake-token");
+      mockInspectUrl.mockResolvedValue({
+        inspectionUrl: "unused",
+        indexStatusResult: { coverageState: "Submitted and indexed" },
+      });
+
+      await main(["--run", "--family=static"]);
+
+      const [, writtenBody] = mockWriteFileSync.mock.calls[0];
+      const report = JSON.parse(String(writtenBody));
+      expect(report.partial).toBeUndefined();
+      expect(report.partialReason).toBeUndefined();
     });
   });
 });
