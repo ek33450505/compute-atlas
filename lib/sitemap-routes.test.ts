@@ -3,6 +3,7 @@ import {
   buildStaticRoutes,
   buildStateRoutes,
   buildOperatorRoutes,
+  buildStakeholderRoutes,
   buildFacilityRoutes,
   buildStatusRoutes,
   buildMetroRoutes,
@@ -367,25 +368,32 @@ describe("sitemap", () => {
     }
   });
 
-  it("total route count equals the sum of all five builders", async () => {
-    const staticRoutes = await buildStaticRoutes();
-    const stateRoutes = await buildStateRoutes();
-    const operatorRoutes = await buildOperatorRoutes();
-    const facilityRoutes = await buildFacilityRoutes();
-    const statusRoutes = await buildStatusRoutes();
-    const total =
-      staticRoutes.length +
-      stateRoutes.length +
-      operatorRoutes.length +
-      facilityRoutes.length +
-      statusRoutes.length;
-    expect(total).toBe(
-      (await buildStaticRoutes()).length +
-        (await buildStateRoutes()).length +
-        (await buildOperatorRoutes()).length +
-        (await buildFacilityRoutes()).length +
-        (await buildStatusRoutes()).length
-    );
+  // Replaces a prior test named "total route count equals the sum of all
+  // five builders", which compared a sum to the same expression recomputed
+  // a second time — that could never fail (code-reviewer-confirmed
+  // tautology). This asserts something falsifiable instead: every one of
+  // the nine route-family builders (matching lib/sitemap-families.ts'
+  // SITEMAP_FAMILY_IDS) produces at least one route, and none of them emits
+  // the same URL twice.
+  it("every builder returns a non-empty array with no duplicate URLs within itself", async () => {
+    const builders = [
+      ["static", buildStaticRoutes],
+      ["learn", buildLearnRoutes],
+      ["states", buildStateRoutes],
+      ["operators", buildOperatorRoutes],
+      ["stakeholders", buildStakeholderRoutes],
+      ["facilities", buildFacilityRoutes],
+      ["status", buildStatusRoutes],
+      ["metros", buildMetroRoutes],
+      ["counties", buildCountyRoutes],
+    ] as const;
+
+    for (const [name, build] of builders) {
+      const routes = await build();
+      expect(routes.length, `${name} builder returned zero routes`).toBeGreaterThan(0);
+      const urls = routes.map((r) => r.url);
+      expect(new Set(urls).size, `${name} builder produced duplicate URLs`).toBe(urls.length);
+    }
   });
 
   it("all URLs are absolute and under siteConfig.url", async () => {
