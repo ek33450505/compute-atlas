@@ -16,6 +16,9 @@ vi.mock("./check-googlebot-access", () => ({
   loadCredentials: mockLoadCredentials,
   fetchAccessToken: mockFetchAccessToken,
   inspectUrl: mockInspectUrl,
+  // index-census.ts now imports SITE_URL from here (see the nit fix removing
+  // its own private duplicate) — the mock must supply it too.
+  SITE_URL: "sc-domain:compute-atlas.com",
 }));
 
 // Only the "--sitemap source lands in the written report" test below drives
@@ -484,6 +487,19 @@ describe("main", () => {
     expect(out).toContain("DRY RUN — no Search Console API calls were made");
     expect(out).toMatch(/% of the 2000\/day quota/);
     expect(out).toContain(OUTPUT_PATH);
+  });
+
+  // The untested throw path in main(): --family=<id> is a well-formed flag
+  // (parseCliArgs accepts it), but no family in the fetched sitemap matches
+  // it. This must throw naming the bad value and the real known families,
+  // and must never reach credential loading or inspection.
+  it("throws naming the unknown family and the known families when --family matches nothing in the sitemap", async () => {
+    await expect(main(["--family=bogus"])).rejects.toThrow(
+      /Unknown family "bogus"\. Known families: static, facilities/
+    );
+    expect(mockLoadCredentials).not.toHaveBeenCalled();
+    expect(mockFetchAccessToken).not.toHaveBeenCalled();
+    expect(mockInspectUrl).not.toHaveBeenCalled();
   });
 
   it("exits 0 with a notice when no credential is found, rather than throwing", async () => {

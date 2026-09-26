@@ -49,7 +49,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-const SITE_URL = "sc-domain:compute-atlas.com";
+export const SITE_URL = "sc-domain:compute-atlas.com";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const INSPECT_URL = "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect";
 const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";

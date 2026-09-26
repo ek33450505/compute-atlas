@@ -141,18 +141,13 @@ import {
   fetchAccessToken,
   inspectUrl,
   loadCredentials,
+  SITE_URL,
   type IndexStatusResult,
   type InspectionResult,
 } from "./check-googlebot-access";
 
 const HOST = "www.compute-atlas.com";
 export const SITEMAP_INDEX_URL = `https://${HOST}/sitemap.xml`;
-
-// Matches (but does not import — it is not exported there) the private
-// SITE_URL constant in check-googlebot-access.ts. `inspectUrl` already bakes
-// the real value into its request body; this copy exists only to label the
-// report's own `siteUrl` field.
-export const SITE_URL = "sc-domain:compute-atlas.com";
 
 export const OUTPUT_PATH = join(process.cwd(), "data", "index-census.json");
 
