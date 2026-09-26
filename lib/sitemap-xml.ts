@@ -43,7 +43,12 @@ function formatLastModified(value: Date | string): string {
  * hand-rolled path preserves today's output semantics. Each optional field is
  * emitted only when present; `priority: 0` is a valid, falsy-but-present
  * number and MUST still be emitted, hence the explicit `typeof === "number"`
- * check rather than a truthiness check.
+ * check rather than a truthiness check. `lastModified`, by contrast, IS
+ * checked with a truthy test — matching `resolveSitemap` itself — so an
+ * empty-string `lastModified` is treated as absent and emits no `<lastmod>`
+ * tag. Today's builders only ever pass a `Date` (always truthy), so this is
+ * unreachable in practice, but `<lastmod></lastmod>` is invalid sitemap
+ * content and the wrong failure mode if that ever changes.
  *
  * Deliberate difference from Next: Next interpolates `<loc>` raw (unescaped).
  * We escape it, because facility/operator/stakeholder slugs can originate
@@ -53,7 +58,7 @@ function formatLastModified(value: Date | string): string {
 function buildUrlBlock(entry: MetadataRoute.Sitemap[number]): string {
   const fields: string[] = [`    <loc>${escapeXml(entry.url)}</loc>`];
 
-  if (entry.lastModified !== undefined) {
+  if (entry.lastModified) {
     fields.push(
       `    <lastmod>${escapeXml(formatLastModified(entry.lastModified))}</lastmod>`
     );

@@ -55,6 +55,15 @@ describe("buildUrlsetXml", () => {
     expect(xml).toContain("<lastmod>2026-03-15</lastmod>");
   });
 
+  // Regression guard matching Next's own `resolveSitemap`: a truthy check,
+  // not `!== undefined`, so an empty string is treated as absent rather than
+  // serialized as an invalid empty <lastmod></lastmod> tag.
+  it("emits no lastmod for an empty-string lastModified", () => {
+    const xml = buildUrlsetXml([{ url: "https://example.com/a", lastModified: "" }]);
+
+    expect(xml).not.toContain("<lastmod>");
+  });
+
   it("XML-escapes unsafe characters in the loc URL", () => {
     const xml = buildUrlsetXml([
       { url: "https://example.com/a?x=1&y=2<script>" },

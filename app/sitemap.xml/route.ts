@@ -18,17 +18,29 @@ const SITEMAP_HEADERS = {
 
 /**
  * Latest `lastModified` among a family's own entries, or `undefined` if the
- * family produced zero entries (or none of its entries carry one). Kept as a
- * small local helper rather than added to `lib/sitemap-families.ts` — that
- * file is under concurrent review and this only serves the sitemap index's
- * per-child `<lastmod>`.
+ * family produced zero entries, none of its entries carry one, or every
+ * carried value is unparseable. Exported (alongside the default `GET`) so
+ * `app/sitemap.xml/route.test.ts` can exercise it directly. Not moved to
+ * `lib/sitemap-families.ts` — that file is under concurrent review and this
+ * only serves the sitemap index's per-child `<lastmod>`.
+ *
+ * A value that parses to `Invalid Date` is skipped via
+ * `Number.isNaN(value.getTime())`, not accepted: a route builder's
+ * `lastModified` traces back to `lastUpdated`, which `facilitySchema`
+ * validates only as `z.string().min(4)` — never for parseability. Without
+ * this guard, an unparseable FIRST entry would be accepted as `max`
+ * unconditionally, and every later comparison (`x > NaN` is always `false`)
+ * would leave it there — surfacing as an Invalid Date whose `.toISOString()`
+ * throws inside `buildSitemapIndexXml`, crashing the entire `/sitemap.xml`
+ * index over one bad record.
  */
-function maxEntryLastModified(entries: MetadataRoute.Sitemap): Date | undefined {
+export function maxEntryLastModified(entries: MetadataRoute.Sitemap): Date | undefined {
   let max: Date | undefined;
   for (const entry of entries) {
     if (entry.lastModified === undefined) continue;
     const value =
       entry.lastModified instanceof Date ? entry.lastModified : new Date(entry.lastModified);
+    if (Number.isNaN(value.getTime())) continue;
     if (max === undefined || value.getTime() > max.getTime()) {
       max = value;
     }

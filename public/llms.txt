@@ -51,7 +51,9 @@ always resolves to its latest archived version:
   sourced, and classified, including the limits of each field.
 - https://www.compute-atlas.com/data — dataset description, license, citation,
   and scope caveats in full.
-- https://www.compute-atlas.com/sitemap.xml — every public page.
+- https://www.compute-atlas.com/sitemap.xml — sitemap index; every public page
+  is listed in one of its per-family children at
+  https://www.compute-atlas.com/sitemaps/<family>.xml.
 
 ## Use signals
 

@@ -285,27 +285,69 @@ describe("collectSitemapUrls", () => {
     ).rejects.toThrow(/Sitemap fetch failed: 503/);
   });
 
-  // A sitemap INDEX has <loc> entries too, pointing at child sitemaps rather
-  // than pages — so the naive parse "succeeds" and yields a handful of .xml
-  // URLs. `app/sitemap.ts` produces a <urlset> today only because it has no
-  // generateSitemaps(); this asserts the boundary is a loud failure, not a
-  // silently wrong submission, if that ever changes.
-  it("refuses a sitemap INDEX rather than submitting child sitemap URLs", async () => {
-    stubFetch(async () =>
-      jsonResponse(
-        200,
-        [
-          '<?xml version="1.0" encoding="UTF-8"?>',
-          '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-          "<sitemap><loc>https://www.compute-atlas.com/sitemap/0.xml</loc></sitemap>",
-          "<sitemap><loc>https://www.compute-atlas.com/sitemap/1.xml</loc></sitemap>",
-          "</sitemapindex>",
-        ].join("\n")
-      )
-    );
-    await expect(
-      collectSitemapUrls("https://www.compute-atlas.com/sitemap.xml")
-    ).rejects.toThrow(/sitemap INDEX/);
+  // `/sitemap.xml` is now a real sitemap INDEX in production
+  // (app/sitemap.xml/route.ts) — its <loc> entries point at child sitemaps,
+  // not at pages, so `collectSitemapUrls` must follow it and flatten every
+  // child's URLs rather than either submitting the .xml URLs themselves or
+  // refusing outright.
+  function sitemapIndexXml(children: string[]): string {
+    return [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      ...children.map((loc) => `<sitemap><loc>${loc}</loc></sitemap>`),
+      "</sitemapindex>",
+    ].join("\n");
+  }
+
+  it("follows a sitemap INDEX and returns the union of every child's URLs", async () => {
+    const indexUrl = "https://www.compute-atlas.com/sitemap.xml";
+    const staticUrl = "https://www.compute-atlas.com/sitemaps/static.xml";
+    const facilitiesUrl = "https://www.compute-atlas.com/sitemaps/facilities.xml";
+
+    const spy = stubFetch(async (input) => {
+      if (input === indexUrl) return jsonResponse(200, sitemapIndexXml([staticUrl, facilitiesUrl]));
+      if (input === staticUrl) return jsonResponse(200, sitemapXml(["https://www.compute-atlas.com/"]));
+      if (input === facilitiesUrl) {
+        return jsonResponse(200, sitemapXml(["https://www.compute-atlas.com/facilities/f-1"]));
+      }
+      throw new Error(`unexpected fetch: ${input}`);
+    });
+
+    await expect(collectSitemapUrls(indexUrl)).resolves.toEqual([
+      "https://www.compute-atlas.com/",
+      "https://www.compute-atlas.com/facilities/f-1",
+    ]);
+
+    // The index AND both children were actually fetched, sequentially and by URL.
+    expect(spy.mock.calls.map((call) => call[0])).toEqual([indexUrl, staticUrl, facilitiesUrl]);
+  });
+
+  it("throws, naming the family, when a child sitemap has zero <loc> entries", async () => {
+    const indexUrl = "https://www.compute-atlas.com/sitemap.xml";
+    const countiesUrl = "https://www.compute-atlas.com/sitemaps/counties.xml";
+
+    stubFetch(async (input) => {
+      if (input === indexUrl) return jsonResponse(200, sitemapIndexXml([countiesUrl]));
+      if (input === countiesUrl) return jsonResponse(200, sitemapXml([]));
+      throw new Error(`unexpected fetch: ${input}`);
+    });
+
+    await expect(collectSitemapUrls(indexUrl)).rejects.toThrow(/counties/);
+  });
+
+  it("throws when a child sitemap is itself a sitemap index (nesting unsupported)", async () => {
+    const indexUrl = "https://www.compute-atlas.com/sitemap.xml";
+    const nestedUrl = "https://www.compute-atlas.com/sitemaps/static.xml";
+
+    stubFetch(async (input) => {
+      if (input === indexUrl) return jsonResponse(200, sitemapIndexXml([nestedUrl]));
+      if (input === nestedUrl) {
+        return jsonResponse(200, sitemapIndexXml(["https://www.compute-atlas.com/sitemaps/nested-2.xml"]));
+      }
+      throw new Error(`unexpected fetch: ${input}`);
+    });
+
+    await expect(collectSitemapUrls(indexUrl)).rejects.toThrow(/sitemap INDEX/);
   });
 
   // A sitemap that parsed to nothing must not become a zero-URL submission
