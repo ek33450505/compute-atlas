@@ -6329,6 +6329,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "centersquare-ord1-chicago-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "centersquare-ord2-elk-grove-village-il": {
     "nearestWater": {
       "name": "Willow Creek",
@@ -12273,6 +12287,20 @@
       "rock": "Carbonate-rock"
     }
   },
+  "digital-realty-ch3-elk-grove-village-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "digital-realty-charlotte-nc": {
     "nearestWater": {
       "name": "Ticer Branch",
@@ -12746,6 +12774,48 @@
       "voltageKv": 345,
       "distanceMi": 3.3
     },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "digital-realty-ord13-franklin-park-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "digital-realty-ord14-franklin-park-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "digital-realty-ord23-northlake-il": {
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -14473,6 +14543,12 @@
       "voltageKv": 345,
       "distanceMi": 0.4
     },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
+  "edged-dekalb-project-vector-il": {
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -22208,6 +22284,32 @@
       "label": "High (40-80%)"
     }
   },
+  "karis-critical-hoffman-estates-plum-farms-il": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "karis-critical-naperville-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "karis-dekalb-campus-il": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    }
+  },
   "karis-dubuque-county-ia": {
     "nearestWater": {
       "name": "Buncombe Creek",
@@ -22812,6 +22914,12 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "lincoln-land-energy-center-pawnee-il": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "liquid-web-dc3-lansing-mi": {
@@ -24182,6 +24290,20 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "menlo-digital-chicago-exchange-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "menlo-digital-jamestown-drive-petersburg-va": {
@@ -32405,6 +32527,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "related-digital-8080-lake-shore-chicago-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "related-digital-cheyenne-wy": {
     "nearestWater": {
       "name": "Wyoming Hereford Ranch Reservoir Number One",
@@ -36967,6 +37103,20 @@
       "rock": "Carbonate-rock"
     }
   },
+  "t5-chicago-v-elk-grove-village-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "t5-cleveland-oh": {
     "nearestWater": {
       "name": "Rocky River",
@@ -39967,6 +40117,16 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "vme-lockport-star-innovation-district-il": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "volition-spanish-fork-ut": {

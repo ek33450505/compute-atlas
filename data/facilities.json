@@ -3487,9 +3487,16 @@
         "publisher": "Datacenters.com",
         "retrievedAt": "2026-08-03",
         "kind": "other"
+      },
+      {
+        "url": "https://static.datacentermap.com/company/aligned-data-centers/datacenter9222/Aligned%20Chicago%20ORD-01%20Spec%20Sheet.pdf",
+        "label": "Aligned Chicago ORD-01 spec sheet (505 Northwest Avenue, Northlake IL; 220,000 gross sq ft; 36 MW)",
+        "publisher": "Aligned Data Centers",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-25",
     "notes": "Confirmed via Aligned Chicago page and DatacenterDynamics ('Aligned completes first Chicago data center'); 505 Northwest Ave, Northlake, IL; 48MW, operational. AI/HPC (likely): Northlake ORD-01 hyperscale, adaptive AI/HPC cooling platform.",
     "energy": {
       "source": "grid",
@@ -3542,14 +3549,31 @@
         "publisher": "Aligned Data Centers",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Illinois DCEO Data Center Investment Program 2025 Annual Report — Aligned Data Centers, Northlake, 2021 MOU",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-25",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-25",
     "notes": "Second Aligned building on the Northlake campus, adjacent to ORD-01 at 505 Northwest Ave. Tier III design, 100% uptime SLA. Operator page does not publish MW.",
     "water": {
       "coolingType": "closed_loop",
       "notes": "Delta3 air cooling arrays with a closed-loop chilled water system; Aligned states near-zero WUE and secondary loops supporting DeltaFlow liquid cooling."
     },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales and use tax exemption)",
+        "amountUsd": 15781250,
+        "jurisdiction": "Illinois",
+        "year": "2021",
+        "sourceIndex": 2
+      }
+    ],
+    "investmentUsd": 252500000,
     "landAcres": 18.5,
     "facilityType": "data_center"
   },
@@ -20350,6 +20374,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "centersquare-ord1-chicago-il",
+    "name": "Centersquare ORD1 (Chicago Cermak)",
+    "operator": "Centersquare (Csquare)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.8537537,
+      "lon": -87.6183798,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "350 E Cermak Road",
+      "postalCode": "60616",
+      "state": "IL",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-25",
+        "note": "Operator spec sheet and locations page list ORD1 as an active Chicago facility on the 4th, 7th and 8th floors of 350 E Cermak Road.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/hubfs/Centersquare%20website/docs/Csquare-ORD-SpecSheet.pdf",
+        "label": "Csquare Chicago market spec sheet — ORD1, 350 East Cermak Road, 58,893 sq ft, 32.8 MW utility",
+        "publisher": "Centersquare (Csquare)",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.csquare.com/data-centers/chicago",
+        "label": "Csquare Chicago data centers — ORD1, ORD2, ORD4",
+        "publisher": "Centersquare (Csquare)",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "58,893 sq ft of raised floor. The operator publishes 32.8 MW UTILITY capacity with 8.8 MW UPS and 16 MW generator capacity; utility service size is not IT load, so no capacityMw value is asserted here.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "centersquare-ord2-elk-grove-village-il",
     "name": "Centersquare ORD2 (Elk Grove Village)",
     "operator": "Centersquare (Csquare)",
@@ -20387,11 +20455,11 @@
         "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
         "label": "Data Center Investment Program 2025 Annual Report (2425 Busse Road LLC (CenterSquare ORD2), Elk Grove Village, 2025 MOU)",
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
-        "retrievedAt": "2026-08-31",
+        "retrievedAt": "2026-09-25",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-25",
     "notes": "Operator lists ORD2 at 111,906 sq ft of raised floor and 25.9MW. The operating entity has changed hands and names repeatedly (Cyxtera/Evoque → Centersquare → Csquare); the DCEO MOU is held by 2425 Busse Road LLC and was amended in 2025 to add Centersquare MSA Holdings LLC. County omitted: the geocoder returns DuPage for this address while Elk Grove Village spans two counties. Coordinates geocoded from the published street address.",
     "subsidies": [
       {
@@ -20402,6 +20470,7 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 274152813,
     "facilityType": "data_center"
   },
   {
@@ -20443,11 +20512,11 @@
         "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
         "label": "Data Center Investment Program 2025 Annual Report (4513 Western Avenue LLC (CenterSquare ORD4), Lisle, 2025 MOU)",
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
-        "retrievedAt": "2026-08-31",
+        "retrievedAt": "2026-09-25",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-25",
     "notes": "Operator lists ORD4 at 66,875 sq ft of raised floor. No capacityMw recorded: the operator's page gives 88.9MW against ORD4 while other trade listings give figures an order of magnitude lower for the same building, so the number is not asserted here. Coordinates geocoded from the published street address.",
     "subsidies": [
       {
@@ -20458,6 +20527,7 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 258374703,
     "facilityType": "data_center"
   },
   {
@@ -21103,14 +21173,31 @@
         "publisher": "Chirisa Technology Parks",
         "retrievedAt": "2026-08-02",
         "kind": "press"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Illinois DCEO Data Center Investment Program 2025 Annual Report — Chirisa Volo LLC, Volo, 2023 MOU",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-25",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-09-25",
     "notes": "160,000 sq ft leased facility; tenant is CoreWeave, Inc. (public GPU/AI-cloud compute provider) -- every source frames this explicitly as an AI data center supporting AI computing operations. 14 MW is the existing/disclosed grid power supply; a planned on-site Bloom Energy fuel-cell/microgrid buildout was targeted for Q3 2025 commissioning but its MW capacity is not disclosed in any source found and is omitted (a distinct figure from the 14 MW grid supply, not additive to it here). Acreage (~50 acres) and the exact street address/postal code are corroborated only via a single aggregator/cached-search path (a direct Data Center Dynamics fetch on the site's HSBC/Capital One former-tenant history returned 403 both attempts) -- flagged as single-path, not independently cross-verified; treat address/acreage as approximate. Former site occupant: HSBC (built ~2007), later Capital One (acquired HSBC's US card operations, 2012), vacant and auctioned ~2023 before Chirisa's redevelopment. No SEC filing or Bloom Energy investor press release could be located this session to corroborate; neither is cited as a source. Investment and jobs figures are not disclosed anywhere and are omitted.",
     "energy": {
       "source": "mixed",
       "notes": "Grid-supplied 14 MW plus a planned on-site Bloom Energy fuel-cell/microgrid buildout (targeted Q3 2025 commissioning; MW not disclosed)."
     },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales and use tax exemption)",
+        "amountUsd": 16375000,
+        "jurisdiction": "Illinois",
+        "year": "2023",
+        "sourceIndex": 3
+      }
+    ],
+    "investmentUsd": 262000000,
     "landAcres": 50,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
@@ -31891,11 +31978,11 @@
         "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
         "label": "Data Center Investment Program 2025 Annual Report (C1 Chicago 1 LLC - C1 Chicago 2 LLC, Wood Dale, 2024 MOU)",
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
-        "retrievedAt": "2026-08-31",
+        "retrievedAt": "2026-09-25",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-25",
     "notes": "Operator states \"the campus will include two buildings totaling more than 500,000 square feet, delivering an initial IT capacity of 18 megawatts with scalable capacity\" — the 18MW is the initial IT capacity, not a full-build figure. Street-level coordinate is approximate: the press release names only Wood Dale, and the Bryn Mawr Avenue location comes from secondary reporting. Distinct from the tracked CyrusOne Aurora (CHI1–CHI3) and CyrusOne Sangamon County records.",
     "subsidies": [
       {
@@ -31906,6 +31993,7 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 250000000,
     "facilityType": "data_center"
   },
   {
@@ -33026,12 +33114,20 @@
         "publisher": "Illinois Times",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nprillinois.org/sangamon-county/2026-04-07/sangamon-county-board-approves-a-controversial-data-center-project",
+        "label": "Sangamon County Board approves a controversial data center project",
+        "publisher": "NPR Illinois",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-25",
     "notes": "Sited at the northwest corner of Thayer and Clark roads in unincorporated Talkington Township, about 14 miles southwest of Springfield. Building program shifted between filings: six 250,000 sq ft buildings at application, four 450,000 sq ft buildings as reported in June 2026. Construction was expected to start summer 2026.",
     "water": {
-      "coolingType": "air"
+      "coolingType": "air",
+      "notes": "Reported as a closed-loop cooling system intended to minimise water consumption; CyrusOne also proposed dredging nearby Waverly Lake. No withdrawal or consumption figure has been published."
     },
     "subsidies": [
       {
@@ -33238,9 +33334,16 @@
         "publisher": "CyrusOne",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Illinois DCEO Data Center Investment Program 2025 Annual Report — C1 Yorkville LLC, Yorkville, 2024 MOU",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-25",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-25",
     "notes": "Applicant C1 Yorkville, LLC, with Yorkville Nexus LLC, on roughly 228 acres east of Eldamain Road, north of the BNSF railroad and Faxon Road, west of Beecher Road. A 2026 major PUD amendment reduced the plan from nine two-story buildings (about 2,451,200 sq ft) to eight one-story buildings (about 2,163,800 sq ft maximum) and cut height from 70 ft to about 50 ft 10 in. Distinct from the tracked CyrusOne Aurora, Wood Dale and Sangamon County campuses. Coordinates are the centre of the described parcel boundaries and are approximate.",
     "energy": {
       "source": "grid",
@@ -33251,6 +33354,16 @@
       "coolingType": "closed_loop",
       "notes": "CyrusOne describes a closed-loop air-cooled system that continuously circulates water within a sealed circuit inside the building, with minimal ongoing discharge in normal operation."
     },
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales and use tax exemption)",
+        "amountUsd": 15625000,
+        "jurisdiction": "Illinois",
+        "year": "2024",
+        "sourceIndex": 2
+      }
+    ],
+    "investmentUsd": 250000000,
     "landAcres": 228,
     "facilityType": "data_center"
   },
@@ -38456,6 +38569,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "digital-realty-ch3-elk-grove-village-il",
+    "name": "Digital Realty CH3",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.9927374,
+      "lon": -87.9968732,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "street": "1400 E Devon Avenue",
+      "postalCode": "60007",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-25",
+        "note": "Listed as an active Digital Realty Chicago-metro facility on the operator's own location index and detail page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/chicago/ch3",
+        "label": "Digital Realty CH3 — 1400 East Devon Avenue, Elk Grove Village, IL (305,500 sq ft)",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/chicago",
+        "label": "Digital Realty Chicago metro data center index",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "305,500 sq ft; LEED Gold and Energy Star. Operator does not publish a megawatt figure for this site. Coordinates are an OSM street-level match on E Devon Avenue, not a parcel-confirmed point.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "digital-realty-charlotte-nc",
     "name": "Digital Realty Moores Chapel Data Center Campus",
     "operator": "Digital Realty",
@@ -39654,6 +39811,138 @@
     ],
     "lastUpdated": "2026-08-31",
     "notes": "110,000 sq ft single-storey building on Digital Realty's 40-acre master-planned Franklin Park campus. Distinct from the four tracked Digital Realty IL records, which are in Elk Grove Village (CH1, CH2) and Chicago (ORD10 at 350 E Cermak, ORD11 at 600 S Federal) — none in Franklin Park. Coordinates geocoded from the published street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-ord13-franklin-park-il",
+    "name": "Digital Realty ORD13",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.9290818,
+      "lon": -87.8587696,
+      "city": "Franklin Park",
+      "county": "Cook",
+      "street": "9355 W Grand Avenue",
+      "postalCode": "60131",
+      "state": "IL",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-25",
+        "note": "Active Digital Realty facility on the 40-acre Franklin Park campus per the operator's detail page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/chicago/ord13",
+        "label": "Digital Realty ORD13 — 9355 Grand Avenue, Franklin Park, IL 60131 (224,500 sq ft)",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Illinois DCEO Data Center Investment Program 2025 Annual Report (Digital Realty Franklin Park campus addresses incl. 9355 West Grand Avenue)",
+        "publisher": "Illinois DCEO",
+        "retrievedAt": "2026-09-25",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "224,500 sq ft, two stories, part of the 40-acre Digital Franklin Park campus. No site-level megawatt figure is published; the DCEO campus-level investment commitment covers multiple Grand Avenue buildings and is deliberately NOT attributed to this single site.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-ord14-franklin-park-il",
+    "name": "Digital Realty ORD14",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.9291102,
+      "lon": -87.8594098,
+      "city": "Franklin Park",
+      "county": "Cook",
+      "street": "9377 W Grand Avenue",
+      "postalCode": "60131",
+      "state": "IL",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-25",
+        "note": "Active Digital Realty facility on the 40-acre Franklin Park campus per the operator's detail page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/chicago/ord14",
+        "label": "Digital Realty ORD14 — 9377 Grand Avenue, Franklin Park, IL 60131 (130,500 sq ft)",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Illinois DCEO Data Center Investment Program 2025 Annual Report (Digital Realty Franklin Park campus addresses incl. 9377 West Grand Avenue)",
+        "publisher": "Illinois DCEO",
+        "retrievedAt": "2026-09-25",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "130,500 sq ft, single story, LEED Silver. No site-level megawatt figure is published; the DCEO campus-level investment commitment is not attributed to this single building.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-ord23-northlake-il",
+    "name": "Digital Realty ORD23",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.9196689,
+      "lon": -87.9129266,
+      "city": "Northlake",
+      "county": "Cook",
+      "street": "505 N Railroad Avenue",
+      "postalCode": "60164",
+      "state": "IL",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-25",
+        "note": "Actively marketed, operating Digital Realty facility per the operator's detail page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/chicago/ord23",
+        "label": "Digital Realty ORD23 — 505 North Railroad Avenue, Northlake, IL 60164 (186,500 sq ft)",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/chicago",
+        "label": "Digital Realty Chicago metro data center index",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "186,500 sq ft single-story building. The operator's index page prints the address as 3505 North Railroad Avenue while the ORD23 detail page prints 505 North Railroad Avenue; the detail page value is used here and the discrepancy is unresolved.",
     "facilityType": "data_center"
   },
   {
@@ -42259,7 +42548,7 @@
     "id": "eagle-rock-meridian-technology-park-taylorville-il",
     "name": "Meridian Technology Park",
     "operator": "Eagle Rock Partners",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 39.489771,
@@ -42278,6 +42567,12 @@
         "date": "2026-06-16",
         "note": "Eagle Rock Partners made its first official appearance before the Christian County Board on June 16, 2026 to present the Meridian Technology Park proposal; no formal application had been submitted as of the county board's initial discussion, and votes by the Zoning Board and County Board remain pending.",
         "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-09-25",
+        "note": "Eagle Rock Partners announced on 2026-08-12 that it is abandoning the $6 billion Meridian Technology Park in Bear Creek Township, Christian County, because delivery of the Lincoln Land Energy Center power it depended on 'is no longer certain'.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -42301,9 +42596,16 @@
         "publisher": "The Breeze Courier",
         "retrievedAt": "2026-07-18",
         "kind": "press"
+      },
+      {
+        "url": "https://www.illinoistimes.com/news/data-center-developer-abandons-plans-for-christian-county/",
+        "label": "Data center developer abandons plans for Christian County",
+        "publisher": "Illinois Times",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-18",
+    "lastUpdated": "2026-09-25",
     "notes": "Proposed 475-acre, 10-building (100MW each, ~1,000MW total) data center campus in unincorporated Christian County, ~2 miles southwest of Taylorville near Clarksdale. Estimated cost $6B-$8.8B. Earliest construction would not begin before 2028-2029. No formal application had been filed with the county as of the board's first briefing on the proposal; zoning board and county board votes are still pending. Not yet listed on major public data center trackers.",
     "landAcres": 475,
     "jobs": {
@@ -44542,6 +44844,57 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "edged-dekalb-project-vector-il",
+    "name": "Edged DeKalb Campus (Project Vector)",
+    "operator": "Edged (Endeavour Energy)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.878256,
+      "lon": -88.753784,
+      "city": "DeKalb",
+      "county": "DeKalb",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-11",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-12-08",
+        "note": "DeKalb City Council unanimously approved the annexation agreement, annexation, rezoning and concept plan for four data center buildings and two electrical substations on approximately 560 acres; city project list shows construction 2026-32.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cityofdekalb.com/DocumentCenter/View/21222/Development-Projects-List-7-15-26-",
+        "label": "City of DeKalb Zoning & Development Projects list as of 7/15/2026 — JJK 343 LLC / Edged (Project Vector), Rt. 23 and Keslinger Rd, 560 acres, approved 12/8/25",
+        "publisher": "City of DeKalb",
+        "retrievedAt": "2026-09-25",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.shawlocal.com/daily-chronicle/2025/12/09/unanimous-yes-to-560-acre-dekalb-data-center/",
+        "label": "Unanimous yes to 560-acre DeKalb data center",
+        "publisher": "Shaw Local / Daily Chronicle",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cityofdekalb.com/DocumentCenter/View/20701/Development-Projects-List-3-18-26-",
+        "label": "City of DeKalb Zoning & Development Projects list as of 3/18/2026",
+        "publisher": "City of DeKalb",
+        "retrievedAt": "2026-09-25",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Four data center buildings plus two electrical substations on both sides of Illinois Route 23, north of Keslinger Road and west of Crego Road, immediately south of Meta's DeKalb data center. Land is largely owned by ChicagoWest Business Center; petitioner of record is JJK 343 LLC. Coordinates are the IL-23 / Keslinger Road intersection (OSM), the site's southern edge, not a parcel centroid. No megawatt figure has been published.",
+    "landAcres": 560,
+    "facilityType": "data_center"
   },
   {
     "id": "edged-energy-ankeny-ia",
@@ -65106,11 +65459,11 @@
         "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
         "label": "Data Center Investment Program 2025 Annual Report (HydraVault LLC, Chicago, 2025 MOU)",
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
-        "retrievedAt": "2026-08-31",
+        "retrievedAt": "2026-09-25",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-25",
     "notes": "Purpose-built for AI training/inference and low-latency trading, at densities up to 200kW per rack. Subsidy value is the state's estimated tax benefit on a $270,000,000 investment commitment. Coordinates geocoded from the published street address.",
     "water": {
       "coolingType": "closed_loop",
@@ -65125,6 +65478,7 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 270000000,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -66699,11 +67053,11 @@
         "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
         "label": "Data Center Investment Program 2025 Annual Report (Iron Mountain Data Centers, LLC, Des Plaines, 2024 MOU)",
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
-        "retrievedAt": "2026-08-31",
+        "retrievedAt": "2026-09-25",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-25",
     "notes": "13-acre campus, 315,000 sq ft with four planned 28,000 sq ft data halls; operator states a \"36MW IT load design\" being built out in phases. Subsidy value is the state's estimated tax benefit on a $320,000,000 investment commitment. Coordinates geocoded from the published street address.",
     "water": {
       "coolingType": "air"
@@ -66717,6 +67071,7 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 320000000,
     "landAcres": 13,
     "facilityType": "data_center"
   },
@@ -68632,6 +68987,127 @@
     "notes": "Proposed campus on 180 acres on 101st Avenue east of Deep River County Park, at up to $900 million and reported to bring hundreds of jobs. Described as early-stage.",
     "investmentUsd": 900000000,
     "landAcres": 180,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "karis-critical-hoffman-estates-plum-farms-il",
+    "name": "Karis Critical Hoffman Estates Data Center (Plum Farms)",
+    "operator": "Karis Critical (H.E. Holdings LLC)",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.074441,
+      "lon": -88.189834,
+      "city": "Hoffman Estates",
+      "county": "Cook",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-07-01",
+        "note": "Developer withdrew its rezoning request for the 186-acre Plum Farms property after the Plan Commission voted 4-2 on June 3, 2026 to recommend against rezoning; the scheduled Village Board vote was cancelled.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nprillinois.org/economy-business/2026-07-02/developer-withdraws-rezoning-request-for-controversial-data-center-in-hoffman-estates",
+        "label": "Developer withdraws rezoning request for controversial data center in Hoffman Estates",
+        "publisher": "NPR Illinois / Capitol News Illinois",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Site is the Plum Farms property at Higgins Road and Route 59. Distinct from the tracked Microsoft Hoffman Estates and Compass Hoffman Estates sites — different operator, different parcel. Neither square footage nor megawatt capacity was disclosed. Coordinates are the Higgins Road / IL-59 intersection (OSM), not a parcel centroid.",
+    "landAcres": 186,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "karis-critical-naperville-il",
+    "name": "Karis Critical Naperville Data Center",
+    "operator": "Karis Critical",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.809029,
+      "lon": -88.117382,
+      "city": "Naperville",
+      "county": "DuPage",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 36
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-01-21",
+        "note": "Naperville City Council rejected the proposal 6-1 with two abstentions after months of opposition; a revised single-facility plan was also voted down.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cbsnews.com/chicago/news/naperville-city-council-to-vote-on-controversial-data-center/",
+        "label": "Naperville City Council votes against proposed data center plan",
+        "publisher": "CBS News Chicago",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "36 MW, 130,000+ sq ft, sited on Naperville's I-88 corridor. ⚠ The source names only the I-88 corridor, not a street address; coordinates are an approximate corridor pin and must be verified before the site is treated as located.",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents objected over utility costs, cooling water use, diesel generator emissions and proximity to homes and schools; the council rejected both the original two-building plan and a reduced single-building version.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "karis-dekalb-campus-il",
+    "name": "KARIS DeKalb Campus (Peace and Gurler Roads)",
+    "operator": "Karis Acquisitions",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.892979,
+      "lon": -88.724193,
+      "city": "DeKalb",
+      "county": "DeKalb",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-07-22",
+        "note": "DeKalb City Council approved an amendment to Ordinance 2023-038 to accommodate a 1,750,000 sq ft data center in seven buildings at the NE corner of Peace and Gurler Roads; still carried on the city's project list as of 7/15/2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cityofdekalb.com/DocumentCenter/View/21222/Development-Projects-List-7-15-26-",
+        "label": "City of DeKalb Zoning & Development Projects list as of 7/15/2026 — Steven Goldin and Karis Acquisitions, NE Corner of Peace and Gurler Roads, 1,750,000 sq ft data center in seven buildings, approved 7/22/24",
+        "publisher": "City of DeKalb",
+        "retrievedAt": "2026-09-25",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.cityofdekalb.com/DocumentCenter/View/20701/Development-Projects-List-3-18-26-",
+        "label": "City of DeKalb Zoning & Development Projects list as of 3/18/2026 (same entry)",
+        "publisher": "City of DeKalb",
+        "retrievedAt": "2026-09-25",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Seven-building, 1,750,000 sq ft campus. Coordinates are the Peace Road / Gurler Road intersection (OSM); the approval describes the NE corner, so the true footprint lies north-east of this point. No megawatt figure appears in the city record.",
     "facilityType": "data_center"
   },
   {
@@ -70792,6 +71268,64 @@
     "lastUpdated": "2026-09-15",
     "notes": "A separate Needham facility from the tracked Digital Realty BOS14 at 128 First Avenue - different operator, different address. Single-source record, hence \"reported\".",
     "facilityType": "data_center"
+  },
+  {
+    "id": "lincoln-land-energy-center-pawnee-il",
+    "name": "Lincoln Land Energy Center",
+    "operator": "Kindle Energy (Lincoln Land Energy Center LLC)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5788,
+      "lon": -89.57984,
+      "city": "Pawnee",
+      "county": "Sangamon",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1276
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-25",
+        "note": "Pre-construction: Illinois EPA air construction permit issued and MISO interconnection agreement executed, but no construction has started.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Lincoln_Land_energy_center",
+        "label": "Lincoln Land energy center — Global Energy Monitor (1,276 MW, pre-construction, Kindle Energy/Blackstone, coordinates 39.5788, -89.57984)",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.powermag.com/illinois-epa-issues-permit-for-new-1-1-gw-gas-fired-facility/",
+        "label": "Illinois EPA Issues Permit for New 1.1-GW Gas-Fired Facility",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.illinoistimes.com/news/data-center-developer-abandons-plans-for-christian-county/",
+        "label": "Data center developer abandons plans for Christian County (Eagle Rock's PPA with Lincoln Land and its financing difficulty)",
+        "publisher": "Illinois Times",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Capacity sources diverge: Global Energy Monitor records 1,276 MW across two 638 MW units, while the 2022 Illinois EPA permit coverage recorded 1,100 MW under then-developer EmberClear. The 1,276 MW figure is used as the more recent; treat the difference as unresolved. Ownership has moved from EmberClear to Lincoln Land Energy Center LLC, a Kindle Energy subsidiary — the permit-era developer is NOT the current owner. Relevant to this tracker because Eagle Rock Partners had contracted the plant's output for its Meridian Technology Park data center and cancelled that project in August 2026 when the plant's delivery became uncertain; no offtaker is recorded now that the PPA counterparty has withdrawn.",
+    "landAcres": 160,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2,
+      "notes": "Combined-cycle, two units; designed to burn a 30% hydrogen blend initially with the ability to move toward 100% hydrogen. Illinois EPA construction permit granted and a MISO interconnection agreement executed; construction has not begun."
+    }
   },
   {
     "id": "liquid-web-dc3-lansing-mi",
@@ -74371,6 +74905,52 @@
     "facilityType": "data_center"
   },
   {
+    "id": "menlo-digital-chicago-exchange-il",
+    "name": "Menlo Digital Chicago Exchange (601 West Polk)",
+    "operator": "Menlo Digital (Menlo Equities)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.8716062,
+      "lon": -87.6430697,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "601 W Polk Street",
+      "state": "IL",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 8
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-12",
+        "note": "Listed as an open, operating Chicago data center; owner's property page describes an active 104,000 sq ft data center with 8 MW installed capacity.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.menloequities.com/properties/601-polk-west-polk-street/",
+        "label": "601 West Polk Street, Chicago — property page (104,000 SF data center, 8 MW installed)",
+        "publisher": "Menlo Equities",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      },
+      {
+        "url": "https://blockclubchicago.org/2026/08/12/data-centers-are-popping-up-everywhere-in-chicago-heres-where-and-why-theyre-controversial/",
+        "label": "Block Club Chicago data center map — Menlo Digital Chicago, 601 W. Polk St., open",
+        "publisher": "Block Club Chicago",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Converted brick warehouse; owner page cites one 2.5 MW utility-owned substation plus two 2.5 MW building-owned unit substations and 8 MW installed capacity. Menlo Equities is the owner; Block Club names Menlo Digital as the operating brand.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "menlo-digital-jamestown-drive-petersburg-va",
     "name": "Menlo Digital Richmond Virginia Data Center (Jamestown Drive)",
     "operator": "Menlo Digital",
@@ -77864,11 +78444,11 @@
         "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
         "label": "Data Center Investment Program 2025 Annual Report (MEDP Mission Critical Facility, LLC dba Metro Edge, Chicago, 2023 MOU)",
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
-        "retrievedAt": "2026-08-31",
+        "retrievedAt": "2026-09-25",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-31",
+    "lastUpdated": "2026-09-25",
     "notes": "Operator's current project page states \"4 story, 174,900 SF\" and \"53 MW in total power from ComEd, 28 MW initial phase\"; the 2022 announcement described a 21MW five-storey building, so the design grew. Status is the weakest link here — neither operator page states a live date, and confidence is set to reported accordingly. Coordinates geocoded from the published street address.",
     "subsidies": [
       {
@@ -77879,6 +78459,7 @@
         "sourceIndex": 2
       }
     ],
+    "investmentUsd": 257123954,
     "landAcres": 1.97,
     "facilityType": "data_center"
   },
@@ -101966,6 +102547,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "related-digital-8080-lake-shore-chicago-il",
+    "name": "Related Digital South Works Campus (8080 S DuSable Lake Shore Drive)",
+    "operator": "Related Digital",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.7466434,
+      "lon": -87.5379905,
+      "city": "Chicago",
+      "county": "Cook",
+      "street": "8080 S DuSable Lake Shore Drive",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "announcedDate": "2025-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-03-27",
+        "note": "Related Companies announced a 1 GW data center on the north side of its 400+ acre former U.S. Steel South Works property when it capitalized Related Digital.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.related.com/press-releases/2025-03-27/related-companies-accelerates-push-data-centers-capitalization-related",
+        "label": "Related Companies accelerates push into data centers with capitalization of Related Digital",
+        "publisher": "Related Companies",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://blockclubchicago.org/2026/08/12/data-centers-are-popping-up-everywhere-in-chicago-heres-where-and-why-theyre-controversial/",
+        "label": "Data Centers Are Popping Up All Over Chicago. Here's Where",
+        "publisher": "Block Club Chicago",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/states/illinois/",
+        "label": "Illinois data center map — 8080 S DuSable Lake Shore Drive, Related Digital, 1,000 MW planned",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "Data center occupies the north side of the former U.S. Steel South Works property; the adjacent 128-acre Illinois Quantum & Microelectronics Park is a separate use on the same property and its acreage is NOT this facility's. Coordinates are the OSM address node for 8080 S Lake Shore Drive, not a parcel-confirmed footprint.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "related-digital-cheyenne-wy",
     "name": "Related Digital Cheyenne Data Center Campus",
     "operator": "Related Digital",
@@ -107451,11 +108086,11 @@
         "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
         "label": "Data Center Investment Program 2025 Annual Report (Serverfarm LLC dba SF CH1, LLC, Chicago, 2023 MOU)",
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
-        "retrievedAt": "2026-08-31",
+        "retrievedAt": "2026-09-25",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-25",
     "notes": "443,000 sq ft eight-storey building with 130,000 sq ft of data halls; 32MW utility power and 21.5MW IT power per the operator. Subsidy value is the state's estimated tax benefit (6.25% of a $285,000,000 investment commitment), not cash received. Coordinates geocoded from the published street address.",
     "water": {
       "coolingType": "closed_loop"
@@ -107469,6 +108104,7 @@
         "sourceIndex": 1
       }
     ],
+    "investmentUsd": 285000000,
     "facilityType": "data_center"
   },
   {
@@ -113283,10 +113919,27 @@
         "publisher": "Stream Data Centers",
         "retrievedAt": "2026-08-17",
         "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Illinois DCEO Data Center Investment Program 2025 Annual Report — SDC CHI II Busse, LLC, Elk Grove Village, 2022 MOU",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-25",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-09-25",
     "notes": "226,000 sq ft facility, 32 MW at full build; fully leased.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales and use tax exemption)",
+        "amountUsd": 15625000,
+        "jurisdiction": "Illinois",
+        "year": "2022",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 250000000,
     "facilityType": "data_center"
   },
   {
@@ -113323,10 +113976,27 @@
         "publisher": "Stream Data Centers",
         "retrievedAt": "2026-08-17",
         "kind": "other"
+      },
+      {
+        "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
+        "label": "Illinois DCEO Data Center Investment Program 2025 Annual Report — SDC CHI III, LLC, Elk Grove Village, 2025 MOU",
+        "publisher": "Illinois Department of Commerce and Economic Opportunity",
+        "retrievedAt": "2026-09-25",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-17",
+    "lastUpdated": "2026-09-25",
     "notes": "35+ acre hyperscale campus planned for up to 2 million sq ft of data center space; building one to deliver 40 MW. capacityMw records building one only — the campus total is not published.",
+    "subsidies": [
+      {
+        "program": "Illinois Data Center Investment Program (sales and use tax exemption)",
+        "amountUsd": 28125000,
+        "jurisdiction": "Illinois",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 450000000,
     "landAcres": 35,
     "facilityType": "data_center"
   },
@@ -115837,7 +116507,7 @@
         "url": "https://dceo.illinois.gov/content/dam/soi/en/web/dceo/aboutdceo/reportsrequiredbystatute/2025-data-centers-annual-report.pdf",
         "label": "Data Center Investment Program 2025 Annual Report — T5@Chicago IV, LP, Grayslake (2025 MOU)",
         "publisher": "Illinois Department of Commerce and Economic Opportunity",
-        "retrievedAt": "2026-09-12",
+        "retrievedAt": "2026-09-25",
         "kind": "subsidy"
       },
       {
@@ -115846,9 +116516,16 @@
         "publisher": "Village of Grayslake, Illinois",
         "retrievedAt": "2026-09-12",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.illinoiscrdc.com/illinoisdatacenters",
+        "label": "Illinois Data Centers — T5 Chicago IV, Grayslake, 1.2 GW IT (Phase 1: 480 MW)",
+        "publisher": "Coalition for Responsible Data Centers",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-25",
     "notes": "CHI IV in Grayslake, Lake County (~40 mi north of Chicago): up to 1.2 GW IT capacity with 1.6 GW secured ComEd power; envisions 20 × 60 MW buildings, Phase 1 (3 × 60 MW) targeted Q4 2027. Recorded as proposed (announced; no groundbreaking confirmed). Distinct from T5's Palmetto, GA campus. Coordinates are the Grayslake area centroid.",
     "energy": {
       "source": "grid",
@@ -115869,6 +116546,7 @@
         "sourceIndex": 5
       }
     ],
+    "investmentUsd": 250000000,
     "landAcres": 400,
     "community": {
       "status": "contested",
@@ -115877,6 +116555,46 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "t5-chicago-v-elk-grove-village-il",
+    "name": "T5 @ Chicago V (CHI V)",
+    "operator": "T5 Data Centers",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0035588,
+      "lon": -88.0037711,
+      "city": "Elk Grove Village",
+      "county": "Cook",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 36
+    },
+    "announcedDate": "2025-03",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-03-26",
+        "note": "T5 announced acquisition of a seven-acre Elk Grove Village site already zoned for data center use, with ComEd utility power secured and construction to begin shortly; 220,000 sq ft / 36 MW critical IT, occupancy slated for 2028.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/t5-data-centers-expands-chicago-footprint-with-acquisition-of-fifth-data-center-chi-v-in-elk-grove-village-302411367.html",
+        "label": "T5 Data Centers expands Chicago footprint with acquisition of fifth data center (CHI V) in Elk Grove Village",
+        "publisher": "PR Newswire / T5 Data Centers",
+        "retrievedAt": "2026-09-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "T5's fifth Chicago-area site and fourth in the O'Hare submarket. ⚠ Coordinates are the Elk Grove Village municipal centroid: the seven-acre parcel's street address has not been published, so the pin may be a mile or more from the real footprint and must be corrected before it is treated as a located site.",
+    "landAcres": 7,
+    "facilityType": "data_center"
   },
   {
     "id": "t5-cleveland-oh",
@@ -125238,6 +125956,51 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "vme-lockport-star-innovation-district-il",
+    "name": "Star Innovation District Data Center (Lockport)",
+    "operator": "VME Developers",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5970347,
+      "lon": -88.0552886,
+      "city": "Lockport",
+      "county": "Will",
+      "street": "302 W 2nd Street",
+      "postalCode": "60441",
+      "state": "IL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-05-28",
+        "note": "Lockport suspended data center discussions pending broader regulatory frameworks, cancelled all June 2026 workshops and let its letter of intent with VME expire; the city states no facility design was ever proposed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cityoflockport.net/956/Data-Center-Information",
+        "label": "Data Center Information — City of Lockport official page",
+        "publisher": "City of Lockport",
+        "retrievedAt": "2026-09-25",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.illinoisedc.org/vetted-site/star-innovation-district/",
+        "label": "Star Innovation District vetted site — 302 W 2nd Street, Lockport, 165 acres, publicly owned",
+        "publisher": "Illinois Economic Development Corporation",
+        "retrievedAt": "2026-09-25",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-25",
+    "notes": "City-owned, remediated brownfield on the former Texaco/Chevron refinery property along the Chicago Sanitary & Ship Canal. The city describes a preliminary 300 MW projection as explicitly unvalidated, so no capacityMw value is asserted. Site utility sheet notes electric service supports only ~10 MW today, with loads above 50 MW requiring new infrastructure on a 36-42 month lead time.",
+    "landAcres": 165,
+    "facilityType": "data_center"
   },
   {
     "id": "volition-spanish-fork-ut",
