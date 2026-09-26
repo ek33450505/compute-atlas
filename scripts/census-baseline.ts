@@ -62,6 +62,34 @@ function printFrozen(report: IndexCensusReport): void {
   }
 }
 
+/**
+ * Refuses to freeze a report that stopped early (`partial: true` — see
+ * `IndexCensusReport` in `./index-census`) as a baseline. A partial report's
+ * per-family counts are truncated at whatever point the run died, so
+ * freezing one would bake a false starting point into every future
+ * measurement. Deliberately no `--force`-style escape: there is no
+ * legitimate reason to want a truncated baseline. Factual on purpose — the
+ * partial report is still on disk, so this never implies data was lost.
+ *
+ * `report.partial` is checked with `=== true` (never a bare truthy check on
+ * some other field) so a report with `partial: false` or the field absent —
+ * both possible once JSON.parse crosses the type-checked boundary — is
+ * correctly treated as complete, not refused.
+ */
+function assertCensusNotPartial(report: IndexCensusReport): void {
+  if (report.partial !== true) return;
+  const covered = Object.keys(report.byRoute).length;
+  const planned = report.sampled.totalInspected;
+  throw new Error(
+    `The census at ${OUTPUT_PATH} is PARTIAL — it covered ${covered}/${planned} planned URL(s) before ` +
+      `stopping early (reason: ${report.partialReason ?? "(no reason recorded)"}). A partial census cannot ` +
+      "be frozen as a baseline: its per-family counts are truncated at whatever point the run died, and " +
+      "freezing it would bake a false starting point into every future measurement. Nothing was lost — the " +
+      "partial report is still on disk. Re-run the census to completion (`npm run census -- --run`) and " +
+      "then retry `npm run census:baseline`."
+  );
+}
+
 export async function main(argv: string[]): Promise<void> {
   const options = parseCliArgs(argv);
 
@@ -79,6 +107,7 @@ export async function main(argv: string[]): Promise<void> {
 
   const raw = readFileSync(OUTPUT_PATH, "utf8");
   const report = JSON.parse(raw) as IndexCensusReport;
+  assertCensusNotPartial(report);
 
   writeFileSync(BASELINE_PATH, raw);
   printFrozen(report);

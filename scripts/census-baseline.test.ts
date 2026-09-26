@@ -219,3 +219,75 @@ describe("history append", () => {
     expect(newEntry.takenAt).toBe(SAMPLE_REPORT.takenAt);
   });
 });
+
+// ---------------------------------------------------------------------------
+// main — partial census guard: a partial census must never become a baseline
+// ---------------------------------------------------------------------------
+describe("main — partial census guard", () => {
+  const PARTIAL_REASON = "URL Inspection failed for https://x/2: 401 ACCESS_TOKEN_EXPIRED";
+  const PARTIAL_REPORT: IndexCensusReport = {
+    takenAt: "2026-09-26T10:00:00.000Z",
+    siteUrl: "sc-domain:compute-atlas.com",
+    sitemapIndexUrl: "https://www.compute-atlas.com/sitemap.xml",
+    sitemapSource: "https://www.compute-atlas.com/sitemap.xml",
+    sampled: { strategy: "test", totalCandidates: 5, totalInspected: 5 },
+    byRoute: {
+      "https://x/1": { family: "facilities", coverageState: "Submitted and indexed" },
+    },
+    summary: {
+      byFamily: {
+        facilities: {
+          inspected: 1,
+          indexed: 1,
+          discovered_not_indexed: 0,
+          crawled_not_indexed: 0,
+          excluded: 0,
+          other: 0,
+        },
+      },
+    },
+    partial: true,
+    partialReason: PARTIAL_REASON,
+  };
+
+  it("refuses a PARTIAL census, naming the reason and the covered/planned counts, and never writes a baseline", async () => {
+    mockExistsSync.mockImplementation((p: unknown) => p === OUTPUT_PATH); // no existing baseline
+    mockReadFileSync.mockReturnValue(JSON.stringify(PARTIAL_REPORT));
+
+    let caught: unknown;
+    try {
+      await main([]);
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).toBeInstanceOf(Error);
+    const message = (caught as Error).message;
+    expect(message).toMatch(/partial/i);
+    expect(message).toContain("1/5");
+    expect(message).toContain(PARTIAL_REASON);
+    expect(message.toLowerCase()).toContain("cannot");
+    expect(mockWriteFileSync).not.toHaveBeenCalled();
+    expect(mockAppendFileSync).not.toHaveBeenCalled();
+  });
+
+  it("still freezes a normal (non-partial) census exactly as before", async () => {
+    mockExistsSync.mockImplementation((p: unknown) => p === OUTPUT_PATH); // no existing baseline
+    mockReadFileSync.mockReturnValue(SAMPLE_JSON);
+    mockConsoleLog();
+
+    await main([]);
+
+    expect(mockWriteFileSync).toHaveBeenCalledWith(BASELINE_PATH, SAMPLE_JSON);
+  });
+
+  it("treats partial: false the same as absent — does not refuse (not a merely-falsy check)", async () => {
+    const explicitlyFalse = JSON.stringify({ ...SAMPLE_REPORT, partial: false });
+    mockExistsSync.mockImplementation((p: unknown) => p === OUTPUT_PATH); // no existing baseline
+    mockReadFileSync.mockReturnValue(explicitlyFalse);
+    mockConsoleLog();
+
+    await main([]);
+
+    expect(mockWriteFileSync).toHaveBeenCalledWith(BASELINE_PATH, explicitlyFalse);
+  });
+});

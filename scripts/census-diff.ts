@@ -170,6 +170,33 @@ function loadReport(path: string, notFoundMessage: string): IndexCensusReport {
   return JSON.parse(readFileSync(path, "utf8")) as IndexCensusReport;
 }
 
+/**
+ * Refuses to diff a side that stopped early (`partial: true` — see
+ * `IndexCensusReport` in `./index-census`). A partial report's per-family
+ * counts are truncated at whatever point the run died, so diffing against
+ * (or from) one would report fictitious per-family movement. Deliberately no
+ * `--force`-style escape: there is no legitimate reason to diff a truncated
+ * side. Factual on purpose — the partial report is still on disk, so this
+ * never implies data was lost.
+ *
+ * `report.partial` is checked with `=== true` (never a bare truthy check on
+ * some other field) so a report with `partial: false` or the field absent —
+ * both possible once JSON.parse crosses the type-checked boundary — is
+ * correctly treated as complete, not refused.
+ */
+function assertNotPartial(report: IndexCensusReport, label: string, path: string): void {
+  if (report.partial !== true) return;
+  const covered = Object.keys(report.byRoute).length;
+  const planned = report.sampled.totalInspected;
+  throw new Error(
+    `The ${label} at ${path} is PARTIAL — it covered ${covered}/${planned} planned URL(s) before ` +
+      `stopping early (reason: ${report.partialReason ?? "(no reason recorded)"}). A partial census cannot ` +
+      "be diffed: its per-family counts are truncated at whatever point the run died, and diffing it would " +
+      "report fictitious per-family movement. Nothing was lost — the partial report is still on disk. " +
+      "Re-run the census to completion (`npm run census -- --run`) and then retry `npm run census:diff`."
+  );
+}
+
 function printDiffTable(diff: CensusDiffResult): void {
   console.log("Index census diff");
   console.log(`Baseline: ${diff.baselineTakenAt} (${diff.baselineSitemapSource})`);
@@ -213,6 +240,9 @@ export async function main(argv: string[]): Promise<void> {
   const options = parseCliArgs(argv);
   const baseline = loadReport(BASELINE_PATH, "No baseline found. Run `npm run census:baseline` first");
   const current = loadReport(OUTPUT_PATH, "No census found. Run `npm run census -- --run` first");
+
+  assertNotPartial(baseline, "baseline", BASELINE_PATH);
+  assertNotPartial(current, "current census", OUTPUT_PATH);
 
   const diff = computeCensusDiff(baseline, current);
 

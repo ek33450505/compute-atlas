@@ -254,3 +254,104 @@ describe("main", () => {
     expect(entry.takenAt).toBe(CURRENT_REPORT.takenAt);
   });
 });
+
+// ---------------------------------------------------------------------------
+// main — partial census guard: neither side of a diff may be partial
+// ---------------------------------------------------------------------------
+describe("main — partial census guard", () => {
+  const PARTIAL_REASON = "URL Inspection failed for https://x/2: 401 ACCESS_TOKEN_EXPIRED";
+
+  function partialReport(takenAt: string): IndexCensusReport {
+    return {
+      ...makeReport(takenAt, {
+        "https://x/1": { family: "facilities", coverageState: "Submitted and indexed" },
+      }),
+      sampled: { strategy: "test", totalCandidates: 5, totalInspected: 5 },
+      partial: true,
+      partialReason: PARTIAL_REASON,
+    };
+  }
+
+  it("refuses when the CURRENT census is partial, naming the current side and covered/planned counts", async () => {
+    mockExistsSync.mockImplementation((p: unknown) => p === OUTPUT_PATH || p === BASELINE_PATH);
+    mockReadFileSync.mockImplementation((p: unknown) => {
+      if (p === OUTPUT_PATH) return JSON.stringify(partialReport("t2"));
+      if (p === BASELINE_PATH) return JSON.stringify(makeReport("t1", {}));
+      throw new Error(`unexpected readFileSync(${String(p)})`);
+    });
+
+    let caught: unknown;
+    try {
+      await main([]);
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).toBeInstanceOf(Error);
+    const message = (caught as Error).message;
+    expect(message).toMatch(/current census/i);
+    expect(message).toContain("1/5");
+    expect(message).toContain(PARTIAL_REASON);
+    expect(message.toLowerCase()).toContain("cannot");
+    expect(mockAppendFileSync).not.toHaveBeenCalled();
+  });
+
+  it("refuses when the BASELINE is partial, naming the baseline side and covered/planned counts", async () => {
+    mockExistsSync.mockImplementation((p: unknown) => p === OUTPUT_PATH || p === BASELINE_PATH);
+    mockReadFileSync.mockImplementation((p: unknown) => {
+      if (p === OUTPUT_PATH) return JSON.stringify(makeReport("t2", {}));
+      if (p === BASELINE_PATH) return JSON.stringify(partialReport("t1"));
+      throw new Error(`unexpected readFileSync(${String(p)})`);
+    });
+
+    let caught: unknown;
+    try {
+      await main([]);
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).toBeInstanceOf(Error);
+    const message = (caught as Error).message;
+    expect(message).toMatch(/\bbaseline\b/i);
+    expect(message).toContain("1/5");
+    expect(message).toContain(PARTIAL_REASON);
+    expect(mockAppendFileSync).not.toHaveBeenCalled();
+  });
+
+  it("still runs when neither side is partial", async () => {
+    mockExistsSync.mockImplementation((p: unknown) => p === OUTPUT_PATH || p === BASELINE_PATH);
+    mockReadFileSync.mockImplementation((p: unknown) => {
+      if (p === OUTPUT_PATH) {
+        return JSON.stringify(
+          makeReport("t2", { "https://x/1": { family: "facilities", coverageState: "Submitted and indexed" } })
+        );
+      }
+      if (p === BASELINE_PATH) {
+        return JSON.stringify(
+          makeReport("t1", {
+            "https://x/1": { family: "facilities", coverageState: "Discovered - currently not indexed" },
+          })
+        );
+      }
+      throw new Error(`unexpected readFileSync(${String(p)})`);
+    });
+    mockConsoleLog();
+
+    await main([]);
+
+    expect(mockAppendFileSync).toHaveBeenCalledTimes(1);
+  });
+
+  it("treats partial: false on either side the same as absent — does not refuse (not a merely-falsy check)", async () => {
+    mockExistsSync.mockImplementation((p: unknown) => p === OUTPUT_PATH || p === BASELINE_PATH);
+    mockReadFileSync.mockImplementation((p: unknown) => {
+      if (p === OUTPUT_PATH) return JSON.stringify({ ...makeReport("t2", {}), partial: false });
+      if (p === BASELINE_PATH) return JSON.stringify({ ...makeReport("t1", {}), partial: false });
+      throw new Error(`unexpected readFileSync(${String(p)})`);
+    });
+    mockConsoleLog();
+
+    await main([]);
+
+    expect(mockAppendFileSync).toHaveBeenCalledTimes(1);
+  });
+});
