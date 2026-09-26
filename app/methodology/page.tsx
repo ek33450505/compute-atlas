@@ -21,7 +21,7 @@ export const metadata: Metadata = {
  *
  * No `revalidate` export: the doc changes only on a code deploy, so this
  * page is fully static, matching /support and /contribute (also
- * revalidate-less, STATIC_PAGE_LAST_MODIFIED in app/sitemap.ts).
+ * revalidate-less, STATIC_PAGE_LAST_MODIFIED in lib/sitemap-routes.ts).
  */
 export default function MethodologyPage() {
   return (

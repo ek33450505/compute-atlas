@@ -10,7 +10,7 @@ import {
   buildCountyRoutes,
   MIN_FACILITIES_FOR_OPERATOR_SITEMAP,
   MIN_FACILITIES_FOR_COUNTY_SITEMAP,
-} from "@/app/sitemap";
+} from "@/lib/sitemap-routes";
 import {
   getAllFacilities,
   getStates,

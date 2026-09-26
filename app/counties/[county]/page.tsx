@@ -48,7 +48,7 @@ function humanJoin(items: string[]): string {
 /**
  * One static param per tracked county — all of them, including the 354 with a
  * single facility. The sitemap deliberately submits only the multi-facility
- * subset (see MIN_FACILITIES_FOR_COUNTY_SITEMAP in app/sitemap.ts), but every
+ * subset (see MIN_FACILITIES_FOR_COUNTY_SITEMAP in lib/sitemap-routes.ts), but every
  * county hub stays generated, live, crawlable and internally linked.
  */
 export async function generateStaticParams() {
