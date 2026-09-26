@@ -67,7 +67,18 @@ export function familyFromChildUrl(url: string): string {
 
 export interface SitemapFamilyUrls {
   family: string;
+  /**
+   * The URL actually FETCHED for this child — rebased onto the origin
+   * `indexUrl` was itself fetched from when that differs from the child's
+   * own `<loc>` origin. Equal to the child's `<loc>` value when the origins
+   * already match (the production case).
+   */
   sitemapUrl: string;
+  /**
+   * Page URLs harvested from inside the child document (its own
+   * `<url><loc>` values), returned completely untouched. Never rebased —
+   * see the inline comment where these are parsed.
+   */
   urls: string[];
 }
 
@@ -84,6 +95,22 @@ export interface SitemapFamilyUrls {
  * and there are only nine children today, so there's no throughput reason to
  * parallelize, and sequential keeps a failure attributable to one request.
  *
+ * Each child's `<loc>` in the index is an absolute PRODUCTION URL (e.g.
+ * `https://www.compute-atlas.com/sitemaps/static.xml`) — correct, since
+ * that's what gets submitted to Google. But fetching it verbatim makes this
+ * function unusable against any non-production origin: `indexUrl` might be
+ * `http://localhost:3999/sitemap.xml` (a local build serving the real
+ * index), whose children don't exist yet at the production origin on an
+ * unmerged branch. So the FETCH target is rebased onto `indexUrl`'s own
+ * origin — the child's path, plus query if any, resolved against that
+ * origin (never string-concatenated, never assuming a `/sitemaps/` prefix).
+ * When the index and its children already share an origin (the production
+ * case) this resolves back to the exact same URL: an intentional no-op.
+ *
+ * The page URLs harvested from each child (its own `<url><loc>` values, in
+ * the returned `urls` array) are NOT rebased — see the inline comment where
+ * they're parsed below.
+ *
  * Every failure throws loudly, naming the URL or family involved:
  *  - `indexUrl` does not resolve to an index (e.g. it is itself a `<urlset>`)
  *  - the index has zero `<sitemap>` children
@@ -99,27 +126,45 @@ export async function collectSitemapUrlsByFamily(
     throw new Error(`${indexUrl} is not a sitemap INDEX (no <sitemapindex> root) — nothing to follow.`);
   }
 
-  const childUrls = parseLocs(xml);
-  if (childUrls.length === 0) {
+  const childLocs = parseLocs(xml);
+  if (childLocs.length === 0) {
     throw new Error(`${indexUrl} is a sitemap index with zero <sitemap> children — refusing to treat this as a no-op.`);
   }
 
+  // Rebase only the FETCH target onto the origin `indexUrl` was itself
+  // fetched from. Resolving the child's path (+ search) against that origin
+  // means production stays byte-identical (same origin in, same origin out)
+  // while a non-production `indexUrl` follows its children locally instead
+  // of leaking out to production.
+  const indexOrigin = new URL(indexUrl).origin;
+
   const results: SitemapFamilyUrls[] = [];
-  for (const sitemapUrl of childUrls) {
-    const family = familyFromChildUrl(sitemapUrl);
-    const childXml = await fetchSitemapXml(sitemapUrl);
+  for (const childLoc of childLocs) {
+    const family = familyFromChildUrl(childLoc);
+    const childUrl = new URL(childLoc);
+    const fetchUrl = new URL(`${childUrl.pathname}${childUrl.search}`, indexOrigin).toString();
+
+    const childXml = await fetchSitemapXml(fetchUrl);
     if (isSitemapIndex(childXml)) {
       throw new Error(
-        `${sitemapUrl} (family "${family}") is itself a sitemap INDEX — nested sitemap indexes are not supported.`
+        `${fetchUrl} (family "${family}") is itself a sitemap INDEX — nested sitemap indexes are not supported.`
       );
     }
+
+    // ⚠️ CRITICAL: `urls` are the page URLs harvested from INSIDE the child
+    // document (its own <url><loc> values) and are returned completely
+    // untouched, exactly as the document states them — NOT rebased to the
+    // fetch origin. These are the canonical URLs that get submitted to
+    // Google and inspected in Search Console; rewriting them to a
+    // local/dev origin would silently make an entire census measure URLs
+    // that do not exist.
     const urls = parseLocs(childXml);
     if (urls.length === 0) {
       throw new Error(
-        `Child sitemap for family "${family}" (${sitemapUrl}) has zero <loc> entries — refusing to treat this as a no-op.`
+        `Child sitemap for family "${family}" (${fetchUrl}) has zero <loc> entries — refusing to treat this as a no-op.`
       );
     }
-    results.push({ family, sitemapUrl, urls });
+    results.push({ family, sitemapUrl: fetchUrl, urls });
   }
   return results;
 }
