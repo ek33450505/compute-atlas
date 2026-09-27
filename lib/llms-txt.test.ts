@@ -43,6 +43,19 @@ describe("public/llms.txt", () => {
     expect(LLMS_TXT).toContain(`Content-Signal: ${signal}`);
   });
 
+  it("points to /contribute for corrections, with the public-source requirement stated", () => {
+    expect(LLMS_TXT).toMatch(/compute-atlas\.com\/contribute\b/);
+    expect(LLMS_TXT).toMatch(/public source/i);
+  });
+
+  it("points to /about", () => {
+    expect(LLMS_TXT).toMatch(/compute-atlas\.com\/about\b/);
+  });
+
+  it("names the repo's raw data/facilities.json export", () => {
+    expect(LLMS_TXT).toContain("data/facilities.json");
+  });
+
   it("carries no facility, source or other moving count", () => {
     // The file has no build step, so a live number in it goes stale silently.
     // Every number it may legitimately contain is part of a fixed token: the

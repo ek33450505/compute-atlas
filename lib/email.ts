@@ -171,6 +171,42 @@ export async function sendChangeNotification(input: {
 }
 
 /**
+ * Sent instead of a confirm email when a new subscription is auto-confirmed
+ * because the address already holds a confirmed subscription elsewhere (see
+ * hasConfirmedSubscription in lib/subscribe.ts) — there is nothing to
+ * confirm, so this states plainly that no confirmation was needed and that
+ * the subscription is already live, then gives an unsubscribe path exactly
+ * like sendChangeNotification's, since this recipient (unlike
+ * sendSubmissionReviewedEmail's) IS a real subscriber going forward.
+ */
+export async function sendWatchStartedEmail(input: {
+  email: string;
+  targetLabel: string;
+  unsubscribeToken: string;
+}): Promise<{ sent: boolean }> {
+  const unsubUrl = `${linkBase()}/api/subscribe/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
+  const subject = `You're now watching ${input.targetLabel} — Compute Atlas`;
+  const text = `You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching ${input.targetLabel} and will get an email whenever it changes.\n\nIf this wasn't you, unsubscribe: ${unsubUrl}`;
+  const html = `<p>You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching <strong>${escapeHtml(input.targetLabel)}</strong> and will get an email whenever it changes.</p><p style="color:#666;font-size:0.85em;">If this wasn't you, <a href="${escapeHtml(unsubUrl)}">unsubscribe</a>.</p>`;
+
+  return sendViaResend(
+    "sendWatchStartedEmail",
+    "RESEND_API_KEY not set — skipping watch-started email send",
+    {
+      from: fromAddress(),
+      to: input.email,
+      subject,
+      text,
+      html,
+      headers: {
+        "List-Unsubscribe": `<${unsubUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    },
+  );
+}
+
+/**
  * "Email me when this is reviewed" — the one-shot send for the
  * `submission_notify_requests` flow (see lib/submission-notify.ts and the
  * review-time hook in lib/submissions.ts). Deliberately NOT a copy-paste of

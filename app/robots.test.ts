@@ -6,7 +6,7 @@ import { describe, it, expect } from "vitest";
 // signal to re-verify that `other` still emits what we think it does.
 import { resolveRobots } from "next/dist/build/webpack/loaders/metadata/resolve-route-data";
 import robots, { BLOCKED_AI_CRAWLERS } from "@/app/robots";
-import { siteConfig } from "@/lib/site";
+import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 import { SITEMAP_FAMILY_IDS, SITEMAP_INDEX_URL, sitemapChildUrl } from "@/lib/sitemap-families";
 
 const CONTENT_SIGNAL = "search=yes,ai-train=no,use=reference";
@@ -114,5 +114,77 @@ describe("robots", () => {
     expect(wildcard.userAgent).toBe("*");
     expect(wildcard.allow).toBe("/");
     expect(wildcard.disallow).toEqual(["/admin/", "/api/"]);
+  });
+
+  it("carries the bulk-data and licence comments on the '*' rule, keyed with a leading '#'", () => {
+    const { rules } = robots();
+    const rule = Array.isArray(rules) ? rules[0] : rules;
+    expect(rule.userAgent).toBe("*");
+
+    const bulkData = rule.other?.["# Bulk data"];
+    const licence = rule.other?.["# Licence"];
+    expect(typeof bulkData).toBe("string");
+    expect(typeof licence).toBe("string");
+    // Points at the human download page and the raw single-file export, not
+    // at page-by-page HTML -- that's the entire point of this comment.
+    expect(bulkData).toContain(`${siteConfig.url}/data`);
+    expect(bulkData).toContain("raw.githubusercontent.com");
+    expect(bulkData).toContain("data/facilities.json");
+    // States the licence condition plainly, without inventing a URL.
+    expect(licence).toContain(DATASET_LICENSE_URL);
+    expect(licence).toContain("CC-BY-4.0");
+  });
+
+  it("gives every '#'-prefixed other-entry a defined value (a null/undefined value is silently dropped by the serializer)", () => {
+    const { rules } = robots();
+    const rule = Array.isArray(rules) ? rules[0] : rules;
+    const commentEntries = Object.entries(rule.other ?? {}).filter(([key]) => key.startsWith("#"));
+
+    // A filter that happened to match nothing would make every assertion
+    // below vacuously pass -- pin the count so this test can't go quiet.
+    expect(commentEntries).toHaveLength(2);
+    for (const [key, value] of commentEntries) {
+      expect(value, `"${key}" must carry a defined value`).not.toBeUndefined();
+      expect(value, `"${key}" must carry a defined value`).not.toBeNull();
+    }
+  });
+
+  it("emits the bulk-data and licence comments as '#'-prefixed lines in the served robots.txt, inside the '*' block", () => {
+    const text = resolveRobots(robots());
+    const blocks = text.split("\n\n");
+    const wildcard = blocks.find((block) => block.startsWith("User-Agent: *\n"));
+    expect(wildcard).toBeDefined();
+
+    const lines = (wildcard as string).split("\n").filter((line) => line.length > 0);
+    const bulkLine = lines.find((line) => line.startsWith("# Bulk data:"));
+    const licenceLine = lines.find((line) => line.startsWith("# Licence:"));
+    expect(bulkLine).toBeDefined();
+    expect(licenceLine).toBeDefined();
+
+    // Every non-blank line in this block is either a real directive or a
+    // "#"-prefixed comment -- nothing that would confuse a real parser.
+    for (const line of lines) {
+      const isKnownDirective = /^(User-Agent|Allow|Disallow|Content-Signal):/.test(line);
+      expect(isKnownDirective || line.startsWith("#")).toBe(true);
+    }
+  });
+
+  it("does not change any crawler permission (permission-neutral: this unit adds comments only)", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    const wildcard = ruleList[0];
+
+    expect(wildcard.userAgent).toBe("*");
+    expect(wildcard.allow).toBe("/");
+    expect(wildcard.disallow).toEqual(["/admin/", "/api/"]);
+
+    // Exact set AND order of every non-"*" rule -- catches a stray added or
+    // dropped crawler rule that the per-entry check below wouldn't.
+    const blockedAgents = ruleList.slice(1).map((rule) => rule.userAgent);
+    expect(blockedAgents).toEqual([...BLOCKED_AI_CRAWLERS]);
+    for (const rule of ruleList.slice(1)) {
+      expect(rule.disallow).toBe("/");
+      expect(rule.allow).toBeUndefined();
+    }
   });
 });

@@ -123,6 +123,40 @@ describe("POST /api/subscribe", () => {
     expect(args.to).toBe("reader@example.com");
   });
 
+  // Pairs with "sends the confirm email once RESEND_API_KEY is set" above:
+  // the auto-confirm (notice) branch must return the exact same {ok:true}/201
+  // shape as the ordinary pending (confirm) branch — the two must be
+  // indistinguishable from the response alone.
+  it("auto-confirms and sends a watch-started notice for an address with a confirmed row elsewhere, same 201 {ok:true} shape", async () => {
+    await seedFacility(tdb.db, seedDoc);
+    const email = "route-already-confirmed@example.com";
+    await tdb.db.insert(subscriptionsTable).values({
+      email,
+      targetType: "state",
+      targetId: "TN",
+      status: "confirmed",
+      confirmedAt: new Date(),
+      confirmToken: "route-seed-tok",
+      unsubscribeToken: "route-seed-unsub",
+    });
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+
+    const res = await POST(req({ email, targetType: "facility", targetId: seedDoc.id }));
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body).toEqual({ ok: true });
+    await flushAfter();
+
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    const args = resendSendMock.mock.calls[0][0];
+    expect(args.to).toBe(email);
+    expect(args.subject).toContain(seedDoc.name);
+
+    const rows = await tdb.db.select().from(subscriptionsTable);
+    const newRow = rows.find((r) => r.targetId === seedDoc.id);
+    expect(newRow?.status).toBe("confirmed");
+  });
+
   it("rejects a malformed JSON body with 400", async () => {
     const badReq = new Request("http://localhost/api/subscribe", {
       method: "POST",

@@ -332,3 +332,32 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
     ).not.toBeInTheDocument();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Agent-quotable contribution note (SourceCorrectionNote) — plain,
+// server-rendered prose distinct from the interactive SuggestCorrection CTA,
+// so a retrieval agent or search snippet can quote the fact even though it
+// can't click a button. See components/contribute/source-correction-note.tsx.
+// ---------------------------------------------------------------------------
+
+describe("FacilityPage — agent-quotable contribution note", () => {
+  it("renders the source-cited/correctable sentence in server output, with a working /contribute link", async () => {
+    const facility = makeFacility({ name: "Quotable Data Center" });
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+
+    const page = await FacilityPage({
+      params: Promise.resolve({ slug: "test-facility" }),
+    });
+    render(page);
+
+    // Substring lives entirely in the text node BEFORE the embedded <Link>,
+    // so it's safe against getByText's direct-text-node-only matching (it
+    // would NOT see text split across the link boundary).
+    expect(
+      screen.getByText(/source-cited, publicly correctable dataset/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "compute-atlas.com/contribute" })
+    ).toHaveAttribute("href", "/contribute");
+  });
+});

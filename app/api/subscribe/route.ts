@@ -1,7 +1,7 @@
 import { after } from "next/server";
 
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
-import { sendConfirmEmail } from "@/lib/email";
+import { sendConfirmEmail, sendWatchStartedEmail } from "@/lib/email";
 import {
   checkSubscribeRateLimit,
   extractTrustedClientIp,
@@ -137,6 +137,11 @@ export async function POST(request: Request) {
   const confirm = result.confirm;
   if (confirm) {
     after(() => sendConfirmEmail(confirm));
+  }
+
+  const notice = result.notice;
+  if (notice) {
+    after(() => sendWatchStartedEmail(notice));
   }
 
   return jsonResponse({ ok: true }, { status: 201 });

@@ -214,3 +214,43 @@ describe("CountyPage headings disambiguate same-named counties by state", () => 
     expect(heading).toBe(metadata.title);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Agent-quotable contribution note (SourceCorrectionNote) — plain,
+// server-rendered prose in the intro, distinct from the site's interactive
+// correction CTAs, so a retrieval agent or search snippet can quote the fact.
+// See components/contribute/source-correction-note.tsx.
+// ---------------------------------------------------------------------------
+
+describe("CountyPage — agent-quotable contribution note", () => {
+  it("renders the source-cited/correctable sentence in server output, with a working /contribute link", async () => {
+    mockGetCountyBySlug.mockResolvedValue(makeCounty());
+    mockGetFacilitiesByCounty.mockResolvedValue([makeFacility()]);
+
+    render(
+      await CountyPage({ params: Promise.resolve({ county: "loudoun-va" }) })
+    );
+
+    // Substring lives entirely in the text node BEFORE the embedded <Link>,
+    // so it's safe against getByText's direct-text-node-only matching.
+    expect(
+      screen.getByText(/source-cited, publicly correctable dataset/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "compute-atlas.com/contribute" })
+    ).toHaveAttribute("href", "/contribute");
+  });
+
+  it("renders it even for a county with no facilities on file (unconditional, unlike the capacity/operator lines)", async () => {
+    mockGetCountyBySlug.mockResolvedValue(makeCounty({ count: 0 }));
+    mockGetFacilitiesByCounty.mockResolvedValue([]);
+
+    render(
+      await CountyPage({ params: Promise.resolve({ county: "loudoun-va" }) })
+    );
+
+    expect(
+      screen.getByText(/source-cited, publicly correctable dataset/i)
+    ).toBeInTheDocument();
+  });
+});

@@ -126,6 +126,11 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/contributors" className={NAV_LINK_CLASS}>
+                  Contributors
+                </Link>
+              </li>
+              <li>
                 <Link href="/support" className={NAV_LINK_CLASS}>
                   Support the atlas <span aria-hidden="true">→</span>
                 </Link>

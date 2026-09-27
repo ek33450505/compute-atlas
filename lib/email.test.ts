@@ -148,6 +148,84 @@ describe("sendBulkAccessEmail", () => {
 });
 
 // ---------------------------------------------------------------------------
+// sendWatchStartedEmail
+// ---------------------------------------------------------------------------
+// Sent instead of a confirm email on the auto-confirm path (see
+// hasConfirmedSubscription in lib/subscribe.ts): the recipient IS a real,
+// already-confirmed subscriber, so unlike sendSubmissionReviewedEmail this
+// one DOES carry an unsubscribe link and List-Unsubscribe headers.
+describe("sendWatchStartedEmail", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    resendSendMock.mockReset();
+  });
+
+  it("returns sent:false and does not call Resend when RESEND_API_KEY is unset", async () => {
+    const { sendWatchStartedEmail } = await import("./email");
+    const result = await sendWatchStartedEmail({
+      email: "reader@example.com",
+      targetLabel: "Some Facility",
+      unsubscribeToken: "tok123",
+    });
+    expect(result.sent).toBe(false);
+    expect(resendSendMock).not.toHaveBeenCalled();
+  });
+
+  it("states plainly that no confirmation was needed, names the target, and carries a working unsubscribe link + headers", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    resendSendMock.mockResolvedValue({ data: { id: "email-1" }, error: null });
+
+    const { sendWatchStartedEmail } = await import("./email");
+    const result = await sendWatchStartedEmail({
+      email: "reader@example.com",
+      targetLabel: "Some Facility",
+      unsubscribeToken: "tok123",
+    });
+
+    expect(result.sent).toBe(true);
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    const args = resendSendMock.mock.calls[0][0];
+    expect(args.to).toBe("reader@example.com");
+    expect(args.subject).toContain("Some Facility");
+    expect(args.text.toLowerCase()).toContain("needed no confirmation");
+    expect(args.text).toContain("Some Facility");
+    expect(args.text).toContain("/api/subscribe/unsubscribe?token=tok123");
+    expect(args.html).toContain("/api/subscribe/unsubscribe?token=tok123");
+    expect(args.headers["List-Unsubscribe"]).toContain("/api/subscribe/unsubscribe?token=tok123");
+    expect(args.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
+  });
+
+  it("escapes an unsafe targetLabel in the html body", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    resendSendMock.mockResolvedValue({ data: { id: "email-1" }, error: null });
+
+    const { sendWatchStartedEmail } = await import("./email");
+    await sendWatchStartedEmail({
+      email: "reader@example.com",
+      targetLabel: `<script>alert('x')</script>`,
+      unsubscribeToken: "tok123",
+    });
+
+    const args = resendSendMock.mock.calls[0][0];
+    expect(args.html).toContain("&lt;script&gt;alert(&#39;x&#39;)&lt;/script&gt;");
+    expect(args.html).not.toContain("<script>alert('x')</script>");
+  });
+
+  it("returns sent:false when the Resend call throws", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    resendSendMock.mockRejectedValue(new Error("network failure"));
+
+    const { sendWatchStartedEmail } = await import("./email");
+    const result = await sendWatchStartedEmail({
+      email: "reader@example.com",
+      targetLabel: "Some Facility",
+      unsubscribeToken: "tok123",
+    });
+    expect(result.sent).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // sendSubmissionReviewedEmail
 // ---------------------------------------------------------------------------
 // This recipient never subscribed to anything — the template-invariant tests

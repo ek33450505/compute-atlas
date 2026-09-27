@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITEMAP_FAMILY_IDS, SITEMAP_INDEX_URL, sitemapChildUrl } from "@/lib/sitemap-families";
+import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
 // AI-crawler rules live here, in our own code, instead of being left to
 // Cloudflare's managed robots.txt block (Security -> Settings -> Bot
@@ -36,6 +37,16 @@ export const BLOCKED_AI_CRAWLERS = [
   "meta-externalagent",
 ] as const;
 
+// Raw GitHub content URL for the dataset export -- the same one-line
+// raw.githubusercontent.com transform app/api/page.tsx uses for its "Bulk
+// access" section (RAW_BASE there), derived from siteConfig.repoUrl rather
+// than a hardcoded owner/repo string. Not imported from that file: it's a
+// route module, not a lib, and doesn't export the constant.
+const RAW_FACILITIES_URL = `${siteConfig.repoUrl.replace(
+  "https://github.com/",
+  "https://raw.githubusercontent.com/"
+)}/main/data/facilities.json`;
+
 export default function robots(): MetadataRoute.Robots {
   const rules: MetadataRoute.Robots["rules"] = [
     {
@@ -62,8 +73,24 @@ export default function robots(): MetadataRoute.Robots {
       // statement, which still exempts Google-Extended. Resolving the tension
       // (varying the signal per agent, or dropping ai-train=no) is a policy
       // call and is deliberately NOT made here.
+      //
+      // The "# Bulk data" / "# Licence" entries below are comments, not
+      // directives -- confirmed against Next's own serializer
+      // (node_modules/next/dist/build/webpack/loaders/metadata/resolve-route-data.js),
+      // which emits every `other` entry as a literal "key: value" line with
+      // no bare-comment affordance, so a key starting with "#" is the only
+      // way to land a line every robots.txt parser discards. No parser acts
+      // on these two lines; the audience is the person deciding how to take
+      // the data. That's not hypothetical: one visitor fetched /robots.txt
+      // 12 times over 7 days while separately fetching 481 individual
+      // /facilities/<slug> pages (997 requests, 50 MB) and correctly
+      // honoured Disallow: /api/ -- but never requested /data, /sitemap*, or
+      // /table, so it never found the one-request alternative to the 997 it
+      // made.
       other: {
         "Content-Signal": "search=yes,ai-train=no,use=reference",
+        "# Bulk data": `The dataset is one file, not one page per facility -- see ${siteConfig.url}/data, or fetch it directly at ${RAW_FACILITIES_URL}`,
+        "# Licence": `Data is CC-BY-4.0, attribution required -- ${DATASET_LICENSE_URL}. Code is MIT.`,
       },
     },
     ...BLOCKED_AI_CRAWLERS.map((userAgent) => ({

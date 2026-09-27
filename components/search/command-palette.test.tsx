@@ -447,6 +447,73 @@ describe("CommandPalette — no results", () => {
 
     expect(await screen.findByText(/no matches for/i)).toBeInTheDocument();
   });
+
+  it("offers a /contribute link for reporting the missing facility", async () => {
+    const user = userEvent.setup();
+    renderPalette();
+    const combobox = await openPalette(user);
+
+    await user.type(combobox, "zzzzznonexistentquery9999");
+    await screen.findByText(/no matches for/i);
+
+    const link = screen.getByRole("link", { name: /send us a link/i });
+    expect(link).toHaveAttribute("href", "/contribute");
+  });
+
+  it("activating the /contribute link navigates there and closes the dialog", async () => {
+    const user = userEvent.setup();
+    renderPalette();
+    const combobox = await openPalette(user);
+
+    await user.type(combobox, "zzzzznonexistentquery9999");
+    await screen.findByText(/no matches for/i);
+
+    // Same close-and-navigate contract as a real result click (see
+    // "clicking a fetched facility option navigates to its href" above):
+    // this reuses `go()` rather than a bare next/link navigation, so the
+    // dialog must not still be mounted afterwards.
+    await user.click(screen.getByRole("link", { name: /send us a link/i }));
+
+    expect(pushMock).toHaveBeenCalledWith("/contribute");
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+
+  it("lets a modified click (e.g. opening in a new tab) fall through instead of intercepting it", async () => {
+    const user = userEvent.setup();
+    renderPalette();
+    const combobox = await openPalette(user);
+
+    await user.type(combobox, "zzzzznonexistentquery9999");
+    await screen.findByText(/no matches for/i);
+
+    // A Ctrl/Cmd/Shift/Alt/middle click must be left to the browser's own
+    // "open in new tab" handling, not routed through `go()` — the dialog
+    // stays open and the click never reaches the app router.
+    fireEvent.click(screen.getByRole("link", { name: /send us a link/i }), {
+      ctrlKey: true,
+    });
+
+    expect(pushMock).not.toHaveBeenCalledWith("/contribute");
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("does not enter the arrow-key result list", async () => {
+    const user = userEvent.setup();
+    renderPalette();
+    const combobox = await openPalette(user);
+
+    await user.type(combobox, "zzzzznonexistentquery9999");
+    await screen.findByText(/no matches for/i);
+
+    // A nonsense query has zero options, so aria-activedescendant must stay
+    // unset both before and after ArrowDown. If the contribute link had been
+    // folded into `flat`, this would start pointing at it — the regression
+    // this guards against is the link shifting the option/index arithmetic
+    // that "ArrowDown advances aria-activedescendant..." above depends on.
+    expect(combobox).not.toHaveAttribute("aria-activedescendant");
+    await user.keyboard("{ArrowDown}");
+    expect(combobox).not.toHaveAttribute("aria-activedescendant");
+  });
 });
 
 describe("CommandPalette — Escape closes", () => {

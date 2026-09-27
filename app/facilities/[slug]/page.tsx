@@ -37,6 +37,7 @@ import { PrintGapSummary } from "@/components/facility/print-gap-summary";
 import { PrintProvenanceFooter } from "@/components/facility/print-provenance-footer";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
+import { SourceCorrectionNote } from "@/components/contribute/source-correction-note";
 import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { ConfirmFactPrompt } from "@/components/contribute/confirm-fact-prompt";
 import { WatchButton } from "@/components/subscribe/watch-button";
@@ -419,6 +420,13 @@ export default async function FacilityPage({
 
       {/* Provenance */}
       <ProvenancePanel facility={facility} />
+
+      {/* Agent-quotable contribution note — plain server-rendered prose (not
+          print:hidden; it reads fine on a printout too), separate from the
+          interactive SuggestCorrection CTA below so a retrieval agent or
+          search snippet can quote the fact even though it can't click a
+          button. See components/contribute/source-correction-note.tsx. */}
+      <SourceCorrectionNote className="text-sm leading-relaxed text-muted-foreground" />
 
       {/* Related facilities — same operator / same state. Renders its own
           leading Separator + heading when it has content, and nothing at

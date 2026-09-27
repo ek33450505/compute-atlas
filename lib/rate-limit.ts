@@ -315,6 +315,18 @@ export async function checkContactRateLimit(ipHash: string): Promise<{ ok: boole
 
 export const EMAIL_SEND_CAP_MAX = 5; // confirm emails per address per window
 
+// Auto-confirm cumulative cap (see canAutoConfirm in lib/subscribe.ts): bounds
+// how many NEW subscriptions a single address can have auto-confirmed (skip
+// the double-opt-in email) within a rolling window, regardless of target.
+// Ed's number (2026-09-27): the biggest genuine power users hold 8 and 7
+// subscriptions respectively, so 50 is ~6x real usage — no legitimate
+// subscriber will ever reach it — while it cuts the abuse ceiling from ~984
+// targets to 50. Going over this cap does NOT reject the subscription; it
+// only denies the auto-confirm shortcut, falling back to the ordinary
+// pending + confirm-email path.
+export const AUTO_CONFIRM_CAP_MAX = 50;
+export const AUTO_CONFIRM_CAP_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 /**
  * Per-recipient cap on confirm-email sends, independent of the per-IP rate
  * limit above. The IP limit doesn't stop a distributed attacker from
