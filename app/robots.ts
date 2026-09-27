@@ -37,6 +37,44 @@ export const BLOCKED_AI_CRAWLERS = [
   "meta-externalagent",
 ] as const;
 
+// SEO-backlink resale crawlers -- a different category from
+// BLOCKED_AI_CRAWLERS above, with a different rationale, so it gets its own
+// list rather than being folded into that one. These don't train models;
+// they re-crawl the site to sell backlink/SEO-analysis data through
+// third-party subscriptions we get no benefit from. Blocking them is a
+// bandwidth decision, not a training-consent one. Measured over 7 days, the
+// four below combined for ~0.7 GB/week (~3 GB/month) against a 100 GB/month
+// Vercel Hobby bandwidth cap, serving nobody but their own paying customers:
+//
+//   SERankingBacklinksBot  4,148 req  0.22 GB
+//   DotBot (Moz)             802 req  0.25 GB
+//   QlyzeBot               2,900 req  0.15 GB
+//   DataForSeoBot          1,671 req ~0.08 GB
+//
+// AhrefsBot and SemrushBot are DELIBERATELY ABSENT from this list, unlike the
+// four above (same pattern as Google-Extended's exemption from
+// BLOCKED_AI_CRAWLERS). They cost bandwidth the same way, but they're also
+// how Ed's own backlink profile is visible to him and to anyone evaluating
+// the project -- there's no substitute that doesn't crawl the site.
+// ~0.44 GB/week is the accepted price for that visibility.
+export const BLOCKED_SEO_CRAWLERS = [
+  "DataForSeoBot",
+  // Moz's own robots.txt examples for this crawler consistently use
+  // lowercase "dotbot" (moz.com/help/moz-procedures/crawlers/dotbot), not the
+  // "DotBot" casing its User-Agent header sends. Matching is case-insensitive
+  // per the robots.txt spec either way, but this is the vendor's documented
+  // token.
+  "dotbot",
+  "QlyzeBot",
+  // Unconfirmed against vendor docs: help.seranking.com sits behind a
+  // Cloudflare bot-challenge that blocks non-browser fetches (verified
+  // 2026-09-27), so the actual documented directive couldn't be read. This is
+  // the exact string SERankingBacklinksBot sends as its own User-Agent,
+  // corroborated by that same doc URL's slug
+  // ("SERankingBacklinksBot-Crawler") but not by the directive text itself.
+  "SERankingBacklinksBot",
+] as const;
+
 // Raw GitHub content URL for the dataset export -- the same one-line
 // raw.githubusercontent.com transform app/api/page.tsx uses for its "Bulk
 // access" section (RAW_BASE there), derived from siteConfig.repoUrl rather
@@ -94,6 +132,10 @@ export default function robots(): MetadataRoute.Robots {
       },
     },
     ...BLOCKED_AI_CRAWLERS.map((userAgent) => ({
+      userAgent,
+      disallow: "/",
+    })),
+    ...BLOCKED_SEO_CRAWLERS.map((userAgent) => ({
       userAgent,
       disallow: "/",
     })),
