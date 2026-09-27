@@ -5,7 +5,7 @@ import { describe, it, expect } from "vitest";
 // line reaches the file. If a Next upgrade moves it, the import error is the
 // signal to re-verify that `other` still emits what we think it does.
 import { resolveRobots } from "next/dist/build/webpack/loaders/metadata/resolve-route-data";
-import robots, { BLOCKED_AI_CRAWLERS } from "@/app/robots";
+import robots, { BLOCKED_AI_CRAWLERS, BLOCKED_SEO_CRAWLERS } from "@/app/robots";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 import { SITEMAP_FAMILY_IDS, SITEMAP_INDEX_URL, sitemapChildUrl } from "@/lib/sitemap-families";
 
@@ -65,6 +65,14 @@ describe("robots", () => {
     expect(userAgents).not.toContain("Google-Extended");
   });
 
+  it("does NOT block AhrefsBot or SemrushBot (regression guard: Ed relies on them for backlink-profile visibility)", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    const userAgents = ruleList.map((rule) => rule.userAgent);
+    expect(userAgents).not.toContain("AhrefsBot");
+    expect(userAgents).not.toContain("SemrushBot");
+  });
+
   it("disallows / for every entry in BLOCKED_AI_CRAWLERS, with no allow", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];
@@ -75,6 +83,27 @@ describe("robots", () => {
       expect(rule?.disallow).toBe("/");
       expect(rule?.allow).toBeUndefined();
     }
+  });
+
+  it("disallows / for every entry in BLOCKED_SEO_CRAWLERS, with no allow", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+
+    for (const agent of BLOCKED_SEO_CRAWLERS) {
+      const rule = ruleList.find((r) => r.userAgent === agent);
+      expect(rule).toBeDefined();
+      expect(rule?.disallow).toBe("/");
+      expect(rule?.allow).toBeUndefined();
+    }
+  });
+
+  it("pins the literal contents of BLOCKED_SEO_CRAWLERS against a hardcoded list, independent of the array itself (a token silently dropped from the source array would still pass the coverage test above, since that test iterates the same array it's checking)", () => {
+    expect([...BLOCKED_SEO_CRAWLERS]).toEqual([
+      "DataForSeoBot",
+      "dotbot",
+      "QlyzeBot",
+      "SERankingBacklinksBot",
+    ]);
   });
 
   it("carries the Content-Signal directive on the '*' rule, verbatim", () => {
@@ -169,7 +198,7 @@ describe("robots", () => {
     }
   });
 
-  it("does not change any crawler permission (permission-neutral: this unit adds comments only)", () => {
+  it("pins the exact set and order of every blocked-crawler rule (AI + SEO), '*' rule unchanged", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];
     const wildcard = ruleList[0];
@@ -179,9 +208,11 @@ describe("robots", () => {
     expect(wildcard.disallow).toEqual(["/admin/", "/api/"]);
 
     // Exact set AND order of every non-"*" rule -- catches a stray added or
-    // dropped crawler rule that the per-entry check below wouldn't.
+    // dropped crawler rule that the per-entry check below wouldn't. AI
+    // crawlers are listed first, then SEO-resale crawlers, matching the order
+    // robots() builds the rules array in.
     const blockedAgents = ruleList.slice(1).map((rule) => rule.userAgent);
-    expect(blockedAgents).toEqual([...BLOCKED_AI_CRAWLERS]);
+    expect(blockedAgents).toEqual([...BLOCKED_AI_CRAWLERS, ...BLOCKED_SEO_CRAWLERS]);
     for (const rule of ruleList.slice(1)) {
       expect(rule.disallow).toBe("/");
       expect(rule.allow).toBeUndefined();

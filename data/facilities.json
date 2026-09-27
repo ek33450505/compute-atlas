@@ -55074,7 +55074,7 @@
     "id": "galaxy-helios-dickens-county-tx",
     "name": "Galaxy Helios Data Center Campus",
     "operator": "Galaxy Digital",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 33.72,
@@ -55082,10 +55082,11 @@
       "city": "Afton",
       "county": "Dickens",
       "state": "TX",
-      "precision": "exact"
+      "precision": "approximate"
     },
     "capacityMw": {
-      "planned": 1630
+      "planned": 1630,
+      "operational": 200
     },
     "poweredBy": "ERCOT grid",
     "announcedDate": "2026-01",
@@ -55151,82 +55152,7 @@
         "publisher": "PR Newswire",
         "retrievedAt": "2026-07-09",
         "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-07-09",
-    "notes": "Converted from Bitcoin mining to AI/HPC. CoreWeave is the anchor tenant using the campus for large-scale AI model training. Location is near Afton, Dickens County (West Texas). Original site was 160 acres; campus has since expanded to 2,200+ acres across multiple phases. Coordinates are approximate.",
-    "energy": {
-      "source": "grid",
-      "notes": "ERCOT approved 1.63 GW total; potential to scale to 3.6 GW. $1.4B project financing closed for expansion. Phase I (133MW critical IT load) completed July 2026."
-    },
-    "water": {
-      "coolingType": "unknown",
-      "notes": "Phase 1 (133 MW) is a liquid-cooled AI deployment with 90+ chillers and associated piping (Clayco). Chiller condenser type (air-cooled vs. water-cooled/evaporative) and water-consumption (MGD) not published. Site overlies the Ogallala Aquifer on the southern High Plains — a material water-risk context flag."
-    },
-    "subsidies": [
-      {
-        "program": "Dickens County PILOT (Payment in Lieu of Taxes), 10-year agreement — $20.5M total ($18.5M PILOT + $2M housing fund); initial $500K payment due Oct 1, 2026",
-        "jurisdiction": "Dickens County, TX",
-        "year": "2026",
-        "sourceIndex": 2
-      }
-    ],
-    "landAcres": 2200,
-    "community": {
-      "status": "supported",
-      "notes": "Galaxy Digital is the largest employer and taxpayer in Dickens County (pop. <2,000). County official on the CoreWeave lease: \"It's the news we've been waiting to hear — news that will bring jobs and dollars to Dickens County's doorstep.\" No opposition or litigation found. Investment/jobs: Phase 1 financed by a $1.4B debt facility + $350M Galaxy equity; Phase 2 permits estimate $3.5B (Helios 2 ~$900M, Helios 3 & 4 ~$1.3B each). Helios expects \"more than 100 permanent jobs\" plus \"50 or more\" from CoreWeave — floors, not hard counts.",
-      "sourceIndex": 3
-    },
-    "facilityType": "data_center",
-    "aiClassification": "confirmed"
-  },
-  {
-    "id": "galaxy-helios-dickens-tx",
-    "name": "Helios (Galaxy Digital / CoreWeave)",
-    "operator": "Galaxy Digital",
-    "status": "operational",
-    "confidence": "reported",
-    "location": {
-      "lat": 33.7814083,
-      "lon": -100.8790507,
-      "city": "Afton",
-      "county": "Dickens",
-      "state": "TX",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 800,
-      "operational": 200
-    },
-    "poweredBy": "ERCOT grid (800 MW approved)",
-    "announcedDate": "2025-03",
-    "statusHistory": [
-      {
-        "status": "operational",
-        "date": "2022-05",
-        "note": "Argo Blockchain completes a 180 MW Bitcoin-mining facility (\"Helios\") on 160 acres in Dickens County, TX.",
-        "sourceIndex": 0
       },
-      {
-        "status": "operational",
-        "date": "2022-12",
-        "note": "Argo sells Helios to Galaxy Digital for approximately $65M amid the 2022 crypto-market downturn, alongside a two-year hosting agreement.",
-        "sourceIndex": 0
-      },
-      {
-        "status": "under_construction",
-        "date": "2025-03",
-        "note": "Galaxy signs a 15-year lease with CoreWeave to convert Helios to AI/HPC hosting (ERCOT-approved capacity expanded to 800 MW); Bitcoin-mining equipment wind-down begins.",
-        "sourceIndex": 1
-      },
-      {
-        "status": "operational",
-        "date": "2026",
-        "note": "Galaxy delivers Phase I (200 MW gross / 133 MW critical IT load) to CoreWeave; site begins generating lease revenue. Remaining phases (toward 800 MW) still under construction, financed by a $1.4B, 36-month debt facility (plus $350M Galaxy equity) closed August 2025.",
-        "sourceIndex": 2
-      }
-    ],
-    "sources": [
       {
         "url": "https://www.argoblockchain.com/news-room/2022-december-helios-sale-to-galaxy",
         "label": "Sale of Helios to Galaxy Digital Holdings",
@@ -55256,21 +55182,32 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-10",
-    "notes": "Built by Argo Blockchain as a 180 MW Bitcoin-mining facility (2022), sold to Galaxy Digital in Dec 2022 amid the crypto downturn. Galaxy has converted the site to AI/HPC hosting for CoreWeave under a 15-year lease signed March 28, 2025; ERCOT has approved 800 MW for the site (up from the original 180 MW mining build). Bitcoin mining is reported wound down (equipment removal/demolition began Q2 2025) ahead of the CoreWeave conversion — no source found describes concurrent mining and AI operation. The $1.4B figure is a project-financing debt facility (36-month term, secured by Phase I assets), not total investment or deal value; Galaxy separately committed $350M equity — investmentUsd is deliberately omitted rather than picking one of these ambiguous figures. A separate, unreconciled $460M figure appears in one lower-confidence source and is not repeated here as fact. Coordinates are approximate (single-source, not independently cross-verified — geocoding tools could not confirm the street address this pass).",
+    "lastUpdated": "2026-09-27",
+    "notes": "Built by Argo Blockchain as a ~180 MW Bitcoin-mining facility in 2022; sold to Galaxy Digital in Dec 2022 amid the crypto-market downturn. Galaxy converted the site to AI/HPC hosting for CoreWeave under a 15-year lease signed March 28, 2025. CoreWeave is the anchor tenant using the campus for large-scale AI model training. Phase I (133 MW critical IT load / 200 MW gross) is complete and operational; further phases toward the 1.63 GW approved total remain under construction. Location is near Afton, Dickens County (West Texas). Original site was 160 acres; campus has since expanded to 2,200+ acres across multiple phases. Coordinates are approximate.",
     "energy": {
       "source": "grid",
-      "notes": "800 MW ERCOT-approved for the site; Phase I delivered 200 MW gross power / 133 MW critical IT load to CoreWeave."
+      "notes": "ERCOT approved 1.63 GW total; potential to scale to 3.6 GW. $1.4B project financing closed for expansion. Phase I (133MW critical IT load) completed July 2026."
     },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Phase 1 (133 MW) is a liquid-cooled AI deployment with 90+ chillers and associated piping (Clayco). Chiller condenser type (air-cooled vs. water-cooled/evaporative) and water-consumption (MGD) not published. Site overlies the Ogallala Aquifer on the southern High Plains — a material water-risk context flag."
+    },
+    "subsidies": [
+      {
+        "program": "Dickens County PILOT (Payment in Lieu of Taxes), 10-year agreement — $20.5M total ($18.5M PILOT + $2M housing fund); initial $500K payment due Oct 1, 2026",
+        "jurisdiction": "Dickens County, TX",
+        "year": "2026",
+        "sourceIndex": 2
+      }
+    ],
+    "landAcres": 2200,
     "community": {
-      "status": "unknown",
-      "notes": "No local community-reaction coverage (water/land/noise) surfaced in this research pass — flagged as an under-covered angle, not confirmed as non-contentious."
+      "status": "supported",
+      "notes": "Galaxy Digital is the largest employer and taxpayer in Dickens County (pop. <2,000). County official on the CoreWeave lease: \"It's the news we've been waiting to hear — news that will bring jobs and dollars to Dickens County's doorstep.\" No opposition or litigation found. Investment/jobs: Phase 1 financed by a $1.4B debt facility + $350M Galaxy equity; Phase 2 permits estimate $3.5B (Helios 2 ~$900M, Helios 3 & 4 ~$1.3B each). Helios expects \"more than 100 permanent jobs\" plus \"50 or more\" from CoreWeave — floors, not hard counts.",
+      "sourceIndex": 3
     },
     "facilityType": "data_center",
-    "aiClassification": "mixed_use",
-    "environmental": {
-      "waterStress": "unknown"
-    }
+    "aiClassification": "confirmed"
   },
   {
     "id": "gateway-business-park-offgrid-generation-letcher-ky",
