@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Dialog } from "@base-ui/react/dialog";
 import { Search } from "lucide-react";
 
@@ -333,12 +332,18 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
                     those below) — so it keeps its default tabIndex (0) and
                     is reached by Tab instead, since it would otherwise have
                     no keyboard path at all. Reuses `go()` so it closes the
-                    dialog and clears `query` exactly like a result click,
-                    rather than left as a bare next/link navigation.
+                    dialog and clears `query` exactly like a result click.
+                    Plain `<a>`, not `next/link`: this file is `"use client"`
+                    and covered by the client-bundle allowlist in
+                    lib/search-index.guard.test.ts, and `next/link` would earn
+                    its keep only via prefetch — wasted bandwidth for a
+                    contribute page reached from a zero-result search — since
+                    `go()` already does the soft-navigate (router.push) and
+                    the onClick below preempts Link's own navigation anyway.
                   */}
                   <p className="mt-2 text-xs">
                     If it is real and missing,{" "}
-                    <Link
+                    <a
                       href="/contribute"
                       className={QUIET_ACTION_CLASS}
                       onClick={(e) => {
@@ -354,7 +359,7 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
                       }}
                     >
                       send us a link
-                    </Link>{" "}
+                    </a>{" "}
                     — that is what gets it added.
                   </p>
                 </li>
