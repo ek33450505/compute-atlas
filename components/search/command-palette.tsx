@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Dialog } from "@base-ui/react/dialog";
 import { Search } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn, QUIET_ACTION_CLASS } from "@/lib/utils";
 import {
   searchCommands,
   facilityToSearchEntry,
@@ -324,6 +325,38 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
               {trimmedQuery && groups.length === 0 && !showSearching && (
                 <li className="px-3 py-6 text-center font-mono text-sm text-muted-foreground">
                   No matches for &ldquo;{query}&rdquo;.
+                  {/*
+                    Highest-intent contribution moment on the site: GSC shows
+                    visitors arriving by searching for one named facility we
+                    don't have. Not part of `flat`/`groups` — deliberately
+                    outside the arrow-key/aria-activedescendant path (see
+                    those below) — so it keeps its default tabIndex (0) and
+                    is reached by Tab instead, since it would otherwise have
+                    no keyboard path at all. Reuses `go()` so it closes the
+                    dialog and clears `query` exactly like a result click,
+                    rather than left as a bare next/link navigation.
+                  */}
+                  <p className="mt-2 text-xs">
+                    If it is real and missing,{" "}
+                    <Link
+                      href="/contribute"
+                      className={QUIET_ACTION_CLASS}
+                      onClick={(e) => {
+                        // Let the browser handle modified clicks (middle/⌘/Ctrl/
+                        // Shift/Alt) so "open in new tab" still works — only a
+                        // plain left click needs the dialog closed before
+                        // navigating. Same guard Next's own Link uses internally.
+                        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                          return;
+                        }
+                        e.preventDefault();
+                        go("/contribute");
+                      }}
+                    >
+                      send us a link
+                    </Link>{" "}
+                    — that is what gets it added.
+                  </p>
                 </li>
               )}
             </ul>
