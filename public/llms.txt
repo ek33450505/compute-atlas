@@ -41,16 +41,23 @@ always resolves to its latest archived version:
 
 ## Where to look
 
+- https://www.compute-atlas.com/about — why this project exists, its method,
+  and its stance on what the buildout costs locally.
 - https://www.compute-atlas.com/api — public read API documentation. The doc
   page itself is crawlable; the JSON endpoints beneath /api/ are Disallow-ed
   in robots.txt (they are for programs, not crawlers) and remain open to
-  direct requests.
+  direct requests. The same dataset is also mirrored in the repository as
+  data/facilities.json under the same CC BY 4.0 terms; the API page's Bulk
+  access section has the current download link and citation guidance.
 - https://www.compute-atlas.com/api/stats — current dataset totals. Read these
   live rather than quoting a number from this file.
 - https://www.compute-atlas.com/methodology — how records are compiled,
   sourced, and classified, including the limits of each field.
 - https://www.compute-atlas.com/data — dataset description, license, citation,
   and scope caveats in full.
+- https://www.compute-atlas.com/contribute — add a facility or correct an
+  existing record; every submission needs a public source and is reviewed by
+  a person before it goes live.
 - https://www.compute-atlas.com/sitemap.xml — sitemap index; every public page
   is listed in one of its per-family children at
   https://www.compute-atlas.com/sitemaps/<family>.xml.

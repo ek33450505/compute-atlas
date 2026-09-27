@@ -121,6 +121,24 @@ const ROUTES = [
   // app/status/[status]/page.tsx's own STATUS_PAGE_META, so it resolves to
   // real per-status editorial copy rather than a placeholder.
   "/status/operational",
+  // Added 2026-09-27: /counties/[county] is a FOURTH CollectionPage-backed
+  // dynamic template (see the /stakeholders /metros /status comment above)
+  // that had no representative slug here — and it just gained exactly the
+  // at-risk shape this spec exists to catch: an interpolated `{" "}`
+  // immediately before a <Link>, itself immediately before literal
+  // punctuation (SourceCorrectionNote, rendered in the page's intro — see
+  // components/contribute/source-correction-note.tsx). Unguarded, a
+  // regression in that shape would have shipped on all 636 county hubs with
+  // nothing here to catch it.
+  //
+  // "loudoun-va" — already this codebase's conventional example county (the
+  // default fixture in app/counties/[county]/page.test.tsx's makeCounty()),
+  // and confirmed to carry 45 real facilities in the live dataset, so the
+  // page is guaranteed to render non-empty (same reasoning as
+  // /metros/northern-virginia above). Deliberately only one county route
+  // added, not also Santa Clara: the Playwright cold build already spends
+  // ~187s of a 240s budget, and each added route costs real wall-clock in CI.
+  "/counties/loudoun-va",
 ] as const;
 
 // A word/digit character, then React's SSR text-node separator, then the

@@ -8,6 +8,7 @@ import { formatCountyLabel } from "@/lib/metros";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
+import { SourceCorrectionNote } from "@/components/contribute/source-correction-note";
 
 export const revalidate = 3600;
 
@@ -163,6 +164,12 @@ export default async function CountyPage({
           </p>
           {capacityLine && <p>{capacityLine}</p>}
           {operatorLine && <p>{operatorLine}</p>}
+          {/* Agent-quotable contribution note — plain server-rendered prose,
+              unconditional (unlike capacityLine/operatorLine above) so every
+              county hub carries it regardless of what data it has on file.
+              Inherits text-base/muted-foreground from CollectionPage's intro
+              wrapper; see components/contribute/source-correction-note.tsx. */}
+          <SourceCorrectionNote />
         </>
       }
       crumbs={[
