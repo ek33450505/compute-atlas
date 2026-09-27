@@ -123,6 +123,19 @@ describe("ContributeLeadForm — submit outcomes", () => {
     expect(activityLink).toHaveAttribute("href", "/activity");
   });
 
+  it("links named contributors to the contributors page on success", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+
+    render(<ContributeLeadForm />);
+    await user.type(screen.getByLabelText(/link to a source/i), "https://example.com/article");
+    await user.click(screen.getByRole("button", { name: /submit link/i }));
+
+    await screen.findByText(/in the queue/i);
+    const contributorsLink = screen.getByRole("link", { name: /contributors page/i });
+    expect(contributorsLink).toHaveAttribute("href", "/contributors");
+  });
+
   it("resets to the empty form when 'Submit another' is clicked", async () => {
     const user = userEvent.setup();
     mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });

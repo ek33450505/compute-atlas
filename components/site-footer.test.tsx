@@ -127,6 +127,9 @@ describe("SiteFooter", () => {
       screen.getByRole("link", { name: /Recent activity/i })
     ).toHaveAttribute("href", "/activity");
     expect(
+      screen.getByRole("link", { name: "Contributors" })
+    ).toHaveAttribute("href", "/contributors");
+    expect(
       screen.getByRole("link", { name: /Support the atlas/i })
     ).toHaveAttribute("href", "/support");
     expect(

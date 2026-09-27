@@ -136,6 +136,19 @@ describe("ContributeFacilityForm — submit outcomes", () => {
     expect(activityLink).toHaveAttribute("href", "/activity");
   });
 
+  it("links named contributors to the contributors page on success", async () => {
+    const user = userEvent.setup();
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+
+    render(<ContributeFacilityForm />);
+    await fillRequiredFields(user);
+    await user.click(screen.getByRole("button", { name: /submit facility/i }));
+
+    await screen.findByText(/in the review queue/i);
+    const contributorsLink = screen.getByRole("link", { name: /contributors page/i });
+    expect(contributorsLink).toHaveAttribute("href", "/contributors");
+  });
+
   it("surfaces a field-level error from a 400 response's issues array", async () => {
     const user = userEvent.setup();
     mockFetchOnce({
