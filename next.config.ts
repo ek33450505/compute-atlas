@@ -175,6 +175,21 @@ const RETIRED_FACILITY_REDIRECTS = [
     destination: "/facilities/aws-blanchard-caddo-parish-la",
     permanent: true,
   },
+  {
+    // Retired 2026-09-27 as a duplicate of the same site. This record and
+    // galaxy-helios-dickens-county-tx both describe Galaxy Digital's Helios
+    // campus in Afton, Dickens County, TX — the same Phase I delivery (133 MW
+    // critical IT load to CoreWeave) and the same $1.4B debt facility, cited
+    // independently by each. dickens-county-tx is the successor: it holds
+    // the search equity (3 clicks / 292 impressions vs. 0 / 39 over the same
+    // 90-day window) and the fuller source set. Before retirement, this
+    // record's capacityMw.operational (200), status (operational),
+    // location.precision (approximate), Argo Blockchain origin history, and
+    // 4 sources were merged into the survivor.
+    source: "/facilities/galaxy-helios-dickens-tx",
+    destination: "/facilities/galaxy-helios-dickens-county-tx",
+    permanent: true,
+  },
 ];
 
 /**

@@ -53,6 +53,22 @@ describe("retired-facility redirects", () => {
       expect(redirect.permanent, `${redirect.source} should be permanent`).toBe(true);
     }
   });
+
+  /**
+   * The generic checks above only fail if an entry points at a dead or
+   * shadowing slug — they don't fail if the entry disappears entirely, since
+   * "for every entry" is vacuously true over an empty list. Retired
+   * 2026-09-27: galaxy-helios-dickens-tx duplicated
+   * galaxy-helios-dickens-county-tx (same Galaxy Digital Helios campus,
+   * Afton, Dickens County, TX); the county-tx slug holds the search equity
+   * and was kept as the survivor.
+   */
+  it("redirects the duplicate galaxy-helios-dickens-tx slug to its survivor", async () => {
+    const redirect = (await facilityRedirects()).find(
+      (r) => r.source === "/facilities/galaxy-helios-dickens-tx"
+    );
+    expect(redirect?.destination).toBe("/facilities/galaxy-helios-dickens-county-tx");
+  });
 });
 
 /**
