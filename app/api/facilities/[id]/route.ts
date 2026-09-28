@@ -20,6 +20,11 @@ export async function GET(
   const { id } = await params;
   const facility = await getFacilityById(id);
   if (!facility) {
+    // `no-store` by choice (Ed, 2026-09-28), not a leftover: the body is tiny, so
+    // caching it would buy origin invocations, not the bandwidth this project is
+    // actually capped on, and one rule for `jsonResponse` beats a per-site
+    // exception. If bad-id enumeration ever shows up in the invocation numbers,
+    // this 404 is the one to reconsider — a short window via `cacheableJson`.
     return jsonResponse({ error: "Facility not found", id }, { status: 404 });
   }
   return cacheableJson(facility, READ_CACHE.facility);
