@@ -931,6 +931,22 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "alasconnect-anchorage-ak": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 0,
+      "label": "Low (<0 cm/y)"
+    }
+  },
+  "alasconnect-fairbanks-ak": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "alaska-communications-anchorage-ak": {
     "nearestTransmission": {
       "voltageKv": 230,
@@ -2247,6 +2263,16 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "applied-digital-delta-forge-2-brookwood-al": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "applied-digital-deuel-county-sd": {
@@ -11820,6 +11846,12 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "deepgreen-cook-inlet-nikiski-ak": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "deltas-edge-solar-carroll-ms": {
     "waterStress": {
       "cat": 0,
@@ -18231,21 +18263,6 @@
       "label": "Extremely High (>80%)"
     }
   },
-  "galaxy-helios-dickens-tx": {
-    "nearestWater": {
-      "name": "Mexican Creek",
-      "kind": "river",
-      "distanceMi": 2
-    },
-    "nearestTransmission": {
-      "voltageKv": 345,
-      "distanceMi": 0.1
-    },
-    "waterStress": {
-      "cat": 4,
-      "label": "Extremely High (>80%)"
-    }
-  },
   "gateway-business-park-offgrid-generation-letcher-ky": {
     "nearestWater": {
       "name": "Little Elkhorn Creek",
@@ -19980,6 +19997,12 @@
     "aquifer": {
       "name": "Lower Tertiary Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "greensparc-cordova-ak": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "gta-gu1-gu2-piti-gu": {},
@@ -30128,6 +30151,20 @@
       "label": "High (40-80%)"
     }
   },
+  "powersouth-lowman-simple-cycle-leroy-al": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "powertransitions-project-yardbird-ks": {
     "nearestWater": {
       "name": "Missouri River",
@@ -37829,6 +37866,12 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "terra-energy-center-susitna-ak": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "terra-hosting-vermillion-rise-newport-in": {
     "nearestWater": {
       "name": "Little Vermilion River",
@@ -38629,6 +38672,12 @@
     "groundwaterDecline": {
       "cat": 1,
       "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "toyota-tsusho-toyota-alabama-solar-huntsville-al": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "tpa-social-circle-technology-park-ga": {
@@ -41300,6 +41349,21 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "galaxy-helios-dickens-tx": {
+    "nearestWater": {
+      "name": "Mexican Creek",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     }
   }
 }
