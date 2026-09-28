@@ -1,5 +1,7 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   customType,
   index,
   integer,
@@ -82,13 +84,33 @@ export type FacilityRow = typeof facilitiesTable.$inferSelect;
  * (payload is a partial patch against `targetFacilityId`) — approving one
  * promotes it via the `createFacility`/`updateFacility` write
  * primitives, so the same validation and revalidation apply either way.
+ *
+ * `submissions_status_check` puts the core invariant's staging half —
+ * "unreviewed intake is staged, nothing promotes itself" (CLAUDE.md) — into
+ * the DATABASE's domain, not only in app code. Before it, `status` was plain
+ * `text` with a `'pending'` DEFAULT: every current writer pins `'pending'`
+ * explicitly (`createSubmission` in lib/submissions.ts) and a default only
+ * applies when the column is OMITTED, so any future writer that passes
+ * `status` at all — a new pipeline lane, a hand-written backfill, an ad-hoc
+ * Neon INSERT — was accepted by Postgres straight at `'approved'`, bypassing
+ * review entirely. The constraint makes the value set enforceable rather than
+ * conventional, and also rejects a typo'd `'Approved'`/`'reject'` that would
+ * otherwise sit in the queue invisible to every status filter.
+ *
+ * ⚠️ The literal list here MUST equal `REVIEW_STATUSES` in lib/submissions.ts.
+ * It is duplicated, not imported, because lib/submissions.ts imports THIS
+ * module — importing back would be a cycle. The duplication is held by a
+ * behavioural drift test (lib/db/schema.submissions-status.integration.test.ts)
+ * that inserts every `REVIEW_STATUSES` member against a real Postgres and
+ * expects each to be accepted, so adding a fourth status without extending
+ * the constraint turns that test red instead of failing in production.
  */
 export const submissionsTable = pgTable(
   "submissions",
   {
     id: uuid("id").defaultRandom().primaryKey(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    status: text("status").notNull().default("pending"), // pending | approved | rejected
+    status: text("status").notNull().default("pending"), // pending | approved | rejected — enforced by submissions_status_check below
     kind: text("kind").notNull(), // create | update
     targetFacilityId: text("target_facility_id"), // set for kind=update
     payload: jsonb("payload").notNull(), // full Facility doc (create) or partial patch (update)
@@ -96,7 +118,13 @@ export const submissionsTable = pgTable(
     reviewNote: text("review_note"),
     reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
   },
-  (table) => [index("submissions_status_idx").on(table.status)]
+  (table) => [
+    index("submissions_status_idx").on(table.status),
+    check(
+      "submissions_status_check",
+      sql`${table.status} IN ('pending', 'approved', 'rejected')`
+    ),
+  ]
 );
 
 export type SubmissionRow = typeof submissionsTable.$inferSelect;
@@ -221,6 +249,85 @@ export const subscribeAttemptsTable = pgTable(
 export type SubscribeAttemptRow = typeof subscribeAttemptsTable.$inferSelect;
 
 /**
+ * The write surfaces `intake_attempts` counts, one budget each. String
+ * literals, not an enum type: adding a surface must not need a migration.
+ */
+export const INTAKE_SURFACES = ["contribute", "leads", "contact", "access-request"] as const;
+
+export type IntakeSurface = (typeof INTAKE_SURFACES)[number];
+
+/**
+ * `subscribe_attempts` (above) generalised to the other four public write
+ * surfaces: one row per request to `POST /api/contribute`, `/api/leads`,
+ * `/api/contact` or `/api/access/request` that the rate-limit gate admits,
+ * written before any content-dependent branch. It is the counter
+ * `checkIntakeRateLimit` reads (lib/rate-limit.ts).
+ *
+ * WHY IT EXISTS: all four caps used to count OUTCOME rows — `submissions`,
+ * `leads`, `contact_messages`, `api_access_grants` — which only a successful
+ * INSERT can raise. Every request that terminated without inserting was
+ * therefore free, so the bots that never insert were the ones never limited.
+ * Worst case, measured in review: `POST /api/contribute {"website":"x"}` trips
+ * the honeypot, returns 201, writes nothing, and cost zero budget — a bot that
+ * trips the honeypot was completely unlimited while one that did not was
+ * capped at 5/hour. On `/api/access/request` the free paths were the
+ * generic-success ones (honeypot, over the per-address send cap, an existing
+ * pending/active grant), i.e. exactly the branches an attacker hits while
+ * email-bombing one address. This is the same defect `subscribe_attempts`
+ * closed for subscribe in PR #288; it was never carried across.
+ *
+ * WHY ONE TABLE WITH A `surface` COLUMN, NOT FOUR TABLES: the budgets stay
+ * strictly separate — every read filters on `surface` and the composite index
+ * below leads with it, so a burst against one surface cannot starve another
+ * (the property the four separate per-surface limiters kept separate
+ * tables for). What four tables would add is four migrations, four prune
+ * steps, and four near-identical copies of this comment: four places for the
+ * "record before every branch" contract to drift, for no isolation the
+ * `surface` predicate does not already give. A future surface needs one
+ * `INTAKE_SURFACES` entry and no DDL.
+ *
+ * WHY A SEPARATE TABLE, NOT A COLUMN ON EACH OUTCOME TABLE: the rows that must
+ * be counted are precisely the ones that create no outcome row, so there is no
+ * outcome row to carry the count. It is also the only shape that lets every
+ * branch write *identically*, which the routes' generic-success contract
+ * requires: `/api/contribute`, `/api/leads` and `/api/contact` answer a tripped
+ * honeypot with the same `201 {ok:true}` as a real submission, and
+ * `requestAccessGrant` answers honeypot / over-cap / existing-grant with the
+ * same `{ok:true}` — a rate-limit side effect that fired on some of those
+ * paths but not others would be an observable oracle separating them.
+ *
+ * WHY ONLY A HASH: same salted sha256 as every other `submitter_ip_hash` here
+ * (`hashIp`, lib/rate-limit.ts); a raw IP is never stored. Rows are pruned by
+ * `scripts/retention-prune.ts` (`INTAKE_ATTEMPTS_RETENTION_DAYS`) — the cap
+ * window is one hour, so they have no useful life beyond it.
+ *
+ * Carries no email, no payload, and no outcome, deliberately: `surface` is the
+ * only discriminator, and it is already known to the caller (it chose the
+ * endpoint). An attempt row must reveal nothing about which branch the request
+ * took once inside that endpoint.
+ */
+export const intakeAttemptsTable = pgTable(
+  "intake_attempts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    surface: text("surface").notNull(), // one of INTAKE_SURFACES
+    submitterIpHash: text("submitter_ip_hash").notNull(),
+  },
+  (table) => [
+    // Leads with `surface` because every read is `surface = ? AND ip = ? AND
+    // created_at > ?`, and the prune (`created_at < ?`) scans anyway.
+    index("intake_attempts_surface_ip_created_idx").on(
+      table.surface,
+      table.submitterIpHash,
+      table.createdAt
+    ),
+  ]
+);
+
+export type IntakeAttemptRow = typeof intakeAttemptsTable.$inferSelect;
+
+/**
  * A one-shot "email me when this is reviewed" request against a single
  * pending `submissions` row — NOT a subscription. A contributor asking to
  * hear back about the submission they just filed has not subscribed to
@@ -270,7 +377,7 @@ export type SubmissionNotifyRequestRow = typeof submissionNotifyRequestsTable.$i
  * bounds *outstanding* requests per address, not how much mail an address
  * actually receives. One actor can name the same victim address across
  * several submissions from one IP (within the existing per-IP
- * `checkRateLimit` budget) to fill that cap; the maintainer's ordinary review
+ * `checkIntakeRateLimit`("contribute") budget) to fill that cap; the maintainer's ordinary review
  * of the queue — approve OR reject, either sends the courtesy email and
  * deletes the row — resets the cap to zero, so the attacker refills
  * immediately and mail volume is unbounded over time, with the maintainer's

@@ -33,6 +33,7 @@ import {
   apiAccessGrantsTable,
   apiDailyUsageTable,
   contactMessagesTable,
+  intakeAttemptsTable,
   leadsTable,
   submissionsTable,
   submissionNotifyRequestsTable,
@@ -49,6 +50,7 @@ export const LEADS_RETENTION_DAYS = 365; // leads: delete promoted/dismissed row
 export const SUBMISSIONS_IP_HASH_RETENTION_DAYS = 90; // submissions: strip provenance.submitterIpHash from reviewed (non-pending) rows older than this many days (by reviewedAt) — the submission row itself is never deleted
 export const SUBSCRIPTIONS_UNSUBSCRIBED_RETENTION_DAYS = 30; // subscriptions: delete unsubscribed rows older than this many days (by unsubscribedAt)
 export const SUBSCRIBE_ATTEMPTS_RETENTION_DAYS = 2; // subscribe_attempts: delete rows older than this many days (by createdAt) — the cap window is 1h, so 2 days is already far beyond useful life
+export const INTAKE_ATTEMPTS_RETENTION_DAYS = 2; // intake_attempts: same as subscribe_attempts above (same 1h cap window, same salted-IP-hash-only payload) — deliberately the same number, not an independent knob
 export const SUBMISSION_NOTIFY_RETENTION_DAYS = 90; // submission_notify_requests: delete rows whose submission was never reviewed — otherwise a submission that never gets reviewed leaves its address sitting forever
 export const SUBMISSION_NOTIFY_SENDS_RETENTION_DAYS = 60; // submission_notify_sends: delete rows older than this many days (by createdAt) — comfortably beyond the 30-day SUBMISSION_NOTIFY_SEND_WINDOW_MS cap window (lib/rate-limit.ts), so pruning can never shorten the cap
 export const API_ACCESS_GRANTS_RETENTION_DAYS = 90; // api_access_grants: delete revoked-or-expired rows older than this many days (by revokedAt/expiresAt)
@@ -87,7 +89,7 @@ export interface RetentionRunSummary {
   ok: boolean;
 }
 
-// Non-generic on purpose: buildSteps() below returns seven table-specific
+// Non-generic on purpose: buildSteps() below returns ten table-specific
 // steps in a uniform array, and runStep() only ever touches `.id` (the full
 // row still flows through to appendBackup() as `unknown[]` for the JSON
 // backup). Making this generic over each table's Row type forces TypeScript
@@ -190,6 +192,12 @@ function buildSteps(now: Date): RetentionStep[] {
   const subscribeAttemptsCutoff = daysAgo(now, SUBSCRIBE_ATTEMPTS_RETENTION_DAYS);
   const subscribeAttemptsPredicate = () => lt(subscribeAttemptsTable.createdAt, subscribeAttemptsCutoff);
 
+  // Deliberately NOT scoped by `surface` — every surface shares the same 1h cap
+  // window, so one cutoff prunes them all. A per-surface predicate would be
+  // four scans for one outcome.
+  const intakeAttemptsCutoff = daysAgo(now, INTAKE_ATTEMPTS_RETENTION_DAYS);
+  const intakeAttemptsPredicate = () => lt(intakeAttemptsTable.createdAt, intakeAttemptsCutoff);
+
   const submissionNotifyCutoff = daysAgo(now, SUBMISSION_NOTIFY_RETENTION_DAYS);
   const submissionNotifyPredicate = () => lt(submissionNotifyRequestsTable.createdAt, submissionNotifyCutoff);
 
@@ -245,6 +253,18 @@ function buildSteps(now: Date): RetentionStep[] {
       action: "delete",
       selectCandidates: () => getDb().select().from(subscribeAttemptsTable).where(subscribeAttemptsPredicate()),
       mutate: () => getDb().delete(subscribeAttemptsTable).where(subscribeAttemptsPredicate()).returning(),
+    },
+    {
+      // Pseudonymized per-IP rate-limit counters for the other four public
+      // write surfaces (contribute / leads / contact / access-request) — exact
+      // sibling of subscribe_attempts above, one row per admitted request,
+      // carrying a salted IP hash and the surface name and nothing else. Same
+      // 1h cap window, so the same short retention: see
+      // INTAKE_ATTEMPTS_RETENTION_DAYS and `intakeAttemptsTable`'s doc comment.
+      table: "intake_attempts",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(intakeAttemptsTable).where(intakeAttemptsPredicate()),
+      mutate: () => getDb().delete(intakeAttemptsTable).where(intakeAttemptsPredicate()).returning(),
     },
     {
       // "Email me when reviewed" requests. A submission that is never

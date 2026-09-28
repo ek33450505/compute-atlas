@@ -13,6 +13,7 @@ import {
   apiAccessGrantsTable,
   apiDailyUsageTable,
   contactMessagesTable,
+  intakeAttemptsTable,
   leadsTable,
   submissionsTable,
   submissionNotifyRequestsTable,
@@ -188,6 +189,24 @@ async function seedAllTables() {
     .values({ submitterIpHash: "attempt-hash-fresh", createdAt: daysBefore(1) })
     .returning({ id: subscribeAttemptsTable.id });
 
+  // intake_attempts: retention window 2 days, by createdAt — the exact sibling
+  // of subscribe_attempts above, for the other four public write surfaces. The
+  // predicate is deliberately NOT scoped by `surface` (every surface shares the
+  // 1h cap window), so the old row from one surface and the old row from another
+  // must BOTH be candidates while the fresh one survives.
+  const [intakeOldContribute] = await tdb.db
+    .insert(intakeAttemptsTable)
+    .values({ surface: "contribute", submitterIpHash: "intake-hash-old-a", createdAt: daysBefore(3) })
+    .returning({ id: intakeAttemptsTable.id });
+  const [intakeOldContact] = await tdb.db
+    .insert(intakeAttemptsTable)
+    .values({ surface: "contact", submitterIpHash: "intake-hash-old-b", createdAt: daysBefore(5) })
+    .returning({ id: intakeAttemptsTable.id });
+  const [intakeFresh] = await tdb.db
+    .insert(intakeAttemptsTable)
+    .values({ surface: "leads", submitterIpHash: "intake-hash-fresh", createdAt: daysBefore(1) })
+    .returning({ id: intakeAttemptsTable.id });
+
   // submission_notify_requests: retention window 90 days, by createdAt — a
   // surviving row this old means its submission was never reviewed (a
   // reviewed one is deleted immediately, well inside the window).
@@ -250,6 +269,9 @@ async function seedAllTables() {
     subscriptionOldConfirmed: subscriptionOldConfirmed.id,
     attemptOld: attemptOld.id,
     attemptFresh: attemptFresh.id,
+    intakeOldContribute: intakeOldContribute.id,
+    intakeOldContact: intakeOldContact.id,
+    intakeFresh: intakeFresh.id,
     notifyOld: notifyOld.id,
     notifyFresh: notifyFresh.id,
     grantOldRevoked: grantOldRevoked.id,
@@ -277,6 +299,7 @@ describe("runRetentionPrune — dry run", () => {
     expect(byTable.submissions.candidates).toBe(1);
     expect(byTable.subscriptions.candidates).toBe(1);
     expect(byTable.subscribe_attempts.candidates).toBe(1);
+    expect(byTable.intake_attempts.candidates).toBe(2); // both old rows, across two surfaces
     expect(byTable.submission_notify_requests.candidates).toBe(1);
     expect(byTable.api_access_grants.candidates).toBe(2); // old-revoked + old-expired
     expect(byTable.api_daily_usage.candidates).toBe(1);
@@ -287,6 +310,7 @@ describe("runRetentionPrune — dry run", () => {
     // Nothing written: no backup dir/files, no rows removed, no provenance stripped.
     expect(() => readdirSync(backupDir)).toThrow();
     expect(await tdb.db.select().from(subscribeAttemptsTable)).toHaveLength(2);
+    expect(await tdb.db.select().from(intakeAttemptsTable)).toHaveLength(3);
     expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(2);
     expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(2);
     expect(await tdb.db.select().from(leadsTable)).toHaveLength(4);
@@ -314,6 +338,7 @@ describe("runRetentionPrune — apply", () => {
     expect(byTable.submissions).toMatchObject({ candidates: 1, applied: 1, action: "strip-ip-hash" });
     expect(byTable.subscriptions).toMatchObject({ candidates: 1, applied: 1 });
     expect(byTable.subscribe_attempts).toMatchObject({ candidates: 1, applied: 1 });
+    expect(byTable.intake_attempts).toMatchObject({ candidates: 2, applied: 2 });
     expect(byTable.submission_notify_requests).toMatchObject({ candidates: 1, applied: 1 });
     expect(byTable.api_access_grants).toMatchObject({ candidates: 2, applied: 2 });
     expect(byTable.api_daily_usage).toMatchObject({ candidates: 1, applied: 1 });
@@ -350,6 +375,11 @@ describe("runRetentionPrune — apply", () => {
     const remainingAttempts = await tdb.db.select().from(subscribeAttemptsTable);
     expect(remainingAttempts.map((r) => r.id)).toEqual([ids.attemptFresh]);
 
+    // intake_attempts: both aged rows are gone regardless of surface, the fresh
+    // one survives — the prune is by age only, never per-surface.
+    const remainingIntake = await tdb.db.select().from(intakeAttemptsTable);
+    expect(remainingIntake.map((r) => r.id)).toEqual([ids.intakeFresh]);
+
     // submission_notify_requests: only the never-reviewed (100-day-old) row is gone.
     const remainingNotify = await tdb.db.select().from(submissionNotifyRequestsTable);
     expect(remainingNotify.map((r) => r.id)).toEqual([ids.notifyFresh]);
@@ -366,7 +396,7 @@ describe("runRetentionPrune — apply", () => {
 
     // Backup file: exactly one JSONL line per applied mutation, correctly tagged.
     const lines = readBackupLines();
-    expect(lines).toHaveLength(10); // 1+2+1+1+1+1+2+1 == sum of `applied` above
+    expect(lines).toHaveLength(12); // 1+2+1+1+1+2+1+2+1 == sum of `applied` above
     const byId = Object.fromEntries(lines.map((l) => [l.row.id, l]));
     expect(byId[ids.contactOld]).toMatchObject({ table: "contact_messages", action: "delete" });
     expect(byId[ids.leadOldPromoted]).toMatchObject({ table: "leads", action: "delete" });
@@ -374,12 +404,14 @@ describe("runRetentionPrune — apply", () => {
     expect(byId[ids.subOldReviewed]).toMatchObject({ table: "submissions", action: "strip-ip-hash" });
     expect(byId[ids.subscriptionOldUnsub]).toMatchObject({ table: "subscriptions", action: "delete" });
     expect(byId[ids.attemptOld]).toMatchObject({ table: "subscribe_attempts", action: "delete" });
+    expect(byId[ids.intakeOldContribute]).toMatchObject({ table: "intake_attempts", action: "delete" });
+    expect(byId[ids.intakeOldContact]).toMatchObject({ table: "intake_attempts", action: "delete" });
     expect(byId[ids.notifyOld]).toMatchObject({ table: "submission_notify_requests", action: "delete" });
     expect(byId[ids.grantOldRevoked]).toMatchObject({ table: "api_access_grants", action: "delete" });
     expect(byId[ids.grantOldExpired]).toMatchObject({ table: "api_access_grants", action: "delete" });
     expect(byId[ids.usageOld]).toMatchObject({ table: "api_daily_usage", action: "delete" });
     // Rows that must NOT appear in the backup at all (never touched).
-    for (const untouchedId of [ids.contactFresh, ids.leadFreshPromoted, ids.leadOldNew, ids.subFreshReviewed, ids.subOldPending, ids.attemptFresh, ids.notifyFresh]) {
+    for (const untouchedId of [ids.contactFresh, ids.leadFreshPromoted, ids.leadOldNew, ids.subFreshReviewed, ids.subOldPending, ids.attemptFresh, ids.intakeFresh, ids.notifyFresh]) {
       expect(byId[untouchedId]).toBeUndefined();
     }
   });

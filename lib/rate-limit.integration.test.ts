@@ -10,10 +10,18 @@ vi.mock("@/lib/db/client");
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
-import { subscribeAttemptsTable, submissionNotifySendsTable, subscriptionsTable } from "@/lib/db/schema";
+import {
+  INTAKE_SURFACES,
+  intakeAttemptsTable,
+  subscribeAttemptsTable,
+  submissionNotifySendsTable,
+  subscriptionsTable,
+} from "@/lib/db/schema";
 
 import {
+  checkIntakeRateLimit,
   checkSubscribeRateLimit,
+  recordIntakeAttempt,
   recordSubscribeAttempt,
   checkSubmissionNotifySendCap,
   recordSubmissionNotifySend,
@@ -117,6 +125,115 @@ describe("checkSubscribeRateLimit", () => {
     // Attempts alone are what close the budget.
     await seedAttempts(IP_HASH, RATE_LIMIT_MAX);
     expect((await checkSubscribeRateLimit(IP_HASH)).ok).toBe(false);
+  });
+});
+
+// --- intake_attempts: the same "attempts, not outcomes" fix, carried across to
+// the other four public write surfaces (Finding 1, security audit 2026-09-27).
+
+/** Inserts `n` attempt rows for (`surface`, `ipHash`), all stamped `ageMs` in the past. */
+async function seedIntakeAttempts(
+  surface: (typeof INTAKE_SURFACES)[number],
+  ipHash: string,
+  n: number,
+  ageMs = 0
+): Promise<void> {
+  const createdAt = new Date(Date.now() - ageMs);
+  for (let i = 0; i < n; i++) {
+    await tdb.db.insert(intakeAttemptsTable).values({ surface, submitterIpHash: ipHash, createdAt });
+  }
+}
+
+describe("recordIntakeAttempt", () => {
+  it("writes exactly one row per call, carrying only the surface and the ip hash", async () => {
+    await recordIntakeAttempt("contribute", IP_HASH);
+
+    const rows = await tdb.db.select().from(intakeAttemptsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].surface).toBe("contribute");
+    expect(rows[0].submitterIpHash).toBe(IP_HASH);
+    expect(rows[0].createdAt).toBeInstanceOf(Date);
+    // The row's shape is part of the contract: an attempt must reveal nothing
+    // about which branch the request took once inside its endpoint, so there is
+    // no email/payload/outcome. `surface` is not a leak — the caller chose the
+    // endpoint.
+    expect(Object.keys(rows[0]).sort()).toEqual([
+      "createdAt",
+      "id",
+      "submitterIpHash",
+      "surface",
+    ]);
+  });
+
+  it("does not swallow a write failure — it must fail closed so the route can refuse", async () => {
+    // A schema-level violation the driver rejects: NOT NULL on submitter_ip_hash.
+    await expect(recordIntakeAttempt("contribute", null as unknown as string)).rejects.toThrow();
+  });
+
+  it.each(INTAKE_SURFACES)("records surface %s", async (surface) => {
+    await recordIntakeAttempt(surface, IP_HASH);
+    const rows = await tdb.db.select().from(intakeAttemptsTable);
+    expect(rows[0].surface).toBe(surface);
+  });
+});
+
+describe("checkIntakeRateLimit", () => {
+  it("allows while prior attempts are below the max and blocks at the max", async () => {
+    expect((await checkIntakeRateLimit("contribute", IP_HASH)).ok).toBe(true);
+
+    await seedIntakeAttempts("contribute", IP_HASH, RATE_LIMIT_MAX - 1);
+    expect((await checkIntakeRateLimit("contribute", IP_HASH)).ok).toBe(true);
+
+    await seedIntakeAttempts("contribute", IP_HASH, 1);
+    expect((await checkIntakeRateLimit("contribute", IP_HASH)).ok).toBe(false);
+  });
+
+  it("counts a row just inside the window and ignores one just outside it", async () => {
+    await seedIntakeAttempts("contribute", IP_HASH, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS - 60_000);
+    expect((await checkIntakeRateLimit("contribute", IP_HASH)).ok).toBe(false);
+
+    await tdb.reset();
+
+    await seedIntakeAttempts("contribute", IP_HASH, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS + 60_000);
+    expect((await checkIntakeRateLimit("contribute", IP_HASH)).ok).toBe(true);
+  });
+
+  it("buckets per ip hash — another ip's attempts never consume this one's budget", async () => {
+    await seedIntakeAttempts("contribute", OTHER_IP_HASH, RATE_LIMIT_MAX * 2);
+    expect((await checkIntakeRateLimit("contribute", IP_HASH)).ok).toBe(true);
+    expect((await checkIntakeRateLimit("contribute", OTHER_IP_HASH)).ok).toBe(false);
+  });
+
+  it("buckets per SURFACE — a burst against one surface never starves another", async () => {
+    // The isolation the four separate outcome tables used to provide, now
+    // carried by the `surface` predicate. Exhaust one surface for one IP...
+    await seedIntakeAttempts("contact", IP_HASH, RATE_LIMIT_MAX * 2);
+    expect((await checkIntakeRateLimit("contact", IP_HASH)).ok).toBe(false);
+    // ...and every other surface for that same IP must be untouched.
+    for (const surface of INTAKE_SURFACES.filter((s) => s !== "contact")) {
+      expect((await checkIntakeRateLimit(surface, IP_HASH)).ok).toBe(true);
+    }
+  });
+
+  it("does not leak across surfaces when both are partly spent", async () => {
+    await seedIntakeAttempts("leads", IP_HASH, RATE_LIMIT_MAX - 1);
+    await seedIntakeAttempts("contribute", IP_HASH, RATE_LIMIT_MAX - 1);
+    // 8 rows for this IP in total, but neither surface is at its own max.
+    expect((await tdb.db.select().from(intakeAttemptsTable)).length).toBe((RATE_LIMIT_MAX - 1) * 2);
+    expect((await checkIntakeRateLimit("leads", IP_HASH)).ok).toBe(true);
+    expect((await checkIntakeRateLimit("contribute", IP_HASH)).ok).toBe(true);
+  });
+
+  it("throws rather than reporting ok when the table is missing — the routes answer 503", async () => {
+    // The unapplied-migration case (SQLSTATE 42P01, the 2026-09-03 incident
+    // behind scripts/check-schema-drift.ts). A limiter that returned `{ok:true}`
+    // here would fail OPEN and silently stop capping.
+    await tdb.client.exec(`ALTER TABLE "intake_attempts" RENAME TO "intake_attempts_hidden"`);
+    try {
+      await expect(checkIntakeRateLimit("contribute", IP_HASH)).rejects.toThrow();
+    } finally {
+      await tdb.client.exec(`ALTER TABLE "intake_attempts_hidden" RENAME TO "intake_attempts"`);
+    }
   });
 });
 

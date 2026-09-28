@@ -29,8 +29,8 @@ vi.mock("next/server", async (importOriginal) => {
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { submissionsTable, submissionNotifyRequestsTable } from "@/lib/db/schema";
-import { EMAIL_SEND_CAP_MAX, hashIp } from "@/lib/rate-limit";
+import { intakeAttemptsTable, submissionsTable, submissionNotifyRequestsTable } from "@/lib/db/schema";
+import { EMAIL_SEND_CAP_MAX, RATE_LIMIT_MAX, hashIp } from "@/lib/rate-limit";
 import facilitiesRaw from "@/data/facilities.json";
 import type { Facility } from "@/lib/schema";
 
@@ -54,6 +54,18 @@ async function flushAfter(): Promise<void> {
 }
 
 let tdb: TestDbHandle;
+
+/**
+ * Seeds `n` "contribute" attempt rows for a raw IP, pre-hashed the same way the
+ * route does. This is what the limiter counts — seeding `submissions` rows
+ * instead (as these tests used to) no longer affects it at all.
+ */
+async function seedAttempts(ip: string, n: number): Promise<void> {
+  const submitterIpHash = hashIp(ip);
+  for (let i = 0; i < n; i++) {
+    await tdb.db.insert(intakeAttemptsTable).values({ surface: "contribute", submitterIpHash });
+  }
+}
 
 beforeAll(async () => {
   tdb = await makeTestDb();
@@ -137,32 +149,21 @@ describe("POST /api/contribute (public, unauthenticated happy path)", () => {
 
   it("rate-limits a 6th submission from the same ip within the window", async () => {
     const ip = "203.0.113.7";
-    const ipHash = hashIp(ip);
-    for (let i = 0; i < 5; i++) {
-      await tdb.db.insert(submissionsTable).values({
-        kind: "create",
-        payload: seedDoc,
-        provenance: { sources: ["https://example.com/x"], discoveredBy: "test", submitterIpHash: ipHash },
-      });
-    }
+    // Seeds ATTEMPT rows, not `submissions` rows: the limiter counts
+    // `intake_attempts` now, because counting submissions made every
+    // non-inserting path free (see `checkIntakeRateLimit` in lib/rate-limit.ts).
+    await seedAttempts(ip, RATE_LIMIT_MAX);
 
     const res = await POST(req(validCreateBody, { "x-forwarded-for": ip }));
     expect(res.status).toBe(429);
 
     const rows = await tdb.db.select().from(submissionsTable);
-    expect(rows).toHaveLength(5); // the 6th attempt must not have landed
+    expect(rows).toHaveLength(0); // the 6th attempt must not have landed
   });
 
   it("buckets by cf-connecting-ip, not a spoofed leftmost x-forwarded-for", async () => {
     const trustedIp = "203.0.113.13";
-    const ipHash = hashIp(trustedIp);
-    for (let i = 0; i < 5; i++) {
-      await tdb.db.insert(submissionsTable).values({
-        kind: "create",
-        payload: seedDoc,
-        provenance: { sources: ["https://example.com/x"], discoveredBy: "test", submitterIpHash: ipHash },
-      });
-    }
+    await seedAttempts(trustedIp, RATE_LIMIT_MAX);
 
     // A different leftmost x-forwarded-for entry on every request is exactly
     // what defeated the naive leftmost-x-forwarded-for extraction
@@ -174,7 +175,205 @@ describe("POST /api/contribute (public, unauthenticated happy path)", () => {
     expect(res.status).toBe(429);
 
     const rows = await tdb.db.select().from(submissionsTable);
-    expect(rows).toHaveLength(5); // the spoofed-XFF attempt must not have landed
+    expect(rows).toHaveLength(0); // the spoofed-XFF attempt must not have landed
+  });
+
+  it("does NOT count pre-existing `submissions` rows — the cap counts attempts, not outcomes", async () => {
+    // The defect this limiter was rewritten to close, from the other side: a
+    // full budget's worth of prior SUBMISSIONS from this IP must no longer
+    // refuse anything, because submissions are outcomes and the attempt rows
+    // that accompanied them have been pruned or never existed.
+    const ip = "203.0.113.99";
+    const ipHash = hashIp(ip);
+    for (let i = 0; i < RATE_LIMIT_MAX + 3; i++) {
+      await tdb.db.insert(submissionsTable).values({
+        kind: "create",
+        payload: seedDoc,
+        provenance: { sources: ["https://example.com/x"], discoveredBy: "test", submitterIpHash: ipHash },
+      });
+    }
+
+    const res = await POST(req(validCreateBody, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(201);
+  });
+});
+
+describe("POST /api/contribute — attempts are counted, not outcomes (Finding 1)", () => {
+  const ip = "198.51.100.44";
+
+  /** Every attempt row for `ip`, which is what the limiter actually counts. */
+  async function attemptsFor(ipAddr: string) {
+    return tdb.db
+      .select()
+      .from(intakeAttemptsTable)
+      .where(eq(intakeAttemptsTable.submitterIpHash, hashIp(ipAddr)));
+  }
+
+  it("counts a request that trips the honeypot — the path that used to be entirely free", async () => {
+    // THE headline case: `{"website":"x"}` returns 201, writes no submission,
+    // and before this fix cost no budget at all, so a bot that tripped the
+    // honeypot was completely unlimited while one that did not was capped.
+    const res = await POST(req({ ...validCreateBody, website: "spam" }, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(201);
+
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+    const attempts = await attemptsFor(ip);
+    expect(attempts).toHaveLength(1);
+    expect(attempts[0].surface).toBe("contribute");
+  });
+
+  it("counts a Zod-failing request", async () => {
+    const res = await POST(req({ kind: "create", name: 42 }, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(400);
+    expect(await attemptsFor(ip)).toHaveLength(1);
+  });
+
+  it("counts an unparseable body", async () => {
+    const res = await POST(
+      new Request("http://localhost/api/contribute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": ip },
+        body: "{not json",
+      })
+    );
+    expect(res.status).toBe(400);
+    expect(await attemptsFor(ip)).toHaveLength(1);
+  });
+
+  it("counts a correction against an unknown facility (the 404 path)", async () => {
+    const res = await POST(
+      req(
+        {
+          kind: "correction",
+          targetFacilityId: "nope-does-not-exist",
+          field: "operator",
+          value: "Someone",
+          sourceUrl: "https://example.com/source",
+        },
+        { "x-forwarded-for": ip }
+      )
+    );
+    expect(res.status).toBe(404);
+    expect(await attemptsFor(ip)).toHaveLength(1);
+  });
+
+  it("counts a successful submission exactly once — an insert costs the same 1 unit as a rejection", async () => {
+    // Equal cost is the point. If an inserting request cost 2 and a
+    // non-inserting one cost 1, the remaining budget would reveal whether the
+    // insert happened — an existence oracle through the generic success.
+    const res = await POST(req(validCreateBody, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(201);
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
+    expect(await attemptsFor(ip)).toHaveLength(1);
+  });
+
+  it("does NOT count an already-refused (429) request, so the window can drain", async () => {
+    await seedAttempts(ip, RATE_LIMIT_MAX);
+    const before = await attemptsFor(ip);
+
+    const res = await POST(req(validCreateBody, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(429);
+
+    // Recording the refusal would mean the rolling window never drains under
+    // sustained traffic: a shared egress IP would be locked out indefinitely
+    // rather than for an hour.
+    expect(await attemptsFor(ip)).toHaveLength(before.length);
+  });
+
+  it("spends exactly one unit per request across mixed paths, so the 6th is refused whatever the first five were", async () => {
+    // Honeypot, invalid JSON, Zod failure, 404 correction, real submission —
+    // five requests that write one submission between them. Under the old
+    // outcome-counting limiter this cost 1 unit total and the 6th sailed
+    // through; it must now be refused.
+    await POST(req({ ...validCreateBody, website: "spam" }, { "x-forwarded-for": ip }));
+    await POST(
+      new Request("http://localhost/api/contribute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": ip },
+        body: "{not json",
+      })
+    );
+    await POST(req({ kind: "create", name: 42 }, { "x-forwarded-for": ip }));
+    await POST(
+      req(
+        {
+          kind: "correction",
+          targetFacilityId: "nope",
+          field: "operator",
+          value: "X",
+          sourceUrl: "https://example.com/s",
+        },
+        { "x-forwarded-for": ip }
+      )
+    );
+    await POST(req(validCreateBody, { "x-forwarded-for": ip }));
+
+    expect(await attemptsFor(ip)).toHaveLength(RATE_LIMIT_MAX);
+    const sixth = await POST(req(validCreateBody, { "x-forwarded-for": ip }));
+    expect(sixth.status).toBe(429);
+  });
+
+  it("fails CLOSED with a 503 (not a 429) when the attempt cannot be recorded", async () => {
+    // The unapplied-migration case: if the cap cannot be enforced the request
+    // must be refused, and the refusal must announce itself as an outage rather
+    // than hide inside ordinary rate-limiting.
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    await tdb.client.exec(`ALTER TABLE "intake_attempts" RENAME TO "intake_attempts_hidden"`);
+    try {
+      const res = await POST(req(validCreateBody, { "x-forwarded-for": ip }));
+      expect(res.status).toBe(503);
+      expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+      // SQLSTATE only — never the error object, whose message embeds the bound
+      // IP hash (lib/db-error.ts).
+      const logged = consoleError.mock.calls.map((c) => String(c[0])).join("\n");
+      expect(logged).toContain("sqlstate: 42P01");
+      expect(logged).not.toContain(hashIp(ip));
+    } finally {
+      await tdb.client.exec(`ALTER TABLE "intake_attempts_hidden" RENAME TO "intake_attempts"`);
+      consoleError.mockRestore();
+    }
+  });
+});
+
+describe("POST /api/contribute — honeypot type symmetry (Finding 3)", () => {
+  // The oracle this closes: the raw-body honeypot used to trip only when
+  // `typeof website === "string"`, so `{"website":1, ...invalid}` fell through
+  // to Zod and answered 400 WITH `issues`, while `{"website":"x", ...invalid}`
+  // answered 201. Flipping one field's type told a bot that `website` is the
+  // honeypot and that its other fields were the real problem.
+  const invalidRest = { kind: "create", sourceUrl: "not-a-valid-url" };
+
+  it.each([
+    ["a non-empty string", "spam"],
+    ["a number", 1],
+    ["zero", 0],
+    ["a boolean true", true],
+    ["an object", { a: 1 }],
+    ["a non-empty array", ["x"]],
+  ])("trips on %s, answering the same generic 201 with nothing written", async (_label, website) => {
+    const res = await POST(req({ ...invalidRest, website }));
+    expect(res.status).toBe(201);
+    expect(await res.json()).toEqual({ ok: true });
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+  });
+
+  it.each([
+    ["an empty string (what a real browser submits)", ""],
+    ["whitespace only", "   "],
+    ["null", null],
+    ["false", false],
+    ["an empty array", []],
+  ])("does NOT trip on %s — the request is validated normally", async (_label, website) => {
+    const res = await POST(req({ ...invalidRest, website }));
+    // Reaches validation, so the invalid payload is rejected on its merits.
+    expect(res.status).toBe(400);
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+  });
+
+  it("an empty-string honeypot on an OTHERWISE VALID body still submits — a real contributor is never rejected", async () => {
+    const res = await POST(req({ ...validCreateBody, website: "" }));
+    expect(res.status).toBe(201);
+    expect(await tdb.db.select().from(submissionsTable)).toHaveLength(1);
   });
 
   it("correction: stages a pending update submission targeting an existing facility", async () => {

@@ -12,7 +12,13 @@ vi.mock("@/lib/db/client");
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 import { apiAccessGrantsTable } from "@/lib/db/schema";
-import { EMAIL_SEND_CAP_MAX, checkAccessGrantRateLimit, checkAccessGrantEmailSendCap } from "@/lib/rate-limit";
+import {
+  EMAIL_SEND_CAP_MAX,
+  RATE_LIMIT_MAX,
+  checkAccessGrantEmailSendCap,
+  checkIntakeRateLimit,
+  recordIntakeAttempt,
+} from "@/lib/rate-limit";
 import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 // Imported after the mock above so its transitive import of lib/db/client
@@ -265,10 +271,24 @@ describe("confirmAccessGrant — stolen-hash rejection", () => {
   });
 });
 
-describe("checkAccessGrantRateLimit", () => {
-  it("blocks once RATE_LIMIT_MAX requests from the same IP land within the window", async () => {
+describe("checkIntakeRateLimit(\"access-request\")", () => {
+  it("blocks once RATE_LIMIT_MAX ATTEMPTS from the same IP land within the window", async () => {
     const ipHash = "rate-ip-1";
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < RATE_LIMIT_MAX; i++) {
+      await recordIntakeAttempt("access-request", ipHash);
+    }
+    expect((await checkIntakeRateLimit("access-request", ipHash)).ok).toBe(false);
+    expect((await checkIntakeRateLimit("access-request", "other-ip")).ok).toBe(true);
+  });
+
+  it("ignores api_access_grants rows entirely — the cap no longer counts OUTCOMES", async () => {
+    // This is the defect this limiter was rewritten to close: it used to count
+    // `api_access_grants` rows, so the three generic-success paths (honeypot,
+    // over the per-address send cap, an existing pending/active grant) inserted
+    // nothing and therefore cost nothing. Grant rows must now be invisible to
+    // it — only `intake_attempts` rows count.
+    const ipHash = "outcome-only-ip";
+    for (let i = 0; i < RATE_LIMIT_MAX + 3; i++) {
       await tdb.db.insert(apiAccessGrantsTable).values({
         email: `user${i}@example.com`,
         status: "pending",
@@ -276,8 +296,21 @@ describe("checkAccessGrantRateLimit", () => {
         submitterIpHash: ipHash,
       });
     }
-    expect((await checkAccessGrantRateLimit(ipHash)).ok).toBe(false);
-    expect((await checkAccessGrantRateLimit("other-ip")).ok).toBe(true);
+    expect((await checkIntakeRateLimit("access-request", ipHash)).ok).toBe(true);
+  });
+
+  it("keeps budgets separate per surface", async () => {
+    const ipHash = "shared-ip";
+    for (let i = 0; i < RATE_LIMIT_MAX; i++) {
+      await recordIntakeAttempt("access-request", ipHash);
+    }
+    expect((await checkIntakeRateLimit("access-request", ipHash)).ok).toBe(false);
+    // A burst against one surface must not starve another — the property the
+    // four separate tables used to provide, now carried by the `surface`
+    // predicate.
+    expect((await checkIntakeRateLimit("contribute", ipHash)).ok).toBe(true);
+    expect((await checkIntakeRateLimit("leads", ipHash)).ok).toBe(true);
+    expect((await checkIntakeRateLimit("contact", ipHash)).ok).toBe(true);
   });
 });
 

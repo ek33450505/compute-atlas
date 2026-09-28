@@ -53,8 +53,8 @@ export interface LeadTriage {
  * selects an explicit column list matching this type (rather than stripping
  * fields after the fact), so a future column added to `leadsTable` can't
  * silently start leaking here too. `submitterIpHash` stays readable
- * server-side via the full `LeadRow` — `checkLeadRateLimit` in
- * lib/rate-limit.ts depends on it.
+ * server-side via the full `LeadRow` — `checkIntakeRateLimit("leads", ipHash)`
+ * in lib/rate-limit.ts depends on it.
  */
 export type AdminLeadRow = Pick<
   LeadRow,
