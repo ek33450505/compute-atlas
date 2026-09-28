@@ -109,25 +109,51 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # GUARD ON THE GUARDS, and unconditional. Three steps below gate on the
-      # HAS_* booleans rendered at job level from `secrets.X != ''`. If either
-      # ever stops rendering as the literal "true"/"false", those steps SKIP —
-      # db:export never runs, the drift check finds nothing, no PR opens, and
-      # the sync stops publishing while reporting success. drift-alert.yml would
-      # catch that a day later; this catches it in one second. It prints only
-      # booleans, never a secret value.
-      - name: Verify the credential guards rendered as booleans
+      # HAS_* booleans rendered at job level from `secrets.X != ''`. Both must be
+      # 'true'. If either is 'false' (the secret is missing) or fails to render at
+      # all, those steps SKIP — db:export never runs, the drift check finds
+      # nothing, no PR opens, and the sync stops publishing while reporting
+      # success. drift-alert.yml would catch that a day later; this catches it in
+      # one second. It prints only booleans, never a secret value.
+      #
+      # ⚠️ WIDENED 2026-09-28. This step previously accepted 'false' as a valid
+      # boolean and only rejected an unrenderable value — so a MISSING secret
+      # sailed through the very guard whose error message names that outcome. The
+      # two causes are still reported separately because their remedies differ:
+      # "add the secret" vs "the expression stopped rendering".
+      #
+      # Failing on 'false' is safe here because the triggers are `schedule` and
+      # `workflow_dispatch` only — there is no `pull_request` trigger, so no
+      # fork-PR case where secrets are legitimately unavailable. Re-check that
+      # before adding a trigger. NEON_SYNC_PAT is treated as equally fatal: the
+      # `secrets.NEON_SYNC_PAT || github.token` fallback below does NOT degrade
+      # gracefully, because github.token lacks Workflows permission and still
+      # fails at the push.
+      #
+      # All four paths exercised under `bash -e` before merge: both-true exits 0,
+      # each 'false' and an unrenderable value each exit 1 naming the cause.
+      - name: Verify both credentials are present and rendered
         run: |
           bad=""
+          msg_db=""
+          msg_pat=""
+
           case "$HAS_DATABASE_URL" in
-            true|false) ;;
-            *) bad="HAS_DATABASE_URL='$HAS_DATABASE_URL'" ;;
+            true) ;;
+            false) msg_db="DATABASE_URL secret is missing or empty" ;;
+            *) msg_db="expression failed to render as a boolean (value='$HAS_DATABASE_URL')" ;;
           esac
+          [ -n "$msg_db" ] && bad="${bad}${bad:+; }HAS_DATABASE_URL: $msg_db"
+
           case "$HAS_NEON_SYNC_PAT" in
-            true|false) ;;
-            *) bad="$bad HAS_NEON_SYNC_PAT='$HAS_NEON_SYNC_PAT'" ;;
+            true) ;;
+            false) msg_pat="NEON_SYNC_PAT secret is missing or empty" ;;
+            *) msg_pat="expression failed to render as a boolean (value='$HAS_NEON_SYNC_PAT')" ;;
           esac
+          [ -n "$msg_pat" ] && bad="${bad}${bad:+; }HAS_NEON_SYNC_PAT: $msg_pat"
+
           if [ -n "$bad" ]; then
-            echo "::error::A credential guard did not render as a boolean ($bad). Every step gated on it would SKIP and this workflow would report success having published nothing. Failing closed."
+            echo "::error::Credential guard FAILED: $bad. Every step gated on these would SKIP and this workflow would report success having published nothing. Failing closed."
             exit 1
           fi
           echo "Credential guards: HAS_DATABASE_URL=$HAS_DATABASE_URL HAS_NEON_SYNC_PAT=$HAS_NEON_SYNC_PAT"
