@@ -78,7 +78,14 @@ describe("data-integrity: NHD backfill debt", () => {
   // facilities, PR #348). NHD was scattered-degraded, not down — the quorum
   // pre-flight correctly aborted the full pass at [PA northeast] while the old
   // single-coordinate probe would have passed and ground for hours.
-  const NHD_BACKFILL_DEBT_CEILING = 155;
+  // 155 -> 158 on 2026-09-28: the 6th consecutive --skip-nhd wave (PR #359, the
+  // AL/AK approvals). The debt is exactly the 3 ALABAMA records; the 5 Alaska
+  // ones in the same wave are non-CONUS and never counted. NHD was DOWN, not
+  // merely slow: build:mapdata's own pre-flight timed out on layers 4 and 10 at
+  // [KS interior] (12s budget, both aborted) and refused the full pass, and the
+  // script's own message prescribed --skip-nhd. This is the documented fallback
+  // being used as documented, not a shortcut.
+  const NHD_BACKFILL_DEBT_CEILING = 158;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data

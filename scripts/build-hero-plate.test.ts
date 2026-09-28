@@ -149,7 +149,16 @@ describe("makeAlbersUsa — AK and HI insets", () => {
    * them deliberately, after confirming the projection and the translates are
    * unchanged — never to make an unexplained failure go quiet.
    */
-  const AK_MARKS = { x0: 239, y0: 686, x1: 272, y1: 815 };
+  // x1 widened 272 -> 282 on 2026-09-28 for greensparc-cordova-ak (60.6099,
+  // -145.644), which projects to x=279.7 — the first facility in EASTERN
+  // Alaska; every other AK mark sits between x=247 and x=264. Widened per the
+  // note above, after confirming scripts/build-hero-plate.mjs is byte-identical
+  // to origin/main (projection, scale, translate, rotate, center, parallels all
+  // unchanged), so this is a genuinely new mark location and not drift. Cordova
+  // lands well inside Alaska's drawable span (x 67-404), so it renders on the
+  // landmass. The box stays an oracle: at 43px wide it still fails the
+  // mutation-checked 60px translate shift.
+  const AK_MARKS = { x0: 239, y0: 686, x1: 282, y1: 815 };
   const HI_MARKS = { x0: 552, y0: 817, x1: 650, y1: 891 };
 
   /**
