@@ -200,12 +200,21 @@ it — and it is the least obvious entry here.
   occurrences — the launchd PATH problem) and a `VerificationGateUnavailableError`
   abort (the Ollama source-verification gate failing closed, which is correct
   behaviour: it refuses to stage unverified candidates).
-- ⚠️ **Cause vs. effect.** The *effect* — three days of no staged candidates —
-  is measured above. The *causes* reported alongside it (expired OAuth on
-  09-26/27, `claude` off the launchd PATH on 09-28) are recorded as reported:
-  the PATH failure appears verbatim in `launchd.err`, but **no explicit OAuth
-  or token-expiry error string was found in either log**, so that half is
-  unconfirmed here.
+- ⚠️ **Cause vs. effect — both halves are measured, but from different
+  artifacts.** The *effect* (three days of no staged candidates) is measured
+  above. Both *causes* are measured too; the OAuth one just is not in the logs,
+  which is why an earlier draft of this entry called it unconfirmed:
+  - **09-28, `claude` off the launchd PATH** — `timeout: failed to run command
+    'claude': No such file or directory` appears verbatim ×4 in
+    `discovery-logs/launchd.err`.
+  - **09-26/27, expired OAuth** — `grep -c "OAuth session expired"` returns **0**
+    for both `launchd.err` and `launchd.out`. The string is the entire 73-byte
+    *content* of the candidate files themselves, in exactly the four states that
+    failed on those two days:
+    `grep -l "OAuth session expired" discovery-logs/candidates-2026092*.json`
+    → `…20260926T130004-WI`, `…20260926T130012-IN`, `…20260927T130104-OK`,
+    `…20260927T131733-WY`. The pipeline wrote the auth error where candidates
+    should have been.
 - Effect on the soak: new-URL supply was flat for **3 of the window's 14
   days**.
 
