@@ -87,13 +87,50 @@ jobs:
   sync:
     name: Export Neon to JSON
     runs-on: ubuntu-latest
-    # Map the secret to a job-level env var so it can be tested in step `if:`
-    # conditions — the `secrets` context is NOT available in `if:` expressions.
+    # ⛔ These are BOOLEANS, not the secrets, and the distinction is the point.
+    # Both secrets were job-level env vars until 2026-09-27, which handed them
+    # to every step — including `npm ci`, which runs four package install
+    # scripts on this runner (esbuild x3, unrs-resolver). That put the
+    # production database URL and a repo-scoped write PAT in the environment of
+    # four third-party scripts. Each secret is now on only the steps that read
+    # it, which is the rule ci.yml already states for DATABASE_URL.
+    #
+    # They cannot simply be deleted from the job level: the `secrets` context is
+    # NOT available in `if:` expressions, and three steps below gate on whether
+    # a secret is set. `secrets.X != ''` is evaluated HERE, where secrets ARE
+    # available, and only the `true`/`false` result is exported — so every guard
+    # keeps its exact meaning while no step that does not need a value sees one.
+    # `with:` and step `env:` CAN read `secrets` directly, so those use it.
+    # Do not "simplify" this back into the secrets themselves.
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT }}
+      HAS_DATABASE_URL: ${{ secrets.DATABASE_URL != '' }}
+      HAS_NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT != '' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # GUARD ON THE GUARDS, and unconditional. Three steps below gate on the
+      # HAS_* booleans rendered at job level from `secrets.X != ''`. If either
+      # ever stops rendering as the literal "true"/"false", those steps SKIP —
+      # db:export never runs, the drift check finds nothing, no PR opens, and
+      # the sync stops publishing while reporting success. drift-alert.yml would
+      # catch that a day later; this catches it in one second. It prints only
+      # booleans, never a secret value.
+      - name: Verify the credential guards rendered as booleans
+        run: |
+          bad=""
+          case "$HAS_DATABASE_URL" in
+            true|false) ;;
+            *) bad="HAS_DATABASE_URL='$HAS_DATABASE_URL'" ;;
+          esac
+          case "$HAS_NEON_SYNC_PAT" in
+            true|false) ;;
+            *) bad="$bad HAS_NEON_SYNC_PAT='$HAS_NEON_SYNC_PAT'" ;;
+          esac
+          if [ -n "$bad" ]; then
+            echo "::error::A credential guard did not render as a boolean ($bad). Every step gated on it would SKIP and this workflow would report success having published nothing. Failing closed."
+            exit 1
+          fi
+          echo "Credential guards: HAS_DATABASE_URL=$HAS_DATABASE_URL HAS_NEON_SYNC_PAT=$HAS_NEON_SYNC_PAT"
 
       # PAT WRITE PREFLIGHT — runs on EVERY run, drift or not, and FIRST, so a
       # dead credential costs seconds instead of the ~30min build:mapdata pass.
@@ -124,7 +161,9 @@ jobs:
       # NEON_SYNC_PAT is a registered Actions secret, so its value is masked in
       # any git error line that echoes the remote URL back into the log.
       - name: Preflight — verify the PR token can still write
-        if: env.NEON_SYNC_PAT != ''
+        if: env.HAS_NEON_SYNC_PAT == 'true'
+        env:
+          NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT }}
         run: |
           set -euo pipefail
           if git push --dry-run \
@@ -143,7 +182,9 @@ jobs:
       - run: npm ci
 
       - name: Run db:export
-        if: env.DATABASE_URL != ''
+        if: env.HAS_DATABASE_URL == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx tsx scripts/export.ts
 
       - name: Check for real changes (ignore .meta.json)
@@ -284,7 +325,7 @@ jobs:
           # note in the header for the mechanism and the observed rejection.
           # It is kept only so a PAT-less run fails at the push with GitHub's
           # own explicit error rather than an unset-token error.
-          token: ${{ env.NEON_SYNC_PAT || github.token }}
+          token: ${{ secrets.NEON_SYNC_PAT || github.token }}
           branch: automated/neon-sync
           base: main
           title: "chore(data): sync facilities.json with Neon"
@@ -346,11 +387,11 @@ jobs:
       - name: Enable auto-merge
         if: >-
           steps.check-drift.outputs.drift == 'true'
-          && env.NEON_SYNC_PAT != ''
+          && env.HAS_NEON_SYNC_PAT == 'true'
           && steps.mapdata.outcome != 'failure'
           && steps.additive.outcome != 'failure'
         env:
-          GH_TOKEN: ${{ env.NEON_SYNC_PAT }}
+          GH_TOKEN: ${{ secrets.NEON_SYNC_PAT }}
           # Env-var indirection rather than direct ${{ }} interpolation into the
           # shell line — the value is a trusted integer from create-pull-request,
           # but the pattern matches MAPDATA_OUTCOME above and GitHub's hardening

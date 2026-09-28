@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -241,6 +241,127 @@ describe("Content-Security-Policy header", () => {
       expect(adminCsp?.value).toContain("object-src 'none'");
       expect(adminCsp?.value).toContain(`report-uri ${CSP_REPORT_PATH}`);
     });
+  });
+});
+
+/**
+ * Guards the baseline security headers other than the CSP (added 2026-09-27
+ * after a live sweep measured `Permissions-Policy` and
+ * `Cross-Origin-Opener-Policy` absent on all five route shapes tested — a flat
+ * gap, not a coverage gap).
+ *
+ * Two of these assertions guard an ABSENCE, which is the unusual direction and
+ * the reason this block exists at all: `Cross-Origin-Embedder-Policy` and a
+ * blanket `Cross-Origin-Resource-Policy` are exactly the headers a future
+ * "harden the headers" pass would reach for, and both would break something
+ * this site deliberately supports. A test is the only place that reasoning
+ * survives being re-derived from a checklist.
+ */
+describe("baseline security headers", () => {
+  const allRules = async () => (await nextConfig.headers?.()) ?? [];
+
+  const baselineHeader = async (key: string) => {
+    const all = await allRules();
+    return all.find((rule) => rule.source === "/:path*")?.headers.find((h) => h.key === key);
+  };
+
+  const headerOnAnyRule = async (key: string) => {
+    const all = await allRules();
+    return all.flatMap((rule) =>
+      rule.headers.filter((h) => h.key.toLowerCase() === key.toLowerCase()).map((h) => ({
+        source: rule.source,
+        value: h.value,
+      }))
+    );
+  };
+
+  describe("Permissions-Policy", () => {
+    it("is present on the site-wide rule", async () => {
+      expect(await baselineHeader("Permissions-Policy")).toBeDefined();
+    });
+
+    it("denies the powerful features the app never uses", async () => {
+      const value = (await baselineHeader("Permissions-Policy"))?.value ?? "";
+      for (const feature of ["camera", "microphone", "payment", "usb"]) {
+        expect(value, `${feature} should carry an empty allowlist`).toContain(`${feature}=()`);
+      }
+    });
+
+    /**
+     * `geolocation=()` is an assertion about the app, not a safe default — an
+     * empty allowlist makes `navigator.geolocation` REJECT rather than prompt,
+     * so a "locate me" control added to the map later would fail silently with
+     * nothing but a console error to show for it.
+     *
+     * Written as a biconditional on purpose. Asserting only "the header says
+     * `geolocation=()`" would be a tautology over a constant in the file next
+     * door; asserting only "no source uses geolocation" would not fail if the
+     * header were loosened for no reason. This fails in BOTH directions: add a
+     * geolocation caller without loosening the header and it goes red, loosen
+     * the header without a caller and it also goes red.
+     */
+    it("keeps geolocation denied exactly as long as no source asks for a position", async () => {
+      const apiMarkers = ["getCurrentPosition", "watchPosition", "GeolocateControl"];
+      const sourceRoots = ["app", "components", "lib"];
+
+      const walk = (dir: string): string[] =>
+        readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+          const full = join(dir, entry.name);
+          if (entry.isDirectory()) return walk(full);
+          return /\.tsx?$/.test(entry.name) && !/\.test\.tsx?$/.test(entry.name) ? [full] : [];
+        });
+
+      const callers = sourceRoots
+        .flatMap((root) => walk(join(process.cwd(), root)))
+        .filter((file) => {
+          const text = readFileSync(file, "utf8");
+          return apiMarkers.some((marker) => text.includes(marker));
+        });
+
+      const value = (await baselineHeader("Permissions-Policy"))?.value ?? "";
+
+      if (callers.length === 0) {
+        expect(value, "no source uses the Geolocation API, so it must stay denied").toContain(
+          "geolocation=()"
+        );
+      } else {
+        expect(
+          value,
+          `${callers.join(", ")} uses the Geolocation API — the header must allow it (self)`
+        ).toContain("geolocation=(self)");
+      }
+    });
+  });
+
+  describe("Cross-Origin-Opener-Policy", () => {
+    it("isolates the browsing context on the site-wide rule", async () => {
+      expect((await baselineHeader("Cross-Origin-Opener-Policy"))?.value).toBe("same-origin");
+    });
+  });
+
+  /**
+   * MapLibre loads vector tiles/glyphs/sprites from tiles.openfreemap.org and
+   * satellite rasters from services.arcgisonline.com. Neither sends
+   * `Cross-Origin-Resource-Policy`, so a COEP of `require-corp` would block
+   * both and render an empty map — a total failure of the site's primary
+   * surface, from a header that looks like pure hardening in review.
+   */
+  it("sets no Cross-Origin-Embedder-Policy, which would block the map's tile hosts", async () => {
+    expect(await headerOnAnyRule("Cross-Origin-Embedder-Policy")).toEqual([]);
+  });
+
+  /**
+   * `/data/*.geojson` is CC-BY-4.0 and meant to be hotlinked, `/embed/*` exists
+   * to be iframed by unknown third parties, and the public read API advertises
+   * `Access-Control-Allow-Origin: *`. A blanket `same-origin` CORP breaks all
+   * three silently — the asset still returns 200 and the embedder sees nothing.
+   *
+   * Asserted across EVERY rule rather than just the baseline one: a CORP added
+   * to `/data/:path+` would be the more likely mistake, and checking only
+   * `/:path*` would miss it.
+   */
+  it("sets no blanket Cross-Origin-Resource-Policy, which would break dataset reuse", async () => {
+    expect(await headerOnAnyRule("Cross-Origin-Resource-Policy")).toEqual([]);
   });
 });
 

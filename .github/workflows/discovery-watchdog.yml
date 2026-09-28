@@ -84,8 +84,13 @@ jobs:
   watchdog:
     name: Verify discovery and digest status
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    # ⛔ DATABASE_URL is deliberately NOT a job-level `env:` (it was one until
+    # 2026-09-27). A job-level env is handed to every step including `npm ci`,
+    # which runs four package install scripts on this runner (esbuild x3,
+    # unrs-resolver) — so the production database URL was in the environment of
+    # four third-party scripts that have no use for it. It is scoped to the two
+    # detector steps that read it instead; nothing else here touches Neon. This
+    # is the rule ci.yml already states for the same secret.
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -95,12 +100,14 @@ jobs:
       - run: npm ci
 
       # Invoked as `npx tsx <script>` rather than the `check:heartbeat` npm
-      # script, matching ci.yml:76 and neon-sync.yml:147. The npm script carries
+      # script, matching ci.yml and neon-sync.yml. The npm script carries
       # `--env-file=.env.local`, which does not exist on a runner; here
-      # DATABASE_URL arrives from the job env above.
+      # DATABASE_URL arrives from this step's own `env:`.
       - name: Check discovery heartbeat freshness
         id: heartbeat
         continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx tsx scripts/discovery/check-heartbeat.ts
 
       # Check for incomplete digest runs (completedAt IS NULL). The state
@@ -124,6 +131,8 @@ jobs:
       - name: Check digest run status
         id: digest
         continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set +e
           OUTPUT="$(npx tsx scripts/discovery/check-digest-status.ts 2>&1)"

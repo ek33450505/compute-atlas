@@ -33,9 +33,21 @@ function formatActionError(result: { error: string }): string {
 }
 
 /**
- * http/https only. `finalUrl` comes from following redirects on a URL an
- * anonymous stranger submitted — it must be validated before it's ever used
- * as a link target, same as the security note on TriagePanel below.
+ * http/https only. Every value this file uses as a link target goes through
+ * here, and both callers need it for different reasons:
+ *
+ * - `triage.finalUrl` comes from following redirects on a URL an anonymous
+ *   stranger submitted, so it is unvalidated attacker input — this is its only
+ *   check, same as the security note on TriagePanel below.
+ * - `lead.url` is already intake-validated (`httpUrlSchema` rejects every
+ *   non-http(s) scheme before `createLead` writes a row), so this is a second
+ *   layer rather than the only one. Keep it anyway: that schema lives in
+ *   another module and is invisible from here, so nothing in this file would
+ *   fail if it were loosened, and a `javascript:` href in the admin UI is
+ *   stored XSS. Defence in depth — do not drop the guard because the intake
+ *   side "already handles it".
+ *
+ * A failing value renders as plain text, never as an anchor.
  */
 function isSafeHttpUrl(value: string | undefined): value is string {
   if (!value) return false;
@@ -76,6 +88,11 @@ function getStatusBadgeVariant(
  * escapes text children by default, so this is safe. Do NOT switch this to
  * dangerouslySetInnerHTML, splice these into an href/title built by string
  * concatenation, or otherwise treat them as trusted markup.
+ *
+ * `finalUrl` is also the one value here used as a link target, so it additionally
+ * passes isSafeHttpUrl above — as does `lead.url` in LeadRowCard. That rule is
+ * not specific to triage fields; see the helper's comment for why the guard
+ * stands on both, including the intake-validated one.
  */
 function TriagePanel({ triage, submittedUrl }: { triage: LeadTriage | null; submittedUrl: string }) {
   if (!triage) {
@@ -142,6 +159,7 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
   const [isPending, startTransition] = useTransition();
 
   const attributionLabel = lead.attribution?.trim() ? lead.attribution : "anonymous";
+  const urlIsSafe = isSafeHttpUrl(lead.url);
   const triage = lead.triage as LeadTriage | null;
   const duplicateIds = triage?.ok ? (triage.duplicateFacilityIds ?? []) : [];
   // `deferred` is deliberately NOT terminal: the lane gave up on it, so a
@@ -214,15 +232,19 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
         <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant={getStatusBadgeVariant(lead.status)}>{lead.status}</Badge>
-            <a
-              href={lead.url}
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label={`${lead.url} (opens in new tab)`}
-              className="text-sm font-medium break-all underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {lead.url}
-            </a>
+            {urlIsSafe ? (
+              <a
+                href={lead.url}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={`${lead.url} (opens in new tab)`}
+                className="text-sm font-medium break-all underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {lead.url}
+              </a>
+            ) : (
+              <span className="text-sm font-medium break-all">{lead.url}</span>
+            )}
           </div>
           <p className="shrink-0 text-xs text-muted-foreground">
             {attributionLabel} · submitted {new Date(lead.createdAt).toLocaleDateString()}

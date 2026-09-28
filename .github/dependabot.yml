@@ -1,0 +1,74 @@
+# Keeps the SHA-pinned actions and the npm tree from freezing silently.
+#
+# WHY THIS EXISTS (measured 2026-09-27): all 18 `uses:` across the seven
+# workflows are pinned to full 40-char commit SHAs, which is the right call for
+# supply-chain integrity — but a SHA pin is a permanent freeze. Dependabot
+# SECURITY updates only fire on an advisory for a package in a manifest; they do
+# not bump a pinned action. With no config here and no Renovate, actions/checkout
+# and actions/setup-node sat on v4 while v5 shipped, and would have stayed there
+# indefinitely. A frozen pin is not a stable pin: it is an unmaintained one.
+#
+# github-actions lane: GROUPED, so all 18 pins move in ONE weekly PR instead of
+# eighteen. Majors are deliberately NOT ignored here — unfreezing v4 -> v5 is the
+# entire point of the lane. Dependabot rewrites the SHA and the trailing
+# `# v4` comment together, so the pinned form survives.
+#
+# npm lane: capped at 2 PRs/week and split prod/dev so a dev-tooling bump never
+# rides along with a runtime one. Majors are suppressed (see the ignore block) —
+# Next 16 / React 19 / Tailwind v4 majors are read-the-changelog work, not
+# merge-the-green-check work.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    # "/" means .github/workflows for this ecosystem, not the repo root.
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Etc/UTC"
+    # One PR for every action, rather than one PR per action.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 1
+    commit-message:
+      prefix: "chore(ci)"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 2
+    groups:
+      npm-production:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      npm-development:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    # ⛔ The `update-types` list here is LOAD-BEARING, not decoration. A bare
+    # `dependency-name: "*"` with no `update-types` silences Dependabot
+    # entirely — including SECURITY updates, which are the one kind that must
+    # always get through. The `version-update:` prefix scopes this to routine
+    # VERSION bumps only: a major-version security advisory still opens a PR.
+    # If you edit this block, keep the prefix.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    labels:
+      - "dependencies"

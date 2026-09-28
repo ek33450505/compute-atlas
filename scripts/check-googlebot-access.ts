@@ -31,9 +31,22 @@
  *   1. `GSC_SERVICE_ACCOUNT_JSON` — the JSON content itself (for CI secrets).
  *   2. `GSC_CREDENTIALS_PATH`, or its default `~/.config/gsc-mcp/service-account.json`
  *      (where it already lives on the maintainer's machine for the GSC MCP).
- * If neither resolves to a readable credential, this prints a skip notice
- * and exits 0 — a missing credential must never turn CI red on its own; that
- * would just be a second, differently-shaped blind spot.
+ * If neither resolves to a readable credential, what happens depends on WHERE
+ * this is running, and the difference is the whole point:
+ *   - In CI (`CI` is set): exit NON-ZERO. An unarmed canary is a failure, not a
+ *     pass. This shipped the other way — exit 0 everywhere — and the result was
+ *     measured on 2026-09-27: `GSC_SERVICE_ACCOUNT_JSON` had never been added as
+ *     a repository secret, so all 10 most recent scheduled runs reported
+ *     `success` and every one of them was a skip. The detector built because
+ *     Googlebot was 403'd for five days had never once executed, and was green
+ *     and silent about it — the exact shape of blind spot it exists to close,
+ *     reproduced one layer up. The durable fix is not "add the secret" (that is
+ *     a one-time act, and the next service-account rotation would re-disarm it
+ *     silently); it is that unarmed can no longer look like passed.
+ *   - Locally (no `CI`): print the skip notice and exit 0, so a maintainer
+ *     running this by hand without credentials is not blocked.
+ * A credential that is PRESENT but malformed is a third case and fails in both
+ * environments — see `loadCredentials`.
  *
  * Rate limits: the URL Inspection API allows 600 queries/minute and
  * 2000/day. Six canary URLs, called sequentially (never in parallel), is
@@ -204,13 +217,65 @@ export async function inspectUrl(accessToken: string, inspectionUrl: string): Pr
   return body.inspectionResult;
 }
 
+/**
+ * True when this is an automated run. GitHub Actions sets `CI=true`; the
+ * literal strings "false" and "0" are honoured as opt-outs because some
+ * toolchains set `CI=false` deliberately, and an env var that cannot be turned
+ * off is not a flag.
+ */
+export function isCi(env: Partial<NodeJS.ProcessEnv> = process.env): boolean {
+  const raw = (env.CI ?? "").trim().toLowerCase();
+  if (!raw) return false;
+  return raw !== "false" && raw !== "0";
+}
+
+export interface UnarmedOutcome {
+  /** True when the run must exit non-zero. */
+  fail: boolean;
+  /** The exact line to print — an ::error:: when failing, a ::notice:: when skipping. */
+  message: string;
+}
+
+/**
+ * Decides what a MISSING credential means, given the environment. Pure — no
+ * process.exit, no console, so both branches are testable. See the header: in
+ * CI an unarmed canary must fail, because "green" there is read as "Googlebot
+ * is not blocked", and an unarmed run has not checked.
+ */
+export function classifyMissingCredential(
+  env: Partial<NodeJS.ProcessEnv> = process.env
+): UnarmedOutcome {
+  const checked =
+    "checked GSC_SERVICE_ACCOUNT_JSON and " +
+    `GSC_CREDENTIALS_PATH / ${DEFAULT_CREDENTIALS_PATH}`;
+  if (isCi(env)) {
+    return {
+      fail: true,
+      message:
+        `::error::Googlebot-access canary is UNARMED: no GSC service-account credential resolved (${checked}). ` +
+        "Failing closed — a canary that did not run must never report green, which is how this went unnoticed for " +
+        "10 consecutive scheduled runs. Add the GSC_SERVICE_ACCOUNT_JSON repository secret (Settings -> Secrets and " +
+        "variables -> Actions) holding the full JSON of a service account with read access to the " +
+        `${SITE_URL} Search Console property.`,
+    };
+  }
+  return {
+    fail: false,
+    message:
+      `::notice::No GSC service-account credential found (${checked}) — skipping Googlebot-access canary. ` +
+      "Treated as a local run (CI is unset, or explicitly \"false\"/\"0\"); the same condition FAILS in CI.",
+  };
+}
+
 async function main(): Promise<void> {
   const creds = loadCredentials();
   if (!creds) {
-    console.log(
-      "::notice::No GSC service-account credential found (checked GSC_SERVICE_ACCOUNT_JSON and " +
-        `GSC_CREDENTIALS_PATH / ${DEFAULT_CREDENTIALS_PATH}) — skipping Googlebot-access canary.`
-    );
+    const outcome = classifyMissingCredential();
+    if (outcome.fail) {
+      console.error(outcome.message);
+      process.exit(1);
+    }
+    console.log(outcome.message);
     process.exit(0);
   }
 

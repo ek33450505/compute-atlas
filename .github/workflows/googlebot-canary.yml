@@ -18,14 +18,24 @@
 # know. A PR gate would also be useless: the state it reads only changes when
 # Googlebot next crawls, which is unrelated to when CI runs.
 #
-# WHY "GREEN" IS NOT AUTOMATICALLY "PASSED":
-# scripts/check-googlebot-access.ts exits 0 when no credential is available,
-# so a missing or rotated secret does not turn this red. That is deliberate —
-# a credential problem should not masquerade as a Googlebot problem. But it
-# means green can also mean "did not run", so the Report step below prints
-# which of the two happened. A silently-skipping canary is then visible in the
-# run log instead of looking identical to a passing one — the exact class of
-# blind spot this workflow exists to close.
+# WHY AN UNARMED CANARY IS RED, NOT GREEN (changed 2026-09-27):
+# This shipped the other way. check-googlebot-access.ts exited 0 whenever no
+# credential resolved, so a missing or rotated secret could not turn this red —
+# deliberately, on the reasoning that a credential problem should not
+# masquerade as a Googlebot problem, with the Report step below left to make a
+# skip visible in the log. Then it was measured: GSC_SERVICE_ACCOUNT_JSON had
+# never been added as a repository secret at all, and all 10 most recent runs
+# reported success, every one of them a skip. The detector built because
+# Googlebot was 403'd for five days had never once executed, and was green and
+# silent about it — the same blind spot this workflow exists to close,
+# reproduced one layer up. A log line nobody reads is not a signal.
+# The script now exits NON-ZERO when no credential resolves and `CI` is set,
+# and still skips quietly when a maintainer runs it by hand locally. Adding the
+# secret is not the durable fix — this is: the next service-account rotation
+# cannot silently re-disarm the canary, because unarmed no longer looks like
+# passed. A credential that is PRESENT but malformed already failed in both
+# environments and still does. The Report step still runs first, so the log
+# names the cause before the failure line.
 #
 # SETUP (one-time): add a repository secret GSC_SERVICE_ACCOUNT_JSON holding
 # the full JSON of a Google service account with read access to the
@@ -46,14 +56,16 @@ jobs:
   googlebot-access:
     name: Verify Google is not being blocked
     runs-on: ubuntu-latest
-    # Job-level rather than step-level env is a deliberate choice, matching
-    # drift-alert.yml's handling of DATABASE_URL. Step-level would be
-    # marginally tighter least-privilege, but two steps need this value and
-    # the repo's established convention is job-level; consistency wins over a
-    # difference that changes no real exposure here (npm ci runs no lifecycle
-    # scripts that could read it out).
-    env:
-      GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+    # ⛔ DO NOT hoist GSC_SERVICE_ACCOUNT_JSON back to a job-level `env:`. It
+    # was one until 2026-09-27, defended here by the claim that "npm ci runs no
+    # lifecycle scripts that could read it out". That claim was measured FALSE:
+    # `npm ci` runs four install scripts on this runner (esbuild x3,
+    # unrs-resolver), and a job-level env is handed to every one of them. The
+    # value is a GCP service-account private key, so it belongs on the two
+    # steps that actually read it and nowhere else — the same rule ci.yml
+    # already states for DATABASE_URL. `--ignore-scripts` is NOT the
+    # alternative: esbuild's install script is what prepares the platform
+    # binary `tsx` needs to run this check at all.
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -65,9 +77,11 @@ jobs:
       # `[ -z ... ]` is a shell built-in test: it inspects the value without
       # printing it, so the private key never reaches the log.
       - name: Report whether the canary can actually run
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
         run: |
           if [ -z "${GSC_SERVICE_ACCOUNT_JSON}" ]; then
-            echo "::warning::GSC_SERVICE_ACCOUNT_JSON is not set — the canary will SKIP, not pass. Add the repository secret to arm it."
+            echo "::warning::GSC_SERVICE_ACCOUNT_JSON is not set — the canary cannot run, so the next step will FAIL rather than skip (CI is set on every runner). Add the repository secret to arm it."
           else
             echo "Credential present; canary will run against sc-domain:compute-atlas.com."
           fi
@@ -77,4 +91,6 @@ jobs:
       # the pipe's final element and swallow a real failure — a trap this repo
       # has hit more than once.
       - name: Ask Google what it saw on its last crawl
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
         run: npm run check:googlebot
