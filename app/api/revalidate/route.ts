@@ -48,6 +48,8 @@ export async function POST(request: Request): Promise<Response> {
   return jsonResponse({ revalidated: validTags });
 }
 
+// `admin`: the only handler here is a bearer-gated POST, so `Authorization`
+// genuinely has to be advertised.
 export function OPTIONS(): Response {
-  return corsPreflight();
+  return corsPreflight("admin");
 }

@@ -94,6 +94,17 @@ export async function POST(request: Request): Promise<Response> {
   return jsonResponse(result.facility, { status: 201 });
 }
 
+// `admin`, NOT `read` — and this is the deliberate exception, not an oversight.
+// This path is mixed: an anonymous public GET above plus a bearer-gated POST.
+// One OPTIONS answers for the whole path, so the preflight has to advertise the
+// union; narrowing it to `read` would make the browser reject a legitimate
+// cross-origin bearer POST before it was ever sent.
+//
+// Widening the preflight costs the public GET nothing, because the two lists
+// are **preflight-only**: the GET's own 200 comes from `cacheableJson`, which
+// spreads `CORS_RESPONSE_HEADERS` — `Access-Control-Allow-Origin: *` and no
+// method or header list at all. So this `admin` scope is never served to a
+// reader; it is only ever the answer to an OPTIONS.
 export function OPTIONS(): Response {
-  return corsPreflight();
+  return corsPreflight("admin");
 }

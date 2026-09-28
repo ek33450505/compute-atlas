@@ -46,6 +46,8 @@ export async function GET(request: Request): Promise<Response> {
   return cacheableJson(body, READ_CACHE.search);
 }
 
+// `read`: this path exports GET and nothing else, so its preflight has no
+// reason to advertise a write verb or `Authorization`.
 export function OPTIONS(): Response {
-  return corsPreflight();
+  return corsPreflight("read");
 }
