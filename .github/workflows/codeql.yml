@@ -1,0 +1,193 @@
+# CodeQL — advanced setup.
+#
+# WHY THIS FILE EXISTS (Ed's decision, 2026-09-28)
+# CodeQL ran here under GitHub's *default setup*, which accepts no configuration —
+# so there is no way to keep test code out of the extracted database. On PR #353 that
+# produced a false-positive high: `js/insufficient-password-hash` on
+# `lib/token-hash.ts:19` ("Password from a call to `confirmReq` is hashed insecurely").
+# `lib/token-hash.ts` was not modified. A newly added
+# `app/api/subscribe/confirm/route.integration.test.ts` defined a helper
+# `confirmReq(token)`, and CodeQL treated it as a production password source because
+# the alert's `classifications` came back empty. The hashed value is `generateToken()`
+# = `randomBytes(32).toString("base64url")` — 256 random bits, not a password — so
+# SHA-256 is correct, and a KDF would add per-request cost on `checkDailyApiGate` for
+# no security gain. Advanced setup puts the scan config in the repo, where it is
+# reviewable.
+#
+# FIDELITY IS THE WHOLE RISK. Reproducing default setup wrongly shrinks coverage
+# silently while the check still reads green. Default setup's live config, read
+# 2026-09-28:
+#   {"state":"configured",
+#    "languages":["actions","javascript","javascript-typescript","python","typescript"],
+#    "query_suite":"default","threat_model":"remote","schedule":"weekly",
+#    "runner_type":"standard"}
+# Every choice below states which part of that it reproduces, and every deliberate
+# OMISSION is named — so nobody "restores" something that was never missing.
+#
+# ⚠️ WHO MAINTAINS THESE SHA PINS depends on merge order, so check rather than assume.
+# `.github/dependabot.yml` does NOT exist on `main` as of 2026-09-28 — on that basis
+# alone these pins are hand-maintained. But PR #353 adds one, with a grouped
+# `github-actions` lane over `/` (which means `.github/workflows` for that ecosystem),
+# and it will cover this file the moment it merges. Whichever lands second inherits
+# the other's state: if `dependabot.yml` is present when you read this, the pins are
+# maintained and this paragraph is stale — delete it.
+
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Reproduces default setup's `schedule: weekly`.
+    - cron: '17 9 * * 1'
+  workflow_dispatch:
+
+# The repo's default GITHUB_TOKEN was set to read-only on 2026-09-27, so nothing may
+# be left implicit. Top-level is least-privilege; the job widens only what it needs.
+permissions:
+  contents: read
+
+# Keyed by ref like ci.yml (`ci-${{ github.ref }}`), but DELIBERATELY NOT the same
+# cancellation policy — see below.
+concurrency:
+  group: codeql-${{ github.ref }}
+  # PR pushes supersede themselves; a `schedule` or `push: main` run does NOT get
+  # cancelled by the other, because they share `github.ref` and cancelling a
+  # default-branch security scan leaves the alert baseline stale. ci.yml uses a
+  # blanket `true`, which is right for a suite that reruns on demand and wrong for
+  # this.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    # NOTE: these are NEW check names, which is expected. They are NOT the repo's
+    # required checks — those are exactly "typecheck · lint · test", "BATS tests" and
+    # "Playwright e2e", and they live in ci.yml / the playwright job. Do not rename
+    # those; nothing here touches them.
+    name: Analyze (${{ matrix.language }})
+    # Reproduces default setup's `runner_type: standard`.
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Reproduces default setup's language list. That list shows FIVE values, but
+        # they resolve to THREE databases, and the alias direction is the opposite of
+        # what you would guess: per `src/languages/builtin.json` at the pinned SHA the
+        # canonical built-in is `javascript`, and BOTH `javascript-typescript` and
+        # `typescript` are aliases FOR it (`parseBuiltInLanguage`,
+        # `src/languages/index.ts`). So
+        #   {actions, javascript, javascript-typescript, python, typescript}
+        #     resolves to {actions, javascript, python}
+        # Three entries here is full parity, not a cut. Do not "restore" the other two.
+        # `python` is NOT vestigial: `scripts/make-banner.py` is the repo's one Python
+        # file, and dropping the language would be a silent coverage loss.
+        language:
+          - actions
+          - javascript-typescript
+          - python
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        with:
+          languages: ${{ matrix.language }}
+
+          # THE ACTUAL CHANGE vs default setup.
+          # Keep test code out of the database. Inline `config:` rather than
+          # `config-file:` so the entire scan configuration lives in this one file;
+          # per init/action.yml at the pinned SHA, `config` "takes precedence over the
+          # config-file input".
+          #
+          # HONEST COST — this is not free. `paths-ignore` drops these files from
+          # EXTRACTION ENTIRELY. It does not merely stop test code seeding taint into
+          # production code: CodeQL can no longer report a finding *inside* a test
+          # file at all, and an excluded file can supply no source, no sink AND no
+          # intermediate step.
+          #
+          # This repo has FOUR known CodeQL findings to date. TWO were in test files
+          # and would now go unreported:
+          #   - `scripts/discovery/check-sources.test.ts:302` — alert #2,
+          #     js/incomplete-url-substring-sanitization (fixed)
+          #   - `scripts/indexnow.test.ts:166` — js/incomplete-hostname-regexp; it
+          #     survives only as a comment, and it is the finding that taught the
+          #     trailing-dot host-matcher lesson, later found a SECOND time at :381
+          #     BECAUSE of it. That is what this exclusion costs.
+          # The other two were production code and are unaffected
+          # (`lib/facility-write.ts:72`, `app/admin/login/actions.ts:29`).
+          #
+          # ⚠️ THE ONE TRUE-POSITIVE RISK, currently latent: a path whose source AND
+          # sink are both in production but which ROUTES THROUGH an excluded file is
+          # also suppressed. That requires production code to import an excluded path
+          # — verified impossible today (zero imports from `e2e/`, `test/`, `tests/`
+          # or `*.test.*` across `lib app components scripts`; `test/pglite-db.ts` has
+          # 15 importers, all of them tests). It stops being latent the moment that
+          # changes, so a guard asserting no production import of a test path is the
+          # cheap way to keep this honest.
+          #
+          # ⚠️ Do NOT "simplify" this to a `query-filters` exclusion of
+          # `js/insufficient-password-hash`. That rule has a TRUE positive in this
+          # repo's history — alert #3 on `app/admin/login/actions.ts:29` — so
+          # suppressing it repo-wide is strictly worse than excluding test files.
+          #
+          # `tests/**` is a coverage no-op either way: it holds 3 `.bats` suites and
+          # CodeQL has no shell language, so those were never extracted under any
+          # config. Listed for intent, not because it removes anything.
+          #
+          # `paths-ignore` only applies to languages analysed WITHOUT building — true
+          # for all three here (no compiled language in this repo).
+          #
+          # What the patterns cover, measured 2026-09-28 (git-tracked):
+          #   **/*.test.ts   -> 163 files (26 of them *.integration.test.ts)
+          #   **/*.test.tsx  -> 147 files
+          #   e2e/**         -> 12 *.spec.ts (Playwright)
+          #   test/**        -> test/pglite-db.ts
+          #   tests/**       -> 3 *.bats suites (discovery, vercel, workflows)
+          config: |
+            paths-ignore:
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+              - 'e2e/**'
+              - 'test/**'
+              - 'tests/**'
+
+          # DELIBERATE OMISSIONS — each one reproduces default setup.
+          # `queries:`       omitted. Default setup ran `query_suite: default`, and
+          #                  omitting `queries` IS the default suite. Not forgotten;
+          #                  adding e.g. security-extended would be a scope change.
+          # `threat-models:` omitted because NO SUCH INPUT EXISTS on
+          #                  github/codeql-action/init at v4. Verified by reading
+          #                  init/action.yml at the pinned SHA: the inputs are tools,
+          #                  languages, build-mode, analysis-kinds, token, registries,
+          #                  matrix, config-file, db-location, config, queries,
+          #                  quality-queries, packs, external-repository-token,
+          #                  setup-python-dependencies, source-root, ram, threads,
+          #                  debug*, trap-caching, dependency-caching, check-run-id,
+          #                  job-status.
+          #                  ⚠️ "No such INPUT" is not "no such setting": `threat-models`
+          #                  IS a valid key inside the `config:` block above
+          #                  (`src/config/db-config.ts`). Omitting it in BOTH places is
+          #                  what reproduces default setup's `threat_model: remote` —
+          #                  an empty set makes db-config drop the key and CodeQL falls
+          #                  back to its own `remote` default.
+          # `build-mode:`    omitted. All three languages default to `none` (nothing
+          #                  compiled here), so there is no build step and no
+          #                  `npm ci` — CodeQL does not need installed dependencies
+          #                  for this repo, and skipping the install keeps the
+          #                  supply-chain surface as narrow as the s169 audit left it.
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        with:
+          category: /language:${{ matrix.language }}
