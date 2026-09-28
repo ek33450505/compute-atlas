@@ -6,7 +6,7 @@ Compute Atlas is a source-cited public tracker of AI data centers, crypto-mining
 
 **Frontend:** Next.js 16 App Router with React 19 + TypeScript. Renders facility data via React Server Components; components never query the database directly. Reads are centralized through `lib/data.ts` and served through tag-based `unstable_cache` with ISR (Incremental Static Regeneration). The UI itself is Tailwind v4 with Base UI + shadcn primitives, and features MapLibre GL for the globe view.
 
-**Backend:** Neon serverless Postgres, schema in `lib/db/schema.ts`, accessed via Drizzle ORM. The database holds five tables: live facility records, staging submissions, a full audit trail (`facility_history`), subscription data, and `leadsTable` (public tip-offs). Unreviewed intake flows through the `submissions` table (staged and `pending`-by-default) and requires explicit human approval to become live; maintainer-reviewed data publishes directly through `lib/facility-write.ts` (admin UI, admin REST) or `scripts/sync-to-neon.ts` (bulk). See "Invariants (as Absences)".
+**Backend:** Neon serverless Postgres, schema in `lib/db/schema.ts`, accessed via Drizzle ORM. The database holds **14 tables** (measured 2026-09-28; `grep -c "pgTable(" lib/db/schema.ts` — re-measure, this grows). Five carry the domain: `facilities` (live records), `submissions` (staging), `facility_history` (the audit trail), `subscriptions` (email alerts), and `leads` (public tip-offs). The other nine are operational ledgers that no facility read touches — per-IP rate-limit counters (`subscribe_attempts`, `intake_attempts`), the submission-notify pair (`submission_notify_requests`, `submission_notify_sends`), `state_digest_runs`, `contact_messages`, the public read-API pair (`api_access_grants`, `api_daily_usage`), and `discovery_heartbeat`. Unreviewed intake flows through the `submissions` table (staged and `pending`-by-default) and requires explicit human approval to become live; maintainer-reviewed data publishes directly through `lib/facility-write.ts` (admin UI, admin REST) or `scripts/sync-to-neon.ts` (bulk). See "Invariants (as Absences)".
 
 **Discovery Pipeline:** A local, scheduled operator tool (`scripts/discovery/`) that proposes new facilities and status changes to the staging queue. It runs via launchd on the maintainer's machine and never writes live facilities — it's not part of the deployed application.
 
@@ -56,7 +56,9 @@ Every facility is one of these three types. Common fields (id, name, operator, l
 - **Email alerts (double-opt-in):** `POST /api/subscribe` (public; starts subscription), `/api/subscribe/confirm` (confirms via emailed token), `/api/subscribe/unsubscribe` (opts out). No authentication; opt-in is tracked via email and token.
 - **Admin write:** `POST /api/submissions`, `/api/submissions/{id}/approve`, `/api/submissions/{id}/reject` (staging queue); `POST /api/facilities` and `PATCH` / `DELETE /api/facilities/{id}` (single live records — the `DELETE` route and the admin delete action are the only delete surfaces); and `POST /api/revalidate`, the only way an out-of-process CLI can bust cache tags. All require the `API_ADMIN_TOKEN` bearer, with one exception: `POST /api/submissions` — staging only — also accepts `API_INTAKE_TOKEN`, so the discovery pipeline can stage a `pending` row without a secret that could publish one. Used by the admin UI and the discovery pipeline.
 
-All responses use the `jsonResponse()` helper for consistent status codes and CORS handling. The `/api/search` endpoint uses Postgres full-text search (the database `search_vector`), not the client-side Fuse.js library (which backs the ⌘K command palette in the UI).
+**Two response helpers, and choosing between them is a security decision** (`lib/api-response.ts`). Public read GETs opt in to edge caching with **`cacheableJson()`**, naming a window from `READ_CACHE`; that is the only cacheable path. Everything else — bearer-gated reads, write results, error bodies, 429s — goes through **`jsonResponse()`**, which is **`no-store` by default on both `Cache-Control` and `CDN-Cache-Control`** (Cloudflare evaluates the latter first). The default is load-bearing, not tidiness: a Cloudflare cache rule makes every GET whose path is not under `/admin` eligible for the edge cache, and `GET /api/submissions` returns every staged row.
+
+**CORS is scoped per route, and it is the one thing a new route cannot skip.** Each route re-exports `corsPreflight(scope)` as its own `OPTIONS`, where `scope` is a **required** `CorsScope` — `read` (anonymous, read-only), `public-write` (anonymous unauthenticated write: moderated intake and the subscribe surfaces), or `admin` (bearer-authenticated, may write). The scopes key on a path's auth posture rather than its verb list, and there is deliberately no default, so a route that never decides its posture fails to compile. One `OPTIONS` answers for a whole path, so a mixed path (public GET plus a bearer-gated write, e.g. `/api/facilities`) advertises the union and stays `admin`. The `/api/search` endpoint uses Postgres full-text search (the database `search_vector`), not the client-side Fuse.js library (which backs the ⌘K command palette in the UI).
 
 ### Map and UI: `components/map/`, `lib/seo.ts`
 
@@ -64,7 +66,7 @@ All responses use the `jsonResponse()` helper for consistent status codes and CO
 
 **JSON-LD** via `lib/seo.ts` generates structured data: `Dataset` on the homepage, `Place` + `BreadcrumbList` on facility detail pages, `ItemList` on directory pages, and a site-wide `Organization`/`WebSite` graph. The OG image is rendered server-side via Satori (React-to-image).
 
-Collection pages (`/states/{state}`, `/operators/{operator}`, `/power`, `/opposition`, `/status/{status}`, `/metros/{metro}`) all use the shared `components/collection/collection-page.tsx` primitive for consistency.
+The shared `components/collection/collection-page.tsx` primitive (masthead + stat row + card grid + `BreadcrumbList`/`ItemList` JSON-LD) backs four lens templates: `/status/{status}`, `/metros/{metro}`, `/counties/{county}`, and `/stakeholders/{person}` (measured 2026-09-28 — `grep -rln "CollectionPage" app/`). The other facility-list pages — `/states/{state}`, `/operators/{operator}`, `/power`, `/opposition` — do not use it; each composes its own layout.
 
 ## Invariants (as Absences)
 
@@ -86,7 +88,7 @@ Collection pages (`/states/{state}`, `/operators/{operator}`, `/power`, `/opposi
 - **Aggregate page cache:** 1h (loadFacilities). Intentionally uncoupled from write events; `db:sync --apply` does bust the `"facilities"` tag, but aggregates have a cheap 1h self-healing timer (Ed, 2026-07-22 ISR-write-blowout fix), so scoped writes don't pin them to a refresh cycle.
 - **Scoped page caches:** Tag-only, no timer on the reader itself. Revalidated on write only. Pages inherit any longer timer from reads higher in the render tree (typically 24h from the root layout).
 
-Why decouple? Previous versions busted the global `"facilities"` tag on every write, rebuilding the entire site. That is a large surface: the route count is one page per facility, plus one per operator slug, state, metro, status, and learn topic, plus roughly twenty static pages — so it grows with every data wave (at the time of writing, a little over 1,500 routes). Scoped tags cut that blast radius to 4–6 cache **tags** per write (facility detail, current/previous state, current/previous operator, ±power-generation).
+Why decouple? Previous versions busted the global `"facilities"` tag on every write, rebuilding the entire site. That is a large surface: the route count is one page per facility, plus one per operator slug, state, metro, status, and learn topic, plus roughly sixty fixed pages — so it grows with every data wave. The production build of `6515815` prerendered **4,330 routes** (measured 2026-09-28: 2,241 `/facilities/[slug]`, 1,018 `/operators/[operator]`, 847 `/counties/[county]`, 55 `/states/[state]`, 55 `/embed/states/[state]`, 27 `/metros/[metro]`, 9 `/sitemaps/[family]`, 8 `/stakeholders/[person]`, 6 `/learn/[topic]`, 5 `/status/[status]`, and ~59 fixed routes). Re-read the build log rather than trusting that figure — it has roughly tripled since this paragraph first quoted it. Scoped tags cut that blast radius to 4–6 cache **tags** per write (facility detail, current/previous state, current/previous operator, ±power-generation).
 
 **Prod-only gotcha:** Neon is the source of truth. `unstable_cache` is Next.js in-memory; a prod data-only change (approving a facility on prod) updates Neon but not the cache until the tag expires or a tagged page is revalidated. The cache survives Neon outages by serving stale data — this is intentional, a feature not a bug, ensuring the site stays read-accessible even during database downtime.
 
@@ -107,7 +109,7 @@ On approve, the provenance is preserved in the audit trail (`facility_history`),
 - Stages both as `pending` submissions
 - **Never** writes live facilities
 
-The pipeline uses the Claude Code subscription (not metered API) and runs via launchd at 13:00. It writes to the same Postgres instance as the runtime via the admin `/api/submissions` endpoint (bearer auth). The approval workflow is identical to public contributor submissions: human reviews the staging queue and approves/rejects.
+The pipeline uses the Claude Code subscription (not metered API) and runs via launchd at 13:00. It writes to the same Postgres instance as the runtime via `POST /api/submissions`, authenticating with `API_INTAKE_TOKEN` and falling back to `API_ADMIN_TOKEN` where the intake token is not configured (`scripts/discovery/submit-candidates.ts`). That handler is the single place `requireIntake` accepts either token, and the split is the point: staging a `pending` row is all the pipeline needs, so it never has to hold a secret that could publish a live facility. The approval workflow is identical to public contributor submissions: human reviews the staging queue and approves/rejects.
 
 This isolation means the app's runtime is decoupled from the pipeline's data sources and logic. The pipeline can be updated, paused, or run ad hoc without touching production code.
 
@@ -133,6 +135,7 @@ graph TB
         History["facility_history<br/>(audit trail)"]
         Subs["subscriptions<br/>(for email alerts)"]
         Leads["leadsTable<br/>(public tip-offs)"]
+        Ops["+9 operational tables<br/>(rate-limit ledgers, notify<br/>queue, contact messages,<br/>API grants, heartbeat)"]
     end
 
     subgraph "Operator Tool (Local)"

@@ -697,12 +697,16 @@ else
   ENRICHMENT_RUN_ID="$(date '+%Y%m%dT%H%M%S')-enrichment"
 
   # ⛔⛔ CRITICAL for extract-fields: --fields MUST be passed explicitly.
-  # parseFieldsArg() returns the FULL six-field default set when --fields is
-  # omitted, and two of those six failed the project's accuracy bench
-  # (capacityMw.planned 75% precision, energy.onSiteGenerationMw 50%) — not
-  # safe to STAGE unattended. So the bare invocation is precisely the unsafe
-  # one, which is why this lane was never wired in before F0 step 3. Do not
-  # remove --fields from the extract-fields call to "simplify" it.
+  # parseFieldsArg() — shared with the read-only verify-fields lane — returns
+  # the FULL six-field default set when --fields is omitted, and two of those
+  # six failed the project's accuracy bench (capacityMw.planned 75% precision,
+  # energy.onSiteGenerationMw 50%) — not safe to STAGE unattended. Since
+  # 2026-09-11 (#276) extract-fields.ts layers a stricter rule on top of that
+  # shared default and THROWS on a bare invocation, so the unsafe sweep can no
+  # longer happen silently; the default itself is unchanged and stays correct
+  # for verify-fields, which stages nothing. Passing --fields here is now
+  # belt-and-braces rather than the only guard — do not remove it from the
+  # extract-fields call to "simplify" it.
   #
   # ⚠️ Every field pinned here IS bench-measured: capacityMw.operational
   # (P=100%/R=100%) and water.coolingType (P=95%/R=95%, measured 2026-09-01

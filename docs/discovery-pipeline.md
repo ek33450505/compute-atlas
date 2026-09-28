@@ -397,8 +397,16 @@ it never proposes new facilities and it never overwrites a curated value.
 the per-state discovery loop and the source-liveness check. It can still be run by
 hand the same way. Two conditions the scheduled invocation has to keep meeting:
 
-- **`--fields` is passed explicitly** — the bare default is the unsafe six-field
-  set, two of which the bench measured as not safe to ship. `run.sh` pins two
+- **`--fields` is passed explicitly** — two of the six extractable fields were
+  bench-measured as not safe to ship, so `extract-fields.ts` refuses to guess.
+  Since 2026-09-11 (#276) its own `parseArgs` fails closed, throwing `--fields is
+  required` when the flag is absent *or* present with no usable value
+  (`--fields=`, or a bare trailing `--fields`). ⚠️ The shared `parseFieldsArg`
+  helper it calls still defaults to all six when the raw value is `undefined`,
+  and that default is deliberate and load-bearing: `verify-fields.ts` imports
+  the same function and depends on it, being read-only and staging nothing. The
+  requirement is layered on top for `extract-fields.ts` specifically — do not
+  move it down into the shared helper. `run.sh` pins two
   fields, and `tests/discovery/run.bats` asserts the flag is present for both
   tools (mutation-tested: deleting it fails the suite).
   Both pinned fields are bench-measured: `capacityMw.operational`
