@@ -10,4 +10,6 @@ This directory contains guides for understanding and contributing to Compute Atl
 
 - **[maintainers.md](maintainers.md)** — Maintainer-only operations: the data-wave workflow (`db:sync` → `db:export` → `build:mapdata`), database scripts, environment variables, releases, the build gate, and the caching model. Requires `DATABASE_URL`.
 
+- **[seo-soak-2026-09.md](seo-soak-2026-09.md)** — A pre-registered before/after soak for the September 2026 sitemap-index split, recording the pre-change baseline and the measurements the window is committed to.
+
 For the project architecture, tech stack, and data model, see the main [README.md](../README.md).
