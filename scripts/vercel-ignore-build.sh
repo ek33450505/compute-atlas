@@ -76,13 +76,124 @@ fi
 #    What IS available: VERCEL_GIT_PREVIOUS_SHA (the commit of this branch's
 #    previous deployment — the right base, and it spans a multi-commit push),
 #    and HEAD^ once the shallow clone is deepened.
+#
+#    ## VERCEL_GIT_PREVIOUS_SHA must be an ANCESTOR, not merely resolvable
+#    (added 2026-09-28, from a real production log)
+#
+#    `git cat-file -e` proves an object EXISTS; it says nothing about whether
+#    it is on this branch's history. `.github/workflows/neon-sync.yml` uses
+#    peter-evans/create-pull-request with `delete-branch: true`, so every data
+#    wave pushes a BRAND-NEW `automated/neon-sync` ref. Vercel then reports the
+#    PREVIOUS wave's commit as VERCEL_GIT_PREVIOUS_SHA — an orphan of a branch
+#    that no longer exists. It resolves fine, but it is not an ancestor of
+#    HEAD, so the diff spans every unrelated change merged to main in between
+#    and always finds code. Measured on deployment compute-atlas-92y4j4zw6:
+#      [vercel-ignore] base=VERCEL_GIT_PREVIOUS_SHA (417de2e8...)
+#      [vercel-ignore] BUILD — code change: components/home/hero-plate-paths.ts
+#    ...a file that was in no commit of that PR. Cost: 22 wasted builds and
+#    ~95K needless ISR writes per month.
+#
+#    So require ancestry, and treat only a POSITIVELY DETERMINED answer as an
+#    answer. Outcomes:
+#      a. ancestor            -> true base, use it (unchanged behaviour on
+#                                main, including accumulation across skipped
+#                                deployments).
+#      b. NOT an ancestor,
+#         history PROVABLY
+#         complete            -> the negative is trustworthy. The previous SHA
+#                                is off this history — a deleted branch, a
+#                                rebase or a force-push all produce it — so
+#                                fall through to HEAD^ (previews only, see
+#                                the production carve-out below).
+#      c. anything else       -> INCONCLUSIVE -> BUILD. Two ways to land here:
+#                                a shallow clone truncates history, so "not an
+#                                ancestor" may only mean the connecting
+#                                commits were never fetched; and a git error
+#                                (`--is-ancestor` exits >=2, the shallow probe
+#                                fails) answers nothing at all. Falling back
+#                                to HEAD^ on a multi-commit push whose code
+#                                change sat in an earlier commit would
+#                                SILENTLY SKIP it — a withheld deploy, the
+#                                worst outcome this script has. Try once to
+#                                complete the history, then BUILD.
+#
+#    Note the probes are written POSITIVELY (`== "false"`, `-eq 1`) so that an
+#    empty or unexpected result falls into (c) and builds. The negative form
+#    (`!= "true"`) would read a FAILED probe as "history is complete" and make
+#    (c) unreachable — the exact inversion of the :37-40 invariant.
+#
+#    ## Residual exposure on previews (accepted, documented 2026-09-28)
+#
+#    Outcome (b) diffs HEAD^..HEAD, which is NARROWER than the push when the
+#    previous SHA was orphaned by a rebase or force-push rather than by a
+#    deleted branch: a >=2-commit push whose code change sat in an earlier
+#    commit, with an allowlist-only tip commit, now skips where it used to
+#    build. Off a preview that would be a withheld deploy, so ONLY an explicit
+#    VERCEL_ENV=preview may narrow; everything else — production, or an
+#    unset/unrecognised value — takes (c) and builds. On main the previous
+#    SHA is an ancestor in normal operation, so that arm is reached only when
+#    the history moved, which is exactly when building is right. What remains
+#    is a PREVIEW that renders one commit behind its branch tip; the next push
+#    rebuilds it, and merging to main builds through the ordinary ancestor
+#    path.
 range_base=""
 how=""
+non_ancestor_prev=""
+anc_rc=0
 
 if [[ -n "${VERCEL_GIT_PREVIOUS_SHA:-}" ]] &&
   git cat-file -e "${VERCEL_GIT_PREVIOUS_SHA}^{commit}" 2>/dev/null; then
-  range_base="$VERCEL_GIT_PREVIOUS_SHA"
-  how="VERCEL_GIT_PREVIOUS_SHA"
+  # rc 0 = ancestor, rc 1 = genuine non-ancestor, rc >=2 = git could not tell
+  # (measured on git 2.55.0: a bad revision exits 128). Only rc 1 is a real
+  # negative, so the rc is split rather than tested as a plain boolean.
+  git merge-base --is-ancestor "$VERCEL_GIT_PREVIOUS_SHA" HEAD 2>/dev/null
+  anc_rc=$?
+
+  if [[ "$anc_rc" -eq 0 ]]; then
+    # (a)
+    range_base="$VERCEL_GIT_PREVIOUS_SHA"
+    how="VERCEL_GIT_PREVIOUS_SHA"
+  elif [[ "$anc_rc" -ne 1 ]]; then
+    # (c) git errored — no answer at all.
+    build "could not test whether previous SHA ${VERCEL_GIT_PREVIOUS_SHA} is an ancestor (git exited ${anc_rc}) (fail-open)"
+  elif [[ "$(git rev-parse --is-shallow-repository 2>/dev/null)" == "false" ]]; then
+    # (b) provably complete history, so the negative answer stands.
+    non_ancestor_prev="$VERCEL_GIT_PREVIOUS_SHA"
+  else
+    # (c) shallow, or the probe itself failed. One attempt to complete the
+    #     history, then re-test. The fetch is bounded by git's own low-speed
+    #     abort — no external `timeout`, which is not guaranteed in the build
+    #     image — because a DEGRADED origin (slow, not down) would otherwise
+    #     hang the gate indefinitely.
+    git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=30 fetch --quiet --unshallow >/dev/null 2>&1 || true
+    git merge-base --is-ancestor "$VERCEL_GIT_PREVIOUS_SHA" HEAD 2>/dev/null
+    anc_rc=$?
+    if [[ "$anc_rc" -eq 0 ]]; then
+      range_base="$VERCEL_GIT_PREVIOUS_SHA"
+      how="VERCEL_GIT_PREVIOUS_SHA"
+    elif [[ "$anc_rc" -eq 1 ]] &&
+      [[ "$(git rev-parse --is-shallow-repository 2>/dev/null)" == "false" ]]; then
+      non_ancestor_prev="$VERCEL_GIT_PREVIOUS_SHA"
+    else
+      build "cannot establish whether previous SHA ${VERCEL_GIT_PREVIOUS_SHA} is an ancestor — history is not provably complete (fail-open)"
+    fi
+  fi
+fi
+
+# The narrowing carve-out for outcome (b): see "Residual exposure" above.
+#
+# Written positively — only an explicit `preview` may narrow to HEAD^ — so an
+# absent or unexpected VERCEL_ENV builds instead of skipping. The negative
+# form (`== "production"`) would put every unrecognised value on the
+# skip-capable arm, the same inversion as `!= "true"` above. The optimistic
+# `${VERCEL_ENV:-preview}` in the final skip message is a LABEL on a decision
+# already made, not a gate; the asymmetry is deliberate.
+#
+# The message says only what was established: non-ancestry, and that this is
+# not a preview. WHICH cause produced the non-ancestry — a deleted branch, a
+# rebase, a force-push — was never determined, so none is asserted.
+if [[ -n "$non_ancestor_prev" && "${VERCEL_ENV:-}" != "preview" ]]; then
+  build "previous SHA ${non_ancestor_prev} is not an ancestor of HEAD and this is not a preview (VERCEL_ENV=\"${VERCEL_ENV:-unset}\") — HEAD^ could be narrower than the push, so refusing to narrow (fail-open)"
 fi
 
 # A merge commit pulls in whatever the other branch carried, which a
@@ -104,6 +215,15 @@ fi
 
 if [[ -z "$range_base" ]]; then
   build "no base commit available (fail-open)"
+fi
+
+# Logged here, not at the point of decision: the merge-commit and no-base
+# checks above can still exit, and a notice naming a base that was never used
+# would be a claim the script had not established. Same discipline applies to
+# the CAUSE — non-ancestry is what was measured; which of the several possible
+# causes produced it was not, so the causes are offered as examples only.
+if [[ -n "$non_ancestor_prev" ]]; then
+  log "previous SHA ${non_ancestor_prev} is not an ancestor of HEAD (a deleted branch, a rebase or a force-push all do this) — using ${how} instead"
 fi
 log "base=${how} (${range_base})"
 
