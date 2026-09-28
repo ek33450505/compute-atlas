@@ -155,6 +155,110 @@ by `scripts/retention-prune.ts` after 90 days for submissions nobody ever review
 ⚠️ **`.env.local` quoting.** `vercel env add` keeps surrounding quotes, and a quoted
 `DATABASE_URL` is invalid and fails *silently* — there is no fallback. Strip the quotes.
 
+## Secret rotation
+
+Nothing in this project had ever been rotated as of the 2026-09-27 security audit — every Vercel
+variable still had `createdAt == updatedAt`, oldest 76 days. This is the runbook; work **top to
+bottom**, because the order matters in two places.
+
+⚠️ **A new or changed Vercel env var is invisible to already-built deployments.** Vercel injects env
+at deploy time, so every rotation below needs
+`npx vercel redeploy --target production <url>` before it takes effect. A rotation that "didn't work"
+is usually a missing redeploy.
+
+**0. `NEON_API_KEY` — revoke, do not rotate.** Nothing consumes it (zero references across
+`.github/`). It is a **control-plane** key: it can create/delete branches, reset role passwords and
+read connection strings, so it can mint a fresh `DATABASE_URL` *after* you rotate the database
+password. The GitHub secret was deleted 2026-09-27; **revoking the key itself in the Neon console is
+a separate step** and deleting the secret does not do it. Do this before step 1. Breaks: nothing.
+
+**1. `DATABASE_URL` (+ `DATABASE_URL_UNPOOLED`).** The app connects as `neondb_owner`, which is a
+member of `neon_superuser` with `rolcreaterole`/`rolcreatedb`/`rolbypassrls`/`rolreplication` and owns
+all 14 public tables — verified by SQL, and far more than the DML the app needs. Reducing that was
+considered and **deliberately deferred**: the least-privilege split's own failure mode (a missing
+`GRANT` on a new table after `db:migrate`, silently breaking production writes) is higher-probability
+than the attack it prevents, for a single-maintainer project. Revisit if a second person gains DB
+access or real personal data lands in the schema.
+To rotate the credential without the privilege split: reset `neondb_owner`'s password in Neon →
+update Vercel production → **redeploy** → update `.env.local` → update the GitHub `DATABASE_URL`
+secret → `npm run check:drift` to confirm the workflows still connect.
+Breaks if you do it out of order: `db:sync`, `db:export`, `check:drift`, `drift-alert.yml`,
+`discovery-watchdog.yml`, `neon-sync.yml` and CI's DB test, all at once.
+⚠️ `DATABASE_URL_UNPOOLED` exists in all three Vercel environments and **no code reads it** (the Neon
+integration creates it). It is a second copy of the same credential — rotate it in lockstep or remove it.
+
+**2. `API_ADMIN_TOKEN`.** Grants every admin write route, the admin UI, discovery staging writes and
+the cron recovery path. ⚠️ **Rotating it invalidates every live `admin_session` cookie**, because the
+cookie HMAC is keyed by the raw token (`lib/admin-session.ts`, `signV2Parts`). There is **no overlap
+window** — the code compares against exactly one value, so it is a hard cutover.
+Order: Vercel production → **redeploy** → `.env.local` (the `submissions` CLI, `sync-to-neon.ts` and
+`submit-candidates.ts` all read it) → log in to `/admin` again.
+Do it when **no nightly `run.sh` discovery run is in flight**.
+
+**3. `NEON_SYNC_PAT`.** Needs `Workflows: RW` and `neon-sync.yml` runs `gh pr merge --squash --auto`,
+so a leaked value can rewrite CI *and* auto-merge to `main` → production. Mint a new **fine-grained**
+PAT (this repo only, Contents/PRs/Workflows RW, with an expiry) → update the secret →
+`gh workflow run neon-sync.yml` → watch the "Preflight — verify the PR token can still write" step.
+⚠️ That preflight proves `Contents: write` only and **cannot** prove `Workflows` — a token missing that
+scope passes preflight and fails at the real push. Revoke the old PAT after one green run.
+
+**4. `RESEND_API_KEY`.** Can send as `alerts@compute-atlas.com` (reputational, not data — the key is
+verified send-only: Resend answers `401 restricted_api_key` to key/domain/email reads). New
+sending-only key → Vercel production → **redeploy** → `.env.local` → delete the old key.
+⚠️ A botched rotation is **invisible**: `lib/email.ts` returns `null` on an unset/bad key and sends
+become a logged no-op. Verify with a real confirm send, not by absence of errors.
+
+**5. `CRON_SECRET`.** Low blast radius (the monthly digest trigger). Rotate freely — but it **must
+stay different from `API_ADMIN_TOKEN`**, or `hasValidCronSecret` short-circuits and the
+`?since=&until=` manual-recovery path becomes permanently unreachable with your own token.
+
+**6. `API_ADMIN_TOKEN_SALT`.** The PBKDF2 salt for the admin-UI password. Rotating it invalidates the
+stored derivation — treat it as "change the admin password", never as a standalone rotation.
+
+**7. ⛔ `CONTRIBUTE_IP_SALT` — do NOT rotate casually.** Every `submitter_ip_hash` in production was
+computed with this salt. Changing it silently orphans every stored row: rate-limit history resets, and
+the notify-email hashes and send-cap counter stop matching. Deliberate migration only.
+⚠️ Since 2026-09-27 it has a **second consumer**: `lib/subscribe-consent.ts` derives the
+subscribe-consent cookie's HMAC key from it (under its own `KEY_DOMAIN`, so the uses cannot collide).
+Rotating therefore also invalidates every outstanding consent cookie — harmless on its own (30-minute
+lifetime; those users simply get the ordinary double-opt-in email), but it means this value is no
+longer only about IP hashes.
+
+**8. `INDEXNOW_KEY`.** Public by design. If changed, write the new `public/<key>.txt` and delete the
+old one in the same commit — `indexnow.test.ts` asserts the file matches the constant.
+
+**9. `EDGE_SHARED_SECRET` — ⚠️ THERE IS NO SAFE TWO-STEP ORDER once the gate is fail-closed.**
+An earlier version of this section said rotation was "safe in either order because the check is
+fail-open when unset." That is only true *before* the gate is armed — i.e. before there is anything to
+rotate — and it would have prescribed exactly the outage it warned about. Corrected 2026-09-27 after
+review caught it.
+
+`isEdgeOriginAllowed` compares the presented header against **one** value. So once armed:
+- Change the Cloudflare rule first ⇒ presented(new) ≠ expected(old) ⇒ **403**.
+- Change Vercel first ⇒ presented(old) ≠ expected(new) ⇒ **403**.
+
+Either way every `/admin` and `/api` request 403s until the second half lands (site-wide once the
+matcher is widened in activation step 5). Use one of these instead:
+
+**Option A — three phases, no code change (recommended).** Disarm, swap, re-arm:
+1. **Unset** `EDGE_SHARED_SECRET` in Vercel → `npx vercel redeploy --target production <url>`. The
+   gate is now fail-open; traffic is unaffected and unprotected.
+2. Change the Cloudflare Transform Rule to the new value. Verify with a real GET.
+3. **Set** the new `EDGE_SHARED_SECRET` → redeploy. Verify a browser request works **and** that
+   `curl --resolve 'www.compute-atlas.com:443:76.76.21.21' https://www.compute-atlas.com/api/stats`
+   is refused.
+⚠️ Steps 1–2 are a genuine window with no origin protection. Keep it short; it is not a secret leak,
+only a period where the bypass is open again.
+
+**Option B — accept an overlap, needs a code change.** Have `EDGE_SHARED_SECRET` parse a
+comma-separated list and accept any member (still `timingSafeEqual` per candidate, constant work per
+request). Then: add the new value alongside the old → redeploy → change the Cloudflare rule → remove
+the old value → redeploy. No unprotected window. Do this if rotation is ever expected to be routine.
+
+Either way: **verify with a real GET, not by absence of errors** — a 403 from this gate looks identical
+to any other 403, and Cloudflare could cache it (`proxy.ts` sets `no-store` on that response for
+exactly this reason).
+
 ## Releases
 
 The project follows [Semantic Versioning](https://semver.org). Releases are published via

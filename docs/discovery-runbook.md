@@ -25,7 +25,9 @@ Configuration is optional; defaults come from `ollama-client.ts`:
 | `OLLAMA_TIMEOUT_MS` | `120000` | per-call abort timeout; used when it parses as a positive finite number, otherwise the default |
 | `VERIFY_SOURCES_ENABLED` | gate is on | `false` is the only opt-out |
 
-If the daemon is down or the model is not pulled, the gate returns `unavailable` and the run aborts rather than submitting unverified candidates. This is deliberate: `unavailable` means "we could not check", never "the source is bad". The only opt-out is an explicit `VERIFY_SOURCES_ENABLED=false`.
+If the daemon is down or the model is not pulled, the gate returns `unavailable` and **nothing is staged** rather than submitting unverified candidates. This is deliberate: `unavailable` means "we could not check", never "the source is bad". The only opt-out is an explicit `VERIFY_SOURCES_ENABLED=false`.
+
+⚠️ **"The run aborts" is imprecise, and the difference costs a session window** (found in the 2026-09-27 audit). `submit-candidates.ts` exits nonzero for the state it was working on — correct, nothing unverified reaches staging — but `run.sh` catches that exit, logs a WARN, appends to `FAILURES` and **continues to the remaining states**. So with Ollama down, a full sweep spends one `claude` invocation per remaining state and dies at the same gate each time, exhausting the session window on a run that structurally cannot stage anything. The safety property holds (nonzero exit plus the desktop notification); the budget does not. If you see the first state fail this way, stop the run by hand rather than letting it walk the list.
 
 ## Installing the launchd job
 
