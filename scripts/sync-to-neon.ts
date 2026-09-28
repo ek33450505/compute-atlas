@@ -73,6 +73,7 @@ import { insertFacilityHistoryRow } from "../lib/facility-history";
 import { canonicalize, canonicalStringify, changedTopLevelKeys } from "../lib/canonical-json";
 import { tagsForFacility, isValidCacheTag, MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
 import { notifySubscribersOfChanges } from "../lib/notify";
+import { redactedErrorCode } from "../lib/db-error";
 
 /**
  * `facility_history.source` for rows this tool writes — a new value alongside
@@ -377,7 +378,10 @@ export async function applySync(
       ];
       await notifySubscribersOfChanges(changes);
     } catch (err) {
-      console.error("subscriber notification failed", err);
+      // SQLSTATE only, never `err`: the notify path's queries bind subscriber
+      // email addresses, which a DrizzleQueryError embeds in its `.message`
+      // (see lib/db-error.ts). A failed notification stays non-fatal.
+      console.error(`subscriber notification failed (sqlstate: ${redactedErrorCode(err)})`);
     }
   }
 

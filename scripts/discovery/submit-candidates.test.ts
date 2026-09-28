@@ -1,6 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { runSubmit, normalizeCandidates, parseCandidatesJson, type RunSubmitOptions } from "./submit-candidates";
+import {
+  runSubmit,
+  runSubmitAndLog,
+  normalizeCandidates,
+  parseCandidatesJson,
+  stripStakeholders,
+  submissionToken,
+  verificationEnabled,
+  VerificationGateUnavailableError,
+  type RunSubmitOptions,
+  type RunSubmitSummary,
+} from "./submit-candidates";
 import type { Facility } from "../../lib/schema";
 import type { VerifyClaim, VerificationResult } from "./verify-source";
 
@@ -1189,5 +1200,281 @@ describe("runSubmit — restricted-source guard", () => {
     expect(body.payload.sources).toEqual([
       { url: VERIFIED_URL, label: "Verified source", retrievedAt: "2026-09-20", kind: "press" },
     ]);
+  });
+});
+
+// --- Finding 2: VERIFY_SOURCES_ENABLED's fail-closed parse -------------------
+// This polarity used to live inline in `main()`, where no unit test could reach
+// it. A refactor to `!== "true"` or a truthiness check would have disabled
+// mechanical source verification on every run with the whole suite still green
+// — the gate's absence produces no error, only unverified candidates reaching
+// `pending`. Each typo case below is a value someone could plausibly TYPE
+// meaning "off"; every one of them must still leave the gate ON.
+describe("verificationEnabled", () => {
+  it("disables the gate on the exact string \"false\"", () => {
+    expect(verificationEnabled({ VERIFY_SOURCES_ENABLED: "false" })).toBe(false);
+  });
+
+  it.each([
+    ["FALSE", "wrong case"],
+    ["False", "wrong case"],
+    ["flase", "typo"],
+    ["fals", "truncated"],
+    [" false", "leading space"],
+    ["false ", "trailing space"],
+    ["0", "numeric off"],
+    ["no", "prose off"],
+    ["off", "prose off"],
+    ["", "empty string"],
+    ["true", "explicitly on"],
+  ])("leaves the gate ENABLED for %j (%s)", (value) => {
+    expect(verificationEnabled({ VERIFY_SOURCES_ENABLED: value })).toBe(true);
+  });
+
+  it("leaves the gate ENABLED when the variable is unset", () => {
+    expect(verificationEnabled({})).toBe(true);
+  });
+
+  it("reads process.env by default", () => {
+    const original = process.env.VERIFY_SOURCES_ENABLED;
+    try {
+      process.env.VERIFY_SOURCES_ENABLED = "false";
+      expect(verificationEnabled()).toBe(false);
+      process.env.VERIFY_SOURCES_ENABLED = "nonsense";
+      expect(verificationEnabled()).toBe(true);
+      delete process.env.VERIFY_SOURCES_ENABLED;
+      expect(verificationEnabled()).toBe(true);
+    } finally {
+      if (original === undefined) delete process.env.VERIFY_SOURCES_ENABLED;
+      else process.env.VERIFY_SOURCES_ENABLED = original;
+    }
+  });
+});
+
+// --- Finding 1: least-privilege intake token ---------------------------------
+describe("submissionToken", () => {
+  it("prefers API_INTAKE_TOKEN", () => {
+    expect(submissionToken({ API_INTAKE_TOKEN: "intake", API_ADMIN_TOKEN: "admin" })).toBe("intake");
+  });
+
+  // Load-bearing: API_INTAKE_TOKEN does not exist in production until it is
+  // set there, so without this fallback merging the split breaks the nightly run.
+  it("falls back to API_ADMIN_TOKEN when API_INTAKE_TOKEN is unset", () => {
+    expect(submissionToken({ API_ADMIN_TOKEN: "admin" })).toBe("admin");
+  });
+
+  it("falls back when API_INTAKE_TOKEN is an empty string", () => {
+    expect(submissionToken({ API_INTAKE_TOKEN: "", API_ADMIN_TOKEN: "admin" })).toBe("admin");
+  });
+
+  it("returns undefined — never the string \"undefined\" — when neither is set", () => {
+    expect(submissionToken({})).toBeUndefined();
+  });
+
+  it("sends the intake token on the wire when it is set", async () => {
+    const original = process.env.API_INTAKE_TOKEN;
+    try {
+      process.env.API_INTAKE_TOKEN = "intake-on-the-wire";
+      const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+      await runSubmit([{ facility: makeCandidate(), provenance: { sources: ["https://example.com/new"] } }], baseOpts(), {
+        fetchImpl,
+        existingFacilities: [],
+      });
+      const [, init] = fetchImpl.mock.calls[0];
+      expect((init!.headers as Record<string, string>).Authorization).toBe("Bearer intake-on-the-wire");
+    } finally {
+      if (original === undefined) delete process.env.API_INTAKE_TOKEN;
+      else process.env.API_INTAKE_TOKEN = original;
+    }
+  });
+
+  it("sends API_ADMIN_TOKEN on the wire when API_INTAKE_TOKEN is unset", async () => {
+    const original = process.env.API_INTAKE_TOKEN;
+    try {
+      delete process.env.API_INTAKE_TOKEN;
+      const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+      await runSubmit([{ facility: makeCandidate(), provenance: { sources: ["https://example.com/new"] } }], baseOpts(), {
+        fetchImpl,
+        existingFacilities: [],
+      });
+      const [, init] = fetchImpl.mock.calls[0];
+      // `beforeEach` sets API_ADMIN_TOKEN = "test-token".
+      expect((init!.headers as Record<string, string>).Authorization).toBe("Bearer test-token");
+    } finally {
+      if (original === undefined) delete process.env.API_INTAKE_TOKEN;
+      else process.env.API_INTAKE_TOKEN = original;
+    }
+  });
+});
+
+// --- Finding 3: a gate abort must still write its run log --------------------
+describe("runSubmitAndLog", () => {
+  const UNAVAILABLE_URL = "https://example.com/unavailable";
+
+  it("writes the log on the success path", async () => {
+    const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+    const logged: RunSubmitSummary[] = [];
+
+    const summary = await runSubmitAndLog(
+      [{ facility: makeCandidate(), provenance: { sources: ["https://example.com/new"] } }],
+      baseOpts(),
+      { fetchImpl, existingFacilities: [] },
+      (s) => logged.push(s)
+    );
+
+    expect(logged).toHaveLength(1);
+    expect(logged[0]).toBe(summary);
+    expect(logged[0].submitted).toBe(1);
+  });
+
+  // The defect: `writeLog` sat AFTER `runSubmit` returned, so an abort wrote
+  // no run-<runId>.json at all — and an absent log is indistinguishable from a
+  // state that never ran. The partial counts are the whole point: they say how
+  // many candidates had already reached `pending` before Ollama went away.
+  it("writes a PARTIAL log when the verification gate aborts the run", async () => {
+    const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+    const logged: RunSubmitSummary[] = [];
+    const verifyImpl = makeVerifyImpl((url) => ({
+      verdict: url === UNAVAILABLE_URL ? "unavailable" : "verified",
+      reason: url === UNAVAILABLE_URL ? "http_error_404" : "ok",
+    }));
+
+    const candidates = [
+      { facility: makeCandidate({ id: "staged-first-tx" }), provenance: { sources: ["https://example.com/new"] } },
+      { facility: makeCandidate({ id: "aborts-the-run-tx" }), provenance: { sources: [UNAVAILABLE_URL] } },
+    ];
+
+    await expect(
+      runSubmitAndLog(candidates, baseOpts({ runId: "aborted-run" }), { fetchImpl, existingFacilities: [] , verifyImpl }, (s) =>
+        logged.push(s)
+      )
+    ).rejects.toThrow(VerificationGateUnavailableError);
+
+    expect(logged).toHaveLength(1);
+    expect(logged[0].runId).toBe("aborted-run");
+    expect(logged[0].discovered).toBe(2);
+    expect(logged[0].submitted).toBe(1);
+    expect(logged[0].submittedIds).toEqual(["staged-first-tx"]);
+  });
+
+  it("rethrows the original abort error unchanged (exit semantics unaffected)", async () => {
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "unavailable", reason: "http_error_404" }));
+    const err = await runSubmitAndLog(
+      [{ facility: makeCandidate(), provenance: { sources: [UNAVAILABLE_URL] } }],
+      baseOpts(),
+      { fetchImpl: makeFetch([{ ok: true }]), existingFacilities: [], verifyImpl },
+      () => {}
+    ).catch((e: unknown) => e);
+
+    expect(err).toBeInstanceOf(VerificationGateUnavailableError);
+    expect((err as Error).message).toContain("http_error_404");
+  });
+
+  // A log-write failure must not REPLACE the aborting error on its way out of
+  // the `finally` — that would turn a diagnosable "Ollama is unreachable" into
+  // an unrelated filesystem error.
+  it("does not let a log-write failure mask the abort error", async () => {
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "unavailable", reason: "http_error_404" }));
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      await expect(
+        runSubmitAndLog(
+          [{ facility: makeCandidate(), provenance: { sources: [UNAVAILABLE_URL] } }],
+          baseOpts(),
+          { fetchImpl: makeFetch([{ ok: true }]), existingFacilities: [], verifyImpl },
+          () => {
+            throw new Error("EACCES: discovery-logs");
+          }
+        )
+      ).rejects.toThrow(VerificationGateUnavailableError);
+      expect(errSpy.mock.calls.some(([msg]) => typeof msg === "string" && msg.includes("could not write run log"))).toBe(true);
+    } finally {
+      errSpy.mockRestore();
+    }
+  });
+});
+
+// --- Finding 4: stakeholders never pass through the submission lane ---------
+// `stakeholders` names real private individuals. No discovery prompt asks for
+// it, so these tests pin a CLOSED path rather than a broken one: CLAUDE.md
+// says the field is excluded from discovery, and this is what makes the code
+// agree instead of relying on no prompt ever asking.
+describe("stripStakeholders", () => {
+  const STAKEHOLDER = {
+    name: "A Private Person",
+    role: "landowner",
+    sourceIndex: 0,
+    asOf: "2026-09-01",
+  };
+
+  it("removes the field from a raw doc", () => {
+    const stripped = stripStakeholders({ id: "x", stakeholders: [STAKEHOLDER] }) as Record<string, unknown>;
+    expect("stakeholders" in stripped).toBe(false);
+    expect(stripped.id).toBe("x");
+  });
+
+  it("leaves a doc without the field untouched (same reference)", () => {
+    const doc = { id: "x" };
+    expect(stripStakeholders(doc)).toBe(doc);
+  });
+
+  it("does not mutate its input", () => {
+    const doc = { id: "x", stakeholders: [STAKEHOLDER] };
+    stripStakeholders(doc);
+    expect(doc.stakeholders).toEqual([STAKEHOLDER]);
+  });
+
+  it.each([[null], [undefined], ["a string"], [42], [[1, 2]]])("passes through non-objects: %j", (value) => {
+    expect(stripStakeholders(value)).toEqual(value);
+  });
+});
+
+describe("the submission lane strips stakeholders", () => {
+  const STAKEHOLDER = {
+    name: "A Private Person",
+    role: "landowner",
+    sourceIndex: 0,
+    asOf: "2026-09-01",
+  };
+
+  it("drops it from a bare candidate doc at normalization", () => {
+    const [normalized] = normalizeCandidates([makeCandidate({ stakeholders: [STAKEHOLDER] })]);
+    expect(normalized.type).toBe("facility");
+    if (normalized.type === "facility") {
+      expect("stakeholders" in (normalized.doc as Record<string, unknown>)).toBe(false);
+    }
+  });
+
+  it("drops it from a wrapped { facility, provenance } candidate", () => {
+    const [normalized] = normalizeCandidates([
+      { facility: makeCandidate({ stakeholders: [STAKEHOLDER] }), provenance: { sources: ["https://x"] } },
+    ]);
+    if (normalized.type === "facility") {
+      expect("stakeholders" in (normalized.doc as Record<string, unknown>)).toBe(false);
+    }
+  });
+
+  // End to end: what reaches POST /api/submissions is what a human reviewer
+  // sees in the admin detail view, so this is the assertion that matters.
+  it("never reaches the POST body, and the candidate still stages", async () => {
+    const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+    const summary = await runSubmit(
+      [
+        {
+          facility: makeCandidate({ stakeholders: [STAKEHOLDER] }),
+          provenance: { sources: ["https://example.com/new"] },
+        },
+      ],
+      baseOpts(),
+      { fetchImpl, existingFacilities: [] }
+    );
+
+    expect(summary.submitted).toBe(1);
+    const [, init] = fetchImpl.mock.calls[0];
+    const body = JSON.parse(init!.body as string);
+    expect(body.payload.stakeholders).toBeUndefined();
+    expect("stakeholders" in body.payload).toBe(false);
+    // Stripped, not rejected — the rest of the candidate survives intact.
+    expect(body.payload.id).toBe("new-facility-tx");
   });
 });

@@ -330,6 +330,28 @@ export const subsidySchema = z.object({
   sourceIndex: z.number().int().nonnegative().optional(),
 });
 
+/**
+ * ⚠️ CURATION RULE — a Zod enum cannot express it, so it is written here.
+ *
+ * Every role below is admissible ONLY for a person acting in a PUBLIC capacity:
+ * the stake must be documented in a public record, a filing, or reporting about
+ * this site. A person who is merely adjacent to the site — a neighbour, an
+ * objector, a private individual named in a local news comment — is never a
+ * stakeholder, whatever their role would nominally be.
+ *
+ * `landowner` is the sharp edge: it is the one value that attaches a named
+ * private individual to a parcel. Admissible only from a named public-record
+ * filing that ties that person to THIS site (a deed or lease cited in a permit,
+ * a rezoning application, an SEC/county filing). NEVER from a residential
+ * parcel lookup, a county assessor search run to find out who owns the land, or
+ * an inference from an address. If a corporate entity holds the land, name the
+ * entity, not a person behind it.
+ *
+ * The field is excluded from public intake and from every discovery lane
+ * (stripped in scripts/discovery/submit-candidates.ts), so entries only ever
+ * arrive by maintainer curation — which is exactly why this rule has to live
+ * where the next entry is written rather than in a validator.
+ */
 export const stakeholderRoleEnum = z.enum([
   // financial interest
   "founder",

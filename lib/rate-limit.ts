@@ -3,14 +3,13 @@ import { and, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import {
-  submissionsTable,
   submissionNotifyRequestsTable,
   submissionNotifySendsTable,
   subscriptionsTable,
   subscribeAttemptsTable,
-  leadsTable,
-  contactMessagesTable,
+  intakeAttemptsTable,
   apiAccessGrantsTable,
+  type IntakeSurface,
 } from "@/lib/db/schema";
 
 export const RATE_LIMIT_MAX = 5;
@@ -201,15 +200,87 @@ export function rateLimitDecision(count: number): { ok: boolean } {
   return { ok: count < RATE_LIMIT_MAX };
 }
 
-export async function checkRateLimit(ipHash: string): Promise<{ ok: boolean }> {
+/**
+ * Records one request against `intake_attempts` for `surface`.
+ *
+ * MUST be called exactly once per request to the surface's endpoint that gets
+ * past the rate-limit gate, BEFORE any content-dependent branch — so invalid
+ * JSON, Zod failure, honeypot, unknown facility/target, over-cap, duplicate and
+ * success all cost exactly one row. Exact sibling of `recordSubscribeAttempt`
+ * below; read that function and `intakeAttemptsTable`'s doc comment
+ * (lib/db/schema.ts) together before changing either.
+ *
+ * WHY BEFORE THE BRANCH, NOT AFTER THE OUTCOME: these four endpoints answer a
+ * tripped honeypot with the SAME `201 {ok:true}` as a real submission, and
+ * `requestAccessGrant` answers honeypot / over-cap / existing-grant with the
+ * same generic `{ok:true}` (all prior security-review fixes). A rate-limit side
+ * effect that fired on some of those paths but not others is observable as a
+ * difference in remaining budget, which reintroduces exactly the
+ * branch-distinguishing oracle that response symmetry exists to close.
+ *
+ * The already-refused (429) request deliberately does NOT record — see the
+ * routes' comments and `recordSubscribeAttempt`: that branch is decided purely
+ * by the prior count, never by request content, so it carries no information
+ * the status code did not already give away, and recording it would stop the
+ * rolling window ever draining for a shared egress IP (CGNAT, corporate NAT,
+ * VPN, campus), turning an hour-long limit into an indefinite lockout.
+ *
+ * Deliberately does NOT swallow errors: if the attempt cannot be recorded the
+ * cap cannot be enforced, so the caller must fail the request rather than let
+ * it proceed uncounted (fail closed). The routes answer a throw here — and one
+ * from `checkIntakeRateLimit`, which fails under the same conditions — with a
+ * 503, not a 429: it is an outage, not a limit.
+ */
+export async function recordIntakeAttempt(surface: IntakeSurface, ipHash: string): Promise<void> {
+  await getDb().insert(intakeAttemptsTable).values({ surface, submitterIpHash: ipHash });
+}
+
+/**
+ * Per-IP rate limit for one public write surface, counting PRIOR *attempts* in
+ * the window — not successful inserts.
+ *
+ * Replaces four separate functions (`checkRateLimit`, `checkLeadRateLimit`,
+ * `checkContactRateLimit`, `checkAccessGrantRateLimit`) that each counted their
+ * own OUTCOME table (`submissions` via a jsonb-path lookup, `leads`,
+ * `contact_messages`, `api_access_grants`). Only a successful INSERT can raise
+ * any of those, so every request that terminated without inserting was free:
+ * `POST /api/contribute {"website":"x"}` tripped the honeypot, returned 201,
+ * wrote nothing and cost nothing — a bot that tripped the honeypot was
+ * completely unlimited while one that did not was capped. Same defect
+ * `checkSubscribeRateLimit` fixed for subscribe in PR #288; it was never
+ * carried across. Do not reintroduce a limiter that counts outcome rows.
+ *
+ * Budgets remain per-surface, as they were with four tables: the `surface`
+ * predicate below is what keeps a burst against one surface from silently
+ * starving another, and the composite index leads with it.
+ *
+ * It counts attempts ONLY — never `attempts + outcome rows`. Counting both
+ * would make an inserting request cost 2 units of budget and a non-inserting
+ * one cost 1, which is observable: send one request, then count how many remain
+ * before the 429, and the count reveals whether the insert happened — an
+ * existence oracle (does this facility id exist? does this address already hold
+ * a grant?) straight through the generic success that exists to hide it. Every
+ * request costing exactly 1 has no such asymmetry, and since an insert can only
+ * occur on a request that already wrote its attempt row, the attempt count is a
+ * superset of the insert count: strictly at least as tight, without the oracle.
+ *
+ * Semantics are unchanged (`count < RATE_LIMIT_MAX`); the route gates on the
+ * prior count and then records this request, so 5 requests per hour still
+ * succeed and the 6th is refused.
+ */
+export async function checkIntakeRateLimit(
+  surface: IntakeSurface,
+  ipHash: string
+): Promise<{ ok: boolean }> {
   const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
   const rows = await getDb()
     .select({ c: sql<number>`count(*)::int` })
-    .from(submissionsTable)
+    .from(intakeAttemptsTable)
     .where(
       and(
-        gt(submissionsTable.createdAt, windowStart),
-        sql`${submissionsTable.provenance}->>'submitterIpHash' = ${ipHash}`
+        eq(intakeAttemptsTable.surface, surface),
+        gt(intakeAttemptsTable.createdAt, windowStart),
+        eq(intakeAttemptsTable.submitterIpHash, ipHash)
       )
     );
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
@@ -280,39 +351,6 @@ export async function checkSubscribeRateLimit(ipHash: string): Promise<{ ok: boo
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
 }
 
-/**
- * Per-IP rate limit for the leads endpoint (`POST /api/leads`), counting
- * `leadsTable` rows via its real `submitterIpHash` column — unlike
- * `checkRateLimit`, which counts `submissions` rows through a jsonb-path
- * lookup. Kept as its own counter (own table, same MAX/WINDOW) so leads and
- * facility submissions don't share a budget — otherwise a burst of one would
- * silently starve the other.
- */
-export async function checkLeadRateLimit(ipHash: string): Promise<{ ok: boolean }> {
-  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
-  const rows = await getDb()
-    .select({ c: sql<number>`count(*)::int` })
-    .from(leadsTable)
-    .where(and(gt(leadsTable.createdAt, windowStart), eq(leadsTable.submitterIpHash, ipHash)));
-  return rateLimitDecision(Number(rows[0]?.c ?? 0));
-}
-
-/**
- * Per-IP rate limit for the contact endpoint (`POST /api/contact`), counting
- * `contactMessagesTable` rows via its own `submitterIpHash` column — its own
- * counter (own table, same MAX/WINDOW), same reasoning as `checkLeadRateLimit`:
- * contact messages, leads, and facility submissions must not share a budget,
- * or a burst against one silently starves the others.
- */
-export async function checkContactRateLimit(ipHash: string): Promise<{ ok: boolean }> {
-  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
-  const rows = await getDb()
-    .select({ c: sql<number>`count(*)::int` })
-    .from(contactMessagesTable)
-    .where(and(gt(contactMessagesTable.createdAt, windowStart), eq(contactMessagesTable.submitterIpHash, ipHash)));
-  return rateLimitDecision(Number(rows[0]?.c ?? 0));
-}
-
 export const EMAIL_SEND_CAP_MAX = 5; // confirm emails per address per window
 
 // Auto-confirm cumulative cap (see canAutoConfirm in lib/subscribe.ts): bounds
@@ -347,7 +385,7 @@ export async function checkEmailSendCap(email: string): Promise<{ ok: boolean }>
 /**
  * Per-recipient cap on OUTSTANDING "email me when reviewed" requests —
  * bounds notify-queue depth per address, NOT mail volume. Independent of the
- * per-IP `checkRateLimit` (5/hour), which already bounds submission
+ * per-IP `checkIntakeRateLimit` ("contribute", 5/hour), which already bounds submission
  * creation. `email` is expected pre-normalized (lowercased/trimmed) by the
  * caller.
  *
@@ -365,7 +403,8 @@ export async function checkEmailSendCap(email: string): Promise<{ ok: boolean }>
  * `checkSubmissionNotifySendCap` below for the persistent counter that
  * actually bounds mail volume; this function is kept only to bound how many
  * requests can sit outstanding for one address at a time. Submission
- * creation itself is bounded independently by the per-IP `checkRateLimit`.
+ * creation itself is bounded independently by the per-IP
+ * `checkIntakeRateLimit`("contribute").
  */
 export async function checkSubmissionNotifyCap(email: string): Promise<{ ok: boolean }> {
   const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
@@ -430,26 +469,6 @@ export async function checkSubmissionNotifySendCap(email: string): Promise<{ ok:
       )
     );
   return { ok: Number(rows[0]?.c ?? 0) < SUBMISSION_NOTIFY_SEND_CAP_MAX };
-}
-
-/**
- * Per-IP rate limit for the bulk-API-access request endpoint
- * (`POST /api/access/request`), counting `apiAccessGrantsTable` rows via its
- * own `submitterIpHash` column — its own counter (own table, same
- * MAX/WINDOW), same reasoning as `checkLeadRateLimit`/`checkContactRateLimit`.
- * This guards the request-a-token endpoint from abuse; it is NOT the daily
- * API-volume gate on the facilities-family routes (a separate mechanism,
- * out of scope here).
- */
-export async function checkAccessGrantRateLimit(ipHash: string): Promise<{ ok: boolean }> {
-  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
-  const rows = await getDb()
-    .select({ c: sql<number>`count(*)::int` })
-    .from(apiAccessGrantsTable)
-    .where(
-      and(gt(apiAccessGrantsTable.createdAt, windowStart), eq(apiAccessGrantsTable.submitterIpHash, ipHash))
-    );
-  return rateLimitDecision(Number(rows[0]?.c ?? 0));
 }
 
 /**

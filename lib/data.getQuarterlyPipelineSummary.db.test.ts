@@ -58,6 +58,25 @@ const historyRows = [
 // failure never leaks into the other tests in this file.
 let shouldFail = false;
 
+// The bound params of THIS query (the quarter-range dates below), reproduced
+// verbatim in the fixture message so the log assertion can prove they never
+// reach the log.
+const BOUND_PARAMS = "2026-07-01T00:00:00.000Z,2026-10-01T00:00:00.000Z";
+
+// DrizzleQueryError-shaped on purpose (security review, 2026-09-27): drizzle
+// puts `params: <bound values>` in the wrapper's OWN `.message` and leaves the
+// real SQLSTATE one level down on `.cause`. A bare `Error` would make
+// `redactedErrorCode` return "unknown", so an assertion expecting a real
+// sqlstate would pass for the wrong reason — a false proxy, not a test.
+const QUERY_FAILURE = new Error(
+  `Failed query: select "facility_id", "change_type", "diff" from "facility_history" where "changed_at" >= $1 and "changed_at" < $2 params: ${BOUND_PARAMS}`,
+  {
+    cause: Object.assign(new Error('relation "facility_history" does not exist'), {
+      code: "42P01",
+    }),
+  }
+);
+
 // Minimal drizzle-query-builder stand-in for the chain used by
 // getQuarterlyPipelineSummary: `.select({...}).from(...).where(...)`. Unlike
 // getRecentActivity's chain, there's no join/orderBy/limit — `.where()` is
@@ -67,9 +86,7 @@ function makeMockDb() {
     select: () => ({
       from: () => ({
         where: () =>
-          shouldFail
-            ? Promise.reject(new Error("mock query failure"))
-            : Promise.resolve(historyRows),
+          shouldFail ? Promise.reject(QUERY_FAILURE) : Promise.resolve(historyRows),
       }),
     }),
   };
@@ -111,6 +128,30 @@ describe("getQuarterlyPipelineSummary (DB path) — query failure", () => {
         statusChangesThisQuarter: 0,
       });
     } finally {
+      shouldFail = false;
+    }
+  });
+
+  // The catch block used to pass `err` as a second console.warn argument,
+  // which put the query's bound params into Vercel Runtime Logs. The failure
+  // must stay visible to an operator, but as a discriminator (the real
+  // SQLSTATE, read through `.cause`) rather than the error object.
+  it("warns with a redacted sqlstate — never the error object or its bound params — when the live query rejects", async () => {
+    shouldFail = true;
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      await getQuarterlyPipelineSummary();
+
+      const logged = warn.mock.calls.flat().map(String).join(" ");
+      expect(logged).toContain("getQuarterlyPipelineSummary");
+      expect(logged).toContain("sqlstate: 42P01");
+      // Silent-failure guard: "unknown" would mean the fixture lost its code
+      // and the assertion above stopped proving anything.
+      expect(logged).not.toContain("sqlstate: unknown");
+      expect(logged).not.toContain(BOUND_PARAMS);
+      expect(logged).not.toContain("Failed query");
+    } finally {
+      warn.mockRestore();
       shouldFail = false;
     }
   });

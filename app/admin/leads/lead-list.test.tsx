@@ -263,6 +263,54 @@ describe("LeadList — row rendering", () => {
   });
 });
 
+// `lead.url` is intake-validated — `httpUrlSchema` rejects every non-http(s)
+// scheme before `createLead` writes a row — so these payloads cannot reach the
+// admin UI today. That is exactly why the render guard needs its own test: the
+// schema lives in another module, nothing in this file would fail if it were
+// loosened, and a `javascript:` href here is stored XSS in the admin UI.
+describe("LeadList — lead.url render guard (defence in depth)", () => {
+  it("renders an http(s) lead url as a link", () => {
+    renderList([makeLead({ url: "https://example.com/tip" })], "new");
+
+    const link = screen.getByRole("link", {
+      name: /https:\/\/example\.com\/tip \(opens in new tab\)/,
+    });
+    expect(link).toHaveAttribute("href", "https://example.com/tip");
+  });
+
+  // One case per scheme family rather than a loop: a failure names the scheme
+  // that regressed, and the guard is asserted to be general, not
+  // `javascript:`-specific.
+  it.each([
+    ["javascript:", "javascript:alert(1)"],
+    ["data:", "data:text/html,<script>alert(1)</script>"],
+    ["vbscript:", "vbscript:msgbox(1)"],
+  ])("renders a %s lead url as text, never as a link", (_scheme, hostileUrl) => {
+    renderList([makeLead({ url: hostileUrl })], "new");
+
+    // The load-bearing assertion is the accessible-name one: it is the only
+    // check that bites for all three schemes. Measured against the guard
+    // removed — React 19 rewrites a `javascript:` href to its own
+    // "React has blocked a javascript: URL" throw, so the href-equality
+    // assertion below passes for that scheme with no guard at all, while
+    // `data:` and `vbscript:` hrefs are emitted verbatim. Keep both, and do
+    // not read the href check as covering `javascript:`.
+    //
+    // A getByText on the payload would also pass with OR without the guard —
+    // an anchor's text child matches too — so it stands in for neither.
+    const escaped = hostileUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    expect(screen.queryByRole("link", { name: new RegExp(escaped) })).not.toBeInTheDocument();
+    expect(
+      [...document.querySelectorAll("a")].map((anchor) => anchor.getAttribute("href"))
+    ).not.toContain(hostileUrl);
+    // No anchor at all in the row: the only other link sources are duplicate
+    // facility ids and a triage finalUrl, neither of which this lead has.
+    expect(screen.queryAllByRole("link")).toHaveLength(0);
+    // The url is still shown to the admin, just inert.
+    expect(screen.getByText(hostileUrl)).toBeInTheDocument();
+  });
+});
+
 // The discovery lane queues `listLeadsForAdmin("new")` and nothing else, so
 // every status transition the UI offers removes a lead from that queue
 // permanently. "Return to new" is the only way back, and it MUST reach the

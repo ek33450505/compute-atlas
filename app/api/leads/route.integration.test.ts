@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } from "vitest";
+import { eq } from "drizzle-orm";
 
 vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
@@ -39,8 +40,8 @@ vi.mock("next/server", async (importOriginal) => {
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { leadsTable } from "@/lib/db/schema";
-import { hashIp } from "@/lib/rate-limit";
+import { intakeAttemptsTable, leadsTable } from "@/lib/db/schema";
+import { RATE_LIMIT_MAX, hashIp } from "@/lib/rate-limit";
 import facilitiesRaw from "@/data/facilities.json";
 import type { Facility } from "@/lib/schema";
 import type { LeadTriage } from "@/lib/leads";
@@ -69,6 +70,18 @@ async function flushAfter(): Promise<void> {
 }
 
 let tdb: TestDbHandle;
+
+/**
+ * Seeds `n` "leads" attempt rows for a raw IP, pre-hashed the way the route
+ * does. This is what the limiter counts — seeding `leads` rows (as these tests
+ * used to) no longer affects it at all.
+ */
+async function seedAttempts(ip: string, n: number): Promise<void> {
+  const submitterIpHash = hashIp(ip);
+  for (let i = 0; i < n; i++) {
+    await tdb.db.insert(intakeAttemptsTable).values({ surface: "leads", submitterIpHash });
+  }
+}
 
 beforeAll(async () => {
   tdb = await makeTestDb();
@@ -173,24 +186,21 @@ describe("POST /api/leads", () => {
 
   it("rate-limits a 6th lead from the same ip within the window", async () => {
     const ip = "203.0.113.9";
-    const ipHash = hashIp(ip);
-    for (let i = 0; i < 5; i++) {
-      await tdb.db.insert(leadsTable).values({ url: `https://example.com/${i}`, submitterIpHash: ipHash });
-    }
+    // Seeds ATTEMPT rows, not `leads` rows: the limiter counts
+    // `intake_attempts` now, because counting leads made every non-inserting
+    // path free (see `checkIntakeRateLimit` in lib/rate-limit.ts).
+    await seedAttempts(ip, RATE_LIMIT_MAX);
 
     const res = await POST(req({ url: "https://example.com/sixth" }, { "x-forwarded-for": ip }));
     expect(res.status).toBe(429);
 
     const rows = await tdb.db.select().from(leadsTable);
-    expect(rows).toHaveLength(5); // the 6th attempt must not have landed
+    expect(rows).toHaveLength(0); // the 6th attempt must not have landed
   });
 
   it("buckets by cf-connecting-ip, not a spoofed leftmost x-forwarded-for", async () => {
     const trustedIp = "203.0.113.11";
-    const ipHash = hashIp(trustedIp);
-    for (let i = 0; i < 5; i++) {
-      await tdb.db.insert(leadsTable).values({ url: `https://example.com/spoof-${i}`, submitterIpHash: ipHash });
-    }
+    await seedAttempts(trustedIp, RATE_LIMIT_MAX);
 
     // A different leftmost x-forwarded-for entry on every request is exactly
     // what defeated the naive leftmost-x-forwarded-for extraction
@@ -205,7 +215,75 @@ describe("POST /api/leads", () => {
     expect(res.status).toBe(429);
 
     const rows = await tdb.db.select().from(leadsTable);
-    expect(rows).toHaveLength(5); // the spoofed-XFF attempt must not have landed
+    expect(rows).toHaveLength(0); // the spoofed-XFF attempt must not have landed
+  });
+
+  it("does NOT count pre-existing `leads` rows — the cap counts attempts, not outcomes", async () => {
+    const ip = "203.0.113.88";
+    const ipHash = hashIp(ip);
+    for (let i = 0; i < RATE_LIMIT_MAX + 3; i++) {
+      await tdb.db.insert(leadsTable).values({ url: `https://example.com/prior-${i}`, submitterIpHash: ipHash });
+    }
+    const res = await POST(req({ url: "https://example.com/fresh" }, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(201);
+  });
+
+  it("counts a honeypot-tripping request, a Zod failure and an unparseable body", async () => {
+    const ip = "198.51.100.71";
+    const attemptsFor = async () =>
+      tdb.db
+        .select()
+        .from(intakeAttemptsTable)
+        .where(eq(intakeAttemptsTable.submitterIpHash, hashIp(ip)));
+
+    const honeypot = await POST(
+      req({ url: "https://example.com/bot", website: "spam" }, { "x-forwarded-for": ip })
+    );
+    expect(honeypot.status).toBe(201);
+    await POST(req({ url: "not-a-url" }, { "x-forwarded-for": ip }));
+    await POST(
+      new Request("http://localhost/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": ip },
+        body: "{not json",
+      })
+    );
+
+    // Zero leads written, three units of budget spent — all three were free before.
+    expect(await tdb.db.select().from(leadsTable)).toHaveLength(0);
+    const attempts = await attemptsFor();
+    expect(attempts).toHaveLength(3);
+    expect(attempts.every((a) => a.surface === "leads")).toBe(true);
+  });
+
+  it("does NOT count an already-refused (429) request", async () => {
+    const ip = "198.51.100.72";
+    await seedAttempts(ip, RATE_LIMIT_MAX);
+    const res = await POST(req({ url: "https://example.com/x" }, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(429);
+    const attempts = await tdb.db
+      .select()
+      .from(intakeAttemptsTable)
+      .where(eq(intakeAttemptsTable.submitterIpHash, hashIp(ip)));
+    expect(attempts).toHaveLength(RATE_LIMIT_MAX);
+  });
+
+  it("trips the honeypot on a non-string truthy value, still returning the generic 201", async () => {
+    // `{"website":1, "url":"not-a-url"}` used to fall past a
+    // `typeof === "string"` gate into Zod and answer 400 with `issues`, while
+    // `{"website":"x", ...}` answered 201 — the type flip revealed the honeypot.
+    for (const website of [1, 0, true, { a: 1 }, ["x"]]) {
+      const res = await POST(req({ url: "not-a-url", website }));
+      expect(res.status).toBe(201);
+      expect(await res.json()).toEqual({ ok: true });
+    }
+    expect(await tdb.db.select().from(leadsTable)).toHaveLength(0);
+  });
+
+  it("does NOT trip on an empty-string honeypot — a real browser's hidden input still submits", async () => {
+    const res = await POST(req({ url: "https://example.com/honest", website: "" }));
+    expect(res.status).toBe(201);
+    expect(await tdb.db.select().from(leadsTable)).toHaveLength(1);
   });
 
   it("a triage fetch failure still yields 201 with the lead row present (triage=null-ish)", async () => {

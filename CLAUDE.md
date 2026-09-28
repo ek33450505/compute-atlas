@@ -126,9 +126,25 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
   the sibling `checkSubmissionNotifyCap` bounds only outstanding requests, because those rows
   are deleted at review time. Do not conflate the two, and do not route it through
   `subscriptions`: this reader never subscribed, so an unsubscribe link would be a lie.
-- **Admin/pipeline writes** (`POST /api/submissions`, approve/reject) require the
-  `API_ADMIN_TOKEN` bearer. The admin pages use a lightweight single-secret cookie
-  gate — there is intentionally **no user-account system** (durable product decision).
+- **Watch subscriptions are double opt-in, and the auto-confirm shortcut is gated on the REQUESTER,
+  not the address.** `canAutoConfirm` originally returned true whenever *the address* held any
+  `confirmed` row, which let an anonymous POST create a live subscription for a third party and mail
+  them (up to 50/address/7d). An existing confirmed row proves *someone* once proved receipt of that
+  address — **not that this requester did**. The shortcut now requires a signed, httpOnly consent
+  cookie minted only when a confirm link is genuinely clicked, and is refused outright when a prior
+  `unsubscribed` row exists for that exact `(email, targetType, targetId)`. ⚠️ Do not "simplify" it
+  back to an address-level check, and do not add a volume cap and call it consent — a cap makes an
+  unconsented action bounded, not consented. ⚠️ The partial unique index
+  `subscriptions_active_target_idx` is `WHERE status <> 'unsubscribed'`, so an unsubscribed row does
+  not block re-insertion; durable suppression is a known gap, tracked for a separate session.
+- **Admin/pipeline writes** require a bearer token, but not all the same one.
+  `POST /api/submissions` — staging only — accepts EITHER `API_INTAKE_TOKEN` or
+  `API_ADMIN_TOKEN` (`requireIntake`), so the discovery pipeline can stage a
+  `pending` row without holding a secret that could publish one. `GET
+  /api/submissions` and approve/reject require `API_ADMIN_TOKEN`. Do not widen
+  `requireIntake` past that one handler. The admin pages use a lightweight
+  single-secret cookie gate — there is intentionally **no user-account system**
+  (durable product decision).
 - **Data rigor:** every fact is traceable to a real, citable source. Do not
   fabricate coordinates, capacity, operators, or dates — omit unknown fields. See
   `CONTRIBUTING.md` and the data model in `lib/schema.ts`.
@@ -284,6 +300,56 @@ tool, not part of the deployed app.
   - **Search index** (global ⌘K palette via `loadFacilitiesForSearch` in root layout) is **24h untagged timer only** — no tag bust affects it; `db:sync --apply` cannot refresh it.
   
   All pages inherit the longest timer from any reader in their render tree (typically 24h from the root layout). The tag vocabulary (`facility:<id>`, `state:<XX>`, `operator:<slug>`, `power-generation`, `facilities`) is centralized in `lib/cache-tags.ts` and shared by `lib/facility-write.ts` and `POST /api/revalidate` so producer and validator can't drift apart. `db:sync --apply` and the approve-on-prod path bust affected tags for you. Only a **raw** Neon write (`db:seed --force`, an ad-hoc upsert) leaves them un-busted — then hit the admin-bearer `POST /api/revalidate` yourself with the affected tags (e.g. `{"tags":["facilities","state:CA"]}`); brand-new facility ids need no bust (cache-miss populates them).
+- **A fourth cache surface, and it is a security boundary (audit s169, 2026-09-27).** A Cloudflare
+  **cache rule** makes **every GET whose path does not start with `/admin`** eligible for the edge
+  cache (`http_request_cache_settings`, `cache: true`, `edge_ttl: respect_origin`). That includes
+  every `/api/*` route, the bearer-gated ones included. Two consequences that are easy to get wrong:
+  - **`jsonResponse()` is `no-store` by default** (`lib/api-response.ts`) and must stay that way. It
+    serves authenticated bodies (`GET /api/submissions` returns every staged row), writes, error
+    bodies and 429s. Before this default, Cloudflare supplied `public, max-age=14400` to those
+    responses, because the origin sent no directive. It sets **both** `Cache-Control` and
+    `CDN-Cache-Control` (Cloudflare evaluates the latter first), placed *before* the `init.headers`
+    spread so a caller can still override deliberately. **Public reads are unaffected** — they use the
+    separate `cacheableJson()` helper, which is the only opt-in cacheable path.
+    ⚠️ Cloudflare's `Authorization`-header protection does **not** save you here: on Free/Pro/Business
+    it declines to store an authenticated response only when `Cache-Control` lacks `public`,
+    `s-maxage` **and** `must-revalidate` — and Next's dynamic-route default carries two of the three.
+    Verified by probe: `cf-cache-status` read `MISS`/`EXPIRED`, never `BYPASS`.
+  - **A mutating or token-bearing GET must opt out explicitly.** `/api/cron/state-digest` is a
+    mutating GET; the `?token=` confirm/unsubscribe/access routes put single-use tokens in the cache
+    key. All emit `no-store`. Do not add a new GET under `/api/` without deciding this.
+- **Cloudflare is bypassable at the origin, so its rules are not a control (audit s169).** The proxied
+  A record's content is Vercel's anycast IP `76.76.21.21`, and Vercel routes by SNI/Host — so
+  `curl --resolve 'www.compute-atlas.com:443:76.76.21.21'` reaches the origin directly and skips the
+  WAF UA blocks, the 100 GET/10s rate limit, the country block, the edge cache and the managed DDoS
+  ruleset. Authorization is unaffected (all origin-side). **Never treat a Cloudflare WAF rule as a
+  bandwidth or abuse control** — it enforces intent against compliant clients and is decorative
+  against anyone who tries. `proxy.ts` enforces a Cloudflare-injected shared-secret header to close
+  this; it is deliberately **fail-open while `EDGE_SHARED_SECRET` is unset**, and `/api/cron/*` is
+  exempt because Vercel Cron may reach the deployment without traversing Cloudflare.
+- **`app/robots.ts` is the source of truth for blocked crawlers; the Cloudflare WAF rule is a second
+  copy.** Counts, each labelled with its side and dated because they drift independently (measured
+  2026-09-27): **`app/robots.ts` = 8 `BLOCKED_AI_CRAWLERS` + 4 `BLOCKED_SEO_CRAWLERS` = 12 tokens**;
+  the **Cloudflare WAF rule = 18 UAs, now 14** after this audit removed four. The two sides have never
+  been equal and nothing reconciles them — re-measure both before citing either. The WAF side is
+  out-of-repo, so only a live API read can confirm it.
+  The drift was not just numeric: the WAF was *inverted*: it 403'd `Perplexity-User` /
+  `Manus-User` / `MistralAI-User` — the vendors' markers for a **human-initiated** fetch — while
+  letting `PerplexityBot` (the indexing crawler) through, and blocked `Baiduspider`, a **search**
+  engine, on a site whose binding constraint is crawl budget. Corrected 2026-09-27 (those four removed
+  from the WAF rule, taking it 18 → 14; `app/robots.ts` was not changed). **The posture is: block
+  TRAINING, allow RETRIEVAL and SEARCH.** A UA blocked at
+  the edge but not disallowed in `robots.txt` is worse than useless — a compliant crawler reads
+  `Allow: /`, gets a 403, and retries.
+- **Every caught DB error logs a SQLSTATE only, via `redactedErrorCode` from `lib/db-error.ts`.**
+  Drizzle's `DrizzleQueryError.message` is `Failed query: … params: …`, so logging the error
+  **object** puts bound parameters (an IP hash, a subscriber email, a raw bearer token) into Vercel
+  Runtime Logs. There is exactly **one** implementation — do not fork a private copy; three existed
+  before 2026-09-27 and diverged. ⚠️ Its permissive `typeof code === "string"` check is **deliberate**:
+  a strict `/^[0-9A-Z]{5}$/` SQLSTATE regex would regress the neon-http driver and discard
+  `ENOTFOUND`/`ECONNREFUSED`, and `ENOTFOUND` is this project's outage-vs-link-rot discriminator.
+  ⚠️ A regex is the wrong tool for finding these sites: `[^)]*` breaks on a `)` inside a format string
+  and an end-of-line anchor misses a multi-line call. Both happened; use a paren-balanced scan.
 - **JSON ↔ Neon — Neon is truth, and `db:sync` is the only bulk write path.**
   `db:sync` applies adds *and* updates, writes history, busts tags, and refuses to
   overwrite a Neon row that moved ahead of the JSON's basis (`facilities.meta.json`'s
@@ -327,6 +393,16 @@ tool, not part of the deployed app.
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+⚠️ **The bundled docs can be wrong — verify behaviour, not prose.** While adding the edge check to
+`proxy.ts` (audit s169, 2026-09-27), `node_modules/next/dist/docs/.../proxy.md` stated that a literal
+matcher source prefix-matches (`/about` also matching `/about/team`). Compiling the real matcher array
+with the installed Next's own `getMiddlewareMatchers` showed otherwise: `/data` matches **only**
+`/data`, never `/data/facilities.geojson`. Had the doc been trusted, every static geojson request would
+have been pulled through the proxy. Bare `/admin` **is** matched by `/admin/:path*`, which is why the
+admin arm tests `pathname === "/admin"` explicitly. The measurement and how to re-run it are recorded
+in `proxy.ts`. So: read the bundled guide to learn what exists, then **measure the behaviour you are
+going to depend on.**
 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 

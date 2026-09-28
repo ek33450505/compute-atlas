@@ -252,8 +252,49 @@ describe("withJsonFallback", () => {
 
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy.mock.calls[0][0]).toContain(
-      "[data] Neon read failed, falling back to bundled JSON snapshot:"
+      "[data] Neon read failed, falling back to bundled JSON snapshot"
     );
+
+    warnSpy.mockRestore();
+  });
+
+  // Security review, 2026-09-27: this log line used to pass `lastErr` as a
+  // second console.warn argument. It is the highest-VOLUME of the codebase's
+  // DB catch paths — it fires on every Neon read failure during prerender,
+  // which is precisely when `lastErr` holds a DrizzleQueryError whose own
+  // `.message` embeds the query's bound params. It also sits AFTER the retry
+  // loop rather than inside the `catch` (the loop only does `lastErr = err`),
+  // which is why it survived every catch-block scan and was found only by
+  // scripts/lint-no-raw-error-logs.mjs.
+  it("logs a redacted sqlstate on fallback, never the bound params drizzle embeds in the error", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const boundParam = "subscriber-secret@example.com";
+    // The fixture MUST carry a real `code`, or redactedErrorCode returns
+    // "unknown" and the sqlstate assertion below would pass no matter what —
+    // a false proxy. Drizzle's shape: params in the wrapper's own `.message`,
+    // the SQLSTATE one level down on `.cause`.
+    const drizzleError = new Error(
+      `Failed query: select "doc" from "facilities" where "email" = $1 params: ${boundParam}`,
+      { cause: Object.assign(new Error("fetch failed"), { code: "08006" }) }
+    );
+    expect(drizzleError.message).toContain(`params: ${boundParam}`);
+
+    const result = await withJsonFallback(
+      async () => {
+        throw drizzleError;
+      },
+      () => "fallback",
+      2
+    );
+
+    // Control flow is untouched by the redaction: the bundled-snapshot
+    // fallback still returns, and still never throws.
+    expect(result).toBe("fallback");
+
+    const logged = warnSpy.mock.calls.flat().map(String).join(" ");
+    expect(logged).toContain("[data] Neon read failed");
+    expect(logged).toContain("sqlstate: 08006");
+    expect(logged).not.toContain(boundParam);
 
     warnSpy.mockRestore();
   });

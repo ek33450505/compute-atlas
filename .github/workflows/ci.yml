@@ -49,6 +49,32 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+
+      # Blocks the eighth site of the raw-error-log class. drizzle-orm's
+      # `DrizzleQueryError.message` is literally `Failed query: <sql> params:
+      # <bound values>`, so logging the error object writes the query's bound
+      # params — an IP hash, a subscriber's plaintext email, a live bearer
+      # token — into Vercel Runtime Logs. A 2026-09-27 audit found SEVEN such
+      # sites; all seven now use `redactedErrorCode()` (lib/db-error.ts), and
+      # nothing stopped a new one.
+      #
+      # WHY A STEP HERE AND NOT AN ESLINT RULE: an `eslint-rules/` entry would
+      # be the tidier home (the repo already has one, no-internal-codenames)
+      # and is the better eventual shape. It is not this change: it needs
+      # `eslint.config.mjs`, and this script needs a `package.json` script
+      # entry to ride `npm run lint` at all. Landing it as a step inside the
+      # job that branch protection already requires ("typecheck · lint · test")
+      # makes it block a merge TODAY rather than after a second edit — a
+      # correct check wired into nothing is the failure mode this repo has hit
+      # twice (see the Playwright and drift-classifier notes below).
+      # ⛔ Do not move this to an `actionlint`-style standalone job: a job that
+      # is not a required context can go red while the merge stays available.
+      #
+      # `node` directly, not `npx`: the script is plain ESM importing only
+      # `typescript`, which `npm ci` above already installed.
+      - name: Lint for raw error logs in lib/ and app/
+        run: node scripts/lint-no-raw-error-logs.mjs
+
       - run: npm test
 
       # Informational only. Absorbed from the former neon-drift-check.yml, which

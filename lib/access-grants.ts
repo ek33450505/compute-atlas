@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { and, eq, inArray } from "drizzle-orm";
 
+import { isHoneypotTripped } from "@/lib/contribute";
 import { getDb } from "@/lib/db/client";
 import { apiAccessGrantsTable } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
@@ -9,7 +10,7 @@ import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 export const accessGrantInputSchema = z.object({
   email: z.string().email().max(254),
-  website: z.string().optional(), // honeypot — real users never fill this
+  website: z.string().optional(), // honeypot — real users never fill this; checked on the RAW input before this schema runs
 });
 
 export type AccessGrantInput = z.infer<typeof accessGrantInputSchema>;
@@ -17,10 +18,6 @@ export type AccessGrantInput = z.infer<typeof accessGrantInputSchema>;
 export type AccessGrantResult =
   | { ok: true; confirm?: { email: string; confirmToken: string } }
   | { ok: false; status: number; error: string; issues?: unknown };
-
-function isHoneypotTripped(input: { website?: string }): boolean {
-  return Boolean(input.website && input.website.trim());
-}
 
 /** Statuses that represent an outstanding or live grant for an email — a new request is a no-op against either. */
 const ACTIVE_GRANT_STATUSES = ["pending", "active"] as const;
@@ -48,15 +45,34 @@ export async function requestAccessGrant(
   rawInput: unknown,
   ipHash: string
 ): Promise<AccessGrantResult> {
+  // Honeypot FIRST, against the RAW input, before `accessGrantInputSchema`
+  // runs — the same ordering the other three intake routes use, and now the
+  // same shared predicate (`isHoneypotTripped`, lib/contribute.ts) rather than
+  // a private copy of it.
+  //
+  // It used to run AFTER the parse, on `parsed.data`, which leaked the honeypot
+  // exactly as the `typeof === "string"` gate did at the other three surfaces:
+  // `website` is typed `z.string().optional()`, so `{"website":1,"email":"bad"}`
+  // failed VALIDATION and answered 400 with `issues`, while
+  // `{"website":"x","email":"bad"}` answered a generic 201. Flipping one field's
+  // type told a bot both that `website` is special and that its other fields
+  // were the real problem. Checking the raw value first makes every type answer
+  // with the same generic success.
+  if (
+    isHoneypotTripped(
+      rawInput && typeof rawInput === "object"
+        ? { website: (rawInput as { website?: unknown }).website }
+        : {}
+    )
+  ) {
+    return { ok: true };
+  }
+
   const parsed = accessGrantInputSchema.safeParse(rawInput);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid request", issues: parsed.error.issues };
   }
   const data = parsed.data;
-
-  if (isHoneypotTripped(data)) {
-    return { ok: true };
-  }
 
   const email = data.email.trim().toLowerCase();
 

@@ -24,11 +24,18 @@ export async function GET(request: Request): Promise<Response> {
         READ_CACHE.schema
       );
     } catch {
+      // `no-store` by choice (Ed, 2026-09-28): caching a 500 would pin a transient
+      // failure at the edge, and the body is far too small for the bandwidth cap
+      // to notice either way. Unlike the 404 in `facilities/[id]` there is no
+      // traffic pattern that would change this — `cacheableJson` above stays the
+      // single opt-in cacheable path.
       return jsonResponse({ error: "Schema unavailable" }, { status: 500 });
     }
   }
 }
 
+// `read`: this path exports GET and nothing else, so its preflight has no
+// reason to advertise a write verb or `Authorization`.
 export function OPTIONS(): Response {
-  return corsPreflight();
+  return corsPreflight("read");
 }

@@ -86,8 +86,22 @@ jobs:
   drift-check:
     name: Verify today's sync converged
     runs-on: ubuntu-latest
+    # ⛔ HAS_DATABASE_URL is a BOOLEAN, not the secret, and that is the whole
+    # point. DATABASE_URL itself was a job-level env until 2026-09-27, which
+    # handed it to every step — including `npm ci`, which runs four package
+    # install scripts on this runner (esbuild x3, unrs-resolver). The secret is
+    # now scoped to the three steps that read it, exactly as ci.yml already
+    # requires for the same value.
+    #
+    # It cannot simply be deleted from the job level, because the `secrets`
+    # context is NOT available in `if:` expressions and eight steps below gate
+    # on whether the secret is set. `secrets.DATABASE_URL != ''` is evaluated
+    # HERE, where secrets ARE available, and only its `true`/`false` result is
+    # exported — so the guards keep working unchanged in meaning while no step
+    # that does not need the value ever sees it. Do not "simplify" this back
+    # into the secret itself.
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      HAS_DATABASE_URL: ${{ secrets.DATABASE_URL != '' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -97,8 +111,8 @@ jobs:
       - run: npm ci
 
       # UNCONDITIONAL, and the first thing that runs. Every step below is
-      # gated on `env.DATABASE_URL != ''`, so without this guard an unset or
-      # empty secret SKIPS all of them and the job finishes GREEN having
+      # gated on `env.HAS_DATABASE_URL == 'true'`, so without this guard an
+      # unset or empty secret SKIPS all of them and the job finishes GREEN having
       # verified nothing at all — a silent pass on the exact condition this
       # workflow exists to detect. That is the same fail-open shape as the
       # six-night failure this file was just fixed for, one layer up, so it
@@ -109,13 +123,30 @@ jobs:
       # is configured. A fork lacking the secret SHOULD fail loudly rather
       # than report a drift check it never performed.
       #
-      # The per-step `if: env.DATABASE_URL != ''` conditions below are now
-      # unreachable-when-empty and kept only as defence in depth — do not
+      # The per-step `if: env.HAS_DATABASE_URL == 'true'` conditions below are
+      # now unreachable-when-false and kept only as defence in depth — do not
       # read them as "skipping is acceptable".
+      #
+      # This step tests the SECRET, not the boolean: `[ -z "$DATABASE_URL" ]`
+      # proves the value actually arrives in a step env, which is a strictly
+      # stronger claim than "the repository has a secret by that name".
       - name: Verify DATABASE_URL is configured
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           if [ -z "$DATABASE_URL" ]; then
             echo "::error::DATABASE_URL is not configured or is empty, so NOTHING below can run. Failing closed: a drift alert that verified nothing must never report success. Set the DATABASE_URL repository secret (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+          # GUARD ON THE GUARD. Every gated step below reads HAS_DATABASE_URL,
+          # a boolean rendered at job level from `secrets.DATABASE_URL != ''`.
+          # If that ever stops rendering as the literal string "true", the
+          # secret is present, THIS step passes, and all eight guards evaluate
+          # false — so the job finishes GREEN having skipped every check. That
+          # is the same silent-pass shape this workflow has now shipped three
+          # times. The two facts must agree, so assert it rather than assume it.
+          if [ "$HAS_DATABASE_URL" != "true" ]; then
+            echo "::error::DATABASE_URL is set, but HAS_DATABASE_URL is '$HAS_DATABASE_URL' rather than 'true'. Every gated step below would SKIP and this job would pass having verified nothing. Failing closed — fix the job-level boolean, do not delete this check."
             exit 1
           fi
           echo "DATABASE_URL is configured."
@@ -132,11 +163,13 @@ jobs:
       # opening a database connection. This workflow shipped with the npm form
       # and failed all 6 of its runs (2026-09-03 .. 2026-09-08) for that reason
       # alone, while reporting a missing production table. DATABASE_URL arrives
-      # from the job env above.
+      # from this step's own `env:`.
       - name: Check deployed schema matches code
-        if: env.DATABASE_URL != ''
+        if: env.HAS_DATABASE_URL == 'true'
         id: schema
         continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx tsx scripts/check-schema-drift.ts
 
       # THREE outcomes, not two. The original form asked one question ("does the
@@ -159,8 +192,10 @@ jobs:
       # command — never through a pipe, which would report the pipe's status
       # instead (see the drift-alert postmortem and CLAUDE.md's note on `tee`).
       - name: Check JSON <-> Neon drift
-        if: env.DATABASE_URL != ''
+        if: env.HAS_DATABASE_URL == 'true'
         id: drift
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set +e
           OUTPUT="$(npx tsx scripts/check-neon-drift.ts 2>&1)"
@@ -197,7 +232,7 @@ jobs:
       # rc is captured the instant the command returns and echoed as a plain
       # command — never through a pipe, which would report the pipe's status.
       - name: Classify sync convergence state
-        if: env.DATABASE_URL != '' && steps.drift.outputs.state == 'drifted'
+        if: env.HAS_DATABASE_URL == 'true' && steps.drift.outputs.state == 'drifted'
         id: convergence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -257,7 +292,7 @@ jobs:
       # It also lets the notice name the real cause: rule 1 fires on an
       # in-flight RUN, where no PR exists yet and "a sync PR" would be a lie.
       - name: Sync is converging (alert suppressed)
-        if: env.DATABASE_URL != '' && steps.convergence.outputs.state == 'converging'
+        if: env.HAS_DATABASE_URL == 'true' && steps.convergence.outputs.state == 'converging'
         run: |
           cause="$(jq -r 'if length > 0 then "neon-sync run \(.[0].databaseId) is \(.[0].status)" else empty end' /tmp/runs.json)"
           if [[ -z "$cause" ]]; then
@@ -269,7 +304,7 @@ jobs:
       # period (900 seconds = 15 minutes). This indicates the sync stalled and
       # requires investigation.
       - name: Report stuck sync PR
-        if: env.DATABASE_URL != '' && steps.convergence.outputs.state == 'stuck'
+        if: env.HAS_DATABASE_URL == 'true' && steps.convergence.outputs.state == 'stuck'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -281,7 +316,7 @@ jobs:
       # Only for ABSENT sync. No sync is running and no open sync PR exists,
       # yet drift is still present past the expected convergence window.
       - name: Fail if sync absent and drift still present
-        if: env.DATABASE_URL != '' && steps.convergence.outputs.state == 'absent'
+        if: env.HAS_DATABASE_URL == 'true' && steps.convergence.outputs.state == 'absent'
         run: |
           echo "::error::JSON<->Neon drift is still present past the daily sync's expected convergence window and no sync is in progress. See the drift output above and docs/architecture (or npm run check:drift locally) to diagnose."
           exit 1
@@ -290,7 +325,7 @@ jobs:
       # never be confused again. This is the state the workflow spent its first
       # six runs in while claiming a production table was missing.
       - name: Fail if the drift detector could not run
-        if: always() && env.DATABASE_URL != '' && steps.drift.outputs.state == 'detector-broken'
+        if: always() && env.HAS_DATABASE_URL == 'true' && steps.drift.outputs.state == 'detector-broken'
         run: |
           echo "::error::The JSON<->Neon drift detector did not run to completion, so THIS WORKFLOW LEARNED NOTHING about drift today. This is not a report that drift exists — it is the absence of a report. Read the detector output above for the cause (a non-zero exit means the script could not start; a '::notice::drift check errored' line means it started but could not reach Neon)."
           exit 1
@@ -308,7 +343,7 @@ jobs:
       # nonetheless reported a missing production table. The script's own
       # output distinguishes the cases correctly; defer to it.
       - name: Fail if the deployed schema check did not pass
-        if: always() && env.DATABASE_URL != '' && steps.schema.outcome == 'failure'
+        if: always() && env.HAS_DATABASE_URL == 'true' && steps.schema.outcome == 'failure'
         run: |
           echo "::error::The deployed-schema check failed — read its output above for which of these it was. If it names missing tables, a migration reached main but was never applied: fix with 'npm run db:migrate' against production, then re-run this workflow. If it reports an unset or unreachable DATABASE_URL, the schema was NOT verified either way."
           echo "::error::Missing tables are the failure mode that silently disabled the daily API cap on 2026-09-03. Nothing caught it: CI was green, the deploy succeeded, and every public API route kept returning 200 while the gate failed open on every request."

@@ -1,6 +1,7 @@
 import { after } from "next/server";
 
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { redactedErrorCode } from "@/lib/db-error";
 import { sendConfirmEmail, sendWatchStartedEmail } from "@/lib/email";
 import {
   checkSubscribeRateLimit,
@@ -10,26 +11,7 @@ import {
   recordSubscribeAttempt,
 } from "@/lib/rate-limit";
 import { subscribeToTarget } from "@/lib/subscribe";
-
-/**
- * Reduces a failed rate-limit accounting step to a Postgres SQLSTATE (or
- * "unknown" — `hashIp`'s misconfiguration error carries no `code`, and its
- * message is redacted like any other) for logging. Deliberately never returns
- * the error's message or the error itself:
- * drizzle wraps driver errors in a `DrizzleQueryError` whose `.message` embeds
- * the bound params — and both of these queries' only param IS the submitter's
- * IP hash, which must never reach a log. The SQLSTATE carries everything an
- * operator needs (e.g. 42P01 = table missing, i.e. the migration has not been
- * applied) and nothing about the caller.
- */
-function redactedFailureCode(err: unknown): string {
-  const layers = [err, err instanceof Error ? err.cause : undefined];
-  for (const layer of layers) {
-    const code = (layer as { code?: unknown } | undefined)?.code;
-    if (typeof code === "string" && code.length > 0) return code;
-  }
-  return "unknown";
-}
+import { readConsentCookie } from "@/lib/subscribe-consent";
 
 export async function POST(request: Request) {
   // The IP hash is derived FIRST, before the body is even parsed, so that the
@@ -91,11 +73,18 @@ export async function POST(request: Request) {
     }
   } catch (err) {
     // Fail closed: if the attempt can't be counted or recorded, the cap can't be
-    // enforced, so refuse rather than let an uncounted request through. Never log
-    // the IP, the hash, or an email address — hence the SQLSTATE-only form (see
-    // redactedFailureCode above; logging `err` itself would print the ip hash).
+    // enforced, so refuse rather than let an uncounted request through.
+    //
+    // Never log the IP, the hash, or an email address — hence the SQLSTATE-only
+    // form. This route is the sharpest case for that rule (see lib/db-error.ts
+    // for the general one): the ONLY bound param in either the gate SELECT or
+    // the record INSERT is the submitter's IP hash, so logging `err` — whose
+    // DrizzleQueryError `.message` embeds the params — would print that hash and
+    // nothing else of value. "unknown" is a legitimate answer here too:
+    // `hashIp`'s own misconfiguration error carries no `code`, and its message is
+    // redacted like any other.
     console.error(
-      `subscribe rate-limit accounting failed — refusing the request (sqlstate: ${redactedFailureCode(err)})`
+      `subscribe rate-limit accounting failed — refusing the request (sqlstate: ${redactedErrorCode(err)})`
     );
     // 503, NOT 429: this is an outage, not a limit, and it must not hide inside
     // ordinary rate-limiting. Migrations here are applied by hand and nothing in
@@ -122,7 +111,12 @@ export async function POST(request: Request) {
     return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const result = await subscribeToTarget(body);
+  // The consent cookie (`lib/subscribe-consent.ts`) is what proves the
+  // requester holds the address they're subscribing, and it gates the
+  // auto-confirm shortcut inside subscribeToTarget. Read here and passed
+  // down, so that module needs no `next/headers` access. Its absence is
+  // never an error — it just means the ordinary double-opt-in path.
+  const result = await subscribeToTarget(body, readConsentCookie(request.headers));
 
   if (!result.ok) {
     return jsonResponse({ error: result.error, issues: result.issues }, { status: result.status });
@@ -147,6 +141,9 @@ export async function POST(request: Request) {
   return jsonResponse({ ok: true }, { status: 201 });
 }
 
+// `public-write`: anonymous POST by design, so POST must stay advertised — but
+// this path has no bearer gate and no PATCH/DELETE, so it needs neither
+// `Authorization` nor those verbs.
 export function OPTIONS() {
-  return corsPreflight();
+  return corsPreflight("public-write");
 }

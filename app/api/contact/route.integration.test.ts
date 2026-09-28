@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } from "vitest";
+import { eq } from "drizzle-orm";
 
 vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
@@ -39,8 +40,8 @@ vi.mock("resend", () => ({
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
-import { contactMessagesTable } from "@/lib/db/schema";
-import { hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
+import { contactMessagesTable, intakeAttemptsTable } from "@/lib/db/schema";
+import { RATE_LIMIT_MAX, hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
 
 // Imported after the mocks above so the mocked modules are in effect.
 import { POST } from "./route";
@@ -65,6 +66,17 @@ const VALID = {
 };
 
 let tdb: TestDbHandle;
+
+/**
+ * Seeds `n` "contact" attempt rows for an already-hashed IP. This is what the
+ * limiter counts — seeding `contact_messages` rows (as these tests used to) no
+ * longer affects it at all.
+ */
+async function seedAttempts(submitterIpHash: string, n: number): Promise<void> {
+  for (let i = 0; i < n; i++) {
+    await tdb.db.insert(intakeAttemptsTable).values({ surface: "contact", submitterIpHash });
+  }
+}
 
 beforeAll(async () => {
   tdb = await makeTestDb();
@@ -208,8 +220,12 @@ describe("POST /api/contact", () => {
       { ...VALID, message: "too short" },
       { ...VALID, message: "a".repeat(4001) },
     ];
-    for (const body of cases) {
-      const res = await POST(req(body));
+    // One distinct IP per case, deliberately. Every request now spends a unit
+    // of its bucket's budget whether or not it inserts (that is the Finding 1
+    // fix), so six rejected requests from ONE bucket would make the sixth a
+    // 429 instead of the 400 this test is about.
+    for (const [i, body] of cases.entries()) {
+      const res = await POST(req(body, { "x-forwarded-for": `203.0.113.${20 + i}` }));
       expect(res.status).toBe(400);
     }
 
@@ -219,22 +235,16 @@ describe("POST /api/contact", () => {
 
   it("rate-limits a 6th message from the same ip within the window", async () => {
     const ip = "203.0.113.9";
-    const ipHash = hashIp(ip);
-    for (let i = 0; i < 5; i++) {
-      await tdb.db.insert(contactMessagesTable).values({
-        name: VALID.name,
-        email: VALID.email,
-        topic: VALID.topic,
-        message: `${VALID.message} ${i}`,
-        submitterIpHash: ipHash,
-      });
-    }
+    // Seeds ATTEMPT rows, not `contact_messages` rows: the limiter counts
+    // `intake_attempts` now, because counting messages made every
+    // non-inserting path free (see `checkIntakeRateLimit` in lib/rate-limit.ts).
+    await seedAttempts(hashIp(ip), RATE_LIMIT_MAX);
 
     const res = await POST(req(VALID, { "x-forwarded-for": ip }));
     expect(res.status).toBe(429);
 
     const rows = await tdb.db.select().from(contactMessagesTable);
-    expect(rows).toHaveLength(5); // the 6th attempt must not have landed
+    expect(rows).toHaveLength(0); // the 6th attempt must not have landed
   });
 
   it("buckets two different IPv6 addresses in the same /64 together (RFC 4941 rotation)", async () => {
@@ -245,8 +255,19 @@ describe("POST /api/contact", () => {
     // never fires.
     const firstAddressInBlock = "2001:db8:1:2:3:4:5:6";
     const secondAddressInBlock = "2001:db8:1:2:ffff:ffff:ffff:ffff";
-    const ipHash = hashIp(normaliseIpForBucketing(firstAddressInBlock));
-    for (let i = 0; i < 5; i++) {
+    await seedAttempts(hashIp(normaliseIpForBucketing(firstAddressInBlock)), RATE_LIMIT_MAX);
+
+    const res = await POST(req(VALID, { "cf-connecting-ip": secondAddressInBlock }));
+    expect(res.status).toBe(429);
+
+    const rows = await tdb.db.select().from(contactMessagesTable);
+    expect(rows).toHaveLength(0); // the 6th attempt, from a rotated address in the same /64, must not have landed
+  });
+
+  it("does NOT count pre-existing contact_messages rows — the cap counts attempts, not outcomes", async () => {
+    const ip = "203.0.113.77";
+    const ipHash = hashIp(ip);
+    for (let i = 0; i < RATE_LIMIT_MAX + 3; i++) {
       await tdb.db.insert(contactMessagesTable).values({
         name: VALID.name,
         email: VALID.email,
@@ -255,11 +276,87 @@ describe("POST /api/contact", () => {
         submitterIpHash: ipHash,
       });
     }
+    const res = await POST(req(VALID, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(201);
+  });
+});
 
-    const res = await POST(req(VALID, { "cf-connecting-ip": secondAddressInBlock }));
+describe("POST /api/contact — attempts, not outcomes (Finding 1) + honeypot symmetry (Finding 3)", () => {
+  const ip = "198.51.100.61";
+
+  async function attemptsFor(ipAddr: string) {
+    return tdb.db
+      .select()
+      .from(intakeAttemptsTable)
+      .where(eq(intakeAttemptsTable.submitterIpHash, hashIp(ipAddr)));
+  }
+
+  it("counts a honeypot-tripping request, which writes no message", async () => {
+    const res = await POST(req({ ...VALID, website: "spam" }, { "x-forwarded-for": ip }));
+    expect(res.status).toBe(201);
+    expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(0);
+    const attempts = await attemptsFor(ip);
+    expect(attempts).toHaveLength(1);
+    expect(attempts[0].surface).toBe("contact");
+  });
+
+  it("counts a Zod-failing request and an unparseable body", async () => {
+    await POST(req({ ...VALID, email: "not-an-email" }, { "x-forwarded-for": ip }));
+    await POST(
+      new Request("http://localhost/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": ip },
+        body: "{not json",
+      })
+    );
+    expect(await attemptsFor(ip)).toHaveLength(2);
+  });
+
+  it("does NOT count an already-refused (429) request", async () => {
+    await seedAttempts(hashIp(ip), RATE_LIMIT_MAX);
+    const res = await POST(req(VALID, { "x-forwarded-for": ip }));
     expect(res.status).toBe(429);
+    expect(await attemptsFor(ip)).toHaveLength(RATE_LIMIT_MAX);
+  });
 
-    const rows = await tdb.db.select().from(contactMessagesTable);
-    expect(rows).toHaveLength(5); // the 6th attempt, from a rotated address in the same /64, must not have landed
+  it("trips the honeypot on a non-string truthy value, still returning the generic 201", async () => {
+    // `{"website":1, ...invalid}` used to fall past a `typeof === "string"`
+    // gate into Zod and answer 400 with `issues`, while `{"website":"x"}`
+    // answered 201 — the type flip revealed the honeypot.
+    const invalid = { ...VALID, email: "not-an-email" };
+    for (const website of [1, 0, true, { a: 1 }, ["x"]]) {
+      const res = await POST(req({ ...invalid, website }));
+      expect(res.status).toBe(201);
+      expect(await res.json()).toEqual({ ok: true });
+    }
+    expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(0);
+  });
+
+  it("does NOT trip on an empty or whitespace-only string, so a real browser's empty hidden input still submits", async () => {
+    // The load-bearing case: an honest browser submits the hidden input as "",
+    // so treating that as "filled" would silently reject every real message.
+    for (const [i, website] of ["", "   "].entries()) {
+      const res = await POST(
+        req({ ...VALID, website }, { "x-forwarded-for": `198.51.100.${100 + i}` })
+      );
+      expect(res.status).toBe(201);
+    }
+    expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(2);
+  });
+
+  it("does NOT trip on null / false / [] — they are validated normally, not silently swallowed", async () => {
+    // These are "present but not filled in" as far as the honeypot is
+    // concerned, so the request proceeds to validation rather than getting the
+    // bot treatment. `contactInputSchema` types `website` as
+    // `z.string().optional()`, so a non-string value is then rejected on its own
+    // merits — a 400, NOT the silent 201 a tripped honeypot returns. The
+    // distinction that matters here is which mechanism answered.
+    for (const [i, website] of [null, false, []].entries()) {
+      const res = await POST(
+        req({ ...VALID, website }, { "x-forwarded-for": `198.51.100.${120 + i}` })
+      );
+      expect(res.status).toBe(400);
+    }
+    expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(0);
   });
 });

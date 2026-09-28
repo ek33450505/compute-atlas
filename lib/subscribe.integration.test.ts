@@ -27,13 +27,29 @@ import {
   confirmSubscription,
   unsubscribeByToken,
 } from "@/lib/subscribe";
+import { createConsentValue } from "@/lib/subscribe-consent";
 
 const facilitiesTyped = facilitiesRaw as unknown as Facility[];
 const seedDoc = facilitiesTyped[0]; // xai-colossus-memphis-tn
 
 let tdb: TestDbHandle;
 
+// The consent cookie's signing key derives from CONTRIBUTE_IP_SALT, which is
+// unset locally — and `lib/subscribe-consent.ts` fails CLOSED without it, so
+// without this every auto-confirm case below would pass for the wrong reason
+// (no key rather than the condition under test). Saved/restored by hand
+// because `unstubEnvs` is not enabled in vitest.config.ts.
+const ORIGINAL_SALT = process.env.CONTRIBUTE_IP_SALT;
+
+/** A valid, freshly minted consent cookie value bound to `email`. */
+function consentFor(email: string): string {
+  const value = createConsentValue(email);
+  if (!value) throw new Error("consentFor: no signing key — CONTRIBUTE_IP_SALT is unset");
+  return value;
+}
+
 beforeAll(async () => {
+  process.env.CONTRIBUTE_IP_SALT = "subscribe-integration-test-salt";
   tdb = await makeTestDb();
   vi.mocked(dbClient.getDb).mockReturnValue(tdb.db as never);
   vi.mocked(dbClient.hasDatabaseUrl).mockReturnValue(true);
@@ -49,6 +65,11 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await tdb.client.close();
+  if (ORIGINAL_SALT === undefined) {
+    delete process.env.CONTRIBUTE_IP_SALT;
+  } else {
+    process.env.CONTRIBUTE_IP_SALT = ORIGINAL_SALT;
+  }
 });
 
 // Shape-only validation (no DB): does this look like a subscribe request?
@@ -286,11 +307,18 @@ describe("subscribeToTarget — auto-confirm for an address with a confirmed sub
   it("first-ever subscription for an address: row is pending, result carries confirm, no notice", async () => {
     await seedFacility(tdb.db, seedDoc);
 
-    const result = await subscribeToTarget({
-      email: "firsttimer@example.com",
-      targetType: "facility",
-      targetId: seedDoc.id,
-    });
+    // A valid consent cookie is supplied deliberately: a first-ever address
+    // cannot really hold one (it is bound to an address that completed a
+    // confirm), so passing one here is what makes this a test of
+    // canAutoConfirm's condition 1 — the cookie ALONE must never auto-confirm.
+    const result = await subscribeToTarget(
+      {
+        email: "firsttimer@example.com",
+        targetType: "facility",
+        targetId: seedDoc.id,
+      },
+      consentFor("firsttimer@example.com")
+    );
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -320,7 +348,10 @@ describe("subscribeToTarget — auto-confirm for an address with a confirmed sub
       unsubscribeToken: "seed-confirmed-unsub",
     });
 
-    const result = await subscribeToTarget({ email, targetType: "facility", targetId: secondDoc.id });
+    const result = await subscribeToTarget(
+      { email, targetType: "facility", targetId: secondDoc.id },
+      consentFor(email)
+    );
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -352,7 +383,12 @@ describe("subscribeToTarget — auto-confirm for an address with a confirmed sub
       unsubscribeToken: "seed-pending-unsub",
     });
 
-    const result = await subscribeToTarget({ email, targetType: "facility", targetId: secondDoc.id });
+    // Consent cookie supplied, so the denial is attributable to the history
+    // condition and not to a missing cookie.
+    const result = await subscribeToTarget(
+      { email, targetType: "facility", targetId: secondDoc.id },
+      consentFor(email)
+    );
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -383,7 +419,12 @@ describe("subscribeToTarget — auto-confirm for an address with a confirmed sub
       unsubscribeToken: "seed-unsub-unsub",
     });
 
-    const result = await subscribeToTarget({ email, targetType: "facility", targetId: secondDoc.id });
+    // Consent cookie supplied, so the denial is attributable to the history
+    // condition and not to a missing cookie.
+    const result = await subscribeToTarget(
+      { email, targetType: "facility", targetId: secondDoc.id },
+      consentFor(email)
+    );
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -393,6 +434,249 @@ describe("subscribeToTarget — auto-confirm for an address with a confirmed sub
     const rows = await tdb.db.select().from(subscriptionsTable).where(eq(subscriptionsTable.targetId, secondDoc.id));
     expect(rows[0].status).toBe("pending");
     expect(rows[0].confirmedAt).toBeNull();
+  });
+});
+
+// CONSENT GATE (security review, 2026-09-27): every input to canAutoConfirm is
+// a property of the ADDRESS, so on its own it let an anonymous POST create a
+// LIVE subscription for any address that had ever confirmed anything — and mail
+// it. The requester must now prove they hold the address, with a signed
+// address-bound cookie minted by the confirm route (lib/subscribe-consent.ts).
+// The positive control lives in this same describe on purpose: without it, a
+// bug that denied the shortcut unconditionally would leave every negative case
+// below passing.
+describe("subscribeToTarget — the auto-confirm shortcut requires a consent cookie bound to THIS address", () => {
+  const email = "proven@example.com";
+  let secondDoc: Facility;
+
+  beforeEach(async () => {
+    secondDoc = facilitiesTyped[1];
+    await seedFacility(tdb.db, seedDoc);
+    await seedFacility(tdb.db, secondDoc);
+    // The history half of eligibility: a confirmed row elsewhere, under the cap,
+    // no prior unsubscribe. So the cookie is the ONLY variable in each case.
+    await tdb.db.insert(subscriptionsTable).values({
+      email,
+      targetType: "facility",
+      targetId: seedDoc.id,
+      status: "confirmed",
+      confirmedAt: new Date(),
+      confirmToken: "consent-seed-tok",
+      unsubscribeToken: "consent-seed-unsub",
+    });
+  });
+
+  async function subscribeWith(cookie: string | undefined) {
+    const result = await subscribeToTarget(
+      { email, targetType: "facility", targetId: secondDoc.id },
+      cookie
+    );
+    const rows = await tdb.db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.targetId, secondDoc.id));
+    return { result, row: rows[0] };
+  }
+
+  it("a valid cookie for this address auto-confirms (positive control)", async () => {
+    const { result, row } = await subscribeWith(consentFor(email));
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.notice).toBeDefined();
+      expect(result.confirm).toBeUndefined();
+    }
+    expect(row.status).toBe("confirmed");
+    expect(row.confirmedAt).not.toBeNull();
+  });
+
+  // THE case. Remove the cookie requirement from subscribeToTarget and this
+  // must fail — if it still passes, it is not testing consent.
+  it("NO cookie: stays pending and sends a confirm email, never a notice", async () => {
+    const { result, row } = await subscribeWith(undefined);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.confirm).toBeDefined();
+      expect(result.notice).toBeUndefined();
+    }
+    expect(row.status).toBe("pending");
+    expect(row.confirmedAt).toBeNull();
+  });
+
+  // The attack the address binding closes: confirming a throwaway address of
+  // your own is free, so an unbound "this browser confirmed something" cookie
+  // would be spendable on any victim address with a confirmed row.
+  it("a valid cookie for a DIFFERENT address: stays pending", async () => {
+    const { result, row } = await subscribeWith(consentFor("attacker@example.com"));
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.notice).toBeUndefined();
+    }
+    expect(row.status).toBe("pending");
+  });
+
+  it("a tampered cookie: stays pending", async () => {
+    const valid = consentFor(email);
+    const parts = valid.split(".");
+    parts[4] = (parts[4][0] === "a" ? "b" : "a") + parts[4].slice(1);
+
+    const { result, row } = await subscribeWith(parts.join("."));
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.notice).toBeUndefined();
+    }
+    expect(row.status).toBe("pending");
+  });
+
+  it("an expired cookie: stays pending", async () => {
+    // Minted 31 minutes ago under fake timers, then real time restored
+    // immediately — no async work happens while they are faked.
+    vi.useFakeTimers();
+    vi.setSystemTime(Date.now() - 31 * 60 * 1000);
+    const stale = consentFor(email);
+    vi.useRealTimers();
+
+    const { result, row } = await subscribeWith(stale);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.notice).toBeUndefined();
+    }
+    expect(row.status).toBe("pending");
+  });
+
+  it("a garbage cookie value: stays pending", async () => {
+    const { result, row } = await subscribeWith("not-a-cookie-at-all");
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.notice).toBeUndefined();
+    }
+    expect(row.status).toBe("pending");
+  });
+
+  // Adversarial on purpose: the cookie is minted under the REPO-PUBLIC fallback
+  // salt that lib/rate-limit.ts uses when CONTRIBUTE_IP_SALT is unset, then the
+  // var is removed. Asserting only that "some cookie stops working" would pass
+  // even if the no-key path silently fell back to that public salt — the
+  // failure mode that matters, since anyone reading this repo could then forge
+  // one against any deployment missing the var.
+  it("no signing key configured: rejects even a cookie keyed on the repo-public fallback salt (fails closed)", async () => {
+    process.env.CONTRIBUTE_IP_SALT = "compute-atlas-contribute-v1";
+    const valid = consentFor(email);
+    delete process.env.CONTRIBUTE_IP_SALT;
+    try {
+      const { result, row } = await subscribeWith(valid);
+
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.notice).toBeUndefined();
+      }
+      expect(row.status).toBe("pending");
+    } finally {
+      process.env.CONTRIBUTE_IP_SALT = "subscribe-integration-test-salt";
+    }
+  });
+});
+
+// PER-TARGET OPT-OUT (security review, 2026-09-27): the partial unique index
+// excludes `unsubscribed` rows, so the moment someone unsubscribes their triple
+// becomes insertable again — and the auto-confirm branch would have re-created
+// it as `confirmed`, making the victim's only per-target remedy undoable by
+// whoever triggered it.
+describe("canAutoConfirm — refuses the shortcut for a target this address already unsubscribed from", () => {
+  const email = "came-back@example.com";
+
+  beforeEach(async () => {
+    await seedFacility(tdb.db, seedDoc);
+    await tdb.db.insert(subscriptionsTable).values({
+      email,
+      targetType: "facility",
+      targetId: seedDoc.id,
+      status: "confirmed",
+      confirmedAt: new Date(),
+      confirmToken: "returning-seed-tok",
+      unsubscribeToken: "returning-seed-unsub",
+    });
+  });
+
+  async function seedUnsubscribed(targetType: string, targetId: string): Promise<void> {
+    await tdb.db.insert(subscriptionsTable).values({
+      email,
+      targetType,
+      targetId,
+      status: "unsubscribed",
+      unsubscribedAt: new Date(),
+      confirmToken: `unsub-${targetType}-${targetId}-tok`,
+      unsubscribeToken: `unsub-${targetType}-${targetId}-unsub`,
+    });
+  }
+
+  async function subscribeToState(code: string) {
+    const result = await subscribeToTarget(
+      { email, targetType: "state", targetId: code },
+      consentFor(email)
+    );
+    const rows = await tdb.db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.targetId, code));
+    return { result, row: rows[0] };
+  }
+
+  it("a prior unsubscribe from THIS target: pending even with a valid cookie", async () => {
+    await seedUnsubscribed("state", "TX");
+
+    const { result, row } = await subscribeToState("TX");
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.confirm).toBeDefined();
+      expect(result.notice).toBeUndefined();
+    }
+    // Two rows now share the triple — the old unsubscribed one and this new
+    // pending one — which is exactly what the partial index permits.
+    expect(row).toBeDefined();
+    const statuses = (
+      await tdb.db.select().from(subscriptionsTable).where(eq(subscriptionsTable.targetId, "TX"))
+    ).map((r) => r.status);
+    expect(statuses).toContain("pending");
+    expect(statuses).not.toContain("confirmed");
+  });
+
+  // Guards against the opposite failure: a condition so broad that ONE
+  // unsubscribe anywhere permanently disables the shortcut for the address.
+  it("a prior unsubscribe from a DIFFERENT target does not block this one", async () => {
+    await seedUnsubscribed("state", "CA");
+
+    const { result, row } = await subscribeToState("TX");
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.notice).toBeDefined();
+    }
+    expect(row.status).toBe("confirmed");
+  });
+
+  // The match is on targetType AND targetId, the way the partial unique index
+  // matches — a facility whose id happens to equal a state code is a different
+  // target, not the same one.
+  it("a prior unsubscribe with the same targetId but a different targetType does not block", async () => {
+    await seedUnsubscribed("facility", "TX");
+
+    const { result } = await subscribeToState("TX");
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.notice).toBeDefined();
+    }
+    const confirmed = (
+      await tdb.db.select().from(subscriptionsTable).where(eq(subscriptionsTable.targetId, "TX"))
+    ).filter((r) => r.targetType === "state");
+    expect(confirmed[0].status).toBe("confirmed");
   });
 });
 
@@ -434,7 +718,14 @@ describe("canAutoConfirm — fails safe when the lookup itself throws (H2)", () 
     };
 
     try {
-      const result = await subscribeToTarget({ email, targetType: "state", targetId: "tn" });
+      // Valid consent cookie, so the fall-through below is attributable to the
+      // thrown lookup and not to a missing cookie. Note this does not disturb
+      // the `selectCalls === 2` ordering the comment above depends on:
+      // verifyConsentCookie is pure crypto and makes no DB call.
+      const result = await subscribeToTarget(
+        { email, targetType: "state", targetId: "tn" },
+        consentFor(email)
+      );
 
       expect(result.ok).toBe(true);
       if (result.ok) {
@@ -495,7 +786,10 @@ describe("canAutoConfirm — cumulative cap: AUTO_CONFIRM_CAP_MAX confirmed rows
     const email = "at-cap-minus-one@example.com";
     await seedConfirmedRows(email, AUTO_CONFIRM_CAP_MAX - 1, TWO_HOURS_MS);
 
-    const result = await subscribeToTarget({ email, targetType: "state", targetId: "TX" });
+    const result = await subscribeToTarget(
+      { email, targetType: "state", targetId: "TX" },
+      consentFor(email)
+    );
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -510,7 +804,10 @@ describe("canAutoConfirm — cumulative cap: AUTO_CONFIRM_CAP_MAX confirmed rows
     const email = "at-cap@example.com";
     await seedConfirmedRows(email, AUTO_CONFIRM_CAP_MAX, TWO_HOURS_MS);
 
-    const result = await subscribeToTarget({ email, targetType: "state", targetId: "TX" });
+    const result = await subscribeToTarget(
+      { email, targetType: "state", targetId: "TX" },
+      consentFor(email)
+    );
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -562,7 +859,10 @@ describe("canAutoConfirm — cumulative cap: AUTO_CONFIRM_CAP_MAX confirmed rows
     const outsideWindowMs = AUTO_CONFIRM_CAP_WINDOW_MS + 24 * 60 * 60 * 1000; // window + 1 day
     await seedConfirmedRows(email, AUTO_CONFIRM_CAP_MAX + 10, outsideWindowMs);
 
-    const result = await subscribeToTarget({ email, targetType: "state", targetId: "TX" });
+    const result = await subscribeToTarget(
+      { email, targetType: "state", targetId: "TX" },
+      consentFor(email)
+    );
 
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -662,6 +962,29 @@ describe("confirmSubscription", () => {
   it("returns 'invalid' for an unknown token and for an empty token", async () => {
     expect((await confirmSubscription("bogus-token")).status).toBe("invalid");
     expect((await confirmSubscription("")).status).toBe("invalid");
+  });
+
+  // The confirm route mints the address-bound consent cookie from this — with no
+  // email it cannot, and the auto-confirm shortcut would be dead code.
+  it("returns the row's email on 'confirmed' and on 'already', and none on 'invalid'", async () => {
+    await seedFacility(tdb.db, seedDoc);
+    const subscribeResult = await subscribeToTarget({
+      email: "Cookie-Source@Example.com",
+      targetType: "facility",
+      targetId: seedDoc.id,
+    });
+    const rawToken =
+      subscribeResult.ok && subscribeResult.confirm ? subscribeResult.confirm.confirmToken : "";
+
+    const first = await confirmSubscription(rawToken);
+    expect(first.status).toBe("confirmed");
+    expect(first.email).toBe("cookie-source@example.com"); // as stored: lowercased + trimmed
+
+    const second = await confirmSubscription(rawToken);
+    expect(second.status).toBe("already");
+    expect(second.email).toBe("cookie-source@example.com");
+
+    expect((await confirmSubscription("bogus-token")).email).toBeUndefined();
   });
 });
 

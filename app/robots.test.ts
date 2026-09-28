@@ -85,6 +85,27 @@ describe("robots", () => {
     }
   });
 
+  it("pins BLOCKED_AI_CRAWLERS against a hardcoded list", () => {
+    // Hardcoded deliberately: the coverage test above iterates the same array
+    // it's checking, so a token silently dropped from the source array would
+    // still pass it. This list is the independent copy that goes red instead.
+    //
+    // Google-Extended is DELIBERATELY ABSENT from this list and must stay
+    // absent -- app/robots.ts explains why, and the regression guard above
+    // asserts it. This pin is not a checklist of every AI crawler that exists;
+    // it's the exact set we chose to block. Don't "fix" it by adding one.
+    expect([...BLOCKED_AI_CRAWLERS]).toEqual([
+      "Amazonbot",
+      "Applebot-Extended",
+      "Bytespider",
+      "CCBot",
+      "ClaudeBot",
+      "CloudflareBrowserRenderingCrawler",
+      "GPTBot",
+      "meta-externalagent",
+    ]);
+  });
+
   it("disallows / for every entry in BLOCKED_SEO_CRAWLERS, with no allow", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];

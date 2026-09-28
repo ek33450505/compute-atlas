@@ -16,6 +16,22 @@ import {
 import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
 
+/**
+ * Hostile input for the five `*JsonLdString` serializers' breakout assertions.
+ *
+ * Each serializer applies `JSON.stringify(...).replace(/</g, "\\u003c")`, so the
+ * guarantee is that ZERO `<` survives — not merely that the literal `</script>`
+ * doesn't. These tests used to assert `not.toContain("</script>")`, which a
+ * mutation narrowing the replace to `/<\/script/g` passes while leaving
+ * `<script src=…>`, `<!--` and `<svg onload=…>` free to break out of the
+ * surrounding `<script type="application/ld+json">` block.
+ *
+ * `]]>` is here because it terminates a CDATA section; the `<` escape does not
+ * neutralize it, so these tests assert only that it survives the round trip
+ * intact rather than claiming it is defanged.
+ */
+const SCRIPT_BREAKOUT_PAYLOAD = '</script><script src="x"><!-- ]]> <svg onload=alert(1)>';
+
 const baseFacility: Facility = {
   id: "test-facility-ny",
   name: "Test Datacenter",
@@ -204,14 +220,16 @@ describe("facilityJsonLdString", () => {
     expect(str).not.toContain("<");
   });
 
-  it("escapes < as \\u003c and removes </script> when name contains script-injection payload", () => {
+  it("escapes every < as \\u003c when the name carries a script-breakout payload", () => {
     const xssFacility: Facility = {
       ...baseFacility,
-      name: "</script><x>",
+      name: SCRIPT_BREAKOUT_PAYLOAD,
     };
     const str = facilityJsonLdString(xssFacility);
     expect(str).toContain("\\u003c");
-    expect(str).not.toContain("</script>");
+    expect(str).not.toContain("<");
+    // The escape must not corrupt the data it protects.
+    expect(JSON.parse(str).name).toBe(SCRIPT_BREAKOUT_PAYLOAD);
   });
 
   it("produces valid JSON after escaping", () => {
@@ -272,6 +290,15 @@ describe("datasetJsonLdString", () => {
     expect(str).not.toContain("<");
   });
 
+  it("escapes every < as \\u003c when dateModified carries a script-breakout payload", () => {
+    // `dateModified` is this serializer's only caller-supplied input — every
+    // other value is a module constant — so it is the whole injectable surface.
+    const str = datasetJsonLdString({ dateModified: SCRIPT_BREAKOUT_PAYLOAD });
+    expect(str).toContain("\\u003c");
+    expect(str).not.toContain("<");
+    expect(JSON.parse(str).dateModified).toBe(SCRIPT_BREAKOUT_PAYLOAD);
+  });
+
   it("produces valid JSON that round-trips to a Dataset shape", () => {
     const str = datasetJsonLdString();
     const parsed = JSON.parse(str);
@@ -325,13 +352,14 @@ describe("breadcrumbJsonLdString", () => {
     expect(str).not.toContain("<");
   });
 
-  it("escapes < as \\u003c and removes </script> when a crumb name contains script-injection payload", () => {
+  it("escapes every < as \\u003c when a crumb name carries a script-breakout payload", () => {
     const str = breadcrumbJsonLdString([
       { name: "Map", url: "/map" },
-      { name: "</script><x>" },
+      { name: SCRIPT_BREAKOUT_PAYLOAD },
     ]);
     expect(str).toContain("\\u003c");
-    expect(str).not.toContain("</script>");
+    expect(str).not.toContain("<");
+    expect(JSON.parse(str).itemListElement[1].name).toBe(SCRIPT_BREAKOUT_PAYLOAD);
   });
 
   it("produces valid JSON that round-trips to a BreadcrumbList shape", () => {
@@ -393,6 +421,15 @@ describe("buildWebSiteJsonLd", () => {
 });
 
 describe("siteJsonLdString", () => {
+  /**
+   * ⚠️ Honest limit: this serializer takes NO arguments — every value in the
+   * graph comes from `siteConfig` module constants, none of which contain a
+   * `<`. So there is nothing to inject, and this assertion CANNOT distinguish
+   * "the `<` escape is applied" from "the escape was deleted": both produce a
+   * `<`-free string. It pins the output invariant only. The escape itself is
+   * pinned by the four sibling serializers' breakout cases, which do have an
+   * injectable surface. Do not read a pass here as coverage of the escape.
+   */
   it("returns a string with no raw < characters", () => {
     const str = siteJsonLdString();
     expect(str).not.toContain("<");
@@ -469,12 +506,13 @@ describe("itemListJsonLdString", () => {
     expect(str).not.toContain("<");
   });
 
-  it("escapes < as \\u003c and removes </script> when a name contains script-injection payload", () => {
+  it("escapes every < as \\u003c when an item name carries a script-breakout payload", () => {
     const str = itemListJsonLdString([
-      { name: "</script><x>", url: "https://www.compute-atlas.com/states/x" },
+      { name: SCRIPT_BREAKOUT_PAYLOAD, url: "https://www.compute-atlas.com/states/x" },
     ]);
     expect(str).toContain("\\u003c");
-    expect(str).not.toContain("</script>");
+    expect(str).not.toContain("<");
+    expect(JSON.parse(str).itemListElement[0].name).toBe(SCRIPT_BREAKOUT_PAYLOAD);
   });
 
   it("produces valid JSON that round-trips to an ItemList shape", () => {

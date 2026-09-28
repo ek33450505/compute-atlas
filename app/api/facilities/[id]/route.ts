@@ -20,6 +20,11 @@ export async function GET(
   const { id } = await params;
   const facility = await getFacilityById(id);
   if (!facility) {
+    // `no-store` by choice (Ed, 2026-09-28), not a leftover: the body is tiny, so
+    // caching it would buy origin invocations, not the bandwidth this project is
+    // actually capped on, and one rule for `jsonResponse` beats a per-site
+    // exception. If bad-id enumeration ever shows up in the invocation numbers,
+    // this 404 is the one to reconsider — a short window via `cacheableJson`.
     return jsonResponse({ error: "Facility not found", id }, { status: 404 });
   }
   return cacheableJson(facility, READ_CACHE.facility);
@@ -64,6 +69,13 @@ export async function DELETE(
   return jsonResponse({ deleted: true, id });
 }
 
+// `admin`, NOT `read` — same mixed-path exception as `/api/facilities`: an
+// anonymous public GET above plus bearer-gated PATCH and DELETE. One OPTIONS
+// covers all three, so it must advertise the union or a legitimate cross-origin
+// bearer write fails at the preflight. As there, the GET's own 200 carries no
+// method/header list — `cacheableJson` spreads `CORS_RESPONSE_HEADERS`, which
+// is `Access-Control-Allow-Origin: *` alone — because both lists are
+// preflight-only, so this scope reaches an OPTIONS and nothing else.
 export function OPTIONS(): Response {
-  return corsPreflight();
+  return corsPreflight("admin");
 }

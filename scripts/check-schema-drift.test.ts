@@ -26,6 +26,7 @@ const ALL_TABLES = [
   "discovery_heartbeat",
   "facilities",
   "facility_history",
+  "intake_attempts",
   "leads",
   "state_digest_runs",
   "submission_notify_requests",

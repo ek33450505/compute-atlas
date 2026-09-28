@@ -1,12 +1,14 @@
 import { z } from "zod";
-import { and, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { subscriptionsTable } from "@/lib/db/schema";
+import { redactedErrorCode } from "@/lib/db-error";
 import { generateToken } from "@/lib/email";
 import { getFacilityById } from "@/lib/data";
 import { stateNameFromCode } from "@/lib/us-states";
 import { checkEmailSendCap, AUTO_CONFIRM_CAP_MAX, AUTO_CONFIRM_CAP_WINDOW_MS } from "@/lib/rate-limit";
+import { verifyConsentCookie } from "@/lib/subscribe-consent";
 import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 export const subscribeInputSchema = z
@@ -55,34 +57,29 @@ function isUniqueViolation(err: unknown): boolean {
 }
 
 /**
- * Extracts a Postgres SQLSTATE (or "unknown") from a caught error for
- * logging, walking the same `err`/`err.cause` layers as isUniqueViolation
- * above — mirrors redactedFailureCode in app/api/subscribe/route.ts (kept as
- * a separate local copy rather than imported: route.ts imports FROM this
- * file, not the other way around). Deliberately never returns the error's
- * message or the error itself: drizzle-orm's DrizzleQueryError embeds its
- * bound params — here, the subscriber's email — in its own `.message`, so
- * logging `err` or `err.message` would leak it into server logs.
- */
-function redactedErrorCode(err: unknown): string {
-  const layers = [err, err instanceof Error ? err.cause : undefined];
-  for (const layer of layers) {
-    const code = (layer as { code?: unknown } | undefined)?.code;
-    if (typeof code === "string" && code.length > 0) return code;
-  }
-  return "unknown";
-}
-
-/**
- * True iff `email` should have a NEW subscription auto-confirmed instead of
- * going through the ordinary double-opt-in flow. Two conditions, both against
- * this email's CONFIRMED rows (to any target):
+ * True iff this address's own SUBSCRIPTION HISTORY permits auto-confirming a
+ * new subscription instead of sending it through the ordinary double-opt-in
+ * flow. Three conditions, all from this email's rows:
  *
- *  1. `total > 0` — it already holds at least one confirmed subscription,
- *     proving it receives our mail, instead of sending yet another confirm
- *     email it will likely never click (measured against prod Neon
- *     2026-09-27: 9 of 14 pending rows belonged to addresses that already
- *     held a confirmed row elsewhere).
+ *  1. `total > 0` — it already holds at least one confirmed subscription to
+ *     some target, so our mail is deliverable there and wanted, instead of
+ *     sending yet another confirm email it will likely never click (measured
+ *     against prod Neon 2026-09-27: 9 of 14 pending rows belonged to
+ *     addresses that already held a confirmed row elsewhere).
+ *
+ *     ⚠️ CORRECTED (security review 2026-09-27, the finding this signature
+ *     change comes from): this condition was previously documented as
+ *     "proven receipt", and the function's whole result was treated as
+ *     licence to auto-confirm. It is NOT proof of receipt by the REQUESTER.
+ *     It is a property of the ADDRESS, and every input to it is a property of
+ *     the address — so on its own it let an anonymous `POST /api/subscribe`
+ *     create a LIVE subscription for any address that had ever confirmed
+ *     anything, and mail it, up to AUTO_CONFIRM_CAP_MAX times per window.
+ *     Nothing here can prove the requester holds the address; that is the
+ *     consent cookie's job (`lib/subscribe-consent.ts`), checked separately
+ *     at the call site and ANDed with this result. Keep the two separate:
+ *     this answers "is auto-confirming this address's history sane?", the
+ *     cookie answers "is this the address's owner asking?".
  *  2. `recent < AUTO_CONFIRM_CAP_MAX` — it hasn't already had
  *     AUTO_CONFIRM_CAP_MAX+ confirmed rows CREATED in the trailing
  *     AUTO_CONFIRM_CAP_WINDOW_MS (H1, security review 2026-09-27; see that
@@ -101,16 +98,30 @@ function redactedErrorCode(err: unknown): string {
  *     auto-confirmed rows: that would need a new column to mark them, and the
  *     property actually wanted is a bound on total new confirmations, not on
  *     this mechanism specifically.
+ *  3. `unsubscribedHere === 0` — this address has never unsubscribed from
+ *     THIS EXACT target (matched the way the partial unique index matches,
+ *     `targetType` + `COALESCE(targetId,'')`, so the two agree on what "the
+ *     same target" is). A prior unsubscribe is a standing instruction about
+ *     one target, and `subscriptions_active_target_idx` excludes
+ *     `unsubscribed` rows — so the moment someone unsubscribes, that triple
+ *     becomes insertable again and the dedup path stops protecting them.
+ *     Without this condition the auto-confirm branch would silently re-create
+ *     the row as `confirmed` and mail them, i.e. the victim's only per-target
+ *     remedy was undoable by whoever triggered it. Refusing only the SHORTCUT
+ *     (not the subscription) is the right strength: a genuine returning
+ *     subscriber can still re-subscribe, they just have to click a confirm
+ *     link again, which is exactly the consent they withdrew.
  *
- * Both counts come from ONE query (a single `count(*) FILTER (...)` alongside
- * a plain `count(*)`, both scoped to this email's `confirmed` rows) to keep
- * this a single round trip — see the timing-symmetry note below.
+ * All three counts come from ONE query — three `count(*) FILTER (...)`
+ * aggregates over this email's rows, so the `confirmed` scoping moved from
+ * the WHERE clause into the filters — to keep this a single round trip; see
+ * the timing-symmetry note below.
  *
- * OVER THE CAP DOES NOT REJECT THE SUBSCRIPTION: condition 2 failing just
- * denies the auto-confirm shortcut. subscribeToTarget falls back to the
- * ordinary pending + confirm-email path exactly as if this address had never
- * confirmed anything, and the caller still gets the usual generic
- * `{ok:true}` — never an error, never a skipped row.
+ * NONE OF THE THREE REJECTS THE SUBSCRIPTION: a failing condition denies only
+ * the auto-confirm shortcut. subscribeToTarget falls back to the ordinary
+ * pending + confirm-email path exactly as if this address had never confirmed
+ * anything, and the caller still gets the usual generic `{ok:true}` — never
+ * an error, never a skipped row.
  *
  * Deliberately does NOT distinguish "no rows at all" from "rows exist but
  * none confirmed" (pending-only or unsubscribed-only) — both leave `total`
@@ -118,6 +129,9 @@ function redactedErrorCode(err: unknown): string {
  * one are both routed through the ordinary double-opt-in path below. An
  * unsubscribed-only address must NOT be auto-confirmed: it already told us
  * to stop, and silently reviving it would override that without consent.
+ * Condition 3 covers the harder case the `total` count cannot see — an
+ * address that still holds confirmed rows elsewhere but unsubscribed from
+ * *this* target.
  *
  * Called unconditionally on every request that reaches this point in
  * subscribeToTarget — immediately after the checkEmailSendCap guard, before
@@ -138,20 +152,33 @@ function redactedErrorCode(err: unknown): string {
  * double-opt-in path), never wrongly auto-confirm and never take down the
  * request.
  */
-async function canAutoConfirm(email: string): Promise<boolean> {
+async function canAutoConfirm(
+  email: string,
+  targetType: string,
+  targetId: string
+): Promise<boolean> {
   try {
     const db = getDb();
     const windowStart = new Date(Date.now() - AUTO_CONFIRM_CAP_WINDOW_MS);
     const [row] = await db
       .select({
-        recent: sql<number>`count(*) filter (where ${subscriptionsTable.createdAt} >= ${windowStart})::int`,
-        total: sql<number>`count(*)::int`,
+        recent: sql<number>`count(*) filter (
+          where ${subscriptionsTable.status} = 'confirmed'
+            and ${subscriptionsTable.createdAt} >= ${windowStart}
+        )::int`,
+        total: sql<number>`count(*) filter (where ${subscriptionsTable.status} = 'confirmed')::int`,
+        unsubscribedHere: sql<number>`count(*) filter (
+          where ${subscriptionsTable.status} = 'unsubscribed'
+            and ${subscriptionsTable.targetType} = ${targetType}
+            and coalesce(${subscriptionsTable.targetId}, '') = ${targetId}
+        )::int`,
       })
       .from(subscriptionsTable)
-      .where(and(eq(subscriptionsTable.email, email), eq(subscriptionsTable.status, "confirmed")));
+      .where(eq(subscriptionsTable.email, email));
     const recent = row?.recent ?? 0;
     const total = row?.total ?? 0;
-    return total > 0 && recent < AUTO_CONFIRM_CAP_MAX;
+    const unsubscribedHere = row?.unsubscribedHere ?? 0;
+    return total > 0 && recent < AUTO_CONFIRM_CAP_MAX && unsubscribedHere === 0;
   } catch (err) {
     console.error(
       `canAutoConfirm lookup failed — falling through to pending (sqlstate: ${redactedErrorCode(err)})`
@@ -170,20 +197,30 @@ async function canAutoConfirm(email: string): Promise<boolean> {
  * sending the email itself — the caller (the route) schedules the actual
  * send AFTER the response goes out, so response latency can't distinguish
  * the new-subscription path from the generic-success paths (a prior
- * security-review fix). If the address is eligible for auto-confirm (see
- * canAutoConfirm above — proven receipt via an existing confirmed row, and
- * under the weekly cumulative cap), the new row is created already-
- * `confirmed` instead and this returns `{ok:true, notice}` — a "you're now
- * watching X" email, not a confirm gate — so a subscriber who has already
- * proven they receive our mail is never asked to prove it again for every
- * new target.
+ * security-review fix).
+ *
+ * `consentCookie` is the raw `sub_consent` cookie value from the request, or
+ * undefined — the route reads it (`readConsentCookie`) and passes it in
+ * rather than this module reaching for `next/headers`, so this stays a plain
+ * function that a test can drive. It is REQUIRED for the auto-confirm
+ * shortcut: the new row is created already-`confirmed` (returning
+ * `{ok:true, notice}` — a "you're now watching X" email, not a confirm gate)
+ * only when BOTH the cookie proves this requester recently completed a
+ * confirm for THIS address AND canAutoConfirm's history conditions hold.
+ * Anything short of both — no cookie, a cookie for another address, a forged
+ * or expired one, no signing key configured — falls through to the ordinary
+ * pending + confirm-email path, which is the same path as a first-time
+ * subscriber and returns the same generic `{ok:true}`.
  *
  * Used to also take an `ipHash` param, written to `subscriptions.submitterIpHash`
  * for rate-limiting. That column was dropped 2026-09-13 as write-only PII —
  * rate limiting now counts `subscribe_attempts` rows instead (see
  * lib/rate-limit.ts) — so don't re-add an ipHash param here for that purpose.
  */
-export async function subscribeToTarget(rawInput: unknown): Promise<SubscribeResult> {
+export async function subscribeToTarget(
+  rawInput: unknown,
+  consentCookie?: string
+): Promise<SubscribeResult> {
   const parsed = subscribeInputSchema.safeParse(rawInput);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid subscription", issues: parsed.error.issues };
@@ -234,10 +271,25 @@ export async function subscribeToTarget(rawInput: unknown): Promise<SubscribeRes
     return { ok: true }; // over the per-address send cap — generic success, no row, no email
   }
 
-  // Auto-confirm eligibility (proven receipt + under the weekly cumulative
-  // cap) — see canAutoConfirm's doc comment for why this must run
-  // unconditionally, right here, on every request that reaches this point.
-  const autoConfirmEligible = await canAutoConfirm(email);
+  // Auto-confirm eligibility. Two independent halves, ANDed: does the
+  // REQUESTER hold this address (the consent cookie), and does the ADDRESS's
+  // own history permit the shortcut (canAutoConfirm). Neither alone is
+  // sufficient — see canAutoConfirm's condition 1.
+  //
+  // LATENCY SYMMETRY (deliberate, and the reason this is written as two
+  // unconditional statements ANDed rather than `hasConsent && await ...`):
+  // canAutoConfirm still runs on EVERY request that reaches this point, in
+  // the same position as before, exactly as its doc comment requires — so no
+  // short-circuit makes one caller's round-trip count differ from another's.
+  // verifyConsentCookie adds no I/O at all (pure HMAC over in-memory
+  // strings), so it shifts every path by the same sub-microsecond constant.
+  // It does return early when no cookie is present, which is a difference
+  // between "sent a cookie" and "didn't" — not an oracle: it is a fact the
+  // requester already knows about their own request, and it reveals nothing
+  // about stored data, which is what the symmetry property protects.
+  const hasConsent = verifyConsentCookie(consentCookie, email);
+  const historyAllows = await canAutoConfirm(email, data.targetType, targetId);
+  const autoConfirmEligible = hasConsent && historyAllows;
 
   const db = getDb();
   const confirmToken = generateToken();
@@ -308,9 +360,19 @@ export async function subscribeToTarget(rawInput: unknown): Promise<SubscribeRes
   }
 }
 
+/**
+ * Consumes a confirm token.
+ *
+ * Returns the row's `email` alongside the status on both non-`invalid`
+ * outcomes, for one caller and one purpose: the confirm route mints the
+ * address-bound consent cookie from it (`lib/subscribe-consent.ts`). The
+ * address is never put in the redirect URL, the response body, or a log — it
+ * goes into an HMAC and nothing else. `invalid` carries no email, because
+ * there is no row to name.
+ */
 export async function confirmSubscription(
   token: string
-): Promise<{ status: "confirmed" | "already" | "invalid" }> {
+): Promise<{ status: "confirmed" | "already" | "invalid"; email?: string }> {
   if (!token) {
     return { status: "invalid" };
   }
@@ -343,7 +405,7 @@ export async function confirmSubscription(
     return { status: "invalid" };
   }
   if (row.status === "confirmed") {
-    return { status: "already" };
+    return { status: "already", email: row.email };
   }
   if (row.status !== "pending") {
     // Stale confirm link for a since-unsubscribed row.
@@ -355,7 +417,7 @@ export async function confirmSubscription(
     .set({ status: "confirmed", confirmedAt: new Date(), confirmToken: hashed })
     .where(eq(subscriptionsTable.confirmToken, matchedValue));
 
-  return { status: "confirmed" };
+  return { status: "confirmed", email: row.email };
 }
 
 export async function unsubscribeByToken(

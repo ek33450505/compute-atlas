@@ -62,7 +62,7 @@ export async function createLead(input: unknown, ipHash: string): Promise<LeadRe
  * explicit column list (rather than stripping fields after the fact) means a
  * future column added to `leadsTable` can't silently start leaking here too.
  * `submitterIpHash` stays readable server-side via the full `LeadRow` —
- * `checkLeadRateLimit` in lib/rate-limit.ts depends on it.
+ * `checkIntakeRateLimit("leads", ipHash)` in lib/rate-limit.ts depends on it.
  */
 const ADMIN_LEAD_COLUMNS = {
   id: leadsTable.id,

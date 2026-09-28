@@ -31,10 +31,13 @@ vi.mock("resend", () => ({
   }),
 }));
 
+import { eq } from "drizzle-orm";
+
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
 import { subscribeAttemptsTable, subscriptionsTable } from "@/lib/db/schema";
 import { EMAIL_SEND_CAP_MAX, hashIp, RATE_LIMIT_MAX } from "@/lib/rate-limit";
+import { CONSENT_COOKIE_NAME, createConsentValue } from "@/lib/subscribe-consent";
 import facilitiesRaw from "@/data/facilities.json";
 import type { Facility } from "@/lib/schema";
 
@@ -140,8 +143,18 @@ describe("POST /api/subscribe", () => {
       unsubscribeToken: "route-seed-unsub",
     });
     vi.stubEnv("RESEND_API_KEY", "test-key");
+    // The shortcut also needs the requester to prove they hold the address —
+    // a signed cookie from GET /api/subscribe/confirm (security review
+    // 2026-09-27). Without the salt there is no signing key and the cookie is
+    // never valid, so both stubs are required for this to exercise the branch.
+    vi.stubEnv("CONTRIBUTE_IP_SALT", "route-auto-confirm-test-salt");
 
-    const res = await POST(req({ email, targetType: "facility", targetId: seedDoc.id }));
+    const res = await POST(
+      req(
+        { email, targetType: "facility", targetId: seedDoc.id },
+        { cookie: `${CONSENT_COOKIE_NAME}=${createConsentValue(email)}` }
+      )
+    );
     expect(res.status).toBe(201);
     const body = await res.json();
     expect(body).toEqual({ ok: true });
@@ -434,7 +447,7 @@ describe("POST /api/subscribe — attempt accounting", () => {
   // `Promise<unknown>` so tdb.client.exec() can be used point-free.
   //
   // `sqlstate` is the code the log must carry. Pinning the REAL code matters:
-  // without it both cases pass just as happily if `redactedFailureCode` always
+  // without it both cases pass just as happily if `redactedErrorCode` always
   // returned "unknown" — which is a false proxy, since "unknown" is exactly what
   // a redaction that extracted nothing would print. The code is the operator's
   // whole diagnostic (42P01 = the migration has not been applied), so asserting
@@ -577,5 +590,171 @@ describe("POST /api/subscribe — attempt accounting", () => {
     );
     expect(refused.status).toBe(429);
     expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(RATE_LIMIT_MAX);
+  });
+});
+
+// CONSENT GATE end-to-end (security review, 2026-09-27): the auto-confirm
+// shortcut used to fire on any address that had ever confirmed anything, with
+// nothing in the request proving the requester held it. The route now forwards
+// the signed `sub_consent` cookie minted by GET /api/subscribe/confirm, and
+// subscribeToTarget requires it for that branch.
+describe("POST /api/subscribe — auto-confirm requires the consent cookie", () => {
+  const email = "proven@example.com";
+  const CONSENT_SALT = "subscribe-route-test-salt";
+
+  /** Seeds the history half of eligibility: one confirmed row on another target. */
+  async function seedConfirmedElsewhere(): Promise<void> {
+    await tdb.db.insert(subscriptionsTable).values({
+      email,
+      targetType: "state",
+      targetId: "CA",
+      status: "confirmed",
+      confirmedAt: new Date(),
+      confirmToken: "route-consent-seed-tok",
+      unsubscribeToken: "route-consent-seed-unsub",
+    });
+  }
+
+  async function subscribeTN(headers: HeadersInit) {
+    const res = await POST(
+      req({ email, targetType: "state", targetId: "TN" }, headers)
+    );
+    await flushAfter();
+    const rows = await tdb.db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.targetId, "TN"));
+    return { res, row: rows[0] };
+  }
+
+  it("with a valid cookie: the new row goes live immediately and the watch-started notice is sent", async () => {
+    vi.stubEnv("CONTRIBUTE_IP_SALT", CONSENT_SALT);
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    await seedConfirmedElsewhere();
+    const consent = createConsentValue(email);
+
+    const { res, row } = await subscribeTN({
+      "x-real-ip": "203.0.113.41",
+      cookie: `${CONSENT_COOKIE_NAME}=${consent}`,
+    });
+
+    expect(res.status).toBe(201);
+    expect(row.status).toBe("confirmed");
+    expect(row.confirmedAt).not.toBeNull();
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    const sent = resendSendMock.mock.calls[0][0] as { subject: string };
+    expect(sent.subject).not.toMatch(/confirm/i); // the notice, not a confirm gate
+  });
+
+  // THE case. Drop the cookie requirement and this must fail.
+  it("with NO cookie: the row stays pending and a confirm email is sent instead", async () => {
+    vi.stubEnv("CONTRIBUTE_IP_SALT", CONSENT_SALT);
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    await seedConfirmedElsewhere();
+
+    const { res, row } = await subscribeTN({ "x-real-ip": "203.0.113.42" });
+
+    expect(res.status).toBe(201);
+    expect(row.status).toBe("pending");
+    expect(row.confirmedAt).toBeNull();
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    const sent = resendSendMock.mock.calls[0][0] as { subject: string };
+    expect(sent.subject).toMatch(/confirm/i);
+  });
+
+  it("with a cookie for a different address: the row stays pending", async () => {
+    vi.stubEnv("CONTRIBUTE_IP_SALT", CONSENT_SALT);
+    await seedConfirmedElsewhere();
+    const consent = createConsentValue("attacker@example.com");
+
+    const { row } = await subscribeTN({
+      "x-real-ip": "203.0.113.43",
+      cookie: `${CONSENT_COOKIE_NAME}=${consent}`,
+    });
+
+    expect(row.status).toBe("pending");
+  });
+});
+
+// The response body must not become an oracle. Every path that sends no new
+// confirm email — honeypot, duplicate, over the per-address cap — already
+// returns the same generic success as a genuine new subscription; the consent
+// gate adds two more (no cookie, cookie for another address) and must not be
+// distinguishable either.
+describe("POST /api/subscribe — the generic success body is byte-identical across every path", () => {
+  async function bodyOf(body: unknown, headers: HeadersInit): Promise<{ status: number; text: string }> {
+    const res = await POST(req(body, headers));
+    await flushAfter();
+    return { status: res.status, text: await res.text() };
+  }
+
+  it("is the same status and the same bytes for new, honeypot, duplicate, over-cap, and consent-denied", async () => {
+    vi.stubEnv("CONTRIBUTE_IP_SALT", "generic-body-test-salt");
+    const email = "generic@example.com";
+
+    // 1. a genuine new subscription
+    const fresh = await bodyOf(
+      { email, targetType: "state", targetId: "TN" },
+      { "x-real-ip": "203.0.113.51" }
+    );
+
+    // 2. the honeypot
+    const honeypot = await bodyOf(
+      { email: "bot@example.com", targetType: "state", targetId: "TN", website: "http://spam" },
+      { "x-real-ip": "203.0.113.52" }
+    );
+
+    // 3. a duplicate of (1) — the active-target unique index rejects the insert
+    const duplicate = await bodyOf(
+      { email, targetType: "state", targetId: "TN" },
+      { "x-real-ip": "203.0.113.53" }
+    );
+
+    // 4. over the per-address send cap
+    for (let i = 0; i < EMAIL_SEND_CAP_MAX; i++) {
+      await tdb.db.insert(subscriptionsTable).values({
+        email: "capped@example.com",
+        targetType: "state",
+        targetId: `cap-${i}`,
+        status: "pending",
+        confirmToken: `generic-cap-tok-${i}`,
+        unsubscribeToken: `generic-cap-unsub-${i}`,
+      });
+    }
+    const overCap = await bodyOf(
+      { email: "capped@example.com", targetType: "state", targetId: "TX" },
+      { "x-real-ip": "203.0.113.54" }
+    );
+
+    // 5. eligible for auto-confirm but with no consent cookie
+    await tdb.db.insert(subscriptionsTable).values({
+      email: "eligible@example.com",
+      targetType: "state",
+      targetId: "CA",
+      status: "confirmed",
+      confirmedAt: new Date(),
+      confirmToken: "generic-eligible-tok",
+      unsubscribeToken: "generic-eligible-unsub",
+    });
+    const consentDenied = await bodyOf(
+      { email: "eligible@example.com", targetType: "state", targetId: "TX" },
+      { "x-real-ip": "203.0.113.55" }
+    );
+
+    // 6. auto-confirmed with a valid cookie — even the path that DOES something
+    //    different answers identically.
+    const autoConfirmed = await bodyOf(
+      { email: "eligible@example.com", targetType: "state", targetId: "NV" },
+      {
+        "x-real-ip": "203.0.113.56",
+        cookie: `${CONSENT_COOKIE_NAME}=${createConsentValue("eligible@example.com")}`,
+      }
+    );
+
+    for (const other of [honeypot, duplicate, overCap, consentDenied, autoConfirmed]) {
+      expect(other.status).toBe(fresh.status);
+      expect(other.text).toBe(fresh.text);
+    }
+    expect(fresh.text).toBe('{"ok":true}');
   });
 });

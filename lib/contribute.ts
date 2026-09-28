@@ -11,6 +11,7 @@ import {
 import { httpUrlSchema, sanitizeAttribution } from "@/lib/intake-fields";
 import { checkSubmissionNotifyCap } from "@/lib/rate-limit";
 import { recordSubmissionNotifyRequest, submissionNotifyEnabled } from "@/lib/submission-notify";
+import { stateNameFromCode } from "@/lib/us-states";
 
 export { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
 // Re-exported so existing callers (this module's own tests, lib/leads.ts
@@ -23,12 +24,53 @@ const SLUG_NON_ALNUM_RE = /[^a-z0-9]+/g;
 const SLUG_EDGE_DASHES_RE = /^-+|-+$/g;
 const SLUG_DASH_RUN_RE = /-+/g;
 
+/**
+ * A real US jurisdiction code, resolved through `stateNameFromCode` (states, DC
+ * and territories) rather than merely counted to two characters.
+ *
+ * `z.string().length(2)` was the whole check, so `"ZZ"` staged a `pending`
+ * submission and `lib/schema.ts`'s `facilitySchema` accepted it too (its
+ * `location.state` is `z.string().length(2)` as well) — the bad code only
+ * surfaced under human review, as queue noise. `subscribeToTarget`
+ * (lib/subscribe.ts) has always resolved its target state this way; this is the
+ * same check, at the other intake.
+ *
+ * The `code.length !== 2` escape in the refinement is deliberate: Zod v4 runs a
+ * `.refine()` even when an earlier check in the chain already failed, so without
+ * it a value like `"Virginia"` would collect BOTH the length issue and the
+ * unknown-code one, and the contribute form (which keys errors by
+ * `issue.path[0]`) would show whichever it happened to pick. Letting the
+ * refinement pass on any non-2-character input leaves `.length(2)` to report
+ * that case alone, so every input yields exactly one issue for this field.
+ */
+const usStateCodeSchema = z
+  .string()
+  .length(2)
+  .refine((code) => code.length !== 2 || stateNameFromCode(code) !== undefined, {
+    message: "Unknown US state or territory code",
+  });
+
 const createSchema = z.object({
   kind: z.literal("create"),
   website: z.string().max(200).optional(),
-  name: z.string().min(1).max(200),
+  // `min(1)` is not enough: a punctuation-only name ("...", "---", "•") is a
+  // non-empty string whose `slugBase` is EMPTY, so `slugify` produced a bare
+  // `"-xx"` id, which `lib/schema.ts`'s `/^[a-z0-9-]+$/` id pattern happily
+  // accepts. Requiring a non-empty slug base is what rejects it, and it is
+  // checked with the same expression the id is built from (see `slugBase`).
+  //
+  // The `value.length === 0` escape mirrors `usStateCodeSchema`'s: Zod v4 runs a
+  // refinement even after `min(1)` fails, so without it an empty name would
+  // report two issues for one field.
+  name: z
+    .string()
+    .min(1)
+    .max(200)
+    .refine((value) => value.length === 0 || slugBase(value).length > 0, {
+      message: "Name must contain at least one letter or number",
+    }),
   operator: z.string().min(1).max(200),
-  state: z.string().length(2),
+  state: usStateCodeSchema,
   facilityType: z
     .enum(["data_center", "crypto_mining", "power_generation"])
     .default("data_center"),
@@ -66,18 +108,54 @@ export type ContributeInput = z.infer<typeof contributeInputSchema>;
 export type CreateContributeInput = z.infer<typeof createSchema>;
 export type CorrectionContributeInput = z.infer<typeof correctionSchema>;
 
-export function isHoneypotTripped(input: { website?: string }): boolean {
-  return Boolean(input.website && input.website.trim());
+/**
+ * The shared honeypot predicate for every public intake surface (contribute,
+ * leads, contact, access/request). Called against the RAW request body, before
+ * any schema parsing — see the honeypot comment in app/api/contribute/route.ts.
+ *
+ * Takes `unknown`, not `string`, ON PURPOSE. It used to be
+ * `Boolean(input.website && input.website.trim())` behind a
+ * `typeof rawWebsite === "string"` gate at each call site, and that TYPE gate
+ * was itself the oracle the honeypot exists to avoid:
+ * `{"website":1,"email":"bad"}` fell past it into Zod and answered 400 with
+ * `issues`, while `{"website":"x","email":"bad"}` answered 201. Flipping one
+ * field's type therefore told a bot two things at once — that `website` is the
+ * honeypot, and that its other fields were what actually failed. Every type
+ * must answer identically, so the check coerces instead of narrowing.
+ *
+ * Tripped by any PRESENT value that is non-empty after `String(v).trim()`:
+ * `"x"`, `" x "`, `1`, `0`, `true`, `{}`, `["x"]`.
+ *
+ * NOT tripped by `undefined` (absent), `null`, `false`, `""`, `"   "` or `[]` —
+ * "present but not filled in." `""` is the load-bearing one: a real browser
+ * submits the hidden input as an empty string on every honest submission, so
+ * treating it as filled would reject every real contributor. `null` and `false`
+ * are included because they are the JSON spellings of the same "no value," and
+ * `String()` would otherwise coerce them to the non-empty `"null"`/`"false"`.
+ */
+export function isHoneypotTripped(input: { website?: unknown }): boolean {
+  const value = input.website;
+  if (value === undefined || value === null || value === false) return false;
+  return String(value).trim().length > 0;
 }
 
-export function slugify(name: string, state: string): string {
-  const base = name
+/**
+ * The slug-safe part of an id, derived from a facility name alone. Split out of
+ * `slugify` so the intake validation that REQUIRES a non-empty base (see
+ * `createSchema.name` below) computes it with the exact same expression the id
+ * is built from, rather than a second regex that can drift.
+ */
+export function slugBase(name: string): string {
+  return name
     .normalize("NFKD")
     .toLowerCase()
     .replace(SLUG_NON_ALNUM_RE, "-")
     .replace(SLUG_EDGE_DASHES_RE, "")
     .replace(SLUG_DASH_RUN_RE, "-");
-  return `${base}-${state.toLowerCase()}`;
+}
+
+export function slugify(name: string, state: string): string {
+  return `${slugBase(name)}-${state.toLowerCase()}`;
 }
 
 export function buildCreatePayload(
@@ -226,8 +304,17 @@ function validateFieldValue(
       return { ok: true };
     }
     case "state": {
-      if (String(value).trim().length !== 2) {
+      const code = String(value).trim();
+      if (code.length !== 2) {
         return { ok: false, error: `${def.label} must be a 2-letter code` };
+      }
+      // Resolved against the real jurisdiction list, not just counted —
+      // otherwise a correction could set an existing facility's state to "ZZ",
+      // which `facilitySchema` (also `z.string().length(2)`) would pass. Same
+      // check as `usStateCodeSchema` above; this is the correction-path door
+      // into the same field.
+      if (stateNameFromCode(code) === undefined) {
+        return { ok: false, error: `${def.label} must be a real US state or territory code` };
       }
       return { ok: true };
     }

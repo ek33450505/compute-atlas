@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { eq, desc } from "drizzle-orm";
 
+import { redactedErrorCode } from "@/lib/db-error";
 import { getDb } from "@/lib/db/client";
 import { submissionsTable, type SubmissionRow } from "@/lib/db/schema";
 import { sendSubmissionReviewedEmail } from "@/lib/email";
@@ -146,11 +147,11 @@ export async function approveSubmission(
   // notifySubmitterOfReview throws (each handles/logs its own errors
   // internally), but this extra try/catch is belt-and-suspenders: a
   // notification failure must never turn a successful approval into an
-  // error response. Logs a code via errorCode(err), never the caught error
+  // error response. Logs a code via redactedErrorCode(err), never the caught error
   // object itself, in case that no-throw contract is ever violated:
   // notifySubmitterOfReview's statements bind the submitter's email address
   // (or its salted hash), and DrizzleQueryError.message embeds bound params
-  // (see errorCode's doc comment below).
+  // (see lib/db-error.ts).
   try {
     const changeLabel =
       row.kind === "create"
@@ -166,7 +167,7 @@ export async function approveSubmission(
       id: writeResult.facility.id,
     });
   } catch (err) {
-    console.error("subscriber notification failed", errorCode(err));
+    console.error("subscriber notification failed", redactedErrorCode(err));
   }
 
   return {
@@ -210,7 +211,7 @@ export async function rejectSubmission(
   try {
     await notifySubmitterOfReview(id, "rejected", facilityLabelForRejection(row));
   } catch (err) {
-    console.error("submitter notification failed", errorCode(err));
+    console.error("submitter notification failed", redactedErrorCode(err));
   }
 
   return { ok: true, submission: updated };
@@ -276,7 +277,7 @@ async function notifySubmitterOfReview(
   try {
     notifyRequest = await getSubmissionNotifyRequest(submissionId);
   } catch (err) {
-    console.error("notifySubmitterOfReview: lookup failed", errorCode(err));
+    console.error("notifySubmitterOfReview: lookup failed", redactedErrorCode(err));
     return;
   }
   if (!notifyRequest) return;
@@ -286,7 +287,7 @@ async function notifySubmitterOfReview(
     try {
       underSendCap = (await checkSubmissionNotifySendCap(notifyRequest.email)).ok;
     } catch (err) {
-      console.error("notifySubmitterOfReview: send-cap check failed", errorCode(err));
+      console.error("notifySubmitterOfReview: send-cap check failed", redactedErrorCode(err));
       // Fail closed — an unverifiable cap must not be treated as "under".
     }
 
@@ -296,7 +297,7 @@ async function notifySubmitterOfReview(
         await recordSubmissionNotifySend(notifyRequest.email);
         recorded = true;
       } catch (err) {
-        console.error("notifySubmitterOfReview: record send failed", errorCode(err));
+        console.error("notifySubmitterOfReview: record send failed", redactedErrorCode(err));
         // Fail closed — an unrecorded attempt must not be allowed to send;
         // that is exactly the unrecorded-mail path this fix exists to close.
       }
@@ -314,7 +315,7 @@ async function notifySubmitterOfReview(
             facilitySlug: decision === "approved" ? facility?.id : undefined,
           });
         } catch (err) {
-          console.error("notifySubmitterOfReview: send failed", errorCode(err));
+          console.error("notifySubmitterOfReview: send failed", redactedErrorCode(err));
         }
       }
     }
@@ -327,7 +328,7 @@ async function notifySubmitterOfReview(
   try {
     await deleteSubmissionNotifyRequest(submissionId);
   } catch (err) {
-    console.error("notifySubmitterOfReview: delete failed", errorCode(err));
+    console.error("notifySubmitterOfReview: delete failed", redactedErrorCode(err));
   }
 }
 
@@ -348,24 +349,4 @@ function facilityLabelForRejection(row: SubmissionRow): { name: string } | undef
   const payload = row.payload as Record<string, unknown> | null;
   const name = payload && typeof payload.name === "string" ? payload.name.trim() : "";
   return name ? { name } : undefined;
-}
-
-/**
- * Never logs the caught error object itself — see notifySubmitterOfReview's
- * doc comment above. DrizzleQueryError wraps the driver error and its own
- * `.message` is `Failed query: ${query}\nparams: ${params}`; the real `code`
- * lives one level down on `.cause` for some drivers, so both are checked.
- * Same reasoning as lib/submission-notify.ts's `isUniqueViolation`, but this
- * returns the code for logging rather than a boolean.
- */
-function errorCode(err: unknown): unknown {
-  if (err && typeof err === "object") {
-    const code = (err as { code?: unknown }).code;
-    if (code !== undefined) return code;
-    const cause = (err as { cause?: unknown }).cause;
-    if (cause && typeof cause === "object" && "code" in cause) {
-      return (cause as { code?: unknown }).code;
-    }
-  }
-  return "unknown";
 }

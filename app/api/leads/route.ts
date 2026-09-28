@@ -1,11 +1,13 @@
 import { after } from "next/server";
 
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { redactedErrorCode } from "@/lib/db-error";
 import {
-  checkLeadRateLimit,
+  checkIntakeRateLimit,
   extractTrustedClientIp,
   hashIp,
   normaliseIpForBucketing,
+  recordIntakeAttempt,
 } from "@/lib/rate-limit";
 import { isHoneypotTripped } from "@/lib/contribute";
 import { createLead, setLeadTriage } from "@/lib/leads";
@@ -13,21 +15,43 @@ import { triageUrl } from "@/lib/url-triage";
 import { findFacilitiesCitingUrl } from "@/lib/lead-dedupe";
 
 export async function POST(request: Request) {
-  let body: unknown;
+  // Gate on PRIOR attempts, then record this one, BEFORE the body is parsed.
+  // Identical shape and reasoning to app/api/contribute/route.ts — see that
+  // handler's comment and `recordIntakeAttempt` (lib/rate-limit.ts). This cap
+  // used to count `leads` rows, which only a successful INSERT can raise, so
+  // the honeypot and Zod-failure paths cost nothing.
+  let gate: { ok: boolean };
+  let ipHash: string;
   try {
-    body = await request.json();
-  } catch {
-    return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
+    ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
+    gate = await checkIntakeRateLimit("leads", ipHash);
+    if (gate.ok) {
+      await recordIntakeAttempt("leads", ipHash);
+    }
+  } catch (err) {
+    // Fail closed, SQLSTATE only (the sole bound param is the IP hash, and
+    // DrizzleQueryError embeds bound params — lib/db-error.ts). 503, not 429:
+    // an outage must not hide inside ordinary rate-limiting.
+    console.error(
+      `leads rate-limit accounting failed — refusing the request (sqlstate: ${redactedErrorCode(err)})`
+    );
+    return jsonResponse(
+      { error: "Submissions are temporarily unavailable. Please try again later." },
+      { status: 503 }
+    );
   }
-
-  const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
-
-  const gate = await checkLeadRateLimit(ipHash);
   if (!gate.ok) {
     return jsonResponse(
       { error: "Too many submissions. Please try again later." },
       { status: 429 }
     );
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
 
   // Honeypot: checked against the RAW body, before any schema parsing, so a
@@ -38,11 +62,15 @@ export async function POST(request: Request) {
   // reach createLead. Null-safe against arbitrary JSON: `body` is `unknown`
   // and may be a string, array, or null. Same silent-201 contract as
   // submitContribution's honeypot handling.
+  //
+  // Deliberately NOT gated on `typeof rawWebsite === "string"` — see
+  // app/api/contribute/route.ts for why that gate was itself the oracle this
+  // comment claims does not exist.
   const rawWebsite =
     body && typeof body === "object" && "website" in body
       ? (body as { website?: unknown }).website
       : undefined;
-  if (typeof rawWebsite === "string" && isHoneypotTripped({ website: rawWebsite })) {
+  if (isHoneypotTripped({ website: rawWebsite })) {
     return jsonResponse({ ok: true }, { status: 201 });
   }
 
@@ -75,6 +103,9 @@ export async function POST(request: Request) {
   return jsonResponse({ ok: true }, { status: 201 });
 }
 
+// `public-write`: anonymous POST is the only handler on this path. Lead triage
+// runs after the response and behind no credential, so the preflight has no
+// reason to advertise `Authorization` or a destructive verb.
 export function OPTIONS() {
-  return corsPreflight();
+  return corsPreflight("public-write");
 }

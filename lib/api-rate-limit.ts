@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { CORS_HEADERS } from "@/lib/api-response";
+import { jsonResponse } from "@/lib/api-response";
 
 /**
  * In-memory fixed-window rate limiter for the public read API (the GET
@@ -13,7 +13,7 @@ import { CORS_HEADERS } from "@/lib/api-response";
  * how much work one warm instance will do for one IP inside a short burst.
  *
  * Deliberately separate from `lib/rate-limit.ts`'s DB-backed
- * `checkRateLimit`/`checkSubscribeRateLimit` — those guard write surfaces and
+ * `checkIntakeRateLimit`/`checkSubscribeRateLimit` — those guard write surfaces and
  * cost a query per check; a DB hit per read request here would defeat the
  * caching goal this limiter exists to protect.
  */
@@ -74,11 +74,26 @@ export function checkApiRateLimit(
   return { ok: false, retryAfter };
 }
 
-/** 429 response for a caller over the limit. Not cacheable — CORS + `Retry-After` only. */
+/**
+ * 429 response for a caller over the limit. Built via `jsonResponse` so being
+ * uncacheable is structural, not a comment: that helper supplies the shared CORS
+ * headers plus `Cache-Control: no-store` *and* `CDN-Cache-Control: no-store`
+ * (Cloudflare evaluates the latter first, so both are needed to block storage in
+ * either Origin-Cache-Control mode).
+ *
+ * This response previously set no cache directive at all. A Cloudflare cache
+ * rule makes every non-`/admin` GET cache-eligible, and with no origin directive
+ * Cloudflare supplied `public, max-age=14400` — so one caller tripping the limit
+ * could have its 429 stored at the edge and served to *every* client of that URL
+ * for up to 4 hours, turning a per-IP backstop into a site-wide outage.
+ *
+ * `Retry-After` is passed as an `init` header, which `jsonResponse` spreads
+ * after its own defaults; it names a different header, so nothing collides.
+ */
 export function tooManyRequests(retryAfter: number): NextResponse {
-  return NextResponse.json(
+  return jsonResponse(
     { error: "Too many requests" },
-    { status: 429, headers: { ...CORS_HEADERS, "Retry-After": String(retryAfter) } }
+    { status: 429, headers: { "Retry-After": String(retryAfter) } }
   );
 }
 

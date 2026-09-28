@@ -138,16 +138,90 @@ const CSP_ADMIN = buildCsp("'none'");
 const CSP_EMBED = buildCsp("*");
 
 /**
+ * `Permissions-Policy` — every powerful browser feature this app does not use,
+ * denied to the document AND to anything it embeds (an empty allowlist `()`
+ * means "no origin, not even self").
+ *
+ * ⚠️ `geolocation=()` is a real assertion, not a default: it is correct ONLY
+ * while nothing in the app asks for the visitor's position. Verified
+ * 2026-09-27 — zero matches for `geolocation` / `getCurrentPosition` /
+ * MapLibre's `GeolocateControl` across `app/`, `components/`, `lib/` and
+ * `public/basemap/`. The map's location search is
+ * `https://nominatim.openstreetmap.org` (`lib/geocode.ts`), a text geocoder
+ * that never touches the Geolocation API. If a "locate me" control is ever
+ * added to the map, this must become `geolocation=(self)` — the control would
+ * otherwise fail silently, since a denied permission rejects rather than
+ * prompting.
+ *
+ * The list is deliberately short: only features with a plausible abuse story
+ * for a page that embeds third-party map tiles. It is not an exhaustive
+ * enumeration of the spec's feature registry, which would go stale on every
+ * new browser feature and imply a completeness this header cannot have.
+ *
+ * ⛔ TWO SIBLING HEADERS ARE DELIBERATELY ABSENT, and both omissions are load
+ * bearing:
+ *   - `Cross-Origin-Embedder-Policy: require-corp` would break the basemap.
+ *     MapLibre fetches vector tiles/glyphs/sprites from
+ *     https://tiles.openfreemap.org and satellite rasters from
+ *     https://services.arcgisonline.com (see the CSP allowlist above); neither
+ *     sends `Cross-Origin-Resource-Policy`, so COEP would block both and the
+ *     map would render empty.
+ *   - `Cross-Origin-Resource-Policy: same-origin` on the baseline rule would
+ *     break the dataset's reuse story, which is a product commitment rather
+ *     than an oversight: `/data/*.geojson` is CC-BY-4.0 and meant to be
+ *     hotlinked, `/embed/*` exists to be iframed by sites we don't know in
+ *     advance (see CSP_EMBED), and the public read API advertises
+ *     `Access-Control-Allow-Origin: *`. A path-scoped CORP that excluded
+ *     `/data` and `/embed` was considered and rejected: CORP only takes effect
+ *     in an embedder that sets COEP, which — per the bullet above — this site
+ *     deliberately never will, so it would buy no protection here while
+ *     leaving a trap where every future public path has to remember to opt
+ *     out.
+ */
+const PERMISSIONS_POLICY = [
+  "camera=()",
+  "microphone=()",
+  "geolocation=()",
+  "payment=()",
+  "usb=()",
+  "magnetometer=()",
+  "gyroscope=()",
+  "accelerometer=()",
+].join(", ");
+
+/**
  * Baseline security headers applied to every route, including the enforcing
  * CSP above. `X-Frame-Options` is kept alongside `frame-ancestors` for
  * browsers that predate CSP Level 2 framing control; where both are
  * understood, `frame-ancestors` wins.
+ *
+ * ⚠️ A change here reaches production only on a CODE deploy.
+ * `scripts/vercel-ignore-build.sh` skips any deployment whose diff touches
+ * only `data/`, `docs/`, `.github/` or `*.md` — production included — so a
+ * header edit batched onto a data wave would sit unshipped. Confirm the
+ * deployment actually built before treating a header as live.
  */
 const BASELINE_SECURITY_HEADERS = [
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  { key: "Permissions-Policy", value: PERMISSIONS_POLICY },
+  /**
+   * `Cross-Origin-Opener-Policy: same-origin` severs `window.opener` for any
+   * cross-origin document this site opens or is opened by, which closes the
+   * tabnabbing / opener-reference class outright rather than relying on every
+   * `target="_blank"` link carrying `rel="noopener"`.
+   *
+   * Safe here because nothing depends on an opener handle: zero matches for
+   * `window.open`, `window.opener` or `postMessage` across `app/`,
+   * `components/` and `lib/` (checked 2026-09-27) — every external link is a
+   * plain anchor, which COOP does not affect beyond dropping a handle no code
+   * reads. It also does not interact with `/embed/*`: COOP applies to
+   * top-level browsing contexts only and is ignored inside an iframe, so
+   * `frame-ancestors *` there is untouched.
+   */
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
   { key: "Content-Security-Policy", value: CSP_SITE_WIDE },
 ];
 
