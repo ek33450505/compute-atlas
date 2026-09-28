@@ -10,11 +10,32 @@ count as pre-registration.
 `/sitemap.xml` becomes a sitemap INDEX over nine per-family children
 (`/sitemaps/<family>.xml`) instead of one flat `<urlset>`.
 
-Verified live against production on 2026-09-25 (this change has not yet
-merged to `main` / deployed — the sitemap-split commits are on
-`feature/seo-index-census` only): `https://www.compute-atlas.com/sitemap.xml`
-returned HTTP 200, root element `<urlset>`, **2,997** `<loc>` entries. That is
-the pre-change baseline state this soak measures against.
+**Pre-change baseline (the *before* state this soak measures against).**
+Verified live against production on 2026-09-25, while the sitemap-split
+commits were still on `feature/seo-index-census` only:
+`https://www.compute-atlas.com/sitemap.xml` returned HTTP 200, root element
+`<urlset>`, **2,997** `<loc>` entries.
+
+**Post-change state — this shipped on 2026-09-26, day 1 of the window.**
+Merged to `main` as #349 (`15cd17c`, "Segment the sitemap by route family and
+add an index-coverage census"), so the split is live for the whole soak
+window. Re-verified live on 2026-09-28: `/sitemap.xml` returns a
+`<sitemapindex>` with **9** `<sitemap>` children and **0** flat `<url>`
+entries.
+
+```bash
+curl -s https://www.compute-atlas.com/sitemap.xml -o /tmp/sm.xml
+grep -c '<sitemap>' /tmp/sm.xml   # 9
+grep -c '<url>'     /tmp/sm.xml   # 0
+for f in $(grep -o '<loc>[^<]*sitemaps/[^<]*</loc>' /tmp/sm.xml \
+             | sed 's|<loc>||;s|</loc>||'); do
+  echo "$(basename "$f" .xml) $(curl -s "$f" | grep -c '<loc>')"
+done
+```
+
+Per-family URL counts from that last loop, 2026-09-28: static 22 · learn 7 ·
+states 55 · operators 233 · stakeholders 9 · **facilities 2,249** · status 6 ·
+metros 28 · counties 396 — 3,005 total.
 
 GSC reports index coverage PER SITEMAP. Under the old flat sitemap, "which
 route family is unindexed?" was unanswerable — every family's URLs were
@@ -76,7 +97,222 @@ sitemap split:
   `npm run check:googlebot`); rule it out explicitly, don't assume it away.
 
 If any of these occur during 2026-09-26 → 2026-10-10, record them here
-before drawing conclusions from the 2026-10-13 read.
+before drawing conclusions from the 2026-10-13 read. The log below is that
+record.
+
+## Confound log
+
+**Recorded 2026-09-28.** That is the date this section was written, not the
+date of any entry — each entry carries its own date. The window is still open
+(closes 2026-10-10), so this log is **incomplete** and must be appended to as
+further events land.
+
+Each entry names the confound category from the list above that it falls
+under, and is marked **OCCURRED** or **RULED OUT**. Where a count is given,
+the command that produces it is given with it.
+
+Repo-side entries are reproducible with:
+
+```bash
+git --no-pager log --since=2026-09-26 --first-parent main --format='%h %ad %s' --date=short
+git --no-pager show --stat --format='' <sha>
+```
+
+### OCCURRED
+
+**2026-09-27 — #351 `f0f8601`, "Fix the contribution funnel's measured leaks"**
+Categories: *internal-linking change* **and** *content edit to page templates*
+**and** *robots.txt* (surface only — see the qualifier).
+
+- Added `components/contribute/source-correction-note.tsx`, rendered
+  unconditionally on `app/facilities/[slug]/page.tsx` and
+  `app/counties/[county]/page.tsx`. It is server-rendered prose containing a
+  new internal `<Link href="/contribute">`, so it is simultaneously a copy
+  change and a new internal link on **2,249 facility pages and 396 county
+  hubs** (counts from the per-family loop above, same date).
+- `app/robots.ts` changed, but **no `Allow`/`Disallow` rule and no user-agent
+  was added, removed or altered**. The change adds two `other` entries keyed
+  `# Bulk data` and `# Licence`, which every robots.txt parser discards as
+  comments. Verify: `git --no-pager diff f0f8601~1 f0f8601 -- app/robots.ts`.
+  Touches the named surface; does not change crawler access.
+
+**2026-09-27 — #352 `8245797`, "Dedupe the Helios campus, and block four resale SEO crawlers"**
+Categories: *concurrent data wave* **and** *robots.txt* — two named categories
+at once — **plus an unlisted one** (see the third bullet).
+
+- `data/facilities.json` + `data/facilities.meta.json` changed: a data wave.
+- `app/robots.ts` gained `BLOCKED_SEO_CRAWLERS` — `DataForSeoBot`, `dotbot`,
+  `QlyzeBot`, `SERankingBacklinksBot` — each with `Disallow: /`. This **is** a
+  real crawler-access change, unlike #351's. None of the four is Googlebot or
+  bingbot.
+- `next.config.ts` gained a `permanent: true` 301 from
+  `/facilities/galaxy-helios-dickens-tx` to
+  `/facilities/galaxy-helios-dickens-county-tx` (the Helios dedupe). **A URL
+  left the `facilities` sitemap mid-window.** Route retirement is *not* in the
+  named-confounds list above, and it bears directly on per-family coverage of
+  the largest family — see "Gaps in the pre-registered list".
+
+**2026-09-27 — Cloudflare WAF user-agent rule, 18 → 14 UAs**
+Category: *Cloudflare rules affecting Googlebot access*. Out-of-repo.
+
+- The change itself is **reported, not re-measured here.** It is corroborated
+  in-repo by `CLAUDE.md` (measured 2026-09-27, four UAs removed), but the rule
+  lives behind the Cloudflare API and this log did not read it. Anyone relying
+  on the 18 → 14 figure should re-read the live rule.
+- What *was* verified live on 2026-09-28, and is the part that matters for
+  this soak: **Googlebot, bingbot and an ordinary Chrome UA all returned
+  HTTP 200**, on both `/` and a real facility page.
+
+  ```bash
+  for ua in \
+    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" \
+    "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)" \
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140.0 Safari/537.36"; do
+    curl -s -o /dev/null -w "%{http_code} ${ua:0:30}\n" -A "$ua" \
+      https://www.compute-atlas.com/facilities/123net-dc1-southfield-mi
+  done
+  ```
+
+- ⚠️ **Qualifier — this rules out a blanket block, not every access effect.**
+  Three 200s at one moment say nothing about rate-limiting, intermittent
+  challenges, or behaviour at crawl volume. `npm run check:googlebot` is the
+  standing check; note the canary it backs has never actually been armed (see
+  the memory on the Googlebot canary before treating its greens as evidence).
+
+**2026-09-26 → 2026-09-28 — discovery pipeline produced nothing for the window's first three days**
+Category: **none of the named four.** This is a confound in the *opposite*
+direction — a suppression of the data-wave category rather than an instance of
+it — and it is the least obvious entry here.
+
+- Measured from `discovery-logs/launchd.out`: every state attempted on
+  2026-09-26, 2026-09-27 and the morning of 2026-09-28 failed with "no
+  parseable candidate array" — WI, IN (09-26 13:30); OK, WY (09-27 15:30);
+  NM, LA (09-28 13:27). The first clean run of the window is
+  `[2026-09-28T15:17:02-0400] discovery run OK — no failures`.
+
+  ```bash
+  grep -nE 'FAIL: discovery run|discovery run OK' \
+    discovery-logs/launchd.out | tail -10
+  ```
+
+- `discovery-logs/launchd.err` additionally shows
+  `timeout: failed to run command 'claude': No such file or directory` (4
+  occurrences — the launchd PATH problem) and a `VerificationGateUnavailableError`
+  abort (the Ollama source-verification gate failing closed, which is correct
+  behaviour: it refuses to stage unverified candidates).
+- ⚠️ **Cause vs. effect — both halves are measured, but from different
+  artifacts.** The *effect* (three days of no staged candidates) is measured
+  above. Both *causes* are measured too; the OAuth one just is not in the logs,
+  which is why an earlier draft of this entry called it unconfirmed:
+  - **09-28, `claude` off the launchd PATH** — `timeout: failed to run command
+    'claude': No such file or directory` appears verbatim ×4 in
+    `discovery-logs/launchd.err`.
+  - **09-26/27, expired OAuth** — `grep -c "OAuth session expired"` returns **0**
+    for both `launchd.err` and `launchd.out`. The string is the entire 73-byte
+    *content* of the candidate files themselves, in exactly the four states that
+    failed on those two days:
+    `grep -l "OAuth session expired" discovery-logs/candidates-2026092*.json`
+    → `…20260926T130004-WI`, `…20260926T130012-IN`, `…20260927T130104-OK`,
+    `…20260927T131733-WY`. The pipeline wrote the auth error where candidates
+    should have been.
+- Effect on the soak: new-URL supply was flat for **3 of the window's 14
+  days**.
+
+**2026-09-28 — 8 facilities approved and published; #359 `2a2be74`**
+Category: *concurrent data wave*.
+
+- `data/facilities.meta.json` `recordCount` went 2241 → 2249 (+8): 5 AK, 3 AL.
+
+  ```bash
+  git --no-pager diff 2a2be74~1 2a2be74 -- data/facilities.meta.json
+  git --no-pager diff 2a2be74~1 2a2be74 -- data/facilities.json \
+    | grep '^+' | grep -o '"state": "[A-Z][A-Z]"' | sort | uniq -c
+  ```
+
+- Note this is the **same event as the outage entry above, recovered**: the AL
+  and AK discovery runs at 14:22 and 14:38 on 09-28 are the first two that
+  succeeded, and these 8 records are their output. Do not count them as two
+  independent confounds.
+
+### RULED OUT
+
+Listed because the section's own instruction is to rule confounds out
+explicitly rather than omit them.
+
+**2026-09-28 — #353 `6c0b85e`, "Close the security audit's findings"** —
+**RULED OUT** as Googlebot-affecting.
+
+- 97 files changed (`git --no-pager show --name-only --format='' 6c0b85e | grep -c .`),
+  but the SEO- or crawler-relevant ones are `app/robots.test.ts` and
+  `lib/seo.test.ts` (**tests**, no shipped behaviour) plus `proxy.ts` /
+  `proxy.test.ts`.
+- `proxy.ts`'s matcher is `["/admin/:path*", "/api/:path*"]` — **no public page
+  path is matched**, so the edge check it added cannot reach a crawlable HTML
+  route. Verify: `grep -A3 'export const config' proxy.ts`.
+- ⚠️ Scope of this ruling: it rests on the matcher and on the SEO-relevant
+  subset of the file list, not on an individual audit of all 97 files.
+
+**2026-09-28 — #358 `c6809cb`, "require the Vercel ignore-gate's diff base to be an ancestor of HEAD"** —
+**RULED OUT**, low relevance.
+
+- Touches only `scripts/vercel-ignore-build.sh` and `tests/vercel/run.bats`. It
+  changes which commits produce a deployment, not page content, internal links
+  or crawler access.
+- The one indirect path, named so it is not rediscovered later: the gate
+  governs *when* a change reaches production, so it can shift a publish date.
+  It cannot change what Googlebot sees on a page that is live.
+
+## Gaps in the pre-registered list
+
+Two things occurred inside the window that the "Named confounds" list does not
+name. Recording them as gaps rather than folding them in silently, because the
+list was pre-registered and amending it after the fact is the thing
+pre-registration exists to prevent:
+
+1. **Route retirement / 301 redirect** (#352). A URL leaving a sitemap family
+   mid-window changes that family's denominator and its coverage report
+   directly. The named list covers content, linking, robots and Cloudflare —
+   not route inventory.
+2. **Absence of expected activity.** The list names things *happening*; the
+   discovery outage is a named-category input (new content) *failing to
+   happen* for 3 of 14 days. A pre-registration that only enumerates positive
+   events cannot catch this class.
+
+## What this does to the 2026-10-13 read
+
+Stated plainly, because a pre-registration whose confounds swamp its signal is
+a fact to record, not to hide.
+
+The falsifiable test above is **per-sitemap coverage differing measurably
+between families**. The confounds land unevenly across families, and that is
+precisely the problem:
+
+- The **`facilities` family — the one the hypothesis is actually about — took
+  three changes at once inside the window**: a data wave (+8 records,
+  2026-09-28), a 301 retirement removing a URL from it (2026-09-27), and a new
+  internal link added to all 2,249 of its pages (2026-09-27).
+- `counties` took the internal-link change (396 pages). The other seven
+  families took none of it.
+- **Therefore a facilities-vs-others difference on 2026-10-13 has at least
+  four candidate causes, and the sitemap split is only one of them. The
+  positive branch of the test is confounded and cannot, on its own, attribute
+  an observed difference to the split.**
+- The outage pushes the other way: 3 of 14 days supplied no new content, so
+  absolute crawl/index volume in the window is depressed relative to a normal
+  fortnight. That affects magnitudes, not the between-family shape.
+
+**The null branch is the more readable of the two, but is not immune.** Every
+confound above acts *differentially* on `facilities`/`counties`, so they push
+toward between-family variation rather than away from it; a flat result across
+all nine families is therefore hard to explain by these confounds. The
+exception worth naming: if a confound lifted `facilities` coverage while its
+true baseline was worse, the two could cancel and read flat spuriously. So
+"every family reports the same indexed ratio → drop the thin-hub triage unit"
+remains decidable, with that caveat attached.
+
+Choosing between reading 2026-10-13 with these limitations stated, and
+extending the window past the confounds, is a maintainer decision and is
+deliberately not made here.
 
 ## See also
 

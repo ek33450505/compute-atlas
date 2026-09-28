@@ -78,6 +78,7 @@ untagged 24-hour timer and refreshes on its own schedule.
 | `npm run db:export` | Write the live database back to `data/facilities.json` |
 | `npm run build:mapdata` | Rebuild static map overlays and siting context |
 | `npm run check:drift` | Read-only JSON ↔ Neon drift report |
+| `npm run check:schema` | Fail-closed schema-drift guard: exits 1 if the live database is missing a table the code expects, or if `DATABASE_URL` is unset or unreachable |
 | `npm run db:seed` | Bootstrap-only: populate an empty database |
 | `npm run submissions -- list pending` | Review the staging queue |
 | `npm run submissions -- approve <id> "note"` | Promote a pending submission to live |
@@ -93,10 +94,13 @@ See `.env.example`.
 | `DATABASE_URL` | Neon Postgres pooled connection string |
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
 | `API_INTAKE_TOKEN` | Staging-only bearer, accepted by `POST /api/submissions` ALONE. For the discovery pipeline. Optional — unset, the pipeline falls back to `API_ADMIN_TOKEN` and nothing changes. **Must be an independent value**; see the activation steps below |
-| `CRON_SECRET` | Bearer secret for `/api/cron/*`. **Leave unset** — see below. Must differ from `API_ADMIN_TOKEN` |
+| `CRON_SECRET` | Bearer secret authenticating Vercel Cron to `/api/cron/*`. **Set in production since 2026-09-14**, with the state digest; unset means every cron-path caller is rejected (fail-closed). **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
 | `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Set to `"true"` in production since 2026-09-14.** Unsetting it (or any value but `"true"`) stops all digest mail immediately, without a deploy |
 | `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Set to `"true"` in production since 2026-09-14.** Same kill semantics |
-| `CRON_SECRET` | Authenticates Vercel Cron to `/api/cron/state-digest`. **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
+| `VERIFY_SOURCES_ENABLED` | Kill switch for the discovery pipeline's mechanical source-verification gate (local Ollama). **Polarity is the opposite of the two switches above:** the gate is ON by default and only the exact string `"false"` disables it, so a typo leaves verification enabled |
+| `API_ADMIN_TOKEN_SALT` | PBKDF2 salt for the admin-UI password login (`app/admin/login/actions.ts`). Required — login fails closed, rejecting every attempt, if unset |
+| `CONTRIBUTE_IP_SALT` | Salt for hashing submitter IPs for public-contribution rate limiting. **Required in production** — `hashIp()` throws on Vercel production rather than hash with the repo-public default; dev, tests and previews fall back to it. Since 2026-09-27 it has a second consumer: `lib/subscribe-consent.ts` derives the subscribe-consent cookie's HMAC key from it, under its own key domain. Rotating it invalidates every stored IP hash **and** every outstanding consent cookie |
+| `EDGE_SHARED_SECRET` | Shared secret proving a request actually traversed Cloudflare: a Transform Rule injects it as `x-edge-shared-secret` and `proxy.ts` compares digests. **Fails open while unset**, deliberately. Checked only when `VERCEL_ENV === "production"`; `/api/cron/*` is exempt unconditionally. There is no safe two-step rotation once armed — see below |
 
 ✅ **The monthly state digest is LIVE as of 2026-09-14** (Ed's decision). Both switches that
 held it off are flipped: `vercel.json` carries
@@ -341,7 +345,7 @@ model for source verification — treat it as an operator tool, not part of the 
 
 ## Caching, briefly
 
-Three independent tiers, all reading from Neon:
+Four surfaces. Three are Next.js render tiers, all reading from Neon:
 
 - **Aggregate pages** (home, map, table, stats, explore) — 1-hour timer, tagged
   `facilities`. Self-heal within the hour even if a tag bust is missed.
@@ -351,6 +355,22 @@ Three independent tiers, all reading from Neon:
 
 The tag vocabulary lives in `lib/cache-tags.ts` and is shared by `lib/facility-write.ts`
 and `POST /api/revalidate`, so producer and validator cannot drift apart.
+
+The fourth is **Cloudflare's edge cache, and it is a security boundary** (audit s169,
+2026-09-27). A cache rule makes **every GET whose path does not start with `/admin`**
+eligible for the edge cache (`http_request_cache_settings`, `cache: true`,
+`edge_ttl: respect_origin`) — the bearer-gated `/api/*` routes included. Two things
+follow, and both are easy to get wrong:
+
+- **`jsonResponse()` is `no-store` by default** (`lib/api-response.ts`) and must stay
+  that way. It serves authenticated bodies (`GET /api/submissions` returns every staged
+  row), writes, error bodies and 429s. It sets the directive under **both**
+  `Cache-Control` and `CDN-Cache-Control`, because Cloudflare evaluates the latter
+  first. Public reads are unaffected — they go through `cacheableJson()`, which is the
+  only opt-in cacheable path.
+- **A new GET under `/api/` has to decide this explicitly.** Mutating or token-bearing
+  GETs emit `no-store`: `/api/cron/state-digest` mutates, and the `?token=` confirm,
+  unsubscribe and access routes would otherwise put a single-use token in the cache key.
 
 ⚠️ Locally, a restart does **not** clear `.next/cache`, so a "fresh" dev server can replay
 an ISR-cached page from before the last publish. That looks exactly like JSON ↔ Neon drift

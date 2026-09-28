@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generateStaticParams } from "./[operator]/page";
-import { getOperators } from "@/lib/data";
+import { getOperators, operatorSlug } from "@/lib/data";
 import { getOperatorBySlug } from "@/lib/data";
 
 /**
@@ -41,6 +41,23 @@ describe("generateStaticParams (operators)", () => {
     const params = await generateStaticParams();
     for (const p of params) {
       expect(p.operator).not.toBe("undefined");
+    }
+  });
+
+  // The cases above run with VERCEL_ENV unset, which is the full-corpus path
+  // (local build and GitHub-Actions CI). This one proves previewSubset is
+  // actually wired in — without the wrapper it would return every operator.
+  it("prerenders only a subset on a Vercel preview build", async () => {
+    const original = process.env.VERCEL_ENV;
+    process.env.VERCEL_ENV = "preview";
+    try {
+      const params = await generateStaticParams();
+      const slugs = new Set((await getOperators()).map((name) => operatorSlug(name)));
+      expect(params).toHaveLength(10);
+      for (const p of params) expect(slugs.has(p.operator)).toBe(true);
+    } finally {
+      if (original === undefined) delete process.env.VERCEL_ENV;
+      else process.env.VERCEL_ENV = original;
     }
   });
 });

@@ -39,9 +39,21 @@ npm run submissions -- reject <id> "note"
 npm run check-sources                        # source-liveness report (read-only)
 ```
 
-**CI:** GitHub Actions runs typecheck, lint, and the vitest suite (plus the
-discovery BATS shell tests) on each PR; the Vercel preview build is an additional
-gate. Still run `npm run typecheck && npm test` locally before opening a PR.
+**CI:** eight workflows live in `.github/workflows/` (as of 2026-09-28:
+`automation-health`, `ci`, `codeql`, `discovery-watchdog`, `drift-alert`,
+`googlebot-canary`, `neon-sync`, `release-please`). `ci.yml` is the PR gate and
+runs three jobs — `typecheck · lint · test` (tsc, eslint, vitest), `BATS tests`
+(the discovery, vercel ignore-gate and drift-classifier shell suites), and
+`Playwright e2e` (a11y + e2e). CodeQL scans on every PR and push to `main` plus
+weekly. The Vercel preview build is an additional gate.
+
+⚠️ **Exactly three status checks are *required* on `main`, and their names are
+load-bearing: `typecheck · lint · test`, `BATS tests`, `Playwright e2e`.** Branch
+protection matches on the job name, so **never rename them** — a rename silently
+detaches the requirement and the branch is unprotected while still reading green.
+`Playwright e2e` has been required since 2026-09-11: a red e2e blocks the merge,
+it is not advisory. Still run `npm run typecheck && npm test` locally before
+opening a PR.
 
 ## Architecture
 
@@ -223,8 +235,15 @@ structured fields on existing facilities. It runs **nightly as part of `run.sh`*
 discovery and source-liveness lanes) and can also be run by hand; everything it produces still
 stages as `pending`. It reads
 PDF sources via `pdftotext -layout` and so **requires poppler** — without it every PDF source goes
-unread, loudly warned but not fatal. ⛔ Always invoke it with an explicit `--fields` list: the bare
-default is all six fields, two of which the bench measured as not safe to ship. Both pinned fields
+unread, loudly warned but not fatal. ⛔ Always invoke it with an explicit `--fields` list — and
+since 2026-09-11 (#276) `extract-fields.ts` enforces that itself: its own `parseArgs` throws
+`--fields is required` when the flag is absent *or* supplies no usable value, because two of the six
+extractable fields failed the accuracy bench (`capacityMw.planned` P=75%,
+`energy.onSiteGenerationMw` P=50%) and the shortest command must not also be the most dangerous one.
+⚠️ The shared `parseFieldsArg` helper it calls **does** still default to all six when `--fields` is
+omitted, and that default is deliberate: `verify-fields.ts` imports the same function and relies on
+it, being read-only and staging nothing. So the requirement is `extract-fields.ts`-specific, layered
+on top — do not "simplify" it into the shared helper. Both pinned fields
 are bench-measured: `capacityMw.operational` (P=100%/R=100%) and `water.coolingType` (P=95%/R=95%,
 measured 2026-09-01). `energy.source` and `energy.utility` remain extractable but are not pinned
 (unmeasured). ⚠️ `water.coolingType`'s 95% belongs to the PROMPT, not the field — it is 53%
@@ -296,7 +315,8 @@ tool, not part of the deployed app.
   vercel-ignore`), never by local probes alone.
 - **Prod cache & bulk go-live:** The site has three independent cache tiers:
   - **Aggregate pages** (home/map/table/stats/explore) read `loadFacilities` with **1h ISR timer** (`revalidate: 3600`) and carry the `"facilities"` tag — they self-heal within the hour even if a tag bust is missed.
-  - **Scoped pages**: `/facilities/[slug]` (1,758 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it floors at 86400s inherited from the root layout. The jurisdiction/operator/metro/county hubs (55/644/27/636 routes, the county hubs behind a `/counties` index) **do** still carry `"facilities"` on a 3600s timer, so they self-heal hourly as well as on a bust. There is no `metro:` or `county:` tag — metro and county hubs are covered by `"facilities"` alone.
+  - **Scoped pages**: `/facilities/[slug]` (2,241 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it floors at 86400s inherited from the root layout. The jurisdiction/operator/metro/county hubs (55 states / 1,018 operators / 27 metros / 847 counties, the county hubs behind a `/counties` index) **do** still carry `"facilities"` on a 3600s timer, so they self-heal hourly as well as on a bust. There is no `metro:` or `county:` tag — metro and county hubs are covered by `"facilities"` alone.
+    ⚠️ Those five figures are a **snapshot, not a constant** — read from the production build log of `6515815` on **2026-09-28** (4,330 prerendered routes in total; `npm run check:drift` confirmed JSON and Neon agreed at 2,241 facilities that day). Every data wave grows them. Re-read a real build log before citing any of them; do not trust the numbers on this line.
   - **Search index** (global ⌘K palette via `loadFacilitiesForSearch` in root layout) is **24h untagged timer only** — no tag bust affects it; `db:sync --apply` cannot refresh it.
   
   All pages inherit the longest timer from any reader in their render tree (typically 24h from the root layout). The tag vocabulary (`facility:<id>`, `state:<XX>`, `operator:<slug>`, `power-generation`, `facilities`) is centralized in `lib/cache-tags.ts` and shared by `lib/facility-write.ts` and `POST /api/revalidate` so producer and validator can't drift apart. `db:sync --apply` and the approve-on-prod path bust affected tags for you. Only a **raw** Neon write (`db:seed --force`, an ad-hoc upsert) leaves them un-busted — then hit the admin-bearer `POST /api/revalidate` yourself with the affected tags (e.g. `{"tags":["facilities","state:CA"]}`); brand-new facility ids need no bust (cache-miss populates them).
@@ -376,7 +396,9 @@ tool, not part of the deployed app.
   entity, which `react/no-unescaped-entities` forbids for `'`. Guarded by
   `e2e/prose-spacing.spec.ts`, which scans raw SSR HTML (never a hydrated DOM —
   hydration removes the `<!-- -->` markers and the check would silently always
-  pass) across 14 routes including one per dynamic template.
+  pass) across 23 routes including one per dynamic template (counted
+  2026-09-28 from that spec's `ROUTES` array — parse it, don't grep it: the
+  array is interleaved with comments that defeat a naive line count).
 - **Static-asset edge cache:** `/data/:path*` and `/basemap/:path*` carry `Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800` (edge cache up to 1 day plus 7 days stale reuse); `/fonts/:path*` are immutable. After `npm run build:mapdata`, regenerated geojson rides the edge cache for up to 24 hours — if a correction must go live immediately, purge Cloudflare.
   ⛔ **Prefix purge is Enterprise-only and purge-by-URL silently does nothing here** — measured
   2026-09-12: posting the exact URLs to `/zones/<id>/purge_cache` returned `success: true` while the

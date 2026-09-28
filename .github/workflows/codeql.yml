@@ -24,13 +24,11 @@
 # Every choice below states which part of that it reproduces, and every deliberate
 # OMISSION is named — so nobody "restores" something that was never missing.
 #
-# ⚠️ WHO MAINTAINS THESE SHA PINS depends on merge order, so check rather than assume.
-# `.github/dependabot.yml` does NOT exist on `main` as of 2026-09-28 — on that basis
-# alone these pins are hand-maintained. But PR #353 adds one, with a grouped
-# `github-actions` lane over `/` (which means `.github/workflows` for that ecosystem),
-# and it will cover this file the moment it merges. Whichever lands second inherits
-# the other's state: if `dependabot.yml` is present when you read this, the pins are
-# maintained and this paragraph is stale — delete it.
+# The action SHA pins below are maintained by Dependabot, not by hand — the
+# grouped `github-actions` lane in `.github/dependabot.yml` covers this file
+# (its `directory: "/"` means `.github/workflows` for that ecosystem). Verified
+# 2026-09-28: that lane opened #356, taking `checkout` v4 → v7.0.1 and
+# `setup-node` v4 → v7.0.0 across all 8 workflows.
 
 name: CodeQL
 

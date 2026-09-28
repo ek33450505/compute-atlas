@@ -297,25 +297,64 @@ request list, an RTO's generation queue) rather than the aggregator.
   no_array` means the run reached `claude` but got a session-limit/prose reply
   rather than candidates. A manual dry-run deliberately does not write the
   heartbeat, so it never masks a real launchd failure.
-- **Alerting — the run tells you when it fails.** ⚠️ From 2026-08-08 to
-  2026-08-14 the heartbeat recorded `claudeStatus: no_array` — total failure —
-  **every day for six days and nothing surfaced it.** The instrument worked;
+- **Alerting — the signal you can rely on is off-machine.** ⚠️ From 2026-08-08
+  to 2026-08-14 the heartbeat recorded `claudeStatus: no_array` — total failure
+  — **every day for six days and nothing surfaced it.** The instrument worked;
   nobody read it. A failed run and a perfect one were indistinguishable from
-  outside: both logged, both wrote a heartbeat, both exited 0. Now any state
-  that produces no parseable array, fails to submit, or overruns the wall-clock
-  cap is recorded in a failure ledger, and at the very end of the run that
-  ledger (a) fires a desktop notification via `terminal-notifier` (falling back
-  to `osascript`) and (b) makes `run.sh` **exit 1**, so launchd records a failed
-  run too. `DISCOVERY_NOTIFY=false` suppresses only the notification.
-  The alert is deliberately the *last* thing in the script — after submit,
-  source-liveness and heartbeat — so it can never cost the run work it would
-  otherwise have completed. A clean run stays silent and exits 0; an alert that
-  fires on healthy runs would train you to ignore it, which is the original bug.
-  **Residual gap (known):** this only fires when `run.sh` actually runs. It
-  cannot detect "launchd never fired at all" — that needs a separate watchdog
-  job. The stale-heartbeat check is the partial mitigation: on startup, a
-  previous `lastRunAt` older than `DISCOVERY_STALE_HOURS` (default 36) is
-  reported and notified, so missed days surface on the next run that happens.
+  outside: both logged, both wrote a heartbeat, both exited 0.
+
+  *The response then (2026-08-14):* any state that produces no parseable array,
+  fails to submit, or overruns the wall-clock cap is recorded in a failure
+  ledger, and at the very end of the run that ledger (a) fires a desktop
+  notification via `terminal-notifier` (falling back to `osascript`) and (b)
+  makes `run.sh` **exit 1**, so launchd records a failed run too.
+  `DISCOVERY_NOTIFY=false` suppresses only the notification. The alert is
+  deliberately the *last* thing in the script — after submit, source-liveness
+  and heartbeat — so it can never cost the run work it would otherwise have
+  completed, and a clean run stays silent and exits 0.
+
+  ⚠️ *Why that was not sufficient (measured 2026-09-28):* **neither half is a
+  delivered signal.** Through the outage `notify()` ended both of its arms in
+  `>/dev/null 2>&1 || true`, so a send that reached nobody was indistinguishable
+  from one that landed and nothing recorded which happened, and its
+  `DISCOVERY_NOTIFY` early return was equally silent. `notify()` in
+  `scripts/discovery/run.sh` was made legible on 2026-09-28: each arm's
+  status is captured with `|| rc=$?` and every call logs one of four outcomes —
+  `SUPPRESSED` (the `DISCOVERY_NOTIFY` early return at the top of `notify()`),
+  `NO NOTIFIER on PATH`, `dispatched`, or `FAILED`. That
+  makes the *attempt* auditable, not the delivery — both notifiers exit 0 with
+  the banner swallowed by Focus or a revoked permission, which is why the log
+  says `dispatched` and never `delivered`. The
+  `exit 1` reaches only launchd, where it surfaces as the status column of
+  `launchctl list` — a place nobody reads daily. It then failed in exactly that
+  shape again: the pipeline failed three consecutive days (2026-09-26/27 an
+  expired Claude Code OAuth session; 2026-09-28 `claude` missing from the
+  launchd PATH), every one of those runs exited nonzero, and the maintainer
+  found out by noticing an absence of results.
+
+  **The durable signal is the heartbeat row, read off-machine.** Every
+  non-dry-run invocation publishes the heartbeat to a `discovery_heartbeat` row
+  in Neon (`scripts/discovery/publish-heartbeat.ts`), and
+  `.github/workflows/discovery-watchdog.yml` reads that row daily at 23:00 UTC
+  via `scripts/discovery/check-heartbeat.ts`. It fails when the row is missing,
+  when `last_run_at` is stale — no run happened — and, **since 2026-09-28**,
+  when the row is fresh but its status is not `ok` — a run happened and failed.
+  That last check is what the 2026-09-26..28 outage needed: those runs each
+  published a perfectly fresh `status="degraded"` heartbeat, so the
+  freshness-only watchdog passed throughout (measured 2026-09-28: 23 consecutive
+  successes with no failures back to 2026-09-06 — re-check with `gh run list
+  --workflow=discovery-watchdog.yml --limit 30` rather than trusting that
+  number). **A pipeline that runs daily and fails daily is maximally fresh**, so
+  freshness alone can never see it. Mechanics, error types and the fails-closed
+  list: `docs/discovery-runbook.md` → *Discovery watchdog*.
+
+  **Residual gap (known):** the failure ledger only fires when `run.sh` actually
+  runs. It cannot detect "launchd never fired at all" — that is the stale-row
+  case the off-machine watchdog owns. `run.sh`'s stale-heartbeat check is the
+  on-machine partial mitigation: on startup, a previous `lastRunAt` older than
+  `DISCOVERY_STALE_HOURS` (default 36) is logged as a WARN and passed to the
+  same best-effort `notify()`, so missed days surface in the run log of the next
+  run that happens.
 - **The wall-clock cap is enforced, and its failure is detected.**
   `DISCOVERY_TIMEOUT_SECS` (default 3000) is passed to `timeout` together with
   `-k DISCOVERY_KILL_AFTER_SECS` (default 120), which escalates to SIGKILL.
@@ -397,8 +436,16 @@ it never proposes new facilities and it never overwrites a curated value.
 the per-state discovery loop and the source-liveness check. It can still be run by
 hand the same way. Two conditions the scheduled invocation has to keep meeting:
 
-- **`--fields` is passed explicitly** — the bare default is the unsafe six-field
-  set, two of which the bench measured as not safe to ship. `run.sh` pins two
+- **`--fields` is passed explicitly** — two of the six extractable fields were
+  bench-measured as not safe to ship, so `extract-fields.ts` refuses to guess.
+  Since 2026-09-11 (#276) its own `parseArgs` fails closed, throwing `--fields is
+  required` when the flag is absent *or* present with no usable value
+  (`--fields=`, or a bare trailing `--fields`). ⚠️ The shared `parseFieldsArg`
+  helper it calls still defaults to all six when the raw value is `undefined`,
+  and that default is deliberate and load-bearing: `verify-fields.ts` imports
+  the same function and depends on it, being read-only and staging nothing. The
+  requirement is layered on top for `extract-fields.ts` specifically — do not
+  move it down into the shared helper. `run.sh` pins two
   fields, and `tests/discovery/run.bats` asserts the flag is present for both
   tools (mutation-tested: deleting it fails the suite).
   Both pinned fields are bench-measured: `capacityMw.operational`

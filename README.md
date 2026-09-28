@@ -152,7 +152,7 @@ Three ways in, all free and all attributed under CC BY 4.0:
 
 | | |
 |---|---|
-| **Browse** | The [map](https://www.compute-atlas.com/map) and [table](https://www.compute-atlas.com/table), or [explore](https://www.compute-atlas.com/explore) by [state](https://www.compute-atlas.com/states), [operator](https://www.compute-atlas.com/operators), [metro](https://www.compute-atlas.com/metros), [power](https://www.compute-atlas.com/power), [status](https://www.compute-atlas.com/status), [crypto](https://www.compute-atlas.com/crypto), and [community opposition](https://www.compute-atlas.com/opposition) |
+| **Browse** | The [map](https://www.compute-atlas.com/map) and [table](https://www.compute-atlas.com/table), or [explore](https://www.compute-atlas.com/explore) by [state](https://www.compute-atlas.com/states), [operator](https://www.compute-atlas.com/operators), [metro](https://www.compute-atlas.com/metros), [county](https://www.compute-atlas.com/counties), [power](https://www.compute-atlas.com/power), [status](https://www.compute-atlas.com/status), [crypto](https://www.compute-atlas.com/crypto), [community opposition](https://www.compute-atlas.com/opposition), and [stakeholders](https://www.compute-atlas.com/stakeholders) |
 | **API** | `GET /api/facilities`, `/api/facilities/{id}`, `/api/search`, `/api/stats`, `/api/schema` — CORS-open, no auth, rate-limited by IP, served with `X-License: CC-BY-4.0`. Full contract at [`/api`](https://www.compute-atlas.com/api) |
 | **Bulk** | [`data/facilities.json`](data/facilities.json) — the complete dataset as one forkable file |
 

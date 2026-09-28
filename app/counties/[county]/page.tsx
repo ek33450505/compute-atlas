@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { getCounties, getCountyBySlug, getFacilitiesByCounty } from "@/lib/data";
+import { previewSubset } from "@/lib/build-params";
 import { formatPower } from "@/lib/format";
 import { formatCountyLabel } from "@/lib/metros";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
@@ -51,10 +52,16 @@ function humanJoin(items: string[]): string {
  * single facility. The sitemap deliberately submits only the multi-facility
  * subset (see MIN_FACILITIES_FOR_COUNTY_SITEMAP in lib/sitemap-routes.ts), but every
  * county hub stays generated, live, crawlable and internally linked.
+ *
+ * Vercel preview builds prerender only a subset (see lib/build-params.ts); the
+ * rest render on demand there, and production is unaffected.
  */
 export async function generateStaticParams() {
   const counties = await getCounties();
-  return counties.map((c) => ({ county: c.slug }));
+  return previewSubset(
+    counties.map((c) => ({ county: c.slug })),
+    10,
+  );
 }
 
 export async function generateMetadata({

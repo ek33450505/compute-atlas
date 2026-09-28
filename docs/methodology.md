@@ -443,9 +443,10 @@ status. A facility's absence is not evidence it does not exist.
 | `proposed` | 336 | 254 (76%) |
 | `cancelled` | 58 | 41 (71%) |
 
-The dataset has since grown to 1,758 records (measured 2026-09-14). The table
-reflects the 2026-09-03 snapshot; currently 512 records (29.1%) carry a dated
-`statusHistory` entry.
+The dataset has since grown to 2,241 records (measured 2026-09-28). The table
+reflects the 2026-09-03 snapshot; measured 2026-09-28, 1,405 records (62.7%)
+carry at least one `statusHistory` entry bearing a `date` — the same rule the
+table above counts by.
 
 The operational cohort is the outlier. An announcement, a permit or a
 groundbreaking produces a dated public record; a site that has simply been
@@ -464,13 +465,13 @@ the proposed/under-construction cohorts as the better-evidenced half.
 - **Absent is not zero.** Optional fields — capacity, water, jobs, subsidies,
   emissions — are omitted when no citable source published a figure. An empty
   field means "not established," never "none."
-- **19.7% of records cite at least one primary document** (a `permit`, `filing`,
-  `iso_queue`, or `subsidy` source). The rest rest on reporting. Measured
-  2026-09-14 across 1,758 records: 347 cite at least one primary document. Read
-  the `kind` mix alongside `confidence` (764 `confirmed`, 979 `reported`, 15
+- **21.7% of records cite at least one primary document** (a `permit`, `filing`,
+  `iso_queue`, or `subsidy` source). The rest rely on reporting. Measured
+  2026-09-28 across 2,241 records: 486 cite at least one primary document. Read
+  the `kind` mix alongside `confidence` (953 `confirmed`, 1,264 `reported`, 24
   `rumored`).
-- **Coordinates vary in precision.** Measured 2026-09-14: 628 records are `exact`
-  footprints; 1,121 are `approximate` geocodes of a town or parcel centroid; 9
+- **Coordinates vary in precision.** Measured 2026-09-28: 733 records are `exact`
+  footprints; 1,499 are `approximate` geocodes of a town or parcel centroid; 9
   are `representative_multi_site`, standing for a multi-building campus or
   distributed fleet. Check `location.precision` before doing distance or spatial
   work.

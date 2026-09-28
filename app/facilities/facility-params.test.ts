@@ -29,4 +29,21 @@ describe("generateStaticParams", () => {
     const ids = facilities.map((f) => f.id).sort();
     expect(slugs).toEqual(ids);
   });
+
+  // The cases above run with VERCEL_ENV unset, which is the full-corpus path
+  // (local build and GitHub-Actions CI). This one proves previewSubset is
+  // actually wired in — without the wrapper it would return all ~1,700 ids.
+  it("prerenders only a subset on a Vercel preview build", async () => {
+    const original = process.env.VERCEL_ENV;
+    process.env.VERCEL_ENV = "preview";
+    try {
+      const params = await generateStaticParams();
+      const ids = new Set((await getAllFacilities()).map((f) => f.id));
+      expect(params).toHaveLength(10);
+      for (const p of params) expect(ids.has(p.slug)).toBe(true);
+    } finally {
+      if (original === undefined) delete process.env.VERCEL_ENV;
+      else process.env.VERCEL_ENV = original;
+    }
+  });
 });
