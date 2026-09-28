@@ -2,9 +2,12 @@
 #
 # WHY THIS CANNOT LIVE ON THE MAINTAINER'S MACHINE:
 # The discovery pipeline runs on the maintainer's Mac via the launchd agent
-# `com.compute-atlas.discovery` at 13:00 local. run.sh already alerts on its own
-# failures — desktop notification plus a nonzero exit — but it documents its own
-# blind spot at scripts/discovery/run.sh:72-75:
+# `com.compute-atlas.discovery` at 13:00 local. run.sh has notify() (logs
+# dispatch attempts and DISCOVERY_NOTIFY state) and a nonzero
+# exit to launchd (visible only in `launchctl list`'s status column) —
+# neither of which reliably reaches a human; see the SCOPE note below for the
+# 2026-09-26..28 outage that proved it. run.sh also documents its own
+# blind spot in the RESIDUAL GAP note in scripts/discovery/run.sh:
 #
 #     RESIDUAL GAP (deliberate, documented): this only fires when run.sh
 #     actually RUNS. It cannot detect "launchd never fired at all" — that needs
@@ -34,13 +37,35 @@
 # than skipping, because a watchdog that quietly skips is the exact silent
 # instrument this feature exists to replace.
 #
-# SCOPE: freshness only — "did it run at all". Run QUALITY (a run that happened
-# but failed) is already covered by run.sh's own notify + nonzero exit, so a
-# degraded-but-fresh heartbeat logs a warning here and still passes. Do not
-# widen this to fail on `status != ok` without removing that overlap first.
+# SCOPE: freshness AND quality — widened 2026-09-28, and the widening is the
+# point. This used to check freshness only, on the stated grounds that a fresh
+# degraded heartbeat was "already covered by run.sh's own notify + nonzero
+# exit". Both halves of that reasoning were insufficient. Before 2026-09-28,
+# notify() used `terminal-notifier ... >/dev/null 2>&1 || true` — fire and
+# forget with no record of delivery — and had a silent off-switch when
+# DISCOVERY_NOTIFY != "true". The notify() rewrite now logs every outcome,
+# suppression included (see its DISCOVERY_NOTIFY check), but the nonzero exit
+# still
+# goes to launchd, where it shows only in the status column of `launchctl list`,
+# which nobody reads; it sat at 1 for three days.
 #
-# 23:00 UTC lands 5-6h after the 13:00-local run starts (17:00 UTC on EDT,
-# 18:00 UTC on EST) and so clears its ~2h runtime in both DST states; measured
+# The incident: 2026-09-26..28 the pipeline failed every day — an expired Claude
+# Code OAuth session (26/27) and `claude` missing from the launchd PATH (28) —
+# and this workflow reported success all three times, because a pipeline that
+# runs daily and fails daily is MAXIMALLY FRESH. A human noticed the absence.
+#
+# check-heartbeat.ts now throws HeartbeatDegradedError on `status != "ok"`.
+# Stale and degraded stay distinguishable on purpose: "it never ran" points at
+# the schedule or the machine, "it ran and failed" points at that run's own
+# output on the Mac. Do not re-narrow this to freshness alone.
+#
+# Scheduled for 23:00 UTC — 5-6h after the 13:00-local run starts (17:00 UTC on
+# EDT, 18:00 UTC on EST). In practice GitHub's scheduled-run delay pushes actual
+# execution to ~00:45-01:26 UTC the NEXT day (~7-8h after the local start);
+# measured 2026-09-28 over the preceding 23 runs, none of which started at 23:00.
+# Both windows clear the ~2h runtime, so the margin below still holds; only the
+# stated timing was wrong. Re-measure with
+# `gh run list --limit 30 --workflow=discovery-watchdog.yml --json createdAt`. Also measured
 # worst-case gap between consecutive runs across a DST transition is ~30-35h,
 # still inside the 36h threshold in check-heartbeat.ts (which matches run.sh's
 # DISCOVERY_STALE_HOURS default), so the exact hour is not load-bearing.
@@ -103,7 +128,7 @@ jobs:
       # script, matching ci.yml and neon-sync.yml. The npm script carries
       # `--env-file=.env.local`, which does not exist on a runner; here
       # DATABASE_URL arrives from this step's own `env:`.
-      - name: Check discovery heartbeat freshness
+      - name: Check discovery heartbeat status
         id: heartbeat
         continue-on-error: true
         env:
@@ -156,7 +181,7 @@ jobs:
       - name: Report heartbeat failure
         if: always() && steps.heartbeat.outcome == 'failure'
         run: |
-          echo "::error::discovery_heartbeat freshness check failed — read its output above for the reason."
+          echo "::error::discovery_heartbeat check failed — it covers BOTH liveness (stale/missing row) and run quality (status != ok); read its output above for which, since the remedies differ."
           exit 1
 
       # Report only if the digest detector itself failed (DATABASE_URL unset,

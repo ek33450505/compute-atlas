@@ -13,8 +13,9 @@ setup() {
 	# coreutils-providing formula is installed) + the shared "tsx -e"
 	# import-safety script, both used only by the Task 7 "verification-gate
 	# import safety" tests near the bottom of this file — mirrors run.sh's
-	# own TIMEOUT_BIN resolution (run.sh:103-107) and candidates_file_has_array()
-	# inline script (run.sh:133-144) exactly.
+	# own TIMEOUT_BIN resolution and the `npx tsx -e` inline script inside
+	# candidates_file_has_array() exactly. (Cite names, not line numbers: see
+	# the note above notify() in run.sh.)
 	TIMEOUT_BIN=""
 	if command -v timeout >/dev/null 2>&1; then
 		TIMEOUT_BIN="timeout"
@@ -81,8 +82,9 @@ case "\$*" in
 	exit 0
 	;;
 *check-sources.ts*)
-	# Simulate the shimmed failure/empty-input case; run.sh appends "|| true"
-	# to this call so a nonzero exit here must NOT fail the overall run.
+	# Simulate the shimmed failure/empty-input case; run.sh's source-liveness
+	# lane wraps this call in `if ! npx ...; then log WARN; fi`, so a nonzero
+	# exit here must NOT fail the overall run.
 	exit 1
 	;;
 *)
@@ -96,9 +98,9 @@ EOF
 	# GUI side effects). run.sh's notify() prefers terminal-notifier and falls
 	# back to osascript; BOTH are shimmed so neither can fire a real banner on
 	# the maintainer's desktop, and the call log lets the alerting tests assert
-	# that notify() actually fired. DISCOVERY_NOTIFY is deliberately left at its
-	# default (true) so the tests exercise the REAL default path rather than a
-	# disabled one.
+	# that notify() actually reached a notifier — a DISPATCH, not a delivery.
+	# DISCOVERY_NOTIFY is deliberately left at its default (true) so the tests
+	# exercise the REAL default path rather than a disabled one.
 	# `caffeinate` is a real macOS binary run.sh prefixes onto every claude
 	# invocation. Shimmed to a pass-through so the suite has zero effect on the
 	# host's power-assertion state — drop caffeinate's own flags, exec the rest.
@@ -654,7 +656,7 @@ EOF
 # ollama-client.ts at module scope (Task 6). The ONE place a BATS run
 # genuinely executes that module scope for REAL — not the shimmed `npx`
 # no-op at the `*submit-candidates.ts*` case in setup() above — is
-# candidates_file_has_array()'s "tsx -e" inline import (run.sh:133-144);
+# candidates_file_has_array()'s "tsx -e" inline import in run.sh;
 # this file's npx shim deliberately delegates any "tsx -e" invocation to the
 # real npx/tsx (see the comment at the top of that case). The gate's real
 # verifyImpl is constructed only inside submit-candidates.ts's main() (see
@@ -879,7 +881,7 @@ EOF
 # exit) AND the negative case, which is the one that matters most: an alert
 # that fires on healthy runs gets ignored and is worth nothing.
 
-@test "a run that stages nothing fires a desktop notification and exits nonzero" {
+@test "a run that stages nothing attempts a desktop notification and exits nonzero" {
 	export DISCOVERY_ENABLED=true
 	cat >"$BIN_DIR/claude" <<'EOF'
 #!/usr/bin/env bash
@@ -899,7 +901,7 @@ EOF
 	[[ "$output" == *"run blocked by the environment"* ]]
 }
 
-@test "a clean run fires NO notification and exits 0" {
+@test "a clean run attempts NO notification and exits 0" {
 	export DISCOVERY_ENABLED=true
 	cat >"$BIN_DIR/claude" <<'EOF'
 #!/usr/bin/env bash
@@ -1158,7 +1160,7 @@ EOF
 	[ "$status" -eq 0 ]
 
 	# Pull the exact ordered list run.sh actually iterated from its own
-	# "starting discovery batch for states=..." log line (run.sh:207) — this
+	# "starting discovery batch for states=..." log line — this
 	# is the runtime BEHAVIOR (BATCH_STATES built from the live STATES array),
 	# not a re-parse of run.sh's source text, so a genuine reordering in
 	# DEFAULT_STATES cannot hide from it.
@@ -1389,8 +1391,8 @@ EOF
 
 # --- retention-prune lane (#238) ---------------------------------------------
 # scripts/retention-prune.ts's own logic (windows, per-table back-up-or-abort)
-# is unit tested separately; these tests cover only run.sh's shell wiring
-# (run.sh:637-646) — that the lane fires on a live run with --apply, is
+# is unit tested separately; these tests cover only the shell wiring of the
+# "PII retention prune" lane in run.sh — that the lane fires on a live run with --apply, is
 # skipped on a dry run, and that its failure is non-fatal but still visibly
 # recorded via FAILURES/exit-status/notification, mirroring the field-
 # extraction lane tests above.
@@ -1465,7 +1467,7 @@ EOF
 	[ -f "$LOG_DIR/heartbeat.json" ]
 }
 
-@test "a retention-prune failure appends to FAILURES and fires the desktop notification" {
+@test "a retention-prune failure appends to FAILURES and dispatches the desktop notification" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=false
 	cat >"$BIN_DIR/npx" <<EOF
@@ -1505,8 +1507,8 @@ EOF
 
 # --- heartbeat-publish lane (#238) --------------------------------------------
 # publish-heartbeat.ts's own logic is unit tested separately; these tests cover
-# only run.sh's shell wiring (run.sh:688-701) — the lane sits INSIDE the same
-# "if DISCOVERY_DRY_RUN != true" block that writes heartbeat.json (run.sh:656),
+# only run.sh's shell wiring around its `publish-heartbeat.ts` call — that call
+# sits INSIDE the same "if DISCOVERY_DRY_RUN != true" block that writes heartbeat.json,
 # so a dry run must never reach Neon at all. There is no distinct "skipping
 # heartbeat publish" log line (the guard has no else branch), so the
 # not-invoked tests below assert absence directly rather than a log message.
@@ -1592,7 +1594,7 @@ EOF
 	[ -f "$LOG_DIR/heartbeat.json" ]
 }
 
-@test "a publish-heartbeat failure appends to FAILURES and fires the desktop notification" {
+@test "a publish-heartbeat failure appends to FAILURES and dispatches the desktop notification" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=false
 	cat >"$BIN_DIR/npx" <<EOF

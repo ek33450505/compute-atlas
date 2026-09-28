@@ -27,8 +27,8 @@ log() {
 # This matters specifically because this lane now runs unattended
 # via launchd, not by hand: a hand-run operator would see the runtime blow
 # up and kill it; a scheduled job will not. submit-candidates.ts already
-# guards this exact bug class for its own --max (see its "unsafe" branch
-# near line 700); extract-fields.ts and verify-fields.ts do not, which is
+# guards this exact bug class for its own --max (see the `--max=` clamp in
+# its parseArgs()); extract-fields.ts and verify-fields.ts do not, which is
 # why the guard belongs here at the call site.
 #
 # Usage: result="$(validate_positive_int_env VAR_NAME default_value)"
@@ -63,29 +63,83 @@ fi
 # 2026-08-14 open item #1: heartbeat.json recorded claudeStatus=no_array every
 # day for SIX consecutive days and nothing surfaced it. The instrument worked
 # perfectly; nobody read it. A silent instrument is not monitoring. So every
-# failure path below now does two things a human/launchd actually sees:
-#   1. fires a desktop notification (terminal-notifier, else osascript)
+# failure path below now does two things, neither of which reliably reaches a
+# person on its own:
+#   1. ATTEMPTS a local desktop notification (terminal-notifier, else
+#      osascript) and logs the outcome of the attempt — an attempt is not a
+#      delivery; see notify() below for why a zero exit proves nothing
 #   2. makes this script exit NONZERO, so launchd records a failed run too
 # DISCOVERY_NOTIFY=false disables (1) for tests/CI. Notification is strictly
-# best-effort: it is wrapped in `|| true` and can never fail the pipeline.
+# best-effort: its exit status is captured and logged, never propagated, so it
+# can never fail the pipeline.
+# The DURABLE signal is neither of the above: it is the discovery_heartbeat row
+# published to Neon and read off-machine by .github/workflows/discovery-watchdog.yml,
+# which since 2026-09-28 fails on a DEGRADED run as well as a missing/stale one.
 #
 # RESIDUAL GAP (deliberate, documented): this only fires when run.sh actually
 # RUNS. It cannot detect "launchd never fired at all" — that needs a separate
 # watchdog job. The stale-heartbeat check below is the partial mitigation: it
 # reports missed days on the next run that does happen.
+#
+# notify() never lets a NOTIFIER fail the run: each arm's exit status is
+# captured with `|| rc=$?` and logged rather than propagated, and the function
+# ends in `return 0`. That is a claim about the notifiers, not a guarantee the
+# function cannot exit — log() is unguarded here exactly as it is everywhere
+# else in this script, and under `set -euo pipefail` a failing log() would end
+# the run wherever it is called. What changed is that notify() is no longer
+# SILENT: every outcome is written through log() so a post-hoc reader of
+# discovery-logs/launchd.out can tell which of four things happened —
+# suppressed, no notifier on PATH, dispatched, or the notifier errored.
+#
+# ⚠️ WORDING IS LOAD-BEARING: these lines say "dispatched", never "delivered".
+# A zero exit from terminal-notifier/osascript proves only that the binary was
+# invoked and returned success. macOS Focus modes, Do Not Disturb and revoked
+# notification permissions all swallow the banner silently and still exit 0, so
+# a green "dispatched" line is NOT evidence that a human was told. Reading it
+# as proof of delivery is the exact overclaim the Sep 2026 three-day silent
+# outage was made of.
+#
+# 📌 REFERENCING CONVENTION (2026-09-28): cite this function as `notify()`, never
+# by line number. A line number in prose is a dependency with no compiler — tsc
+# catches a broken import, nothing catches a broken `run.sh:101-136`. Anchors
+# pointing here went stale THREE times in one session, once while two agents were
+# fixing them concurrently, so a correction went stale during the act of
+# correcting it. Names move with the code; line numbers do not. Keep a line
+# number only when there is nothing nameable to point at, and then say what it
+# points at.
 notify() {
-  local title="$1" message="$2" safe_title safe_message
-  [[ "${DISCOVERY_NOTIFY:-true}" == "true" ]] || return 0
+  local title="$1" message="$2" safe_title safe_message rc
   # Strip quotes/backslashes/newlines — these strings are interpolated into an
   # AppleScript string literal below, and state/run-id values reach them.
+  # (Also keeps each log line below to a single line.)
   safe_title="$(printf '%s' "$title" | tr -d '"\\' | tr '\n' ' ')"
   safe_message="$(printf '%s' "$message" | tr -d '"\\' | tr '\n' ' ')"
+  if [[ "${DISCOVERY_NOTIFY:-true}" != "true" ]]; then
+    log "notify: SUPPRESSED (DISCOVERY_NOTIFY=${DISCOVERY_NOTIFY:-true}) — $safe_title: $safe_message"
+    return 0
+  fi
+  # set -e is in force, so capture the status with `|| rc=$?` — immediately,
+  # and never through a pipe (a pipeline has silently replaced an exit status
+  # in this repo before).
+  rc=0
   if command -v terminal-notifier >/dev/null 2>&1; then
     terminal-notifier -title "$safe_title" -message "$safe_message" \
-      -group com.compute-atlas.discovery >/dev/null 2>&1 || true
+      -group com.compute-atlas.discovery >/dev/null 2>&1 || rc=$?
+    if [[ "$rc" -eq 0 ]]; then
+      log "notify: dispatched via terminal-notifier (exit 0; dispatched != seen) — $safe_title: $safe_message"
+    else
+      log "notify: FAILED via terminal-notifier (exit $rc) — $safe_title: $safe_message"
+    fi
   elif command -v osascript >/dev/null 2>&1; then
     osascript -e "display notification \"$safe_message\" with title \"$safe_title\"" \
-      >/dev/null 2>&1 || true
+      >/dev/null 2>&1 || rc=$?
+    if [[ "$rc" -eq 0 ]]; then
+      log "notify: dispatched via osascript (exit 0; dispatched != seen) — $safe_title: $safe_message"
+    else
+      log "notify: FAILED via osascript (exit $rc) — $safe_title: $safe_message"
+    fi
+  else
+    log "notify: NO NOTIFIER on PATH (neither terminal-notifier nor osascript) — $safe_title: $safe_message"
   fi
   return 0
 }
@@ -852,7 +906,11 @@ EOF
   # publish failure must not abort the run and lose it — but per this file's
   # own "a silent instrument is not monitoring" rule (see the block below),
   # it must not fail silently either: log it and record a FAILURES entry so
-  # the run still exits nonzero and the desktop notification still fires.
+  # the run still exits nonzero and a local notification is still attempted
+  # (attempted and logged — not guaranteed to reach a person; see notify()).
+  # Note the irony this guards: a failed publish is precisely the case where
+  # the off-machine watchdog CANNOT see the degradation, so the local log line
+  # and the nonzero exit are all that is left.
   if ! npx tsx --env-file=.env.local scripts/discovery/publish-heartbeat.ts \
     >"$LOG_DIR/publish-heartbeat.log" 2>>"$LOG_DIR/publish-heartbeat.err"; then
     log "WARN: publish-heartbeat failed — continuing (see publish-heartbeat.err)"
