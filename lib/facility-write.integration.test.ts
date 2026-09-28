@@ -355,11 +355,20 @@ describe("recordFacilityHistory failure handling (WriteResult.historyRecorded)",
     // Simulate a facility_history-only DB failure: intercept `db.insert`,
     // reject just for facilityHistoryTable, and pass every other table
     // (facilitiesTable etc.) through to the real PGlite-backed insert.
+    //
+    // The simulated error carries a REAL SQLSTATE so the log assertion below can
+    // pin it. A bare `new Error(...)` has no `code`, so `redactedErrorCode` would
+    // return "unknown" — and "unknown" is exactly what a redaction that extracted
+    // nothing would print, making the assertion a false proxy.
+    const simulatedError = Object.assign(
+      new Error("simulated facility_history insert failure"),
+      { code: "42P01" } // undefined_table — the migration-not-applied case
+    );
     const originalInsert = tdb.db.insert.bind(tdb.db);
     const insertSpy = vi.spyOn(tdb.db, "insert").mockImplementation((table: unknown) => {
       if (table === facilityHistoryTable) {
         return {
-          values: () => Promise.reject(new Error("simulated facility_history insert failure")),
+          values: () => Promise.reject(simulatedError),
         } as unknown as ReturnType<typeof tdb.db.insert>;
       }
       return originalInsert(table as never);
@@ -380,14 +389,25 @@ describe("recordFacilityHistory failure handling (WriteResult.historyRecorded)",
       expect(result.facility.id).toBe(doc.id);
       expect(result.historyRecorded).toBe(false);
 
-      // The failure is still logged (unchanged behavior), on top of now
-      // also being carried on the result for the caller to surface.
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "facility_history insert failed for %s (%s):",
-        doc.id,
-        "create",
-        expect.any(Error)
+      // The failure is still logged, on top of being carried on the result for
+      // the caller to surface — but as a SQLSTATE only. The insert binds the
+      // facility's whole diff and DrizzleQueryError.message embeds its bound
+      // params, so passing `err` to console.error put that payload into the
+      // runtime log (see lib/db-error.ts).
+      const historyCalls = consoleErrorSpy.mock.calls.filter(
+        (call) =>
+          typeof call[0] === "string" && call[0].startsWith("facility_history insert failed")
       );
+      expect(historyCalls).toHaveLength(1);
+      // One argument only. A trailing second argument is precisely how the error
+      // object used to reach the log, so arity is the assertion that catches a
+      // regression — not just the text of the message.
+      expect(historyCalls[0]).toHaveLength(1);
+      const logged = historyCalls[0][0] as string;
+      expect(logged).toContain(doc.id);
+      expect(logged).toContain("(create)");
+      expect(logged).toContain("sqlstate: 42P01"); // the useful half survived
+      expect(logged).not.toContain(simulatedError.message); // the dangerous half did not
 
       // And the facility really did land in the DB, not just in the
       // in-memory `result.facility` — a failed audit row must not roll

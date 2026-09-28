@@ -208,14 +208,25 @@ describe("searchFacilitiesDb", () => {
     expect(capturedWhereSql).toBeUndefined();
   });
 
-  it("degrades to [] and warns when the DB query fails", async () => {
+  it("degrades to [] and warns with a redacted sqlstate — never the visitor's search text — when the DB query fails", async () => {
     // A live Neon failure must not surface on the public, unauthenticated
     // /api/search as a 500 — every other public read path here degrades to
     // empty (`getRecentActivity` in lib/data.ts).
-    queryError = new Error("connection terminated unexpectedly");
+    //
+    // The fixture is DrizzleQueryError-shaped on purpose (security review,
+    // 2026-09-27): drizzle puts `params: <bound values>` in the wrapper's own
+    // `.message` and the SQLSTATE one level down on `.cause`. This query's
+    // bound param IS the visitor's search text, so the catch block must log
+    // the sqlstate only — it used to pass `err` as a second console.warn
+    // argument, which put the search text into Vercel Runtime Logs.
+    const searchText = "hyperscale";
+    queryError = new Error(
+      `Failed query: select "doc" from "facilities" where "search_vector" @@ to_tsquery($1) params: ${searchText}:*`,
+      { cause: Object.assign(new Error("connection terminated unexpectedly"), { code: "08006" }) }
+    );
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    const result = await searchFacilitiesDb("hyperscale");
+    const result = await searchFacilitiesDb(searchText);
 
     expect(result.facilities).toEqual([]);
     // The distinguishing bit: a blip's `[]` must not look like a genuine
@@ -223,11 +234,12 @@ describe("searchFacilitiesDb", () => {
     // cache the body for the next 600s (app/api/search/route.ts).
     expect(result.degraded).toBe(true);
     // Silent data loss is not the goal — the failure stays visible to an
-    // operator, with the underlying error attached.
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining("searchFacilitiesDb"),
-      queryError
-    );
+    // operator, but as a discriminator (the real sqlstate read through
+    // `.cause`) rather than the error object.
+    const logged = warn.mock.calls.flat().map(String).join(" ");
+    expect(logged).toContain("searchFacilitiesDb");
+    expect(logged).toContain("sqlstate: 08006");
+    expect(logged).not.toContain(searchText);
     warn.mockRestore();
   });
 

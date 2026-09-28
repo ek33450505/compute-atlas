@@ -273,3 +273,59 @@ describe("checkDailyApiGate", () => {
     expect(updated.requestCount).toBe(1);
   });
 });
+
+// Security review, 2026-09-27: this function's single `try` wraps its whole
+// body, INCLUDING the legacy raw-token lookup — a DrizzleQueryError from that
+// SELECT embeds `params: <the presented bearer token>` in its own `.message`,
+// so the catch block's original `console.warn(msg, err)` put a live raw bearer
+// token into Vercel Runtime Logs. It now logs a redacted SQLSTATE only
+// (`redactedErrorCode`, lib/db-error.ts).
+describe("checkDailyApiGate — a thrown DB error is logged redacted, never as the error object", () => {
+  it("logs a SQLSTATE only — never the presented bearer token — and still fails open", async () => {
+    const fakeBearer = "live-raw-bearer-token-must-never-be-logged";
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    // Forces the gate's FIRST DB round trip (the hash-first grant lookup) to
+    // throw, without touching the schema — the same technique
+    // lib/subscribe.integration.test.ts uses for its sibling H2 case.
+    const db = tdb.db as unknown as { select: (...args: unknown[]) => unknown };
+    // Captured UNBOUND so the `finally` restores the property to exactly the
+    // value it held — a `.bind(tdb.db)` capture restores a different function
+    // object and leaves shared state altered for anything that runs after.
+    const originalSelect = db.select;
+    db.select = () => {
+      // DrizzleQueryError's real shape: the bound params live in the WRAPPER's
+      // own `.message`, the SQLSTATE one level down on `.cause`.
+      const driverError = Object.assign(new Error('relation "api_access_grants" does not exist'), {
+        code: "42P01",
+      });
+      throw new Error(
+        `Failed query: select "id", "expires_at" from "api_access_grants" where "access_token" = $1 and "status" = $2 params: ${fakeBearer},active`,
+        { cause: driverError }
+      );
+    };
+
+    try {
+      const result = await checkDailyApiGate(
+        makeRequest({ "x-real-ip": "203.0.113.7", authorization: `Bearer ${fakeBearer}` })
+      );
+
+      // Fail-open is the contract, unchanged by the redaction: this gate only
+      // backstops the in-memory burst limiter and must never be the reason a
+      // DB blip takes the public read API down.
+      expect(result).toEqual({ ok: true });
+
+      const logged = warnSpy.mock.calls.flat().map(String).join(" ");
+      // The operator still gets a usable signal: which gate failed, and a real
+      // SQLSTATE read through `.cause` (42P01 = the table is missing, i.e. the
+      // migration has not been applied) — not a placeholder.
+      expect(logged).toContain("checkDailyApiGate");
+      expect(logged).toContain("sqlstate: 42P01");
+      // The whole point. Passing `err` as a second console.warn argument is
+      // enough to fail this: String()-ing it yields the `params:` clause.
+      expect(logged).not.toContain(fakeBearer);
+    } finally {
+      db.select = originalSelect;
+      warnSpy.mockRestore();
+    }
+  });
+});

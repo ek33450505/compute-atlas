@@ -22,6 +22,7 @@ import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { getDb, hasDatabaseUrl, readsUseDatabase } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable, submissionsTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
+import { redactedErrorCode } from "@/lib/db-error";
 import type { DiffEntry } from "@/lib/doc-diff";
 import { operatorSlug, personSlug } from "@/lib/operator-slug";
 import { getGenerationFuelClass } from "@/lib/generation";
@@ -83,9 +84,15 @@ export async function withJsonFallback<T>(
       }
     }
   }
+  // SQLSTATE only, never `lastErr`: this is the highest-volume of the DB
+  // catch paths — it fires on every Neon read failure during prerender, i.e.
+  // exactly when `lastErr` is a DrizzleQueryError whose `.message` embeds the
+  // query's bound params (see lib/db-error.ts). Note the log sits AFTER the
+  // retry loop rather than inside the `catch`, which is why it escaped the
+  // catch-block scans and needed scripts/lint-no-raw-error-logs.mjs to find.
+  // The fallback itself is unchanged: still always logged, never silent.
   console.warn(
-    "[data] Neon read failed, falling back to bundled JSON snapshot:",
-    lastErr
+    `[data] Neon read failed, falling back to bundled JSON snapshot (sqlstate: ${redactedErrorCode(lastErr)})`
   );
   return fallback();
 }
@@ -2489,7 +2496,11 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
     // A live query failure (DB unreachable or over-quota) degrades to an empty
     // feed rather than throwing into the homepage teaser / /activity page —
     // both render their existing empty state instead of the error boundary.
-    console.warn("getRecentActivity: activity feed unavailable, degrading to empty", err);
+    // SQLSTATE only, never `err`: a DrizzleQueryError embeds this query's
+    // bound params in its `.message` (see lib/db-error.ts).
+    console.warn(
+      `getRecentActivity: activity feed unavailable, degrading to empty (sqlstate: ${redactedErrorCode(err)})`
+    );
     return [];
   }
 }
@@ -2596,7 +2607,12 @@ export async function getContributorCredits(): Promise<ContributorCredit[]> {
     // A live query failure (DB unreachable or over-quota) degrades to an
     // empty credit list rather than throwing into the /contributors page —
     // it renders its existing empty state instead of the error boundary.
-    console.warn("getContributorCredits: contributor credits unavailable, degrading to empty", err);
+    // SQLSTATE only, never `err`: a DrizzleQueryError embeds this query's
+    // bound params — here contributor identifiers — in its `.message` (see
+    // lib/db-error.ts).
+    console.warn(
+      `getContributorCredits: contributor credits unavailable, degrading to empty (sqlstate: ${redactedErrorCode(err)})`
+    );
     return [];
   }
 }
@@ -2712,9 +2728,10 @@ export async function getQuarterlyPipelineSummary(): Promise<QuarterlyPipelineSu
   } catch (err) {
     // A live query failure (DB unreachable or over-quota) degrades to the
     // all-zero summary rather than throwing into the pipeline lens page.
+    // SQLSTATE only, never `err`: a DrizzleQueryError embeds this query's
+    // bound params in its `.message` (see lib/db-error.ts).
     console.warn(
-      "getQuarterlyPipelineSummary: pipeline summary unavailable, degrading to zero",
-      err
+      `getQuarterlyPipelineSummary: pipeline summary unavailable, degrading to zero (sqlstate: ${redactedErrorCode(err)})`
     );
     return empty;
   }

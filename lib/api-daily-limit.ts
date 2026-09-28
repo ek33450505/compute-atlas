@@ -2,6 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
 import { apiAccessGrantsTable, apiDailyUsageTable } from "@/lib/db/schema";
+import { redactedErrorCode } from "@/lib/db-error";
 import { extractTrustedClientIp, hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
 import { hashToken, isHashedToken } from "@/lib/token-hash";
 
@@ -119,7 +120,14 @@ export async function checkDailyApiGate(
     }
     return { ok: false, retryAfter: secondsUntilNextUtcMidnight() };
   } catch (err) {
-    console.warn("checkDailyApiGate: daily-volume gate unavailable, failing open", err);
+    // SQLSTATE only, never `err`: this one `try` wraps the whole function,
+    // including the legacy raw-token lookup above — so a DrizzleQueryError
+    // from that SELECT embeds a LIVE raw bearer token in its `.message`, and
+    // one from the counter upsert embeds the caller's `ipHash`. See
+    // lib/db-error.ts. Fail-open behaviour is unchanged.
+    console.warn(
+      `checkDailyApiGate: daily-volume gate unavailable, failing open (sqlstate: ${redactedErrorCode(err)})`
+    );
     return { ok: true };
   }
 }

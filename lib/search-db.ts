@@ -5,6 +5,7 @@ import type { Facility } from "@/lib/schema";
 import { getDb, hasDatabaseUrl } from "@/lib/db/client";
 import { facilitiesTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
+import { redactedErrorCode } from "@/lib/db-error";
 
 /** Hard cap on search query length, applied before the query reaches Postgres or a cache key. */
 export const MAX_SEARCH_QUERY_LEN = 200;
@@ -161,8 +162,11 @@ export async function searchFacilitiesDb(query: string): Promise<FacilitySearchR
   } catch (err) {
     // Visible to an operator in the logs (matching `getRecentActivity`), but
     // not to the caller — /api/search returns an empty result set rather than
-    // a 500.
-    console.warn("searchFacilitiesDb: facility search unavailable, degrading to empty", err);
+    // a 500. SQLSTATE only, never `err`: its bound param is the visitor's
+    // search tsquery (see lib/db-error.ts).
+    console.warn(
+      `searchFacilitiesDb: facility search unavailable, degrading to empty (sqlstate: ${redactedErrorCode(err)})`
+    );
     return { facilities: [], degraded: true };
   }
 }

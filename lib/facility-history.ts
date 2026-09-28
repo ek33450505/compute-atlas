@@ -1,3 +1,4 @@
+import { redactedErrorCode } from "@/lib/db-error";
 import { getDb } from "@/lib/db/client";
 import { facilityHistoryTable } from "@/lib/db/schema";
 import type { DiffEntry } from "@/lib/doc-diff";
@@ -40,7 +41,13 @@ export async function insertFacilityHistoryRow(
     await db.insert(facilityHistoryTable).values({ facilityId, changeType, diff, source });
     return true;
   } catch (err) {
-    console.error("facility_history insert failed for %s (%s):", facilityId, changeType, err);
+    // SQLSTATE only, never `err` — the insert above binds the facility's whole
+    // diff, and DrizzleQueryError.message embeds its bound params (see
+    // lib/db-error.ts). The id and changeType are ours, not the caller's, so
+    // they stay: they are what makes a lost audit row recoverable.
+    console.error(
+      `facility_history insert failed for ${facilityId} (${changeType}) (sqlstate: ${redactedErrorCode(err)})`
+    );
     return false;
   }
 }

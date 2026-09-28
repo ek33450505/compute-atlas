@@ -25,6 +25,7 @@
  */
 import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
+import { redactedErrorCode } from "../lib/db-error";
 import { computeDocDiff } from "../lib/doc-diff";
 
 export interface BackfillResult {
@@ -82,7 +83,14 @@ export async function backfillFacilityHistory(
         changedAt: facility.updatedAt,
       });
     } catch (err) {
-      console.error("facility_history backfill insert failed for %s:", facility.id, err);
+      // SQLSTATE only, never `err` — this insert binds the facility's whole
+      // computed diff and DrizzleQueryError.message embeds its bound params
+      // (see lib/db-error.ts). Only facility ids are bound here, so the risk is
+      // low; it is converted anyway because leaving one site behind is how this
+      // class keeps recurring.
+      console.error(
+        `facility_history backfill insert failed for ${facility.id} (sqlstate: ${redactedErrorCode(err)})`
+      );
     }
   }
 
