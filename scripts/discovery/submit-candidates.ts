@@ -24,13 +24,16 @@
  * for exactly when it runs and when it is skipped.
  *
  * Run via: tsx scripts/discovery/submit-candidates.ts <candidates.json> [flags]
- * Requires API_ADMIN_TOKEN in the environment (e.g. via --env-file=.env.local).
+ * Requires API_INTAKE_TOKEN — or, as a fallback, API_ADMIN_TOKEN — in the
+ * environment (e.g. via --env-file=.env.local). See `submissionToken`: staging
+ * is the only capability this lane needs, so prefer the intake token.
  *
  * Uses relative imports throughout, matching scripts/seed.ts and scripts/submissions.ts.
  */
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { redactedErrorCode } from "../../lib/db-error";
 import { facilitySchema, type Facility, type Source } from "../../lib/schema";
 import { statusUpdateIntentSchema, type StatusUpdateIntent } from "../../lib/status-update";
 import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../../lib/enrichment-update";
@@ -39,6 +42,57 @@ import { verifySource, type VerifyClaim, type VerificationResult } from "./verif
 import { fetchPageText } from "./fetch-page-text";
 import { callOllama } from "./ollama-client";
 import { loadFacilities } from "./load-facilities";
+
+// --- environment -------------------------------------------------------------
+
+/**
+ * The slice of the environment the helpers below read. Deliberately NOT
+ * `NodeJS.ProcessEnv`: Next's type augmentation makes `NODE_ENV` required, so
+ * that type cannot be satisfied by a test-supplied literal — which would put
+ * these two parse rules back out of reach of a unit test, the exact problem
+ * `verificationEnabled` exists to fix. `process.env` satisfies this.
+ */
+type EnvLike = Record<string, string | undefined>;
+
+/**
+ * The bearer token this lane presents to `POST /api/submissions`.
+ *
+ * Prefers `API_INTAKE_TOKEN` — the least-privilege, staging-only credential
+ * accepted by that one route (see `requireIntake` in lib/api-auth.ts) — and
+ * falls back to `API_ADMIN_TOKEN`, which the route still accepts. The fallback
+ * is load-bearing, not tidiness: `API_INTAKE_TOKEN` does not exist in
+ * production until it is set there, and without the fallback merging this
+ * would break the nightly run. Once it IS set, remove `API_ADMIN_TOKEN` from
+ * the pipeline's environment — that removal, not this preference, is what
+ * actually drops the pipeline's ability to publish live facilities, approve
+ * submissions, and forge an admin session cookie.
+ *
+ * Returns `undefined` (never the string "undefined") when neither is set, so
+ * `main()`'s preflight can refuse to run rather than sending
+ * `Authorization: Bearer undefined` and reading the 401s as submit errors.
+ */
+export function submissionToken(env: EnvLike = process.env): string | undefined {
+  return env.API_INTAKE_TOKEN || env.API_ADMIN_TOKEN || undefined;
+}
+
+/**
+ * Whether the mechanical source-verification gate runs. Default-ON: ONLY the
+ * exact string "false" disables it; every other value — including `"FALSE"`,
+ * a `"flase"` typo, `"0"`, `"no"`, `""`, and unset — leaves it ENABLED.
+ *
+ * ⚠️ The polarity is the safety property, and it is asymmetric: a
+ * false-negative here costs one aborted run, while a false-positive stages
+ * unverified candidates on EVERY run with the whole suite still green (the
+ * gate's absence produces no error, just weaker data — see
+ * `RunSubmitDeps.verifyImpl`). Extracted from `main()` for exactly that
+ * reason: inside `main()` no unit test could pin it, so `!== "true"` or a
+ * truthiness check would have been a silent, reviewable-looking refactor. Do
+ * not "simplify" this to a truthy/falsy test — see the typo cases in
+ * submit-candidates.test.ts.
+ */
+export function verificationEnabled(env: EnvLike = process.env): boolean {
+  return env.VERIFY_SOURCES_ENABLED !== "false";
+}
 
 // --- types -----------------------------------------------------------------
 
@@ -104,6 +158,20 @@ export interface RunSubmitDeps {
    * state, never a silent promote path.
    */
   verifyImpl?: (url: string, claim: VerifyClaim) => Promise<VerificationResult>;
+  /**
+   * Called ONCE with the still-empty summary, before any candidate is
+   * processed. The object handed over is the LIVE one `runSubmit` mutates in
+   * place, so a caller that keeps the reference can read a PARTIAL summary
+   * even when the run never returns — the only way to see how far a run got
+   * when `verifyCandidateSources` throws `VerificationGateUnavailableError`
+   * mid-way (see `runSubmitAndLog`, which uses this to write
+   * `run-<runId>.json` on an abort; an absent log is indistinguishable from a
+   * state that never ran at all).
+   *
+   * Observability only: nothing in `runSubmit` reads it back, and it must not
+   * mutate what it is given.
+   */
+  onSummaryInit?: (summary: RunSubmitSummary) => void;
 }
 
 export interface RunSubmitSummary {
@@ -145,6 +213,38 @@ export interface RunSubmitSummary {
  * `{ enrichmentUpdate, provenance }` compact intent (classified as
  * `type: "enrichment_update"`).
  */
+/**
+ * Removes `stakeholders` from a raw candidate doc before it is validated.
+ *
+ * `stakeholders` names real private individuals, so it is maintainer-curated
+ * and site-level ONLY (lib/schema.ts's `stakeholderSchema`): every entry needs
+ * a source tying that person to this specific site, and — per the curation
+ * rule at `stakeholderRoleEnum` — a public capacity. CLAUDE.md states the
+ * field is "excluded from public intake and discovery enrichment"; this makes
+ * the submission lane agree. No discovery prompt asks for the field, so today
+ * this strips something nothing produces — deliberately: it closes a generic
+ * pass-through so a future prompt change cannot quietly open the path, and the
+ * cost of being wrong here is one omitted curated field, versus staging a
+ * model-invented name attached to a parcel.
+ *
+ * Applied to the RAW doc (before `facilitySchema.safeParse`) rather than the
+ * validated `Facility`, because `Facility` is a discriminated union on
+ * `facilityType` and rebuilding one field-wise needs the per-branch dance in
+ * `applyDocSourceStrip`. Returns the input unchanged when there is nothing to
+ * strip, so the overwhelmingly common case allocates nothing.
+ */
+export function stripStakeholders(doc: unknown): unknown {
+  if (!doc || typeof doc !== "object" || Array.isArray(doc)) {
+    return doc;
+  }
+  if (!("stakeholders" in doc)) {
+    return doc;
+  }
+  const rest = { ...(doc as Record<string, unknown>) };
+  delete rest.stakeholders;
+  return rest;
+}
+
 export function normalizeCandidates(raw: unknown[]): NormalizedCandidate[] {
   return raw.map((entry) => {
     if (entry && typeof entry === "object" && "statusUpdate" in (entry as Record<string, unknown>)) {
@@ -173,9 +273,13 @@ export function normalizeCandidates(raw: unknown[]): NormalizedCandidate[] {
     }
     if (entry && typeof entry === "object" && "facility" in (entry as Record<string, unknown>)) {
       const wrapped = entry as { facility: unknown; provenance?: CandidateProvenance };
-      return { type: "facility", doc: wrapped.facility, provenance: wrapped.provenance ?? {} };
+      return {
+        type: "facility",
+        doc: stripStakeholders(wrapped.facility),
+        provenance: wrapped.provenance ?? {},
+      };
     }
-    return { type: "facility", doc: entry, provenance: {} };
+    return { type: "facility", doc: stripStakeholders(entry), provenance: {} };
   });
 }
 
@@ -492,6 +596,10 @@ function applyDocSourceStrip(doc: Facility, sources: Source[], remapped: Map<str
     const idx = remapped.get(`subsidies[${i}].sourceIndex`);
     return idx === undefined ? s : { ...s, sourceIndex: idx };
   });
+  // Unreachable in THIS lane — `normalizeCandidates` strips `stakeholders`
+  // before validation (see `stripStakeholders`) — but kept so this function
+  // stays correct for any `Facility`: silently leaving a stale sourceIndex
+  // behind would mis-cite a named person, which is worse than a no-op branch.
   const stakeholders = doc.stakeholders?.map((s, i) => ({
     ...s,
     sourceIndex: remapped.get(`stakeholders[${i}].sourceIndex`) ?? s.sourceIndex,
@@ -590,6 +698,10 @@ export async function runSubmit(
     errors: 0,
     submittedIds: [],
   };
+
+  // Before ANY work, so a caller holding this reference can still log how far
+  // the run got if it aborts (see `RunSubmitDeps.onSummaryInit`).
+  deps.onSummaryInit?.(summary);
 
   if (!opts.dryRun && !deps.verifyImpl) {
     console.warn(
@@ -744,7 +856,7 @@ export async function runSubmit(
         const res = await deps.fetchImpl(`${opts.baseUrl}/api/submissions`, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${process.env.API_ADMIN_TOKEN}`,
+            Authorization: `Bearer ${submissionToken()}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(envelope),
@@ -860,7 +972,7 @@ export async function runSubmit(
         const res = await deps.fetchImpl(`${opts.baseUrl}/api/submissions`, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${process.env.API_ADMIN_TOKEN}`,
+            Authorization: `Bearer ${submissionToken()}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(envelope),
@@ -937,9 +1049,11 @@ export async function runSubmit(
     // oversight: statusHistory[].sourceIndex (lib/schema.ts:66) and
     // subsidies[].sourceIndex (lib/schema.ts:330) are `.optional()`, so without
     // the guard an unset index would push `index: undefined` and spuriously
-    // skip the candidate. stakeholders[].sourceIndex (lib/schema.ts:358) is
-    // required by its schema, so a guard there would be dead code — it pushes
-    // unconditionally on purpose.
+    // skip the candidate. stakeholders[].sourceIndex is required by its schema,
+    // so a guard there would be dead code — it pushes unconditionally on
+    // purpose. (`doc.stakeholders` is always undefined here: the field is
+    // stripped in `normalizeCandidates` — see `stripStakeholders` — so this
+    // loop is belt-and-braces for a doc that reached validation with one.)
     const docSourceRefs: SourceIndexRef[] = [];
     doc.statusHistory.forEach((event, i) => {
       if (event.sourceIndex !== undefined) {
@@ -1009,7 +1123,7 @@ export async function runSubmit(
       const res = await deps.fetchImpl(`${opts.baseUrl}/api/submissions`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.API_ADMIN_TOKEN}`,
+          Authorization: `Bearer ${submissionToken()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(envelope),
@@ -1108,6 +1222,56 @@ function writeLog(summary: RunSubmitSummary): void {
 }
 
 /**
+ * `runSubmit` with the run log written in a `finally` — on the success path AND
+ * on an abort, exactly once either way.
+ *
+ * Why this exists: a `VerificationGateUnavailableError` (Ollama down, model not
+ * pulled) aborts the run by design, and the previous `writeLog(summary)` call
+ * sat AFTER `runSubmit` returned, so an aborted state wrote no
+ * `run-<runId>.json` at all. That made the post-mortem of an outage impossible
+ * in the one direction that matters — how many candidates had already reached
+ * `pending` before the abort — and left an aborted state looking exactly like
+ * a state that never ran.
+ *
+ * Observability only: the error is rethrown unchanged, so the caller's nonzero
+ * exit and the abort semantics are untouched. A failure to WRITE the log is
+ * reported but deliberately swallowed — it must not replace the aborting error
+ * on its way out of the `finally`, which is how a diagnosable "Ollama is
+ * unreachable" message would otherwise turn into an EACCES on the log dir.
+ */
+export async function runSubmitAndLog(
+  candidates: unknown[],
+  opts: RunSubmitOptions,
+  deps: RunSubmitDeps,
+  writeLogImpl: (summary: RunSubmitSummary) => void = writeLog
+): Promise<RunSubmitSummary> {
+  let partial: RunSubmitSummary | undefined;
+  try {
+    return await runSubmit(candidates, opts, {
+      ...deps,
+      onSummaryInit: (summary) => {
+        partial = summary;
+      },
+    });
+  } finally {
+    if (partial) {
+      try {
+        writeLogImpl(partial);
+      } catch (err) {
+        // `redactedErrorCode` rather than `.message`, even though this is an fs
+        // error with no bound params and `scripts/` is outside the lint's
+        // SCAN_ROOTS. For an fs failure the errno IS the diagnosis (ENOSPC,
+        // EACCES, ENOENT) and `.message` adds only the path, which this program
+        // already determines. So the pattern the 2026-09-27 wave built a gate
+        // against buys nothing here — and an instance that has to be argued safe
+        // is what makes the next one arguable.
+        console.error(`error: could not write run log (code: ${redactedErrorCode(err)})`);
+      }
+    }
+  }
+}
+
+/**
  * Constructs the real verification gate: verify-source.ts composed with
  * fetch-page-text.ts and ollama-client.ts, both bound to the real global
  * `fetch`. Called ONLY from inside `main()`, never at module scope —
@@ -1135,8 +1299,11 @@ function buildRealVerifyImpl(): (url: string, claim: VerifyClaim) => Promise<Ver
 }
 
 async function main(): Promise<void> {
-  if (!process.env.API_ADMIN_TOKEN) {
-    console.error("API_ADMIN_TOKEN is not set. Configure it before running the discovery pipeline.");
+  if (!submissionToken()) {
+    console.error(
+      "Neither API_INTAKE_TOKEN nor API_ADMIN_TOKEN is set. Configure API_INTAKE_TOKEN " +
+        "(staging-only, preferred) before running the discovery pipeline."
+    );
     process.exit(1);
   }
 
@@ -1156,12 +1323,13 @@ async function main(): Promise<void> {
 
   // Default-ON: the real gate always runs unless explicitly disabled. This
   // makes Ollama an operational dependency of a real (non-dry-run) discovery
-  // run — accepted per Open Question 3 (Ed). VERIFY_SOURCES_ENABLED must be
-  // the exact string "false" to opt out; any other value (including unset)
-  // keeps the gate on.
-  const verifyImpl = process.env.VERIFY_SOURCES_ENABLED === "false" ? undefined : buildRealVerifyImpl();
+  // run — accepted per Open Question 3 (Ed). The polarity lives in
+  // `verificationEnabled` so a unit test can pin it.
+  const verifyImpl = verificationEnabled() ? buildRealVerifyImpl() : undefined;
 
-  const summary = await runSubmit(
+  // `runSubmitAndLog`, not `runSubmit`: the run log must survive a
+  // verification-gate abort, which used to skip `writeLog` entirely.
+  const summary = await runSubmitAndLog(
     raw,
     {
       runId: args.runId,
@@ -1174,7 +1342,6 @@ async function main(): Promise<void> {
     { fetchImpl: fetch, existingFacilities, verifyImpl }
   );
 
-  writeLog(summary);
   console.log(JSON.stringify(summary, null, 2));
   process.exit(0);
 }
