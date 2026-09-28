@@ -1,3 +1,7 @@
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import {
@@ -8,6 +12,8 @@ import {
   stripStakeholders,
   submissionToken,
   verificationEnabled,
+  exitCodeForSummary,
+  main,
   VerificationGateUnavailableError,
   type RunSubmitOptions,
   type RunSubmitSummary,
@@ -1476,5 +1482,182 @@ describe("the submission lane strips stakeholders", () => {
     expect("stakeholders" in body.payload).toBe(false);
     // Stripped, not rejected — the rest of the candidate survives intact.
     expect(body.payload.id).toBe("new-facility-tx");
+  });
+});
+
+// --- D-4: a run that lost work must not exit 0 -------------------------------
+
+function makeSummary(overrides: Partial<RunSubmitSummary> = {}): RunSubmitSummary {
+  return {
+    runId: "test-run",
+    state: "TX",
+    discovered: 10,
+    submitted: 10,
+    skippedDuplicate: 0,
+    skippedInvalid: 0,
+    skippedOverCap: 0,
+    skippedUnverified: 0,
+    skippedRestrictedSource: 0,
+    errors: 0,
+    submittedIds: [],
+    ...overrides,
+  };
+}
+
+describe("exitCodeForSummary", () => {
+  it("exits 0 on a clean run", () => {
+    expect(exitCodeForSummary(makeSummary())).toBe(0);
+  });
+
+  it.each([
+    [1, "a single lost candidate"],
+    [42, "every candidate lost"],
+  ])("exits nonzero when errors = %i (%s)", (errors) => {
+    expect(exitCodeForSummary(makeSummary({ errors, submitted: 0 }))).not.toBe(0);
+  });
+
+  // The anti-regression. Each skip counter is the corresponding gate WORKING:
+  // a source-verification skip is the gate correctly refusing to stage
+  // something unverified, not a failure. Widening the predicate to any of
+  // these would page a human for healthy operation — tested one at a time so
+  // widening to exactly one still goes red.
+  it.each([
+    ["skippedDuplicate", "already tracked"],
+    ["skippedInvalid", "failed facilitySchema"],
+    ["skippedOverCap", "hit --max"],
+    ["skippedUnverified", "the verification gate refused it"],
+    ["skippedRestrictedSource", "licence-restricted citation"],
+  ])("exits 0 with %s > 0 and no errors (%s)", (counter) => {
+    const summary = makeSummary({ [counter]: 7, submitted: 3 } as Partial<RunSubmitSummary>);
+    expect(summary[counter as keyof RunSubmitSummary]).toBe(7);
+    expect(exitCodeForSummary(summary)).toBe(0);
+  });
+
+  it("exits 0 with every skip counter populated and nothing submitted", () => {
+    expect(
+      exitCodeForSummary(
+        makeSummary({
+          submitted: 0,
+          skippedDuplicate: 4,
+          skippedInvalid: 3,
+          skippedOverCap: 2,
+          skippedUnverified: 9,
+          skippedRestrictedSource: 1,
+        })
+      )
+    ).toBe(0);
+  });
+
+  // The deliberate design decision, pinned: ONE nonzero code, not a graded
+  // scale. The only consumer is run.sh's `if !`, which sees zero/nonzero; the
+  // "how much" lives in the summary JSON, not in the exit status.
+  it("uses the SAME code for partial loss and total loss", () => {
+    const partial = exitCodeForSummary(makeSummary({ submitted: 9, errors: 1 }));
+    const total = exitCodeForSummary(makeSummary({ submitted: 0, errors: 10 }));
+    expect(partial).toBe(total);
+    expect(partial).toBe(1);
+  });
+});
+
+// Wiring, not arithmetic: every test above would pass unchanged against the
+// hardcoded `process.exit(0)` this replaced. These drive the real `main()`.
+describe("main — exit code wiring", () => {
+  async function runMain(submitStatus: number): Promise<{
+    exitCode: number | undefined;
+    logs: string[];
+  }> {
+    const logDir = mkdtempSync(path.join(tmpdir(), "submit-candidates-exit-"));
+    const inputPath = path.join(logDir, "candidates.json");
+    writeFileSync(
+      inputPath,
+      JSON.stringify([
+        { facility: makeCandidate(), provenance: { sources: ["https://example.com/new"] } },
+      ])
+    );
+
+    const originalArgv = process.argv;
+    const originalLogDir = process.env.DISCOVERY_LOG_DIR;
+    const originalVerify = process.env.VERIFY_SOURCES_ENABLED;
+    const originalFetch = globalThis.fetch;
+
+    // Off so `main()` never builds the real Ollama-backed gate — this test is
+    // about the exit path, and the gate has its own coverage above.
+    process.env.VERIFY_SOURCES_ENABLED = "false";
+    process.env.DISCOVERY_LOG_DIR = logDir;
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=exit-wiring", "--base-url=http://api.test"];
+
+    globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith("/api/facilities")) {
+        return new Response(JSON.stringify({ facilities: [] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      }
+      if (url.endsWith("/api/submissions")) {
+        return new Response(submitStatus === 200 ? JSON.stringify({ id: "sub-1" }) : "upstream boom", {
+          status: submitStatus,
+        });
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    }) as unknown as typeof fetch;
+
+    const logs: string[] = [];
+    const logSpy = vi.spyOn(console, "log").mockImplementation((...args: unknown[]) => {
+      logs.push(args.map(String).join(" "));
+    });
+    let exitCode: number | undefined;
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      exitCode = code;
+      throw new Error(`process.exit(${code})`);
+    }) as never);
+
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(/);
+      return { exitCode, logs };
+    } finally {
+      exitSpy.mockRestore();
+      logSpy.mockRestore();
+      globalThis.fetch = originalFetch;
+      process.argv = originalArgv;
+      if (originalLogDir === undefined) delete process.env.DISCOVERY_LOG_DIR;
+      else process.env.DISCOVERY_LOG_DIR = originalLogDir;
+      if (originalVerify === undefined) delete process.env.VERIFY_SOURCES_ENABLED;
+      else process.env.VERIFY_SOURCES_ENABLED = originalVerify;
+      rmSync(logDir, { recursive: true, force: true });
+    }
+  }
+
+  function printedSummary(logs: string[]): RunSubmitSummary {
+    const line = logs.find((l) => l.trimStart().startsWith("{"));
+    if (!line) throw new Error(`no summary JSON printed; logs were: ${JSON.stringify(logs)}`);
+    return JSON.parse(line) as RunSubmitSummary;
+  }
+
+  // The D-4 defect itself: every candidate failed to POST, the summary said
+  // so, and the process exited 0 anyway — so run.sh's `if !` never fired, the
+  // heartbeat never went `degraded`, and no human ever heard about it.
+  it("exits nonzero when every candidate failed to submit", async () => {
+    const { exitCode, logs } = await runMain(500);
+    expect(printedSummary(logs).errors).toBe(1);
+    expect(exitCode).not.toBe(0);
+  });
+
+  // The summary JSON is the diagnosis, so it has to survive the failure it
+  // describes: printed BEFORE the exit, not swallowed by it.
+  it("still prints the summary JSON on the failing path", async () => {
+    const { logs } = await runMain(500);
+    const summary = printedSummary(logs);
+    expect(summary.runId).toBe("exit-wiring");
+    expect(summary.submitted).toBe(0);
+    expect(summary.errors).toBe(1);
+  });
+
+  it("exits 0 and prints the summary on a clean run", async () => {
+    const { exitCode, logs } = await runMain(200);
+    const summary = printedSummary(logs);
+    expect(summary.submitted).toBe(1);
+    expect(summary.errors).toBe(0);
+    expect(exitCode).toBe(0);
   });
 });

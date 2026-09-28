@@ -1298,7 +1298,76 @@ function buildRealVerifyImpl(): (url: string, claim: VerifyClaim) => Promise<Ver
     });
 }
 
-async function main(): Promise<void> {
+/**
+ * The process exit code for a completed run: nonzero iff work was LOST.
+ *
+ * Until this existed, `main()` ended in an unconditional `process.exit(0)`, so
+ * a state in which every single candidate failed to POST printed
+ * `"errors": 42` and exited 0 — indistinguishable, to every automated consumer,
+ * from a clean run. Only a human reading the summary JSON could tell.
+ *
+ * What a nonzero exit now sets in motion, end to end — this is the whole point,
+ * so do not "simplify" it back to `exit(0)` without understanding what that
+ * switches off:
+ *   1. Both of `run.sh`'s call sites — the per-state discovery lane and the
+ *      enrichment lane — are `if ! npx tsx ... submit-candidates.ts ...`. The
+ *      `if !` is deliberate: it guards `set -e` so one state's failure cannot
+ *      abort the remaining states in the sweep.
+ *   2. That branch logs `WARN: submit-candidates failed ...` and appends to
+ *      `FAILURES` (`"<STATE>: submit failed"` / `"enrichment: submit failed"`).
+ *   3. A non-empty `FAILURES` publishes the heartbeat as `degraded`.
+ *   4. A `degraded` heartbeat fails the GitHub-Actions watchdog — i.e. it
+ *      reaches a human.
+ * Every link but this one already existed; the exit code was the missing one.
+ *
+ * ONLY `errors` counts. The five `skipped*` counters are the gates WORKING AS
+ * DESIGNED and must never fail the run:
+ *   - `skippedDuplicate` — we already track this facility.
+ *   - `skippedInvalid` — a per-candidate content rejection. ⚠️ NOT only a
+ *     `facilitySchema` failure: of its eight sites only one is that, one is a
+ *     provenance rule, and six are intent-shape or target-resolution. The
+ *     distinction matters — a stale facility index turns "target not found"
+ *     into `skippedInvalid`, so a spike here can mean lost work rather than
+ *     bad candidates. This counter has a nonzero HEALTHY baseline, which is
+ *     why it cannot gate a binary exit code; a RATE threshold would be the
+ *     right instrument and does not exist yet.
+ *   - `skippedOverCap` — the run hit its `--max` bound.
+ *   - `skippedUnverified` — the source-verification gate correctly REFUSED to
+ *     stage something it could not verify. That is the gate succeeding, and on
+ *     a bad night it is the majority of a run.
+ *   - `skippedRestrictedSource` — a licence-restricted citation could not be
+ *     safely stripped.
+ * Widening this to any of them would make the healthy operation of a safety
+ * gate page a human, and the predictable repair for that is to turn the
+ * alerting off. `errors` means something else entirely: we tried to stage a
+ * candidate we had already decided was good, and it broke.
+ *
+ * Deliberately ONE nonzero code, not a graded scale ("some failed" vs "all
+ * failed"). The sole consumer is a shell `if !`, which can only see
+ * zero/nonzero; a graded code would be a distinction no caller can act on, and
+ * a second thing to keep in sync. The graded information is not lost — it is in
+ * the summary JSON, which `main()` prints before exiting on the completed-run
+ * path (⚠️ not on every path: a `VerificationGateUnavailableError` reaches
+ * `main().catch` and prints no summary to stdout — `writeLog` still persists
+ * the partial, so diagnosis survives) and
+ * `writeLog` persists to `run-<runId>.json`. Exit codes answer "did this run
+ * lose work"; the JSON answers "how much, and which". Note too that every other
+ * failure path in `main()` already exits 1, so a distinct code here would imply
+ * a difference in kind that does not exist.
+ */
+export function exitCodeForSummary(summary: Pick<RunSubmitSummary, "errors">): number {
+  return summary.errors > 0 ? 1 : 0;
+}
+
+/**
+ * Exported ONLY so a test can prove the wiring below: that the summary JSON is
+ * printed and that the exit code is `exitCodeForSummary(summary)` rather than a
+ * hardcoded 0. Unit-testing the pure function alone would pass just as happily
+ * against the `process.exit(0)` this replaced. The `isMain` guard at the bottom
+ * of the file — not the absence of `export` — is what keeps an import from
+ * running the CLI.
+ */
+export async function main(): Promise<void> {
   if (!submissionToken()) {
     console.error(
       "Neither API_INTAKE_TOKEN nor API_ADMIN_TOKEN is set. Configure API_INTAKE_TOKEN " +
@@ -1342,8 +1411,10 @@ async function main(): Promise<void> {
     { fetchImpl: fetch, existingFacilities, verifyImpl }
   );
 
+  // Print the summary FIRST, then exit on it: the JSON is the diagnosis, and it
+  // has to survive the failure case it describes.
   console.log(JSON.stringify(summary, null, 2));
-  process.exit(0);
+  process.exit(exitCodeForSummary(summary));
 }
 
 // Only run the CLI when this file is executed directly (e.g. `tsx
