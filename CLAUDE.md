@@ -137,9 +137,14 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
   unconsented action bounded, not consented. ⚠️ The partial unique index
   `subscriptions_active_target_idx` is `WHERE status <> 'unsubscribed'`, so an unsubscribed row does
   not block re-insertion; durable suppression is a known gap, tracked for a separate session.
-- **Admin/pipeline writes** (`POST /api/submissions`, approve/reject) require the
-  `API_ADMIN_TOKEN` bearer. The admin pages use a lightweight single-secret cookie
-  gate — there is intentionally **no user-account system** (durable product decision).
+- **Admin/pipeline writes** require a bearer token, but not all the same one.
+  `POST /api/submissions` — staging only — accepts EITHER `API_INTAKE_TOKEN` or
+  `API_ADMIN_TOKEN` (`requireIntake`), so the discovery pipeline can stage a
+  `pending` row without holding a secret that could publish one. `GET
+  /api/submissions` and approve/reject require `API_ADMIN_TOKEN`. Do not widen
+  `requireIntake` past that one handler. The admin pages use a lightweight
+  single-secret cookie gate — there is intentionally **no user-account system**
+  (durable product decision).
 - **Data rigor:** every fact is traceable to a real, citable source. Do not
   fabricate coordinates, capacity, operators, or dates — omit unknown fields. See
   `CONTRIBUTING.md` and the data model in `lib/schema.ts`.

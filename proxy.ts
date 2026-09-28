@@ -66,24 +66,33 @@ function isCronPath(pathname: string): boolean {
  *   a no-op until both halves are in place, and the check starts enforcing
  *   the moment the variable appears.
  *
- * ACTIVATION SEQUENCE — five steps, in this order. Steps 1-3 change no
- * behaviour at all (the check is still failing open); step 4 is the one that
- * starts enforcing:
- *   1. Set `EDGE_SHARED_SECRET` in the Vercel project, production scope.
- *   2. Create a Cloudflare Transform Rule (Modify Request Header → Set
+ * ACTIVATION SEQUENCE — five steps, in this order. The REDEPLOY (step 3) is
+ * what ARMS the gate: the check below refuses a header-less request as soon
+ * as `expected` is truthy, and a new Vercel env var is invisible to an
+ * already-built deployment until a redeploy reads it. So steps 1-2 change no
+ * behaviour, and the Transform Rule must already exist and be verified
+ * before step 3 lands — not after it:
+ *   1. Create a Cloudflare Transform Rule (Modify Request Header → Set
  *      static) injecting `x-edge-shared-secret` — EXACTLY that header name,
- *      the value of `EDGE_SECRET_HEADER` above — with that same secret, on
- *      all incoming requests. A mismatch between the rule's header name and
- *      this file is a site-wide 403 the moment step 4 lands, so copy the
- *      string, don't retype it.
- *   3. Redeploy. A new Vercel env var is invisible to already-built
- *      deployments, so until this step the running function reads `undefined`
- *      and keeps failing open no matter what the rule does.
- *   4. Make it fail CLOSED: replace the `if (!expected) return true;` below
- *      with `return false;`. Verify with `curl --resolve
+ *      the value of `EDGE_SECRET_HEADER` above — with the secret you are
+ *      about to set, on all incoming requests. A mismatch between the rule's
+ *      header name and this file 403s EVERY matched path the moment step 3
+ *      lands — `/admin` and `/api` today, the whole site once step 5 widens
+ *      the matcher — so copy the string, don't retype it.
+ *   2. Set `EDGE_SHARED_SECRET` in the Vercel project, production scope, to
+ *      that same value. Still inert — the running deployment cannot see it.
+ *   3. Redeploy. This is the enforcing step. Verify with `curl --resolve
  *      www.compute-atlas.com:443:76.76.21.21 …`, which reaches Vercel without
  *      traversing Cloudflare and must now return 403, while a normal request
  *      to the same URL still returns 200.
+ *   4. Close the remaining hole: replace the `if (!expected) return true;`
+ *      below with `return false;`. This does NOT start enforcement — step 3
+ *      did — it only covers the case where the variable goes ABSENT (an
+ *      unset, a deploy that drops it), which today silently reopens the
+ *      bypass. ⚠️ After this edit, unsetting the variable 403s every matched
+ *      path — `/admin` and `/api` today, the whole site after step 5 — rather
+ *      than disarming the gate, which changes how rotation has to be done;
+ *      see `docs/maintainers.md`.
  *   5. Only then widen the matcher to the bandwidth-heavy pages — see the
  *      `config` block at the bottom of this file for why that step is last.
  *

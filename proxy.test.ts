@@ -375,7 +375,9 @@ describe("proxy — edge gate rollout posture", () => {
     // site's busiest routes (proxy is step 3 of Next's execution order, ahead
     // of the filesystem/dynamic route steps, so it runs before any cache
     // lookup). While the check fails open that buys no protection, so the
-    // widening is ordered after step 4 rather than shipped with it.
+    // widening is deferred to ACTIVATION step 5 — a different numbering from
+    // Next's execution order above — which falls after enforcement begins at
+    // activation step 3, the redeploy, rather than being shipped with it.
     for (const pathname of ["/map", "/table", "/data"]) {
       expect(isMatched(config.matcher, pathname)).toBe(false);
     }

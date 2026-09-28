@@ -92,6 +92,7 @@ See `.env.example`.
 |---|---|
 | `DATABASE_URL` | Neon Postgres pooled connection string |
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
+| `API_INTAKE_TOKEN` | Staging-only bearer, accepted by `POST /api/submissions` ALONE. For the discovery pipeline. Optional — unset, the pipeline falls back to `API_ADMIN_TOKEN` and nothing changes. **Must be an independent value**; see the activation steps below |
 | `CRON_SECRET` | Bearer secret for `/api/cron/*`. **Leave unset** — see below. Must differ from `API_ADMIN_TOKEN` |
 | `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Set to `"true"` in production since 2026-09-14.** Unsetting it (or any value but `"true"`) stops all digest mail immediately, without a deploy |
 | `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Set to `"true"` in production since 2026-09-14.** Same kill semantics |
@@ -155,6 +156,27 @@ by `scripts/retention-prune.ts` after 90 days for submissions nobody ever review
 ⚠️ **`.env.local` quoting.** `vercel env add` keeps surrounding quotes, and a quoted
 `DATABASE_URL` is invalid and fails *silently* — there is no fallback. Strip the quotes.
 
+### Activating `API_INTAKE_TOKEN` (the intake/admin split)
+
+`POST /api/submissions` accepts either `API_INTAKE_TOKEN` or `API_ADMIN_TOKEN` (`requireIntake` in
+`lib/api-auth.ts`). Merging that was a behavioural no-op; the separation is only real once the
+discovery pipeline holds the intake token and **nothing else**. Three steps, in order — and only the
+third revokes anything:
+
+1. **Generate an independent value** and `vercel env add API_INTAKE_TOKEN production`. ⚠️ A value
+   equal to `API_ADMIN_TOKEN` gives no separation at all — the "intake" secret would still be the
+   live-write and cookie-signing secret.
+2. **`npx vercel redeploy --target production <url>`** — a new env var is invisible to an
+   already-built deployment, so until this the route cannot match the new token.
+3. **Put `API_INTAKE_TOKEN` in the discovery pipeline's `.env.local` AND REMOVE `API_ADMIN_TOKEN`
+   from it.** This is the step that does the work: it is what stops the pipeline being able to
+   publish a live facility, approve its own submissions, or forge an admin session cookie. Steps 1-2
+   alone change nothing — `submissionToken()` prefers the intake token but the admin token is still
+   sitting there.
+
+`scripts/discovery/run.sh` needs no edit. Verify by staging one candidate with the pipeline's
+`.env.local`, then confirming the same token is refused by `GET /api/submissions` (admin-only).
+
 ## Secret rotation
 
 Nothing in this project had ever been rotated as of the 2026-09-27 security audit — every Vercel
@@ -187,13 +209,18 @@ Breaks if you do it out of order: `db:sync`, `db:export`, `check:drift`, `drift-
 ⚠️ `DATABASE_URL_UNPOOLED` exists in all three Vercel environments and **no code reads it** (the Neon
 integration creates it). It is a second copy of the same credential — rotate it in lockstep or remove it.
 
-**2. `API_ADMIN_TOKEN`.** Grants every admin write route, the admin UI, discovery staging writes and
-the cron recovery path. ⚠️ **Rotating it invalidates every live `admin_session` cookie**, because the
-cookie HMAC is keyed by the raw token (`lib/admin-session.ts`, `signV2Parts`). There is **no overlap
-window** — the code compares against exactly one value, so it is a hard cutover.
+**2. `API_ADMIN_TOKEN`.** Grants every admin write route, the admin UI, the cron recovery path, and
+— until the intake split is activated — discovery staging writes too. ⚠️ **Rotating it invalidates
+every live `admin_session` cookie**, because the cookie HMAC is keyed by the raw token
+(`lib/admin-session.ts`, `signV2Parts`). There is **no overlap window** — the code compares against
+exactly one value, so it is a hard cutover.
 Order: Vercel production → **redeploy** → `.env.local` (the `submissions` CLI, `sync-to-neon.ts` and
 `submit-candidates.ts` all read it) → log in to `/admin` again.
 Do it when **no nightly `run.sh` discovery run is in flight**.
+⚠️ **This entry assumes the pre-split arrangement.** Once step 3 of "Activating `API_INTAKE_TOKEN`"
+is done, `submit-candidates.ts` no longer reads `API_ADMIN_TOKEN` and the pipeline's `.env.local` is
+not part of this rotation — rotate `API_INTAKE_TOKEN` there instead, and the in-flight-run caveat
+moves with it.
 
 **3. `NEON_SYNC_PAT`.** Needs `Workflows: RW` and `neon-sync.yml` runs `gh pr merge --squash --auto`,
 so a leaked value can rewrite CI *and* auto-merge to `main` → production. Mint a new **fine-grained**
@@ -227,11 +254,23 @@ longer only about IP hashes.
 **8. `INDEXNOW_KEY`.** Public by design. If changed, write the new `public/<key>.txt` and delete the
 old one in the same commit — `indexnow.test.ts` asserts the file matches the constant.
 
-**9. `EDGE_SHARED_SECRET` — ⚠️ THERE IS NO SAFE TWO-STEP ORDER once the gate is fail-closed.**
+**9. `EDGE_SHARED_SECRET` — ⚠️ THERE IS NO SAFE TWO-STEP ORDER once the gate is armed.**
 An earlier version of this section said rotation was "safe in either order because the check is
 fail-open when unset." That is only true *before* the gate is armed — i.e. before there is anything to
 rotate — and it would have prescribed exactly the outage it warned about. Corrected 2026-09-27 after
 review caught it.
+
+**Two independent states, and conflating them is what makes this section confusing.**
+- **ARMED** = `EDGE_SHARED_SECRET` holds a value *and* a deploy has read it. This is what turns
+  enforcement on: `isEdgeOriginAllowed` refuses any request without a matching header. Unsetting the
+  variable and redeploying disarms it — **but only while the code is still fail-OPEN**. Once
+  activation step 4 has been done, the same unset 403s every matched path instead; that is the whole
+  of the next bullet, and Option A's ⛔ below depends on it.
+- **FAIL-CLOSED** = the code change in `proxy.ts` activation step 4 (`if (!expected) return true;`
+  → `return false;`). This governs only the *absent-variable* case. It does not arm anything, and
+  it does not make an armed gate any stricter.
+
+They move independently, and the rotation options below depend on which one you are in.
 
 `isEdgeOriginAllowed` compares the presented header against **one** value. So once armed:
 - Change the Cloudflare rule first ⇒ presented(new) ≠ expected(old) ⇒ **403**.
@@ -240,13 +279,18 @@ review caught it.
 Either way every `/admin` and `/api` request 403s until the second half lands (site-wide once the
 matcher is widened in activation step 5). Use one of these instead:
 
-**Option A — three phases, no code change (recommended).** Disarm, swap, re-arm:
+**Option A — three phases, no code change (recommended). ⛔ Valid ONLY while the code is still
+fail-OPEN.** Its first step is a deliberate disarm, and unsetting the variable disarms the gate only
+while `if (!expected) return true;` is still in `proxy.ts`. If activation step 4 has been done
+(`return false;`), the same unset is a site-wide 403 — precisely the outage this option exists to
+avoid. Read `isEdgeOriginAllowed` before starting; if it is fail-closed, either revert that one line
+and redeploy first, or use Option B.
 1. **Unset** `EDGE_SHARED_SECRET` in Vercel → `npx vercel redeploy --target production <url>`. The
-   gate is now fail-open; traffic is unaffected and unprotected.
+   gate is now disarmed and failing open; traffic is unaffected and unprotected.
 2. Change the Cloudflare Transform Rule to the new value. Verify with a real GET.
-3. **Set** the new `EDGE_SHARED_SECRET` → redeploy. Verify a browser request works **and** that
-   `curl --resolve 'www.compute-atlas.com:443:76.76.21.21' https://www.compute-atlas.com/api/stats`
-   is refused.
+3. **Set** the new `EDGE_SHARED_SECRET` → redeploy. This re-arms it. Verify a browser request works
+   **and** that `curl --resolve 'www.compute-atlas.com:443:76.76.21.21'
+   https://www.compute-atlas.com/api/stats` is refused.
 ⚠️ Steps 1–2 are a genuine window with no origin protection. Keep it short; it is not a secret leak,
 only a period where the bypass is open again.
 
