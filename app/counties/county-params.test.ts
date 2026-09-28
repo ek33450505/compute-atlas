@@ -37,4 +37,21 @@ describe("generateStaticParams (county)", () => {
     expect(singleFacilityCounty).toBeDefined();
     expect(params.map((p) => p.county)).toContain(singleFacilityCounty!.slug);
   });
+
+  // The cases above run with VERCEL_ENV unset, which is the full-corpus path
+  // (local build and GitHub-Actions CI). This one proves previewSubset is
+  // actually wired in — without the wrapper it would return every county.
+  it("prerenders only a subset on a Vercel preview build", async () => {
+    const original = process.env.VERCEL_ENV;
+    process.env.VERCEL_ENV = "preview";
+    try {
+      const params = await generateStaticParams();
+      const slugs = new Set((await getCounties()).map((c) => c.slug));
+      expect(params).toHaveLength(10);
+      for (const p of params) expect(slugs.has(p.county)).toBe(true);
+    } finally {
+      if (original === undefined) delete process.env.VERCEL_ENV;
+      else process.env.VERCEL_ENV = original;
+    }
+  });
 });

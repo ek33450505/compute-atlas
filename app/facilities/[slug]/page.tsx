@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Info, Flag } from "lucide-react";
 
 import { getAllFacilityIds, getFacilityByIdCached, operatorSlug, countySlug } from "@/lib/data";
+import { previewSubset } from "@/lib/build-params";
 import { getStatusMeta } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import {
@@ -48,7 +49,10 @@ export const revalidate = false;
 
 export async function generateStaticParams() {
   const ids = await getAllFacilityIds();
-  return ids.map((id) => ({ slug: id }));
+  return previewSubset(
+    ids.map((id) => ({ slug: id })),
+    10,
+  );
 }
 
 /**

@@ -8,6 +8,7 @@ import {
   operatorSlug,
   getOperatorBySlug,
 } from "@/lib/data";
+import { previewSubset } from "@/lib/build-params";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
 import { formatLocation, formatPower } from "@/lib/format";
@@ -24,7 +25,10 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const names = await getOperators();
-  return names.map((name) => ({ operator: operatorSlug(name) }));
+  return previewSubset(
+    names.map((name) => ({ operator: operatorSlug(name) })),
+    10,
+  );
 }
 
 export async function generateMetadata({
