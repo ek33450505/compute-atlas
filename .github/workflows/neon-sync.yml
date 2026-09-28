@@ -106,7 +106,7 @@ jobs:
       HAS_DATABASE_URL: ${{ secrets.DATABASE_URL != '' }}
       HAS_NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT != '' }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # GUARD ON THE GUARDS, and unconditional. Three steps below gate on the
       # HAS_* booleans rendered at job level from `secrets.X != ''`. If either
@@ -175,7 +175,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
           cache: npm
@@ -315,7 +315,7 @@ jobs:
 
       - name: Create PR if drift detected
         if: steps.check-drift.outputs.drift == 'true'
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         id: create-pr
         with:
           # ⛔ NOT graceful degradation, despite the shape. This is a
