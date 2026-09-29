@@ -187,15 +187,37 @@ and legitimately leaves a stale siting entry behind.
 *degraded rather than down*, the full pass neither finishes nor aborts: `build-map-data.mjs`'s
 `NHD_CONSECUTIVE_FAILURE_BUDGET = 10` counts **failures** and is blind to **latency**, so 200-OK
 responses arriving 30x slow keep it grinding (measured 473ms..14.5s on identical queries; the run
-was cancelled at 2h05m against a 6h job cap). Worse, finishing would not have helped: the full path
-rebuilds `computeSitingContext` from scratch and never merges the existing file, so scattered
-timeouts null `nearestWater` on EXISTING records and the additive guard discards everything.
+was cancelled at 2h05m against a 6h job cap).
 In that case publish in two stages: (1) `build:mapdata -- --skip-nhd` now — that branch seeds every
 id and merges `{...existing[id], ...envContext[id]}`, so it is *structurally* additive and new
-records still get waterStress/aquifer/groundwaterDecline; (2) a full `build:mapdata` once NHD is
-healthy, to backfill `nearestWater`/`nearestTransmission`.
-⛔ **Stage 2 is not test-covered** — `siting-context.test.ts` asserts an ENTRY exists, not that it
-carries NHD fields, so nothing goes red while it is outstanding. Track it explicitly and verify with
+records still get waterStress/aquifer/groundwaterDecline; (2) `build:mapdata -- --backfill-nhd` once
+NHD is healthy — it restricts the NHD pass to only the facilities whose existing
+`data/siting-context.json` entry lacks `nearestWater` (177, not a full 2,268-record re-pass) and
+carries every other entry forward untouched. `--skip-nhd` and `--backfill-nhd` are mutually exclusive
+and error out together.
+
+⚠️ **CORRECTION (2026-09-29): the "finishing would not have helped" claim formerly in this section was
+false, and the false claim was expensive.** It read: *"the full path rebuilds `computeSitingContext`
+from scratch and never merges the existing file, so scattered timeouts null `nearestWater` on EXISTING
+records and the additive guard discards everything."* Verified false in source: `resolveNearestWater`
+**carries a prior `nearestWater` forward** on every unconfirmed/partial/total NHD failure — its gate
+is `absenceConfirmed !== true`. Only a genuinely confirmed absence (both NHD layers answered and found
+nothing) clears an existing value, and that's deliberate: it's what lets a corrected coordinate clear
+stale data. The false warning made a full run look destructive, so it was avoided for **seven
+consecutive data waves** while the debt grew (141 → 155 → 158 → 177) — a false deterrent costs more
+than a false assertion, because nothing ever tests the action you didn't take. Note: `mergeSitingContextEntry`
+takes an explicit `nhdRan` flag rather than inferring it, because `resolveNearestWater` signals "clear
+this stale value" by *omitting* the key, and an object spread cannot delete an omitted key — an
+unconditional existing-first merge would make a confirmed absence unable to ever clear a stale value on
+the default full-run path. That was a real regression, caught in review on this branch. The full path
+remains the right tool for exactly one case: re-querying a facility whose coordinates were corrected,
+because only it can *clear* a stale value — `--backfill-nhd` only fills gaps, it never re-checks a
+facility that already has an entry.
+
+⛔ **Stage 2 is not test-covered by an entry-shape check** — `siting-context.test.ts` asserts an ENTRY
+exists, not that it carries NHD fields — but the outstanding count is now covered by a separate
+mutation-tested ratchet (`NHD_BACKFILL_DEBT_CEILING`, currently 177) that fails if the debt grows *or*
+silently shrinks. Track the raw count explicitly and verify with
 ```bash
 python3 -c "
 import json
@@ -205,11 +227,47 @@ off={'HI','AK','GU','MP','PR','VI'}
 print(sum(1 for i,v in s.items() if 'nearestWater' not in v
           and f.get(i,{}).get('location',{}).get('state') not in off))"
 ```
-Expect **79** now, **0** after stage 2. ⚠️ The non-CONUS exclusion is REQUIRED: 19 facilities
-(HI 6 · AK 4 · GU 4 · MP 2 · PR 2 · VI 1) legitimately have no NHD match because NHD is CONUS-only,
-so an unscoped count reads 98 and can never reach 0.
+Expect **177** now, **0** after stage 2 (as measured 2026-09-29 — re-measure, don't cite this literal
+indefinitely). ⚠️ The non-CONUS exclusion is REQUIRED: 24 facilities
+(AK 9 · HI 6 · GU 4 · MP 2 · PR 2 · VI 1) legitimately have no NHD match because NHD is CONUS-only,
+so an unscoped count reads 201 and can never reach 0.
 Do NOT treat this as general permission to
 use `--skip-nhd` on a wave — the paragraph above is still the rule.
+
+⚠️ **Data-source decision (2026-09-29): keep the live NHD query service, do not migrate to bulk
+download.** Evaluated and rejected replacing the per-facility ArcGIS queries (`nhdQueryLayer`,
+called by `nearestWaterViaNHD`) with a bulk download:
+- USGS NHD was retired 2023-10-01 and is frozen — no longer maintained; the 3D Hydrography Program
+  (3DHP) is the successor. ⚠️ Secondary-sourced: the USGS access page returned HTTP 403 to `curl` this
+  session, so it was not fetched directly — corroborated by the `3DHP`/`3DHP_all` MapServers returning
+  HTTP 200.
+- The live service's layer is *named* "Flowline - Small Scale" but its own metadata describes
+  high-resolution NHD at 1:24,000/1:12,000 scale, with `GNIS_NAME` present. The name is a trap — it is
+  NOT the USGS 1:1,000,000 product.
+- Bulk sizes via the TNM Access API: national FileGDB 31,436,969,083 bytes (29.3 GiB, published
+  2025-09-18); national GeoPackage 43.1 GB; sum of all 56 state/territory FileGDBs ~22.7 GB (that
+  per-state sum was not independently re-verified).
+- **Decision: not switching.** `data/siting-context.json` is already the cache; frozen upstream data
+  cannot go stale, so only our own coordinate corrections invalidate an entry. Re-querying all 2,268
+  records to learn ~19 new ones per wave is ~99% waste, which `--backfill-nhd` removes instead. Bulk
+  would cost 22.7 GB of transfer, a GDAL system dependency (no mature pure-JS FileGDB reader; the
+  pure-JS shapefile route is ~46.5 GB), and replacing `nearestFromCandidates`'s bbox-prefilter + linear
+  scan with a real spatial index.
+- Keep the live service as the documented escape hatch for a genuine full recompute (a methodology
+  change or mass coordinate corrections).
+- Explicitly rejected: the USGS 1:1,000,000 hydrographic geodatabase (~231 MB national, small enough
+  to tempt) — it is a ~40x coarser generalization than the 1:24,000 data every other record was
+  measured at, so mixing it in would make `nearestWater` mean two different things inside one
+  published field.
+
+⚠️ **`fetchArcGISAll` now fails closed on a truncated page set.** It verifies its paged total against
+the service's own `returnCountOnly` total and throws on mismatch, because a page returning HTTP 200
+with `features: []` is byte-indistinguishable from genuine end-of-data. Measured: HIFLD reports 10,490
+features at `VOLTAGE>=230` and the layer's `maxRecordCount` is 2000 — exactly the page size — so a
+single transient empty page would have published ~6,000 of 10,490 (~43% loss) into both
+`public/data/power.geojson` and every `nearestTransmission`, with nothing failing. Consequence:
+`nearestTransmission` needs no carry-forward, unlike `nearestWater` — a `null` there is now
+authoritative, and adding a carry-forward would destroy the ability to ever clear a stale value.
 
 Why it matters: the site reads Neon live, so data never needed a build. Editing the
 file and shipping it through git made every correction a Vercel deploy, and left
