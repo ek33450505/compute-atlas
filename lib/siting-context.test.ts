@@ -85,7 +85,22 @@ describe("data-integrity: NHD backfill debt", () => {
   // [KS interior] (12s budget, both aborted) and refused the full pass, and the
   // script's own message prescribed --skip-nhd. This is the documented fallback
   // being used as documented, not a shortcut.
-  const NHD_BACKFILL_DEBT_CEILING = 158;
+  // 158 -> 177 on 2026-09-29: the 7th consecutive --skip-nhd wave (PR #363, the
+  // AR/CA approvals). The debt is exactly the 19 newly added records: 14
+  // Arkansas + 5 California, every one CONUS and every one missing
+  // nearestWater. NHD was SCATTERED-DEGRADED, not down — a different shape
+  // from the 2026-09-28 entry above, and the reason the full pass is not
+  // merely worth retrying: measured locally over two samples of
+  // spread-coordinate probes, 17 of 34 layer probes failed on the 12s budget
+  // while others answered normally, and three successes took 6.1-7.7s against
+  // the 473ms healthy baseline. Yet one full round of three spread
+  // coordinates came back green and fast (260-1064ms) mid-sample, which is
+  // exactly why a green pre-flight is a Bernoulli trial and not a health
+  // verdict. The workflow's own quorum pre-flight aborted
+  // the full pass at [KS interior] layers 4 and 10 (neon-sync run
+  // 36608012700), which is what discarded the map artifacts and left the PR
+  // red.
+  const NHD_BACKFILL_DEBT_CEILING = 177;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data
