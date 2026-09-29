@@ -181,7 +181,11 @@ skips `build:mapdata` turns the required `typecheck · lint · test` check red i
 silently. This covers the **manual** path specifically — `neon-sync.yml`'s additive guard only
 ever ran inside the automated workflow, so a maintainer syncing by hand bypassed it entirely.
 The reverse direction is deliberately NOT asserted: retiring a facility needs a raw Neon delete
-and legitimately leaves a stale siting entry behind.
+and legitimately leaves a stale siting entry behind. That orphan survives `--skip-nhd` runs (which
+union in every existing id) but is pruned by the next full or `--backfill-nhd` run, whose id set is
+facilities + computed results only. `check-siting-additive.mjs` then reports it as `removed: 1` and
+exits 1 — confirm the id is absent from `data/facilities.json` before accepting that as a prune
+rather than a loss (first seen 2026-09-29: `galaxy-helios-dickens-tx`, retired in #352).
 
 ⚠️ **The ONE sanctioned `--skip-nhd` exception, and its price** (2026-09-22). When USGS NHD is
 *degraded rather than down*, the full pass neither finishes nor aborts: `build-map-data.mjs`'s
@@ -192,7 +196,7 @@ In that case publish in two stages: (1) `build:mapdata -- --skip-nhd` now — th
 id and merges `{...existing[id], ...envContext[id]}`, so it is *structurally* additive and new
 records still get waterStress/aquifer/groundwaterDecline; (2) `build:mapdata -- --backfill-nhd` once
 NHD is healthy — it restricts the NHD pass to only the facilities whose existing
-`data/siting-context.json` entry lacks `nearestWater` (177, not a full 2,268-record re-pass) and
+`data/siting-context.json` entry lacks `nearestWater` (201 on 2026-09-29, not a full 2,268-record re-pass) and
 carries every other entry forward untouched. `--skip-nhd` and `--backfill-nhd` are mutually exclusive
 and error out together.
 
@@ -216,7 +220,7 @@ facility that already has an entry.
 
 ⛔ **Stage 2 is not test-covered by an entry-shape check** — `siting-context.test.ts` asserts an ENTRY
 exists, not that it carries NHD fields — but the outstanding count is now covered by a separate
-mutation-tested ratchet (`NHD_BACKFILL_DEBT_CEILING`, currently 177) that fails if the debt grows *or*
+mutation-tested ratchet (`NHD_BACKFILL_DEBT_CEILING`, 0 since the 2026-09-29 stage-2 run) that fails if the debt grows *or*
 silently shrinks. Track the raw count explicitly and verify with
 ```bash
 python3 -c "
@@ -227,8 +231,8 @@ off={'HI','AK','GU','MP','PR','VI'}
 print(sum(1 for i,v in s.items() if 'nearestWater' not in v
           and f.get(i,{}).get('location',{}).get('state') not in off))"
 ```
-Expect **177** now, **0** after stage 2 (as measured 2026-09-29 — re-measure, don't cite this literal
-indefinitely). ⚠️ The non-CONUS exclusion is REQUIRED: 24 facilities
+Stage 2 ran on 2026-09-29 and took it **177 → 0** in ~5 min (NHD healthy). Expect **0**; anything
+higher is a `--skip-nhd` wave's new debt, and the ratchet will fail on it. ⚠️ The non-CONUS exclusion is REQUIRED: 24 facilities
 (AK 9 · HI 6 · GU 4 · MP 2 · PR 2 · VI 1) legitimately have no NHD match because NHD is CONUS-only,
 so an unscoped count reads 201 and can never reach 0.
 Do NOT treat this as general permission to

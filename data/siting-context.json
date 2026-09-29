@@ -261,6 +261,15 @@
     }
   },
   "5c-data-centers-phx01-phoenix-az": {
+    "nearestWater": {
+      "name": "Salt River",
+      "kind": "river",
+      "distanceMi": 3.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -632,6 +641,15 @@
     }
   },
   "adapture-cherry-valley-solar-cross-county-ar": {
+    "nearestWater": {
+      "name": "Halk Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 23.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -692,6 +710,15 @@
     }
   },
   "aecc-woodruff-county-solar-ar": {
+    "nearestWater": {
+      "name": "Horseshoe Lake",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 21.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -805,6 +832,15 @@
     }
   },
   "aib-clt-01-spartanburg-county-sc": {
+    "nearestWater": {
+      "name": "Middle Tyger River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -903,6 +939,15 @@
     }
   },
   "alabama-power-gorgas-bess-parrish-al": {
+    "nearestWater": {
+      "name": "Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -932,6 +977,10 @@
     }
   },
   "alasconnect-anchorage-ak": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -942,6 +991,10 @@
     }
   },
   "alasconnect-fairbanks-ak": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 237.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -1258,6 +1311,15 @@
     }
   },
   "aligned-peoria-campus-az": {
+    "nearestWater": {
+      "name": "New River",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -1956,6 +2018,15 @@
     }
   },
   "american-express-whitsett-guilford-county-nc": {
+    "nearestWater": {
+      "name": "Back Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -2266,6 +2337,15 @@
     }
   },
   "applied-digital-delta-forge-2-brookwood-al": {
+    "nearestWater": {
+      "name": "Blanchet Branch",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -2435,6 +2515,15 @@
     }
   },
   "archbald-i-campus-1-eynon-jermyn-road-lackawanna-pa": {
+    "nearestWater": {
+      "name": "Lackawanna River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -2445,6 +2534,15 @@
     }
   },
   "archbald-i-campus-2-washington-avenue-lackawanna-pa": {
+    "nearestWater": {
+      "name": "Lackawanna River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -2569,6 +2667,15 @@
     }
   },
   "arizona-land-consulting-balterra-tonopah-az": {
+    "nearestWater": {
+      "name": "Winters Wash",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -2758,6 +2865,15 @@
     }
   },
   "artemis-power-tech-wolfe-ky": {
+    "nearestWater": {
+      "name": "Little Sinking Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 23.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -5081,6 +5197,15 @@
     }
   },
   "blakely-borough-data-center-lackawanna-pa": {
+    "nearestWater": {
+      "name": "Lackawanna River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -5448,6 +5573,15 @@
     }
   },
   "bluegrassnet-louisville-jefferson-ky": {
+    "nearestWater": {
+      "name": "South Fork Beargrass Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -5534,6 +5668,15 @@
     }
   },
   "blusky-ai-wells-elko-county-nv": {
+    "nearestWater": {
+      "name": "Humboldt River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.9
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -6032,6 +6175,15 @@
     }
   },
   "cane-creek-solar-clarke-ms": {
+    "nearestWater": {
+      "name": "Shubuta Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -6152,6 +6304,15 @@
     }
   },
   "cc-communications-fallon-churchill-county-nv": {
+    "nearestWater": {
+      "name": "Carson River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 1000,
+      "distanceMi": 13.8
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -6185,6 +6346,15 @@
     }
   },
   "cdt-vacaville-data-center-ca": {
+    "nearestWater": {
+      "name": "Gibson Canyon Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6366,6 +6536,15 @@
     }
   },
   "centersquare-ord1-chicago-il": {
+    "nearestWater": {
+      "name": "Lake Michigan",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -6517,6 +6696,15 @@
     }
   },
   "centra-rno1-south-virginia-reno-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -6527,6 +6715,15 @@
     }
   },
   "centra-rno2-keystone-reno-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -6567,6 +6764,15 @@
     }
   },
   "charter-spectrum-charlotte-national-data-center-nc": {
+    "nearestWater": {
+      "name": "Sugar Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -6916,6 +7122,15 @@
     }
   },
   "citynet-bridgeport-harrison-county-wv": {
+    "nearestWater": {
+      "name": "Simpson Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -6926,6 +7141,15 @@
     }
   },
   "citynet-charleston-kanawha-county-wv": {
+    "nearestWater": {
+      "name": "Kanawha River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -7644,6 +7868,15 @@
     }
   },
   "cloverleaf-bluestem-tonganoxie-ks": {
+    "nearestWater": {
+      "name": "Tonganoxie Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -7726,6 +7959,15 @@
     }
   },
   "cloverleaf-pumpkin-technology-campus-harlem-ga": {
+    "nearestWater": {
+      "name": "Sandy Run Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -8446,6 +8688,15 @@
     }
   },
   "coloxchange-north-las-vegas-nv": {
+    "nearestWater": {
+      "name": "Las Vegas Wash",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8696,6 +8947,15 @@
     }
   },
   "connect-data-centers-reno-north-valleys-nv": {
+    "nearestWater": {
+      "name": "Silver Lake",
+      "kind": "lake",
+      "distanceMi": 2.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -8797,6 +9057,15 @@
     }
   },
   "continent-8-west-virginia-dc1-south-charleston-wv": {
+    "nearestWater": {
+      "name": "Kanawha River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8807,6 +9076,15 @@
     }
   },
   "continent-8-west-virginia-dc2-petersburg-grant-county-wv": {
+    "nearestWater": {
+      "name": "South Branch Potomac River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8859,6 +9137,15 @@
     }
   },
   "copia-maricopa-energy-center-harquahala-az": {
+    "nearestWater": {
+      "name": "Tiger Wash",
+      "kind": "river",
+      "distanceMi": 2.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.6
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -9974,6 +10261,15 @@
     }
   },
   "cubico-crossett-solar-ashley-county-ar": {
+    "nearestWater": {
+      "name": "Snake Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 20.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -10030,6 +10326,15 @@
     }
   },
   "cypress-creek-steel-river-energy-center-wilson-ar": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 4.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.9
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -10059,6 +10364,15 @@
     }
   },
   "cyrusone-chandler-phx1-phx8-az": {
+    "nearestWater": {
+      "name": "Gila River",
+      "kind": "river",
+      "distanceMi": 7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -10217,6 +10531,15 @@
     }
   },
   "cyrusone-mesa-elliot-ellsworth-az": {
+    "nearestWater": {
+      "name": "Weekes Wash",
+      "kind": "river",
+      "distanceMi": 5.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -10459,6 +10782,15 @@
     }
   },
   "cyrusone-raleigh-durham-i-durham-nc": {
+    "nearestWater": {
+      "name": "Northeast Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -10617,6 +10949,15 @@
     }
   },
   "dartpoints-charleston-ladson-sc": {
+    "nearestWater": {
+      "name": "Bluehouse Swamp",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -10631,6 +10972,15 @@
     }
   },
   "dartpoints-columbia-sc": {
+    "nearestWater": {
+      "name": "Congaree River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -10706,6 +11056,15 @@
     }
   },
   "dartpoints-spartanburg-sc": {
+    "nearestWater": {
+      "name": "Grays Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -11549,6 +11908,15 @@
     }
   },
   "dc-blox-high-point-nc": {
+    "nearestWater": {
+      "name": "East Fork Deep River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -11624,6 +11992,15 @@
     }
   },
   "dc-blox-north-augusta-sc": {
+    "nearestWater": {
+      "name": "Horse Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11813,6 +12190,15 @@
     }
   },
   "dedispec-berkeley-springs-morgan-county-wv": {
+    "nearestWater": {
+      "name": "Warm Spring Run",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11842,6 +12228,15 @@
     }
   },
   "deep-lake-energy-center-nicholas-county-wv": {
+    "nearestWater": {
+      "name": "Arbuckle Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 30.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11871,12 +12266,25 @@
     }
   },
   "deepgreen-cook-inlet-nikiski-ak": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 35.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
     }
   },
   "deltas-edge-solar-carroll-ms": {
+    "nearestWater": {
+      "name": "Big Sand Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 15.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11910,6 +12318,15 @@
     }
   },
   "depg-smithfield-gateway-data-center-monroe-pa": {
+    "nearestWater": {
+      "name": "Sambo Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11935,6 +12352,15 @@
     }
   },
   "desri-long-lake-solar-phillips-county-ar": {
+    "nearestWater": {
+      "name": "Long Lake",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -12344,6 +12770,15 @@
     }
   },
   "digital-realty-ch3-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -12419,6 +12854,15 @@
     }
   },
   "digital-realty-clt10-charlotte-nc": {
+    "nearestWater": {
+      "name": "Little Sugar Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -12844,6 +13288,15 @@
     }
   },
   "digital-realty-ord13-franklin-park-il": {
+    "nearestWater": {
+      "name": "Des Plaines River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -12858,6 +13311,15 @@
     }
   },
   "digital-realty-ord14-franklin-park-il": {
+    "nearestWater": {
+      "name": "Des Plaines River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -12872,6 +13334,15 @@
     }
   },
   "digital-realty-ord23-northlake-il": {
+    "nearestWater": {
+      "name": "Addison Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -13470,6 +13941,15 @@
     }
   },
   "dominion-mount-storm-power-station-grant-county-wv": {
+    "nearestWater": {
+      "name": "Mount Storm Lake",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -13740,6 +14220,15 @@
     }
   },
   "duke-energy-smith-energy-complex-richmond-county-nc": {
+    "nearestWater": {
+      "name": "Marks Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -13788,6 +14277,15 @@
     }
   },
   "dynamic-quest-greensboro-nc": {
+    "nearestWater": {
+      "name": "Daniel Lumber Company Lake",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -13855,6 +14353,15 @@
     }
   },
   "eagle-rock-pine-ridge-tech-park-twiggs-ga": {
+    "nearestWater": {
+      "name": "Turvin Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -13869,6 +14376,15 @@
     }
   },
   "east-kentucky-network-ivel-floyd-ky": {
+    "nearestWater": {
+      "name": "Levisa Fork",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -13959,6 +14475,15 @@
     }
   },
   "eco-tip-west-moncure-chatham-county-nc": {
+    "nearestWater": {
+      "name": "Deep River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -14380,6 +14905,15 @@
     }
   },
   "edgeconnex-union-city-campus-fulton-ga": {
+    "nearestWater": {
+      "name": "Deep Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -14428,6 +14962,15 @@
     }
   },
   "edgecore-dobson-farms-east-florence-az": {
+    "nearestWater": {
+      "name": "Gila River",
+      "kind": "river",
+      "distanceMi": 6.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -14605,6 +15148,15 @@
     }
   },
   "edged-dekalb-project-vector-il": {
+    "nearestWater": {
+      "name": "Little Rock Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -14682,6 +15234,15 @@
     }
   },
   "edpr-crooked-lake-solar-mississippi-county-ar": {
+    "nearestWater": {
+      "name": "Crooked Lake",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 13.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -14696,6 +15257,15 @@
     }
   },
   "edpr-cypress-knee-solar-chicot-county-ar": {
+    "nearestWater": {
+      "name": "Bayou Macon",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -14744,6 +15314,15 @@
     }
   },
   "ekpc-cooper-station-unit-3-pulaski-ky": {
+    "nearestWater": {
+      "name": "Lake Cumberland",
+      "kind": "lake",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -14754,6 +15333,15 @@
     }
   },
   "ekpc-liberty-station-casey-ky": {
+    "nearestWater": {
+      "name": "Green River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 18.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15137,6 +15725,15 @@
     }
   },
   "enfinity-eg-saturn-solar-i-perry-al": {
+    "nearestWater": {
+      "name": "Rice Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15151,6 +15748,15 @@
     }
   },
   "enfinity-eg-saturn-solar-ii-perry-al": {
+    "nearestWater": {
+      "name": "Rice Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15299,6 +15905,15 @@
     }
   },
   "entergy-driver-solar-osceola-ar": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 2.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -15466,6 +16081,15 @@
     }
   },
   "entergy-searcy-solar-white-county-ar": {
+    "nearestWater": {
+      "name": "Glade Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15518,6 +16142,15 @@
     }
   },
   "entergy-walnut-bend-solar-lee-county-ar": {
+    "nearestWater": {
+      "name": "Little LaGrue Bayou",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -15555,6 +16188,15 @@
     }
   },
   "entergy-west-memphis-solar-crittenden-county-ar": {
+    "nearestWater": {
+      "name": "Alligator Bayou",
+      "kind": "river",
+      "distanceMi": 4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -16284,6 +16926,15 @@
     }
   },
   "eurus-ee-gemina-solar-triana-al": {
+    "nearestWater": {
+      "name": "Guntersville Lake",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 10.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -16754,6 +17405,15 @@
     }
   },
   "fiddle-falls-solar-pontotoc-ms": {
+    "nearestWater": {
+      "name": "Cane Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 19.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -16888,6 +17548,15 @@
     }
   },
   "flat-fork-solar-brinkley-ar": {
+    "nearestWater": {
+      "name": "Flat Fork Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -17951,6 +18620,15 @@
     }
   },
   "fort-martin-power-station-maidsville-monongalia-county-wv": {
+    "nearestWater": {
+      "name": "Monongahela River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -18479,6 +19157,15 @@
     }
   },
   "giga-data-centers-mooresville-nc": {
+    "nearestWater": {
+      "name": "West Branch Rocky River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -18527,6 +19214,15 @@
     }
   },
   "girasol-solar-farm-sunflower-ms": {
+    "nearestWater": {
+      "name": "Otter Lake Bayou",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 13.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -18621,6 +19317,15 @@
     }
   },
   "global-stack-san-mateo-county-event-center-ca": {
+    "nearestWater": {
+      "name": "Laurel Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -18631,6 +19336,15 @@
     }
   },
   "global-stack-tulare-county-fairgrounds-ca": {
+    "nearestWater": {
+      "name": "Elk Bayou",
+      "kind": "river",
+      "distanceMi": 3.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -20062,6 +20776,10 @@
     }
   },
   "greensparc-cordova-ak": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 136.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -20450,6 +21168,15 @@
     }
   },
   "harvest-gold-solar-sunflower-ms": {
+    "nearestWater": {
+      "name": "Big Sunflower River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -20464,6 +21191,15 @@
     }
   },
   "hattiesburg-solar-farm-forrest-ms": {
+    "nearestWater": {
+      "name": "Burketts Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -20699,6 +21435,15 @@
     }
   },
   "hinds-solar-hinds-ms": {
+    "nearestWater": {
+      "name": "Straight Fence Creek",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -21293,6 +22038,15 @@
     }
   },
   "iep-hummingbird-data-center-campus-greene-county-pa": {
+    "nearestWater": {
+      "name": "Monongahela River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -21478,6 +22232,15 @@
     }
   },
   "invenergy-chalk-bluff-solar-st-francis-county-ar": {
+    "nearestWater": {
+      "name": "Saint Francis River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -21492,6 +22255,15 @@
     }
   },
   "invenergy-decoy-solar-arkansas-county-ar": {
+    "nearestWater": {
+      "name": "Prices Branch",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -21506,6 +22278,15 @@
     }
   },
   "invenergy-downstream-solar-keo-lonoke-county-ar": {
+    "nearestWater": {
+      "name": "North Bayou",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -21702,6 +22483,15 @@
     }
   },
   "iron-mountain-azp-3-az": {
+    "nearestWater": {
+      "name": "Salt River",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -22032,6 +22822,15 @@
     }
   },
   "isp-net-las-vegas-fremont-nv": {
+    "nearestWater": {
+      "name": "Flamingo Wash",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -22398,6 +23197,15 @@
     }
   },
   "karis-critical-hoffman-estates-plum-farms-il": {
+    "nearestWater": {
+      "name": "Spring Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -22408,6 +23216,15 @@
     }
   },
   "karis-critical-naperville-il": {
+    "nearestWater": {
+      "name": "East Branch Du Page River",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -22418,6 +23235,15 @@
     }
   },
   "karis-dekalb-campus-il": {
+    "nearestWater": {
+      "name": "South Branch Kishwaukee River",
+      "kind": "river",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -22462,6 +23288,15 @@
     }
   },
   "klondike-wyalusing-data-center-bradford-pa": {
+    "nearestWater": {
+      "name": "Brewer Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -22506,6 +23341,15 @@
     }
   },
   "kyndryl-research-triangle-park-durham-nc": {
+    "nearestWater": {
+      "name": "Stirrup Iron Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -22645,6 +23489,15 @@
     }
   },
   "landshark-energy-solar-calhoun-ms": {
+    "nearestWater": {
+      "name": "Gordon Branch",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 28.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -22991,6 +23844,15 @@
     }
   },
   "lighthouse-data-centers-spartanburg-sc": {
+    "nearestWater": {
+      "name": "Peters Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -23001,6 +23863,15 @@
     }
   },
   "lightsource-bp-black-bear-solar-montgomery-al": {
+    "nearestWater": {
+      "name": "Waller Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -23015,6 +23886,15 @@
     }
   },
   "lightsource-bp-conway-solar-at-happy-white-county-ar": {
+    "nearestWater": {
+      "name": "Raft Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -23044,6 +23924,15 @@
     }
   },
   "lincoln-land-energy-center-pawnee-il": {
+    "nearestWater": {
+      "name": "Horse Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -23505,6 +24394,15 @@
     }
   },
   "lumen-greensboro-1-nc": {
+    "nearestWater": {
+      "name": "Ryan Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -23515,6 +24413,15 @@
     }
   },
   "lumen-las-vegas-1-aerojet-nv": {
+    "nearestWater": {
+      "name": "Las Vegas Wash",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -23925,6 +24832,15 @@
     }
   },
   "mainstream-technologies-little-rock-data-center-ar": {
+    "nearestWater": {
+      "name": "Murray Lake",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 10.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -23992,6 +24908,15 @@
     }
   },
   "mapletree-5150-mccrimmon-morrisville-nc": {
+    "nearestWater": {
+      "name": "Stirrup Iron Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -24189,6 +25114,15 @@
     }
   },
   "mark-iv-victory-district-gas-generation-fernley-nv": {
+    "nearestWater": {
+      "name": "Fernley Reservoir Number One",
+      "kind": "lake",
+      "distanceMi": 3.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 1000,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": -1,
       "label": "Arid and Low Water Use"
@@ -24434,6 +25368,15 @@
     }
   },
   "menlo-digital-chicago-exchange-il": {
+    "nearestWater": {
+      "name": "Chicago Sanitary and Ship Canal",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -25489,6 +26432,15 @@
     }
   },
   "microsoft-east-point-ben-hill-road-ga": {
+    "nearestWater": {
+      "name": "Camp Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -26012,6 +26964,15 @@
     }
   },
   "microsoft-palmetto-fulton-ga": {
+    "nearestWater": {
+      "name": "Little Bear Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -26439,6 +27400,15 @@
     }
   },
   "mn8-mammoth-solar-kanawha-county-wv": {
+    "nearestWater": {
+      "name": "Elk Twomile Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -26449,6 +27419,15 @@
     }
   },
   "mon-power-davis-solar-tucker-county-wv": {
+    "nearestWater": {
+      "name": "Blackwater River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -26478,6 +27457,15 @@
     }
   },
   "mon-power-valley-point-solar-preston-county-wv": {
+    "nearestWater": {
+      "name": "Glade Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -26488,6 +27476,15 @@
     }
   },
   "mon-power-wylie-ridge-solar-hancock-county-wv": {
+    "nearestWater": {
+      "name": "Harmon Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -26612,6 +27609,15 @@
     }
   },
   "moonshot-solar-hancock-ms": {
+    "nearestWater": {
+      "name": "Bayou Bacon",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -27143,6 +28149,15 @@
     }
   },
   "netl-computational-science-engineering-center-morgantown-wv": {
+    "nearestWater": {
+      "name": "Monongahela River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -27446,6 +28461,15 @@
     }
   },
   "nextera-big-cypress-solar-crittenden-county-ar": {
+    "nearestWater": {
+      "name": "Big Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 15.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -27460,6 +28484,15 @@
     }
   },
   "nextera-chicot-solar-lake-village-ar": {
+    "nearestWater": {
+      "name": "Boeuf River",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -27474,6 +28507,15 @@
     }
   },
   "nextera-forgeview-solar-mississippi-county-ar": {
+    "nearestWater": {
+      "name": "Crooked Lake",
+      "kind": "lake",
+      "distanceMi": 4.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 8.8
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -27526,6 +28568,15 @@
     }
   },
   "nextera-little-ashdown-solar-little-river-county-ar": {
+    "nearestWater": {
+      "name": "Allen Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -27566,6 +28617,15 @@
     }
   },
   "nextera-stuttgart-solar-arkansas-county-ar": {
+    "nearestWater": {
+      "name": "Bennett Reservoir",
+      "kind": "lake",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -27717,6 +28777,15 @@
     }
   },
   "noaa-environmental-security-computing-center-fairmont-wv": {
+    "nearestWater": {
+      "name": "Monongahela River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -27875,6 +28944,15 @@
     }
   },
   "northstar-newport-solar-jackson-county-ar": {
+    "nearestWater": {
+      "name": "Village Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -28836,6 +29914,15 @@
     }
   },
   "oppidan-clop-aiken-graniteville-sc": {
+    "nearestWater": {
+      "name": "Horse Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -28865,6 +29952,15 @@
     }
   },
   "oppidan-paradise-post-road-clark-county-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29031,6 +30127,15 @@
     }
   },
   "origis-covington-solar-ms": {
+    "nearestWater": {
+      "name": "McCall Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 13.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29090,6 +30195,15 @@
     }
   },
   "origis-walker-springs-i-solar-clarke-al": {
+    "nearestWater": {
+      "name": "Bassett Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29104,6 +30218,15 @@
     }
   },
   "origis-walker-springs-ii-solar-clarke-al": {
+    "nearestWater": {
+      "name": "Bassett Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29160,6 +30283,15 @@
     }
   },
   "orsted-eleven-mile-solar-center-pinal-az": {
+    "nearestWater": {
+      "name": "Lake in the Desert",
+      "kind": "lake",
+      "distanceMi": 5.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -29238,6 +30370,15 @@
     }
   },
   "overwatch-resilience-gsp-greer-sc": {
+    "nearestWater": {
+      "name": "Enoree River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -29271,6 +30412,15 @@
     }
   },
   "ozarksgo-fayetteville-data-center-ar": {
+    "nearestWater": {
+      "name": "Owl Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29281,6 +30431,15 @@
     }
   },
   "pa-data-center-partners-granville-township-mifflin-pa": {
+    "nearestWater": {
+      "name": "Juniata River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29435,6 +30594,15 @@
     }
   },
   "pattern-big-island-solar-wilson-ar": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 4.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.9
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -29551,6 +30719,15 @@
     }
   },
   "pearl-river-solar-park-scott-ms": {
+    "nearestWater": {
+      "name": "Coffee Bogue",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 16.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29580,6 +30757,15 @@
     }
   },
   "pennsylvania-glacial-till-caughbaugh-road-tobyhanna-monroe-pa": {
+    "nearestWater": {
+      "name": "Lehigh River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29902,6 +31088,15 @@
     }
   },
   "pnk-great-stream-commons-gregg-township-union-pa": {
+    "nearestWater": {
+      "name": "West Branch Susquehanna River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -30356,6 +31551,15 @@
     }
   },
   "powersouth-lowman-simple-cycle-leroy-al": {
+    "nearestWater": {
+      "name": "Tombigbee River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -30442,6 +31646,15 @@
     }
   },
   "premier-project-arrowhead-irwin-ga": {
+    "nearestWater": {
+      "name": "Reedy Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -30635,6 +31848,15 @@
     }
   },
   "primergy-prairie-mist-solar-ashley-county-ar": {
+    "nearestWater": {
+      "name": "Haley Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 21.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -30961,6 +32183,15 @@
     }
   },
   "project-turbo-llc-project-azalea-thomson-ga": {
+    "nearestWater": {
+      "name": "Sills Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -31009,6 +32240,15 @@
     }
   },
   "prologis-326-charcot-avenue-san-jose-ca": {
+    "nearestWater": {
+      "name": "Coyote Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -31296,6 +32536,15 @@
     }
   },
   "prospect-rd-misty-hollow-forward-township-butler-pa": {
+    "nearestWater": {
+      "name": "Connoquenessing Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -32291,6 +33540,15 @@
     }
   },
   "quartz-solar-cross-county-ar": {
+    "nearestWater": {
+      "name": "Williams Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 16.8
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -32362,6 +33620,15 @@
     }
   },
   "qx-net-lexington-fayette-ky": {
+    "nearestWater": {
+      "name": "Town Branch",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -32793,6 +34060,15 @@
     }
   },
   "related-digital-8080-lake-shore-chicago-il": {
+    "nearestWater": {
+      "name": "Lake Michigan",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -33145,6 +34421,15 @@
     }
   },
   "roller-network-reno-nv": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -33353,6 +34638,15 @@
     }
   },
   "ryan-companies-florence-tech-park-az": {
+    "nearestWater": {
+      "name": "Gila River",
+      "kind": "river",
+      "distanceMi": 8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -33386,6 +34680,15 @@
     }
   },
   "ryan-companies-southwest-crossing-data-park-eloy-az": {
+    "nearestWater": {
+      "name": "Santa Cruz River",
+      "kind": "river",
+      "distanceMi": 6.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -33419,6 +34722,15 @@
     }
   },
   "rye-arkabutla-lake-hydro-desoto-ms": {
+    "nearestWater": {
+      "name": "Coldwater River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -33433,6 +34745,15 @@
     }
   },
   "rye-enid-lake-hydro-panola-ms": {
+    "nearestWater": {
+      "name": "Enid Lake",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -33447,6 +34768,15 @@
     }
   },
   "rye-grenada-lake-hydro-grenada-ms": {
+    "nearestWater": {
+      "name": "Yalobusha River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -33461,6 +34791,15 @@
     }
   },
   "rye-sardis-lake-hydro-panola-ms": {
+    "nearestWater": {
+      "name": "Little Tallahatchie River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -33779,6 +35118,15 @@
     }
   },
   "sabre-solar-holmes-ms": {
+    "nearestWater": {
+      "name": "Millstone Bayou",
+      "kind": "river",
+      "distanceMi": 2.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -33827,6 +35175,15 @@
     }
   },
   "sahuarita-holdings-project-gravel-pima-county-az": {
+    "nearestWater": {
+      "name": "Santa Cruz River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -34279,6 +35636,15 @@
     }
   },
   "sarcobatus-solar-scottys-junction-nye-county-nv": {
+    "nearestWater": {
+      "name": "Oriental Wash",
+      "kind": "river",
+      "distanceMi": 11.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 67.7
+    },
     "waterStress": {
       "cat": -1,
       "label": "Arid and Low Water Use"
@@ -34812,6 +36178,15 @@
     }
   },
   "shady-spring-data-center-campus-raleigh-county-wv": {
+    "nearestWater": {
+      "name": "Little Beaver Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -34917,6 +36292,15 @@
     }
   },
   "silicon-ranch-lambert-solar-georgetown-county-sc": {
+    "nearestWater": {
+      "name": "Ditch Branch",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -35141,6 +36525,15 @@
     }
   },
   "skybox-santa-clara-1200-memorex-drive-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -35542,18 +36935,45 @@
     }
   },
   "sr-jasper-solar-jasper-ms": {
+    "nearestWater": {
+      "name": "Pachuta Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
     }
   },
   "sr-magnolia-solar-monroe-ms": {
+    "nearestWater": {
+      "name": "James Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
     }
   },
   "sr-meridian-iii-solar-lauderdale-ms": {
+    "nearestWater": {
+      "name": "Sucatolba Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -35568,6 +36988,15 @@
     }
   },
   "sr-mount-pleasant-solar-marshall-ms": {
+    "nearestWater": {
+      "name": "Lee Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36673,6 +38102,15 @@
     }
   },
   "sumrall-i-solar-lamar-ms": {
+    "nearestWater": {
+      "name": "Tick Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 11.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -36687,6 +38125,15 @@
     }
   },
   "sumrall-ii-solar-lamar-ms": {
+    "nearestWater": {
+      "name": "Big Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 11.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -36720,6 +38167,15 @@
     }
   },
   "sunflower-county-solar-station-ms": {
+    "nearestWater": {
+      "name": "Blackhaw Bayou",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 13.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -37066,6 +38522,15 @@
     }
   },
   "switch-las-vegas-15-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -37224,6 +38689,15 @@
     }
   },
   "synergy-south-russellville-al": {
+    "nearestWater": {
+      "name": "Garman Branch",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -37379,6 +38853,15 @@
     }
   },
   "t5-chicago-v-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -37742,6 +39225,15 @@
     }
   },
   "tc-atlanta-development-winston-douglas-ga": {
+    "nearestWater": {
+      "name": "Waterfall Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -38105,6 +39597,10 @@
     }
   },
   "terra-energy-center-susitna-ak": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 41.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -38126,6 +39622,15 @@
     }
   },
   "terra-nexus-camden-kershaw-county-sc": {
+    "nearestWater": {
+      "name": "Little Pine Tree Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -38452,6 +39957,15 @@
     }
   },
   "tierpoint-charlotte-north-myers-nc": {
+    "nearestWater": {
+      "name": "Little Sugar Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -38681,6 +40195,15 @@
     }
   },
   "tierpoint-raleigh-departure-drive-nc": {
+    "nearestWater": {
+      "name": "Marsh Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -38691,6 +40214,15 @@
     }
   },
   "tierpoint-raleigh-rtp-durham-nc": {
+    "nearestWater": {
+      "name": "Stirrup Iron Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -38913,6 +40445,15 @@
     }
   },
   "toyota-tsusho-toyota-alabama-solar-huntsville-al": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -38938,6 +40479,15 @@
     }
   },
   "tpx-communications-las-vegas-nv": {
+    "nearestWater": {
+      "name": "Duck Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -39328,6 +40878,15 @@
     }
   },
   "tron-usa-ai-campus-titus-station-cumru-berks-pa": {
+    "nearestWater": {
+      "name": "Angelica Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -39470,6 +41029,15 @@
     }
   },
   "tva-new-caledonia-lowndes-ms": {
+    "nearestWater": {
+      "name": "Howard Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -39484,6 +41052,15 @@
     }
   },
   "twisted-gun-solar-mingo-logan-county-wv": {
+    "nearestWater": {
+      "name": "Middle Fork Island Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 12.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -40407,6 +41984,15 @@
     }
   },
   "vme-lockport-star-innovation-district-il": {
+    "nearestWater": {
+      "name": "Fiddyment Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -41106,6 +42692,15 @@
     }
   },
   "wildflower-solar-desoto-ms": {
+    "nearestWater": {
+      "name": "Johnson Creek",
+      "kind": "river",
+      "distanceMi": 3.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -41272,6 +42867,15 @@
     }
   },
   "wyalusing-energy-center-bradford-pa": {
+    "nearestWater": {
+      "name": "Brewer Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -41496,6 +43100,15 @@
     }
   },
   "youngwoo-project-brookwood-al": {
+    "nearestWater": {
+      "name": "Hurricane Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -41587,21 +43200,6 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
-    }
-  },
-  "galaxy-helios-dickens-tx": {
-    "nearestWater": {
-      "name": "Mexican Creek",
-      "kind": "river",
-      "distanceMi": 2
-    },
-    "nearestTransmission": {
-      "voltageKv": 345,
-      "distanceMi": 0.1
-    },
-    "waterStress": {
-      "cat": 4,
-      "label": "Extremely High (>80%)"
     }
   }
 }
