@@ -1388,7 +1388,35 @@ export async function main(): Promise<void> {
     return;
   }
 
-  const existingFacilities = await loadFacilities(args.baseUrl);
+  // Fail fast on a stale index, before any candidate is processed. Unlike the
+  // four read-only discovery lanes (check-sources.ts, existing-facilities.ts,
+  // extract-fields.ts, verify-fields.ts) — where a file fallback is degraded
+  // but not corrupting, and gets a loud console.warn instead — this script
+  // resolves candidate targets against `existingFacilities` and then POSTs to
+  // the very API that just failed to answer. A stale index can turn a
+  // recently-approved facility's update into a false "target not found"
+  // (counted as `skippedInvalid`, discarding real work silently — see the
+  // note above exitCodeForSummary) or re-stage an already-live facility as a
+  // duplicate. Both are worse than aborting, and the POST to
+  // /api/submissions was going to fail anyway if the API is unreachable, so
+  // there is nothing to gain by proceeding. This is deliberately an early
+  // abort in main() rather than a new exitCodeForSummary input: a stale index
+  // is a precondition failure ("we could not establish what is already
+  // live"), not a per-candidate outcome, and exitCodeForSummary's contract is
+  // scoped to summarizing candidates that were actually processed — none
+  // have been yet at this point, so there is no summary to report and
+  // nothing has been staged.
+  const existingFacilitiesResult = await loadFacilities(args.baseUrl);
+  if (existingFacilitiesResult.source === "file") {
+    console.error(
+      `Could not read the live facility index from the API (${existingFacilitiesResult.apiError}); ` +
+        "refusing to stage candidates against the committed data/facilities.json snapshot, which may " +
+        "be stale. Staging nothing this run rather than risking a false duplicate or a lost update."
+    );
+    process.exit(1);
+    return;
+  }
+  const existingFacilities = existingFacilitiesResult.facilities;
 
   // Default-ON: the real gate always runs unless explicitly disabled. This
   // makes Ollama an operational dependency of a real (non-dry-run) discovery
