@@ -43,14 +43,24 @@
  *   data/siting-context.json                (per-facility nearest-water/-transmission +
  *                                             waterStress/groundwaterDecline/aquifer stats)
  *
- * Usage: node scripts/build-map-data.mjs [--skip-nhd]
- *   --skip-nhd  Skip the slow (~5min) live USGS NHD nearest-water pass and the
- *               water/power/drought overlay rebuild. Reuses the EXISTING
- *               data/siting-context.json's nearestWater/nearestTransmission
- *               fields and existing public/data/map-layers.json water/power/
- *               drought entries byte-for-byte, recomputing + merging in only
- *               the Aqueduct/aquifer fields and overlays. Use this to refresh
- *               environmental layers without re-running the full NHD pass.
+ * Usage: node scripts/build-map-data.mjs [--skip-nhd | --backfill-nhd]
+ *   --skip-nhd      Skip the slow (~5min) live USGS NHD nearest-water pass and
+ *                   the water/power/drought overlay rebuild. Reuses the
+ *                   EXISTING data/siting-context.json's nearestWater/
+ *                   nearestTransmission fields and existing
+ *                   public/data/map-layers.json water/power/drought entries
+ *                   byte-for-byte, recomputing + merging in only the
+ *                   Aqueduct/aquifer fields and overlays. Use this to refresh
+ *                   environmental layers without re-running the full NHD pass.
+ *   --backfill-nhd  Run the normal full path (water/power/drought overlays
+ *                   rebuild included), but restrict the per-facility NHD
+ *                   lookup to facilities whose EXISTING siting-context.json
+ *                   entry has no nearestWater — the debt a chronically
+ *                   degraded NHD has left behind across repeated full-pass
+ *                   timeouts, rather than re-querying all ~2200 CONUS
+ *                   facilities every time. Mutually exclusive with
+ *                   --skip-nhd (one makes no NHD calls, the other exists
+ *                   only to make them).
  */
 
 import { writeFileSync, mkdirSync, readFileSync } from 'fs';
@@ -1193,6 +1203,89 @@ export function resolveNearestWater(waterOutcome, existingEntry) {
 }
 
 /**
+ * --backfill-nhd's narrowing predicate: does this facility still need an NHD
+ * lookup? True when its existing siting-context.json entry has no
+ * nearestWater — including a facility absent from existingContext entirely,
+ * which has no value to speak of. Extracted as a pure function so the
+ * narrowing logic (which facilities computeSitingContext even iterates) is
+ * testable without a network call.
+ */
+export function needsNHDBackfill(existingEntry) {
+  return !existingEntry?.nearestWater;
+}
+
+/**
+ * Merge one facility's final siting-context.json entry from the three
+ * possible sources. Which side wins is NOT a fixed spread order — it is
+ * gated on the caller-supplied `nhdRan`, and that gate is load-bearing.
+ *
+ * LANDMINE (2026-09-29), corrected same day: an unconditional existing-first
+ * spread (`{ ...existing, ...nhd, ...env }`) fixes --backfill-nhd's narrowed
+ * subset (see below) but breaks the ordinary full run, which is the default
+ * production and CI path. `resolveNearestWater` signals "this stale value is
+ * a CONFIRMED absence, clear it" by returning `value: undefined`, and the
+ * entry builder then OMITS the key entirely — a plain object spread cannot
+ * delete an already-present key, so once `existingEntry` is spread first, a
+ * stale `nearestWater` survives a genuine, fully-confirmed absence forever.
+ * That directly contradicts resolveNearestWater's own contract: "a corrected
+ * coordinate must still be able to clear a stale value."
+ *
+ * The two cases an unconditional spread order cannot tell apart:
+ *   - NHD RAN for this facility this pass: nhdEntry is authoritative for the
+ *     fields it owns, INCLUDING an omitted key meaning "confirmed absent,
+ *     clear it". Existing must NOT be spread first, or a cleared field would
+ *     survive underneath nhdEntry's own `{}`-shaped omission.
+ *   - NHD did NOT run for this facility this pass (skipped by
+ *     --backfill-nhd's narrowing, or filtered out for lacking coordinates):
+ *     nhdEntry contributes nothing by construction (there was no lookup), so
+ *     existing must win or a source that never touched this facility would
+ *     silently erase its already-good fields. This is the ORIGINAL landmine:
+ *     --backfill-nhd's nhdContext holds only the narrowed subset that lacked
+ *     nearestWater, so for every other sited facility, an nhd-first spread
+ *     would spread `undefined`'s `{}` and drop already-good data.
+ *
+ * `nhdRan` must come from the SAME set computeSitingContext actually
+ * iterated (its returned `processedIds`), never inferred from
+ * `nhdEntry === undefined` — a facility NHD ran on can legitimately produce
+ * an entry with zero keys (no nearestWater, no nearestTransmission), which
+ * is byte-identical to a facility NHD never touched. Conflating the two is
+ * exactly what caused this bug; see needsNHDBackfill/computeSitingContext.
+ */
+export function mergeSitingContextEntry(existingEntry, nhdEntry, envEntry, { nhdRan = false } = {}) {
+  if (nhdRan) {
+    return { ...(nhdEntry ?? {}), ...(envEntry ?? {}) };
+  }
+  return { ...(existingEntry ?? {}), ...(envEntry ?? {}) };
+}
+
+/**
+ * Parse and validate the two mutually-exclusive NHD run-mode flags from
+ * argv. --skip-nhd makes NO NHD calls at all; --backfill-nhd exists ONLY to
+ * make NHD calls (for the narrowed set of facilities still missing
+ * nearestWater) — passing both is a contradiction, not a preference to
+ * resolve, so this returns an `error` message rather than silently picking
+ * one. Pure (no process.exit / console access) so main()'s CLI wiring stays
+ * a thin, untested shell and the validation itself is unit-testable.
+ */
+export function parseNHDFlags(argv) {
+  const skipNHD = argv.includes('--skip-nhd');
+  const backfillNHD = argv.includes('--backfill-nhd');
+  if (skipNHD && backfillNHD) {
+    return {
+      skipNHD,
+      backfillNHD,
+      error: [
+        '',
+        '--skip-nhd and --backfill-nhd are mutually exclusive: --skip-nhd makes NO',
+        'NHD calls at all, while --backfill-nhd exists ONLY to make NHD calls (for',
+        'the narrowed set of facilities still missing nearestWater). Pass exactly one.',
+      ].join('\n'),
+    };
+  }
+  return { skipNHD, backfillNHD, error: null };
+}
+
+/**
  * Decide whether a run projected from the CURRENT measurement window can
  * still finish inside the job's time budget. Pure: takes measurements,
  * returns a verdict — no clock, no sleeping, fully testable (mirrors the
@@ -1293,9 +1386,21 @@ export function nextThroughputWindow({ processed, windowSize, windowStartedAt, n
   return { isBoundary: true, windowElapsedMs: nowMs - windowStartedAt, windowStartedAt: nowMs };
 }
 
-async function computeSitingContext(facilities, powerCandidates, existingContext = {}, { now = () => Date.now() } = {}) {
+export async function computeSitingContext(
+  facilities,
+  powerCandidates,
+  existingContext = {},
+  { now = () => Date.now(), backfillOnly = false } = {},
+) {
   console.log('\n=== Siting context (per-facility nearest water/transmission) ===');
   const result = {};
+  // Every id this run actually iterated the loop for — NOT `Object.keys(result)`,
+  // which only holds ids whose entry ended up with at least one key. A facility
+  // NHD ran on but which produced zero fields (no nearestWater, no
+  // nearestTransmission) is otherwise indistinguishable from one NHD never
+  // touched, which is the exact ambiguity mergeSitingContextEntry's `nhdRan`
+  // exists to resolve. This is the single source of truth callers must use.
+  const processedIds = new Set();
   let consecutiveNHDFailures = 0;
   let carriedForwardCount = 0;
   let unconfirmedAbsenceCount = 0;
@@ -1315,10 +1420,23 @@ async function computeSitingContext(facilities, powerCandidates, existingContext
   // abort is worse than no guard: the first one teaches everyone watching the
   // pipeline to ignore it. Dormant today (0 of the live dataset lacks
   // coordinates) but latent otherwise.
-  const sitedFacilities = facilities.filter((facility) => {
+  //
+  // --backfill-nhd composes the SAME filter rather than adding a second skip
+  // path, for the identical reason: `sitedFacilities` stays the exact set
+  // this run iterates, so `total` fed to assessThroughput below is never
+  // biased by facilities the run was never going to touch.
+  const sitedWithCoords = facilities.filter((facility) => {
     const { lat, lon } = facility.location ?? {};
     return typeof lat === 'number' && typeof lon === 'number';
   });
+  const sitedFacilities = backfillOnly
+    ? sitedWithCoords.filter((facility) => needsNHDBackfill(existingContext[facility.id]))
+    : sitedWithCoords;
+  if (backfillOnly) {
+    console.log(
+      `  backfill mode: ${sitedFacilities.length} of ${sitedWithCoords.length} facilities lack nearestWater`,
+    );
+  }
 
   for (const facility of sitedFacilities) {
     const { lat, lon } = facility.location ?? {};
@@ -1370,6 +1488,7 @@ async function computeSitingContext(facilities, powerCandidates, existingContext
         distanceMi: Math.round(nearestTransmission.dist * 10) / 10,
       };
     }
+    processedIds.add(facility.id);
     if (Object.keys(entry).length > 0) {
       result[facility.id] = entry;
     }
@@ -1451,7 +1570,7 @@ async function computeSitingContext(facilities, powerCandidates, existingContext
       `  [warn] ${unconfirmedAbsenceCount} facilities had UNCONFIRMED water absence this run (NHD degraded at the terminating ring) — ${carriedForwardCount} preserved from the prior siting-context.json, ${unconfirmedAbsenceCount - carriedForwardCount} recorded no nearestWater and should be re-verified`
     );
   }
-  return result;
+  return { result, processedIds };
 }
 
 /**
@@ -1491,7 +1610,12 @@ function computeDistribution(sitingContext, fieldName) {
 // Main
 // ---------------------------------------------------------------------------
 async function main() {
-  const skipNHD = process.argv.slice(2).includes('--skip-nhd');
+  const { skipNHD, backfillNHD, error: flagError } = parseNHDFlags(process.argv.slice(2));
+  if (flagError) {
+    console.error(flagError);
+    process.exitCode = 1;
+    return;
+  }
 
   // --skip-nhd makes NO NHD calls at all, so it must NOT pre-flight: that path
   // is the documented fallback DURING an outage and has to keep working when
@@ -1529,6 +1653,7 @@ async function main() {
   const facilities = JSON.parse(readFileSync(FACILITIES_PATH, 'utf8'));
   console.log(`Loaded ${facilities.length} facilities from ${FACILITIES_PATH}`);
   if (skipNHD) console.log('--skip-nhd: reusing existing siting-context.json + map-layers.json for water/power/drought');
+  if (backfillNHD) console.log('--backfill-nhd: querying NHD only for facilities whose existing entry lacks nearestWater');
 
   const aqueductResult = await buildAqueduct();
   const aquifersResult = await buildAquifers();
@@ -1575,7 +1700,9 @@ async function main() {
       ...Object.keys(envContext),
     ]);
     for (const id of ids) {
-      sitingContext[id] = { ...(existing[id] ?? {}), ...(envContext[id] ?? {}) };
+      // --skip-nhd makes NO NHD calls at all, so no facility was processed
+      // this run: nhdRan is false for every id, unconditionally.
+      sitingContext[id] = mergeSitingContextEntry(existing[id], undefined, envContext[id], { nhdRan: false });
     }
     manifestBase = JSON.parse(readFileSync(MANIFEST_OUT, 'utf8'));
   } else {
@@ -1600,7 +1727,12 @@ async function main() {
       }
       /* fake-success-ok: ENOENT only — first-ever build has no prior siting-context.json to carry forward from. */
     }
-    const nhdContext = await computeSitingContext(facilities, powerResult.powerCandidates, existingSitingContext);
+    const { result: nhdContext, processedIds } = await computeSitingContext(
+      facilities,
+      powerResult.powerCandidates,
+      existingSitingContext,
+      { backfillOnly: backfillNHD },
+    );
     sitingContext = {};
     // Seed the id set with EVERY facility, not just the ones a dataset matched:
     // a facility that matched nothing is recorded as `{}` on purpose. NHD,
@@ -1615,7 +1747,16 @@ async function main() {
       ...Object.keys(envContext),
     ]);
     for (const id of ids) {
-      sitingContext[id] = { ...(nhdContext[id] ?? {}), ...(envContext[id] ?? {}) };
+      // nhdRan comes from processedIds — the set computeSitingContext actually
+      // iterated — NEVER from `nhdContext[id] !== undefined`. A facility NHD
+      // ran on can legitimately produce a zero-key entry (confirmed absence,
+      // no transmission match either), which is byte-identical to a facility
+      // NHD skipped entirely (lacking coordinates, or narrowed out by
+      // --backfill-nhd). Conflating those two is the bug mergeSitingContextEntry's
+      // doc comment describes; processedIds is the one thing that tells them apart.
+      sitingContext[id] = mergeSitingContextEntry(existingSitingContext[id], nhdContext[id], envContext[id], {
+        nhdRan: processedIds.has(id),
+      });
     }
     manifestBase = {
       water: { attribution: ATTRIBUTIONS.water },

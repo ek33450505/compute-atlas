@@ -11,6 +11,10 @@ import {
   nearestWaterViaNHD,
   assessThroughput,
   nextThroughputWindow,
+  needsNHDBackfill,
+  mergeSitingContextEntry,
+  computeSitingContext,
+  parseNHDFlags,
 } from "./build-map-data.mjs";
 import { point as turfPoint, lineString } from "@turf/helpers";
 
@@ -928,5 +932,228 @@ describe("nextThroughputWindow", () => {
     });
     expect(negative.isBoundary).toBe(false);
     expect(negative.windowStartedAt).toBe(5_000);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// needsNHDBackfill — --backfill-nhd's narrowing predicate
+// ---------------------------------------------------------------------------
+
+describe("needsNHDBackfill", () => {
+  it("is true for a facility absent from existingContext entirely (no value to speak of)", () => {
+    expect(needsNHDBackfill(undefined)).toBe(true);
+  });
+
+  it("is true when the existing entry has no nearestWater at all", () => {
+    const existingEntry = { nearestTransmission: { voltageKv: 230, distanceMi: 12.4 } };
+    expect(needsNHDBackfill(existingEntry)).toBe(true);
+  });
+
+  it("is false when the existing entry already carries a nearestWater", () => {
+    const existingEntry = {
+      nearestWater: { name: "Big Creek", kind: "river", distanceMi: 3.1 },
+      nearestTransmission: { voltageKv: 230, distanceMi: 12.4 },
+    };
+    expect(needsNHDBackfill(existingEntry)).toBe(false);
+  });
+
+  // MUTATION CHECK: invert the predicate (`!!existingEntry?.nearestWater`)
+  // and re-run this suite by hand — every case above must FAIL, proving none
+  // of these assertions can pass against the inverted logic.
+});
+
+// ---------------------------------------------------------------------------
+// mergeSitingContextEntry — the three-way existing/nhd/env merge, gated on
+// `nhdRan` (NOT a fixed spread order). Two regressions this function exists
+// to close simultaneously:
+//   - THE LANDMINE (original bug): --backfill-nhd's nhdContext covers only
+//     the narrowed subset of facilities, so a source that never touched a
+//     facility this pass must not be able to erase its already-good fields.
+//   - THE CLEARING REGRESSION (2026-09-29, same day): an unconditional
+//     existing-first spread fixes the landmine but then can never clear a
+//     stale value on a CONFIRMED absence, because resolveNearestWater
+//     signals "clear this" by OMITTING the key, and a spread can't delete
+//     an already-present key underneath it.
+// ---------------------------------------------------------------------------
+
+describe("mergeSitingContextEntry", () => {
+  it("THE CLEARING TEST: nhdRan true, nhdEntry omits nearestWater (confirmed absence) — a stale existing nearestWater must NOT survive", () => {
+    // This is the ordinary full-run shape: NHD ran for this facility and
+    // came back with a confirmed absence (no nearestWater key at all), but
+    // did find a transmission line. The existing entry has a stale
+    // nearestWater from a prior pass. MUST FAIL against an unconditional
+    // existing-first-always implementation.
+    const existingEntry = {
+      nearestWater: { name: "Old River", kind: "river", distanceMi: 5.2 },
+    };
+    const nhdEntry = {
+      nearestTransmission: { voltageKv: 345, distanceMi: 1.1 },
+    };
+    const envEntry = { waterStress: { label: "High", cat: 3 } };
+
+    const merged = mergeSitingContextEntry(existingEntry, nhdEntry, envEntry, { nhdRan: true });
+
+    expect(merged.nearestWater).toBeUndefined();
+    expect(merged.nearestTransmission).toEqual(nhdEntry.nearestTransmission);
+    expect(merged.waterStress).toEqual(envEntry.waterStress);
+  });
+
+  it("THE LANDMINE TEST: nhdRan false preserves an untouched facility's nearestWater/nearestTransmission when nhdContext has no entry for it (--backfill-nhd shape)", () => {
+    // Facility A already has both NHD fields from a prior pass and was NOT
+    // selected for this backfill run (nhdContext holds only facility B, so
+    // A's nhdEntry is undefined AND its nhdRan is false).
+    // envContext covers both (the env pass always runs on every facility).
+    const existingEntry = {
+      nearestWater: { name: "Old River", kind: "river", distanceMi: 5.2 },
+      nearestTransmission: { voltageKv: 230, distanceMi: 12.4 },
+    };
+    const nhdEntryForA = undefined; // A was not in this run's nhdContext
+    const envEntryForA = { waterStress: { label: "High", cat: 3 } };
+
+    const merged = mergeSitingContextEntry(existingEntry, nhdEntryForA, envEntryForA, { nhdRan: false });
+
+    expect(merged.nearestWater).toEqual(existingEntry.nearestWater);
+    expect(merged.nearestTransmission).toEqual(existingEntry.nearestTransmission);
+    expect(merged.waterStress).toEqual(envEntryForA.waterStress);
+  });
+
+  it("nhdRan true but nhdEntry undefined (NHD ran and confirmed absence of BOTH fields) still clears the stale existing nearestWater — the case an inferred nhdRan cannot tell apart from the landmine", () => {
+    // Byte-identical inputs to THE LANDMINE TEST's nhdEntryForA/existingEntry
+    // EXCEPT nhdRan is true here: this facility WAS processed this run (it's
+    // in computeSitingContext's processedIds) but its result had zero keys,
+    // so the caller's nhdContext[id] is undefined — same shape as a facility
+    // --backfill-nhd narrowed out entirely. Only the explicit nhdRan flag
+    // tells these two apart; inferring it from `nhdEntry !== undefined`
+    // cannot, and would wrongly preserve the stale value here.
+    const existingEntry = {
+      nearestWater: { name: "Old River", kind: "river", distanceMi: 5.2 },
+      nearestTransmission: { voltageKv: 230, distanceMi: 12.4 },
+    };
+
+    const merged = mergeSitingContextEntry(existingEntry, undefined, undefined, { nhdRan: true });
+
+    expect(merged.nearestWater).toBeUndefined();
+    expect(merged.nearestTransmission).toBeUndefined();
+  });
+
+  it("nhdRan true: a freshly-computed nhd entry still wins over a stale existing one for the fields it sets", () => {
+    const existingEntry = { nearestWater: { name: "Old River", kind: "river", distanceMi: 5.2 } };
+    const nhdEntry = { nearestWater: { name: "New Creek", kind: "creek", distanceMi: 0.4 } };
+    const envEntry = { aquifer: { name: "Some Aquifer" } };
+
+    const merged = mergeSitingContextEntry(existingEntry, nhdEntry, envEntry, { nhdRan: true });
+
+    expect(merged.nearestWater).toEqual(nhdEntry.nearestWater);
+    expect(merged.aquifer).toEqual(envEntry.aquifer);
+  });
+
+  it("is safe when existingEntry, nhdEntry, and/or envEntry are undefined", () => {
+    expect(mergeSitingContextEntry(undefined, undefined, undefined)).toEqual({});
+    expect(
+      mergeSitingContextEntry(
+        undefined,
+        { nearestWater: { name: "X", kind: "river", distanceMi: 1 } },
+        undefined,
+        { nhdRan: true },
+      ),
+    ).toEqual({ nearestWater: { name: "X", kind: "river", distanceMi: 1 } });
+  });
+
+  // MUTATION CHECK 1: revert to the unconditional existing-first spread
+  // `{ ...(existingEntry ?? {}), ...(nhdEntry ?? {}), ...(envEntry ?? {}) }`
+  // (ignoring nhdRan entirely) and re-run — THE CLEARING TEST above must
+  // FAIL (merged.nearestWater stays the stale existing value).
+  //
+  // MUTATION CHECK 2: instead infer nhdRan from `nhdEntry !== undefined`
+  // rather than taking it as an explicit parameter, and re-run — THE
+  // CLEARING TEST still passes (nhdEntry is defined there), but "nhdRan true
+  // but nhdEntry undefined ... still clears the stale existing nearestWater"
+  // above must FAIL: it and THE LANDMINE TEST have byte-identical
+  // (existingEntry, nhdEntry) but opposite correct outcomes, distinguished
+  // ONLY by nhdRan — an inference from nhdEntry alone necessarily gets one
+  // of the two wrong. This is why nhdRan must come from computeSitingContext's
+  // `processedIds`, never be inferred here.
+});
+
+// ---------------------------------------------------------------------------
+// computeSitingContext — processedIds must equal exactly the ids the run
+// actually iterated, under both full and --backfill-nhd (backfillOnly) modes.
+// This is the single source of truth mergeSitingContextEntry's `nhdRan` is
+// built from, so a drift here silently reintroduces the clearing regression
+// or the landmine, undetected by the mergeSitingContextEntry unit tests
+// above (which take processedIds membership as a given, not derived).
+// No real network calls — fetch is stubbed via stubNHD, same as the
+// nearestWaterViaNHD suite above.
+// ---------------------------------------------------------------------------
+
+describe("computeSitingContext processedIds", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  // Facility A already carries a nearestWater in existingContext (so
+  // needsNHDBackfill is false for it — --backfill-nhd would narrow it out).
+  // Facility B has no existing nearestWater (needsNHDBackfill true — always
+  // processed). Facility C has no coordinates at all and is filtered out
+  // before the loop in every mode.
+  const facilityA = { id: "a", location: { lat: 40, lon: -75, state: "PA" } };
+  const facilityB = { id: "b", location: { lat: 41, lon: -76, state: "NY" } };
+  const facilityC = { id: "c", location: {} };
+  const facilities = [facilityA, facilityB, facilityC];
+
+  const existingContext = {
+    a: { nearestWater: { name: "Old River", kind: "river", distanceMi: 2 } },
+  };
+
+  it("full mode: processedIds is exactly every facility with usable coordinates", async () => {
+    stubNHD({ "4": { body: namedFlowlineAt(40, -75) }, "10": {} });
+    const { processedIds } = await computeSitingContext(facilities, [], existingContext, {
+      backfillOnly: false,
+    });
+    expect(processedIds).toEqual(new Set(["a", "b"]));
+  });
+
+  it("backfillOnly mode: processedIds is narrowed to only facilities still missing nearestWater", async () => {
+    stubNHD({ "4": { body: namedFlowlineAt(40, -75) }, "10": {} });
+    const { processedIds } = await computeSitingContext(facilities, [], existingContext, {
+      backfillOnly: true,
+    });
+    // A already has a nearestWater and is narrowed out; B is processed; C was
+    // never a candidate (no coordinates).
+    expect(processedIds).toEqual(new Set(["b"]));
+  });
+
+  // MUTATION CHECK: change `processedIds.add(facility.id)` to run only
+  // `if (Object.keys(entry).length > 0)` (i.e. derive processedIds from
+  // `result`'s keys instead of the loop itself) and re-run — a facility NHD
+  // ran on but which found neither water nor transmission would then be
+  // silently dropped from processedIds, reintroducing the exact ambiguity
+  // this field exists to remove.
+});
+
+// ---------------------------------------------------------------------------
+// parseNHDFlags — --skip-nhd / --backfill-nhd are mutually exclusive
+// ---------------------------------------------------------------------------
+
+describe("parseNHDFlags", () => {
+  it("both flags together is an error, not a silent pick", () => {
+    const res = parseNHDFlags(["--skip-nhd", "--backfill-nhd"]);
+    expect(res.error).toBeTruthy();
+    expect(res.error).toMatch(/mutually exclusive/);
+  });
+
+  it("--skip-nhd alone parses cleanly", () => {
+    const res = parseNHDFlags(["--skip-nhd"]);
+    expect(res).toEqual({ skipNHD: true, backfillNHD: false, error: null });
+  });
+
+  it("--backfill-nhd alone parses cleanly", () => {
+    const res = parseNHDFlags(["--backfill-nhd"]);
+    expect(res).toEqual({ skipNHD: false, backfillNHD: true, error: null });
+  });
+
+  it("neither flag parses cleanly", () => {
+    const res = parseNHDFlags([]);
+    expect(res).toEqual({ skipNHD: false, backfillNHD: false, error: null });
   });
 });
