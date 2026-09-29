@@ -180,6 +180,18 @@ if [[ -n "${VERCEL_GIT_PREVIOUS_SHA:-}" ]] &&
   fi
 fi
 
+# The #364 preview log recorded only `base=HEAD^`, which cannot distinguish
+# VERCEL_GIT_PREVIOUS_SHA being unset from it being set but absent from this
+# clone (an orphan from a deleted branch, or simply unfetched) — the question
+# V-6 rung 3 needs a real build log to answer. These two arms describe only
+# the input, not the base the script goes on to choose: the merge-commit and
+# no-base checks below can still build, so neither message names a base.
+if [[ -z "${VERCEL_GIT_PREVIOUS_SHA:-}" ]]; then
+  log "VERCEL_GIT_PREVIOUS_SHA is unset — no previous deployment to diff against"
+elif ! git cat-file -e "${VERCEL_GIT_PREVIOUS_SHA}^{commit}" 2>/dev/null; then
+  log "previous SHA ${VERCEL_GIT_PREVIOUS_SHA} is not present in this clone (git cat-file -e failed) — ancestry cannot be tested"
+fi
+
 # The narrowing carve-out for outcome (b): see "Residual exposure" above.
 #
 # Written positively — only an explicit `preview` may narrow to HEAD^ — so an

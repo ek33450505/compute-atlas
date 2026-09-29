@@ -212,6 +212,26 @@ assert_skip() {
 	[[ "$output" == *"HEAD^"* ]]
 }
 
+@test "a previous SHA absent from this clone is logged as such, not silently swallowed" {
+	# Same well-formed-but-missing SHA as the test above; this one pins the new
+	# diagnostic line the #364 preview log lacked, without changing the outcome.
+	export VERCEL_GIT_PREVIOUS_SHA="dddddddddddddddddddddddddddddddddddddddd"
+	commit_change "data/facilities.json"
+
+	run bash "$SCRIPT"
+	assert_skip
+	[[ "$output" == *"is not present in this clone"* ]]
+}
+
+@test "an unset VERCEL_GIT_PREVIOUS_SHA is logged as such, not silently swallowed" {
+	unset VERCEL_GIT_PREVIOUS_SHA
+	commit_change "data/facilities.json"
+
+	run bash "$SCRIPT"
+	assert_skip
+	[[ "$output" == *"is unset"* ]]
+}
+
 @test "fails open (BUILD) when there is no base commit at all" {
 	rm -rf "$REPO"
 	mkdir -p "$REPO"
