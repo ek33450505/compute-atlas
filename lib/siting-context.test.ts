@@ -100,7 +100,16 @@ describe("data-integrity: NHD backfill debt", () => {
   // the full pass at [KS interior] layers 4 and 10 (neon-sync run
   // 36608012700), which is what discarded the map artifacts and left the PR
   // red.
-  const NHD_BACKFILL_DEBT_CEILING = 177;
+  // 177 -> 0 on 2026-09-29: the stage-2 backfill, `build:mapdata --
+  // --backfill-nhd`, run by hand once NHD answered the quorum pre-flight
+  // (all 10 probes ok, 240-607ms). It queried only the 201 facilities whose
+  // entry lacked nearestWater (177 CONUS + 24 non-CONUS) at ~0.72/sec and
+  // filled all 177; the 24 non-CONUS ids still legitimately lack it. At a
+  // ceiling of 0 the floor test below can no longer fire, which is correct:
+  // there is no debt left to pay down, and the ceiling test alone now fails
+  // the moment a --skip-nhd wave leaves any new CONUS record without
+  // nearestWater.
+  const NHD_BACKFILL_DEBT_CEILING = 0;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data
@@ -187,8 +196,8 @@ describe("data-integrity: NHD backfill debt", () => {
       throw new Error(
         `NHD backfill debt has DROPPED to ${offenders.length} (ceiling is ` +
           `${NHD_BACKFILL_DEBT_CEILING}). Before lowering the ceiling, check which of two ` +
-          "things caused the drop: either the debt was genuinely backfilled by a full " +
-          "`npm run build:mapdata` run — in which case lower NHD_BACKFILL_DEBT_CEILING to " +
+          "things caused the drop: either the debt was genuinely backfilled by " +
+          "`npm run build:mapdata` (a full run or `-- --backfill-nhd`) — in which case lower NHD_BACKFILL_DEBT_CEILING to " +
           `${offenders.length} in lib/siting-context.test.ts so the ratchet keeps its teeth ` +
           "— or NON_CONUS was widened to exclude a state with real offenders, which only " +
           "narrows what this test measures and pays down no debt at all (the membership " +
