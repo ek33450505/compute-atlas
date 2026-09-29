@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 
 import {
   fetchJSON,
+  fetchArcGISAll,
   preflightNHD,
   preflightNHDQuorum,
   propGNISName,
@@ -67,6 +68,122 @@ describe("fetchJSON", () => {
   it("still rejects on a non-200 HTTP status (no regression)", async () => {
     vi.stubGlobal("fetch", mockFetchOnce({}, 500));
     await expect(fetchJSON("https://example.com/query", { retries: 0 })).rejects.toThrow(/500/);
+  });
+});
+
+describe("fetchArcGISAll", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  /**
+   * Stubs fetch so a `returnCountOnly=true` request (in any position — the
+   * count call happens before paging) gets `countBody`, and every other
+   * request consumes the next entry from `pageBodies` in order. Running past
+   * the end of `pageBodies` throws rather than repeating the last page, so
+   * an unexpected extra page fetch is a test failure, not a silent pass.
+   */
+  function stubArcGISRaw({ countBody, pageBodies }: { countBody: unknown; pageBodies: unknown[] }) {
+    let pageIndex = 0;
+    const fn = vi.fn(async (url: string) => {
+      if (url.includes("returnCountOnly=true")) {
+        return { ok: true, status: 200, statusText: "OK", json: async () => countBody };
+      }
+      const body = pageBodies[pageIndex];
+      pageIndex++;
+      if (body === undefined) {
+        throw new Error(`test stub: page ${pageIndex} requested, only ${pageBodies.length} configured`);
+      }
+      return { ok: true, status: 200, statusText: "OK", json: async () => body };
+    });
+    vi.stubGlobal("fetch", fn);
+    return fn;
+  }
+
+  it("throws when a truncated page (silent early end) leaves the paged total short of the authoritative count", async () => {
+    // count says 10,490 (HIFLD's real live returnCountOnly for VOLTAGE>=230
+    // at time of writing); two full 2000-row pages then an empty page that
+    // is byte-indistinguishable from genuine end-of-data.
+    stubArcGISRaw({
+      countBody: { count: 10490 },
+      pageBodies: [
+        { features: Array.from({ length: 2000 }, (_, i) => ({ id: i })), properties: { exceededTransferLimit: true } },
+        { features: Array.from({ length: 2000 }, (_, i) => ({ id: 2000 + i })), properties: { exceededTransferLimit: true } },
+        { features: [] },
+      ],
+    });
+    let error: Error | undefined;
+    try {
+      await fetchArcGISAll("https://example.com/query", "VOLTAGE>=230", "VOLTAGE", "HIFLD transmission");
+    } catch (err) {
+      error = err as Error;
+    }
+    expect(error).toBeDefined();
+    // Message must name BOTH the authoritative total and the short paged
+    // total, so an operator reading a build failure knows the shape of the
+    // loss without re-deriving it.
+    expect(error!.message).toMatch(/10490/);
+    expect(error!.message).toMatch(/4000/);
+  });
+
+  it("returns every feature on a healthy multi-page fetch whose paged total matches the count exactly", async () => {
+    stubArcGISRaw({
+      countBody: { count: 4500 },
+      pageBodies: [
+        { features: Array.from({ length: 2000 }, (_, i) => ({ id: i })), properties: { exceededTransferLimit: true } },
+        { features: Array.from({ length: 2000 }, (_, i) => ({ id: 2000 + i })), properties: { exceededTransferLimit: true } },
+        // Final short page: no exceededTransferLimit at all — the normal
+        // end-of-data signal this loop relies on.
+        { features: Array.from({ length: 500 }, (_, i) => ({ id: 4000 + i })) },
+      ],
+    });
+    const result = await fetchArcGISAll("https://example.com/query", "VOLTAGE>=230", "VOLTAGE", "HIFLD transmission");
+    expect(result).toHaveLength(4500);
+  });
+
+  it("still honors a top-level exceededTransferLimit flag (no regression on the back-compat shape)", async () => {
+    stubArcGISRaw({
+      countBody: { count: 3000 },
+      pageBodies: [
+        { features: Array.from({ length: 2000 }, (_, i) => ({ id: i })), exceededTransferLimit: true },
+        { features: Array.from({ length: 1000 }, (_, i) => ({ id: 2000 + i })) },
+      ],
+    });
+    const result = await fetchArcGISAll("https://example.com/query", "1=1", "AQ_NAME,ROCK_NAME,AQ_CODE", "USGS Principal Aquifers");
+    expect(result).toHaveLength(3000);
+  });
+
+  it("does not throw on a single page smaller than pageSize whose total matches the count exactly", async () => {
+    stubArcGISRaw({
+      countBody: { count: 42 },
+      pageBodies: [{ features: Array.from({ length: 42 }, (_, i) => ({ id: i })) }],
+    });
+    const result = await fetchArcGISAll("https://example.com/query", "1=1", "AQ_NAME,ROCK_NAME,AQ_CODE", "USGS Principal Aquifers");
+    expect(result).toHaveLength(42);
+  });
+
+  it("carries the caller's geometryEnvelope on the count query, not just the paged query", async () => {
+    // Regression guard for the load-bearing detail: a count query that omits
+    // an envelope-scoped caller's geometry returns the GLOBAL total (e.g.
+    // Aqueduct's 68,506 basins), which would never match a US-clipped paged
+    // total and would false-abort every envelope-scoped caller.
+    const envelope = { xmin: -125, ymin: 24, xmax: -66, ymax: 49, spatialReference: { wkid: 4326 } };
+    const fn = stubArcGISRaw({
+      countBody: { count: 10 },
+      pageBodies: [{ features: Array.from({ length: 10 }, (_, i) => ({ id: i })) }],
+    });
+    await fetchArcGISAll("https://example.com/query", {
+      where: "1=1",
+      outFields: "bws_cat,bws_label,gtd_cat,gtd_label",
+      label: "Aqueduct basins (US envelope)",
+      pageSize: 750,
+      geometryEnvelope: envelope,
+    });
+    const countCall = fn.mock.calls.find(([url]) => (url as string).includes("returnCountOnly=true"));
+    expect(countCall).toBeDefined();
+    const countUrl = countCall![0] as string;
+    expect(countUrl).toContain("geometryType=esriGeometryEnvelope");
+    expect(countUrl).toContain(encodeURIComponent(JSON.stringify(envelope)));
   });
 });
 

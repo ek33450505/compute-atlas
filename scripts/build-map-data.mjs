@@ -277,6 +277,22 @@ export async function fetchJSON(url, { label = url, retries = 1, timeoutMs = nul
 }
 
 /**
+ * Builds the shared `where` + geometry-envelope portion of an ArcGIS
+ * FeatureServer/query URL. Used for BOTH the paged fetch and the
+ * `returnCountOnly` completeness check below, so the two requests can never
+ * diverge on filter — a count query missing a caller's geometryEnvelope
+ * would report the unfiltered (e.g. global) total and guarantee a false
+ * "incomplete" abort for every envelope-scoped caller.
+ */
+function arcGISQueryBase(baseUrl, where, geometryEnvelope) {
+  let url = `${baseUrl}?where=${encodeURIComponent(where)}`;
+  if (geometryEnvelope) {
+    url += `&geometry=${encodeURIComponent(JSON.stringify(geometryEnvelope))}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects`;
+  }
+  return url;
+}
+
+/**
  * Paged ArcGIS FeatureServer/query fetch.
  *
  * Back-compat form: fetchArcGISAll(baseUrl, whereClause, outFields, label)
@@ -286,6 +302,24 @@ export async function fetchJSON(url, { label = url, retries = 1, timeoutMs = nul
  *   { xmin, ymin, xmax, ymax, spatialReference } object applied as a
  *   server-side esriGeometryEnvelope spatial filter (needed to cut Aqueduct's
  *   global 68,506 basins down to the US before paging).
+ *
+ * Fails closed on a truncated result set. A page that comes back HTTP 200
+ * with a valid-but-short body (`features: []` before the server said
+ * exceededTransferLimit, or the flag itself missing/falsy while more rows
+ * exist) is byte-indistinguishable from genuine end-of-data — `fetchJSON`
+ * only catches a *failed* request or an ArcGIS error body, not a
+ * successful-looking short one. So before paging, this queries the SAME
+ * endpoint's authoritative `returnCountOnly` total (via the shared
+ * `arcGISQueryBase`, so it is filtered identically to the paged query) and
+ * throws if the paged total doesn't match exactly. Strict equality, not a
+ * tolerance: these are live hosted services and could in principle be
+ * edited between the count call and the last page, but a rare spurious
+ * abort on a moving dataset is preferable to ever silently publishing a
+ * partial candidate set — HIFLD_TRANSMISSION alone feeds both the published
+ * power.geojson overlay and every facility's nearestTransmission stat, so a
+ * silent 40%+ loss (this file's HIFLD_PAGE_SIZE equals the layer's
+ * maxRecordCount, so every full page is exactly at the server's cap) would
+ * corrupt both without the build ever failing.
  */
 async function fetchArcGISAll(baseUrl, whereClauseOrOpts, outFieldsArg, labelArg) {
   let where, outFields, label, pageSize, geometryEnvelope;
@@ -299,13 +333,16 @@ async function fetchArcGISAll(baseUrl, whereClauseOrOpts, outFieldsArg, labelArg
     geometryEnvelope = null;
   }
 
+  const queryBase = arcGISQueryBase(baseUrl, where, geometryEnvelope);
+
+  const countUrl = `${queryBase}&returnCountOnly=true&f=json`;
+  const countBody = await fetchJSON(countUrl, { label: `${label} count`, retries: 1 });
+  const expectedCount = countBody.count;
+
   let offset = 0;
   const allFeatures = [];
   for (;;) {
-    let url = `${baseUrl}?where=${encodeURIComponent(where)}&outFields=${outFields}&resultRecordCount=${pageSize}&resultOffset=${offset}&f=geojson`;
-    if (geometryEnvelope) {
-      url += `&geometry=${encodeURIComponent(JSON.stringify(geometryEnvelope))}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects`;
-    }
+    const url = `${queryBase}&outFields=${outFields}&resultRecordCount=${pageSize}&resultOffset=${offset}&f=geojson`;
     const data = await fetchJSON(url, { label: `${label} offset=${offset}`, retries: 1 });
     const features = data.features || [];
     allFeatures.push(...features);
@@ -316,6 +353,15 @@ async function fetchArcGISAll(baseUrl, whereClauseOrOpts, outFieldsArg, labelArg
     if (!exceededTransferLimit) break;
     offset += pageSize;
   }
+
+  if (allFeatures.length !== expectedCount) {
+    throw new Error(
+      `${label}: paged fetch returned ${allFeatures.length} features but the service's ` +
+        `returnCountOnly total is ${expectedCount} — aborting rather than publishing a ` +
+        `partial candidate set (a truncated page looks identical to genuine end-of-data)`
+    );
+  }
+
   return allFeatures;
 }
 
@@ -615,7 +661,7 @@ const GNIS_NAME_OVERRIDES = new Map([
 ]);
 
 /** Case-insensitive property lookup (NHD layers use inconsistent casing across layers). */
-export { ISLAND_GRID_BBOX, nearestFromCandidates };
+export { ISLAND_GRID_BBOX, nearestFromCandidates, fetchArcGISAll };
 
 export function propGNISName(props) {
   const raw = props?.GNIS_NAME ?? props?.gnis_name ?? props?.GnisName ?? null;
@@ -1465,6 +1511,20 @@ export async function computeSitingContext(
     // matter how close the straight line makes it look. Undefined for every
     // mainland state, which leaves their behaviour byte-identical.
     const islandBBox = ISLAND_GRID_BBOX[facility.location?.state] ?? null;
+    // No carry-forward here, unlike resolveNearestWater below (deliberate
+    // asymmetry, not an oversight). fetchArcGISAll now verifies the HIFLD
+    // transmission candidate set against the service's own returnCountOnly
+    // total and throws on any mismatch, so `powerCandidates` is guaranteed
+    // complete-or-the-build-never-got-here — a `null` result is therefore
+    // authoritative ("no line within NEAREST_CAP_MILES"), not an artifact of
+    // a partial fetch. resolveNearestWater's carry-forward exists to survive
+    // a degraded per-facility NHD *response* (a failure mode with no
+    // analogous completeness check here); adding carry-forward to this value
+    // too would also block ever CLEARING a stale nearestTransmission when a
+    // facility's coordinates are corrected — the same class of bug the nhdRan
+    // fix (56b7dbf) closed on the water side, where an unconditional
+    // existing-first merge left a confirmed absence unable to clear a stale
+    // nearestWater on the default full-run path.
     const nearestTransmission = nearestFromCandidates(
       pt,
       powerCandidates,
