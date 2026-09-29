@@ -6184,6 +6184,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "cdt-vacaville-data-center-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Central Valley Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "centeris-south-hill-puyallup-wa": {
     "nearestWater": {
       "name": "McMillin Reservoir",
@@ -9960,6 +9970,20 @@
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cubico-crossett-solar-ashley-county-ar": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -15441,6 +15465,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "entergy-searcy-solar-white-county-ar": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "entergy-traceview-ridgeland-ms": {
     "nearestWater": {
       "name": "Hanging Moss Creek",
@@ -18582,6 +18620,30 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "global-stack-san-mateo-county-event-center-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "global-stack-tulare-county-fairgrounds-ca": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Central Valley Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "global-stack-vallejo-fairgrounds-ca": {
     "nearestWater": {
       "name": "Lake Chabot",
@@ -21415,7 +21477,35 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "invenergy-chalk-bluff-solar-st-francis-county-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "invenergy-decoy-solar-arkansas-county-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "invenergy-downstream-solar-keo-lonoke-county-ar": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -22924,6 +23014,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "lightsource-bp-conway-solar-at-happy-white-county-ar": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "lightwave-networks-needham-ma": {
     "nearestWater": {
       "name": "Charles River",
@@ -23817,6 +23921,20 @@
     },
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "mainstream-technologies-little-rock-data-center-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
     }
   },
@@ -27327,6 +27445,34 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "nextera-big-cypress-solar-crittenden-county-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "nextera-chicot-solar-lake-village-ar": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "nextera-forgeview-solar-mississippi-county-ar": {
     "waterStress": {
       "cat": 4,
@@ -27379,6 +27525,12 @@
       "label": "Low (<10%)"
     }
   },
+  "nextera-little-ashdown-solar-little-river-county-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "nextera-paducah-generation-mccracken-ky": {
     "nearestWater": {
       "name": "Bayou Creek",
@@ -27411,6 +27563,20 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "nextera-stuttgart-solar-arkansas-county-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "nextera-wildwood-solar-tallahatchie-ms": {
@@ -27705,6 +27871,20 @@
     },
     "aquifer": {
       "name": "Central Valley Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "northstar-newport-solar-jackson-county-ar": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -29090,6 +29270,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "ozarksgo-fayetteville-data-center-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
+    }
+  },
   "pa-data-center-partners-granville-township-mifflin-pa": {
     "waterStress": {
       "cat": 2,
@@ -29242,6 +29432,20 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "pattern-big-island-solar-wilson-ar": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "pch-wi-holdings-wisconsin-rapids-wood-county-wi": {
@@ -30430,6 +30634,20 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "primergy-prairie-mist-solar-ashley-county-ar": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "prince-william-digital-gateway-va": {
     "nearestWater": {
       "name": "Broad Run",
@@ -30788,6 +31006,16 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "prologis-326-charcot-avenue-san-jose-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "prologis-allen-township-northampton-pa": {
@@ -34910,6 +35138,16 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "skybox-santa-clara-1200-memorex-drive-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "slate-belt-holdings-upper-mount-bethel-northampton-pa": {

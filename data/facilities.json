@@ -10181,11 +10181,11 @@
         "url": "https://www.enr.com/articles/62325-26b-in-datacenter-builds-move-forward-in-arkansas-mississippi",
         "label": "$26B in Data-Center Builds Move Forward in Arkansas, Mississippi",
         "publisher": "Engineering News-Record",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-09-29",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-09-29",
     "notes": "Location: off Interstate 530 near 145th Street, Pulaski County; coordinates are approximate for the I-530 corridor south of Little Rock. Named after the Leo constellation. Initial $6B investment may grow to $21B through full build-out. First phase completion targeted June 2027. Campus sits near long-haul fiber routes connecting Dallas, Atlanta, and Memphis. Q1 2026 construction start was planned as of announcement; current construction status unconfirmed as of research date. Fix: energy.source corrected from 'on_site_gas' to 'mixed'; onSiteGenerationMw removed — the 150 MW figure is the Entergy Arkansas grid supply contract, not on-site generation; on-site gas capacity is unquantified in sources. Arkansas's data-center sales-and-use tax exemption (Act 819 of 2023, expanded by Act 548 of 2025) likely applies given the investment scale, but no AVAIO-specific incentive award has been published.",
     "energy": {
       "source": "mixed",
@@ -14519,7 +14519,7 @@
         "url": "https://www.bakersfield.com/news/crc-proposes-w-kern-data-center-with-dedicated-power-closed-loop-cooling/article_5f2d14f7-8f86-4478-958d-513b8f9de1da.html",
         "label": "CRC proposes W. Kern data center with dedicated power, closed-loop cooling",
         "publisher": "The Bakersfield Californian",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-09-29",
         "kind": "press"
       },
       {
@@ -14544,7 +14544,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-29",
     "notes": "400,000 sq ft on 100 acres, dedicated 275MW from CRC's own Elk Hills natural gas power plant, closed-loop cooling. Standalone campus on former oilfield, not a colo tenancy.",
     "energy": {
       "source": "on_site_gas",
@@ -20148,6 +20148,43 @@
       "notes": "The South Whitehall Civic Alliance opposes the project outright — \"The only acceptable outcome is no data center\" — and has pledged to fight it up to the Pennsylvania Supreme Court. Three buildings of roughly 500,000 sq ft each are proposed 1,700 feet from Parkland High School.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cdt-vacaville-data-center-ca",
+    "name": "California Department of Technology Vacaville Data Center (1020 Vaquero Circle)",
+    "operator": "California Department of Technology",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.3839859,
+      "lon": -121.9499907,
+      "city": "Vacaville",
+      "county": "Solano",
+      "street": "1020 Vaquero Circle",
+      "postalCode": "95688",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-02-05",
+        "note": "DGS Notice of Exemption for a lease of an existing data center, with no change of use proposed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ceqanet.lci.ca.gov/2026020164",
+        "label": "Vacaville Data Center-1020 Vaquero Circle (SCH 2026020164), Notice of Exemption",
+        "publisher": "CEQAnet / Department of General Services",
+        "retrievedAt": "2026-09-29",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "State government data center leased by CDT, with DGS as lead agency. Coordinates are the OSM centroid of Vaquero Circle (street-level), not the building.",
     "facilityType": "data_center"
   },
   {
@@ -31803,6 +31840,54 @@
     }
   },
   {
+    "id": "cubico-crossett-solar-ashley-county-ar",
+    "name": "Crossett Solar Park",
+    "operator": "Cubico Sustainable Investments",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.0932495,
+      "lon": -91.9365428,
+      "city": "Crossett",
+      "county": "Ashley",
+      "state": "AR",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-09",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cubicoinvest.com/news/132mwdc-crossett-solar-park-enters-commercial-operations/",
+        "label": "132MWdc Crossett Solar Park enters commercial operations",
+        "publisher": "Cubico",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/20082095",
+        "label": "OpenStreetMap: Crossett Solar",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "notes": "132 MWdc per Cubico. OSM tags 100 MW (AC capacity not confirmed in a document, so capacityMw is not set). Connected to MISO. Acquired from RES."
+    }
+  },
+  {
     "id": "culpeper-brandy-station-va",
     "name": "Culpeper Acquisitions Brandy Station Campus (denied)",
     "operator": "Culpeper Acquisitions LLC",
@@ -35532,7 +35617,7 @@
         "url": "https://www.prnewswire.com/news-releases/databank-and-goodman-group-partner-to-open-new-landmark-data-center-in-los-angeles-302735412.html",
         "label": "DataBank and Goodman Group partner to open new landmark data center in Los Angeles",
         "publisher": "PR Newswire",
-        "retrievedAt": "2026-07-17",
+        "retrievedAt": "2026-09-29",
         "kind": "press"
       },
       {
@@ -35563,7 +35648,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-09-29",
     "notes": "Joint venture with Goodman Group; opening December 2026, phased through September 2027.",
     "facilityType": "data_center"
   },
@@ -43243,9 +43328,16 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://convergedigest.com/ecl-unveils-35mw-flexgrid-data-center-in-santa-clara-to-tackle-ai-power-constraints/",
+        "label": "ECL Unveils 35MW FlexGrid Data Center in Santa Clara to Tackle AI Power Constraints",
+        "publisher": "Converge Digest",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-09-29",
     "notes": "Exact street address not publicly disclosed. Coordinates are Santa Clara city centroid (approximate). Announced April 21, 2026. First phase targets Q4 2026 delivery. ECL CEO Yuval Bachar stated the project addresses SVP grid capacity constraints that have forced other data center developers into multi-year interconnection queues. Project targets AI training and inference workloads.",
     "energy": {
       "source": "mixed",
@@ -45462,9 +45554,16 @@
         "publisher": "World-Energy",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://www.solarpowerworldonline.com/2026/05/meta-signs-250-mw-ppa-on-edp-renewables-arkansas-solar-project/",
+        "label": "Meta signs 250-MW PPA on EDP Renewables' Arkansas solar project",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-09-29",
     "notes": "Only 'Chicot County' is published for the site; the coordinate is the county seat (Lake Village) and is a county-level placeholder, not the project footprint.",
     "energy": {
       "source": "solar"
@@ -46921,11 +47020,11 @@
         "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
         "label": "Entergy renewable generation projects in service or in development as of July 2026",
         "publisher": "Entergy Corporation",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-09-29",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-09-29",
     "notes": "Coordinates are the OpenStreetMap point for Pastoria, the community Energy-Storage.news names in its site description ('approximately 3,000 acres of land east of the Arkansas River near Pastoria'); this is a nearest-community approximation across a 3,000-acre footprint, not a site centroid. Sources describe the site position two different ways - 'east of the Arkansas River near Pastoria' and, in other coverage, on the north bank southwest of Wright - so the exact orientation of the tract is NOT settled here. The status is recorded as 'permitted' on the strength of September 2026 reporting that the project is in cost recovery and under construction funding, not on a fetched copy of the PSC order itself; the order was not retrieved in this pass.",
     "energy": {
       "source": "solar",
@@ -47217,7 +47316,7 @@
         "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
         "label": "Entergy renewable generation projects in service or in development as of July 2026",
         "publisher": "Entergy Corporation",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-09-29",
         "kind": "other"
       },
       {
@@ -47228,7 +47327,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-09-29",
     "notes": "Adjacent to U.S. Steel's Big River operations near Osceola. Confidence is 'reported' because the two cited sources disagree on nameplate capacity (250 MW vs 150 MWac) and on whether Lightsource bp retains an ownership interest.",
     "energy": {
       "source": "solar",
@@ -47710,6 +47809,77 @@
     }
   },
   {
+    "id": "entergy-searcy-solar-white-county-ar",
+    "name": "Searcy Solar (+ Battery)",
+    "operator": "Entergy Arkansas",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.2226575,
+      "lon": -91.7035693,
+      "city": "Searcy",
+      "county": "White",
+      "state": "AR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2020-04-28",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2021-10",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.entergy.com/news/arkansas-public-service-commission-approves-searcy-solar-project",
+        "label": "Arkansas Public Service Commission approves Searcy Solar project",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.tdworld.com/distributed-energy-resources/energy-storage/article/21172781/entergy-arkansas-to-go-online-with-searcy-solar-project-in-white-county",
+        "label": "Entergy Arkansas to go online with Searcy Solar project in White County",
+        "publisher": "T&D World",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
+        "label": "Entergy renewable portfolio",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-09-29",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/15587381",
+        "label": "OpenStreetMap: Searcy Solar Hybrid",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "energy": {
+      "source": "solar",
+      "notes": "100 MW solar with a 10 MW / 30 MWh lithium-ion battery. The solar and battery are DC-coupled and share a 100 MW point of interconnection."
+    },
+    "landAcres": 800,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Built by NextEra Energy Resources. It is utility-owned by Entergy Arkansas. It came online in early October 2021 per T&D World; Entergy's portfolio lists 2022."
+    }
+  },
+  {
     "id": "entergy-traceview-ridgeland-ms",
     "name": "Traceview Advanced Power Station",
     "operator": "Entergy Mississippi",
@@ -47878,7 +48048,7 @@
         "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
         "label": "Entergy renewable generation projects in service or in development as of July 2026",
         "publisher": "Entergy Corporation",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-09-29",
         "kind": "other"
       },
       {
@@ -47889,7 +48059,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-09-29",
     "notes": "COORDINATE NEEDS VERIFICATION BEFORE PUBLICATION. The pin is Global Energy Monitor's, but it does not fall inside Lee County — the county GEM itself assigns the plant — and it is also well southwest of Brinkley, the town Entergy names. Recorded as approximate and flagged rather than replaced with a guess.",
     "energy": {
       "source": "solar",
@@ -48011,7 +48181,7 @@
         "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
         "label": "Entergy renewable generation projects in service or in development as of July 2026",
         "publisher": "Entergy Corporation",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-09-29",
         "kind": "other"
       },
       {
@@ -48029,7 +48199,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-09-29",
     "notes": "Distinct from the tracked Google West Memphis data center campus — same city, different facility and operator.",
     "energy": {
       "source": "solar",
@@ -51523,7 +51693,7 @@
         "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
         "label": "Entergy renewable generation projects in service or in development as of July 2026",
         "publisher": "Entergy Corporation",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-09-29",
         "kind": "other"
       },
       {
@@ -51541,11 +51711,12 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-09-29",
     "notes": "County deliberately omitted: Global Energy Monitor and Cleanview both assign St. Francis County, but the registry coordinate sits near Brinkley in Monroe County, matching the town Entergy names. The coordinate and the town agree; the county label does not, so no county is asserted.",
     "energy": {
       "source": "solar",
-      "utility": "Entergy Arkansas"
+      "utility": "Entergy Arkansas",
+      "notes": "Output is sold to Entergy Arkansas under a PPA."
     },
     "facilityType": "power_generation",
     "generation": {
@@ -56404,6 +56575,104 @@
     "facilityType": "data_center"
   },
   {
+    "id": "global-stack-san-mateo-county-event-center-ca",
+    "name": "San Mateo County Event Center Data Center (Global Stack proposal, dropped)",
+    "operator": "Global Stack LLC",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.5466677,
+      "lon": -122.3020513,
+      "city": "San Mateo",
+      "county": "San Mateo",
+      "street": "1346 Saratoga Drive",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-08",
+        "note": "San Mateo County Event Center CEO described preliminary talks with Global Stack.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-07-24",
+        "note": "Petition relays that County Executive Mike Callagy said the county has 'zero interest' and directed the Event Center CEO to stop discussions.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.change.org/p/keep-data-centers-out-of-the-san-mateo-county-event-center",
+        "label": "Keep Data Centers Out of the San Mateo County Event Center (petition)",
+        "publisher": "Change.org",
+        "retrievedAt": "2026-09-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/california-proposal-build-least-8-001813987.html",
+        "label": "California proposal would build 8 data centers in Bay Area",
+        "publisher": "San Francisco Chronicle via Yahoo News",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "Early-stage fairground edge data center pitch on county-owned land (48-acre event center). The cancellation relies on a county executive quote relayed by a petition page; it should be corroborated. Coordinates are the OSM venue point.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "global-stack-tulare-county-fairgrounds-ca",
+    "name": "Tulare County Fairgrounds Edge Data Center (Global Stack proposal)",
+    "operator": "Global Stack LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.1991383,
+      "lon": -119.3420041,
+      "city": "Tulare",
+      "county": "Tulare",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-21",
+        "note": "Tulare County Fair board tabled a rental agreement with Global Stack after public comment; the board says it is in a fact-finding and feasibility phase.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://thebusinessjournal.com/is-it-a-data-center-tulare-fairgrounds-tables-global-stack-proposal/",
+        "label": "Is it a data center? Tulare fairgrounds tables Global Stack proposal",
+        "publisher": "The Business Journal",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://abc30.com/post/tulare-fair-board-faces-pushback-proposed-high-tech-fairgrounds-project-packed-meeting/19700804/",
+        "label": "Tulare Fair board faces pushback over proposed high-tech fairgrounds project",
+        "publisher": "ABC30",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/california-proposal-build-least-8-001813987.html",
+        "label": "California proposal would build 8 data centers in Bay Area",
+        "publisher": "San Francisco Chronicle via Yahoo News",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "Global Stack calls it a self-contained edge computing and emergency-resilience system; residents call it a data center. Global Stack's generic spec is 8–10 MW on about 5 acres per fairground, but no site-specific figure was published. Tulare County supervisors adopted a 45-day moratorium on data centers in unincorporated areas. Coordinates are the OSM fairgrounds centroid.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "global-stack-vallejo-fairgrounds-ca",
     "name": "Solano County Fairgrounds Data Center (Global Stack proposal)",
     "operator": "Global Stack LLC",
@@ -60821,9 +61090,16 @@
         "publisher": "Energy-Storage.news",
         "retrievedAt": "2026-09-15",
         "kind": "press"
+      },
+      {
+        "url": "https://www.arkansasonline.com/news/2026/sep/15/lawmakers-discuss-the-data-center-industry-in/",
+        "label": "Lawmakers discuss the data center industry in Arkansas",
+        "publisher": "Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-09-29",
     "notes": "Campus on Bolliger Road, West Memphis. Coordinates approximate for the Bolliger Road industrial area. $4B is Phase 1 through 2027; total planned investment is $10B, which would be the largest private capital investment in Arkansas history. Five data center buildings on 920-acre campus footprint within a 1,178-acre site (per U.S. Army Corps of Engineers filing). Fixes: (1) removed unsourced 5,000 construction jobs figure — AEDC states only 'thousands'; (2) corrected energy.source from 'solar' to 'grid' — facility draws from Entergy Arkansas; Arkansas Cypress Solar is a companion renewable project; (3) corrected landAcres from 1,200 to 1,178 per Army Corps filing.",
     "energy": {
       "source": "grid",
@@ -64068,7 +64344,7 @@
         "url": "https://www.hayward-ca.gov/business/for-developers/data-center-development-applications",
         "label": "Data Center Development Applications — City of Hayward",
         "publisher": "City of Hayward",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-09-29",
         "kind": "permit"
       },
       {
@@ -64086,7 +64362,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-09-29",
     "notes": "Roughly 300,000 sq ft data center building within the four-building Hayward Exchange @92 campus. The contractor's project page names Hines and MetLife Investment Management as owners and describes partial occupancy by Amazon; the city register names Hines as developer.",
     "facilityType": "data_center"
   },
@@ -66482,6 +66758,57 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "invenergy-chalk-bluff-solar-st-francis-county-ar",
+    "name": "Chalk Bluff Solar",
+    "operator": "Invenergy",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.0153956,
+      "lon": -90.7263194,
+      "county": "St. Francis",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 450
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-12",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/invenergy-to-provide-over-760mw-in-renewable-energy-supporting-metas-energy-needs-in-line-with-its-clean-and-renewable-energy-goals-302323252.html",
+        "label": "Invenergy to provide over 760MW in renewable energy supporting Meta",
+        "publisher": "Invenergy via PR Newswire",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/1818429",
+        "label": "OpenStreetMap: St. Francis County, Arkansas (county boundary, used for an approximate location)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "The location is the county centroid only. The site parcel was not found.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "notes": "EIA lists 450 MW nameplate (Chalk Bluff Solar Energy LLC) with a planned online date of June 1, 2027. Invenergy's Meta release lists 350 MW contracted to Meta, with expected COD in 2027."
+    }
+  },
+  {
     "id": "invenergy-decoy-solar-arkansas-county-ar",
     "name": "Decoy Solar Energy Center",
     "operator": "Invenergy",
@@ -66537,6 +66864,84 @@
       "technology": "solar",
       "offtaker": "Meta Platforms",
       "notes": "Invenergy lists the project in engineering and pre-construction, with a 2027 commercial operation date under a Meta agreement covering 791 MW across four US facilities. Expected to generate electricity for about 37,000 homes."
+    }
+  },
+  {
+    "id": "invenergy-downstream-solar-keo-lonoke-county-ar",
+    "name": "Downstream Solar Energy Center",
+    "operator": "Invenergy",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.6019207,
+      "lon": -92.0104869,
+      "city": "Keo",
+      "county": "Lonoke",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://downstreamsolar.invenergy.com/",
+        "label": "Downstream Solar Energy Center",
+        "publisher": "Invenergy",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://talkbusiness.net/2025/08/packed-house-for-600-million-keo-solar-farm-hearing/",
+        "label": "Packed house for $600 million Keo solar farm hearing",
+        "publisher": "Talk Business & Politics",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.arkansasonline.com/news/2025/aug/04/plans-in-the-works-for-700-million-300-megawatt/",
+        "label": "Plans in the works for $700 million, 300 megawatt solar array",
+        "publisher": "Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/13830499",
+        "label": "OpenStreetMap: Keo, Lonoke County, Arkansas (town boundary, used for an approximate location)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "energy": {
+      "source": "solar"
+    },
+    "subsidies": [
+      {
+        "program": "Act 9 industrial revenue bond PILOT (65% property-tax abatement over 50 years)",
+        "jurisdiction": "Lonoke County, AR",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 600000000,
+    "jobs": {
+      "construction": 300,
+      "permanent": 3,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Just north of Keo between Arkansas 161 and U.S. 165. About 90% is in Lonoke County and the rest in Pulaski County. Site size is reported as about 6,000 acres (Talk Business) or 6,600 acres (Democrat-Gazette). Construction is planned for 2026 and operation for 2028. Invenergy says it is in engineering and pre-construction."
     }
   },
   {
@@ -68230,9 +68635,16 @@
         "publisher": "SFGATE",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://calexicochronicle.com/2026/01/07/where-imperial-data-center-project-and-opposition-stands/",
+        "label": "Where Imperial Data Center Project — and Opposition — Stands",
+        "publisher": "Calexico Chronicle",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-29",
     "notes": "Coordinates approximate; actual site is near Aten Road and Clark Road just outside Imperial city limits. Developer Sebastian Rucci (Imperial Valley Computer Manufacturing) proposes ~950,000 sq ft facility described by developer as 'designed exclusively for advanced artificial intelligence and machine learning operations.' Imperial County Board of Supervisors was deliberating an emergency moratorium on new data center approvals as of June 4, 2026 — adoption not confirmed by cited source. Annual promised tax revenue: ~$28M.",
     "energy": {
       "source": "grid",
@@ -71500,6 +71912,61 @@
     }
   },
   {
+    "id": "lightsource-bp-conway-solar-at-happy-white-county-ar",
+    "name": "Conway Solar at Happy",
+    "operator": "Lightsource bp",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.1673494,
+      "lon": -91.6616507,
+      "county": "White",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 135
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-10-19",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lightsourcebp.com/news/lightsource-bp-and-conway-corp-unveil-135-megawatt-pollinator-friendly-solar-farm/",
+        "label": "Lightsource bp and Conway Corp unveil 135-megawatt pollinator-friendly solar farm",
+        "publisher": "Lightsource bp",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/15705812",
+        "label": "OpenStreetMap: Happy Solar #1",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "The operator named is the developer and operator at COD. A reported 2024 ownership change to JERA Nex was not verified from a fetched source. OSM tags the footprint at 95 MW, so the point is marked approximate.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 125000000,
+    "jobs": {
+      "construction": 300,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Conway Corp (PPA)"
+    }
+  },
+  {
     "id": "lightwave-networks-needham-ma",
     "name": "LightWave Networks Needham Data Center",
     "operator": "LightWave Networks",
@@ -73800,6 +74267,49 @@
       "notes": "Council vote was unanimous against the project despite a proposed $1M community-benefits package; press described the rejection as met with 'cheers and a standing ovation' from residents in attendance.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "mainstream-technologies-little-rock-data-center-ar",
+    "name": "Mainstream Technologies Little Rock Data Center",
+    "operator": "Mainstream Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.7445,
+      "lon": -92.274234,
+      "city": "Little Rock",
+      "county": "Pulaski",
+      "street": "325 West Capitol Ave., Suite 200",
+      "postalCode": "72201",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-29",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.mainstream-tech.com/data-center-services/",
+        "label": "Mainstream Technologies data center services",
+        "publisher": "Mainstream Technologies",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/837008389",
+        "label": "OpenStreetMap: 325 West Capitol Avenue, Little Rock",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "A downtown Little Rock colocation and hosting facility (SOC 2 Type 2). It sits in a multi-tenant building, and the coordinates are the building's address.",
     "facilityType": "data_center"
   },
   {
@@ -79233,9 +79743,16 @@
         "publisher": "City of San José Planning Division",
         "retrievedAt": "2026-09-21",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.kqed.org/news/12099195/full-on-backlash-against-data-centers-occurring-as-san-jose-courts-them",
+        "label": "'Full-on Backlash' Against Data Centers Occurring as San José Courts Them",
+        "publisher": "KQED",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-29",
     "notes": "Microsoft's first self-owned/operated data center in San Jose. Groundbreaking June 10, 2026, target completion 2028. 64-acre site (1657 Alviso-Milpitas Rd), two-building campus. Distinct from the already-tracked Prologis San Jose records.",
     "energy": {
       "source": "grid",
@@ -86541,6 +87058,113 @@
     }
   },
   {
+    "id": "nextera-big-cypress-solar-crittenden-county-ar",
+    "name": "Big Cypress Solar",
+    "operator": "NextEra Energy Resources",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.3276782,
+      "lon": -90.3158835,
+      "county": "Crittenden",
+      "state": "AR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 180
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Big_Cypress_Solar",
+        "label": "Big Cypress Solar",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-09-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1202896105",
+        "label": "OpenStreetMap: Big Cypress Solar",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "180 MWac, 100% owned by NextEra Energy per GEM, commissioned in 2023.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
+    "id": "nextera-chicot-solar-lake-village-ar",
+    "name": "Chicot Solar Energy Center",
+    "operator": "NextEra Energy Resources",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.4765647,
+      "lon": -91.3576725,
+      "city": "Lake Village",
+      "county": "Chicot",
+      "state": "AR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020-09-30",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.entergy.com/news/second-entergy-arkansas-solar-project-begins-operation",
+        "label": "Second Entergy Arkansas solar project begins operation",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
+        "label": "Entergy renewable portfolio",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-09-29",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1058275069",
+        "label": "OpenStreetMap: Chicot Solar",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "energy": {
+      "source": "solar"
+    },
+    "landAcres": 825,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Entergy Arkansas (20-year PPA)"
+    }
+  },
+  {
     "id": "nextera-forgeview-solar-mississippi-county-ar",
     "name": "Forgeview Solar",
     "operator": "NextEra Energy Resources",
@@ -86576,7 +87200,7 @@
         "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
         "label": "Entergy renewable generation projects in service or in development as of July 2026",
         "publisher": "Entergy Corporation",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-09-29",
         "kind": "other"
       },
       {
@@ -86587,11 +87211,12 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-09-29",
     "notes": "Coordinate from Global Energy Monitor, treated as approximate.",
     "energy": {
       "source": "solar",
-      "utility": "Entergy Arkansas"
+      "utility": "Entergy Arkansas",
+      "notes": "Output is sold to Entergy Arkansas under a PPA."
     },
     "landAcres": 1800,
     "jobs": {
@@ -86755,6 +87380,61 @@
     }
   },
   {
+    "id": "nextera-little-ashdown-solar-little-river-county-ar",
+    "name": "Little Ashdown Solar",
+    "operator": "NextEra Energy Resources",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.6968793,
+      "lon": -94.2065398,
+      "county": "Little River",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-29",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.project.nexteraenergyresources.com/little-ashdown-solar",
+        "label": "Little Ashdown Solar project page",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/1820230",
+        "label": "OpenStreetMap: Little River County, Arkansas (county boundary, used for an approximate location)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "The location is the county centroid only.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 313000000,
+    "jobs": {
+      "construction": 300,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Proposed, pending permits and approvals. NextEra estimates $17M in tax revenue over 30 years."
+    }
+  },
+  {
     "id": "nextera-paducah-generation-mccracken-ky",
     "name": "NextEra Paducah Site Dedicated Generation",
     "operator": "NextEra Energy",
@@ -86878,6 +87558,64 @@
       "technology": "solar",
       "offtaker": "Google",
       "notes": "One of two long-term PPAs Google announced alongside its Oklahoma data-center buildout, together adding 600 MW of new clean energy to the Oklahoma grid (the other is High Spring Solar in Muskogee County). Developer projects roughly $25 million in tax revenue and hundreds of construction jobs."
+    }
+  },
+  {
+    "id": "nextera-stuttgart-solar-arkansas-county-ar",
+    "name": "Stuttgart Solar Energy Center",
+    "operator": "NextEra Energy Resources",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.4393869,
+      "lon": -91.441733,
+      "city": "Stuttgart",
+      "county": "Arkansas",
+      "state": "AR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 81
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2018-05-29",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solarpowerworldonline.com/2018/05/entergy-nextera-energy-resources-arkansas-solar-project/",
+        "label": "Entergy, NextEra Energy Resources commission 81-MW Arkansas solar project",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
+        "label": "Entergy renewable portfolio",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-09-29",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/14506442",
+        "label": "OpenStreetMap: Stuttgart Solar",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "energy": {
+      "source": "solar"
+    },
+    "landAcres": 475,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Entergy Arkansas (20-year PPA)"
     }
   },
   {
@@ -87852,6 +88590,69 @@
     "notes": "300-acre industrial campus between Vanden Road and North Gate Road in northeast Fairfield, near the Vacaville border. The Fairfield Planning Commission approved a master development permit for a 4.6-million-sq-ft industrial park here in 2023; the 150 MW data-center figure comes from developer/broker (Jones Lang LaSalle and NorthPoint) presentation materials for that broader park, and no data-center-specific application had been filed as of this reporting. Canon Partners (itself controlled by Andrews Lando & Associates and Stroud Properties) is also named as a co-developer. PG&E began an infrastructure/engineering cost study around Q3 2025 and issued an engineering agreement in December 2025. A public hearing would still be required before any data-center-specific approval. Coordinates are geocoded to Vanden Road in Fairfield only (no confirmed parcel or street address), so treat the pin as a rough area marker.",
     "landAcres": 300,
     "facilityType": "data_center"
+  },
+  {
+    "id": "northstar-newport-solar-jackson-county-ar",
+    "name": "Newport Solar Project",
+    "operator": "NorthStar Clean Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.6794424,
+      "lon": -91.1831841,
+      "city": "Newport",
+      "county": "Jackson",
+      "state": "AR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 180
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-10",
+        "note": "Began generating electricity in October 2023. The official opening was August 15, 2024.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.arkansasonline.com/news/2024/aug/15/180-mw-solar-project-comes-to-newport/",
+        "label": "Company celebrates 2,000-acre solar project near Newport",
+        "publisher": "Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1326144769",
+        "label": "OpenStreetMap: Newport Solar",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "energy": {
+      "source": "solar"
+    },
+    "subsidies": [
+      {
+        "program": "Payment in lieu of taxes (PILOT) agreement",
+        "jurisdiction": "Jackson County, AR",
+        "sourceIndex": 0
+      }
+    ],
+    "landAcres": 2000,
+    "jobs": {
+      "permanent": 25,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "General Motors"
+    }
   },
   {
     "id": "nova-energy-cryptomine-frenchcreek-venango-county-pa",
@@ -92071,6 +92872,53 @@
     }
   },
   {
+    "id": "ozarksgo-fayetteville-data-center-ar",
+    "name": "OzarksGo Fayetteville Data Center",
+    "operator": "OzarksGo, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.077952,
+      "lon": -94.212464,
+      "city": "Fayetteville",
+      "county": "Washington",
+      "street": "3641 Wedington Drive",
+      "postalCode": "72704",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-29",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ozarksgo.net/colocation",
+        "label": "OzarksGo colocation",
+        "publisher": "OzarksGo",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/5522",
+        "label": "PeeringDB facility: OzarksGo Fayetteville",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "A carrier-neutral colocation facility run by the fiber subsidiary of Ozarks Electric Cooperative. It hosts Arkansas's only DNS root server instance, per OzarksGo. Coordinates are from PeeringDB.",
+    "energy": {
+      "source": "grid",
+      "notes": "UPS and generators protect the whole data center. Power comes from multiple substations."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "pa-data-center-partners-granville-township-mifflin-pa",
     "name": "Granville Township Data Center Campus (Loop Road)",
     "operator": "PA Data Center Partners",
@@ -92588,6 +93436,77 @@
     "landAcres": 5,
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "pattern-big-island-solar-wilson-ar",
+    "name": "Big Island Solar",
+    "operator": "Pattern Energy",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.569201,
+      "lon": -90.0445018,
+      "city": "Wilson",
+      "county": "Mississippi",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 440
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-17",
+        "note": "PSC denied Entergy Arkansas's application to buy power from the facility.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://patternenergy.com/projects/big-island-solar/",
+        "label": "Big Island Solar project page",
+        "publisher": "Pattern Energy",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nwaonline.com/news/2026/sep/17/public-service-commission-denies-entergy-arkansas/",
+        "label": "Public Service Commission denies Entergy Arkansas request to purchase power from planned solar facility",
+        "publisher": "Northwest Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.entergy.com/wp-content/uploads/15/Entergy-renewable-portfolio.pdf",
+        "label": "Entergy renewable portfolio",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-09-29",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/8542308",
+        "label": "OpenStreetMap: Wilson, Mississippi County, Arkansas (town boundary, used for an approximate location)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "Located outside Wilson in Mississippi County. Pattern reports $74.6M in new county tax revenue over the project's life. The location is the Wilson town centroid.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 750000000,
+    "jobs": {
+      "construction": 400,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Entergy Arkansas sought approval of a 20-year PPA, filed January 29. The Arkansas PSC denied it on September 17, 2026. Entergy's portfolio lists a 2028 targeted in-service date."
+    }
   },
   {
     "id": "pch-wi-holdings-wisconsin-rapids-wood-county-wi",
@@ -96076,9 +96995,16 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.connectcre.com/stories/prime-data-centers-breaks-ground-on-second-sacramento-facility/",
+        "label": "Prime Data Centers Breaks Ground on Second Sacramento Facility",
+        "publisher": "Connect CRE",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-09-29",
     "notes": "Address: 2408 AK Street, McClellan Park, Sacramento, CA 95652. Coordinates approximate (McClellan Business Park). Adjacent to operational SMF01 (8MW at 2407 AK Street). Combined campus: 26MW across 215,000 sq ft on 8.6 acres. Marketed for hyperscale and AI-ready deployments. Certifications: ISO 27001, SOC 2 Type 2.",
     "energy": {
       "source": "grid",
@@ -96201,6 +97127,61 @@
       "hardwareType": "asic",
       "coolingType": "air",
       "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "primergy-prairie-mist-solar-ashley-county-ar",
+    "name": "Prairie Mist Solar",
+    "operator": "Primergy Solar",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.2535103,
+      "lon": -91.6683179,
+      "county": "Ashley",
+      "state": "AR",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 100
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-12",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pv-magazine-usa.com/2024/12/19/amazon-solar-farm-goes-live-in-arkansas/",
+        "label": "Amazon solar farm goes live in Arkansas",
+        "publisher": "pv magazine USA",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1466897847",
+        "label": "OpenStreetMap: Prairie Mist Solar",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-29",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "energy": {
+      "source": "solar"
+    },
+    "landAcres": 700,
+    "jobs": {
+      "construction": 200,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Amazon",
+      "notes": "North Little Rock buys capacity attributes under a 20-year contract. The project is expected to contribute about $10M in tax benefits to Ashley County over its life."
     }
   },
   {
@@ -97432,6 +98413,51 @@
     "facilityType": "data_center"
   },
   {
+    "id": "prologis-326-charcot-avenue-san-jose-ca",
+    "name": "Prologis 326 Charcot Avenue Data Center (North San José)",
+    "operator": "Prologis",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.381800835839,
+      "lon": -121.915780681274,
+      "city": "San Jose",
+      "county": "Santa Clara",
+      "street": "326 Charcot Avenue",
+      "postalCode": "95131",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 99
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-25",
+        "note": "Press Democrat reports a 514,000 sq ft, 99 MW data center proposed to replace five industrial buildings at 326 Charcot Ave; construction targeted for Q1 2028, operation in 2030, pending city approval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.pressdemocrat.com/2026/09/25/tech-san-jose-data-pge-ai-property-economy-build-real-estate-prologis/",
+        "label": "Data center could open in 2030 in North San Jose pending project approval",
+        "publisher": "The Press Democrat",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "514,000 sq ft data center plus 30,000 sq ft office at the corner of Zanker Road and Charcot Avenue. This is a separate site from Prologis STEM Park (city-owned land in Alviso) and from Prologis's Silver Creek Valley Road and Rue Ferrari projects. Coordinates come from the US Census geocoder address match.",
+    "energy": {
+      "source": "grid",
+      "utility": "PG&E",
+      "notes": "Press Democrat: three-story facility with onsite substation and backup generator yard, connecting to two transmission lines; depends on CPUC agreement to expand PG&E's Trimble substation, with Prologis funding all grid interconnection costs. Prologis intends to enroll in San José Clean Energy's Total Clean program or similar."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "prologis-allen-township-northampton-pa",
     "name": "Prologis Allen Township Data Center (2500 Liberty Drive)",
     "operator": "Prologis",
@@ -97835,13 +98861,21 @@
         "publisher": "San Francisco YIMBY",
         "retrievedAt": "2026-09-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kqed.org/news/12099195/full-on-backlash-against-data-centers-occurring-as-san-jose-courts-them",
+        "label": "'Full-on Backlash' Against Data Centers Occurring as San José Courts Them",
+        "publisher": "KQED",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-09-29",
     "notes": "5977 Silver Creek Valley Road, South San Jose. Three-story facility, 516,000 sq ft. Permit filed July 2026; ~2-year buildout once approved. Prologis states it will self-fund substation/transmission costs. Distinct from Prologis's already-tracked Project Sail, Project Cardinal, and Project Mila entries. Coordinates are approximate.",
     "energy": {
       "source": "grid",
-      "utility": "Pacific Gas & Electric (PG&E)"
+      "utility": "Pacific Gas & Electric (PG&E)",
+      "notes": "KQED: a three-story facility with 44 diesel generators for backup power."
     },
     "landAcres": 15,
     "facilityType": "data_center",
@@ -102523,9 +103557,16 @@
         "publisher": "Somach Law",
         "retrievedAt": "2026-08-02",
         "kind": "other"
+      },
+      {
+        "url": "https://www.turnto23.com/news/local-news/ai-data-center-proposal-draws-opposition-from-kern-county-residents",
+        "label": "AI data center proposal draws opposition from Kern County residents",
+        "publisher": "KERO 23ABC",
+        "retrievedAt": "2026-09-29",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-29",
     "notes": "Unincorporated Kern County site south of West Inyokern Road (Hwy 178) and west of North Brown Road (APNs 084-010-43, -44, -45 portion; broader ~95-acre study area across 19 APNs). The CEC SPPE docket formally governs 40 diesel backup generator sets rated to 99 MW combined backup capacity, described by the CEC as not electrically interconnected to the transmission or distribution grid; primary power is a separate 115 kV interconnection to Southern California Edison. Proposer entities per the primary CEC filing: Intuva Inc. and Valley Wide Engineering & Construction, alongside applicant R&L Capital, Inc. (CEO Robbie Barker). Unconfirmed pending a direct read of the CEC Basis-of-Design filing: press claims of '6 modular data halls' and on-site canopy solar. Jobs figures are inconsistent across sources (30-60 permanent, 1,600 temporary construction, and a softer 530-total-including-indirect claim, all secondary/company-sourced) and are omitted from the structured jobs field for that reason. Investment (~$250M) is a company estimate reported by Tehachapi News, not seen in a primary filing. A Phase I cultural resources survey found no CRHR-eligible or tribal cultural resources (NAHC response negative, 2026-03-16). Distinct from the already-tracked Golden Valley Technology Hub (Beacon/CRC, Elk Hills) - different operator, site, capacity, and power model. Coordinates are an approximate road-intersection geocode near North Brown Road, not a parcel-confirmed point.",
     "energy": {
       "source": "grid",
@@ -109779,6 +110820,65 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "skybox-santa-clara-1200-memorex-drive-ca",
+    "name": "Skybox Santa Clara (1200 Memorex Drive)",
+    "operator": "Skybox Datacenters",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.36257104275,
+      "lon": -121.949979903926,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "1200 Memorex Drive",
+      "postalCode": "95050",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 60
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-29",
+        "note": "Baxtel lists it as a new facility under construction with planned completion in 2026. Cleanview lists it as operating; the conflict is unresolved.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.corgan.com/projects/skybox-santa-clara-data-center",
+        "label": "Skybox Santa Clara Data Center project page",
+        "publisher": "Corgan",
+        "retrievedAt": "2026-09-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/skybox-santa-clara",
+        "label": "Skybox Santa Clara Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-29",
+        "kind": "other"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/california/963/skybox-santa-clara",
+        "label": "Skybox Santa Clara",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-09-29",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-29",
+    "notes": "Site of the former Memorex headquarters. Four-story data center (472,920 sq ft) with a six-story ancillary office (87,520 sq ft), per Baxtel. Corgan states 60 MW critical load on an 11-acre site; Cleanview gives 9 acres. Operational status conflicts between sources.",
+    "energy": {
+      "source": "grid",
+      "utility": "Silicon Valley Power",
+      "notes": "Corgan: N+2 generator backup with 30 generators and 60 rooftop chillers."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "slate-belt-holdings-upper-mount-bethel-northampton-pa",
     "name": "Slate Belt Holdings Data Center Campus (Upper Mount Bethel)",
     "operator": "Slate Belt Holdings LLC (Talen Energy / River Pointe Logistics joint venture)",
@@ -112366,7 +113466,7 @@
         "url": "https://www.hayward-ca.gov/business/for-developers/data-center-development-applications",
         "label": "Data center development applications",
         "publisher": "City of Hayward",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-09-29",
         "kind": "permit"
       },
       {
@@ -112391,7 +113491,7 @@
         "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-09-29",
     "notes": "STACK's first tracked East Bay CA site (existing STACK entries stack-svy01-ca/San Jose and stack-svy02-ca/Santa Clara are both South Bay). 300,000 sq ft campus at Production Ave/Investment Blvd: 3-story primary data center building + 1-story secondary building, height 100ft (+8ft variance approved); site plan also shows frontage on Eden Landing Road, treated as the same 11.3-acre parcel, not a separate site. energy.onSiteGenerationMw reflects the CEC SPPE-disclosed backup-generator capacity (28 generators across two yards, docket 23-SPPE-01) - this is NOT a disclosed IT/critical-load figure; no whole-facility IT MW is publicly disclosed anywhere. The 76.6 MW figure supersedes the original CEQA filing's 67.2 MW. Jobs figures (41 permanent, ~380 construction) are single-sourced to local press (Tri City Voice; Hayward Herald ran the same underlying story). Coordinates are a geocoded street-address point, not parcel-confirmed.",
     "energy": {
       "source": "grid",
