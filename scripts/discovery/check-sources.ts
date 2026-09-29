@@ -288,7 +288,13 @@ async function main(): Promise<void> {
   const concurrency = Number(process.env.CHECK_SOURCES_CONCURRENCY) || DEFAULT_CONCURRENCY;
   const timeoutMs = Number(process.env.CHECK_SOURCES_TIMEOUT_MS) || DEFAULT_TIMEOUT_MS;
 
-  const facilities = await loadFacilities(baseUrl);
+  const { facilities, source, apiError } = await loadFacilities(baseUrl);
+  if (source === "file") {
+    console.warn(
+      `WARNING: could not read the live facility index from the API (${apiError}); ` +
+        `falling back to the committed data/facilities.json snapshot, which may be stale.`
+    );
+  }
   const results = await checkSources(facilities, { fetchImpl: fetch, concurrency, timeoutMs });
   const logPath = writeReport(results);
   console.log(`${summarize(results)} -> ${logPath}`);

@@ -64,7 +64,7 @@ afterEach(() => {
 });
 
 describe("loadFacilities", () => {
-  it("returns the API's facilities when fetch succeeds", async () => {
+  it("returns the API's facilities when fetch succeeds, source: api, no apiError", async () => {
     const fetchImpl = vi.fn<typeof fetch>(async () => ({
       ok: true,
       json: async () => ({ facilities: [API_FACILITY] }),
@@ -72,30 +72,40 @@ describe("loadFacilities", () => {
 
     const result = await loadFacilities("http://localhost:3000", fetchImpl);
 
-    expect(result).toEqual([API_FACILITY]);
+    expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
+    expect(result.apiError).toBeUndefined();
     expect(fetchImpl).toHaveBeenCalledWith("http://localhost:3000/api/facilities");
   });
 
-  it("falls back to reading data/facilities.json when fetch rejects (network error)", async () => {
+  it("falls back to reading data/facilities.json when fetch rejects (network error), and reports the thrown message", async () => {
     const fetchImpl = vi.fn<typeof fetch>(async () => {
       throw new Error("network down");
     });
 
     const result = await loadFacilities("http://localhost:3000", fetchImpl);
 
-    expect(Array.isArray(result)).toBe(true);
-    expect(result.length).toBeGreaterThan(0);
-    expect(result).toEqual(readRealFacilitiesFile());
+    expect(result.source).toBe("file");
+    expect(result.apiError).toBe("network down");
+    expect(Array.isArray(result.facilities)).toBe(true);
+    expect(result.facilities.length).toBeGreaterThan(0);
+    expect(result.facilities).toEqual(readRealFacilitiesFile());
   });
 
-  it("falls back to reading data/facilities.json when the API responds non-OK", async () => {
-    const fetchImpl = vi.fn<typeof fetch>(async () => ({ ok: false, status: 500 }) as Response);
+  // This is the case the pre-fix code discarded entirely: the non-ok branch
+  // fell through to the file fallback with no record of the status at all.
+  it("falls back to reading data/facilities.json when the API responds non-OK, and names the status in apiError", async () => {
+    const fetchImpl = vi.fn<typeof fetch>(
+      async () => ({ ok: false, status: 503, statusText: "Service Unavailable" }) as Response
+    );
 
     const result = await loadFacilities("http://localhost:3000", fetchImpl);
 
-    expect(Array.isArray(result)).toBe(true);
-    expect(result.length).toBeGreaterThan(0);
-    expect(result).toEqual(readRealFacilitiesFile());
+    expect(result.source).toBe("file");
+    expect(result.apiError).toContain("503");
+    expect(result.apiError).toContain("Service Unavailable");
+    expect(Array.isArray(result.facilities)).toBe(true);
+    expect(result.facilities.length).toBeGreaterThan(0);
+    expect(result.facilities).toEqual(readRealFacilitiesFile());
   });
 
   it("uses the global fetch when fetchImpl is omitted, matching every existing call site", async () => {
@@ -107,7 +117,7 @@ describe("loadFacilities", () => {
 
     const result = await loadFacilities("http://localhost:3000");
 
-    expect(result).toEqual([API_FACILITY]);
+    expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
     expect(globalFetch).toHaveBeenCalledWith("http://localhost:3000/api/facilities");
   });
 });

@@ -1661,3 +1661,78 @@ describe("main — exit code wiring", () => {
     expect(exitCode).toBe(0);
   });
 });
+
+// The defect this task fixes: loadFacilities' file fallback used to be
+// invisible to every caller. For submit-candidates specifically, a stale
+// index corrupts target resolution and this script POSTs to the very API
+// that just failed to answer — so it must abort before staging anything,
+// not just warn like the four read-only lanes.
+describe("main — aborts on a stale facility index", () => {
+  it("exits nonzero and never calls /api/submissions when /api/facilities responds non-OK", async () => {
+    const logDir = mkdtempSync(path.join(tmpdir(), "submit-candidates-stale-index-"));
+    const inputPath = path.join(logDir, "candidates.json");
+    writeFileSync(
+      inputPath,
+      JSON.stringify([
+        { facility: makeCandidate(), provenance: { sources: ["https://example.com/new"] } },
+      ])
+    );
+
+    const originalArgv = process.argv;
+    const originalLogDir = process.env.DISCOVERY_LOG_DIR;
+    const originalVerify = process.env.VERIFY_SOURCES_ENABLED;
+    const originalFetch = globalThis.fetch;
+
+    process.env.VERIFY_SOURCES_ENABLED = "false";
+    process.env.DISCOVERY_LOG_DIR = logDir;
+    process.argv = [
+      "node",
+      "submit-candidates.ts",
+      inputPath,
+      "--run-id=stale-index",
+      "--base-url=http://api.test",
+    ];
+
+    const submissionsCalls: string[] = [];
+    globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith("/api/facilities")) {
+        return new Response("upstream boom", { status: 503, statusText: "Service Unavailable" });
+      }
+      if (url.endsWith("/api/submissions")) {
+        submissionsCalls.push(url);
+        return new Response(JSON.stringify({ id: "sub-1" }), { status: 200 });
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    }) as unknown as typeof fetch;
+
+    const errors: string[] = [];
+    const errorSpy = vi.spyOn(console, "error").mockImplementation((...args: unknown[]) => {
+      errors.push(args.map(String).join(" "));
+    });
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    let exitCode: number | undefined;
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      exitCode = code;
+      throw new Error(`process.exit(${code})`);
+    }) as never);
+
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(/);
+      expect(exitCode).toBe(1);
+      expect(submissionsCalls).toHaveLength(0);
+      expect(errors.some((line) => line.includes("503") && line.includes("stale"))).toBe(true);
+    } finally {
+      exitSpy.mockRestore();
+      logSpy.mockRestore();
+      errorSpy.mockRestore();
+      globalThis.fetch = originalFetch;
+      process.argv = originalArgv;
+      if (originalLogDir === undefined) delete process.env.DISCOVERY_LOG_DIR;
+      else process.env.DISCOVERY_LOG_DIR = originalLogDir;
+      if (originalVerify === undefined) delete process.env.VERIFY_SOURCES_ENABLED;
+      else process.env.VERIFY_SOURCES_ENABLED = originalVerify;
+      rmSync(logDir, { recursive: true, force: true });
+    }
+  });
+});

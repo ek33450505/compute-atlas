@@ -18,24 +18,49 @@
  * solely so load-facilities.test.ts can inject a fake without touching real
  * network or the real data/facilities.json. Every existing call site omits
  * it and gets identical behavior to before this param existed.
+ *
+ * The return value carries `source`/`apiError` so a caller can tell whether
+ * it got a live read or the committed `data/facilities.json` snapshot. Before
+ * this, the fallback was silent: a caller destructuring a bare array had no
+ * way to know the index it just received could be stale by however long ago
+ * that file was last synced. That mattered concretely in
+ * submit-candidates.ts, where a stale index makes "target not found"
+ * indistinguishable from a genuinely-new facility (see its docblock above
+ * `exitCodeForSummary`) — the fix is to make the fallback observable at the
+ * source rather than inferring it downstream from a skip-rate.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import type { Facility } from "../../lib/schema";
 
-export async function loadFacilities(baseUrl: string, fetchImpl: typeof fetch = fetch): Promise<Facility[]> {
+export type FacilitySource = "api" | "file";
+
+export type LoadFacilitiesResult = {
+  facilities: Facility[];
+  source: FacilitySource;
+  /** Present only when source === "file": why the API read was abandoned. */
+  apiError?: string;
+};
+
+export async function loadFacilities(
+  baseUrl: string,
+  fetchImpl: typeof fetch = fetch
+): Promise<LoadFacilitiesResult> {
+  let apiError: string;
   try {
     const res = await fetchImpl(`${baseUrl}/api/facilities`);
     if (res.ok) {
       const body = (await res.json()) as { facilities: Facility[] };
-      return body.facilities;
+      return { facilities: body.facilities, source: "api" };
     }
-  } catch {
-    // fall through to file fallback
+    apiError = `API responded ${res.status} ${res.statusText}`.trim();
+  } catch (err) {
+    apiError = err instanceof Error ? err.message : String(err);
   }
 
   const jsonPath = path.join(process.cwd(), "data", "facilities.json");
   const raw = readFileSync(jsonPath, "utf-8");
-  return JSON.parse(raw) as Facility[];
+  const facilities = JSON.parse(raw) as Facility[];
+  return { facilities, source: "file", apiError };
 }
