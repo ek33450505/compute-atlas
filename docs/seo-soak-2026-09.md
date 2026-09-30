@@ -102,7 +102,7 @@ record.
 
 ## Confound log
 
-**Recorded 2026-09-28.** That is the date this section was written, not the
+**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`).** Those are the dates this section was written, not the
 date of any entry — each entry carries its own date. The window is still open
 (closes 2026-10-10), so this log is **incomplete** and must be appended to as
 further events land.
@@ -234,10 +234,66 @@ Category: *concurrent data wave*.
   succeeded, and these 8 records are their output. Do not count them as two
   independent confounds.
 
+**2026-09-28 — #355 `9907134`, runtime dependency bumps (Dependabot)**
+Category: *content edit to page templates* — **indirect**, via the renderer.
+
+- `next` 16.3.3 → 16.3.6 and `react`/`react-dom` 19.2.4 → 19.3.0, plus 11
+  other runtime packages. No template source changed, but a framework bump can
+  change emitted HTML. **Not measured** — no before/after HTML diff was taken.
+- It lands on **every** family at once, so it cannot by itself produce a
+  between-family difference; it matters only for absolute magnitudes.
+
+  ```bash
+  git --no-pager diff 9907134~1 9907134 -- package.json | grep '^[-+] '
+  ```
+
+**2026-09-29 — #363 `133e70c`, 19 facilities approved and published**
+Category: *concurrent data wave*. `facilities` family only.
+
+- `recordCount` 2249 → 2268 (+19): 14 AR, 5 CA.
+
+  ```bash
+  git --no-pager diff 133e70c~1 133e70c -- data/facilities.meta.json
+  git --no-pager diff 133e70c~1 133e70c -- data/facilities.json \
+    | grep '^+' | grep -o '"state": "[A-Z][A-Z]"' | sort | uniq -c
+  ```
+
+**2026-09-29 — #365 `d9fa6da`, siting-context backfill**
+Category: *content edit to page templates* (data-driven content, no template
+change). `facilities` family only.
+
+- 177 facility pages that had no "nearest water" line gained one, and 182
+  gained a "nearest ≥230 kV line" — both render in the "Siting context" panel.
+  Existing values were untouched (0 changed, 0 nulled).
+- One `data/siting-context.json` entry was dropped, for
+  `galaxy-helios-dickens-tx` — the URL #352 already 301'd, so no page changed.
+
 ### RULED OUT
 
 Listed because the section's own instruction is to rule confounds out
 explicitly rather than omit them.
+
+**2026-09-28 — #361 `1bec5e6`, preview-only prerender trim** — **RULED OUT**.
+
+- It edits `generateStaticParams` on the facility, county and operator
+  templates, but through `previewSubset` (`lib/build-params.ts`), which
+  returns the full list unless `VERCEL_ENV === "preview"`. Production output
+  is unchanged. Verify: `grep -A4 'export function previewSubset' lib/build-params.ts`.
+
+**2026-09-28 → 2026-09-29 — #354, #356, #357, #362, #364, #366** — **RULED OUT**.
+
+- None touches `app/`, `components/`, `next.config.ts`, `proxy.ts` or
+  `app/robots.ts`: CI config, dev dependencies, and the discovery / map-data
+  pipelines. Verify per SHA with
+  `git --no-pager show --name-only --format='' <sha> | grep -E '^(app/|components/|next\.config|proxy\.ts)'`
+  (empty for each).
+
+**2026-09-29 — #368 `b79b487` (`undici` 7.29.0 → 7.30.0) and #367 `1099e79`
+(`ip-address` 10.4.0 → 10.7.2)** — **RULED OUT**.
+
+- Both change `package-lock.json` only (transitive dependencies). No direct
+  dependency, template or config changed. Verify:
+  `git --no-pager show --name-only --format='' b79b487 1099e79`.
 
 **2026-09-28 — #353 `6c0b85e`, "Close the security audit's findings"** —
 **RULED OUT** as Googlebot-affecting.
@@ -288,9 +344,11 @@ between families**. The confounds land unevenly across families, and that is
 precisely the problem:
 
 - The **`facilities` family — the one the hypothesis is actually about — took
-  three changes at once inside the window**: a data wave (+8 records,
-  2026-09-28), a 301 retirement removing a URL from it (2026-09-27), and a new
-  internal link added to all 2,249 of its pages (2026-09-27).
+  five changes inside the window**: two data waves (+8 records 2026-09-28, +19
+  on 2026-09-29), a 301 retirement removing a URL from it (2026-09-27), a new
+  internal link added to all 2,249 of its pages (2026-09-27), and new siting
+  content on 177 of its pages (2026-09-29). A framework bump (2026-09-28) hit
+  every family equally.
 - `counties` took the internal-link change (396 pages). The other seven
   families took none of it.
 - **Therefore a facilities-vs-others difference on 2026-10-13 has at least
