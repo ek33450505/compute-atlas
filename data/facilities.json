@@ -9348,6 +9348,55 @@
     "facilityType": "data_center"
   },
   {
+    "id": "atlas-capital-bloomfield-ct",
+    "name": "Atlas Capital Group Data Center (132 Griffin Road North)",
+    "operator": "Atlas Capital Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.8843905,
+      "lon": -72.7389957,
+      "city": "Bloomfield",
+      "county": "Hartford",
+      "street": "132 Griffin Road North",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-06",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.bloomfieldct.gov/CivicAlerts.aspx?AID=201",
+        "label": "Town of Bloomfield — Major Data Center Proposed for Bloomfield by NY developer (2025-07-03)",
+        "publisher": "Town of Bloomfield, CT",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/atlas-capital-connecticut",
+        "label": "Atlas Capital: Connecticut Data Center — 132 Griffin Rd N, Bloomfield (44-acre former tobacco field)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?street=132+Griffin+Road+North&city=Bloomfield&state=CT&country=US&format=json&addressdetails=1",
+        "label": "OpenStreetMap Nominatim — Griffin Road North (street centroid; exact address not matched)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-09-30",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "New York-based Atlas Capital Group informally presented a concept to the Bloomfield Town Plan and Zoning Commission in June 2025: a two-story building of about 1 million sq ft, with 900,000+ sq ft of data processing space and a 127,000 sq ft substation. The town expects about 40 employees. No formal application was found as of 2026-09-30. No MW figure is stated. Acreage (44) is from Baxtel, not the town notice. Coordinates are only the OpenStreetMap centroid of Griffin Road North: the exact address did not geocode, and OSM places that way in Windsor while the town places the site in Bloomfield, so the pin is approximate and needs parcel confirmation.",
+    "landAcres": 44,
+    "jobs": {
+      "permanent": 40,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "atlas-compute-ai-data-center-campus-fort-pierce-fl",
     "name": "Atlas Compute AI Data Center Campus",
     "operator": "Atlas Compute (infrastructure by Penguin Solutions)",
@@ -20398,6 +20447,79 @@
     "facilityType": "data_center"
   },
   {
+    "id": "centersquare-den1-highlands-ranch-co",
+    "name": "Csquare (Centersquare) DEN1 Denver - Highlands Ranch",
+    "operator": "Csquare (Centersquare)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.549201,
+      "lon": -105.032671,
+      "city": "Highlands Ranch",
+      "county": "Douglas",
+      "street": "9110-9180 Commerce Center Circle",
+      "postalCode": "80129",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/hubfs/Centersquare%20website/docs/Csquare-DEN-SpecSheet.pdf",
+        "label": "Csquare Denver Market spec sheet (DEN1/DEN2)",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "The operator spec sheet lists 41,593 sq ft, 18.3 MW of utility capacity, 9.2 MW of UPS capacity, 15 MW of generator capacity, and chilled water, with a Littleton 80129 mailing address in Highlands Ranch. Utility capacity is not IT load, so capacityMw is left unset. The site was formerly branded Cyxtera, then Centersquare. Coordinates are a Census geocode of 9180 Commerce Center Cir.",
+    "water": {
+      "notes": "Operator spec sheet lists chilled-water cooling."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "centersquare-den2-englewood-co",
+    "name": "Csquare (Centersquare) DEN2 Denver - Englewood",
+    "operator": "Csquare (Centersquare)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.561593,
+      "lon": -104.832547,
+      "city": "Englewood",
+      "county": "Douglas",
+      "street": "8534 Concord Center Drive",
+      "postalCode": "80112",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/hubfs/Centersquare%20website/docs/Csquare-DEN-SpecSheet.pdf",
+        "label": "Csquare Denver Market spec sheet (DEN1/DEN2)",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/2623",
+        "label": "Centersquare Denver (DEN2)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "The operator spec sheet lists 21,938 sq ft, 27.4 MW of utility capacity, 3.8 MW of UPS capacity, 6 MW of generator capacity, and chilled water. PeeringDB confirms Centersquare at 8534 Concord Center Drive. Utility capacity is not IT load, so capacityMw is left unset. Coordinates are a Census geocode of the street address.",
+    "water": {
+      "notes": "Operator spec sheet lists chilled-water cooling."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "centersquare-ewr2-weehawken-nj",
     "name": "Centersquare EWR2 (Weehawken)",
     "operator": "Centersquare",
@@ -21772,6 +21894,52 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "cigna-windsor-data-center-ct",
+    "name": "Cigna Windsor Data Center (9 Griffin Road North)",
+    "operator": "Cigna",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.879941,
+      "lon": -72.73157,
+      "city": "Windsor",
+      "county": "Hartford",
+      "street": "9 Griffin Road North",
+      "postalCode": "06095",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://hartfordbusiness.com/article/cigna-plans-386m-renovation-of-windsor-data-center/",
+        "label": "Cigna plans $386M renovation of Windsor data center (2022-06-22)",
+        "publisher": "Hartford Business Journal",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://insideinvestigator.org/approval-of-connecticut-tax-credits-for-data-center-bypassed-required-review/",
+        "label": "Approval of Connecticut tax credits for data center bypassed required review (2026-08-05)",
+        "publisher": "CT Inside Investigator",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "Existing enterprise data center in a 153,462 sq ft building built in 1982. In June 2022 Windsor's Town Council unanimously endorsed a host municipality agreement for a planned $386M renovation ($100M software, $286M taxable personal property over five years), with no local tax abatement. Per a 2026 report on a state audit, Cigna is the only company to have received Connecticut Qualified Data Center Incentive Program benefits: $863 million in qualified investments, over $17 million in credits, and 5 jobs created. investmentUsd records the $863M qualified-investment figure, which counts equipment and software purchases and is not the construction cost. No MW figure is published.",
+    "subsidies": [
+      {
+        "program": "Connecticut Qualified Data Center Incentive Program",
+        "amountUsd": 17000000,
+        "jurisdiction": "CT",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 863000000,
+    "facilityType": "data_center"
   },
   {
     "id": "cipher-barber-lake-colorado-city-tx",
@@ -25753,8 +25921,12 @@
       "lon": -73.1474121,
       "city": "Trumbull",
       "street": "80 Merritt Blvd",
+      "postalCode": "06611",
       "state": "CT",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 6.75
     },
     "statusHistory": [],
     "sources": [
@@ -25784,11 +25956,52 @@
         "label": "OpenStreetMap building at 80 Merritt Blvd, Trumbull, CT",
         "retrievedAt": "2026-09-12",
         "kind": "osm"
+      },
+      {
+        "url": "https://westfaironline.com/fairfield/data-center-owner-tells-trumbull-first-selectman-it-will-abide-by-4-conditions/",
+        "label": "Data center owner tells Trumbull first selectman it will abide by 4 conditions (2026-08-12)",
+        "publisher": "Westfair Communications",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://westfaironline.com/fairfield/proposed-trumbull-ai-data-center-at-nasdaq-site-worrisome-to-residents/",
+        "label": "Proposed Trumbull AI data center at Nasdaq site worrisome to residents (2026-07-19)",
+        "publisher": "Westfair Communications",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cognovum.com/test-1",
+        "label": "CogNovum — CNYC1 Trumbull (80 Merritt Boulevard, Trumbull, CT 06611; 228,000 sq ft; 6.75 MW UPS)",
+        "publisher": "CogNovum",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://westfaironline.com/latest-news/trumbull-town-council-oks-moratorium-on-new-data-centers/",
+        "label": "Trumbull Town Council OKs moratorium on new data centers (2026-09-11)",
+        "publisher": "Westfair Communications",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-30",
     "notes": "Existing 228,000 sq ft building at 80 Merritt Blvd, Trumbull, CT, built in 1960 (originally for Nasdaq per the operator's account); currently operated by CogNovum. Aphorio Carter acquired the property in 2024. On 2026-05-06, 365 Data Centers and Aphorio Carter announced a ~200MW AI-ready data-center pipeline across six US markets; Trumbull is named as a site 'under evaluation' for AI-focused upgrades to this existing building, with letters of intent not yet signed for it (only Aurora, CO and Simpsonville, KY had signed LOIs as of the release). The operator's CEO described the plan as upgrading an existing facility on existing power infrastructure, not new construction: \"We are simply updating an existing, historic facility to ensure we can continue serving our customers effectively, while supporting the town with local jobs and substantial tax revenue.\" No MW, investment, or job-count figures were published for the current facility. Coordinates cross-checked: US Census geocoder (41.240871, -73.146313) and the OSM building footprint (41.2407281, -73.1474121) agree within ~100m; the OSM point is used per the mapped-building preference. Flagging for awareness, not asserted as fact: OSM's building tag for this address (as retrieved 2026-09-12) reads \"Digital Realty New York HVN10,\" which is not corroborated by any 2026 source found in this search and may reflect a prior/stale ownership label rather than current fact.",
-    "facilityType": "data_center"
+    "energy": {
+      "notes": "The owner committed to no additional electrical draw beyond the site's existing capacity; the operator lists 6.75 MW of UPS capacity"
+    },
+    "water": {
+      "notes": "The owner committed to no increase in water consumption and is converting the site to a closed-loop cooling system as part of the modernization (Westfair, 2026-08-12); the current heat-rejection method is not stated"
+    },
+    "investmentUsd": 200000000,
+    "community": {
+      "status": "contested",
+      "notes": "A resident petition passed 1,200 signatures by July and 1,445 by 2026-08-12, asking for a moratorium and a joint public meeting. The Town Council passed a two-year moratorium on new data centers on 2026-09-11 that explicitly excludes the 80 Merritt Blvd modernization, which residents objected to.",
+      "sourceIndex": 4
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "coinmint-massena-ny",
@@ -29413,6 +29626,66 @@
     "facilityType": "data_center"
   },
   {
+    "id": "coresite-de1-denver-co",
+    "name": "CoreSite DE1 (910 15th Street)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.745646,
+      "lon": -104.995336,
+      "city": "Denver",
+      "county": "Denver",
+      "street": "910 15th St.",
+      "postalCode": "80202",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center-locations/denver",
+        "label": "Colocation Data Centers in Denver",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "The operator's Denver market page lists DE1 at 910 15th St. with more than 152,000 sq ft, and shows it as an operating facility. The page gives no MW figure, so capacity is omitted. This is a separate building from CoreSite DE3 at 4900 Race St., which is already tracked. It is also separate from the 1500 Champa St. carrier hotel. Coordinates are a Census geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-de2-denver-co",
+    "name": "CoreSite DE2 (639 E. 18th Avenue)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.744914,
+      "lon": -104.979413,
+      "city": "Denver",
+      "county": "Denver",
+      "street": "639 E. 18th Ave.",
+      "postalCode": "80203",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center-locations/denver",
+        "label": "Colocation Data Centers in Denver",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "The operator's Denver market page lists DE2 at 639 E. 18th Ave. with more than 5,100 sq ft, and shows it as operating. This is a small colocation site and no MW figure is published. It is a separate facility from DE1 and DE3. Coordinates are a Census geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "coresite-de3-denver-co",
     "name": "CoreSite DE3",
     "operator": "CoreSite",
@@ -31894,6 +32167,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "ct-das-groton-data-center-ct",
+    "name": "State of Connecticut Groton Data Center (Pfizer campus Building 230)",
+    "operator": "Connecticut Department of Administrative Services",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.334586,
+      "lon": -72.076516,
+      "city": "Groton",
+      "county": "New London",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2014-04",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://portal.ct.gov/das/best/platform-services/statewide-data-center-facilities",
+        "label": "CT DAS BITS — Statewide Data Center Facilities (Tier II Groton Data Center)",
+        "publisher": "Connecticut Department of Administrative Services",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://portal.ct.gov/DECD/Press-Room/Press-Releases/2014/2014-04-12-Gov-Malloy-to-Turn-Vacant-Buildings-Bioscience-Business-Incubator-New-State-Data-Center",
+        "label": "Gov. Malloy: Agreement reached to turn vacant Pfizer buildings into bioscience incubator and new state data center (Building 230, $1/yr lease)",
+        "publisher": "CT Department of Economic and Community Development",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.carlinconstruction.com/project/state-ct-connecticut-data-center",
+        "label": "State of CT — Connecticut Data Center renovation, Pfizer campus Groton (9,000+ sq ft)",
+        "publisher": "Carlin Construction",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "State government Tier II data center, leased from Pfizer for $1 a year in Building 230 of Pfizer's Groton research campus under a 2014 agreement. It serves roughly 50,000 state personnel and pairs with a Springfield, MA site. The contractor's fast-track renovation covered 9,000+ sq ft, including raised floor, electrical work and four replacement CRAC units. Coordinates are a Census geocode of the Pfizer Groton campus address on Eastern Point Road, not Building 230, so precision is approximate and no street is recorded. Not the Pfizer or NE Edge hyperscale proposals.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "ctr-american-data-power-hells-kitchen-imperial-ca",
     "name": "Hell's Kitchen Geothermal Energy Complex (American Data Power)",
     "operator": "Controlled Thermal Resources (American Data Power)",
@@ -33244,6 +33560,8 @@
       "lon": -73.3886495,
       "city": "Norwalk",
       "county": "Fairfield",
+      "street": "6 Norden Place",
+      "postalCode": "06855",
       "state": "CT",
       "precision": "exact"
     },
@@ -33265,9 +33583,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-07-22",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=CT&limit=250",
+        "label": "PeeringDB facility registry API — record 'CyrusOne Norwalk', 6 Norden Place (f/k/a 10 Norden Place), Norwalk 06855",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-09-30",
     "notes": "Confirmed at 6 Norden Place, Norwalk, CT — Connecticut's largest data center per operator's own page.",
     "water": {
       "coolingType": "air"
@@ -34716,6 +35041,39 @@
     ],
     "lastUpdated": "2026-08-05",
     "notes": "Colocation facility in the 1255 Euclid Avenue carrier-hotel building, downtown Cleveland — 7,440 sq ft raised floor, 0.4 MW critical IT load. Distinct from the already-tracked Lumen Cleveland 1 (4000 Chester Ave). The same building also houses 365 Data Centers (CL1) and BlueBridge Networks as separate colocation tenants; recorded here as one representative record rather than three near-duplicate pins at one address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-den1-englewood-co",
+    "name": "DataBank DEN1 - Englewood",
+    "operator": "DataBank",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.560952,
+      "lon": -104.865649,
+      "city": "Englewood",
+      "county": "Douglas",
+      "street": "393 Inverness Parkway",
+      "postalCode": "80112",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.databank.com/data-centers/denver/",
+        "label": "Premium Data Centers in Denver",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "DataBank's Denver page lists DEN1 at 393 Inverness Parkway, with 24,180 IT sq ft and 2 MW of critical IT load. This is a separate site from the DEN2 and DEN5 Centennial campus, which is already tracked. Coordinates are a Census geocode of the street address.",
     "facilityType": "data_center"
   },
   {
@@ -45823,6 +46181,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "eip-energy-innovation-park-new-britain-ct",
+    "name": "Energy & Innovation Park Data Center (480 Myrtle Street)",
+    "operator": "EIP Investment",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.669693,
+      "lon": -72.797359,
+      "city": "New Britain",
+      "county": "Hartford",
+      "street": "480 Myrtle Street",
+      "postalCode": "06053",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 44
+    },
+    "announcedDate": "2018",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://hartfordbusiness.com/article/new-britain-data-center-fuel-cell-project-aims-to-move-forward-with-changes/",
+        "label": "New Britain data center-fuel cell project aims to move forward, with changes (2022-02-03)",
+        "publisher": "Hartford Business Journal",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://ctmirror.org/2025/12/23/walking-myrtle-street-again-how-new-britain-is-rewriting-its-future-shuyue/",
+        "label": "Opinion: How New Britain is rewriting its future (Energy & Innovation Park)",
+        "publisher": "CT Mirror",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/energy-innovation-park",
+        "label": "Energy Innovation Park Data Center — 480 Myrtle Street, New Britain (planned)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "Colocation data center planned inside the former Stanley Black & Decker factory on Myrtle Street, anchored by a 19.98 MW fuel-cell microgrid (tracked separately as generate-nb-fuel-cells-new-britain-ct). Hartford Business Journal (2022) describes a '$1 billion, 44-megawatt' colocation project first proposed in 2018. That investment figure covers the whole redevelopment, fuel cells included, not the data center alone. Baxtel describes Phase II (data center in the main factory building) as following Phase I (the fuel-cell grid). No fetched source shows data-center construction or a tenant as of 2026-09-30. A $55.2M sales-tax exemption appears in DCD coverage, but that page returned HTTP 403 and is not cited or recorded.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 19.98,
+      "notes": "Planned to be supplied by the adjacent 19.98 MW Bloom Energy fuel-cell microgrid on the same campus"
+    },
+    "investmentUsd": 1000000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "ekpc-cooper-station-unit-3-pulaski-ky",
     "name": "Cooper Station Unit 3 Combined-Cycle",
     "operator": "East Kentucky Power Cooperative",
@@ -48915,6 +49327,66 @@
     "energy": {
       "utility": "Dominion Energy Virginia"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-de1-centennial-co",
+    "name": "Equinix DE1 Denver",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.587746,
+      "lon": -104.87629,
+      "city": "Centennial",
+      "county": "Arapahoe",
+      "street": "9706 East Easter Avenue, Suite 160",
+      "postalCode": "80112",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/4443",
+        "label": "Equinix DE1 - Denver",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "PeeringDB lists Equinix, Inc. as the owner, at 9706 East Easter Avenue, Suite 160, with an Englewood 80112 mailing address. The Census geocoder places the address in Centennial, Arapahoe County. This is an interconnection and colocation site; no MW figure is published. Coordinates are a Census geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "equinix-de2-englewood-co",
+    "name": "Equinix DE2 Denver (Inverness Business Park)",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.561029,
+      "lon": -104.858662,
+      "city": "Englewood",
+      "county": "Douglas",
+      "street": "335 Inverness Drive South",
+      "postalCode": "80112",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/696",
+        "label": "Equinix DE2 - Denver",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "PeeringDB lists Equinix, Inc. as the owner, at 335 Inverness Drive South (80112). It hosts 15 networks and 2 local exchanges. No MW figure is published. Coordinates are a Census geocode of the street address, which falls in Douglas County.",
     "facilityType": "data_center"
   },
   {
@@ -53372,18 +53844,42 @@
         "publisher": "Colorado Politics",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.denvergazette.com/2026/09/12/to-build-or-to-ban-colorado-municipalities-grapple-with-data-centers/",
+        "label": "To build or to ban: Colorado municipalities grapple with data centers",
+        "publisher": "Denver Gazette",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.koaa.com/news/local-news/douglas-county-approves-19m-tax-rebate-for-parker-data-center",
+        "label": "Douglas County approves $19M tax rebate for Parker data center",
+        "publisher": "KOAA",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-09-30",
     "notes": "249,000 sq ft on 17 acres on Compark Boulevard near South Chambers Road. The town of Parker approved rezoning and a data center overlay district in February 2024 after a January 2024 planning-commission approval. A $19.3 million Douglas County business-personal-property tax rebate over 35 years was scheduled for a commissioner vote the week of 2026-08-11; it is not recorded here as a subsidy because the award had not been made as of the source date. County estimate of 16 permanent positions; company representatives suggested 30-50. Coordinates are an approximate Compark Boulevard geocode, not parcel-confirmed. Distinct from Flexential's existing Aurora, Centennial, Downtown and Englewood Denver-market sites.",
     "energy": {
       "source": "grid",
-      "utility": "CORE Electric Cooperative"
+      "utility": "CORE Electric Cooperative",
+      "notes": "Flexential is working with CORE and funding the infrastructure upgrades; the site draws power from a nearby transmission station."
     },
     "water": {
       "coolingType": "closed_loop",
       "notes": "Closed-loop liquid cooling targeting zero water usage effectiveness, per the county incentive review."
     },
+    "subsidies": [
+      {
+        "program": "Business personal property tax rebate (100% of the county's share, 35 years)",
+        "amountUsd": 19300000,
+        "jurisdiction": "Douglas County, CO",
+        "year": "2026",
+        "sourceIndex": 1
+      }
+    ],
     "investmentUsd": 205000000,
     "landAcres": 17,
     "jobs": {
@@ -55966,6 +56462,83 @@
     "aiClassification": "likely"
   },
   {
+    "id": "generate-nb-fuel-cells-new-britain-ct",
+    "name": "Energy & Innovation Park Fuel Cell Microgrid (Generate NB Fuel Cells)",
+    "operator": "Generate NB Fuel Cells, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.669693,
+      "lon": -72.797359,
+      "city": "New Britain",
+      "county": "Hartford",
+      "street": "480 Myrtle Street",
+      "postalCode": "06053",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 19.98
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2021-12-21",
+        "note": "Siting Council decision on reopened Petition No. 1350A (19.98 MW fuel cell facility)",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2024-06-18",
+        "note": "Construction completion notice filed with the Siting Council; operating status inferred from construction completion",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://portal.ct.gov/csc/3_petitions/petition-nos-1341-1350/petition-no-1350-new-britain-eip",
+        "label": "Connecticut Siting Council — Petition No. 1350, EIP Investment LLC, 19.98 MW fuel cell facility, Building 107, 480 Myrtle Street",
+        "publisher": "Connecticut Siting Council",
+        "retrievedAt": "2026-09-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://portal.ct.gov/csc/3_petitions/petition-nos-1341-1350/petition-no-1350a_eip_new-britain?archived=true",
+        "label": "Connecticut Siting Council — Petition No. 1350A, EIP Investment LLC / Generate NB Fuel Cells, LLC (decision 12/21/2021; construction completion notice 6/18/2024)",
+        "publisher": "Connecticut Siting Council",
+        "retrievedAt": "2026-09-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://ogind.com/2022/phase-i-of-the-energy-innovation-park-project-officially-begins-in-new-britain/",
+        "label": "Phase I of the Energy & Innovation Park Project officially begins in New Britain",
+        "publisher": "O&G Industries",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://ctmirror.org/2025/12/23/walking-myrtle-street-again-how-new-britain-is-rewriting-its-future-shuyue/",
+        "label": "Opinion: How New Britain is rewriting its future (67-fuel-cell array installed)",
+        "publisher": "CT Mirror",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "19.98 MW Bloom Energy fuel-cell microgrid, the Phase I anchor of the Energy & Innovation Park on the former Stanley Black & Decker campus. O&G Industries (Dec 2022 kickoff) names Generate Capital as owner and operator and gives 67 Bloom units. The Siting Council record lists Generate NB Fuel Cells, LLC alongside EIP Investment LLC and shows a construction completion notice filed 2024-06-18. Operational status is inferred from that completion notice; no fetched source states commercial operation or what the plant supplies before the data center is built, so confidence is reported. Unit count: 67 (O&G 2022, CT Mirror 2025) versus 74 in a 2022 Hartford Business Journal report of the Siting Council filing; 67 is recorded.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 19.98
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "offtaker": "EIP Investment (Energy & Innovation Park data center)",
+      "unitCount": 67,
+      "notes": "Bloom Energy solid-oxide fuel cells, permitted as combined heat and power. Built to anchor the planned co-located data center, proposed in this batch as eip-energy-innovation-park-new-britain-ct; poweredFacilityIds is left unset until that record is live."
+    }
+  },
+  {
     "id": "genesis-digital-assets-anderson-sc",
     "name": "Genesis Digital Assets Anderson Bitcoin Mining Data Center",
     "operator": "Genesis Digital Assets",
@@ -56484,6 +57057,7 @@
       "lon": -104.909,
       "city": "Windsor",
       "county": "Weld",
+      "street": "2000 Howard Smith Avenue W",
       "state": "CO",
       "precision": "approximate"
     },
@@ -56513,9 +57087,16 @@
         "publisher": "Town of Windsor, Colorado",
         "retrievedAt": "2026-08-26",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.kunc.org/news/2026-09-12/weld-county-commissioners-approve-permit-for-global-ai-data-center",
+        "label": "Weld County commissioners approve permit for Global AI data center",
+        "publisher": "KUNC",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-09-30",
     "notes": "Global AI, a New York-based firm, bought a 438-acre former Kodak/Carestream property in unincorporated Weld County near Windsor in November 2025 and is developing a 41-acre data center on it. Phase 1 is stated at 27.5 MW with an ambition to reach 1 GW; no timeline for later phases has been shared. The company says it plans to operate the site alongside Nvidia and Humain. Coordinates are approximate (former Kodak campus, Eastman Park Drive area), not parcel-confirmed.",
     "energy": {
       "source": "mixed",
@@ -56527,6 +57108,11 @@
       "notes": "A Weld County review published 2026-08-07 found the applicant still had to show proof of water supply. Windsor has issued only a non-binding will-serve letter for water and wastewater contingent on annexation."
     },
     "landAcres": 41,
+    "jobs": {
+      "construction": 1500,
+      "permanent": 200,
+      "sourceIndex": 2
+    },
     "community": {
       "status": "contested",
       "notes": "Weld County posted stop-work orders on the property on 2026-05-07, 2026-06-11 and again on an unspecified date for un-permitted construction, and issued a formal order to abate on 2026-07-20. The county received hundreds of public comments; the site is in the Use by Special Review process. Windsor states it has not approved or endorsed the project.",
@@ -88234,6 +88820,51 @@
     "facilityType": "data_center"
   },
   {
+    "id": "nlr-esif-hpc-data-center-golden-co",
+    "name": "ESIF High-Performance Computing Data Center (Kestrel supercomputer)",
+    "operator": "National Laboratory of the Rockies (formerly NREL), U.S. Department of Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.74024,
+      "lon": -105.16718,
+      "city": "Golden",
+      "county": "Jefferson",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.energy.gov/cmei/articles/department-energys-newest-energy-research-dedicated-supercomputer-arrives-nrel",
+        "label": "Department of Energy's Newest Energy Research-Dedicated Supercomputer Arrives at NREL",
+        "publisher": "U.S. Department of Energy",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nlr.gov/computational-science/facilities",
+        "label": "Computational Science Facilities",
+        "publisher": "National Laboratory of the Rockies",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.nlr.gov/news/detail/program/2023/nrels-new-high-performance-computer-has-a-tremendous-supporting-cast",
+        "label": "NREL's New High-Performance Computer Has a Tremendous Supporting Cast",
+        "publisher": "National Laboratory of the Rockies",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "This is the HPC data center inside the Energy Systems Integration Facility (ESIF) on the lab campus in Golden. It houses the Kestrel supercomputer (HPE, CPU plus GPU nodes), which arrived in March 2023. The lab needed '2.5-megawatt upgrades to support Kestrel'. A total facility MW figure was not in the fetched pages, so capacityMw is omitted. Coordinates are a Census geocode of the lab's 15013 Denver West Pkwy campus address, not the ESIF building itself.",
+    "water": {
+      "notes": "Warm-water liquid cooling with waste-heat capture and reuse, per the lab and DOE."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "noaa-environmental-security-computing-center-fairmont-wv",
     "name": "NOAA Environmental Security Computing Center (NESCC)",
     "operator": "National Oceanic and Atmospheric Administration",
@@ -90902,6 +91533,55 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "og-industries-beacon-falls-ct",
+    "name": "Beacon Falls Data Center Campus (1 Lopus Road)",
+    "operator": "O&G Industries",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.442318,
+      "lon": -73.064334,
+      "city": "Beacon Falls",
+      "county": "New Haven",
+      "street": "1 Lopus Road",
+      "postalCode": "06403",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://agencycre.com/properties/one-of-the-northeasts-most-significant-planned-ai-digital-infrastructure-developments-beacon-falls-data-center/",
+        "label": "Beacon Falls Data Center — 1 Lopus Road, 294,000 SF, 100 MW campus (marketing listing)",
+        "publisher": "The Agency CRE",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/ct-town-turns-against-data-090000150.html",
+        "label": "CT town turns against data centers: 'Yes, please' becomes 'No way' (Hartford Courant, 2026-09-21)",
+        "publisher": "Hartford Courant via Yahoo News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "O&G Industries (master developer) is marketing a 44+/49-acre former gravel-pit site off Lopus Road beside Route 8 for a 294,000 sq ft data center campus: 100 MW ultimate capacity (listing specs say 112.5 MW), sold as AI/cloud capacity and powered by utility service plus Class I fuel cells (33 fuel cells, per the Courant) with carbon capture. As of 2026-09-21 no formal application had been filed with the town. Residents approved a 32 MW data center on the same property in 2022, but it never materialized. aiClassification is not set: the AI framing comes from a marketing listing, not a committed tenant.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Listing: utility-delivered power combined with Class I fuel cells and carbon capture; the Courant reports 33 fuel cells planned"
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Courant (2026-09-21): an August 2026 town information meeting; three online petitions with more than 3,000 signatures; residents calling for a moratorium (none passed yet)",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "okee-one-irsc-okeechobee-fl",
     "name": "Okee-One Data Center Campus",
     "operator": "Indian River State College",
@@ -91118,6 +91798,43 @@
       ],
       "notes": "Oklo owns/operates; Meta prepays for power + funds development (not equity). Powers Meta's New Albany 'Prometheus' supercluster (meta-prometheus-new-albany-oh). Site is the former Portsmouth Gaseous Diffusion Plant, 206 acres bought from DOE for ~$5.15M in Dec 2025."
     }
+  },
+  {
+    "id": "omega-systems-stamford-ct",
+    "name": "Omega Systems Stamford Data Center (26 Fahey Street, formerly Amnet/Cloudpath CT1)",
+    "operator": "Omega Systems",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.091473,
+      "lon": -73.517633,
+      "city": "Stamford",
+      "county": "Fairfield",
+      "street": "26 Fahey Street",
+      "postalCode": "06907",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://omegasystemscorp.com/company/amnet-systems-has-a-new-home/",
+        "label": "Amnet Systems is Now Omega Systems — Stamford office and SOC 2 data center, 26 Fahey Street",
+        "publisher": "Omega Systems",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=CT&limit=250",
+        "label": "PeeringDB facility registry API — records 'Omega CT1' (Omega Systems Consultants, LLC) and 'Cloudpath CT1 (26 Fahey St)', Stamford 06907",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "Colocation and managed-IT data center that Omega Systems took over when it acquired Stamford-based Amnet Technology Solutions and Cloudpath (2024). PeeringDB still carries a separate legacy 'Cloudpath CT1' record at the same address; it is the same site. No size or MW figures are published. PeeringDB lists Cloudpath points of presence at 1351 Washington Blvd and 5 Landmark Square; those are not proposed here.",
+    "facilityType": "data_center"
   },
   {
     "id": "one-data-center-america-ontario-ca",
@@ -100315,11 +101032,11 @@
         "url": "https://www.cpr.org/2026/07/08/qts-aurora-data-center-diesel-generators/",
         "label": "Colorado's biggest data center wants to add another 98 diesel backup generators",
         "publisher": "Colorado Public Radio",
-        "retrievedAt": "2026-07-08",
+        "retrievedAt": "2026-09-30",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-09-30",
     "notes": "1160 N. Gun Club Rd, Aurora, CO 80018; eastern Aurora near E-470. Former JPMorgan data center site. Four-building campus on 67 acres. Colorado's first hyperscale facility at this scale. Coordinates based on Gun Club Rd address. Investment amount and specific job counts (previously $1B, 500 construction, 77 permanent) removed — not confirmed by cited sources. QTS Data Centers is owned by Blackstone (2021 take-private). As of 2026-07-08, one of the campus's three buildings is complete, a second is nearly finished, and site work has begun on the third. A July 2025 permit application seeks 98 additional diesel backup generators on top of the existing 40.",
     "energy": {
       "source": "grid",
@@ -100328,6 +101045,7 @@
     },
     "water": {
       "coolingType": "unknown",
+      "reportedMgd": 0.0024,
       "notes": "Colorado data center water use under scrutiny; Xcel projects data center load growth requiring $22B infrastructure spend by 2040"
     },
     "landAcres": 67,
@@ -104361,6 +105079,149 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "renew-riverside-bristol-ct",
+    "name": "ReNew Riverside Micro Cloud Technology Center (234 Riverside Avenue)",
+    "operator": "ReNew Developers",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.670002,
+      "lon": -72.934109,
+      "city": "Bristol",
+      "county": "Hartford",
+      "street": "234 Riverside Avenue",
+      "postalCode": "06010",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04",
+        "note": "Bristol Inland Wetlands commission approved the wetlands application with stipulations; the data-center building still needs local site-plan and building approvals",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://www.bristolct.gov/m/newsflash/Home/Detail/1683",
+        "label": "City of Bristol — Data Center Overview from the Mayor (Riverside Avenue micro cloud building, 4 MW fuel cell, approvals timeline)",
+        "publisher": "City of Bristol, CT",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://portal.ct.gov/-/media/csc/4_csc_calendarofevents/meetingmaterials/2022/20221208/pe1540-sr--draft_rev2_s.pdf?rev=75458ee8e14249e1a1a03b6e9a70cc96&hash=607BF2906B65A65CFFB6458607F564DD",
+        "label": "Connecticut Siting Council — Petition No. 1540 staff report (draft), ReNew Developers LLC, 4.0 MW customer-side fuel cell at 234 Riverside Avenue serving a data center",
+        "publisher": "Connecticut Siting Council",
+        "retrievedAt": "2026-09-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://bristoledition.org/blog/2026/04/09/inlands-wetlands-approves-permit-for-riverside-venue-data-center/",
+        "label": "Inland Wetlands approves permit for Riverside Avenue data center",
+        "publisher": "The Bristol Edition",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://bristoledition.org/blog/2026/08/17/zoning-commission-to-take-up-vape-shops-data-center-at-special-meeting/",
+        "label": "Zoning Commission to take up vape shops, data center at special meeting",
+        "publisher": "The Bristol Edition",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://bristoledition.org/blog/2026/04/20/mayors-column-lets-talk-about-data-center/",
+        "label": "Mayor's column: Let's talk about data center",
+        "publisher": "The Bristol Edition",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "Small edge/'micro cloud' data center on a 1.62-acre remediated brownfield (former Dodge Village dealership) beside the Pequabuck River. Building size varies across sources: the city says ~15,000 sq ft, the Siting Council staff report is referenced in press as ~15,000 gross sq ft over two stories, and The Bristol Edition reported 27,000 sq ft (April 2026) and 14,000 sq ft (August 2026); no single figure is recorded. The Siting Council's Petition 1540 approval (2022-12-08, construction extension 2025-09-19) covers only the fuel-cell plant; the data-center building still needs Bristol land-use and building approvals. In August 2026 the Zoning Commission took up an amendment to drop the 5,001–250,000 sq ft data-center category and require special permits, and the mayor urged limiting data centers over 15,000 sq ft; together these could block the project at its current size. The 4 MW is the on-site fuel-cell rating, not IT load, so capacityMw is omitted.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Eversource",
+      "onSiteGenerationMw": 4,
+      "notes": "Siting Council staff report: 13 Bloom Energy ES-5 solid-oxide fuel cells running on natural gas, in parallel with the grid, supplying about 99% of the data center's base load; the Eversource interconnection is for backup"
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "City and mayor describe closed-loop liquid cooling with no withdrawal from or discharge to the Pequabuck River; the mayor estimated annual water use at about 30% of a local grocery store's"
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The Bristol Edition reports residents only learned of the 2022-era project recently, and the City Council and mayor pushed the Zoning Commission to roll back the data-center rules the project relies on",
+      "sourceIndex": 3
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "renew-riverside-fuel-cell-bristol-ct",
+    "name": "ReNew Riverside Fuel Cell Facility (234 Riverside Avenue)",
+    "operator": "Bloom Energy",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.670002,
+      "lon": -72.934109,
+      "city": "Bristol",
+      "county": "Hartford",
+      "street": "234 Riverside Avenue",
+      "postalCode": "06010",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 4
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2022-12-08",
+        "note": "Connecticut Siting Council approved Petition No. 1540 (declaratory ruling); the city reports a construction extension approved 2025-09-19",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://portal.ct.gov/-/media/csc/4_csc_calendarofevents/meetingmaterials/2022/20221208/pe1540-sr--draft_rev2_s.pdf?rev=75458ee8e14249e1a1a03b6e9a70cc96&hash=607BF2906B65A65CFFB6458607F564DD",
+        "label": "Connecticut Siting Council — Petition No. 1540 staff report (draft), ReNew Developers LLC, 4.0 MW customer-side fuel cell at 234 Riverside Avenue",
+        "publisher": "Connecticut Siting Council",
+        "retrievedAt": "2026-09-30",
+        "kind": "permit"
+      },
+      {
+        "url": "http://www.bristolct.gov/m/newsflash/Home/Detail/1683",
+        "label": "City of Bristol — Data Center Overview from the Mayor (Petition 1540 approval 12/8/2022; construction extension 9/19/2025)",
+        "publisher": "City of Bristol, CT",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "Customer-side 4.0 MW solid-oxide fuel cell plant: ten 325 kW plus three 250 kW Bloom Energy ES-5 units in a 9,423 sq ft fenced compound. Bloom would install, maintain and operate it under a 25-year contract with ReNew Developers. It is meant to be built alongside the ReNew Riverside data center (the staff report calls it 'Connecticut Data Park') and supply about 99% of that site's base load, running in parallel with the Eversource grid. It is not an emergency generator and not in demand response. The operator is recorded as Bloom Energy because the permit says Bloom would operate the plant; ReNew is the host and customer.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Eversource",
+      "onSiteGenerationMw": 4,
+      "notes": "Natural gas fed from the East Street main; electricity only (not combined heat and power)"
+    },
+    "water": {
+      "notes": "Staff report: about 1,248 gallons consumed only at system start or restart; no water discharge under normal operation"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "offtaker": "ReNew Developers",
+      "unitCount": 13,
+      "notes": "Bloom Energy ES-5 solid-oxide fuel cells (10 x 325 kW + 3 x 250 kW). Dedicated to the co-located ReNew Riverside data center, which is also proposed in this batch as renew-riverside-bristol-ct; poweredFacilityIds is left unset until that record is live."
+    }
   },
   {
     "id": "revolve-labs-glencoe-mn",
@@ -118422,6 +119283,55 @@
     "facilityType": "data_center"
   },
   {
+    "id": "t5-colorado-springs-co",
+    "name": "T5@Colorado Data Center Campus",
+    "operator": "T5 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.795985,
+      "lon": -104.794485,
+      "city": "Colorado Springs",
+      "county": "El Paso",
+      "street": "3323 Janitell Road",
+      "postalCode": "80906",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/t5-colorado",
+        "label": "T5 Colorado Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://t5datacenters.com/resources/global-software-company-first-tenant-to-break-ground-at-t5-data-centers-colorado-campus/",
+        "label": "Global Software Company First Tenant to Break Ground at T5 Data Centers' T5@Colorado Campus",
+        "publisher": "T5 Data Centers",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/investing/t5-plans-800-million-campus-in-colorado-springs",
+        "label": "T5 Plans $800 Million Campus in Colorado Springs",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "T5 announced this 64-acre campus in 2013: 100 MW of expandable power and an $800M plan. That is a campus-wide plan, not built investment, so investmentUsd is left unset. In June 2016 an unnamed top-10 technology company bought 8.5 acres and broke ground on the first data center. Baxtel lists the campus at 3323 Janitell Rd as operational since 2017, with up to 82 MW of on-site expansion and Colorado Springs Utilities service. The campus is separate from Novva (650 Sybilla Ln) and QTS (311 S. Rockrimmon Blvd). T5's current ownership was not independently verified, and the end tenant is undisclosed.",
+    "energy": {
+      "source": "grid",
+      "utility": "Colorado Springs Utilities"
+    },
+    "landAcres": 64,
+    "facilityType": "data_center"
+  },
+  {
     "id": "t5-minneapolis-1001-third-avenue-mn",
     "name": "T5@Minneapolis (1001 Third Avenue South)",
     "operator": "T5 Data Centers (asset owned by a Cloud Capital / Arcapita joint venture since January 2026)",
@@ -123050,6 +123960,7 @@
       "lon": -73.0410751,
       "city": "Waterbury",
       "street": "108 Bank Street",
+      "postalCode": "06702",
       "state": "CT",
       "precision": "approximate"
     },
@@ -123074,9 +123985,16 @@
         "label": "OpenStreetMap building at 108 Bank Street, Waterbury, CT",
         "retrievedAt": "2026-09-12",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=CT&limit=250",
+        "label": "PeeringDB facility registry API — record 'TierPoint Waterbury' (TierPoint, LLC), 108 Bank St, Waterbury 06702",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-09-30",
     "notes": "Carrier-neutral colocation suite on the 5th floor of a multi-tenant building at 108 Bank Street, Waterbury CT 06702 (≈25 miles southwest of Hartford, per the operator). precision is \"approximate\" because this is a leased floor inside a larger building, not a dedicated single-tenant parcel; OSM tags the building's general use as residential, which likely reflects the building's broader mixed-use character rather than this specific suite. TierPoint states 3,000+ total sq ft with 1,600+ sq ft of raised floor, onsite backup generation (one 125kW and one 400kW unit, 48+ hour runtime), a 100% uptime SLA, and multiple diverse fiber carriers. Audited annually under SOC 1 Type II, SOC 2 Type II, SOC 2 + HITRUST, GLBA, HIPAA, and PCI-DSS; ITAR and Data Privacy Framework registered. No MW, investment, or facility-founding-date figures were published. Coordinates cross-checked: US Census geocoder (41.554386, -73.041037) and OSM building footprint (41.554366, -73.0410751) agree within a few meters.",
     "facilityType": "data_center"
   },
@@ -125508,6 +126426,46 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "undisclosed-brighton-cr4-50th-ave-co",
+    "name": "Brighton Data Center Complex (County Road 4 & 50th Avenue)",
+    "operator": "Undisclosed developer (Dewberry-planned rezoning application)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.015,
+      "lon": -104.7523,
+      "city": "Brighton",
+      "county": "Weld",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.denver7.com/news/local-news/in-your-community/north-metro/brighton-residents-uncover-proposal-for-massive-data-center-campus-spurring-potential-moratorium",
+        "label": "Brighton residents uncover proposal for massive data center campus, spurring potential moratorium",
+        "publisher": "Denver7",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://bizwest.com/2026/09/24/plan-for-massive-data-center-spurs-call-for-brighton-pause/",
+        "label": "Plan for massive data center spurs call for Brighton pause",
+        "publisher": "BizWest",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "The plan is eight two-story data center buildings, about 315,000 sq ft each and 2.52 million sq ft in total, in the Weld County portion of Brighton near County Road 4 and 50th Avenue. The city has received a rezoning application but no public hearing has been held. Planning firm Dewberry held pre-application meetings with city staff in January and July of the prior year. The developer and end user are not named, and no MW or acreage is disclosed. Coordinates are an approximate point at WCR 4 and N 50th Ave from OSM/Nominatim, not a parcel. This may relate to the aggregator-listed 'Cielo Hudson' Weld County site, but no source links them.",
+    "community": {
+      "status": "opposed",
+      "notes": "Northeast Brighton residents organized against the plan over water, noise and health concerns. Mayor Pro Tem Peter Padilla plans to propose a 90-day moratorium at the October 6 council meeting.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "unisys-salt-lake-city-ut",
