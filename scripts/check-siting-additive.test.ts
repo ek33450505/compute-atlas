@@ -164,8 +164,83 @@ describe("diffSitingContext / isAdditive", () => {
 
     const diff = diffSitingContext(obj, obj);
 
-    expect(diff).toEqual({ added: [], removed: [], lost: [], nulled: [], changed: [] });
+    expect(diff).toEqual({
+      added: [],
+      removed: [],
+      pruned: [],
+      lost: [],
+      nulled: [],
+      changed: [],
+    });
     expect(isAdditive(diff)).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// pruned vs removed — the orphan-facility discriminator.
+//
+// Incident this guards against (2026-09-29): a full/--backfill-nhd build:mapdata
+// run seeds the siting-context id set from facilities ∪ computed results, so a
+// facility retired by a raw Neon delete (no longer in data/facilities.json) has
+// its siting-context entry legitimately dropped on the next such run. Without a
+// discriminator this guard cannot tell that apart from real data loss.
+// ---------------------------------------------------------------------------
+
+describe("diffSitingContext — pruned (orphan) vs removed (real loss)", () => {
+  it("classifies a dropped id as `pruned`, not `removed`, when it is absent from liveIds", () => {
+    const oldObj = {
+      "retired-facility": { nearestWater: { name: "River A", kind: "river", distanceMi: 1 } },
+    };
+    const newObj = {};
+    const liveIds = new Set<string>(); // the facility is gone from data/facilities.json too
+
+    const diff = diffSitingContext(oldObj, newObj, liveIds);
+
+    expect(diff.pruned).toEqual(["retired-facility"]);
+    expect(diff.removed).toEqual([]);
+    expect(isAdditive(diff)).toBe(true);
+  });
+
+  it("classifies a dropped id as `removed`, not `pruned`, when it is STILL in liveIds", () => {
+    const oldObj = {
+      "still-live-facility": { nearestWater: { name: "River A", kind: "river", distanceMi: 1 } },
+    };
+    const newObj = {};
+    const liveIds = new Set(["still-live-facility"]); // present in data/facilities.json
+
+    const diff = diffSitingContext(oldObj, newObj, liveIds);
+
+    expect(diff.removed).toEqual(["still-live-facility"]);
+    expect(diff.pruned).toEqual([]);
+    expect(isAdditive(diff)).toBe(false);
+  });
+
+  it("falls back to legacy behaviour (everything -> removed) when liveIds is omitted", () => {
+    const oldObj = {
+      "some-facility": { nearestWater: { name: "River A", kind: "river", distanceMi: 1 } },
+    };
+    const newObj = {};
+
+    const diff = diffSitingContext(oldObj, newObj);
+
+    expect(diff.removed).toEqual(["some-facility"]);
+    expect(diff.pruned).toEqual([]);
+    expect(isAdditive(diff)).toBe(false);
+  });
+
+  it("classifies a mix of one orphan and one live-removed id independently", () => {
+    const oldObj = {
+      "retired-facility": { nearestWater: { name: "River A", kind: "river", distanceMi: 1 } },
+      "still-live-facility": { nearestWater: { name: "River B", kind: "river", distanceMi: 2 } },
+    };
+    const newObj = {};
+    const liveIds = new Set(["still-live-facility"]);
+
+    const diff = diffSitingContext(oldObj, newObj, liveIds);
+
+    expect(diff.pruned).toEqual(["retired-facility"]);
+    expect(diff.removed).toEqual(["still-live-facility"]);
+    expect(isAdditive(diff)).toBe(false);
   });
 });
 

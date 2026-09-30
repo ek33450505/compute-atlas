@@ -7,16 +7,31 @@
  * checked out when the job started.
  *
  * Background: `npm run build:mapdata` recomputes per-facility siting context
- * from live external APIs (USGS NHD, HIFLD, WRI Aqueduct). On a transient
- * fetch failure, build-map-data.mjs's per-facility lookups can come back
- * empty; that path feeds `nearest: null`, and the field is then simply
- * OMITTED from the entry written to siting-context.json — the previously
- * good value is gone, with nothing to restore it. build-map-data.mjs's own
- * circuit breaker only aborts the whole build after N CONSECUTIVE total
- * failures, so a SCATTERED partial outage can drop fields across many
- * facilities while the build still exits 0. This script is the machine gate
- * that replaces the sync PR's unread "confirm changes are additive"
- * checklist item, since that PR auto-merges and no human reads it.
+ * from live external APIs (USGS NHD, HIFLD, WRI Aqueduct). build-map-data.mjs's
+ * `resolveNearestWater` now carries a prior `nearestWater` forward on any
+ * unconfirmed/partial NHD response (gate: `absenceConfirmed !== true`), so a
+ * degraded-but-not-down NHD no longer drops that field on its own. Only a
+ * genuinely confirmed absence (both NHD layers answered and found nothing)
+ * clears it — which is deliberate, since that is also what lets a corrected
+ * coordinate clear a stale value. `nearestTransmission` has no analogous
+ * carry-forward: `fetchArcGISAll` verifies its HIFLD page count against the
+ * service's own total and throws on a mismatch, so a `null` there is
+ * authoritative, not an artifact of a partial fetch. This guard remains a
+ * backstop: for regressions in that carry-forward logic, and for any current
+ * or future field without an equivalent completeness check.
+ *
+ * `pruned` vs `removed`: full and `--backfill-nhd` runs of build:mapdata seed
+ * the id set from facilities.json ∪ computed results, so a facility retired by
+ * a raw Neon delete (absent from data/facilities.json, no page) has its
+ * siting-context entry legitimately dropped on the next such run. Without a
+ * discriminator this guard cannot tell that apart from real data loss, so it
+ * classifies a dropped id as `pruned` (not `removed`, does not fail the check)
+ * only when that id is ALSO absent from the working tree's data/facilities.json
+ * — the only signal available for "this facility was intentionally retired."
+ * `--skip-nhd` unions in the existing ids and so never drops an orphan itself.
+ * This script is the machine gate that replaces the sync PR's unread "confirm
+ * changes are additive" checklist item, since that PR auto-merges and no human
+ * reads it.
  *
  * WHY NOT HEAD: build:mapdata takes ~30 min. Anything merged during that
  * window leaves the checked-out HEAD stale, and a recomputation that is
@@ -55,6 +70,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "..");
 const SITING_CONTEXT_REL_PATH = "data/siting-context.json";
+const FACILITIES_REL_PATH = "data/facilities.json";
 const PRINT_LIMIT = 25;
 export const PREFERRED_BASELINE_REF = "origin/main";
 export const FALLBACK_BASELINE_REF = "HEAD";
@@ -69,20 +85,28 @@ export const FALLBACK_BASELINE_REF = "HEAD";
  *
  * @param {Record<string, Record<string, unknown>>} oldObj
  * @param {Record<string, Record<string, unknown>>} newObj
+ * @param {Set<string>} [liveIds] ids present in the CURRENT data/facilities.json.
+ *   When supplied, an id dropped from siting-context.json that is ALSO absent
+ *   from liveIds is a legitimate orphan (the facility itself was retired via a
+ *   raw Neon delete) and is classified as `pruned`, not `removed`. When
+ *   omitted, every dropped id goes to `removed` — identical to pre-`pruned`
+ *   behaviour.
  * @returns {{
  *   added: string[],
  *   removed: string[],
+ *   pruned: string[],
  *   lost: Array<{id: string, field: string, oldValue: unknown}>,
  *   nulled: Array<{id: string, field: string, oldValue: unknown}>,
  *   changed: Array<{id: string, field: string, oldValue: unknown, newValue: unknown}>,
  * }}
  */
-export function diffSitingContext(oldObj, newObj) {
+export function diffSitingContext(oldObj, newObj, liveIds) {
   const safeOld = oldObj ?? {};
   const safeNew = newObj ?? {};
 
   const added = [];
   const removed = [];
+  const pruned = [];
   const lost = [];
   const nulled = [];
   const changed = [];
@@ -95,7 +119,11 @@ export function diffSitingContext(oldObj, newObj) {
 
   for (const id of Object.keys(safeOld)) {
     if (!newIdSet.has(id)) {
-      removed.push(id);
+      if (liveIds && !liveIds.has(id)) {
+        pruned.push(id);
+      } else {
+        removed.push(id);
+      }
       continue;
     }
 
@@ -127,7 +155,7 @@ export function diffSitingContext(oldObj, newObj) {
     }
   }
 
-  return { added, removed, lost, nulled, changed };
+  return { added, removed, pruned, lost, nulled, changed };
 }
 
 /**
@@ -319,15 +347,49 @@ function main() {
     return;
   }
 
-  const diff = diffSitingContext(oldObj, newObj);
+  // FAIL CLOSED: an unreadable, unparseable, non-array, or empty
+  // facilities.json must not silently reclassify every genuine removal as an
+  // allowed prune. An empty liveIds set would make EVERY dropped id look like
+  // an orphan.
+  let facilities;
+  try {
+    facilities = readWorkingTree(REPO_ROOT, FACILITIES_REL_PATH);
+  } catch (err) {
+    console.error(
+      `[check-siting-additive] Failed to read/parse working-tree ${FACILITIES_REL_PATH}: ${err.message}`,
+    );
+    process.exit(1);
+    return;
+  }
+  if (!Array.isArray(facilities) || facilities.length === 0) {
+    console.error(
+      `[check-siting-additive] ${FACILITIES_REL_PATH} is not a non-empty array — refusing to run ` +
+        `(an empty/malformed facility list would reclassify every removed id as an allowed prune).`,
+    );
+    process.exit(1);
+    return;
+  }
+  const liveIds = new Set(facilities.map((facility) => facility.id));
+
+  const diff = diffSitingContext(oldObj, newObj, liveIds);
   const additive = isAdditive(diff);
 
   console.log(`=== siting-context.json additive check (vs ${baselineRef}) ===`);
   console.log(`  added:   ${diff.added.length}`);
   console.log(`  removed: ${diff.removed.length}`);
+  console.log(
+    `  pruned:  ${diff.pruned.length}  (allowed — orphans with no facility in ${FACILITIES_REL_PATH})`,
+  );
   console.log(`  lost:    ${diff.lost.length}`);
   console.log(`  nulled:  ${diff.nulled.length}`);
   console.log(`  changed: ${diff.changed.length}  (allowed — refreshed values)`);
+
+  if (diff.pruned.length) {
+    console.log(`\nPruned facility ids (${diff.pruned.length}, showing up to ${PRINT_LIMIT}):`);
+    for (const id of diff.pruned.slice(0, PRINT_LIMIT)) {
+      console.log(`  - ${id}`);
+    }
+  }
 
   if (!additive) {
     console.error(

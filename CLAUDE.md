@@ -183,9 +183,11 @@ ever ran inside the automated workflow, so a maintainer syncing by hand bypassed
 The reverse direction is deliberately NOT asserted: retiring a facility needs a raw Neon delete
 and legitimately leaves a stale siting entry behind. That orphan survives `--skip-nhd` runs (which
 union in every existing id) but is pruned by the next full or `--backfill-nhd` run, whose id set is
-facilities + computed results only. `check-siting-additive.mjs` then reports it as `removed: 1` and
-exits 1 — confirm the id is absent from `data/facilities.json` before accepting that as a prune
-rather than a loss (first seen 2026-09-29: `galaxy-helios-dickens-tx`, retired in #352).
+facilities + computed results only. `check-siting-additive.mjs` classifies a dropped id that is
+ALSO absent from `data/facilities.json` as `pruned` (reported, does not fail); a dropped id that still
+has a facility is `removed` and fails. It fails closed if `facilities.json` is unreadable or empty,
+since an empty list would make every removal look like a prune. (First seen 2026-09-29:
+`galaxy-helios-dickens-tx`, retired in #352, read as `removed: 1` and exited 1 before this split.)
 
 ⚠️ **The ONE sanctioned `--skip-nhd` exception, and its price** (2026-09-22). When USGS NHD is
 *degraded rather than down*, the full pass neither finishes nor aborts: `build-map-data.mjs`'s
