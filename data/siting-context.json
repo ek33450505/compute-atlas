@@ -2978,6 +2978,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "atlas-capital-bloomfield-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "atlas-compute-ai-data-center-campus-fort-pierce-fl": {
     "nearestWater": {
       "name": "Moore Creek",
@@ -6412,6 +6422,34 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "centersquare-den1-highlands-ranch-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "centersquare-den2-englewood-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "centersquare-ewr2-weehawken-nj": {
     "nearestWater": {
       "name": "Hackensack Reservoir Number Two",
@@ -6893,6 +6931,16 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cigna-windsor-data-center-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
     }
   },
   "cipher-barber-lake-colorado-city-tx": {
@@ -9507,6 +9555,34 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "coresite-de1-denver-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "coresite-de2-denver-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "coresite-de3-denver-co": {
     "nearestWater": {
       "name": "Cherry Creek",
@@ -10245,6 +10321,12 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "ct-das-groton-data-center-ct": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "ctr-american-data-power-hells-kitchen-imperial-ca": {
@@ -11249,6 +11331,20 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "databank-den1-englewood-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "databank-den2-centennial-co": {
@@ -15323,6 +15419,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "eip-energy-innovation-park-new-britain-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "ekpc-cooper-station-unit-3-pulaski-ky": {
     "nearestWater": {
       "name": "Lake Cumberland",
@@ -16434,6 +16540,34 @@
     },
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "equinix-de1-centennial-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "equinix-de2-englewood-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
       "rock": "Sandstone"
     }
   },
@@ -19058,6 +19192,16 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "generate-nb-fuel-cells-new-britain-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
     }
   },
   "genesis-digital-assets-anderson-sc": {
@@ -28786,6 +28930,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "nlr-esif-hpc-data-center-golden-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "noaa-environmental-security-computing-center-fairmont-wv": {
     "nearestWater": {
       "name": "Monongahela River",
@@ -29686,6 +29844,12 @@
       "label": "Low (<10%)"
     }
   },
+  "og-industries-beacon-falls-ct": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "okee-one-irsc-okeechobee-fl": {
     "nearestWater": {
       "name": "Taylor Creek",
@@ -29741,6 +29905,12 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "omega-systems-stamford-ct": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "one-data-center-america-ontario-ca": {
@@ -34161,6 +34331,26 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Carbonate-rock Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "renew-riverside-bristol-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "renew-riverside-fuel-cell-bristol-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
     }
   },
   "revolve-labs-glencoe-mn": {
@@ -38920,6 +39110,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "t5-colorado-springs-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "t5-minneapolis-1001-third-avenue-mn": {
     "nearestWater": {
       "name": "Bassett Creek",
@@ -41138,6 +41338,20 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "undisclosed-brighton-cr4-50th-ave-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "unisys-salt-lake-city-ut": {
