@@ -109,7 +109,17 @@ describe("data-integrity: NHD backfill debt", () => {
   // there is no debt left to pay down, and the ceiling test alone now fails
   // the moment a --skip-nhd wave leaves any new CONUS record without
   // nearestWater.
-  const NHD_BACKFILL_DEBT_CEILING = 0;
+  //
+  // Raised 0 -> 3 on 2026-09-30: USGS NHD failed the build:mapdata pre-flight
+  // twice (layers 4 and 10 timed out at 12s), so the Bartow County, GA wave
+  // (Stiles Road, Brown Farm Road, Switch Cartersville) shipped via
+  // --skip-nhd. Pay it down with `build:mapdata` once NHD is healthy — the FULL
+  // run, not --backfill-nhd, because the same wave also moved two pins
+  // (Project Bunkhouse, Project Springbank) whose nearestWater and
+  // nearestTransmission are still computed from the old coordinates, and only
+  // the full path re-queries a facility that already has an entry. Lower this
+  // back to 0 in that PR; the floor test below forces it.
+  const NHD_BACKFILL_DEBT_CEILING = 3;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data
