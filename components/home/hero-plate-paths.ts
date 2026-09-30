@@ -67,5 +67,5 @@ export const HERO_PLATE = {
   omitted: 9,
   omittedJurisdictions: ["GU", "MP", "PR", "VI"],
   total: 2271,
-  asOf: "2026-09-30T15:58:13.362Z",
+  asOf: "2026-09-30T16:58:14.424Z",
 } as const satisfies HeroPlate;
