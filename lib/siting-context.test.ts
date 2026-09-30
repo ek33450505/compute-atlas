@@ -119,7 +119,17 @@ describe("data-integrity: NHD backfill debt", () => {
   // nearestTransmission are still computed from the old coordinates, and only
   // the full path re-queries a facility that already has an entry. Lower this
   // back to 0 in that PR; the floor test below forces it.
-  const NHD_BACKFILL_DEBT_CEILING = 3;
+  //
+  // Raised 3 -> 22 on 2026-09-30: the CT/CO wave (PR #372, 19 new records:
+  // 10 CO + 9 CT, all CONUS) shipped via --skip-nhd as well. The full pass
+  // cleared the 5-coordinate quorum pre-flight (all 10 probes ok, 303-1034ms),
+  // then NHD degraded mid-run — HTTP 504s, throughput fell to 0.0406
+  // facilities/sec at 250/2290, projecting 13.9h — and the throughput guard
+  // aborted it before anything was written. The payoff is unchanged from the
+  // entry above and is still the FULL run (the two moved GA pins still need a
+  // re-query); it now also takes the 19 CT/CO ids, 22 -> 0. Lower this to 0
+  // in that PR.
+  const NHD_BACKFILL_DEBT_CEILING = 22;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data

@@ -102,7 +102,7 @@ record.
 
 ## Confound log
 
-**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`) and 2026-09-30 (Bartow County data correction).** Those are the dates this section was written, not the
+**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`) and 2026-09-30 (Bartow County data correction; CT/CO wave, #372).** Those are the dates this section was written, not the
 date of any entry — each entry carries its own date. The window is still open
 (closes 2026-10-10), so this log is **incomplete** and must be appended to as
 further events land.
@@ -294,6 +294,42 @@ hub). `facilities` family, plus one operator hub removed and one grown.
 
   ```bash
   git --no-pager diff main -- data/facilities.meta.json
+  ```
+
+**2026-09-30 — #372 (`automated/neon-sync`), Connecticut + Colorado, 19 facilities**
+Categories: *concurrent data wave* **and** *internal-linking change* (new
+operator and county hubs). `facilities` family.
+
+- Already live in Neon when the 17:36Z Neon→JSON sync (run 36752631424)
+  exported it; #372 is that export plus the map data below.
+- `recordCount` 2271 → 2290 (+19: 10 CO, 9 CT; 17 `data_center`, 2
+  `power_generation`).
+- 6 existing records changed. No title changed and no pin moved (the four
+  `location` diffs are street / postal code only): `cognovum-trumbull-ct`,
+  `cyrusone-nym5-norwalk-ct`, `flexential-parker-co`, `global-ai-windsor-co`,
+  `qts-aurora-co`, `tierpoint-waterbury-ct`.
+- Distinct operator slugs 1030 → 1042 (+12) and county slugs 860 → 863 (+3:
+  `hartford-ct`, `jefferson-co`, `new-haven-ct`), counted with
+  `operatorSlug` (`lib/operator-slug.ts`) and `countySlug` (`lib/counties.ts`)
+  over `data/facilities.json`. These are slug counts; hub pages were not
+  inspected.
+- USGS NHD passed the pre-flight, then degraded mid-run (HTTP 504s, 0.0406
+  facilities/sec at 250/2290), so `build:mapdata` ran with `--skip-nhd`. The
+  19 new pages render a "Siting context" panel with water stress / aquifer /
+  groundwater decline but without nearest-water / nearest-≥230 kV lines.
+  `check-siting-additive`: 19 added, 0 lost, 0 nulled, 0 changed. The NHD
+  ceiling in `lib/siting-context.test.ts` rises 3 → 22 (these 19 plus the 3
+  Bartow County records above). The full `build:mapdata` owed there now
+  covers 22 pages plus the 2 moved GA pins, and will itself be a small
+  `facilities`-family content change.
+- The homepage hero plate (`components/home/hero-plate-paths.ts`) and
+  `public/data/{hero-points,map-layers,pipeline-history}.json` were
+  regenerated from the new data.
+
+  ```bash
+  git --no-pager diff c8deea0 ab8671d -- data/facilities.meta.json
+  git --no-pager diff c8deea0 ab8671d -- data/facilities.json \
+    | grep '^+' | grep -o '"state": "[A-Z][A-Z]"' | sort | uniq -c
   ```
 
 ### RULED OUT
