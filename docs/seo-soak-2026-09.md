@@ -102,7 +102,7 @@ record.
 
 ## Confound log
 
-**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`).** Those are the dates this section was written, not the
+**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`) and 2026-09-30 (Bartow County data correction).** Those are the dates this section was written, not the
 date of any entry — each entry carries its own date. The window is still open
 (closes 2026-10-10), so this log is **incomplete** and must be appended to as
 further events land.
@@ -267,6 +267,34 @@ change). `facilities` family only.
   Existing values were untouched (0 changed, 0 nulled).
 - One `data/siting-context.json` entry was dropped, for
   `galaxy-helios-dickens-tx` — the URL #352 already 301'd, so no page changed.
+
+**2026-09-30 — branch `data/bartow-bunkhouse-correction`, Bartow County, GA correction + 3 facilities**
+Categories: *concurrent data wave* **and** *internal-linking change* (operator
+hub). `facilities` family, plus one operator hub removed and one grown.
+
+- Prompted by a correction request from Taurus Investment Holdings, which no
+  source tied to Project Bunkhouse. Published through `submissions` (6 rows,
+  each human-approved), then `db:export`.
+- `recordCount` 2268 → 2271 (+3, all GA): `atlas-stiles-road-cartersville-ga`,
+  `oakley-brown-farm-road-cartersville-ga`,
+  `switch-keep-2-atlanta-north-cartersville-ga`.
+- 2 records changed: `taurus-digital-realty-project-bunkhouse-stilesboro-ga`
+  (**title changed** — "Taurus/Digital Realty" → "Digital Realty"; operator
+  → `Digital Realty`) and `atlas-project-springbank-adairsville-ga`. Both pins
+  moved (≈1 km and ≈7.2 km).
+- USGS NHD failed the pre-flight twice, so `build:mapdata` ran with
+  `--skip-nhd`: the 3 new pages render a "Siting context" panel without
+  nearest-water / nearest-≥230 kV lines, and the 2 moved pins still show
+  values computed at their old coordinates. A full `build:mapdata` is owed
+  (the NHD ceiling in `lib/siting-context.test.ts` is 3 until then); that
+  follow-up is itself a small `facilities`-family content change.
+- The operator hub for "Taurus Investment Holdings (Taurus DC SPE LLC); to be
+  managed by Digital Realty" lost its only facility and no longer exists; the
+  `Digital Realty` hub gained one.
+
+  ```bash
+  git --no-pager diff main -- data/facilities.meta.json
+  ```
 
 ### RULED OUT
 
