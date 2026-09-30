@@ -3111,11 +3111,21 @@
       "distanceMi": 2.7
     },
     "waterStress": {
-      "cat": 2,
-      "label": "Medium - High (20-40%)"
+      "cat": 3,
+      "label": "High (40-80%)"
     },
     "aquifer": {
-      "name": "Valley And Ridge Aquifers",
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "atlas-stiles-road-cartersville-ga": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
       "rock": "Sandstone and carbonate-rock"
     }
   },
@@ -29636,6 +29646,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "oakley-brown-farm-road-cartersville-ga": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "ocosa-321-south-boston-tulsa-ok": {
     "nearestWater": {
       "name": "Arkansas River",
@@ -38404,6 +38424,16 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "switch-keep-2-atlanta-north-cartersville-ga": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "switch-las-19-enterprise-nv": {

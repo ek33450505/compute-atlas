@@ -9692,13 +9692,13 @@
     "name": "Project Springbank (Atlas Development Bartow County Campus)",
     "operator": "Atlas Development LLC",
     "status": "cancelled",
-    "confidence": "reported",
+    "confidence": "confirmed",
     "location": {
-      "lat": 34.369,
-      "lon": -84.9341,
+      "lat": 34.30926,
+      "lon": -84.96325,
       "city": "Adairsville",
       "county": "Bartow",
-      "street": "Barnsley Gardens Road at Horseshoe Loop",
+      "street": "Barnsley Gardens Road",
       "state": "GA",
       "precision": "approximate"
     },
@@ -9709,15 +9709,15 @@
     "statusHistory": [
       {
         "status": "proposed",
-        "date": "2025-02",
-        "note": "Preliminary plans disclosed in a Development of Regional Impact filing; rezoning from A-1 to I-1 still required.",
-        "sourceIndex": 0
+        "date": "2025-02-14",
+        "note": "Bartow County submitted Development of Regional Impact #4403 (\"Project Springbank\", developer Atlas Development LLC) to the Georgia DCA; determined to warrant regional review 2025-02-24.",
+        "sourceIndex": 4
       },
       {
         "status": "cancelled",
-        "date": "2026-09-23",
-        "note": "Atlas Development withdrew the Project Springbank rezoning application on 2025-05-13, the day before Bartow County's sole commissioner was to rule, after the county planning commission voted 6-1 on 2025-04-28 to recommend denial. Under county rules Atlas would have to wait six months to resubmit the same application; no refiling was found.",
-        "sourceIndex": 2
+        "date": "2025-05-13",
+        "note": "Atlas Development withdrew rezoning application Z-25-00006 through its attorney on 2025-05-13, the day before the sole commissioner was to rule, after the Bartow County Planning Commission voted 6-1 on 2025-04-28 to recommend denial. Atlas gave no reason. No refiling of this site has been found.",
+        "sourceIndex": 7
       }
     ],
     "sources": [
@@ -9739,24 +9739,142 @@
         "url": "https://www.daily-tribune.com/news/springbank-data-center-application-withdrawn/article_4038268b-78d8-5d26-9e10-2bf514aac3a3.html",
         "label": "Springbank data center application withdrawn",
         "publisher": "Daily Tribune News (Cartersville)",
-        "retrievedAt": "2026-09-23",
+        "retrievedAt": "2026-09-30",
         "kind": "press"
       },
       {
         "url": "https://www.fox5atlanta.com/news/bartow-county-data-center-barnsley-resort-residents-oppose",
         "label": "Bartow County planning commission votes to recommend denying data center rezoning request",
         "publisher": "FOX 5 Atlanta",
-        "retrievedAt": "2026-09-23",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://apps.dca.ga.gov/DRI/InitialForm.aspx?driid=4403",
+        "label": "Development of Regional Impact #4403, Project Springbank — initial form (location, owner, size)",
+        "publisher": "Georgia Department of Community Affairs",
+        "retrievedAt": "2026-09-30",
+        "kind": "filing"
+      },
+      {
+        "url": "https://apps.dca.ga.gov/DRI/AdditionalForm.aspx?driid=4403",
+        "label": "Development of Regional Impact #4403, Project Springbank — additional information (value, water, sewer)",
+        "publisher": "Georgia Department of Community Affairs",
+        "retrievedAt": "2026-09-30",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/petition-started-town-hall-set-regarding-proposed-data-center/article_4fddc487-fe84-578f-b4a0-0e5b2ad1cf8d.html",
+        "label": "Petition started, town hall set regarding proposed data center",
+        "publisher": "Daily Tribune News (Cartersville)",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://cms2.revize.com/revize/bartowcounty/CommissionerOffice/MINUTES.PUBLIC_MEETING_5-14-2025.pdf",
+        "label": "Minutes, Public Meeting, Bartow County Commissioner, May 14, 2025 — Z-25-00006 withdrawn",
+        "publisher": "Bartow County Commissioner's Office",
+        "retrievedAt": "2026-09-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/town-hall-held-public-hearing-postponed-for-proposed-data-center/article_881cdab3-b9b8-587b-9510-77464608a3e7.html",
+        "label": "Town hall held, public hearing postponed for proposed data center",
+        "publisher": "Daily Tribune News (Cartersville)",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox5atlanta.com/news/backlash-over-proposed-data-center-near-adairsville",
+        "label": "Backlash over proposed data center near Adairsville",
+        "publisher": "FOX 5 Atlanta",
+        "retrievedAt": "2026-09-30",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-23",
-    "notes": "Six buildings of about 379,000 sq ft each (2.27M sq ft total), each drawing up to 78 MW for a 432 MW campus total. Anticipated completion December 2031. No named end-user operator is attached to the project. Public-reception check (2026-09-10): Checked the original Northwest Georgia News piece (2026-09-10); it covers the Development of Regional Impact filing and a site plan from Bartow County's community development director, plus a competitor CEO's skepticism about demand forecasts being overstated -- not local resident opposition or support. No public hearing, resident reaction, or elected-official statement about this specific project was found in this source.",
+    "lastUpdated": "2026-09-30",
+    "notes": "Six buildings totaling 2,274,000 sq ft (about 379,000 sq ft each), per DRI #4403, which states the project \"will utilize closed loop technology to reduce water and sewer demand.\" The DRI states a build-out value of $4,500,000,000 and completion in December 2031, and leaves the electrical-load and energy-provider fields blank. The 432 MW figure (six buildings of up to 78 MW each) is from press reporting on the site plan, not the DRI. Property owners per the DRI: The Darryl William Edwards Living Revocable Trust, King Curtis LLC and Riverside NVR LLC. Acreage: the county's minutes and the Daily Tribune give 630 acres for the rezoning request (to Business Park District); earlier press gave 588. Coordinates are the point stated in the DRI filing, not a surveyed site centroid. No named end-user operator was attached to the project. Distinct from Atlas Development's later Stiles Road application off Euharlee Road (withdrawn December 2025).",
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.015,
+      "notes": "DRI #4403 estimates 0.015 MGD (15,000 gallons per day) water demand from Bartow County and zero sewage flow, and describes closed-loop technology."
     },
     "investmentUsd": 4500000000,
-    "landAcres": 588,
+    "landAcres": 630,
+    "community": {
+      "status": "opposed",
+      "notes": "Residents organized against the rezoning. A change.org petition, \"Halt Proposed Land Use Change from Agriculture to Industrial in Bartow County\", co-founded by Josh Cauthen, had 1,280 signatures by 2025-03-11 and 1,723 by 2025-03-21, and was reported at over 2,000 by the 2025-04-28 hearing. \"The local community is in lockstep against the proposed rezoning,\" Cauthen said. Residents cited wildlife, well water and the prospect of further industrial rezoning nearby; Atlas's attorney put turnout at its 2025-03-19 town hall at \"maybe 20 to 25 people.\" At the 2025-04-28 planning commission hearing, residents packed the room, many wearing red, and Barnsley Resort president David Friederich called the project \"an existential threat\" to the resort's business model. The commission voted 6-1 to recommend denial, and Atlas withdrew before the commissioner's decision.",
+      "sourceIndex": 3
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "atlas-stiles-road-cartersville-ga",
+    "name": "Atlas Development Stiles Road Data Center (Euharlee Road)",
+    "operator": "Atlas Development LLC",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.1354,
+      "lon": -84.89,
+      "city": "Cartersville",
+      "county": "Bartow",
+      "street": "208 and 329 Stiles Road SW",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11",
+        "note": "Atlas Development applied for a conditional use permit for a data center on about 302 acres at 208 and 329 Stiles Road, off Euharlee Road; a Bartow County Planning Commission hearing was set for 2025-12-15 (reported 2025-11-14 from the county's legal advertisement).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-12-02",
+        "note": "The applicant withdrew the conditional use permit application on 2025-12-02, before the scheduled 2025-12-15 hearing. Atlas Development gave no reason.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.daily-tribune.com/news/december-hearing-set-for-possible-data-center/article_a52add52-b5b3-58f9-b4b0-3aea7d7552f1.html",
+        "label": "December hearing set for possible data center",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/data-center-application-withdrawn/article_80097f5c-8949-5b72-ae12-bf4c10aa3614.html",
+        "label": "Data center application withdrawn",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.change.org/p/say-no-to-the-data-center-on-euharlee-rd",
+        "label": "Say NO to the Data Center on Euharlee Rd. (petition, 2,225 signatures)",
+        "publisher": "change.org",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/euharlee-resident-questions-council-about-data-centers/article_c8d290bc-df63-5c0a-9538-9a22e6777a5b.html",
+        "label": "Euharlee resident questions council about data centers",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "Conditional use permit application by Atlas Development for about 302 acres across two adjacent parcels at 208 and 329 Stiles Road, a loop road off Euharlee Road. The parcels are owned by Super Land Holdings LLC. According to the county's legal advertisement, if approved the zoning would have gone from A-1 (agricultural) to I-1 (general industrial), with a final decision by Commissioner Steve Taylor on 2026-01-07. The site plan showed seven structures of about 260,000 sq ft each. The Etowah River lies to the west; county Community Development Director Brandon Johnson said the site is directly across the river from Georgia Power's Plant Bowen and that a power easement runs through the property. No capacity or investment figure was disclosed, and no Georgia DRI filing was found for the project. Distinct from Atlas Development's Project Springbank (Barnsley Gardens Road, withdrawn May 2025) and from Project Bunkhouse (Taff Road, a Digital Realty project). Coordinates are the Census geocoder matches for the two stated street addresses (about 160 m apart), not a surveyed site centroid.",
+    "landAcres": 302,
+    "community": {
+      "status": "opposed",
+      "notes": "A change.org petition, \"Say NO to the Data Center on Euharlee Rd.\", started by Dani Hall on 2025-11-17, reached 2,225 signatures. It cited noise, heat, power demand, water use for cooling, diesel generator emissions and habitat loss. At the 2025-11-18 Euharlee City Council meeting, resident Ron Hartman questioned plans for the site; the council took no position. The application was withdrawn on 2025-12-02, before its hearing, and the petition was marked a victory.",
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -90617,6 +90735,84 @@
     "facilityType": "data_center"
   },
   {
+    "id": "oakley-brown-farm-road-cartersville-ga",
+    "name": "Oakley Real Estate Partners Brown Farm Road Data Center",
+    "operator": "Oakley Real Estate Partners",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.1181,
+      "lon": -84.8698,
+      "city": "Cartersville",
+      "county": "Bartow",
+      "street": "Brown Farm Road SW (west end)",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07",
+        "note": "Akin & Tate P.C., on behalf of Oakley Real Estate Partners, applied to rezone about 111.4 acres off Brown Farm Road from A-1 to Business Park District and to change the land use map from low density residential to industrial; Oakley presented the plan at a 2026-07-15 community meeting. On 2026-08-24 the Bartow County Planning Commission voted 6-0 against both requests, sending recommendations for denial to the sole commissioner for a final decision at his 2026-09-02 meeting.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.daily-tribune.com/news/bcpc-recommends-denial-of-brown-farm-data-center/article_54fd01af-4dd1-556e-9365-80b4b6ac8cc2.html",
+        "label": "BCPC recommends denial of Brown Farm data center",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/informal-meeting-draws-opposition-to-proposed-data-center/article_56a2f675-ccc3-52cc-8d42-909299d27f27.html",
+        "label": "Informal meeting draws opposition to proposed data center",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/data-center-public-hearing-rescheduled-for-aug-24/article_b273ab7f-6389-5d9a-b7be-53961c942e05.html",
+        "label": "Data center public hearing rescheduled for Aug. 24",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox5atlanta.com/news/bartow-county-residents-challenge-data-center-plan",
+        "label": "Bartow County residents challenge data center plan",
+        "publisher": "FOX 5 Atlanta",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://cms2.revize.com/revize/bartowcounty/CommissionerOffice/AGENDA.PUBLIC_MEETING_9-2-2026.pdf",
+        "label": "Agenda, Public Meeting, Bartow County Commissioner, September 2, 2026",
+        "publisher": "Bartow County Commissioner's Office",
+        "retrievedAt": "2026-09-30",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "Rezoning request by Akin & Tate P.C. on behalf of Oakley Real Estate Partners for about 111.4 acres at the west end of Brown Farm Road, near the Etowah River, from A-1 (agricultural) to Business Park District, with a land-use-map change from low density residential to industrial. Oakley described it as a micro-scale data center it intends to market; no end user has been named. The plan is two buildings of about 374,000 sq ft in total, with a power substation and a single access drive, and a voluntary condition that the campus never exceed 450,000 sq ft. Other self-imposed conditions: setbacks of at least 200 ft from residential areas, and no cryptocurrency mining. Oakley estimated about 50 jobs and roughly $5 million a year in property taxes. At the Planning Commission hearing, Oakley said the substation and the nearest building would each sit 400 ft from the riverbank. The hearing was first set for 2026-07-27 but was removed from that agenda after county staff found a discrepancy in the notice sent to Native American nations with ties to the district. The Planning Commission voted 6-0 to recommend denial on 2026-08-24; the commissioner's 2026-09-02 agenda listed zoning applications, but as of 2026-09-30 neither the meeting minutes nor any press report of the final decision had been found. No Georgia DRI filing exists for the project. No capacity or investment figure has been disclosed. Coordinates are the western end of Brown Farm Road SW in OpenStreetMap, the location the press gives for the site, not a surveyed parcel centroid.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer-stated: closed-loop cooling that recirculates a fixed volume of water, with yearly water use estimated at around 10,000 gallons (\"about the amount of water in a residential pool\"), drained about once a year to the sanitary sewer. The developer said the site stays out of the FEMA regulatory floodway and the river keeps its vegetated stream buffers."
+    },
+    "landAcres": 111.4,
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "The 2026-07-15 community meeting drew a standing-room crowd, and the residents who spoke were opposed, citing noise, water use, environmental effects, falling property values and the future of the area's historic district; opponent Alex Payne said the developers \"paint a nice pretty picture\" but leave questions about who will ultimately use the facility. At the 2026-08-24 Planning Commission hearing, moved to Courtroom D to accommodate a crowd that packed it to capacity, nearly everyone present was in opposition. Board member Richard Fox read that State Rep. Matthew Gambill (District 15) had submitted a letter opposing the project. Resident Marty Knight cited the Cherokee Darter, \"a federally-listed threatened freshwater fish native exclusively to the Etowah River.\" Cartersville resident Howard Smith was the only community member to speak in favor. The commission voted 6-0 to recommend denial.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "ocosa-321-south-boston-tulsa-ok",
     "name": "OCOSA Communications Tulsa Data Center (321 S Boston)",
     "operator": "OCOSA Communications",
@@ -116644,6 +116840,112 @@
     "aiClassification": "likely"
   },
   {
+    "id": "switch-keep-2-atlanta-north-cartersville-ga",
+    "name": "Switch KEEP 2.0 Atlanta North Campus",
+    "operator": "Switch",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.1149,
+      "lon": -84.7938,
+      "city": "Cartersville",
+      "county": "Bartow",
+      "street": "South of Old Alabama Road at Bates Road",
+      "state": "GA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-08-29",
+        "note": "City of Cartersville submitted Development of Regional Impact #4061, \"Switch KEEP 2.0 Atlanta North Campus\" (developer Switch, LTD), to the Georgia DCA.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2023-11-02",
+        "note": "Cartersville City Council voted unanimously to rezone the roughly 1,946 acres remaining in the Carter Grove Planned Development to a Technology District at Switch's request.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://apps.dca.ga.gov/DRI/InitialForm.aspx?driid=4061",
+        "label": "Development of Regional Impact #4061, Switch KEEP 2.0 Atlanta North Campus — initial form (location, owner, size, schedule)",
+        "publisher": "Georgia Department of Community Affairs",
+        "retrievedAt": "2026-09-30",
+        "kind": "filing"
+      },
+      {
+        "url": "https://apps.dca.ga.gov/DRI/AdditionalForm.aspx?driid=4061",
+        "label": "Development of Regional Impact #4061, Switch KEEP 2.0 Atlanta North Campus — additional information (value, water, sewer)",
+        "publisher": "Georgia Department of Community Affairs",
+        "retrievedAt": "2026-09-30",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/700m-plus-tech-center-proposed-in-cartersville/article_702bf210-750c-54f8-92b8-babc04811dca.html",
+        "label": "$700M-plus tech center proposed in Cartersville",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/cartersville-approves-rezoning-for-switch-to-build-data-center-campus/article_f8ff705d-9ac7-5180-b4fb-e1daeffcfba9.html",
+        "label": "Cartersville approves rezoning for Switch to build data center campus",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/cartersville-approves-rezoning-annexation-for-switch/article_72265042-836b-5bb4-9fef-54039b416a08.html",
+        "label": "Cartersville approves rezoning, annexation for Switch",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/gtc-conducts-open-house-for-new-transmission-line/article_1b826548-e2ea-57c0-af37-1536dbf15d7b.html",
+        "label": "GTC conducts open house for new transmission line (Brandon Farm–Pittman Lake 230 kV)",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gpb.org/news/2025/10/22/wave-of-data-center-ordinances-sweep-through-ga-counties-how-strict-are-they",
+        "label": "A 'wave' of data center ordinances sweep through GA counties",
+        "publisher": "Georgia Public Broadcasting",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://cms2.revize.com/revize/bartowcounty/CommissionerOffice/PUBLIC%20RELATIONS_DATA%20CENTERS_BARTOW%20COUNTY%20POLICY%20STATEMENT_8-2026.pdf",
+        "label": "Data Centers — Bartow County Policy Statement (August 2026)",
+        "publisher": "Bartow County Commissioner's Office",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-09-30",
+    "notes": "Switch's second Georgia campus; distinct from its operational \"The Keep\" campus in Lithia Springs, Douglas County. Per DRI #4061 (submitted 2023-08-29 by the City of Cartersville): location \"South of intersection of Old Alabama Rd and Bates Rd to Paulding County line within City of Cartersville\"; a first phase of 126 acres with a single data center building about 1,620 ft long plus driveways, detention ponds and an electrical substation, described as 6.5% of the overall acreage; this phase targeted for Q2 2026 and the overall project for 2046; estimated build-out value $772 million and about $15 million a year in local tax revenue. Property owner per the DRI: Carter Grove (Atlanta) ASLI VI. In November 2023 the city rezoned the roughly 1,946 acres remaining in the Carter Grove Planned Development to a Technology District; the city approved a further annexation and rezoning for the campus in July 2025, with a condition barring any access, including construction access, from Etowah Ridge Trail. Bartow County's August 2026 policy statement says Switch \"has not disclosed numbers, but its campus is larger than Digital Realty and its buildout could well be larger,\" that Switch has not forecast jobs, and that the county has granted no tax abatements or payment-in-lieu-of-taxes arrangements to these facilities. Status: aggregator sites report phase 1 as operational, but no primary source confirming construction or operation was found, so the record stays at the November 2023 rezoning approval. Coordinates are the Old Alabama Road / Bates Road intersection from OpenStreetMap, the reference point the DRI gives; the campus lies south of it.",
+    "energy": {
+      "notes": "Georgia Transmission Corporation's planned Brandon Farm–Pittman Lake 230 kV line (about 5.17 miles across Bartow and Paulding counties) will serve the Switch data center in Cartersville; clearing is scheduled for Q2 2027, construction for Q3 2027 and service for Q2 2028. Bartow County Administrator Peter Olsen said Switch is powered by \"Georgia EMC\" with a 1,200 megawatt commitment (GPB, paraphrased); the specific cooperative was not named. The DRI's energy section is blank."
+    },
+    "water": {
+      "reportedMgd": 1.3,
+      "notes": "DRI #4061 estimates 1.3 MGD water supply demand and 0.65 MGD wastewater, provided by Bartow County. Bartow County's August 2026 policy statement says Switch \"initially inquired about future phases using evaporative cooling\" but \"most recently they have stated that all their customers prefer to use closed loop because water is so controversial.\""
+    },
+    "investmentUsd": 772000000,
+    "landAcres": 126,
+    "community": {
+      "status": "mixed",
+      "notes": "Some residents objected at the rezoning stages. In November 2023, resident Vicki Cox wrote to the city planner opposing the Technology District rezoning, citing power outages, noise, environmental impact and traffic. At the July 2025 annexation and rezoning, residents raised concerns about access from Etowah Ridge Trail, and the approval barred it. No organized opposition campaign against the Switch campus was found.",
+      "sourceIndex": 3
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "switch-las-19-enterprise-nv",
     "name": "Switch LAS 19",
     "operator": "Switch",
@@ -119206,35 +119508,83 @@
   },
   {
     "id": "taurus-digital-realty-project-bunkhouse-stilesboro-ga",
-    "name": "Project Bunkhouse (Taurus/Digital Realty Data Center Campus)",
-    "operator": "Taurus Investment Holdings (Taurus DC SPE LLC); to be managed by Digital Realty",
+    "name": "Project Bunkhouse (Digital Realty Data Center Campus)",
+    "operator": "Digital Realty",
     "status": "permitted",
-    "confidence": "reported",
+    "confidence": "confirmed",
     "location": {
-      "lat": 34.087,
-      "lon": -84.91,
+      "lat": 34.096532,
+      "lon": -84.911951,
       "city": "Stilesboro",
       "county": "Bartow",
       "state": "GA",
       "precision": "approximate"
     },
     "capacityMw": {
-      "planned": 1830
+      "planned": 1300
     },
     "statusHistory": [
       {
+        "status": "proposed",
+        "date": "2025-03-31",
+        "note": "Bartow County submitted Development of Regional Impact #4433 (\"Project Bunkhouse\") to the Georgia DCA; determined to warrant regional review 2025-04-01.",
+        "sourceIndex": 1
+      },
+      {
         "status": "permitted",
         "date": "2025-06-04",
-        "note": "permitted per Bartow County Commissioner rezoning approval, Project Bunkhouse (Taurus DC SPE LLC)",
+        "note": "Sole Commissioner Steve Taylor approved rezoning case Z-25-00020 (applicant Taurus DC SPE LLC), 876.57 acres from A-1 to Business Park Development and the land-use map from Agricultural to Industrial, with conditions.",
         "sourceIndex": 0
       }
     ],
     "sources": [
       {
+        "url": "https://cms2.revize.com/revize/bartowcounty/CommissionerOffice/MINUTES.PUBLIC_MEETING_6-4-2025.pdf",
+        "label": "Minutes, Public Meeting, Bartow County Commissioner, June 4, 2025 — rezoning case Z-25-00020 (Taurus DC SPE LLC)",
+        "publisher": "Bartow County Commissioner's Office",
+        "retrievedAt": "2026-09-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://apps.dca.ga.gov/DRI/InitialForm.aspx?driid=4433",
+        "label": "Development of Regional Impact #4433, Project Bunkhouse — initial form (location, owner, size)",
+        "publisher": "Georgia Department of Community Affairs",
+        "retrievedAt": "2026-09-30",
+        "kind": "filing"
+      },
+      {
+        "url": "https://apps.dca.ga.gov/DRI/AdditionalForm.aspx?driid=4433",
+        "label": "Development of Regional Impact #4433, Project Bunkhouse — additional information (value, water, sewer, traffic)",
+        "publisher": "Georgia Department of Community Affairs",
+        "retrievedAt": "2026-09-30",
+        "kind": "filing"
+      },
+      {
         "url": "https://www.daily-tribune.com/news/taylor-approves-project-bunkhouse-rezoning/article_cd988e43-8419-51e1-b443-729a16fe9b24.html",
-        "label": "Bartow County Commissioner rezoning approval, Project Bunkhouse (Taurus DC SPE LLC)",
+        "label": "Taylor approves Project Bunkhouse rezoning",
         "publisher": "Daily Tribune News",
-        "retrievedAt": "2026-07-17",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/bcpc-recommends-approval-for-project-bunkhouse/article_17f99c56-ae0f-5eab-a253-ee6ddd01c996.html",
+        "label": "BCPC recommends approval for Project Bunkhouse",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.daily-tribune.com/news/new-data-center-eyes-bartow/article_65eb57bd-8406-5afa-80c8-d944a5ec8e94.html",
+        "label": "New data center eyes Bartow (county economic development director disputes DRI incentive statement)",
+        "publisher": "Daily Tribune News",
+        "retrievedAt": "2026-09-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ajc.com/news/business/19b-data-center-campus-proposed-northwest-of-atlanta/FPMRPJCYERGXLLAND6IZACSVEM/",
+        "label": "$19B data center campus proposed northwest of Atlanta (site plan showing 1,830 MW)",
+        "publisher": "The Atlanta Journal-Constitution",
+        "retrievedAt": "2026-09-30",
         "kind": "press"
       },
       {
@@ -119264,18 +119614,35 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://cms2.revize.com/revize/bartowcounty/CommissionerOffice/PUBLIC%20RELATIONS_DATA%20CENTERS_BARTOW%20COUNTY%20POLICY%20STATEMENT_8-2026.pdf",
+        "label": "Data Centers — Bartow County Policy Statement (August 2026)",
+        "publisher": "Bartow County Commissioner's Office",
+        "retrievedAt": "2026-09-30",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
-    "notes": "Rezoning approved by county commissioner June 4, 2025 after unanimous planning commission recommendation May 19/20, 2025. 12-building, 8.6M sq ft build-out per DCD; capacity/investment figures ($19B, 1,830MW) are widely reported industry estimates (DCD/CleanView/Server Country) tied to the project, not yet independently verified against a bond-validation dollar figure — flagged as reported-tier confidence on the financial figures even though the rezoning itself is confirmed via primary county action. Bartow County rezoning (8.3M sqft cap, 876.57 ac) confirmed via the county commissioner approval; the ~1,830 MW / ~$19B figures are widely-reported industry estimates, not a permit/bond figure — recorded reported-tier.",
+    "lastUpdated": "2026-09-30",
+    "notes": "Applicant of record is Taurus DC SPE LLC (Bartow County rezoning case Z-25-00020). No source reviewed names a parent company for that entity; the similarly named Taurus Investment Holdings, LLC is not named in any filing or report on this project, and a prior version of this record attributed the project to it without a source. Operator: Bartow County's August 2026 policy statement refers to the campus as \"Digital Realty's investment in the Stilesboro area\". At the June 4, 2025 hearing the applicant's attorney, Scott Peters, stated \"This is a Digital Realty project. It is not a Crypto center\" (county minutes), and Andrew Alves of Digital Realty appeared as part of the Project Bunkhouse team at the May 19, 2025 planning commission hearing (Daily Tribune). Digital Realty has not announced the project in its own press releases. Property owner per the DRI filing: Gaines Family Land LLC; the DRI's developer field names Brian B. West of Kimley-Horn (engineering consultant). Site: Taff Road south of GA Hwy 113, south of Georgia Power's Plant Bowen, also bordering Floyd Creek Church Road; tax parcels 0032-1184-001, 0032-1122-001, 0032a-003-002 and 0032b-003-006; Raccoon Creek runs along the property. Coordinates are the point stated in the DRI filing, not a surveyed site centroid. Size: the DRI filing states 8,675,000 sq ft; the approved rezoning caps total building area at 8,300,000 sq ft. Capacity: Bartow County's August 2026 data-center policy statement says \"Digital Realty's investment in the Stilesboro area, planned for approximately 1.3 gigawatts of computing capacity, has indicated a total build-out capital investment on the order of eighteen billion dollars,\" and that Digital Realty \"forecasts total employment in excess of 800 jobs once the campus is complete\"; the 1.3 GW is recorded as planned capacity. Earlier, a site plan obtained by the Atlanta Journal-Constitution (April 2025) put the project's power needs at 1,830 MW with three on-site substations; the DRI filing's energy-demand field is blank. The same county statement says Bartow County has granted no tax abatements, PILOT or comparable arrangement to these data center facilities. Value: the DRI filing states an estimated build-out value of $19 billion and projected annual property tax of at least $40-50 million, with build-out estimated for 2035. Incentives: the DRI filing said the project was \"in the process of incentive negotiations\" with the Bartow-Cartersville Joint Development Authority; the county's economic development director, Melinda Lemmon, said that was \"mistakenly included in the DRI filing\" and that the authority \"is not negotiating incentives with the data center calling themselves Project Bunkhouse or any other data center\" (Daily Tribune, April 2, 2025). No bond validation, PILOT or abatement for the project has been found. Rezoning conditions include: an 8,300,000 sq ft cap; buffers required before occupancy; primary access from Taff Road only; distribution, manufacturing, warehousing, outdoor storage, towers, laboratories and retail prohibited; water-efficient HVAC required. Other DRI figures: about 8,588 average daily vehicle trips, about 29% impervious surface, wetlands, floodplain and historic resources present on site (impacts not expected per the filing). No building permits or site work have been reported since the rezoning.",
     "energy": {
-      "utility": "Georgia Power"
+      "utility": "Georgia Power",
+      "notes": "Utility is from the HIFLD retail service-territory layer, not a project statement. At the rezoning hearing the applicant's attorney said the site is adjacent to Plant Bowen and high-voltage transmission lines, and that \"all the power will come off the existing lines and into the substation at the corner of Brandon Farm Road and Taff Road\" (county minutes). No Georgia Power or Georgia PSC filing naming the project was found. The 1,830 MW figure is from a site plan reported by the AJC, not a utility filing."
+    },
+    "water": {
+      "reportedMgd": 0.625,
+      "notes": "DRI #4433 estimates 0.625 MGD water supply demand and 0.625 MGD sewage flow, served by the Bartow County Water Department. The same filing states that \"Bartow County has confirmed capacity for 0.25 MGD for water and wastewater service. At this time, no discussion has been had with Bartow County about capacity over 0.25 MGD.\" It also lists about 1 mile of water line extension and about 3.5 miles of 6-inch force main to the Brown Farm pump station. Cooling method has not been disclosed; a rezoning condition requires water-efficient HVAC technology, and use of public water for equipment or building cooling is subject to Water Department approval."
     },
     "investmentUsd": 19000000000,
     "landAcres": 876.57,
+    "jobs": {
+      "permanent": 800,
+      "sourceIndex": 11
+    },
     "community": {
-      "status": "supported",
-      "notes": "Unanimous planning-commission recommendation (May 2025) followed by county approval (June 2025)."
+      "status": "mixed",
+      "notes": "Residents opposed the project at both public hearings. At the May 19, 2025 planning commission hearing, Valerie Holt, Amy Tilley and Lauren Van Winkle spoke against it (rural character, Taff Road traffic), and Joe Harris spoke in support of the landowners' right to sell; the commission still recommended approval unanimously (Daily Tribune). At the June 4, 2025 hearing, Patty Everett spoke in opposition, citing the loss of pasture and property values, and Gail Cochran asked whether Georgia Power would take her property for new transmission lines; the minutes record no other speakers. The sole commissioner approved the rezoning the same day. No petition, lawsuit or appeal specific to this project has been found.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
