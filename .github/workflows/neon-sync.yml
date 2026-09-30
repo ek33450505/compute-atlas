@@ -257,10 +257,13 @@ jobs:
       #
       # WHY THE EXISTING CIRCUIT BREAKER IS NOT ENOUGH: build-map-data.mjs aborts
       # only after NHD_CONSECUTIVE_FAILURE_BUDGET (10) CONSECUTIVE facilities
-      # fail BOTH NHD layers. A SCATTERED partial outage never trips that: each
-      # affected facility silently loses `nearestWater` (the failure path returns
-      # `{ok:false, features:[]}`, the key is then omitted, and nothing preserves
-      # the prior value) while the build still exits 0.
+      # fail BOTH NHD layers, so a SCATTERED partial outage exits 0. Since #347
+      # (2026-09-25) `resolveNearestWater` carries a prior `nearestWater` forward
+      # on any unconfirmed failure (only a confirmed absence clears it), so this
+      # step is now a backstop against a regression in that logic, not the only
+      # thing standing between an outage and lost values. (This comment formerly
+      # said "nothing preserves the prior value" — false once carry-forward
+      # landed; see the CORRECTION in CLAUDE.md.)
       #
       # WHAT A PASSING CHECK LOOKS LIKE WHILE THE BUG IS PRESENT: it does not
       # pass. Probed by planting a violation 2026-09-05 — one dropped field, one
@@ -269,6 +272,10 @@ jobs:
       # NHD HTTP 502s still produced 1355→1384, +29 added, 0 lost, 0 nulled: the
       # mechanism is real and that day's blast radius was zero, which is exactly
       # the difference this step makes visible instead of assumed.
+      #
+      # A removed entry whose facility is also absent from data/facilities.json
+      # (a retirement's orphan, pruned by any non --skip-nhd run) is reported as
+      # `pruned` and does not fail this step.
       #
       # continue-on-error so the failure is HANDLED (discard + hold the PR open)
       # rather than aborting the job and leaving no PR at all.
