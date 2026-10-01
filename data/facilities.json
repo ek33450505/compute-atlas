@@ -558,6 +558,7 @@
       "lon": -77.029210511723,
       "city": "Washington",
       "street": "1275 K Street NW",
+      "postalCode": "20005",
       "state": "DC",
       "precision": "approximate"
     },
@@ -576,10 +577,27 @@
         "publisher": "CoreSite",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=1275%20K%20St%20NW%2C%20Washington%2C%20DC&benchmark=Public_AR_Current&format=json",
+        "label": "US Census Bureau geocoder match: 1275 K ST NW, WASHINGTON, DC, 20005",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.energystar.gov/about/potomac-electric-power-company-pepco",
+        "label": "Potomac Electric Power Company (Pepco) - ENERGY STAR partner profile",
+        "publisher": "U.S. EPA ENERGY STAR",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-01",
     "notes": "Address confirmed directly from the operator's own facilities-network page, which lists 1275 K Street NW, Washington, DC among its current locations; no square footage, power capacity, tier, or floor/suite detail was published on that page. 'Operational' status is inferred from inclusion in the operator's current facilities listing rather than an explicit statement. Coordinates geocoded via the US Census geocoder for the exact numbered street address (match: '1275 K ST NW, WASHINGTON, DC, 20005'). IMPORTANT: this is the SAME building address as the existing live record coresite-dc1-washington-d-c-dc — re-fetched CoreSite's own page (sourceIndex 1) and confirmed it independently states the identical address, '1275 K St. NW, Washington, D.C. 20005'. 1275 K Street NW is a multi-tenant carrier-hotel building; CoreSite and 365 Data Centers appear to be two distinct operators leasing space in the same building, not the same facility double-counted. Precision set to 'approximate' accordingly (building-level, floor/suite unconfirmed for either tenant). Flagging explicitly for reviewer attention given the near-zero pin distance from a live record.",
+    "energy": {
+      "utility": "Pepco"
+    },
     "facilityType": "data_center"
   },
   {
@@ -1317,6 +1335,9 @@
       "state": "TN",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 10
+    },
     "statusHistory": [
       {
         "status": "operational",
@@ -1330,11 +1351,11 @@
         "url": "https://www.sec.gov/Archives/edgar/data/1864055/000149315226019612/form20-f.htm",
         "label": "Abits Group Inc Form 20-F (FY2025) — self-owned property at 4458 White Oak Road, Duff, TN 37729",
         "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
-        "retrievedAt": "2026-09-17",
+        "retrievedAt": "2026-10-01",
         "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-17",
+    "lastUpdated": "2026-10-01",
     "notes": "Street address is stated verbatim in the 20-F; the point is the Duff community centroid because the street address could not be geocoded. Capacity is not recorded: the filing's 10 MW -> 22 MW figure is the company's combined Duff + hosted-Memphis power capacity, not this site's. Distinct from the CleanSpark Campbell Junction record already tracked in Campbell County (different operator, different place).",
     "energy": {
       "source": "grid",
@@ -2446,6 +2467,43 @@
       "notes": "Operator states over 80 MW of protected power delivered as 2N dual feeds from two independent substations on separate grids."
     },
     "landAcres": 15,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ainet-dc-900s-washington-dc",
+    "name": "AiNET DC-900S",
+    "operator": "AiNET",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.90077,
+      "lon": -77.003642,
+      "city": "Washington",
+      "county": "District of Columbia",
+      "street": "900 2nd Street NE",
+      "postalCode": "20002",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/6543",
+        "label": "PeeringDB facility 6543: AiNET DC-900S",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=900%202nd%20St%20NE%2C%20Washington%2C%20DC&benchmark=Public_AR_Current&format=json",
+        "label": "US Census Bureau geocoder match: 900 2ND ST NE, WASHINGTON, DC, 20002",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "SINGLE-SOURCE, so flag for reviewer attention. The only primary-ish source is the PeeringDB facility registry entry 'AiNET DC-900S', owned by the AiNET organization (ASN 6405), at 900 2nd Street NE, Washington, DC 20002. The record is active, lists AiNET's own network as present, and notes 'Diverse Serving Substations'. AiNET's website (ai.net) describes its DC/Baltimore fiber and data-center business, but none of the pages fetched list individual facility addresses, so the site could not be confirmed on an operator page. 'Operational' reflects only the active registry entry with the operator's network present; a reviewer may prefer to verify before publishing. A '10 MW' figure seen only in a third-party aggregator (Inflect) summary was NOT used, so capacityMw is omitted. The tracker's existing AiNET records are both in Maryland (Glen Burnie CyberNAP, Baltimore One Market Center), so this is not a duplicate. Coordinates are from the US Census geocoder (street-interpolated), so precision is 'approximate'.",
     "facilityType": "data_center"
   },
   {
@@ -22571,6 +22629,88 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cirrus-delaware-middletown-technology-center-de",
+    "name": "Middletown Technology Center (Cirrus Delaware LLC)",
+    "operator": "Cirrus Delaware, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.4497639,
+      "lon": -75.7166345,
+      "city": "Middletown",
+      "county": "New Castle",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 40
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2015",
+        "note": "Middletown Town Council approved plans for the Middletown Technology Center: a 228,000 sq ft, 40 MW data center with a natural-gas cogeneration plant on 70 acres in the town's Westown area. DBT reports the approval came in August 2015. Data Center Knowledge's report is dated Aug 5, 2015.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2016-05-04",
+        "note": "Delaware Infrastructure Investment Committee voted 4-0 to approve up to $7.5M in New Jobs Infrastructure Fund money for the project's utility infrastructure. The approval was conditioned on a DNREC air permit, financing disclosure, identification of the operator, and payment on a reimbursement basis.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "proposed",
+        "date": "2017-10",
+        "note": "Per the dcmap.us activity log, Cirrus put its Middletown air-permit application on hold. No later activity was found.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://delawarebusinesstimes.com/news/plans-afoot-for-middletown-technology-center-data-power-plant/",
+        "label": "Plans afoot for Middletown data center, power plant (70 acres, 228,000 sq ft, 40 MW, 52.5 MW co-generation)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://publicmeetings.delaware.gov/Document/35863_Minutes-Draft.pdf",
+        "label": "Delaware Infrastructure Investment Committee minutes, May 4, 2016: Cirrus Delaware, LLC request for up to $7,500,000",
+        "publisher": "Delaware Economic Development Office",
+        "retrievedAt": "2026-10-01",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/regulations/officials-approve-data-center-and-cogen-plant-project-in-delaware",
+        "label": "Officials Approve Data Center and Cogen Plant Project in Delaware",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/states/delaware/",
+        "label": "Delaware Data Center Map: Cirrus Delaware Middletown Technology Center, 'Paused' (Mar 2016 air-permit application; Oct 2017 put on hold)",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Never built, and apparently dormant since the air-permit application was put on hold in October 2017. Status stays 'proposed' because no source records a formal withdrawal or cancellation. Treat the status as stalled, not active. The $7.5M state grant was conditional and reimbursement-only. No evidence was found that it was disbursed, so it is not recorded in subsidies. Sources disagree on cost: $250M (DCK 2015), about $400M (DBT 2015) and $350M (applicant, IIC 2016), so investmentUsd is unset. Jobs figures are the applicant's 2016 IIC projections. DBT 2015 cited 'more than 100' full-time and up to 2,000 construction jobs. Partners named at the IIC meeting were Duffield Associates (now Verdantas), MEP Associates and landowner Mautom, LLC. The end operator was never disclosed. The pin is Middletown's OSM boundary centroid, because the 70-acre Westown parcel did not resolve to a point.",
+    "energy": {
+      "source": "mixed",
+      "onSiteGenerationMw": 52.5,
+      "notes": "Per the applicant at the May 2016 IIC meeting, the facility would 'mostly pull power from the PJM grid from Middletown' over 138 kV lines from an adjacent substation. An on-site natural-gas cogeneration plant would supply redundancy and peak-period power within air-permit hour limits. DBT and Data Center Knowledge (2015) give the gas plant as 52.5 MW. At the 2016 IIC meeting the applicant described the data center as 40 MW, with 36 MW of white space at a design PUE of 1.4, for a 50 MW total requirement at full build."
+    },
+    "landAcres": 70,
+    "jobs": {
+      "construction": 750,
+      "permanent": 117,
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "citynet-bridgeport-harrison-county-wv",
     "name": "Citynet Bridgeport Data Center",
     "operator": "Citynet, LLC",
@@ -25908,6 +26048,67 @@
     ],
     "lastUpdated": "2026-09-21",
     "notes": "38,654 sq ft carrier-neutral colocation facility with 42U cabinets and private cages; UPS and generator backup; port sizes up to 100GE. MW not stated by the operator.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cogent-washington-dc-2-1050-connecticut-ave-dc",
+    "name": "Cogent Washington DC 2 Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.903131,
+      "lon": -77.039741,
+      "city": "Washington",
+      "county": "District of Columbia",
+      "street": "1050 Connecticut Avenue NW",
+      "postalCode": "20036",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/en/cogent-dc",
+        "label": "Cogent Washington DC",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cogentco.com/en/cogent-dc/343-dc-office/4213-dc-office-3",
+        "label": "Washington DC 2 Data Center",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cogent-communications-announces-closing-of-sale-of-10-data-center-facilities-302813574.html",
+        "label": "Cogent Communications Announces Closing of Sale of 10 Data Center Facilities",
+        "publisher": "PR Newswire / Cogent Communications",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=1050%20Connecticut%20Ave%20NW%2C%20Washington%2C%20DC&benchmark=Public_AR_Current&format=json",
+        "label": "US Census Bureau geocoder match: 1050 CONNECTICUT AVE NW, WASHINGTON, DC, 20036",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.energystar.gov/about/potomac-electric-power-company-pepco",
+        "label": "Potomac Electric Power Company (Pepco) - ENERGY STAR partner profile",
+        "publisher": "U.S. EPA ENERGY STAR",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Cogent's Washington DC metro page lists one data center: 'Washington DC 2 Data Center', 1050 Connecticut Ave, NW, Washington, DC 20036, with '16,763 Sq. Feet, 42U Cabinets, Private Cages available'. It is described as carrier-neutral, with UPS and backup generator. Operational status is inferred from the operator's current colocation listing. Ownership was checked separately: Cogent's 10-facility sale to an I Squared Capital-sponsored entity, closed June 29, 2026, covered Phoenix, Anaheim, Burbank, Stockton, Atlanta, Chicago, Elkridge, Kansas City, Nashville and Houston, and did not include Washington DC. Cogent therefore remains the operator per its own current site. No MW figure is published. A 500 kW generator figure seen only in an aggregator summary was not used. An aggregator also lists a 'Cogent Washington DC 1' at 1120 Vermont Ave NW, but Cogent's own site no longer lists it, so it was not emitted. A third-party directory also places a CenterServ facility at 1050 Connecticut Ave; that was not verified and is not asserted here. Coordinates are from the US Census geocoder (street-interpolated), so precision is 'approximate'.",
+    "energy": {
+      "utility": "Pepco"
+    },
     "facilityType": "data_center"
   },
   {
@@ -29591,6 +29792,7 @@
       "city": "Washington",
       "county": "District of Columbia",
       "street": "1275 K Street Northwest",
+      "postalCode": "20005",
       "state": "DC",
       "precision": "approximate"
     },
@@ -29616,12 +29818,82 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.coresite.com/data-center-locations/washington-dc",
+        "label": "Colocation Data Centers in Washington D.C. - CoreSite",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-10-01",
     "notes": "Confirmed via CoreSite official directory + dedicated facility page.",
     "energy": {
       "utility": "Pepco"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-dc2-washington-d-c-dc",
+    "name": "CoreSite DC2 - Washington, D.C.",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.903679,
+      "lon": -77.031877,
+      "city": "Washington",
+      "county": "District of Columbia",
+      "street": "1099 14th Street NW",
+      "postalCode": "20005",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/dc2-washington-d-c",
+        "label": "CoreSite DC2 - Washington D.C. Data Center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.coresite.com/data-center-locations/washington-dc",
+        "label": "Colocation Data Centers in Washington D.C. - CoreSite",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/9663",
+        "label": "PeeringDB facility 9663: CoreSite - Washington,DC (DC2)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=1099%2014th%20St%20NW%2C%20Washington%2C%20DC&benchmark=Public_AR_Current&format=json",
+        "label": "US Census Bureau geocoder match: 1099 14TH ST NW, WASHINGTON, DC, 20005",
+        "publisher": "US Census Bureau",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.energystar.gov/about/potomac-electric-power-company-pepco",
+        "label": "Potomac Electric Power Company (Pepco) - ENERGY STAR partner profile",
+        "publisher": "U.S. EPA ENERGY STAR",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "CoreSite's own DC2 facility page and its Washington D.C. locations page list DC2 at 1099 14th St. NW, Washington, D.C. 20005, at 24,000+ sq ft. The locations page calls it 'the only enterprise-class data center in downtown D.C. with direct, private connectivity to cloud service providers.' The facility page describes a 'single utility feed from highly stable White House utility grid,' 4:3 distributed-redundant UPS with 2N capability, and a connection to the DC1 interconnection hub at 1275 K St NW. DC1 is a separate live record (coresite-dc1-washington-d-c-dc) at a different street address, so this is not a duplicate. Operational status is inferred from the operator's current facility listing and an active PeeringDB facility entry (CoreSite org, 4 networks present, Any2East exchange). No power figure was published on any operator page fetched. A ~3 MW figure seen only in third-party aggregator summaries was NOT used, so capacityMw is omitted. There is no AI/GPU mention, so aiClassification is omitted. Coordinates are from the US Census geocoder, which interpolates along the street, so precision is 'approximate'. Pepco attribution: ENERGY STAR describes Pepco as the electric utility serving the Washington, DC area.",
+    "energy": {
+      "source": "grid",
+      "utility": "Pepco",
+      "notes": "Operator states a single utility feed from the downtown ('White House') utility grid; no on-site generation capacity published."
     },
     "facilityType": "data_center"
   },
@@ -34612,6 +34884,175 @@
     "facilityType": "data_center"
   },
   {
+    "id": "dastor-new-castle-boulden-circle-de",
+    "name": "DāSTOR New Castle (3 Boulden Circle)",
+    "operator": "DāSTOR LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.68965,
+      "lon": -75.574117,
+      "city": "New Castle",
+      "county": "New Castle",
+      "street": "3 Boulden Circle",
+      "postalCode": "19720",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 8
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-04",
+        "note": "Delaware Business Now reported DāSTOR had acquired the New Castle data center at 3 Boulden Circle. It was DāSTOR's second Delaware site, after downtown Wilmington.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dastorllc.com/locations/",
+        "label": "DāSTOR data center locations: New Castle, DE, 3 Boulden Circle, 61,000 S.F., 8 MW Power",
+        "publisher": "DāSTOR",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.delawarebusinessnow.com/news/new_castle_county/d-stor-acquires-new-castle-data-center/article_8b2a8a4e-aad8-5923-ae62-53de779e2c3e.html",
+        "label": "DÄSTOR acquires New Castle data center (3 Boulden Circle; more than 30,000 sq ft raised floor)",
+        "publisher": "Delaware Business Now",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://technical.ly/civic-news/delaware-data-center-project-washington-location/",
+        "label": "See where Starwood Digital Holdings is planning its Delaware data center, and where others are already running",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/new-castle-data-center-campus/",
+        "label": "New Castle could be the site of mega data center campus (notes DāSTOR's Boulden Interchange Park addition)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Colocation facility. The operator lists it at 61,000 sq ft and 8 MW, with N+1 generator backing, 2N+1 UPS and N+1 cooling. The 8 MW is the operator's stated facility power, not a measured IT load. Delaware Business Now (April 2024) reported more than 30,000 sq ft of raised floor. Delaware Business Times (July 2025) said DāSTOR 'added a nondescript warehouse in the Boulden Interchange Park last year.' Coordinates are a US Census geocode of the street address, and an OSM Nominatim lookup agrees to within about 30 m. Not a surveyed footprint.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "dastor-wilmington-1201-north-market-de",
+    "name": "DāSTOR Wilmington (1201 North Market Street, formerly IPR Wilmington)",
+    "operator": "DāSTOR LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.747859,
+      "lon": -75.546753,
+      "city": "Wilmington",
+      "county": "New Castle",
+      "street": "1201 North Market Street",
+      "postalCode": "19801",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 4
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-08",
+        "note": "Technical.ly lists the DaSTOR Wilmington data center at 1201 N. Market St. among Delaware's operating data centers, noting DaSTOR acquired IPR Secure in 2021.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dastorllc.com/locations/",
+        "label": "DāSTOR data center locations: Wilmington, DE, 1201 North Market Street, 23,000 S.F., 4 MW Power",
+        "publisher": "DāSTOR",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/1460",
+        "label": "PeeringDB facility record: IPR Wilmington CCC, 1201 N Market Street, Wilmington DE 19801",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://technical.ly/civic-news/delaware-data-center-project-washington-location/",
+        "label": "See where Starwood Digital Holdings is planning its Delaware data center, and where others are already running",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Downtown Wilmington colocation site. The operator lists 23,000 sq ft and 4 MW, with N+1 generator backing, 2N UPS and a carrier meet-me room. PeeringDB still carries the facility under its pre-acquisition name, 'IPR Wilmington CCC' (IPR International). Technical.ly reports DaSTOR acquired IPR Secure in 2021. The 4 MW is operator-stated facility power, not a measured IT load. Coordinates are PeeringDB's geocode, and a US Census geocode of the address agrees.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "data-canopy-newark-pencader-de",
+    "name": "Data Canopy Newark (350 Pencader Drive)",
+    "operator": "Data Canopy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.612001,
+      "lon": -75.760335,
+      "city": "Newark",
+      "county": "New Castle",
+      "street": "350 Pencader Drive",
+      "postalCode": "19702",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 6
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-07",
+        "note": "Baxtel reports Data Canopy acquired Ntirety's colocation business, which included this Newark facility, in July 2023.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacanopy.com/data-centers/newark-de/",
+        "label": "Newark, DE data center: 350 Pencader Dr., 6MW building power capacity, 16,085 sq ft white space",
+        "publisher": "Data Canopy",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://technical.ly/civic-news/delaware-data-center-project-washington-location/",
+        "label": "See where Starwood Digital Holdings is planning its Delaware data center, and where others are already running",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/datacanopy-newark",
+        "label": "DataCanopy: Newark data center (350 Pencader Dr; Ntirety colocation business acquired July 2023)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Colocation and managed-hosting facility. The operator lists 6 MW building power capacity, 16,085 sq ft of white space and 3 utility feeds. Backup is Generac generators with 7,000 gallons of diesel on site, and cooling is a DX system with 30+ CRAC units. The 6 MW is operator-stated building power, not a measured IT load. water.coolingType is left unset because the DX heat-rejection path is not described. Coordinates are a US Census geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "data-city-energy-abundance-laredo-tx",
     "name": "Data City, Texas",
     "operator": "Energy Abundance Development Corporation",
@@ -37999,6 +38440,101 @@
     "facilityType": "data_center"
   },
   {
+    "id": "delaware-dti-biggs-data-center-new-castle-de",
+    "name": "State of Delaware Biggs Data Center (DTI)",
+    "operator": "Delaware Department of Technology and Information",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.697868,
+      "lon": -75.574992,
+      "city": "New Castle",
+      "county": "New Castle",
+      "street": "1901 North DuPont Highway",
+      "postalCode": "19720",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-11",
+        "note": "DTI RFP DTI230047-INTERNET (released Nov 2023) asks for internet service to 'the data centers located at' Biggs Building, 1901 N Dupont Hwy, New Castle, DE.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://webfiles.dti.delaware.gov/pdfs/processes/Data-Center-Access.pdf",
+        "label": "DTI procedure 110304-P-025 Data Center Access: William Penn Data Center (Dover) and Biggs Data Center (New Castle)",
+        "publisher": "Delaware Department of Technology and Information",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://bidcondocs.delaware.gov/DTI/DTI230047-INTERNET-ad1.pdf",
+        "label": "RFP DTI230047-INTERNET Addendum 1: internet access to the data centers at Biggs Building, 1901 N Dupont Hwy, New Castle and 801 Silver Lake Blvd, Dover",
+        "publisher": "State of Delaware, DTI",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "State government data center operated by DTI in the Biggs Building on the 1901 N. DuPont Highway state campus, paired with DTI's William Penn Data Center in Dover. No capacity is published. Coordinates are a US Census geocode of the campus street address, not the Biggs Building footprint itself. The campus holds several buildings, so precision is approximate.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "delaware-dti-william-penn-data-center-dover-de",
+    "name": "State of Delaware William Penn Data Center (DTI)",
+    "operator": "Delaware Department of Technology and Information",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.171779,
+      "lon": -75.536142,
+      "city": "Dover",
+      "county": "Kent",
+      "street": "801 Silver Lake Boulevard",
+      "postalCode": "19904",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-11",
+        "note": "DTI RFP DTI230047-INTERNET (released Nov 2023) asks for internet service to 'the data centers located at' Biggs Building, 1901 N Dupont Hwy, New Castle, and 801 Silver Lake Blvd, Dover.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://webfiles.dti.delaware.gov/pdfs/processes/Data-Center-Access.pdf",
+        "label": "DTI procedure 110304-P-025 Data Center Access: regulates access to the William Penn Data Center located in Dover and the Biggs Data Center located in New Castle",
+        "publisher": "Delaware Department of Technology and Information",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://bidcondocs.delaware.gov/DTI/DTI230047-INTERNET-ad1.pdf",
+        "label": "RFP DTI230047-INTERNET Addendum 1: internet access to the data centers at Biggs Building, 1901 N Dupont Hwy, New Castle and 801 Silver Lake Blvd, Dover",
+        "publisher": "State of Delaware, DTI",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      },
+      {
+        "url": "https://dti.delaware.gov/arpa/it-modernization/data-center-modernization/",
+        "label": "DTI Data Center Modernization (ARPA IT modernization), references the William Penn Data Center",
+        "publisher": "Delaware Department of Technology and Information",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "State government data center operated by DTI in the department's Dover headquarters building. DTI's modernization page refers to addressing 'lingering issues' at the William Penn Data Center and moving about 10 racks out of state for disaster-recovery compliance. It is paired with DTI's Biggs Data Center in New Castle. No capacity is published. Coordinates are a US Census geocode of the street address, and OSM Nominatim agrees.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "deltas-edge-solar-carroll-ms",
     "name": "Delta's Edge Solar",
     "operator": "Cubico USA, LLC",
@@ -38108,6 +38644,51 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "demec-beasley-generation-station-kent-de",
+    "name": "Warren F. \"Sam\" Beasley Generation Station",
+    "operator": "Delaware Municipal Electric Corporation (DEMEC)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.279179,
+      "lon": -75.62393,
+      "county": "Kent",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 96
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2002-04",
+        "note": "First combustion turbine entered service in April 2002, and the second in November 2012, per EIA-860M.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory, August 2026: Operating sheet, Warren F Sam Beasley Generation Station (plant 7962), Delaware Municipal Electric Corp",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Peaking plant owned by Delaware's joint-action municipal power agency. Single-source (EIA) record, hence 'reported'. No city is recorded because EIA gives county only. Coordinates are the EIA-860M plant point.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Two natural-gas combustion turbines: unit 001 (45 MW nameplate, April 2002) and unit 002 (51 MW nameplate, November 2012), per EIA-860M. 96 MW is the sum of the two EIA nameplate ratings. Net summer ratings sum to 98 MW."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2
+    }
   },
   {
     "id": "depg-smithfield-gateway-data-center-monroe-pa",
@@ -47433,6 +48014,80 @@
     }
   },
   {
+    "id": "engie-solidago-solar-townsend-de",
+    "name": "Solidago Solar (Amazon Solar Farm Delaware – Solidago)",
+    "operator": "ENGIE North America (ENGIE Solidago Solar LLC)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.395187,
+      "lon": -75.7535,
+      "city": "Townsend",
+      "county": "New Castle",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 50
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2021-11",
+        "note": "ENGIE had bought more than 500 acres off Green Giant Road west of Townsend and planned to build a 50 MW array on about 276 acres the following year, with Amazon buying the power.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "operational",
+        "date": "2022-12",
+        "note": "EIA-860M lists the 50 MW solar generator (EIA plant 65304) as operating since December 2022.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory, August 2026: ENGIE Solidago Solar Project - Hybrid (plant 65304), 50 MW operating; 12.5 MW battery planned",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.engie-na.com/project/solidago/",
+        "label": "Solidago: ENGIE North America project page (50 MW, New Castle County, Delaware, PJM)",
+        "publisher": "ENGIE North America",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/amazon-solar-farm/",
+        "label": "Exclusive: Huge Amazon Solar Farm coming to Townsend",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/amazon-cedar-creek/",
+        "label": "Amazon inks deal for Cedar Creek solar power (references Amazon Solar Farm Delaware – Solidago)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Delaware's largest operating solar plant in the EIA inventory. It connects to an existing Delmarva Power substation off Dogtown Road, per plans DBT reviewed. ENGIE's own page gives 2023 as the operational year, while EIA lists December 2022, and both are recorded here. The project was originally developed as 'Solidago Solar' by Community Energy Inc. landAcres is the roughly 276-acre build area, not the 500+ acre purchase. Coordinates are the EIA-860M plant point.",
+    "energy": {
+      "source": "solar"
+    },
+    "landAcres": 276,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Amazon",
+      "notes": "Amazon buys the output under a PPA, and the array is branded Amazon Solar Farm Delaware – Solidago. EIA-860M also lists a planned 12.5 MW battery (BESS) at the same plant, '(P) Planned for installation, but regulatory approvals not initiated', for June 2027."
+    }
+  },
+  {
     "id": "enseva-hiawatha-ia",
     "name": "Enseva Hiawatha Data Center",
     "operator": "Enseva",
@@ -55741,6 +56396,158 @@
     "facilityType": "data_center"
   },
   {
+    "id": "freepoint-cedar-creek-solar-smyrna-de",
+    "name": "Cedar Creek Solar (Amazon Solar Farm Delaware – Cedar Creek)",
+    "operator": "Freepoint Solar (FPS Cedar Creek Solar LLC)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.37259,
+      "lon": -75.56455,
+      "city": "Smyrna",
+      "county": "New Castle",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 114
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2020-10",
+        "note": "Freepoint Solar's 114 MW Cedar Creek project, about $100M, was still in New Castle County permitting. It had signed the City of Dover as a power customer.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "proposed",
+        "date": "2022-04",
+        "note": "Amazon contracted 74.7 MW of output. A reworked proposal had been approved by Kent County Levy Court, while the New Castle County portion was still in permitting.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "proposed",
+        "date": "2026-08",
+        "note": "EIA-860M (August 2026) lists the plant (EIA ID 64543) as '(L) Regulatory approvals pending. Not under construction,' with planned operation in July 2028.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory, August 2026: Planned sheet, Cedar Creek Solar (plant 64543), FPS Cedar Creek Solar LLC, 114 MW",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/amazon-cedar-creek/",
+        "label": "Amazon inks deal for Cedar Creek solar power (74.7 MW PPA; about 260 acres east of Smyrna along Woodland Beach and Lighthouse roads)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/freepoint-solar/",
+        "label": "Largest Delaware solar projects poised to break ground (Cedar Creek about $100M; Dover PPA)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Cedar_Creek_Solar",
+        "label": "Cedar Creek Solar: Global Solar Power Tracker record",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-01",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Would be Delaware's largest solar array. The site spans parcels in Kent and New Castle counties. EIA places the plant in New Castle County, and DBT describes the panels on about 260 acres east of Smyrna along Woodland Beach and Lighthouse roads. The schedule has slipped repeatedly: DBT targeted operation in 2022 (2020 article) and then end-2024 (2022 article), GEM lists 2026, and EIA's August 2026 inventory lists July 2028 with approvals still pending. The $100M investment is DBT's 2020 'approximately' figure and has not been updated. Coordinates are the EIA-860M plant point, which GEM repeats.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 100000000,
+    "landAcres": 260,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Amazon",
+      "notes": "Amazon announced a PPA for 74.7 MW, about 65% of output, in April 2022, and the project would be branded Amazon Solar Farm Delaware – Cedar Creek. In 2020 the City of Dover signed PPAs with Freepoint for 50 MW, split between Cedar Creek and Raceway at 4 cents/kWh for 25 years."
+    }
+  },
+  {
+    "id": "freepoint-raceway-solar-harrington-de",
+    "name": "Raceway Solar",
+    "operator": "Freepoint Solar (Freepoint Commodities LLC)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.909956,
+      "lon": -75.58819,
+      "city": "Harrington",
+      "county": "Kent",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2020-05",
+        "note": "Kent County Levy Court approved the roughly $45M, 50 MW Raceway project near Farmington and Walter Messick roads.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-08",
+        "note": "EIA-860M (August 2026) lists Raceway Solar (EIA ID 63846) as '(U) Under construction, less than or equal to 50 percent complete,' with planned operation in July 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory, August 2026: Planned sheet, Raceway Solar (plant 63846), Freepoint Commodities LLC, 50 MW",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/freepoint-solar/",
+        "label": "Largest Delaware solar projects poised to break ground (Raceway about $45M, approved by Kent County Levy Court in May; about 100 construction jobs)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/freepoint-buys-harrington-land-for-solar-project/",
+        "label": "Freepoint buys Harrington land for solar project (FPS Raceway LLC bought 290 acres for $2.35M)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "FPS Raceway LLC bought the 290-acre site in April 2021, per Kent County land records cited by DBT. DBT's 2020 article put the array on 'more than 200 acres'. Completion was originally targeted for end-2021 and has slipped to EIA's July 2027 planned date. The investment (about $45M) and construction jobs (about 100) are 2020 estimates. Coordinates are the EIA-860M plant point.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 45000000,
+    "landAcres": 290,
+    "jobs": {
+      "construction": 100,
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "The City of Dover signed 25-year PPAs at 4 cents/kWh with Freepoint in 2020 for 50 MW split between Raceway and Cedar Creek. That is a municipal utility, not a compute offtaker."
+    }
+  },
+  {
     "id": "freestone-energy-center-fairfield-tx",
     "name": "Freestone Energy Center",
     "operator": "Constellation Energy",
@@ -56256,6 +57063,59 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "garrison-energy-center-dover-de",
+    "name": "Garrison Energy Center",
+    "operator": "Garrison Energy Center LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.187195,
+      "lon": -75.4994,
+      "city": "Dover",
+      "county": "Kent",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 309
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2015-06",
+        "note": "Both Garrison generators entered service in June 2015 per EIA-860M.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory, August 2026: Operating sheet, Garrison Energy Center LLC (plant 57349)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/916457/000091645719000028/cpn_8kxjuly10x2019.htm",
+        "label": "Calpine Corp. Form 8-K (July 2019): completed sale of 100% of Garrison Energy Center LLC, a 309 MW combined-cycle plant in Dover, DE, to Cobalt Power, L.L.C.",
+        "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Delaware's newest gas-fired plant. Calpine built it and sold 100% of Garrison Energy Center LLC to Cobalt Power, L.L.C. on July 10, 2019, for about $360M. So it was NOT part of Calpine's portfolio at the 2026 Constellation acquisition and is not in the LS Power divestiture. The operator field uses the project LLC that EIA lists as the August 2026 entity. The current ultimate parent after 2019 was not re-verified. Coordinates are the EIA-860M plant point.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural gas combined cycle with one combustion turbine (CTG1, 235 MW nameplate) and one steam turbine (STG2, 126 MW nameplate), in service June 2015 per EIA-860M. The 309 MW figure is the plant rating stated in Calpine's 2019 8-K and equals the sum of EIA net summer ratings (186 + 123). EIA nameplate totals 361 MW."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2
+    }
   },
   {
     "id": "gateway-business-park-offgrid-generation-letcher-ky",
@@ -64321,6 +65181,66 @@
     "facilityType": "data_center"
   },
   {
+    "id": "hay-road-energy-center-de",
+    "name": "Hay Road Energy Center",
+    "operator": "Calpine Mid-Atlantic Generation LLC (Constellation Energy)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.7436,
+      "lon": -75.5072,
+      "county": "New Castle",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 1098.2
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1989-05",
+        "note": "The first Hay Road combined-cycle generators entered service in May and July 1989, and the last (HR8) in July 2002, per EIA-860M.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory, August 2026: Operating sheet, Hay Road (plant 7153), Calpine Mid-Atlantic Generation LLC",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-01",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.power-eng.com/business/constellation-to-sell-4-4gw-of-pjm-assets-to-ls-power-for-5b-as-part-of-calpine-acquisition/",
+        "label": "Constellation to sell 4.4GW of PJM assets to LS Power for $5B as part of Calpine acquisition",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lspower.com/news/ls-power-to-acquire-sixth-gas-power-plant-from-constellation/",
+        "label": "LS Power to Acquire Sixth Gas Power Plant from Constellation (Aug 6, 2026; pending transactions expected to close Q4 2026)",
+        "publisher": "LS Power",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Delaware's largest power plant, on the Wilmington-area Delaware River waterfront next to Calpine's Edge Moor station (EIA plant 593, not emitted separately). OWNERSHIP IS IN TRANSITION. The operator field reflects the EIA August 2026 entity and Constellation's January 2026 acquisition of Calpine. Re-check the operator once the LS Power sale closes, which was expected in Q4 2026. Coordinates are the EIA-860M plant point.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural gas combined cycle with eight generators, HR1–HR8, entering service between 1989 and 2002 per EIA-860M. 1,098.2 MW is the sum of the eight EIA nameplate ratings. Their EIA net summer ratings sum to 1,128 MW."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 8,
+      "notes": "Subject to a FERC/DOJ-required divestiture. Constellation completed its Calpine acquisition on January 7, 2026. In March 2026 it agreed to sell Hay Road, Edge Moor, Bethlehem, York 1 and York 2 to LS Power for about $5B. On August 6, 2026 LS Power said its Constellation transactions were expected to close in Q4 2026."
+    }
+  },
+  {
     "id": "haystack-wind-wayne-ne",
     "name": "Haystack Wind Project",
     "operator": "Ørsted",
@@ -70046,6 +70966,50 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "jpmorgan-chase-cdc1-bear-de",
+    "name": "JPMorgan Chase Core Data Center 1 (CDC1), Bear",
+    "operator": "JPMorgan Chase Bank, N.A.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.64975,
+      "lon": -75.656095,
+      "city": "Bear",
+      "county": "New Castle",
+      "street": "501 Bear Christiana Road",
+      "postalCode": "19701",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-12",
+        "note": "DNREC draft Synthetic Minor permit APC-2003/0285-OPERATION (SM)(NSPS)(A5) covers twelve existing diesel emergency generators at the JP Morgan Chase Bank Core Data Center facility. The DNREC engineering memo describes 'JP Morgan Chase CDC 1' as 'a Tier 4 data center with highly redundant electrical systems.'",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://docs.dnrec.delaware.gov/render/2446576/c1b1b6791dc007b72fdca01fd2ea9fa568f551cf506d18581b522a1ea65cf5e667aa6b87b38cb1b1246515c1c0b04ca1/",
+        "label": "DNREC Division of Air Quality: draft permit APC-2003/0285-OPERATION (SM)(NSPS)(A5), twelve emergency generators, JP Morgan Data Center CDC1, 501 Bear Christiana Road (Dec 2021)",
+        "publisher": "Delaware DNREC",
+        "retrievedAt": "2026-10-01",
+        "kind": "permit"
+      },
+      {
+        "url": "https://dnrec.delaware.gov/public-notices/title-v-synthetic-minor-permit-applications-jp-morgan/",
+        "label": "Title V Synthetic Minor Permit Applications: JP Morgan (501 Bear Christiana Road), public notice Dec 12, 2021",
+        "publisher": "Delaware DNREC",
+        "retrievedAt": "2026-10-01",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-01",
+    "notes": "Enterprise data center. The DNREC permit covers twelve diesel emergency generators: six at 19.6 MMBtu/hr, two at 19.8 and four at 20.3, each described in the DNREC memo as 3,058 HP. The original permit applications date to May 28, 2003. The 2021 amendment removed SCR systems from generators 5–8 and capped each generator at 124 hours/year. DNREC's public notice gives the address as Newark, while the permit itself says Bear. No IT capacity is published, so capacityMw is left unset. dcmap.us shows an 'estimated' 34.934 MW that comes from no primary source and is not used. The latest primary evidence of operation is the December 2021 permit action. Coordinates are a US Census geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "jpmorgan-chase-orangeburg-ny",
     "name": "JPMorgan Chase Data Center, Orangeburg",
     "operator": "JPMorgan Chase",
@@ -74935,6 +75899,7 @@
       "lon": -75.5777033,
       "city": "Harrington",
       "county": "Kent",
+      "street": "111 Reese Avenue",
       "state": "DE",
       "precision": "approximate"
     },
@@ -74962,10 +75927,25 @@
         "publisher": "Spotlight Delaware",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/harrington-data-center/",
+        "label": "Harrington denies data center development (Maguire Hayden owns 111 Reese Ave.; listed at 220,973 sq ft on approximately 24.6 acres)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/insider-only/harrington-data-centers/",
+        "label": "Harrington considers possible data centers (cold storage facility at 111 Reese Ave., formerly Burris Logistics)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-01",
     "notes": "No street address given beyond 'the site of a former cold storage warehouse' in Harrington, DE; location pin is Harrington's OSM place centroid (approximate). Article was published 2026-08-19 and refers to a council vote 'Monday' with no explicit calendar date, so statusHistory entries are dated to month-precision (2026-08) only. A separate, still-unidentified 100 MW project appears in Delmarva Power's internal 'Kent County' project list per a 2026-09 Technical.ly FOIA report; that report states press coverage could not confirm whether it is the same project as this one. Treated here as a distinct, unconfirmed lead and NOT merged into this record given the capacity mismatch (24 MW here vs. 100 MW in Delmarva's list) — flagged in the wave summary rather than fabricated into its own record for lack of any name or location.",
+    "landAcres": 24.6,
     "community": {
       "status": "opposed",
       "notes": "Council vote was unanimous against the project despite a proposed $1M community-benefits package; press described the rejection as met with 'cheers and a standing ovation' from residents in attendance.",
@@ -94096,10 +95076,18 @@
         "publisher": "Technical.ly",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://delawarebusinesstimes.com/news/three-sites-data-center-conversions/",
+        "label": "Three sites across New Castle explore data center conversions (Parkway Gravel plans for close to 1,500 acres at St. Georges Business Park / Lighthouse Farms)",
+        "publisher": "Delaware Business Times",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-01",
     "notes": "Confidence is 'rumored' rather than 'reported' because sources disagree on whether the ultimate use will be a data center: county filings and press describe a mixed-use industrial park (distribution/fulfillment/warehouse) for which Delaware zoning also happens to permit data centers, and coverage attributes to the developer's engineering firm only that 'the developer may be planning to build a data center' — not a confirmed data-center project. A Delmarva Power internal project list obtained via FOIA (Technical.ly, sourceIndex 2) separately lists a 300 MW 'St. Georges/Frightland Area' project 'pending cluster study analysis'; this record treats it as the same site given the shared name/geography, though the FOIA-based list does not itself name Parkway Gravel Inc., so treat the capacityMw.planned=300 figure with that caveat. Square footage progression (2.5M sq ft → 3.2M sq ft) is not recorded in a dedicated field since it describes the broader mixed-use park, not a confirmed data-center footprint. Location precision is approximate: geocoded to the unincorporated place of St. Georges, DE (OSM); some press coverage instead characterizes the site as 'in Middletown' given proximity. The specific parcel south of the C&D Canal off US Route 13 did not resolve via geocoding.",
+    "landAcres": 1500,
     "community": {
       "status": "contested",
       "notes": "The site includes land hosting Frightland, a well-known Delaware Halloween attraction, which would be demolished. The proposal has drawn resident backlash over energy-cost and environmental impact, which Spotlight Delaware cites as a driver of New Castle County's new data-center zoning ordinance (buffer/setback, noise, and cooling-water rules).",
@@ -122478,14 +123466,25 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-12",
         "kind": "osm"
+      },
+      {
+        "url": "https://delawarebusinessnow.com/2013/05/more-details-offered-on-proposed-data-center-power-plant-project/",
+        "label": "More details offered on proposed data center-power plant project (900,000 sq ft; 'The site would employ 290')",
+        "publisher": "Delaware Business Now",
+        "retrievedAt": "2026-10-01",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-01",
     "notes": "Proposed circa 2013 by The Data Centers, LLC (TDC): up to 900,000 sq ft of data center space plus the 279 MW cogeneration plant noted above, on the University of Delaware's 271-acre STAR Campus (former Chrysler Newark Assembly Plant site). Sources disagree on the headline investment figure — Data Center Knowledge reported 'approximately $1 billion' while Technical.ly reported 'more than $1.8 billion' for the combined data-center-and-power-plant project; both are recorded here rather than resolving to one number, so investmentUsd is left unset. Coordinates are the 'STAR Campus' OSM way centroid (approximate) — the specific parcel within the 271-acre campus where this project would have sited was not stated in any source reviewed, and the project was never built.",
     "energy": {
       "source": "on_site_gas",
       "onSiteGenerationMw": 279,
       "notes": "Proposed 279 MW natural-gas cogeneration (CHP) plant to power the data center on-site. UD's review found this would have been at least twice the size of any other known on-site generation facility at a US data center. Never built."
+    },
+    "jobs": {
+      "permanent": 290,
+      "sourceIndex": 4
     },
     "community": {
       "status": "opposed",
