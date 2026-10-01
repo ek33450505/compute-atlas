@@ -129,13 +129,53 @@ export async function sendContactEmail(input: {
   }
 
   const subject = `Compute Atlas contact — ${input.topic}`;
-  const text = `New contact form submission.\n\nName: ${input.name}\nEmail: ${input.email}\nTopic: ${input.topic}\n\n${input.message}`;
-  const html = `<p><strong>New contact form submission</strong></p><p>Name: ${escapeHtml(input.name)}<br>Email: ${escapeHtml(input.email)}<br>Topic: ${escapeHtml(input.topic)}</p><p>${escapeHtml(input.message).replace(/\n/g, "<br>")}</p>`;
+  const adminUrl = `${linkBase()}/admin/contact`;
+  const text = `New contact form submission.\n\nName: ${input.name}\nEmail: ${input.email}\nTopic: ${input.topic}\n\n${input.message}\n\nReply as Compute Atlas: ${adminUrl}`;
+  const html = `<p><strong>New contact form submission</strong></p><p>Name: ${escapeHtml(input.name)}<br>Email: ${escapeHtml(input.email)}<br>Topic: ${escapeHtml(input.topic)}</p><p>${escapeHtml(input.message).replace(/\n/g, "<br>")}</p><p><a href="${escapeHtml(adminUrl)}">Reply as Compute Atlas</a></p>`;
 
+  // `replyTo` is deliberately absent. With it set, pressing Reply in the
+  // maintainer's mail client would send to the visitor FROM his personal
+  // address, leaking it. Replies go through /admin/contact, which calls
+  // sendContactReply and sends under the Compute Atlas name. Do not re-add it.
   return sendViaResend(
     "sendContactEmail",
     "RESEND_API_KEY not set — skipping contact email send",
-    { from: fromAddress(), to, replyTo: input.email, subject, text, html },
+    { from: fromAddress(), to, subject, text, html },
+  );
+}
+
+/**
+ * Answers a public contact-form message from the Compute Atlas sender. No
+ * `replyTo`/cc/bcc and no reference to CONTACT_TO_EMAIL: the visitor must
+ * never see the maintainer's personal address. A follow-up goes to the From
+ * address, which Cloudflare Email Routing forwards privately.
+ */
+export async function sendContactReply(input: {
+  to: string;
+  originalMessage: string;
+  replyBody: string;
+}): Promise<{ sent: boolean }> {
+  // A reply to a member of the public must never go out under a personal From
+  // (e.g. a misconfigured EMAIL_FROM); fail closed rather than expose it.
+  const rawFrom = fromAddress();
+  const bracketed = /<([^>]*)>/.exec(rawFrom);
+  const fromEmail = (bracketed ? bracketed[1] : rawFrom).trim().toLowerCase();
+  if (!/^[^@\s<>]+@compute-atlas\.com$/.test(fromEmail)) {
+    console.warn("sendContactReply: EMAIL_FROM is not a compute-atlas.com address — refusing to send");
+    return { sent: false };
+  }
+  const subject = "Re: your message to Compute Atlas";
+  const quoted = input.originalMessage
+    .split("\n")
+    .map((line) => `> ${line}`)
+    .join("\n");
+  const text = `${input.replyBody}\n\n—\nCompute Atlas\n${linkBase()}\n\n${quoted}`;
+  const html = `<p>${escapeHtml(input.replyBody).replace(/\n/g, "<br>")}</p><p>—<br>Compute Atlas<br><a href="${escapeHtml(linkBase())}">${escapeHtml(linkBase())}</a></p><blockquote>${escapeHtml(input.originalMessage).replace(/\n/g, "<br>")}</blockquote>`;
+
+  return sendViaResend(
+    "sendContactReply",
+    "RESEND_API_KEY not set — skipping contact reply send",
+    { from: rawFrom, to: input.to, subject, text, html },
   );
 }
 

@@ -2,6 +2,7 @@ import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 import type { AdminContactRow } from "@/lib/contact";
 import { Badge } from "@/components/ui/badge";
+import { ContactReplyForm } from "./contact-reply-form";
 
 /**
  * Renders whether the notification email actually sent for this message.
@@ -36,12 +37,8 @@ function ContactMessageRow({ message }: { message: AdminContactRow }) {
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline">{message.topic}</Badge>
             <span className="text-sm font-medium text-foreground">{message.name}</span>
-            <a
-              href={`mailto:${message.email}`}
-              className="text-sm text-muted-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {message.email}
-            </a>
+            {/* Plain text, not a mailto: link — a mail client would send from the maintainer's personal address. */}
+            <span className="text-sm text-muted-foreground select-text">{message.email}</span>
           </div>
           <p className="shrink-0 text-xs text-muted-foreground">
             {new Date(message.createdAt).toLocaleString()}
@@ -49,6 +46,7 @@ function ContactMessageRow({ message }: { message: AdminContactRow }) {
         </div>
         <p className="text-sm whitespace-pre-wrap text-foreground">{message.message}</p>
         <EmailDeliveryStatus sent={message.emailSent} />
+        <ContactReplyForm messageId={message.id} recipientName={message.name} />
       </div>
     </div>
   );

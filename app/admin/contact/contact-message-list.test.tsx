@@ -1,8 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import type { AdminContactRow } from "@/lib/contact";
 import { ContactMessageList } from "./contact-message-list";
+
+vi.mock("@/app/admin/contact/actions", () => ({
+  replyToContactMessageAction: vi.fn(),
+}));
 
 function makeMessage(overrides: Partial<AdminContactRow> = {}): AdminContactRow {
   return {
@@ -25,7 +29,18 @@ describe("ContactMessageList — empty state", () => {
 });
 
 describe("ContactMessageList — row rendering", () => {
-  it("renders name, topic, message body, and a mailto link for the email", () => {
+  it("renders email as plain text with no mailto link, and a reply button per message", () => {
+    const { container } = render(
+      <ContactMessageList
+        messages={[makeMessage({ id: "msg-1" }), makeMessage({ id: "msg-2", name: "Alex Chen" })]}
+      />
+    );
+    expect(container.querySelector('a[href^="mailto:"]')).toBeNull();
+    expect(screen.getAllByText("jamie@example.com").length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: "Reply as Compute Atlas" })).toHaveLength(2);
+  });
+
+  it("renders name, topic, and message body", () => {
     render(<ContactMessageList messages={[makeMessage()]} />);
 
     expect(screen.getByText("Jamie Rivera")).toBeInTheDocument();
@@ -33,9 +48,6 @@ describe("ContactMessageList — row rendering", () => {
     expect(
       screen.getByText("This is a message with well over twenty characters in it.")
     ).toBeInTheDocument();
-
-    const emailLink = screen.getByRole("link", { name: "jamie@example.com" });
-    expect(emailLink).toHaveAttribute("href", "mailto:jamie@example.com");
   });
 
   it("shows a quiet confirmation when the notification email sent", () => {

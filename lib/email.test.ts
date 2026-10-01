@@ -62,7 +62,7 @@ describe("sendContactEmail", () => {
     expect(resendSendMock).not.toHaveBeenCalled();
   });
 
-  it("sends to CONTACT_TO_EMAIL with the submitter as replyTo, and escapes html", async () => {
+  it("sends to CONTACT_TO_EMAIL with NO replyTo, points at /admin/contact, and escapes html", async () => {
     vi.stubEnv("RESEND_API_KEY", "test-key");
     vi.stubEnv("CONTACT_TO_EMAIL", "maintainer@example.com");
     resendSendMock.mockResolvedValue({ data: { id: "email-1" }, error: null });
@@ -79,7 +79,11 @@ describe("sendContactEmail", () => {
     expect(resendSendMock).toHaveBeenCalledTimes(1);
     const args = resendSendMock.mock.calls[0][0];
     expect(args.to).toBe("maintainer@example.com");
-    expect(args.replyTo).toBe("jamie@example.com");
+    // A replyTo would make a Gmail "Reply" go to the visitor from the
+    // maintainer's personal address.
+    expect(args.replyTo).toBeUndefined();
+    expect(args.text).toContain("/admin/contact");
+    expect(args.html).toContain("/admin/contact");
     expect(args.subject).toBe("Compute Atlas contact — correction");
     expect(args.html).toContain("&lt;b&gt;Jamie&lt;/b&gt;");
     expect(args.html).not.toContain("<b>Jamie</b>");
@@ -98,6 +102,105 @@ describe("sendContactEmail", () => {
       message: "some message",
     });
     expect(result.sent).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// sendContactReply
+// ---------------------------------------------------------------------------
+describe("sendContactReply", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    resendSendMock.mockReset();
+  });
+
+  it("sends to the visitor from the Compute Atlas address with no replyTo/cc/bcc", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    vi.stubEnv("EMAIL_FROM", "Compute Atlas <alerts@compute-atlas.com>");
+    vi.stubEnv("CONTACT_TO_EMAIL", "private@example.com");
+    resendSendMock.mockResolvedValue({ data: { id: "e1" }, error: null });
+
+    const { sendContactReply } = await import("./email");
+    const result = await sendContactReply({
+      to: "visitor@example.com",
+      originalMessage: "line one\nline two",
+      replyBody: "Thanks for writing",
+    });
+
+    expect(result.sent).toBe(true);
+    const args = resendSendMock.mock.calls[0][0];
+    expect(args.to).toBe("visitor@example.com");
+    expect(args.from).toBe("Compute Atlas <alerts@compute-atlas.com>");
+    expect(args.replyTo).toBeUndefined();
+    expect(args.cc).toBeUndefined();
+    expect(args.bcc).toBeUndefined();
+    expect(args.subject).toBe("Re: your message to Compute Atlas");
+    expect(args.text).toContain("Thanks for writing");
+    expect(args.text).toContain("> line one\n> line two");
+    expect(JSON.stringify(args)).not.toContain("private@example.com");
+  });
+
+  it("escapes html in both the reply and the quoted original", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    resendSendMock.mockResolvedValue({ data: { id: "e1" }, error: null });
+
+    const { sendContactReply } = await import("./email");
+    await sendContactReply({
+      to: "visitor@example.com",
+      originalMessage: "<script>orig</script>",
+      replyBody: "<b>reply</b>",
+    });
+
+    const args = resendSendMock.mock.calls[0][0];
+    expect(args.html).toContain("&lt;b&gt;reply&lt;/b&gt;");
+    expect(args.html).toContain("<blockquote>&lt;script&gt;orig&lt;/script&gt;</blockquote>");
+    expect(args.html).not.toContain("<b>reply</b>");
+    expect(args.html).not.toContain("<script>");
+  });
+
+  it("returns sent:false without calling Resend when RESEND_API_KEY is unset", async () => {
+    const { sendContactReply } = await import("./email");
+    const result = await sendContactReply({
+      to: "visitor@example.com",
+      originalMessage: "x",
+      replyBody: "y",
+    });
+    expect(result.sent).toBe(false);
+    expect(resendSendMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["a personal address", "Ed <someone@gmail.com>"],
+    ["a lookalike suffix domain", "Compute Atlas <x@compute-atlas.com.evil.com>"],
+  ])("refuses to send when EMAIL_FROM is %s", async (_label, from) => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    vi.stubEnv("EMAIL_FROM", from);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { sendContactReply } = await import("./email");
+    const result = await sendContactReply({ to: "visitor@example.com", originalMessage: "x", replyBody: "y" });
+    expect(result).toEqual({ sent: false });
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(JSON.stringify(warn.mock.calls)).not.toContain("gmail");
+    warn.mockRestore();
+  });
+
+  it("falls back to the default compute-atlas.com sender when EMAIL_FROM is unset", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    vi.stubEnv("EMAIL_FROM", undefined);
+    resendSendMock.mockResolvedValue({ data: { id: "e1" }, error: null });
+    const { sendContactReply } = await import("./email");
+    const result = await sendContactReply({ to: "visitor@example.com", originalMessage: "x", replyBody: "y" });
+    expect(result.sent).toBe(true);
+    expect(resendSendMock.mock.calls[0][0].from).toBe("Compute Atlas <alerts@compute-atlas.com>");
+  });
+
+  it("accepts a bare compute-atlas.com EMAIL_FROM", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    vi.stubEnv("EMAIL_FROM", "contact@compute-atlas.com");
+    resendSendMock.mockResolvedValue({ data: { id: "e1" }, error: null });
+    const { sendContactReply } = await import("./email");
+    const result = await sendContactReply({ to: "visitor@example.com", originalMessage: "x", replyBody: "y" });
+    expect(result.sent).toBe(true);
   });
 });
 

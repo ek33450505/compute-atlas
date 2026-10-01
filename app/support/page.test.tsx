@@ -100,12 +100,14 @@ describe("SupportPage", () => {
 });
 
 describe("SupportPage — the personal sections", () => {
-  it("names the maintainer and links his site", () => {
-    render(<SupportPage />);
-    const bio = screen.getByRole("link", { name: /Edward Kubiak/ });
-    expect(bio).toHaveAttribute("href", "https://edwardkubiak.com");
-    expect(bio).toHaveAttribute("target", "_blank");
-    expect(bio).toHaveAttribute("rel", "noreferrer noopener");
+  it("names the maintainer as plain text with no link to a personal site", () => {
+    const { container } = render(<SupportPage />);
+    const bio = screen.getByText(/Edward Kubiak/);
+    expect(bio.textContent).toContain(
+      "I’m Edward Kubiak, a full-stack developer"
+    );
+    expect(container.querySelector('a[href*="edwardkubiak.com"]')).toBeNull();
+    expect(screen.queryByRole("link", { name: /Edward Kubiak/ })).toBeNull();
   });
 
   it("renders the three personal section headings in the order the page argues them", () => {
