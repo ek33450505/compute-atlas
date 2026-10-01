@@ -102,7 +102,7 @@ record.
 
 ## Confound log
 
-**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`) and 2026-09-30 (Bartow County data correction; CT/CO wave, #372).** Those are the dates this section was written, not the
+**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`), 2026-09-30 (Bartow County data correction; CT/CO wave, #372) and 2026-10-01 (footer portfolio link).** Those are the dates this section was written, not the
 date of any entry — each entry carries its own date. The window is still open
 (closes 2026-10-10), so this log is **incomplete** and must be appended to as
 further events land.
@@ -330,6 +330,27 @@ operator and county hubs). `facilities` family.
   git --no-pager diff c8deea0 ab8671d -- data/facilities.meta.json
   git --no-pager diff c8deea0 ab8671d -- data/facilities.json \
     | grep '^+' | grep -o '"state": "[A-Z][A-Z]"' | sort | uniq -c
+  ```
+
+**2026-10-01 — `feature/contact-privacy`, maintainer portfolio link removed (Ed's call to ship inside the soak)**
+Category: *content edit to page templates* — at template scale (the footer is on
+every HTML page), but the smallest form of it.
+
+- `components/site-footer.tsx`: the outbound `<a href="https://edwardkubiak.com">`
+  around "Edward Kubiak" became plain text. The visible footer text is
+  unchanged; one **external** link is gone from every page. No internal link,
+  title, H1, canonical, `robots.txt` or sitemap change.
+- `app/support/page.tsx`: the same outbound link removed from the "Who's behind
+  it" bio; the prose is otherwise unchanged. One page.
+- Shipped in the soak deliberately: sites now cite Compute Atlas as a data
+  source, and the link led readers to the maintainer's personal contact
+  details. The rest of the branch (`/admin/contact` reply-via-Resend, the
+  contact notification email) is not crawlable — `/admin/` is disallowed in
+  `app/robots.ts` and cookie-gated.
+
+  ```bash
+  git --no-pager log -S'edwardkubiak.com' --first-parent main --format='%h %ad %s' \
+    --date=short -- components/site-footer.tsx app/support/page.tsx
   ```
 
 ### RULED OUT

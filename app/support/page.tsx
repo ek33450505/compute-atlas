@@ -127,16 +127,8 @@ export default function SupportPage() {
           Who&rsquo;s behind it
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          I&rsquo;m{" "}
-          <a
-            href="https://edwardkubiak.com"
-            target="_blank"
-            rel="noreferrer noopener"
-            className={LINK_CLASS}
-          >
-            Edward Kubiak <span aria-hidden="true">↗</span>
-          </a>
-          , a full-stack developer and AI systems engineer in Columbus, Ohio.
+          I&rsquo;m Edward Kubiak, a full-stack developer and AI systems
+          engineer in Columbus, Ohio.
           There is no company behind Compute Atlas, no investor, and no outside
           funding. It is one person, and this page is the whole business model.
         </p>

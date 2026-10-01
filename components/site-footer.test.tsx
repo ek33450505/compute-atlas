@@ -60,12 +60,13 @@ describe("SiteFooter", () => {
     expect(screen.getByText(/An independent project by/i)).toBeInTheDocument();
   });
 
-  it("links the maintainer's name to their personal site, opened in a new tab", () => {
-    render(<SiteFooter />);
-    const maintainerLink = screen.getByRole("link", { name: "Edward Kubiak" });
-    expect(maintainerLink).toHaveAttribute("href", "https://edwardkubiak.com");
-    expect(maintainerLink).toHaveAttribute("target", "_blank");
-    expect(maintainerLink).toHaveAttribute("rel", "noopener noreferrer");
+  it("names the maintainer as plain text with no link to a personal site", () => {
+    const { container } = render(<SiteFooter />);
+    expect(
+      screen.getByText("An independent project by Edward Kubiak")
+    ).toBeInTheDocument();
+    expect(container.querySelector('a[href*="edwardkubiak.com"]')).toBeNull();
+    expect(screen.queryByRole("link", { name: /Edward Kubiak/ })).toBeNull();
   });
 
   it("renders the Explore and Data & project column labels", () => {
