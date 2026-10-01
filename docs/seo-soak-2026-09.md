@@ -102,7 +102,7 @@ record.
 
 ## Confound log
 
-**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`), 2026-09-30 (Bartow County data correction; CT/CO wave, #372) and 2026-10-01 (footer portfolio link).** Those are the dates this section was written, not the
+**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`), 2026-09-30 (Bartow County data correction; CT/CO wave, #372) and 2026-10-01 (footer portfolio link; DE/DC wave, #374).** Those are the dates this section was written, not the
 date of any entry — each entry carries its own date. The window is still open
 (closes 2026-10-10), so this log is **incomplete** and must be appended to as
 further events land.
@@ -351,6 +351,41 @@ every HTML page), but the smallest form of it.
   ```bash
   git --no-pager log -S'edwardkubiak.com' --first-parent main --format='%h %ad %s' \
     --date=short -- components/site-footer.tsx app/support/page.tsx
+  ```
+
+**2026-10-01 — #374 (`automated/neon-sync`), Delaware + District of Columbia, 16 facilities**
+Categories: *concurrent data wave* **and** *internal-linking change* (new
+operator hubs). `facilities` family.
+
+- Already live in Neon when the 18:17Z Neon→JSON sync (run 36905711567)
+  exported it; #374 is that export plus the map data below.
+- `recordCount` 2290 → 2306 (+16: 13 DE, 3 DC; 10 `data_center`, 6
+  `power_generation`).
+- 6 existing records changed. No title changed and no pin moved (the three
+  `location` diffs are street / postal code only):
+  `365-data-centers-washington-dc`, `abit-usa-duff-tn`,
+  `coresite-dc1-washington-d-c-dc`, `maguire-hayden-harrington-de`,
+  `parkway-gravel-st-georges-de`, `the-data-centers-star-campus-newark-de`.
+- Distinct operator slugs 1042 → 1053 (+11). County slugs unchanged at 863:
+  every new record falls in a county that already had one. Counted the same
+  way as #372; hub pages were not inspected.
+- USGS NHD failed the quorum pre-flight at [KS interior] in CI (layers 4 and
+  10 timed out at 12s), and again when re-probed by hand, so `build:mapdata`
+  ran with `--skip-nhd`. The 16 new pages render a "Siting context" panel
+  with water stress / aquifer / groundwater decline but without nearest-water
+  / nearest-≥230 kV lines. `check-siting-additive`: 16 added, 0 lost, 0
+  nulled, 0 changed. The NHD ceiling in `lib/siting-context.test.ts` rises
+  22 → 38. The full `build:mapdata` owed there now covers 38 pages plus the
+  2 moved GA pins.
+- The homepage hero plate (`components/home/hero-plate-paths.ts`) and
+  `public/data/{hero-points,map-layers,pipeline-history}.json` were
+  regenerated from the new data.
+
+  ```bash
+  sha=$(git log -1 --format=%h --grep='(#374)' main)
+  git --no-pager diff "$sha~1" "$sha" -- data/facilities.meta.json
+  git --no-pager diff "$sha~1" "$sha" -- data/facilities.json \
+    | grep '^+' | grep -o '"state": "[A-Z][A-Z]"' | sort | uniq -c
   ```
 
 ### RULED OUT

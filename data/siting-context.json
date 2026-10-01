@@ -873,6 +873,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "ainet-dc-900s-washington-dc": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "ainet-one-market-center-baltimore-md": {
     "nearestWater": {
       "name": "Gwynns Falls",
@@ -7179,6 +7193,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "cirrus-delaware-middletown-technology-center-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "citynet-bridgeport-harrison-county-wv": {
     "nearestWater": {
       "name": "Simpson Creek",
@@ -8300,6 +8328,20 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cogent-washington-dc-2-1050-connecticut-ave-dc": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "cognovum-trumbull-ct": {
@@ -9542,6 +9584,20 @@
       "voltageKv": 230,
       "distanceMi": 2.7
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "coresite-dc2-washington-d-c-dc": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11166,6 +11222,48 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "dastor-new-castle-boulden-circle-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "dastor-wilmington-1201-north-market-de": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "data-canopy-newark-pencader-de": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "data-city-energy-abundance-laredo-tx": {
     "nearestWater": {
       "name": "Zacata Creek",
@@ -12381,6 +12479,34 @@
       "label": "Low (<10%)"
     }
   },
+  "delaware-dti-biggs-data-center-new-castle-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "delaware-dti-william-penn-data-center-dover-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "deltas-edge-solar-carroll-ms": {
     "nearestWater": {
       "name": "Big Sand Creek",
@@ -12421,6 +12547,20 @@
     "aquifer": {
       "name": "Floridan Aquifer System",
       "rock": "Carbonate-rock"
+    }
+  },
+  "demec-beasley-generation-station-kent-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "depg-smithfield-gateway-data-center-monroe-pa": {
@@ -15886,6 +16026,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "engie-solidago-solar-townsend-de": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "enseva-hiawatha-ia": {
     "nearestWater": {
       "name": "Dry Creek",
@@ -18979,6 +19133,34 @@
       "label": "Low (<10%)"
     }
   },
+  "freepoint-cedar-creek-solar-smyrna-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "freepoint-raceway-solar-harrington-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "freestone-energy-center-fairfield-tx": {
     "nearestWater": {
       "name": "Walnut Creek",
@@ -19121,6 +19303,20 @@
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
+    }
+  },
+  "garrison-energy-center-dover-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "gateway-business-park-offgrid-generation-letcher-ky": {
@@ -21375,6 +21571,20 @@
   },
   "hawaiiantel-kawaihae-hi": {},
   "hawaiki-cable-kapolei-hi": {},
+  "hay-road-energy-center-de": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "haystack-wind-wayne-ne": {
     "nearestWater": {
       "name": "South Branch Deer Creek",
@@ -23257,6 +23467,20 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "jpmorgan-chase-cdc1-bear-de": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "jpmorgan-chase-orangeburg-ny": {
