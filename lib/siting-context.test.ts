@@ -129,7 +129,13 @@ describe("data-integrity: NHD backfill debt", () => {
   // entry above and is still the FULL run (the two moved GA pins still need a
   // re-query); it now also takes the 19 CT/CO ids, 22 -> 0. Lower this to 0
   // in that PR.
-  const NHD_BACKFILL_DEBT_CEILING = 22;
+  //
+  // Raised 22 -> 38 on 2026-10-01: the DE/DC wave (PR #374, 16 new records:
+  // 13 DE + 3 DC, all CONUS) shipped via --skip-nhd. NHD failed the quorum
+  // pre-flight at [KS interior] in CI (neon-sync run 36905711567, layers 4
+  // and 10 timed out at 12s), and again when re-probed by hand. The payoff is
+  // still the FULL run, now 38 -> 0. Lower this to 0 in that PR.
+  const NHD_BACKFILL_DEBT_CEILING = 38;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data
