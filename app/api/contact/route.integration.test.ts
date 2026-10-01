@@ -127,7 +127,7 @@ describe("POST /api/contact", () => {
     expect(resendSendMock).toHaveBeenCalledTimes(1);
     const sentArgs = resendSendMock.mock.calls[0][0];
     expect(sentArgs.to).toBe("maintainer@example.com");
-    expect(sentArgs.replyTo).toBe(VALID.email);
+    expect(sentArgs.replyTo).toBeUndefined();
     expect(sentArgs.subject).toContain("press");
 
     const rows = await tdb.db.select().from(contactMessagesTable);

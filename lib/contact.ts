@@ -90,6 +90,29 @@ export async function listContactMessagesForAdmin(): Promise<AdminContactRow[]> 
     .orderBy(desc(contactMessagesTable.createdAt));
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Looks up only the two columns a reply needs, so the recipient address is
+ * resolved server-side and never supplied by the client. A malformed id
+ * returns undefined rather than letting Postgres throw 22P02.
+ */
+export async function getContactMessageForReply(
+  id: string,
+): Promise<{ email: string; message: string } | undefined> {
+  if (!UUID_RE.test(id)) return undefined;
+  const db = getDb();
+  const rows = await db
+    .select({
+      email: contactMessagesTable.email,
+      message: contactMessagesTable.message,
+    })
+    .from(contactMessagesTable)
+    .where(eq(contactMessagesTable.id, id))
+    .limit(1);
+  return rows[0];
+}
+
 /**
  * Records whether the notification email actually sent, once the `after()`
  * send in the route resolves. Mirrors `setLeadTriage` (lib/leads.ts) — a

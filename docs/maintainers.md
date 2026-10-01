@@ -307,6 +307,18 @@ Either way: **verify with a real GET, not by absence of errors** — a 403 from 
 to any other 403, and Cloudflare could cache it (`proxy.ts` sets `no-store` on that response for
 exactly this reason).
 
+## Contact messages: reply as Compute Atlas, never from your inbox
+
+The site is cited by third parties, so no correspondence may carry the maintainer's personal address.
+
+- `/api/contact` stores the message and notifies `CONTACT_TO_EMAIL` **without** a `Reply-To`, so pressing
+  Reply in your inbox goes back to the Compute Atlas sender (`EMAIL_FROM`), never to the visitor. Do not re-add it.
+- Answer from **`/admin/contact` → "Reply as Compute Atlas"**. It sends via Resend from `EMAIL_FROM`, and
+  refuses to send unless that address is `@compute-atlas.com`.
+- ⚠️ **The one gap code cannot close:** a visitor's follow-up goes to `alerts@`, which Cloudflare Email
+  Routing forwards into your inbox *with the visitor as sender*. Replying there sends from your personal
+  address. Answer follow-ups from the original message's reply box in `/admin/contact` instead.
+
 ## Releases
 
 The project follows [Semantic Versioning](https://semver.org). Releases are published via
