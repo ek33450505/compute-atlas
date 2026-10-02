@@ -177,6 +177,74 @@
     "facilityType": "data_center"
   },
   {
+    "id": "1547-alohanap-kapolei-hi",
+    "name": "AlohaNAP (1547 HAII1)",
+    "operator": "fifteenfortyseven Critical Systems Realty (1547)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.335728,
+      "lon": -158.086738,
+      "city": "Kapolei",
+      "county": "Honolulu",
+      "street": "91-340 Farrington Hwy",
+      "postalCode": "96707",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2.7
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2015-01",
+        "note": "AlohaNAP reported fully operational, with about 10,000 sq ft of turnkey space.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.1547realty.com/data-center/kapolei-hi-haii1/",
+        "label": "Kapolei HI | HAII1 | 1547 Critical Systems Realty",
+        "publisher": "fifteenfortyseven Critical Systems Realty (1547)",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/3149",
+        "label": "PeeringDB facility 3149: AlohaNAP",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/business/hawaii-data-center-alohanap-now-fully-operational",
+        "label": "Hawaii Data Center AlohaNAP Now Fully Operational",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcnnmagazine.com/uncategorised/acquisition-and-expansion-of-hawaiian-data-centre-announced/",
+        "label": "Acquisition and expansion of Hawaiian data centre announced",
+        "publisher": "Data Centre & Network News",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://files.hawaii.gov/dbedt/erp/Doc_Library/2025-07-08-OA-FEA-Hawaiki-Submarine-Cable-Landing-Expansion-Project.pdf",
+        "label": "Final Environmental Assessment: Hawaiki Cable Landing Expansion Project",
+        "publisher": "Hawaiki Submarine Cable USA LLC / State of Hawaii OPSD Environmental Review Program",
+        "retrievedAt": "2026-10-02",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "A carrier-neutral interconnection data center at 91-340 Farrington Hwy, Kapolei, next to Hawaii Pacific Teleport's teleport; PeeringDB lists the org as Hawaii Pacific Data LLC. It was developed by 1547 with Hawaii Pacific Teleport and reported fully operational in January 2015, about 2 miles inland and 130 ft above sea level. 1547's page says it has direct access to trans-Pacific fiber, the teleport, and an AWS Direct Connect designation. In October 2024, Harrison Street and 1547 announced they had acquired AlohaNAP and planned a Phase 1 expansion. It would add about 10,300 sq ft and 1.5 MW (~200 cabinets), for 22,800 sq ft and 2.7 MW in total. capacityMw.planned = 2.7 is that stated post-expansion total; completion of the expansion was not confirmed. SPLIT NOTE: the tracked record hawaiki-cable-kapolei-hi currently folds AlohaNAP/HAII1 into the Hawaiki cable landing station and asks for a human split if that is wrong. Evidence they are separate sites: PeeringDB puts AlohaNAP about 4.6 km from the Hawaiki CLS at 92-384 Farrington Hwy (Kahe). Hawaiki's own 2025 Final EA describes that CLS as a ~3,850 sq ft building with two generators and one on-site staffer, not a 10,200+ sq ft colocation hall. Coordinates are PeeringDB's pin; the Census geocode of the same address is about 640 m west-northwest.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "1623-farnam-omaha-ne",
     "name": "1623 Farnam",
     "operator": "1623 Farnam",
@@ -346,6 +414,64 @@
     "community": {
       "status": "unknown"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "365-data-centers-boca-raton-fl",
+    "name": "365 Data Centers Boca Raton (BC1)",
+    "operator": "365 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 26.3814312,
+      "lon": -80.0836087,
+      "city": "Boca Raton",
+      "county": "Palm Beach",
+      "street": "3500 NW Boca Raton Boulevard, Suites 800, 810 & 900",
+      "postalCode": "33431",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-02",
+        "note": "Listed among 365 Data Centers' current facilities.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://365datacenters.com/facilities-network/",
+        "label": "Facilities & Network",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://365datacenters.com/colocation-in-south-florida/",
+        "label": "Colocation in South Florida",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/560",
+        "label": "365 Data Centers Boca Raton (BC1) facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/node/9164670828",
+        "label": "OSM node at 3500 NW Boca Raton Boulevard (geocode)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "PeeringDB describes this as the former Host.net facility, in Buildings 800 & 900. 365 Data Centers' Tampa site was sold to H5 Data Centers in February 2026; this Boca Raton site is still on 365's facility list. Coordinates are an OSM-mapped point at the same street address in the multi-tenant 3500 NW Boca Raton Blvd complex, so they are approximate. This is a different site from 3EX Hosting (6601 Park of Commerce Blvd) and Equinix MI3 (4680 Conference Way South).",
     "facilityType": "data_center"
   },
   {
@@ -545,6 +671,50 @@
       "onSiteGenerationMw": 0.75,
       "notes": "The 0.75 MW figure is a 750 kW on-site diesel generator for backup/emergency power only (per the operator's own spec sheet), not primary or supplemental grid generation."
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "365-data-centers-fort-lauderdale-fl",
+    "name": "365 Data Centers Fort Lauderdale (FLL)",
+    "operator": "365 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 26.184971,
+      "lon": -80.190819,
+      "city": "Fort Lauderdale",
+      "county": "Broward",
+      "street": "3250 W Commercial Boulevard, Suite 140",
+      "postalCode": "33309",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-02",
+        "note": "Listed among 365 Data Centers' current facilities.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://365datacenters.com/facilities-network/",
+        "label": "Facilities & Network",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/605",
+        "label": "365 Data Centers Ft. Lauderdale (FLL) facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "PeeringDB describes this as the former Cybergate/eSpire/Affinity, Hostway and Host.net facility. Coordinates are PeeringDB's and approximate. This is a different site from Flexential FLL01/02 (5301 NW 33rd Ave).",
     "facilityType": "data_center"
   },
   {
@@ -24465,6 +24635,64 @@
     }
   },
   {
+    "id": "cloud-south-west-palm-beach-fl",
+    "name": "Cloud South West Palm Beach 1",
+    "operator": "Cloud South",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 26.6838049,
+      "lon": -80.0549592,
+      "city": "West Palm Beach",
+      "county": "Palm Beach",
+      "street": "424 Hampton Road",
+      "postalCode": "33405",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2012-05-22",
+        "note": "Data Center Knowledge reported the facility opening for public colocation; the operator still says it owns and operates its West Palm Beach data centers (site footer dated 2026).",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cloudsouth.com/",
+        "label": "Cloud South",
+        "publisher": "Cloud South",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/424-hampton-road-west-palm-beach/cloud-south/datacenter/cloud-south-data-center",
+        "label": "Cloud South West Palm Beach 1",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/cloud/cloud-south-opens-south-florida-data-center",
+        "label": "Cloud South Opens South Florida Data Center",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=json&limit=2&q=424%20Hampton%20Road%2C%20West%20Palm%20Beach%2C%20FL",
+        "label": "Geocode of 424 Hampton Road, West Palm Beach, FL",
+        "publisher": "OpenStreetMap Nominatim",
+        "retrievedAt": "2026-10-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "Data Center Knowledge (2012) reported a 6,500 sq ft facility with 1 MW of IT capacity, built by Global Crossing in 2003 and operated privately until it opened to public colocation in 2011–2012. That capacity figure is from 2012, so it is not recorded as a current value. The operator says it owns and operates two data centers in West Palm Beach, totalling over 8,300 sq ft; Inflect lists the second at 513 Hampton Road. Coordinates are an OSM address interpolation and approximate.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cloudburst-oklahoma-city-campus-ok",
     "name": "CloudBurst Oklahoma City Campus",
     "operator": "CloudBurst Data Centers",
@@ -25893,6 +26121,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cogent-boca-raton-fl",
+    "name": "Cogent Boca Raton Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 26.392805,
+      "lon": -80.109732,
+      "city": "Boca Raton",
+      "county": "Palm Beach",
+      "street": "5050 Conference Way North, Suite 100",
+      "postalCode": "33431",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-02",
+        "note": "Operator lists this as a Cogent data center offering colocation.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/en/cogent-boca-raton",
+        "label": "Cogent Boca Raton",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/10473",
+        "label": "Cogent Boca Raton facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The operator lists 10,011 sq ft with 42U cabinets and private cages, UPS and backup generator, and carrier-neutral colocation. Coordinates are PeeringDB's and approximate. This is a different site from Equinix MI3 on Conference Way South.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cogent-cheyenne-114-w-10th-wy",
     "name": "Cogent Cheyenne Data Center",
     "operator": "Cogent Communications",
@@ -25972,6 +26244,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cogent-hollywood-pembroke-park-fl",
+    "name": "Cogent Hollywood, FL Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 25.9954554,
+      "lon": -80.1795761,
+      "city": "Pembroke Park",
+      "county": "Broward",
+      "street": "3924 Pembroke Road",
+      "postalCode": "33021",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-02",
+        "note": "Operator lists the Hollywood, FL data center with colocation service.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/en/cogent-miami/289-mia-office/2481-hollywood-fl-data-center",
+        "label": "Hollywood, FL Data Center",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=json&limit=2&q=3924%20Pembroke%20Road%2C%20Pembroke%20Park%2C%20FL%2033021",
+        "label": "Geocode of 3924 Pembroke Road, Pembroke Park, FL 33021",
+        "publisher": "OpenStreetMap Nominatim",
+        "retrievedAt": "2026-10-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "Cogent groups this site with its Miami market as the 'Hollywood, FL' data center at 3924 Pembroke Rd, Pembroke Park. The operator page publishes no size or power. Coordinates are an OSM address interpolation and approximate.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cogent-oklahoma-city-ok",
     "name": "Cogent Oklahoma City Data Center",
     "operator": "Cogent Communications",
@@ -26048,6 +26364,47 @@
     ],
     "lastUpdated": "2026-09-21",
     "notes": "38,654 sq ft carrier-neutral colocation facility with 42U cabinets and private cages; UPS and generator backup; port sizes up to 100GE. MW not stated by the operator.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cogent-pearl-city-waihona-hi",
+    "name": "Cogent Data Center – Hawaii (96-1402 Waihona Place)",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 21.41146,
+      "lon": -157.97475,
+      "city": "Pearl City",
+      "county": "Honolulu",
+      "street": "96-1402 Waihona Pl",
+      "postalCode": "96782",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.8
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.sdxcentral.com/news/cogent-data-center-up-for-sale-in-hawaii/",
+        "label": "Cogent data center up for sale in Hawaii",
+        "publisher": "SDxCentral",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=96-1402%20Waihona%20Place%2C%20Pearl%20City&format=json&limit=2",
+        "label": "OSM Nominatim: 96-1402 Waihona Place, Pearl City (office=telecommunication)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "This is a former Sprint facility. Cogent got it from T-Mobile in 2022, when T-Mobile sold its wireline business to Cogent for $1; that is an entity-level deal, not a value for this site. The building is 10,320 sq ft on a 2.5-acre site with 800 kW of power. Carriers on site are Hawaiian Tel, Lumen and Spectrum, and it sits next to an AT&T facility. In March 2025 Cogent listed the building for sale as 'move-in-ready' at an $8M asking price, through Hawaii Commercial Real Estate. No sale, vacancy or closure was confirmed this session, so status is operational but confidence is reported. A completed sale or vacancy should prompt a re-check. capacityMw.operational is the stated 800 kW building power, not a measured IT load. Coordinates are the OSM building at this address tagged office=telecommunication.",
+    "landAcres": 2.5,
     "facilityType": "data_center"
   },
   {
@@ -26314,6 +26671,50 @@
     "lastUpdated": "2026-09-10",
     "notes": "Coinmint's SECOND New York site, distinct from the already-recorded Massena/former-Alcoa complex in St. Lawrence County: this one is a 10 MW operation \"located within the Skyway Plaza, a shopping center in southern Plattsburgh, on the western shores of Lake Champlain\" in Clinton County. Coordinates are as stated by the source (44.680538, -73.451475) but are marked approximate because they resolve to a shopping plaza, not a confirmed equipment footprint. STATUS CAVEAT: Global Energy Monitor lists the facility as operating as of its last update in July 2022; no more recent operating confirmation was found in this run, which is why confidence is 'reported' rather than 'confirmed'. Confirmed absences (2026-09-09): the fetched source states no start date, no utility or energy source, no water/cooling detail, no investment, no job count, and no subsidy agreement. Context not recorded as fields: the City of Plattsburgh's cheap municipal hydro allocation is what drew miners here, and the city imposed (and later let expire) a crypto-mining moratorium - neither is stated in the fetched source, so neither is recorded. HISTORICAL (2018), NOT applied as a structured jobs field because the source gives a range, not a single figure: per a Jan. 30, 2018 NYPA memorandum, Coinmint's North Country Data Center subsidiary expected to grow Plattsburgh staff from 6 to 10-15 permanent employees. Reporting for hand review only -- too old and too imprecise to safely commit to jobs.permanent.",
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "colo-solutions-downtown-orlando-fl",
+    "name": "Colo Solutions Downtown Orlando",
+    "operator": "Colo Solutions, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 28.534496,
+      "lon": -81.379455,
+      "city": "Orlando",
+      "county": "Orange",
+      "street": "100 W. Lucerne Circle, Suite 201",
+      "postalCode": "32801",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1997",
+        "note": "Operator states it has run the downtown Orlando colocation facility since 1997.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.colosolutions.com/",
+        "label": "Carrier-neutral colocation in downtown Orlando",
+        "publisher": "Colo Solutions",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/9416",
+        "label": "Colo Solutions Downtown Orlando facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "Carrier-neutral colocation. The operator cites two independent utility feeds, one of them on the Priority 1 hospital grid, and three diesel generators in an N+1 farm. Size and MW are not published. Coordinates are PeeringDB's and approximate.",
+    "facilityType": "data_center"
   },
   {
     "id": "colocation-america-sfdc1-san-francisco-ca",
@@ -43045,6 +43446,7 @@
       "lon": -157.9171752,
       "city": "Honolulu",
       "street": "3375 Koapaka Street",
+      "postalCode": "96819",
       "state": "HI",
       "precision": "approximate"
     },
@@ -43063,10 +43465,27 @@
         "publisher": "DRFortress",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://www.1547realty.com/data-center/honolulu-hi-drfortress/",
+        "label": "Honolulu HI | DRFortress",
+        "publisher": "fifteenfortyseven Critical Systems Realty (1547)",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/2526",
+        "label": "PeeringDB facility 2526: DRFortress HNL",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-02",
     "notes": "Hawaii's largest carrier-neutral data center per the operator's own site, described as a single ~65,000 sq ft location that has been expanded multiple times. Coordinates geocoded from the street address via OSM Nominatim (matched a specific building at this house number on Koapaka Street, Salt Lake/Airport Industrial Park area); not confirmed against a surveyed parcel, so precision is approximate. No MW, cabinet-count, or investment figures were stated on the pages fetched, so those fields are omitted rather than estimated.",
+    "energy": {
+      "notes": "1547's facility page describes the 65,000 sq ft Honolulu facility as having '4.2 Megawatts of back-up power with minimum N+1 configuration', with 120V-480V and -48VDC power options. This is backup generation capacity, not a stated IT or utility load, so it is not recorded as capacityMw."
+    },
     "facilityType": "data_center"
   },
   {
@@ -45161,6 +45580,114 @@
     "facilityType": "data_center"
   },
   {
+    "id": "edgeconnex-mia01-miami-fl",
+    "name": "EdgeConneX MIA01 — Miami",
+    "operator": "EdgeConneX",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 25.793016,
+      "lon": -80.38119,
+      "city": "Miami",
+      "county": "Miami-Dade",
+      "street": "2132 NW 114th Avenue",
+      "postalCode": "33172",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1.5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-02",
+        "note": "EdgeConneX's Miami data sheet and PeeringDB both list this as an operating Edge Data Center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/1923",
+        "label": "EdgeConneX Miami (EDCMIA01)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.edgeconnex.com/locations/americas/miami-fl/",
+        "label": "Miami, FL Data Center & Colocation (MIA01 & MIA02)",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.edgeconnex.com/wp-content/uploads/2025/07/Miami-Data-Sheet_V2.pdf",
+        "label": "Miami MIA01 & MIA02 data sheet",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The operator data sheet describes a 27,000 sq ft facility with 11,300 sq ft of raised floor and 1.5 MW N+1. The data sheet puts the two Miami sites at 7.5 MW combined, while the operator's web page says 9 MW. PeeringDB lists the Florida Internet Exchange (FL-IX) at this facility. Coordinates are PeeringDB's and approximate. This is a different site from the withdrawn EdgeConneX MIA03 (Beacon Station, Medley).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "edgeconnex-mia02-miami-gardens-fl",
+    "name": "EdgeConneX MIA02 — Miami Gardens",
+    "operator": "EdgeConneX",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 25.945524,
+      "lon": -80.191391,
+      "city": "Miami Gardens",
+      "county": "Miami-Dade",
+      "street": "475 NE 185th Street",
+      "postalCode": "33179",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 6
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-02",
+        "note": "EdgeConneX's Miami data sheet and PeeringDB both list this as an operating Edge Data Center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/5111",
+        "label": "EdgeConneX Miami (EDCMIA02)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.edgeconnex.com/locations/americas/miami-fl/",
+        "label": "Miami, FL Data Center & Colocation (MIA01 & MIA02)",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.edgeconnex.com/wp-content/uploads/2025/07/Miami-Data-Sheet_V2.pdf",
+        "label": "Miami MIA01 & MIA02 data sheet",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The operator data sheet describes a 65,518 sq ft facility with 34,800 sq ft of raised floor and 6 MW N+1. The data sheet gives the city as Miami Gardens; PeeringDB lists it as Miami. ENERGY STAR certified per the operator page. Coordinates are PeeringDB's and approximate.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "edgeconnex-mia03-beacon-station-medley-fl",
     "name": "EdgeConneX MIA03 (Beacon Station, withdrawn)",
     "operator": "EdgeConneX",
@@ -45490,6 +46017,61 @@
     ],
     "lastUpdated": "2026-09-10",
     "notes": "Operator facility ID SLI01, marketed under the \"New Orleans\" metro but physically sited in Slidell, St. Tammany Parish — \"Within 30 miles of Downtown New Orleans\" per the operator’s own page, which gives no street address. Street address and coordinates CONFIRMED 2026-09-10 against PeeringDB facility 11786 \"EdgeConneX New Orleans (EDCSLI01)\" at 2070 Gause Blvd E; these replace the earlier city-level Slidell geocode. Precision remains approximate — PeeringDB coordinates are address-geocoded, not a surveyed parcel.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "edgeconnex-tal01-tallahassee-fl",
+    "name": "EdgeConneX TAL01 — Tallahassee",
+    "operator": "EdgeConneX",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.471969,
+      "lon": -84.353232,
+      "city": "Tallahassee",
+      "county": "Leon",
+      "street": "1531 Commonwealth Business Drive, Units 404-408",
+      "postalCode": "32303",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 0.5,
+      "operational": 0.25
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2014",
+        "note": "The operator states the Tallahassee Edge Data Center was established in 2014.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/2074",
+        "label": "EdgeConneX Tallahassee (EDCTAL01)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.edgeconnex.com/locations/americas/tallahassee-fl/",
+        "label": "Tallahassee, FL and Colocation in FL",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.edgeconnex.com/wp-content/uploads/2024/09/Tallahassee-Data-Sheet.pdf",
+        "label": "Tallahassee TAL01 data sheet",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The operator describes an 11,810 sq ft facility with 3,778 sq ft of raised floor. Its data sheet gives 250 kW N+1, 'planned for 500kW'. The facility is SOC 2 Type 2, ISO 27001 and PCI DSS compliant. Coordinates are PeeringDB's and approximate.",
     "facilityType": "data_center"
   },
   {
@@ -62598,6 +63180,64 @@
     "facilityType": "data_center"
   },
   {
+    "id": "google-uh-west-oahu-cable-landing-station-kapolei-hi",
+    "name": "Google Cable Landing Station at UH West Oʻahu",
+    "operator": "Google",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.35761,
+      "lon": -158.05734,
+      "city": "Kapolei",
+      "county": "Honolulu",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07",
+        "note": "UH announced a Google cable landing station on about four acres of the UH West Oʻahu campus under a long-term lease the Board of Regents approved in 2024. Earliest estimated completion: 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.hawaii.edu/news/2025/07/09/uh-west-oahu-google-global-fiber-system/",
+        "label": "UH West Oʻahu campus proposed gateway for Google's $1B global fiber system",
+        "publisher": "University of Hawaiʻi News",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://hnldoc.ehawaii.gov/hnldoc/document-download?id=28669",
+        "label": "Committee Report 212(26), Resolution 26-165: SMA Major Permit for the Oʻahu Subsea Cable Telecommunications Project",
+        "publisher": "Honolulu City Council, Committee on Zoning & Planning",
+        "retrievedAt": "2026-10-02",
+        "kind": "permit"
+      },
+      {
+        "url": "https://dlnr.hawaii.gov/wp-content/uploads/2026/04/D-7.pdf",
+        "label": "BLNR submittal D-7: Grant of easement to Humuhumu Services, LLC and Starfish Infrastructure, Inc. for submarine communication cables off Kapolei",
+        "publisher": "State of Hawaii Department of Land and Natural Resources",
+        "retrievedAt": "2026-10-02",
+        "kind": "permit"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=University%20of%20Hawaii%20West%20Oahu&format=json&limit=2",
+        "label": "OSM Nominatim: University of Hawaii-West Oahu",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "Google is to design, build, operate and maintain a cable landing station on about four acres of the UH West Oʻahu campus under a long-term lease. It will serve three new trans-Pacific subsea cables, part of a $1B system; that is a program-level figure, not this site's investment. The cables land at Barbers Point Beach Park and run about 5.3 miles underground in public roads to the campus. Permits for the project: DLNR FONSI (September 2025), Army Corps Nationwide Permit 57 (October 2025), BLNR CDUA and easement with an immediate construction right-of-entry (April 2026), and Honolulu SMA Major Permit (Resolution 26-165, Committee Report 212(26), adopted 2026-08-12). The permit applicants are Starfish Infrastructure Inc. and Humuhumu Services, LLC; their corporate tie to Google is not stated in the fetched documents. The applicant told the Council the building will occupy about 2 acres of the 4-acre site, and that it is 'used for the transport of subsea cables, and is not a data center containing servers that process and store vast amounts of digital data.' It is tracked as a cable landing station, like other CLS records. Status is held at proposed because no source confirmed construction has started at the campus building; the permits mainly cover the beach and submerged-land segments. This is a different site from the Hawaiki CLS expansion at Kahe (hawaiki-cable-kapolei-hi). Coordinates are the OSM campus pin; where the station sits on campus is not public.",
+    "landAcres": 4,
+    "facilityType": "data_center"
+  },
+  {
     "id": "google-west-memphis-ar",
     "name": "Google West Memphis Data Center Campus",
     "operator": "Google",
@@ -65094,6 +65734,8 @@
       "lat": 21.304547,
       "lon": -157.855676,
       "city": "Honolulu",
+      "street": "2339 Kamehameha Hwy",
+      "postalCode": "96819",
       "state": "HI",
       "precision": "approximate"
     },
@@ -65105,9 +65747,23 @@
         "publisher": "Hawaiian Telcom",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/6505",
+        "label": "PeeringDB facility 6505: Endeavor Data Center",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001487986/000110465913068218/a13-20242_1ex99d1.htm",
+        "label": "Hawaiian Telcom to Acquire SystemMetrics Corporation (Form 8-K Exhibit 99.1)",
+        "publisher": "Hawaiian Telcom Holdco, Inc. via SEC EDGAR",
+        "retrievedAt": "2026-10-02",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-02",
     "notes": "Hawaiian Telcom names this as its newest, most advanced Oahu colocation facility: elevated second-floor hosting outside flood zones, N+2 HVAC to a Class 7 clean-room standard, N+1 UPS and generator plant, 24/7 guards and biometric access, per the operator's own site. That page does not publish a street address. Third-party directories consistently cite 2339 Kamehameha Highway, Honolulu, but repeated attempts to fetch a page confirming that address directly (datacentermap.com) returned HTTP 429 this session, so it is not used here. Pin is a Honolulu city-level approximation (Nominatim), not the specific parcel — do not read the absence of a street field as meaning one wasn't sought.",
     "facilityType": "data_center"
   },
@@ -65174,10 +65830,20 @@
         "publisher": "Bowers + Kubota",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://files.hawaii.gov/dbedt/erp/Doc_Library/2025-07-08-OA-FEA-Hawaiki-Submarine-Cable-Landing-Expansion-Project.pdf",
+        "label": "Final Environmental Assessment: Hawaiki Cable Landing Expansion Project",
+        "publisher": "Hawaiki Submarine Cable USA LLC / State of Hawaii Office of Planning and Sustainable Development (Environmental Review Program)",
+        "retrievedAt": "2026-10-02",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-02",
     "notes": "Landing station for the Hawaiki trans-Pacific submarine cable (completed 2018), providing 43 terabits of carrier-neutral capacity via six fiber pairs to the US west coast, Australia, New Zealand and American Samoa. DRFortress has operated landing and colocation activities here under a long-term partnership with Hawaiki dating to 2016; 1547 Critical Systems Realty (which acquired DRFortress in 2025) lists a Kapolei facility (\"HAII1\", branded AlohaNAP-adjacent, ~10,200 sq ft expandable to 60,200 sq ft) that this record treats as the same site rather than a separate parcel, since both describe DRFortress/1547 colocation activity at the one cable landing station Hawaiki owns in Kapolei — flag for a human split if that assumption is wrong. In early 2026 the Honolulu City Council granted a Special Management Area Major Permit for an expansion project at this site to add landing capacity for Google's Taihei and Tabua cables plus BW Digital's own Hawaiki Nui cable. Coordinates are a Census TIGER-line geocode of the street address, not a confirmed parcel survey.",
+    "energy": {
+      "notes": "Hawaiki's 2025 Final EA describes the existing CLS (permitted mainly in 2017) as a building of about 3,850 sq ft with two diesel generators in a sound-dampened generator room. The planned expansion adds only landing infrastructure (up to three bores, one beach manhole and conduits) on the adjacent 22-acre parcel. It requires no expansion of the CLS building, no new above-ground infrastructure and no added staff."
+    },
     "facilityType": "data_center"
   },
   {
@@ -67997,6 +68663,60 @@
       "technology": "natural_gas",
       "notes": "Behind-the-meter combined-cycle gas turbines with battery storage and backup from an existing grid interconnection. Manufacturing slots secured with turbine delivery expected in 2028; expected operational Q1 2029. IEP's own page describes the plant as approximately 910 MW. The plant is proposed to serve a co-located Project Hummingbird compute campus, which Compute Atlas does not track as a separate facility record; no powered-facility link is recorded rather than pointing at an id that does not exist."
     }
+  },
+  {
+    "id": "im-critical-miami-fl",
+    "name": "iM Critical Miami Data Center",
+    "operator": "iM Critical (iM Data Centers)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 25.848356,
+      "lon": -80.194926,
+      "city": "Miami",
+      "county": "Miami-Dade",
+      "street": "100 NE 80th Terrace",
+      "postalCode": "33138",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-06-09",
+        "note": "Operator announced the launch of its Miami data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://imcritical.com/about/newsroom/introducing-im-criticals-miami-data-center-miamis-next-gen-hub-for-mission-critical-colocation/",
+        "label": "Introducing iM Critical's Miami Data Center: Miami's Next-Gen Hub for Mission-Critical Colocation",
+        "publisher": "iM Critical",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/149",
+        "label": "iM Critical Miami (facility record)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/cooling/article/55247746/accelsius-and-im-data-centers-demo-next-gen-cooling-and-sustainability-at-miami-data-center",
+        "label": "Accelsius and iM Data Centers Demo Next-Gen Cooling and Sustainability at Miami Data Center",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The 2022 launch release describes a 100,000 sq ft purpose-built building with over 60,000 sq ft for colocation, 5 MW of power and HPC environments up to 75 kW/rack. Data Center Frontier (2025-01-08) describes iM Data Centers' 100,000 sq ft Miami facility as launching with 10 MW of critical capacity, with potential for up to 40 MW more, and an Accelsius two-phase direct-to-chip cooling demonstration. This is apparently the same building under the company's later name. The operator-stated 5 MW is kept as the operational value. Address and coordinates are from PeeringDB; coordinates are approximate.",
+    "facilityType": "data_center"
   },
   {
     "id": "immersionbtc-walnut-ridge-ar",
@@ -74987,6 +75707,43 @@
     ],
     "lastUpdated": "2026-09-24",
     "notes": "Carrier-network colocation site inherited from the CenturyLink / Level 3 merger. A sibling 'Lumen Greensboro 2' is listed in the same market table but its street address was not retrieved this session, so it is not emitted. No MW published.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-honolulu-paiea-hi",
+    "name": "Lumen Honolulu (550 Paiea Street)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 21.33556,
+      "lon": -157.91629,
+      "city": "Honolulu",
+      "county": "Honolulu",
+      "street": "550 Paiea St",
+      "postalCode": "96819",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://assets.lumen.com/is/content/Lumen/colocation-overview-data-sheet?Creativeid=1251e94a-b729-42ac-877d-abf98cc7cef5",
+        "label": "Lumen Data Center Overview (colocation data sheet)",
+        "publisher": "Lumen Technologies",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://cloudandcolocation.com/datacenters/tw-telecom-hawaii-data-center/",
+        "label": "tw telecom – Hawaii Data Center",
+        "publisher": "Cloud and Colocation",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "Lumen's colocation data sheet lists Honolulu, HI among its data center locations but gives no address. A directory entry for the legacy 'tw telecom – Hawaii Data Center' gives 550 Paiea St, Honolulu 96819. It says the building was constructed in 1997, has 861 sq ft of raised floor for colocation, and has redundant UPS, standby diesel generators and AC/DC power. Treating the tw telecom site as Lumen's current Honolulu location relies on tw telecom having become part of Level 3 and then Lumen. That chain is widely reported but was not confirmed from a fetched page, hence confidence 'reported'. 550 Paiea St is a multi-tenant commercial building near the airport. It is about 150 m from DRFortress (3375 Koapaka St) but at a different address with a different operator. Coordinates are the OSM building at 550 Paiea Street.",
     "facilityType": "data_center"
   },
   {
@@ -92590,11 +93347,38 @@
         "publisher": "Tampa Bay Times",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/desantis-officials-gave-1-5m-133000999.html",
+        "label": "DeSantis officials gave $1.5M to data center campus. They say they were tricked",
+        "publisher": "Tampa Bay Times (via Yahoo News)",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wptv.com/news/treasure-coast/region-okeechobee-county/vote-by-okeechobee-county-commissioners-kills-controversial-okee-one-data-center-project",
+        "label": "Vote by Okeechobee County commissioners kills controversial Okee-One data center project",
+        "publisher": "WPTV",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-02",
     "notes": "Indian River State College's 'Okee-One' project on the former Florida School for Boys site off US 441, a 205-acre site reported by WLRN as a 9-to-10-megawatt facility (figure given as a range, not a single confirmed number, so no capacityMw field is set here). Effectively shut down after Okeechobee County commissioners voted April 23, 2026 to remove the 'Special Technology Opportunity Centers' designation from the county's comprehensive economic growth plan, following a petition against the project that gathered more than 3,000 signatures. The state had previously granted IRSC $1.5M from the Rural Infrastructure Fund for the project; DeSantis administration officials later told Tampa Bay Times they felt misled about its scale and AI-data-center purpose.",
+    "subsidies": [
+      {
+        "program": "Rural Infrastructure Fund",
+        "amountUsd": 1500000,
+        "jurisdiction": "State of Florida (Department of Commerce)",
+        "sourceIndex": 2
+      }
+    ],
     "landAcres": 205,
+    "community": {
+      "status": "opposed",
+      "notes": "Residents raised noise and well-water contamination concerns. Okeechobee County commissioners then dropped 'Special Technology Opportunity Centers' from the long-term growth plan, which effectively killed the project. The state's commerce department withdrew support, saying the college's plans were 'based on falsehoods'.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -107857,6 +108641,9 @@
       "state": "FL",
       "precision": "exact"
     },
+    "capacityMw": {
+      "planned": 100
+    },
     "statusHistory": [
       {
         "status": "proposed",
@@ -107919,10 +108706,25 @@
         "label": "Lakeland, Florida just paused a 600,000-square-foot, 100-megawatt data center on a 4-3 commission vote",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://baynews9.com/fl/tampa/news/2026/07/07/data-center-developer-addresses-public-as-lakeland-considers-moratorium",
+        "label": "Data center developer addresses public as Lakeland considers moratorium",
+        "publisher": "Spectrum Bay News 9",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-02",
     "notes": "600,000 sq ft across 3 buildings on 60.5 acres (4 parcels, near 923 Wilkinson Rd). Zoning may prohibit the project — data centers are not in Lakeland's Land Development Code — and part of the site is unincorporated Polk County, requiring annexation.",
+    "energy": {
+      "source": "grid",
+      "utility": "Lakeland Electric",
+      "notes": "Bay News 9 (2026-07-06) reported that Project Swan would need about 100 MW, contingent on Lakeland Electric being able to supply it. The mayor said the utility's largest current customer is 18 MW."
+    },
+    "water": {
+      "notes": "The developer said water use would be limited to everyday operational needs, not server cooling. The cooling method was not identified."
+    },
     "landAcres": 60.5,
     "community": {
       "status": "opposed",
@@ -110616,6 +111418,57 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "sd-data-center-melbourne-fl",
+    "name": "SD Data Center — Melbourne",
+    "operator": "SD Data Center (Gogo Inc.; formerly Satcom Direct)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 28.259162,
+      "lon": -80.694858,
+      "city": "Melbourne",
+      "county": "Brevard",
+      "street": "8635 Holiday Springs Road",
+      "postalCode": "32940",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2010",
+        "note": "Operator states the facility has been operational since 2010.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sddatacenter.com/",
+        "label": "SD Data Center",
+        "publisher": "SD Data Center",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://bizwest.com/2025/02/25/gogo-updates-branding-following-satcom-direct-acquisition/",
+        "label": "Gogo updates branding following Satcom Direct acquisition",
+        "publisher": "BizWest",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/2126",
+        "label": "SD Data Center facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The operator describes a 25,000 sq ft, Tier 3, climate-controlled facility. Gogo completed its acquisition of Satcom Direct in December 2024. Gogo's CEO said the SD Data Center keeps its name and is 'located at the Melbourne facility, the former headquarters for Satcom Direct' (BizWest, 2025-02-25). Street address and coordinates are PeeringDB's and approximate.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "security-land-woodlawn-baltimore-county-md",
     "name": "1500 Woodlawn Drive Data Center Campus",
     "operator": "Security Land and Development LP",
@@ -111967,10 +112820,78 @@
     "facilityType": "data_center"
   },
   {
+    "id": "servpac-mtp-building-1-mililani-hi",
+    "name": "Servpac MTP Data Center (Building 1)",
+    "operator": "Servpac",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.47999,
+      "lon": -158.0202,
+      "city": "Mililani",
+      "county": "Honolulu",
+      "street": "200 Kahelu Ave",
+      "postalCode": "96789",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://servpac.com/tier_certification/",
+        "label": "SERVPAC Cloud Data Center Hawaii's First to Receive Highest Level of Industry Certification, Awarded Uptime Institute Tier IV Certification",
+        "publisher": "Servpac",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://servpac.com/mtp-groundbreaking/",
+        "label": "Hawaii Tier IV Data Center: MTP Building 2 Groundbreaking",
+        "publisher": "Servpac",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/17093",
+        "label": "PeeringDB facility 17093: Servpac MTP DC",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/servpac-mtp-mililani-tech-park",
+        "label": "Servpac MTP Mililani Tech Park Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.insynergyeng.com/blog/2025/3/10/servpac-mililani-tech-park-data-center",
+        "label": "Servpac Mililani Tech Park Data Center",
+        "publisher": "InSynergy Engineering, Inc.",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://servpac.com/data-center-colocation/",
+        "label": "MTP Data Center | Data Center Colocation",
+        "publisher": "Servpac",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "Servpac's original MTP Data Center building in Mililani Technology Park: 30,000 sq ft, 850 ft above sea level and 10 miles inland. Servpac calls it Hawaii's only Uptime Institute Tier IV certified constructed facility, with 2N power and cooling and '96 hours of actual installed power-generation capability'. This record covers only the existing, operating Building 1. It is distinct from the tracked servpac-mtp2-mililani-hi, a separate ~15,500 sq ft Building 2 on an additional 5 acres that broke ground 2026-01-22. Opening date conflicts across sources: Baxtel says it was announced January 2020 and opened August 2020, while engineer InSynergy describes a 5,000 sq ft data center 'completed in 2022', with a 2024 expansion to 500 kW of supported IT load. The InSynergy figure may describe the data-hall fit-out rather than the building, so no statusHistory date is asserted. IT capacity also conflicts: InSynergy gives 500 kW, while the Building 2 record cites DCD's ~1 MW for Building 1. capacityMw is therefore omitted. InSynergy lists 288 tons of variable-refrigerant-flow (VRF) air conditioning. coolingType is left unset because VRF can be air- or water-source and no source says which. Coordinates are the OSM/Census address point for 200 Kahelu Ave; PeeringDB's pin is about 140 m away. Not a parcel survey.",
+    "energy": {
+      "notes": "Servpac's Tier IV release cites '96 hours of actual installed power-generation capability' (on-site backup) and multiple independent power distribution paths. The serving utility was not named in any fetched source."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "servpac-mtp2-mililani-hi",
     "name": "Servpac MTP Building 2",
     "operator": "Servpac",
-    "status": "proposed",
+    "status": "under_construction",
     "confidence": "confirmed",
     "location": {
       "lat": 21.448,
@@ -111987,6 +112908,12 @@
         "date": "2026-01",
         "note": "Servpac announced MTP Building 2 expansion at Mililani Technology Park; $13M investment planned to approximately 10x existing 1MW IT capacity of Building 1; as of February 2026 reporting, project was in design phase with construction details not yet disclosed",
         "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-10-02",
+        "note": "Servpac held the groundbreaking ceremony for MTP Data Center Building 2 on 2026-01-22. Its own release, the PR Newswire distribution (2026-02-24) and Building Industry Hawaii (March 2026) all report it. Building 2 is a 15,500+ sq ft, $13M building on an additional 5 acres of company-owned land, with Ralph S. Inouye Co. as general contractor. Completion was targeted for Q2 2026, but no completion or opening announcement was found as of 2026-10-02, so under_construction is the current sourced state.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -111996,9 +112923,44 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/servpacs-mtp-data-center-celebrates-groundbreaking-for-building-2-302694909.html",
+        "label": "Servpac's MTP Data Center Celebrates Groundbreaking for Building 2",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://servpac.com/mtp-groundbreaking/",
+        "label": "Hawaii Tier IV Data Center: MTP Building 2 Groundbreaking",
+        "publisher": "Servpac",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://servpac.com/mtp-groundbreaking/",
+        "label": "Hawaii Tier IV Data Center: MTP Building 2 Groundbreaking",
+        "publisher": "Servpac",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/servpacs-mtp-data-center-celebrates-groundbreaking-for-building-2-302694909.html",
+        "label": "Servpac's MTP Data Center Celebrates Groundbreaking for Building 2",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://buildingindustryhawaii.com/2026/03/servpac-inc-breaks-ground-on-mtp-data-centers-building-2/",
+        "label": "Servpac Inc. breaks ground on MTP Data Center's Building 2",
+        "publisher": "Building Industry Hawaii",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-02",
     "notes": "Located in Mililani Technology Park, Central O'ahu, 10 miles inland and 850 feet above sea level, outside major flood, tsunami, and hurricane zones. Building 2 will approximately 10x the existing 1MW IT capacity of MTP Building 1 (Hawaii's only Uptime Institute Tier IV certified facility). Designed to withstand Category 5 hurricane-force winds. Primary use is enterprise colocation; no AI-specific tenant announced. DCD (February 2026) reports project is in design phase; 'broke ground' claim in original record is unsupported by the cited source. Hawaii's structural barriers (highest US electricity costs, limited grid capacity) make large-scale hyperscale AI builds unlikely; Servpac MTP2 is the only Hawaii project of note found.",
     "energy": {
       "source": "mixed",
@@ -112010,8 +112972,68 @@
       "notes": "Closed-loop cooling systems eliminate freshwater consumption entirely."
     },
     "investmentUsd": 13000000,
+    "landAcres": 5,
+    "jobs": {
+      "construction": 150,
+      "permanent": 15,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "servpac-puahale-honolulu-hi",
+    "name": "Servpac Puahale Data Center",
+    "operator": "Servpac",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.33204,
+      "lon": -157.87777,
+      "city": "Honolulu",
+      "county": "Honolulu",
+      "street": "1931 N King St",
+      "postalCode": "96819",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/17094",
+        "label": "PeeringDB facility 17094: Servpac Puahale DC",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/servpac-puahale",
+        "label": "Servpac Puahale Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://servpac.com/data-center-press-release/",
+        "label": "Servpac Announces New Data Center and Disaster Recovery Office in Hawaii",
+        "publisher": "Servpac",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://servpac.com/data-center-colocation/",
+        "label": "MTP Data Center | Data Center Colocation",
+        "publisher": "Servpac",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "Servpac's Honolulu data center at 1931 N King St in Kalihi Kai. Servpac names it the 'Puahale Data Center' and offers it as the second site in dual-site colocation with its Mililani MTP Data Center; the Mililani site is in Mililani Technology Park, about 17 km away, and is a different site. Baxtel reports Hawaiian Electric (HECO) as the utility, says the site is about 1.5 miles from the ocean, and says Servpac built its own data center in 2014 to provide cloud services. That year is a directory statement, so it is not used as a status date. No square footage, MW or investment figure was found. Coordinates are the OSM address point for 1931 North King Street; PeeringDB's pin is about 50 m away.",
+    "energy": {
+      "utility": "Hawaiian Electric Company (HECO)"
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "shady-spring-data-center-campus-raleigh-county-wv",
@@ -112459,7 +113481,7 @@
     "id": "silver-fox-606-indiantown-fl",
     "name": "Silver Fox 606 AI Data Center Campus (withdrawn)",
     "operator": "Silver Fox 606 LLC",
-    "status": "cancelled",
+    "status": "proposed",
     "confidence": "reported",
     "location": {
       "lat": 27.0400025,
@@ -112470,12 +113492,21 @@
       "state": "FL",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 1000
+    },
     "statusHistory": [
       {
         "status": "cancelled",
         "date": "2026",
         "note": "Silver Fox 606 withdrew its application for a 2-million-sq-ft data center at 13820 Silver Fox Road after community pushback.",
         "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-10-02",
+        "note": "Project Silver Fox, withdrawn in April 2026, is back before the public with a revised plan from Panattoni Development and Ferreira Construction. The changes are a 'waterless' design, a reduced footprint and landscape screening, and the developers held an open house on 2026-09-21. The Indiantown Village Council will decide on the site plan; the developers say the project already qualifies under existing industrial zoning.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -112485,10 +113516,53 @@
         "publisher": "WPTV News Channel 5",
         "retrievedAt": "2026-09-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/florida-data-center-developers-host-012531808.html",
+        "label": "Florida data center developers host open house to praise benefits",
+        "publisher": "TCPalm (via Yahoo News)",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wflx.com/2026/09/22/indiantown-project-silver-fox-data-center-plan-returns-with-changes-resident-concerns-remain/",
+        "label": "Indiantown 'Project Silver Fox' data center plan returns with changes, resident concerns remain",
+        "publisher": "WFLX",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wflx.com/2026/09/22/indiantown-project-silver-fox-data-center-plan-returns-with-changes-resident-concerns-remain/",
+        "label": "Indiantown 'Project Silver Fox' data center plan returns with changes, resident concerns remain",
+        "publisher": "WFLX",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/florida-data-center-developers-host-012531808.html",
+        "label": "Florida data center developers host open house to praise benefits",
+        "publisher": "TCPalm (via Yahoo News)",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-02",
     "notes": "A roughly 2-million-sq-ft AI data center campus proposed in the Village of Indiantown and withdrawn by the applicant. Separate from FPL's Tesoro Groves PUD on Kanner Highway, which FPL states is \"a planning framework for future development, not a specific project\" and is therefore not tracked here as a facility.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Panattoni's Adam Kramer described cooling through 'a closed-loop water system where a sealed piping network of water or coolant circulates continuously ... without being exposed to outside air or constantly replenished' (TCPalm). WFLX reports the revised plan marketed as a 'waterless data center' that would not use Indiantown water. Under the schema tie-breaker the recirculating circuit makes this closed_loop."
+    },
+    "landAcres": 606,
+    "jobs": {
+      "construction": 3000,
+      "permanent": 300,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "contested",
+      "notes": "At the 2026-09-21 open house, residents raised concerns about traffic, noise, water and light. The Village Council is expected to take the first of two votes on a one-year data-center moratorium in October 2026.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -112921,6 +113995,50 @@
       "utility": "Silicon Valley Power",
       "notes": "Corgan: N+2 generator backup with 30 generators and 60 rooftop chillers."
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "skylink-data-centers-naples-fl",
+    "name": "SkyLink Data Centers — Naples",
+    "operator": "SkyLink Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 26.167743,
+      "lon": -81.799835,
+      "city": "Naples",
+      "county": "Collier",
+      "street": "801 Orchid Drive",
+      "postalCode": "34102",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-02",
+        "note": "Operator markets colocation at this facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://skylinkdc.com/colocation/",
+        "label": "Colocation Services & Infrastructure - SkyLink Data Centers",
+        "publisher": "SkyLink Data Centers",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/13975",
+        "label": "SKYLINK DATA CENTERS facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The operator describes it as 'the only true Cat 5 hurricane hardened, PCI and HIPAA Compliant data center facility south of Tampa and West of Miami', running fully redundant N+1. Size and power are not stated on the operator page. Coordinates are PeeringDB's and approximate.",
     "facilityType": "data_center"
   },
   {
@@ -127319,6 +128437,126 @@
     }
   },
   {
+    "id": "uh-cancer-center-medai-core-honolulu-hi",
+    "name": "UH Cancer Center Data Center – Medical AI Core (PAC-AID)",
+    "operator": "University of Hawaiʻi Cancer Center",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.29525,
+      "lon": -157.86368,
+      "city": "Honolulu",
+      "county": "Honolulu",
+      "street": "701 Ilalo St",
+      "postalCode": "96813",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-06",
+        "note": "Reported in June 2026: renovation of the Cancer Center's existing ground-floor data center into the Medical AI Core is already under way, targeting completion by the end of 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.hawaii.edu/news/article.php?aId=14654",
+        "label": "University of Hawaiʻi researchers awarded $12M grant to advance AI, data science in medicine",
+        "publisher": "University of Hawaiʻi News",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.govtech.com/education/higher-ed/university-of-hawaii-to-build-data-center-for-healthcare",
+        "label": "University of Hawaii to Build Data Center for Healthcare",
+        "publisher": "Government Technology (via Honolulu Star-Advertiser)",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.hawaiinewsnow.com/2026/06/22/uh-receives-12-million-grant-new-ai-medical-research-center/",
+        "label": "UH receives $12 million grant for new AI medical research center",
+        "publisher": "Hawaii News Now",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.uhcancercenter.org/about-us",
+        "label": "About the University of Hawaii Cancer Center",
+        "publisher": "University of Hawaiʻi Cancer Center",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "UH is renovating the Cancer Center's existing garage-sized, air-conditioned, ground-floor data center room in Kakaʻako into the Medical AI Core (MedAI Core), which will provide high-performance computing for the new Pacific Center for Artificial Intelligence and Data Science in Medicine (PAC-AID). PAC-AID is funded by a $12M, five-year NIH COBRE grant, awarded 2026-06-04 and running through February 2031. About $300,000 of that money is going to renovate and equip the room. The Star-Advertiser (via GovTech) calls it a first-of-its-kind AI data center for Hawaiʻi. This is a single room in an existing building, not a campus. No MW, GPU count or cooling method was published. investmentUsd covers only the ~$300K room renovation, not the $12M research grant. Coordinates are the OSM feature for the UH Cancer Center building at 701 Ilalo St, the address the Cancer Center publishes.",
+    "investmentUsd": 300000,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "uh-information-technology-center-honolulu-hi",
+    "name": "University of Hawaiʻi Information Technology Center Data Center",
+    "operator": "University of Hawaiʻi (Information Technology Services)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 21.29868,
+      "lon": -157.81681,
+      "city": "Honolulu",
+      "county": "Honolulu",
+      "street": "2520 Correa Rd",
+      "postalCode": "96822",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2014-01",
+        "note": "IT Center building completed in 2013; full staff move-in began January 27, 2014.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.hawaii.edu/its/leed-about-the-building/",
+        "label": "About the Building (Information Technology Center)",
+        "publisher": "University of Hawaiʻi Information Technology Services",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.hawaii.edu/its/servers-data-center-storage-services/colocation/",
+        "label": "Colocation (ITC Data Center)",
+        "publisher": "University of Hawaiʻi Information Technology Services",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "http://www.hawaii.edu/news/2016/03/15/uh-information-technology-center-to-house-portion-of-states-it-systems/",
+        "label": "UH Information Technology Center to house portion of state's IT systems",
+        "publisher": "University of Hawaiʻi News",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://datascience.hawaii.edu/university-of-hawaii-celebrates-supercomputer-milestone/",
+        "label": "University of Hawaii celebrates supercomputer milestone",
+        "publisher": "Hawaiʻi Data Science Institute",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "An 8,000 sq ft data center with Tier II redundancy, backup batteries and generator, inside the six-story, 74,000 sq ft, LEED Gold IT Center on the UH Mānoa campus. The building is hardened against Category III hurricane winds. UH offers colocation there at $3,700 per cabinet per year. Under a 2016 agreement, it also houses part of the State of Hawaiʻi's executive-branch IT systems moved from the aging Kalanimoku Building data center, with ETS reimbursing UH's costs. It hosts UH's Mana HPC cluster, which as of 2022 had 8,964 cores and 120 GPUs that the source calls critical for machine-learning and AI research; about $4.5M had been invested in the cluster since 2014. That cluster figure is not a facility investment, so investmentUsd is omitted. aiClassification is mixed_use: AI/ML work on the GPU cluster is one named use alongside enterprise university and state systems. No MW figure was published. Coordinates are the Census geocode of 2520 Correa Rd.",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "uh-mhpcc-kihei-hi",
     "name": "Maui High Performance Computing Center",
     "operator": "University of Hawaiʻi (for Air Force Research Laboratory)",
@@ -127589,6 +128827,63 @@
       }
     ],
     "investmentUsd": 96000000,
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
+    "id": "university-of-florida-data-center-gainesville-fl",
+    "name": "University of Florida Data Center (East Campus, HiPerGator)",
+    "operator": "University of Florida",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 29.672262,
+      "lon": -82.3013842,
+      "city": "Gainesville",
+      "county": "Alachua",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025",
+        "note": "HiPerGator 4 (NVIDIA DGX B200 SuperPOD, 63 DGX B200 nodes) entered early access in June 2025, with full production planned for fall 2025.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alligator.org/article/2025/04/hipergator-fourth-generation-in-motion",
+        "label": "Fourth generation of UF supercomputer, HiPerGator, approved with sustainability in mind",
+        "publisher": "The Independent Florida Alligator",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://news.ufl.edu/2025/05/the-fourth-generation-model-of-ufs-hipergator/",
+        "label": "The fourth-gen model of UF's HiPerGator, available to users in June, is built to reshape AI education and research",
+        "publisher": "University of Florida News",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.whiting-turner.com/projects/mission-critical/university-of-florida-east-campus-data-center/",
+        "label": "University of Florida East Campus Data Center",
+        "publisher": "Whiting-Turner",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/11768589",
+        "label": "University of Florida East Campus (OSM relation)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The Alligator reports that HiPerGator is housed in the UF Data Center on East Campus. Whiting-Turner describes 10,000 sq ft of computing space, split between a Tier 3 data center and 5,000 sq ft of data center research space, plus 4,400 sq ft of standby administrative space. The building has 2.5 MW of generator capacity and an on-site central utility plant. UF's Board of Trustees approved a $24M HiPerGator upgrade in December 2024; the system costs about $6M a year to operate. That $24M is a hardware upgrade, not facility investment. Classed as mixed_use because the building also hosts general enterprise and research computing alongside the NVIDIA AI supercomputer. The building's exact street address is not confirmed, so coordinates are the East Campus centroid and approximate.",
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
   },
@@ -129966,6 +131261,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "volico-fll1-pompano-beach-fl",
+    "name": "Volico FLL1 (500 Green Road)",
+    "operator": "Volico (Biznesshosting, Inc.)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 26.289687,
+      "lon": -80.130014,
+      "city": "Pompano Beach",
+      "county": "Broward",
+      "street": "500 Green Road",
+      "postalCode": "33064",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-02",
+        "note": "Operator markets FLL1 as an operating colocation facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.volico.com/data-centers/deerfield-data-center/",
+        "label": "Fort Lauderdale Data Center - FLL1",
+        "publisher": "Volico",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/1080",
+        "label": "500 Green (AKA VOLICO 2.0) facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/500-green-road-pompano-beach/volico/datacenter/volico-broward-data-center",
+        "label": "Volico FLL1",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-02",
+    "notes": "The operator lists 20,000 sq ft of current capacity (140,000 sq ft future), 2 MW of power with 48 MW of expansion capacity, and 600 tons of Liebert 2N CRAC/HVAC. The 48 MW is marketed expansion headroom, not an announced build, so it is not recorded as planned capacity. The city is given as Pompano Beach by the operator and as Deerfield/Deerfield Beach by PeeringDB and Inflect. Coordinates are PeeringDB's and approximate.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "volition-spanish-fork-ut",
     "name": "Volition Spanish Fork Data Center",
     "operator": "Volition Industries",
@@ -131992,11 +133341,23 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-10",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/florida-data-center-proposal-draws-181305771.html",
+        "label": "Florida data center developers table request amid protest, for now",
+        "publisher": "TCPalm (via Yahoo News)",
+        "retrievedAt": "2026-10-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-02",
     "notes": "Willow Lakes LLC filed a rezoning application in June 2026 to convert 174 of a 203-acre parcel at West Midway Road and I-95 from its current designation to light industrial for a data center (the remaining 26 acres would go general commercial for retail/hotel/gas station uses). The application states intent to bring in an unnamed partner company to develop and operate the facility; it cites existing FPL transmission lines crossing the site and an existing man-made lake floated as a potential closed-loop cooling source. Scheduled before the St. Lucie Planning and Zoning Board on September 17, 2026 as of the article date. The parcel was previously entitled for the since-abandoned Koa Bay Surf Park. No capacity, investment, or job figures were stated in the source. Coordinates corrected 2026-09-10: an earlier draft shared a pin with sentinel-grove-technology-park-fort-pierce-fl that sat about 10 km from this parcel. This pin is the West Midway Road / I-95 crossing the source names, derived from OpenStreetMap geometry (Midway Road runs east-west at latitude 27.3742 and I-95 crosses it at longitude -80.4104); precision is 'approximate' because no parcel or house number was published. Distinct from atlas-compute-ai-data-center-campus-fort-pierce-fl, which lies roughly 8 km northeast: Atlas Compute announced land and utilities already secured in November 2025, whereas this application states the applicant has yet to name or agree terms with a partner company as of August 2026, and this parcel was previously entitled for the abandoned Koa Bay Surf Park rather than sited in Midway Industrial Park.",
     "landAcres": 174,
+    "community": {
+      "status": "opposed",
+      "notes": "Dozens of residents picketed outside City Hall and packed the 2026-09-17 Fort Pierce Planning Board meeting on 'Project Neptune'. The board declined to vote and Willow Lakes LLC withdrew its rezoning application. Its attorney indicated it would return once the City Commission decides data-center policy, so the status is not changed here.",
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {

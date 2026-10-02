@@ -102,7 +102,7 @@ record.
 
 ## Confound log
 
-**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`), 2026-09-30 (Bartow County data correction; CT/CO wave, #372) and 2026-10-01 (footer portfolio link; DE/DC wave, #374).** Those are the dates this section was written, not the
+**Recorded 2026-09-28; extended 2026-09-29 (through `1099e79`), 2026-09-30 (Bartow County data correction; CT/CO wave, #372), 2026-10-01 (footer portfolio link; DE/DC wave, #374) and 2026-10-02 (FL/HI wave, #375).** Those are the dates this section was written, not the
 date of any entry — each entry carries its own date. The window is still open
 (closes 2026-10-10), so this log is **incomplete** and must be appended to as
 further events land.
@@ -383,6 +383,45 @@ operator hubs). `facilities` family.
 
   ```bash
   sha=$(git log -1 --format=%h --grep='(#374)' main)
+  git --no-pager diff "$sha~1" "$sha" -- data/facilities.meta.json
+  git --no-pager diff "$sha~1" "$sha" -- data/facilities.json \
+    | grep '^+' | grep -o '"state": "[A-Z][A-Z]"' | sort | uniq -c
+  ```
+
+**2026-10-02 — #375 (`automated/neon-sync`), Florida + Hawaii, 22 facilities**
+Categories: *concurrent data wave* **and** *internal-linking change* (new
+operator and county hubs). `facilities` family.
+
+- Already live in Neon when the 18:13Z Neon→JSON sync (run 37045992336)
+  exported it; #375 is that export plus the map data below.
+- `recordCount` 2306 → 2328 (+22: 14 FL, 8 HI; all `data_center`).
+- 8 existing records changed. No title changed and no pin moved (the two
+  `location` diffs are street / postal code only). Two changed status:
+  `servpac-mtp2-mililani-hi` proposed → under_construction and
+  `silver-fox-606-indiantown-fl` cancelled → proposed. The other six:
+  `drfortress-koapaka-honolulu-hi`, `hawaiiantel-endeavor-honolulu-hi`,
+  `hawaiki-cable-kapolei-hi`, `okee-one-irsc-okeechobee-fl`,
+  `ryan-companies-project-swan-lakeland-fl`,
+  `willow-lakes-west-midway-fort-pierce-fl`.
+- Distinct operator slugs 1053 → 1063 (+10) and county slugs 863 → 867 (+4:
+  `alachua-fl`, `brevard-fl`, `collier-fl`, `leon-fl`), counted the same way
+  as #372. These are slug counts; hub pages were not inspected.
+- USGS NHD failed the quorum pre-flight at [KS interior] in CI (layer 4 HTTP
+  502), and twice more when re-probed by hand (layer 4 timed out at [KS
+  interior]; both layers timed out at [PA northeast]), so `build:mapdata` ran
+  with `--skip-nhd`. No new page has nearest-water / nearest-≥230 kV lines.
+  The 14 FL entries carry water stress plus aquifer and/or groundwater
+  decline; the 8 HI entries carry aquifer only (7) or nothing (1).
+  `check-siting-additive`: 22 added, 0 lost, 0 nulled, 0 changed. The NHD
+  ceiling in `lib/siting-context.test.ts` rises 38 → 52 (the 14 FL records;
+  HI is outside NHD's CONUS coverage). The full `build:mapdata` owed there
+  now covers 52 pages plus the 2 moved GA pins.
+- The homepage hero plate (`components/home/hero-plate-paths.ts`) and
+  `public/data/{hero-points,map-layers,pipeline-history}.json` were
+  regenerated from the new data.
+
+  ```bash
+  sha=$(git log -1 --format=%h --grep='(#375)' main)
   git --no-pager diff "$sha~1" "$sha" -- data/facilities.meta.json
   git --no-pager diff "$sha~1" "$sha" -- data/facilities.json \
     | grep '^+' | grep -o '"state": "[A-Z][A-Z]"' | sort | uniq -c

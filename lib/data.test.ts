@@ -1277,8 +1277,8 @@ describe("getOperatorSummary", () => {
   it("stateCodes contains exactly the expected codes for Google (no DC)", async () => {
     // sanity: typed-out literal, snapshotted from the live dataset.
     const expected = [
-      "AL", "AR", "AZ", "GA", "IA", "IN", "MI", "MN", "MO", "NC", "NE", "NV",
-      "OH", "OK", "OR", "SC", "TN", "TX", "UT", "VA", "WV", "WY",
+      "AL", "AR", "AZ", "GA", "HI", "IA", "IN", "MI", "MN", "MO", "NC", "NE",
+      "NV", "OH", "OK", "OR", "SC", "TN", "TX", "UT", "VA", "WV", "WY",
     ];
     const summary = (await getOperatorSummary("Google"))!;
     expect(summary.stateCodes).toEqual(expected);

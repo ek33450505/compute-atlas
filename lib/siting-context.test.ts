@@ -135,7 +135,15 @@ describe("data-integrity: NHD backfill debt", () => {
   // pre-flight at [KS interior] in CI (neon-sync run 36905711567, layers 4
   // and 10 timed out at 12s), and again when re-probed by hand. The payoff is
   // still the FULL run, now 38 -> 0. Lower this to 0 in that PR.
-  const NHD_BACKFILL_DEBT_CEILING = 38;
+  //
+  // Raised 38 -> 52 on 2026-10-02: the FL/HI wave (PR #375, 22 new records:
+  // 14 FL + 8 HI) shipped via --skip-nhd. Only the 14 FL records count; HI is
+  // outside NHD's CONUS coverage (see NON_CONUS). NHD failed the quorum
+  // pre-flight at [KS interior] in CI (neon-sync run 37045992336, layer 4
+  // HTTP 502), and twice more when re-probed by hand (layer 4 timed out at
+  // [KS interior]; both layers timed out at [PA northeast]). The payoff is
+  // still the FULL run, now 52 -> 0. Lower this to 0 in that PR.
+  const NHD_BACKFILL_DEBT_CEILING = 52;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data
