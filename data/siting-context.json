@@ -59,6 +59,12 @@
       "label": "Low (<10%)"
     }
   },
+  "1547-alohanap-kapolei-hi": {
+    "aquifer": {
+      "name": "Hawaiian Sedimentary Deposit Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "1623-farnam-omaha-ne": {
     "nearestWater": {
       "name": "Missouri River",
@@ -106,6 +112,16 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "365-data-centers-boca-raton-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
     }
   },
   "365-data-centers-bridgewater-nj": {
@@ -178,6 +194,16 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "365-data-centers-fort-lauderdale-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
     }
   },
   "365-data-centers-washington-dc": {
@@ -7828,6 +7854,20 @@
       "label": "Low (<10%)"
     }
   },
+  "cloud-south-west-palm-beach-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "cloudburst-oklahoma-city-campus-ok": {
     "nearestWater": {
       "name": "North Canadian River",
@@ -8246,6 +8286,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "cogent-boca-raton-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
+    }
+  },
   "cogent-cheyenne-114-w-10th-wy": {
     "nearestWater": {
       "name": "Clear Creek",
@@ -8292,6 +8342,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "cogent-hollywood-pembroke-park-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
+    }
+  },
   "cogent-oklahoma-city-ok": {
     "nearestWater": {
       "name": "North Canadian River",
@@ -8328,6 +8388,12 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cogent-pearl-city-waihona-hi": {
+    "aquifer": {
+      "name": "Hawaiian Volcanic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "cogent-washington-dc-2-1050-connecticut-ave-dc": {
@@ -8395,6 +8461,20 @@
     "aquifer": {
       "name": "New York And New England Carbonate-rock Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "colo-solutions-downtown-orlando-fl": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "colocation-america-sfdc1-san-francisco-ca": {
@@ -15013,6 +15093,26 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "edgeconnex-mia01-miami-fl": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "edgeconnex-mia02-miami-gardens-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
+    }
+  },
   "edgeconnex-mia03-beacon-station-medley-fl": {
     "nearestWater": {
       "name": "The Pocket",
@@ -15148,6 +15248,20 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "edgeconnex-tal01-tallahassee-fl": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "edgeconnex-union-city-campus-fulton-ga": {
@@ -20718,6 +20832,12 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "google-uh-west-oahu-cable-landing-station-kapolei-hi": {
+    "aquifer": {
+      "name": "Hawaiian Volcanic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "google-west-memphis-ar": {
     "nearestWater": {
       "name": "Tenmile Bayou",
@@ -22437,6 +22557,16 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "im-critical-miami-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
     }
   },
   "immersionbtc-walnut-ridge-ar": {
@@ -24787,6 +24917,12 @@
     },
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "lumen-honolulu-paiea-hi": {
+    "aquifer": {
+      "name": "Hawaiian Sedimentary Deposit Aquifers",
       "rock": "Igneous and metamorphic-rock"
     }
   },
@@ -36175,6 +36311,20 @@
       "label": "Low (<10%)"
     }
   },
+  "sd-data-center-melbourne-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "security-land-woodlawn-baltimore-county-md": {
     "nearestWater": {
       "name": "Dead Run",
@@ -36605,9 +36755,21 @@
       "rock": "Sandstone"
     }
   },
+  "servpac-mtp-building-1-mililani-hi": {
+    "aquifer": {
+      "name": "Hawaiian Volcanic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "servpac-mtp2-mililani-hi": {
     "aquifer": {
       "name": "Hawaiian Volcanic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "servpac-puahale-honolulu-hi": {
+    "aquifer": {
+      "name": "Hawaiian Sedimentary Deposit Aquifers",
       "rock": "Igneous and metamorphic-rock"
     }
   },
@@ -36974,6 +37136,20 @@
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "skylink-data-centers-naples-fl": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -41543,6 +41719,13 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "uh-cancer-center-medai-core-honolulu-hi": {},
+  "uh-information-technology-center-honolulu-hi": {
+    "aquifer": {
+      "name": "Hawaiian Sedimentary Deposit Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "uh-mhpcc-kihei-hi": {
     "aquifer": {
       "name": "Hawaiian Volcanic-rock Aquifers",
@@ -41622,6 +41805,16 @@
     "aquifer": {
       "name": "Southeastern Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "university-of-florida-data-center-gainesville-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
     }
   },
   "upstream-wind-energy-center-antelope-ne": {
@@ -42467,6 +42660,16 @@
     },
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "volico-fll1-pompano-beach-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
       "rock": "Carbonate-rock"
     }
   },
