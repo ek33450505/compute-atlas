@@ -56,21 +56,20 @@
 # `gh pr merge --auto` waits for those checks to pass before merging — it does
 # not bypass branch protection, it satisfies it normally.
 #
-# ⛔ Workflows:read/write is NOT optional, and the `|| github.token` fallback
-# below is NOT graceful — both were mis-stated here until 2026-09-05. Because
-# `delete-branch: true` recreates `automated/neon-sync` from scratch on every
-# run, each push creates a BRAND-NEW ref, and GitHub re-evaluates every commit
-# reachable from a new ref as new to it. Any commit under .github/workflows/ in
-# main's history therefore trips the workflow-scope check on every single run.
-# Observed 2026-09-04 01:39, on the ordinary path, ten hours after
-# drift-alert.yml had already merged to main:
+# ⛔ Workflows:read/write is NOT optional — this was mis-stated until 2026-09-05.
+# Because `delete-branch: true` recreates `automated/neon-sync` from scratch on
+# every run, each push creates a BRAND-NEW ref, and GitHub re-evaluates every
+# commit reachable from a new ref as new to it. Any commit under .github/workflows/
+# in main's history therefore trips the workflow-scope check on every single run.
+# Observed 2026-09-04 01:39, on the ordinary path, ten hours after drift-alert.yml
+# had already merged to main:
 #     ! [remote rejected] automated/neon-sync -> automated/neon-sync (refusing
 #       to allow a GitHub App to create or update workflow
 #       `.github/workflows/drift-alert.yml` without `workflows` permission)
 # So without a PAT carrying Workflows, the push is rejected and NO PR OPENS AT
-# ALL — the sync silently stops publishing rather than degrading to manual
-# merge. The preflight step below catches a missing Contents:write, but cannot
-# catch this; the only defence is granting all three permissions.
+# ALL — the sync silently stops publishing rather than degrading to manual merge.
+# The credential guard below fails the run closed when the PAT is missing, so no
+# fallback is needed; all three permissions are required on the PAT.
 
 name: Neon→JSON Sync
 
@@ -80,8 +79,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
 
 # Never run two exports concurrently — avoids racing auto-PRs onto the same branch.
 concurrency:
@@ -112,6 +111,11 @@ jobs:
       HAS_NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT != '' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # Do not persist github.token to .git/config — npm ci runs third-party
+          # install scripts (esbuild x3, unrs-resolver) in this step, matching the
+          # 2026-09-27 principle of keeping secrets away from third-party execution.
 
       # GUARD ON THE GUARDS, and unconditional. Three steps below gate on the
       # HAS_* booleans rendered at job level from `secrets.X != ''`. Both must be
@@ -130,10 +134,10 @@ jobs:
       # Failing on 'false' is safe here because the triggers are `schedule` and
       # `workflow_dispatch` only — there is no `pull_request` trigger, so no
       # fork-PR case where secrets are legitimately unavailable. Re-check that
-      # before adding a trigger. NEON_SYNC_PAT is treated as equally fatal: the
-      # `secrets.NEON_SYNC_PAT || github.token` fallback below does NOT degrade
-      # gracefully, because github.token lacks Workflows permission and still
-      # fails at the push.
+      # before adding a trigger. NEON_SYNC_PAT is treated as equally fatal: Create PR
+      # uses it with no github.token fallback (github.token could not push this branch
+      # anyway — it lacks Workflows permission — and this job's GITHUB_TOKEN is now
+      # read-only).
       #
       # All four paths exercised under `bash -e` before merge: both-true exits 0,
       # each 'false' and an unrenderable value each exit 1 naming the cause.
@@ -433,14 +437,9 @@ jobs:
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         id: create-pr
         with:
-          # ⛔ NOT graceful degradation, despite the shape. This is a
-          # last-resort fallback that is expected to FAIL: github.token cannot
-          # push this branch at all while any commit under .github/workflows/
-          # is reachable from the newly created ref — see the NEON_SYNC_PAT
-          # note in the header for the mechanism and the observed rejection.
-          # It is kept only so a PAT-less run fails at the push with GitHub's
-          # own explicit error rather than an unset-token error.
-          token: ${{ secrets.NEON_SYNC_PAT || github.token }}
+          # The credential guard fails the run closed when the PAT is missing, and
+          # the preflight when it cannot write, so no fallback is needed.
+          token: ${{ secrets.NEON_SYNC_PAT }}
           branch: automated/neon-sync
           base: main
           title: "chore(data): sync facilities.json with Neon"
