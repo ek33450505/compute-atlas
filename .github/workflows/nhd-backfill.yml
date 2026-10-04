@@ -124,13 +124,13 @@ jobs:
       # group "neon-sync" with neon-sync.yml, which serialises only runs, not PR
       # lifetimes. A backfill PR and a neon-sync PR can open at once, both
       # rewriting siting-context.json and the ledger, and conflict. If a same-repo
-      # neon-sync PR is open < 24h, defer to the next night's run (::warning).
-      # If one is open ≥ 24h, error out (::error) so automation-health surfaces it,
-      # as a stalled PR blocks the backfill indefinitely. (Residual: a manual
-      # dispatch can still replace a PENDING neon-sync run in the shared group
-      # because cancel-in-progress: false keeps only one pending run, not one run
-      # per trigger source. Fork PRs cannot defer via this query: isCrossRepository
-      # filters them out.)
+      # neon-sync PR is open less than 24 hours, defer to the next night's run
+      # (::warning). If one is open more than 24 hours, error out (::error) so
+      # automation-health surfaces it, as a stalled PR blocks the backfill
+      # indefinitely. (Residual: a manual dispatch can still replace a PENDING
+      # neon-sync run in the shared group because cancel-in-progress: false keeps
+      # only one pending run, not one run per trigger source. Fork PRs cannot defer
+      # via this query: isCrossRepository filters them out.)
       - name: Defer while a neon-sync PR is open
         id: defer
         env:
@@ -139,8 +139,9 @@ jobs:
           set -euo pipefail
           now=$(date -u +%s)
 
-          # Get open same-repo (isCrossRepository == false) neon-sync PRs
-          open_data=$(gh pr list --head automated/neon-sync --state open --json number,isCrossRepository,createdAt | jq -c '.[] | select(.isCrossRepository == false)')
+          # Get open same-repo (isCrossRepository == false) neon-sync PRs.
+          # --limit 100 prevents fork PRs from pushing the real same-repo PR off the page.
+          open_data=$(gh pr list --head automated/neon-sync --state open --limit 100 --json number,isCrossRepository,createdAt | jq -c '.[] | select(.isCrossRepository == false)')
 
           old_prs=""
           new_count=0
@@ -150,11 +151,13 @@ jobs:
             pr_num=$(echo "$pr_line" | jq -r '.number')
             created_at=$(echo "$pr_line" | jq -r '.createdAt')
 
-            # Convert ISO8601 timestamp to Unix seconds
+            # Convert ISO8601 timestamp to Unix seconds. GNU date (ubuntu runner);
+            # BSD/macOS `date` has no `-d`, so a local dry-run fails closed.
             pr_timestamp=$(date -u -d "$created_at" +%s)
-            age_hours=$(( (now - pr_timestamp) / 3600 ))
+            age_secs=$(( now - pr_timestamp ))
+            age_hours=$(( age_secs / 3600 ))
 
-            if [ "$age_hours" -gt 24 ]; then
+            if [ "$age_secs" -gt 86400 ]; then
               old_prs="${old_prs:+$old_prs, }#$pr_num (${age_hours}h old)"
             else
               new_count=$((new_count + 1))
@@ -162,7 +165,7 @@ jobs:
           done <<< "$open_data"
 
           if [ -n "$old_prs" ]; then
-            echo "::error::An automated/neon-sync PR has been open > 24h; NHD backfill is blocked — merge or close: $old_prs"
+            echo "::error::An automated/neon-sync PR has been open more than 24 hours; NHD backfill is blocked — merge or close: $old_prs"
             exit 1
           elif [ "$new_count" -gt 0 ]; then
             echo "::warning::Deferring backfill — $new_count neon-sync PR(s) open."
