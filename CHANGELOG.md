@@ -5,6 +5,16 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.34.1](https://github.com/ek33450505/compute-atlas/compare/v1.34.0...v1.34.1) (2026-10-04)
+
+
+### Bug Fixes
+
+* **ci:** require the Vercel ignore-gate's diff base to be an ancestor of HEAD ([#358](https://github.com/ek33450505/compute-atlas/issues/358)) ([c6809cb](https://github.com/ek33450505/compute-atlas/commit/c6809cb3da93c24ac46ed736328db26ffae086fa))
+* **discovery:** exit nonzero when a submit run loses candidates ([#362](https://github.com/ek33450505/compute-atlas/issues/362)) ([b1be354](https://github.com/ek33450505/compute-atlas/commit/b1be354de3a876d4bbf2fdad4bdb6fc886244052))
+* **discovery:** strip licence-restricted sources instead of letting them ride along ([#339](https://github.com/ek33450505/compute-atlas/issues/339)) ([53a251a](https://github.com/ek33450505/compute-atlas/commit/53a251a7e3db34b106759f9f45d3f97e00edc837))
+* **scripts:** pre-flight NHD query layers before build:mapdata ([#344](https://github.com/ek33450505/compute-atlas/issues/344)) ([a81d3fd](https://github.com/ek33450505/compute-atlas/commit/a81d3fd5dd7f4ccfdc8b88cfc7686c57e719e0ca))
+
 ## [1.34.0](https://github.com/ek33450505/compute-atlas/compare/v1.33.0...v1.34.0) (2026-09-21)
 
 
