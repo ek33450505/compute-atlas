@@ -29,7 +29,9 @@ npm run build:mapdata        # 4. rebuild map overlays + per-facility siting con
 `data/siting-context.json` until it runs, so its page silently renders without the
 "Siting context" panel — no error, just a missing section. Use the full run, not
 `--skip-nhd`: that flag reuses existing `nearestWater` / `nearestTransmission` values,
-which is exactly what new records lack.
+which is exactly what new records lack. If NHD is degraded, the automated sync falls back
+to `--skip-nhd` and the nightly backfill pays the resulting debt; a hand-run wave that
+falls back must record it with `npm run nhd:debt -- --note "<why>"`.
 
 **Diff-read the result.** It should be additive — fills and new entries. Any
 `value → null` is data loss, not a refresh. A clean exit code is not evidence the work

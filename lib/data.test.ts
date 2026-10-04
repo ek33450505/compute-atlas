@@ -1267,19 +1267,39 @@ describe("getOperatorSummary", () => {
   });
 
   it("stateCodes contains exactly the expected codes for CoreSite (has DC)", async () => {
-    // sanity: typed-out literal, not derived from the same Set-building
-    // expression the implementation uses — snapshotted from the live dataset.
-    const expected = ["CA", "CO", "DC", "FL", "GA", "IL", "MA", "NJ", "OR", "VA"];
+    // Derived independently from live data, not from the implementation's
+    // Set-building expression: looping into an object keyed by state, then
+    // Object.keys().sort(), so a data wave moves both sides together.
+    const facilities = await getFacilitiesByOperator("CoreSite");
+    expect(facilities.length).toBeGreaterThan(0); // sanity: fixture must exist
+    const stateMap: Record<string, true> = {};
+    for (const f of facilities) {
+      stateMap[f.location.state] = true;
+    }
+    const expected = Object.keys(stateMap).sort();
+    // Sanity: CoreSite must have a DC facility for this test to be meaningful
+    expect(expected).toContain("DC");
+    expect(expected.length).toBeGreaterThanOrEqual(2);
+
     const summary = (await getOperatorSummary("CoreSite"))!;
     expect(summary.stateCodes).toEqual(expected);
   });
 
   it("stateCodes contains exactly the expected codes for Google (no DC)", async () => {
-    // sanity: typed-out literal, snapshotted from the live dataset.
-    const expected = [
-      "AL", "AR", "AZ", "GA", "HI", "IA", "IN", "MI", "MN", "MO", "NC", "NE",
-      "NV", "OH", "OK", "OR", "SC", "TN", "TX", "UT", "VA", "WV", "WY",
-    ];
+    // Derived independently from live data, not from the implementation's
+    // Set-building expression: looping into an object keyed by state, then
+    // Object.keys().sort(), so a data wave moves both sides together.
+    const facilities = await getFacilitiesByOperator("Google");
+    expect(facilities.length).toBeGreaterThan(0); // sanity: fixture must exist
+    const stateMap: Record<string, true> = {};
+    for (const f of facilities) {
+      stateMap[f.location.state] = true;
+    }
+    const expected = Object.keys(stateMap).sort();
+    // Sanity: Google must NOT have a DC facility for this test to be meaningful
+    expect(expected).not.toContain("DC");
+    expect(expected.length).toBeGreaterThanOrEqual(2);
+
     const summary = (await getOperatorSummary("Google"))!;
     expect(summary.stateCodes).toEqual(expected);
   });
@@ -1947,13 +1967,19 @@ describe("getCryptoMiningStats", () => {
   });
 
   it("stateCodes contains exactly the expected codes for the live crypto_mining fixture", async () => {
-    // sanity: typed-out literal, not derived from the same Set-building
-    // expression the implementation uses — snapshotted from the live dataset.
-    const expected = [
-      "AK", "AL", "AR", "CO", "FL", "GA", "IA", "ID", "IL", "IN", "KS", "KY",
-      "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NM", "NV", "NY", "OH",
-      "OK", "OR", "PA", "SC", "SD", "TN", "TX", "VA", "WA", "WI", "WV", "WY",
-    ];
+    // Derived independently from live data, not from the implementation's
+    // Set-building expression: looping into an object keyed by state, then
+    // Object.keys().sort(), so a data wave moves both sides together.
+    const facilities = await getCryptoMiningFacilities();
+    expect(facilities.length).toBeGreaterThan(0); // sanity: fixture must exist
+    const stateMap: Record<string, true> = {};
+    for (const f of facilities) {
+      stateMap[f.location.state] = true;
+    }
+    const expected = Object.keys(stateMap).sort();
+    // Sanity: crypto fixture must span multiple states
+    expect(expected.length).toBeGreaterThanOrEqual(2);
+
     const { stateCodes } = await getCryptoMiningStats();
     expect(stateCodes).toEqual(expected);
   });

@@ -1,6 +1,14 @@
 import { describe, it, expect } from "vitest";
 import facilitiesRaw from "@/data/facilities.json";
+import nhdDebtLedgerRaw from "@/data/nhd-backfill-debt.json";
 import sitingContextRaw from "@/data/siting-context.json";
+import {
+  missingNearestWaterOffenders,
+  NON_CONUS,
+  parseLedger,
+  perStateBreakdown,
+  type FacilityStateRow,
+} from "./nhd-debt";
 import { splitRiskLabel, type SitingContext } from "./siting-context";
 
 describe("splitRiskLabel", () => {
@@ -66,14 +74,23 @@ describe("data-integrity: siting-context coverage", () => {
 });
 
 describe("data-integrity: NHD backfill debt", () => {
-  // NHD, HIFLD, WRI Aqueduct and the USGS principal aquifers are all CONUS-only,
-  // so these jurisdictions can never match and are not debt.
-  const NON_CONUS = new Set(["HI", "AK", "GU", "MP", "PR", "VI"]);
-
+  // NON_CONUS and the offender/breakdown helpers live in ./nhd-debt so
+  // scripts/update-nhd-debt.ts counts exactly what this ratchet counts. The
+  // production assertions below always read the real imported JSON; only the
+  // orphan-regression test injects synthetic data, because the real dataset has
+  // zero orphans today (2228/2228, 1:1) and there is no way to hit that path
+  // against it directly.
+  //
   // Ratchet. This is a DEBT, not a target: every --skip-nhd wave raises it and a
-  // successful full `npm run build:mapdata` should drive it to 0. Changing this
-  // number must be a deliberate, reviewed edit — four consecutive waves grew this
+  // successful full `npm run build:mapdata` should drive it to 0. Changing the
+  // ceiling must be a deliberate, reviewed edit — four consecutive waves grew this
   // debt silently because nothing asserted it.
+  //
+  // The ceiling now lives in data/nhd-backfill-debt.json and is rewritten by
+  // `npx tsx scripts/update-nhd-debt.ts --note "<why>"`; its `note` carries the
+  // reason for the latest change. The history below is what was recorded here while
+  // the ceiling was a literal in this file (last set to 52 in #375, 2026-10-02) —
+  // newer entries live in the ledger's `note` and in git history.
   // 141 -> 155 on 2026-09-25: the 5th consecutive --skip-nhd wave (+14 Illinois
   // facilities, PR #348). NHD was scattered-degraded, not down — the quorum
   // pre-flight correctly aborted the full pass at [PA northeast] while the old
@@ -149,80 +166,28 @@ describe("data-integrity: NHD backfill debt", () => {
   // all 2,328). check-siting-additive: 0 lost, 0 nulled, 4 changed — the two
   // moved GA pins (Bunkhouse, Springbank) re-queried at their corrected
   // coordinates. All 52 owed CONUS ids now carry nearestWater.
-  const NHD_BACKFILL_DEBT_CEILING = 0;
+  const NHD_BACKFILL_DEBT_CEILING = parseLedger(nhdDebtLedgerRaw).ceiling;
 
-  // `FacilityStateRow` is the minimal facility shape the debt count needs.
-  // stateById/missingNearestWaterOffenders both take optional injected data
-  // (defaulting to the real imported JSON) so the orphan-regression test below
-  // can exercise a synthetic orphan id without mutating
-  // facilitiesRaw/sitingContextRaw — the real dataset has zero orphans today
-  // (2228/2228, 1:1), so there is no way to hit that path against it directly.
-  // Every production assertion in this file calls these with no arguments,
-  // which resolves to the defaults below and keeps reading off the real
-  // imported JSON unchanged.
-  type FacilityStateRow = { id: string; location: { state: string } };
+  const realOffenders = () =>
+    missingNearestWaterOffenders(
+      facilitiesRaw as FacilityStateRow[],
+      sitingContextRaw as Record<string, SitingContext>,
+    );
 
-  function stateById(
-    facilities: FacilityStateRow[] = facilitiesRaw as FacilityStateRow[],
-  ): Map<string, string> {
-    const map = new Map<string, string>();
-    for (const facility of facilities) {
-      map.set(facility.id, facility.location.state);
-    }
-    return map;
-  }
-
-  function missingNearestWaterOffenders(
-    facilities: FacilityStateRow[] = facilitiesRaw as FacilityStateRow[],
-    sitingContext: Record<string, SitingContext> = sitingContextRaw as Record<
-      string,
-      SitingContext
-    >,
-  ): Array<{ id: string; state: string }> {
-    const stateMap = stateById(facilities);
-    const offenders: Array<{ id: string; state: string }> = [];
-
-    for (const [id, entry] of Object.entries(sitingContext)) {
-      if (entry.nearestWater !== undefined) continue; // has it - not debt
-
-      // An ORPHAN (siting entry with no facility) is not debt: it has no page, so
-      // it renders no partial panel. Retiring a facility takes a raw Neon delete
-      // that deliberately leaves the entry behind (see CLAUDE.md), which is why
-      // the coverage test above asserts forward coverage only. Counting orphans
-      // would make a pure-retirement wave churn the ceiling for the wrong reason.
-      const state = stateMap.get(id);
-      if (state === undefined) continue;
-
-      if (NON_CONUS.has(state)) continue; // CONUS-only datasets can't match here
-
-      offenders.push({ id, state });
-    }
-
-    return offenders;
-  }
-
-  function perStateBreakdown(offenders: Array<{ id: string; state: string }>): string {
-    const counts = new Map<string, number>();
-    for (const { state } of offenders) {
-      counts.set(state, (counts.get(state) ?? 0) + 1);
-    }
-    return Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-      .map(([state, count]) => `${state}: ${count}`)
-      .join(", ");
-  }
+  const RATCHET_REMEDY =
+    'run `npx tsx scripts/update-nhd-debt.ts --note "<why>"` in the same PR ' +
+    "(it rewrites data/nhd-backfill-debt.json) so the change is reviewed.";
 
   it("does not silently exceed the NHD backfill debt ceiling", () => {
-    const offenders = missingNearestWaterOffenders();
+    const offenders = realOffenders();
 
     if (offenders.length > NHD_BACKFILL_DEBT_CEILING) {
       throw new Error(
         `${offenders.length} facilities are missing nearestWater in data/siting-context.json, ` +
-          `exceeding NHD_BACKFILL_DEBT_CEILING (${NHD_BACKFILL_DEBT_CEILING}). ` +
+          `exceeding the NHD backfill debt ceiling in data/nhd-backfill-debt.json (${NHD_BACKFILL_DEBT_CEILING}). ` +
           `Per-state breakdown of offending ids: ${perStateBreakdown(offenders)}. ` +
           "A `--skip-nhd` wave is the usual cause, though not the only possible one; " +
-          "if the growth was intentional, raise NHD_BACKFILL_DEBT_CEILING in " +
-          "lib/siting-context.test.ts in the same PR so the growth is reviewed.",
+          `if the growth was intentional, ${RATCHET_REMEDY}`,
       );
     }
 
@@ -230,15 +195,15 @@ describe("data-integrity: NHD backfill debt", () => {
   });
 
   it("flags when debt is paid down, so the ceiling can be ratcheted lower", () => {
-    const offenders = missingNearestWaterOffenders();
+    const offenders = realOffenders();
 
     if (offenders.length < NHD_BACKFILL_DEBT_CEILING) {
       throw new Error(
-        `NHD backfill debt has DROPPED to ${offenders.length} (ceiling is ` +
-          `${NHD_BACKFILL_DEBT_CEILING}). Before lowering the ceiling, check which of two ` +
+        `NHD backfill debt has DROPPED to ${offenders.length} (the ceiling in ` +
+          `data/nhd-backfill-debt.json is ${NHD_BACKFILL_DEBT_CEILING}). Before lowering the ceiling, check which of two ` +
           "things caused the drop: either the debt was genuinely backfilled by " +
-          "`npm run build:mapdata` (a full run or `-- --backfill-nhd`) — in which case lower NHD_BACKFILL_DEBT_CEILING to " +
-          `${offenders.length} in lib/siting-context.test.ts so the ratchet keeps its teeth ` +
+          "`npm run build:mapdata` (a full run or `-- --backfill-nhd`) — in which case " +
+          `${RATCHET_REMEDY} It will record ${offenders.length} so the ratchet keeps its teeth ` +
           "— or NON_CONUS was widened to exclude a state with real offenders, which only " +
           "narrows what this test measures and pays down no debt at all (the membership " +
           "test below pins NON_CONUS against exactly that). A stale high ceiling silently " +
@@ -270,10 +235,9 @@ describe("data-integrity: NHD backfill debt", () => {
     //
     // The real dataset has zero orphans today (2228/2228, 1:1), so this can
     // only be exercised with injected data — hence
-    // missingNearestWaterOffenders() takes optional facilities/sitingContext
-    // params instead of this test mutating the imported JSON. Every
-    // production test above calls it with no arguments and keeps reading off
-    // the real data unchanged.
+    // missingNearestWaterOffenders() takes facilities/sitingContext as params
+    // instead of this test mutating the imported JSON. Every production test
+    // above reads off the real data unchanged.
     const facilities: FacilityStateRow[] = [{ id: "known-1", location: { state: "TX" } }];
     const sitingContext: Record<string, SitingContext> = {
       "known-1": {}, // real facility, missing nearestWater -> IS debt

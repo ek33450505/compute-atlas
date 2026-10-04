@@ -165,10 +165,11 @@ const NHD_SKIP_FALLBACK_GUIDANCE = [
   'waterStress/aquifer/groundwaterDecline for new records.',
   '',
   'PRICE OF --skip-nhd: it leaves nearestWater/nearestTransmission UNSET on',
-  'new records, and nothing in the test suite goes red while that is',
-  'outstanding (siting-context.test.ts asserts an ENTRY exists, not that it',
-  'carries NHD fields). A full build:mapdata is still OWED once NHD is',
-  'healthy — track it explicitly.',
+  'new records. Record that debt in the same change with',
+  '`npm run nhd:debt -- --note "<why>"`, or the ratchet in',
+  'lib/siting-context.test.ts fails CI. The nightly nhd-backfill workflow',
+  'pays it off-peak (--backfill-nhd). A FULL build:mapdata is still the only',
+  'way to re-query a facility whose coordinates were corrected.',
 ];
 
 // --- NHD pre-flight -------------------------------------------------------

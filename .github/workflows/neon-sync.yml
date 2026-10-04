@@ -27,19 +27,24 @@
 # would open a PR every single morning with no facility change behind it, and a
 # daily noise PR is one you learn to ignore.
 #
-# It is FAIL-CLOSED: build:mapdata fetches external APIs (USGS NHD, HIFLD ArcGIS,
-# USDM, WRI Aqueduct). A mid-run failure can leave a PARTIALLY written
+# It is FAIL-CLOSED with a fallback: build:mapdata fetches external APIs (USGS NHD,
+# HIFLD ArcGIS, USDM, WRI Aqueduct). A mid-run failure can leave a PARTIALLY written
 # siting-context.json, which is worse than a stale one — it is exactly the
-# `value -> null` data loss CLAUDE.md tells you to diff-read for. So on failure the
-# generated artifacts are reverted and the PR opens with the facility files only,
-# rather than committing a half-built context file.
+# `value -> null` data loss CLAUDE.md tells you to diff-read for. On full-path failure
+# the workflow falls back to build:mapdata --skip-nhd (no NHD calls; water/power/drought
+# overlays reused from prior state; Aqueduct + aquifer context refreshed), which is
+# STRUCTURALLY additive and seeds an entry for every facility id. The NHD debt (new
+# CONUS facilities missing nearestWater/nearestTransmission) is logged in
+# data/nhd-backfill-debt.json and paid off by the nightly nhd-backfill.yml. If --skip-nhd
+# also fails or its output is not additive, the artifacts are reverted and the PR opens
+# with facility files only.
 #
 # NOTE: The FIRST run after merge will produce a large one-time diff, as the
 # hand-maintained JSON is canonicalized into the sorted form db:export uses.
 # This is expected and accepted; subsequent runs will be incremental.
 #
 # Requires: DATABASE_URL as a repo secret (Settings → Secrets and variables → Actions).
-# If not configured, the workflow skips gracefully.
+# If it is missing, the credential guard fails the run (closed) rather than skipping.
 #
 # NEON_SYNC_PAT (REQUIRED, added 2026-09-03): a fine-grained PAT scoped to this
 # repo only, owned by the maintainer, with THREE permissions — Contents,
@@ -51,21 +56,20 @@
 # `gh pr merge --auto` waits for those checks to pass before merging — it does
 # not bypass branch protection, it satisfies it normally.
 #
-# ⛔ Workflows:read/write is NOT optional, and the `|| github.token` fallback
-# below is NOT graceful — both were mis-stated here until 2026-09-05. Because
-# `delete-branch: true` recreates `automated/neon-sync` from scratch on every
-# run, each push creates a BRAND-NEW ref, and GitHub re-evaluates every commit
-# reachable from a new ref as new to it. Any commit under .github/workflows/ in
-# main's history therefore trips the workflow-scope check on every single run.
-# Observed 2026-09-04 01:39, on the ordinary path, ten hours after
-# drift-alert.yml had already merged to main:
+# ⛔ Workflows:read/write is NOT optional — this was mis-stated until 2026-09-05.
+# Because `delete-branch: true` recreates `automated/neon-sync` from scratch on
+# every run, each push creates a BRAND-NEW ref, and GitHub re-evaluates every
+# commit reachable from a new ref as new to it. Any commit under .github/workflows/
+# in main's history therefore trips the workflow-scope check on every single run.
+# Observed 2026-09-04 01:39, on the ordinary path, ten hours after drift-alert.yml
+# had already merged to main:
 #     ! [remote rejected] automated/neon-sync -> automated/neon-sync (refusing
 #       to allow a GitHub App to create or update workflow
 #       `.github/workflows/drift-alert.yml` without `workflows` permission)
 # So without a PAT carrying Workflows, the push is rejected and NO PR OPENS AT
-# ALL — the sync silently stops publishing rather than degrading to manual
-# merge. The preflight step below catches a missing Contents:write, but cannot
-# catch this; the only defence is granting all three permissions.
+# ALL — the sync silently stops publishing rather than degrading to manual merge.
+# The credential guard below fails the run closed when the PAT is missing, so no
+# fallback is needed; all three permissions are required on the PAT.
 
 name: Neon→JSON Sync
 
@@ -75,8 +79,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
 
 # Never run two exports concurrently — avoids racing auto-PRs onto the same branch.
 concurrency:
@@ -107,6 +111,11 @@ jobs:
       HAS_NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT != '' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # Do not persist github.token to .git/config — npm ci runs third-party
+          # install scripts (esbuild x3, unrs-resolver) in this step, matching the
+          # 2026-09-27 principle of keeping secrets away from third-party execution.
 
       # GUARD ON THE GUARDS, and unconditional. Three steps below gate on the
       # HAS_* booleans rendered at job level from `secrets.X != ''`. Both must be
@@ -125,10 +134,10 @@ jobs:
       # Failing on 'false' is safe here because the triggers are `schedule` and
       # `workflow_dispatch` only — there is no `pull_request` trigger, so no
       # fork-PR case where secrets are legitimately unavailable. Re-check that
-      # before adding a trigger. NEON_SYNC_PAT is treated as equally fatal: the
-      # `secrets.NEON_SYNC_PAT || github.token` fallback below does NOT degrade
-      # gracefully, because github.token lacks Workflows permission and still
-      # fails at the push.
+      # before adding a trigger. NEON_SYNC_PAT is treated as equally fatal: Create PR
+      # uses it with no github.token fallback (github.token could not push this branch
+      # anyway — it lacks Workflows permission — and this job's GITHUB_TOKEN is now
+      # read-only).
       #
       # All four paths exercised under `bash -e` before merge: both-true exits 0,
       # each 'false' and an unrenderable value each exit 1 naming the cause.
@@ -230,6 +239,55 @@ jobs:
         continue-on-error: true
         run: npm run build:mapdata
 
+      # FALLBACK ON NHD DEGRADATION (added 2026-10-04: every daytime dispatch 2026-09-25 → 10-02 failed the NHD pre-flight, 6/6).
+      # When USGS NHD is degraded during US business hours (12s timeouts, HTTP 502),
+      # the full build:mapdata pre-flight fails and the full run never starts.
+      # This fallback runs build:mapdata --skip-nhd: no NHD calls; water/power/drought
+      # overlays reused from prior state; Aqueduct + aquifer context refreshed.
+      # STRUCTURALLY additive (merges {... existing[id], ...envContext[id]}), seeds an
+      # entry for every facility id, and regenerates hero-points.json, hero-plate-paths.ts
+      # and pipeline-history.json. New CONUS facilities will lack nearestWater/
+      # nearestTransmission entries (NHD debt), which is recorded in
+      # data/nhd-backfill-debt.json for the nightly nhd-backfill.yml to pay off.
+      # This step reverts artifacts first to start from committed state.
+      - name: Fall back to build:mapdata --skip-nhd
+        id: mapdata_fallback
+        if: steps.check-drift.outputs.drift == 'true' && steps.mapdata.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          git checkout -- \
+            data/siting-context.json \
+            public/data/water.geojson \
+            public/data/power.geojson \
+            public/data/drought.geojson \
+            public/data/water-stress.geojson \
+            public/data/groundwater-decline.geojson \
+            public/data/aquifers.geojson \
+            public/data/map-layers.json \
+            public/data/hero-points.json \
+            public/data/pipeline-history.json \
+            components/home/hero-plate-paths.ts
+          npm run build:mapdata -- --skip-nhd
+
+      # Resolve which map-data build path succeeded (full, fallback, or neither).
+      # Pass outcomes through env (never interpolate ${{ }} directly into run: —
+      # this keeps the expression opaque to the shell).
+      - name: Resolve map-data path
+        id: mappath
+        if: steps.check-drift.outputs.drift == 'true'
+        env:
+          MAPDATA_OUTCOME: ${{ steps.mapdata.outcome }}
+          MAPDATA_FALLBACK_OUTCOME: ${{ steps.mapdata_fallback.outcome }}
+        run: |
+          if [ "$MAPDATA_OUTCOME" = "success" ]; then
+            echo "path=full" >> "$GITHUB_OUTPUT"
+          elif [ "$MAPDATA_FALLBACK_OUTCOME" = "success" ]; then
+            echo "path=skip-nhd" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=none" >> "$GITHUB_OUTPUT"
+          fi
+
       # ADDITIVE GUARD — the machine half of a gate that was never actually run.
       #
       # The PR body has always carried "Confirm data/siting-context.json changes
@@ -281,9 +339,28 @@ jobs:
       # rather than aborting the job and leaving no PR at all.
       - name: Verify siting-context changes are additive
         id: additive
-        if: steps.check-drift.outputs.drift == 'true' && steps.mapdata.outcome == 'success'
+        if: steps.check-drift.outputs.drift == 'true' && steps.mappath.outputs.path != 'none'
         continue-on-error: true
         run: node scripts/check-siting-additive.mjs
+
+      # Update the NHD debt ledger (data/nhd-backfill-debt.json) if a map-data
+      # build succeeded and was verified as additive. The ledger tracks which
+      # facilities are missing nearestWater/nearestTransmission entries (CONUS only,
+      # non-CONUS facilities legitimately have no NHD match). This count is compared
+      # by CI against expected debt, so it cannot grow silently. The nightly
+      # nhd-backfill.yml pays off this debt.
+      - name: Update NHD debt ledger
+        id: debt
+        if: steps.check-drift.outputs.drift == 'true' && steps.mappath.outputs.path != 'none' && steps.additive.outcome == 'success'
+        continue-on-error: true
+        env:
+          MAP_PATH: ${{ steps.mappath.outputs.path }}
+        run: |
+          set -euo pipefail
+          npx tsx scripts/update-nhd-debt.ts --note "neon-sync ${MAP_PATH} run ${GITHUB_RUN_ID}"
+          count=$(npx tsx scripts/update-nhd-debt.ts --count)
+          if ! [[ "$count" =~ ^[0-9]+$ ]]; then echo "::error::NHD debt count is not a valid integer: '$count'."; exit 1; fi
+          echo "count=$count" >> "$GITHUB_OUTPUT"
 
       # FAIL-CLOSED: revert every build:mapdata output so a partially written
       # siting-context.json can never reach the PR. Paths here MUST stay in sync
@@ -291,24 +368,27 @@ jobs:
       # exactly the gap this change exists to close. Authoritative output list is
       # the header of scripts/build-map-data.mjs.
       #
-      # Fires on EITHER cause: mapdata crashed, or it succeeded but its output
-      # was not additive. When mapdata fails the additive step is skipped, whose
-      # outcome is 'skipped' — never 'failure' — so the two causes cannot
-      # double-fire and the message below always names the real one.
+      # Fires when: both full and fallback failed, OR a build succeeded but output
+      # was not additive, OR the debt ledger update failed.
       - name: Discard generated map data on failure
         if: >-
           steps.check-drift.outputs.drift == 'true'
-          && (steps.mapdata.outcome == 'failure' || steps.additive.outcome == 'failure')
+          && (steps.mappath.outputs.path == 'none' || steps.additive.outcome == 'failure' || steps.debt.outcome == 'failure')
         env:
-          MAPDATA_OUTCOME: ${{ steps.mapdata.outcome }}
+          MAPPATH: ${{ steps.mappath.outputs.path }}
+          ADDITIVE_OUTCOME: ${{ steps.additive.outcome }}
+          DEBT_OUTCOME: ${{ steps.debt.outcome }}
         run: |
-          if [ "$MAPDATA_OUTCOME" = "failure" ]; then
-            echo "::error::build:mapdata FAILED — discarding partial artifacts. The PR will contain facility data only; data/siting-context.json will be STALE for any new facility until the next successful run or a manual 'npm run build:mapdata'."
-          else
-            echo "::error::build:mapdata SUCCEEDED but its output was NOT additive — it dropped or nulled siting-context fields that exist at HEAD (the step above names them). Discarding the regenerated artifacts rather than publishing data loss; data/siting-context.json will be STALE for any new facility until a clean rerun."
+          if [ "$MAPPATH" = "none" ]; then
+            echo "::error::Both build:mapdata (full) and build:mapdata --skip-nhd failed — discarding artifacts. The PR will contain facility data only; data/siting-context.json will be STALE for any new facility until the next successful run or a manual build."
+          elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+            echo "::error::build:mapdata output was NOT additive — it dropped or nulled siting-context fields that exist at HEAD (the step above names them). Discarding the regenerated artifacts rather than publishing data loss; data/siting-context.json will be STALE for any new facility until a clean rerun."
+          elif [ "$DEBT_OUTCOME" = "failure" ]; then
+            echo "::error::NHD debt ledger update failed — discarding artifacts to avoid committing an incomplete debt record. The PR will contain facility data only."
           fi
           git checkout -- \
             data/siting-context.json \
+            data/nhd-backfill-debt.json \
             public/data/water.geojson \
             public/data/power.geojson \
             public/data/drought.geojson \
@@ -323,25 +403,31 @@ jobs:
       # Heredoc form of $GITHUB_OUTPUT, not `key=value`: the note contains
       # backticks, quotes and emoji, and key=value is single-line-only — a stray
       # newline there would silently truncate the value or corrupt the output file.
-      # MAPDATA_OUTCOME goes through `env:` rather than being interpolated straight
-      # into the script, so the expression can never be parsed as shell.
+      # Outcomes go through `env:` rather than being interpolated straight into
+      # the script, so expressions can never be parsed as shell.
       - name: Note map-data status for the PR body
         id: mapnote
         if: steps.check-drift.outputs.drift == 'true'
         env:
-          MAPDATA_OUTCOME: ${{ steps.mapdata.outcome }}
+          MAPPATH: ${{ steps.mappath.outputs.path }}
           ADDITIVE_OUTCOME: ${{ steps.additive.outcome }}
+          DEBT_OUTCOME: ${{ steps.debt.outcome }}
+          DEBT_COUNT: ${{ steps.debt.outputs.count }}
         run: |
           # shellcheck disable=SC2016  # single quotes are deliberate: the backticks
           # below are literal markdown for the PR body, not command substitution.
           {
             echo "note<<MAPNOTE_EOF"
-            if [ "$MAPDATA_OUTCOME" = "failure" ]; then
-              echo '⚠️ **build:mapdata FAILED this run** — map artifacts were discarded and are NOT in this PR. Any new facility here will render without its "Siting context" panel until a successful run or a manual `npm run build:mapdata`.'
+            if [ "$MAPPATH" = "none" ]; then
+              echo '⛔ **Both build:mapdata (full) and build:mapdata --skip-nhd failed** — map artifacts were discarded and are NOT in this PR. Any new facility here will render without its "Siting context" panel until a successful run or a manual `npm run build:mapdata`.'
             elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
               echo '⛔ **build:mapdata output was NOT additive** — it dropped or nulled `data/siting-context.json` fields that exist on `main`, so the regenerated artifacts were discarded and are NOT in this PR. This usually means a transient USGS NHD / HIFLD / WRI outage during the rebuild. Auto-merge is disabled for this PR: read the "Verify siting-context changes are additive" step for the exact ids, then rerun the workflow once the upstream service is healthy.'
-            else
+            elif [ "$DEBT_OUTCOME" = "failure" ]; then
+              echo '⛔ **NHD debt ledger update failed** — the regenerated map artifacts were discarded and are NOT in this PR to avoid committing an incomplete debt record. Auto-merge is disabled: rerun the workflow once the ledger operation succeeds.'
+            elif [ "$MAPPATH" = "full" ]; then
               echo '✅ Map data regenerated — `data/siting-context.json` and the `public/data/` overlays are included, so new facilities have their "Siting context" panel.'
+            elif [ "$MAPPATH" = "skip-nhd" ]; then
+              echo "⚠️ **USGS NHD was degraded** — map data was rebuilt with \`--skip-nhd\` (no NHD calls; water/power/drought overlays reused; Aqueduct + aquifer context still refreshed). Every facility has a Siting context entry, but new CONUS facilities lack \`nearestWater\` and \`nearestTransmission\`. NHD debt is now $DEBT_COUNT (recorded in \`data/nhd-backfill-debt.json\`), and the nightly \`nhd-backfill.yml\` fills it off-peak."
             fi
             echo "MAPNOTE_EOF"
           } >> "$GITHUB_OUTPUT"
@@ -351,14 +437,9 @@ jobs:
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         id: create-pr
         with:
-          # ⛔ NOT graceful degradation, despite the shape. This is a
-          # last-resort fallback that is expected to FAIL: github.token cannot
-          # push this branch at all while any commit under .github/workflows/
-          # is reachable from the newly created ref — see the NEON_SYNC_PAT
-          # note in the header for the mechanism and the observed rejection.
-          # It is kept only so a PAT-less run fails at the push with GitHub's
-          # own explicit error rather than an unset-token error.
-          token: ${{ secrets.NEON_SYNC_PAT || github.token }}
+          # The credential guard fails the run closed when the PAT is missing, and
+          # the preflight when it cannot write, so no fallback is needed.
+          token: ${{ secrets.NEON_SYNC_PAT }}
           branch: automated/neon-sync
           base: main
           title: "chore(data): sync facilities.json with Neon"
@@ -381,6 +462,7 @@ jobs:
             data/facilities.json
             data/facilities.meta.json
             data/siting-context.json
+            data/nhd-backfill-debt.json
             public/data/water.geojson
             public/data/power.geojson
             public/data/drought.geojson
@@ -400,29 +482,35 @@ jobs:
       # when the PAT isn't configured, since there would be nothing for it to
       # wait on.
       #
-      # ⛔ ALSO skipped when build:mapdata FAILED, and that clause is
-      # load-bearing. On a mapdata failure the artifacts are discarded above and
-      # the PR opens carrying facility data only, with a ⚠️ in its body saying
-      # siting-context will be STALE for any new facility. That warning only
-      # works if a human reads it — and auto-merge is precisely the thing that
-      # removes the reader. Worse, it does not self-heal: the merge resolves the
-      # `data/facilities.json` drift, so the next run's drift check finds
-      # nothing, skips, and `data/siting-context.json` stays stale indefinitely
-      # until someone runs `npm run build:mapdata` by hand. That is the
-      # mechanism that left 65 of 934 records without a Siting context panel
-      # (2026-08-08). Holding the PR open on failure restores the human read on
-      # exactly the runs that need one, and costs nothing on a clean run.
+      # ⛔ ALSO skipped when BOTH the full path and the fallback fail, or when
+      # the additive/debt checks fail. On double failure the artifacts are
+      # discarded and the PR opens carrying facility data only, with a ⛔ in
+      # its body saying siting-context is STALE or both builds failed. That
+      # warning only works if a human reads it — and auto-merge is precisely
+      # the thing that removes the reader. Worse, it does not self-heal: the
+      # merge resolves the `data/facilities.json` drift, so the next run's drift
+      # check finds nothing, skips, and `data/siting-context.json` stays stale
+      # indefinitely until someone runs `npm run build:mapdata` by hand. That is
+      # the mechanism that left 65 of 934 records without a Siting context panel
+      # (2026-08-08).
+      #
+      # A --skip-nhd fallback DOES NOT trigger this hold: every id gets an entry
+      # (additive by design), the debt is recorded in the ledger (which a CI ratchet
+      # test compares against data to prevent silent growth), and nhd-backfill.yml
+      # (monitored by automation-health) pays it down off-peak, so it self-heals
+      # and auto-merge is safe.
       #
       # Use `outcome`, NOT `conclusion`: `continue-on-error: true` rewrites
       # `conclusion` to 'success' even when the step failed, so a `conclusion`
-      # check here would silently never fire. Matches the two existing
-      # `steps.mapdata.outcome` uses above.
+      # check here would silently never fire. Same rule as every other
+      # continue-on-error step in this file.
       - name: Enable auto-merge
         if: >-
           steps.check-drift.outputs.drift == 'true'
           && env.HAS_NEON_SYNC_PAT == 'true'
-          && steps.mapdata.outcome != 'failure'
-          && steps.additive.outcome != 'failure'
+          && steps.mappath.outputs.path != 'none'
+          && steps.additive.outcome == 'success'
+          && steps.debt.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.NEON_SYNC_PAT }}
           # Env-var indirection rather than direct ${{ }} interpolation into the

@@ -500,6 +500,27 @@ explicitly rather than omit them.
   governs *when* a change reaches production, so it can shift a publish date.
   It cannot change what Googlebot sees on a page that is live.
 
+**2026-10-04 — #376 `998f2fc`, release 1.34.1** — **RULED OUT**.
+
+- `.release-please-manifest.json`, `CHANGELOG.md`, `package.json` and
+  `package-lock.json` only (version bump). Verify:
+  `git --no-pager show --name-only --format='' 998f2fc`.
+
+**2026-10-04 — branch `fix/map-automation-resilience`, map-data automation and
+monitor repairs** — **RULED OUT**.
+
+- Workflows (`neon-sync.yml` falls back to `--skip-nhd`; new nightly
+  `nhd-backfill.yml`), scripts, tests, docs and the NHD debt ledger
+  (`data/nhd-backfill-debt.json`, read only by a test and a script). Nothing
+  under `app/`, `components/`, `next.config.ts` or `proxy.ts`. Verify:
+  `git --no-pager diff --name-only origin/main...fix/map-automation-resilience | grep -E '^(app/|components/|next\.config|proxy\.ts)'`
+  (empty).
+- Indirect path, named: when NHD is degraded, a wave's new facilities now get
+  a Siting context entry without the nearest-water / nearest-≥230 kV lines
+  (the nightly backfill adds them later). Before, the whole map-data artifact
+  was discarded and a manual `--skip-nhd` run produced the same partial
+  entries by hand. Each such wave is still logged under `### OCCURRED`.
+
 ## Gaps in the pre-registered list
 
 Two things occurred inside the window that the "Named confounds" list does not
