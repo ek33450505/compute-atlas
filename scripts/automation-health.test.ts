@@ -9,6 +9,7 @@ import {
   classifyWorkflow,
   emitOutcome,
   pickLatestSuccess,
+  sortNewestFirst,
   type WorkflowConfig,
   type WorkflowRun,
 } from "./automation-health";
@@ -109,6 +110,65 @@ describe("classifyWorkflow", () => {
   it("weekly budget: a 9-day-old release-please run is stale", () => {
     const result = classifyWorkflow(WEEKLY, [run(9 * 24, { conclusion: "success" })], NOW);
     expect(result.state).toBe("stale");
+  });
+
+  // Position is not recency. On 2026-09-28/29 the runs-list API returned a stale
+  // ordering, and the report said "neon-sync — stale, Last run: 2026-09-08"
+  // while daily scheduled successes existed through 2026-09-29. The classifier
+  // must be correct for ANY input order, so every fixture here is deliberately
+  // NOT newest-first.
+  describe("input order independence", () => {
+    it("reports the newest run, not the first one, when an old run leads the list", () => {
+      // The 500h-old run sits at position 0, exactly the incident's shape.
+      const runs: WorkflowRun[] = [run(500), run(50), run(2), run(26), run(74)];
+      const result = classifyWorkflow(DAILY, runs, NOW);
+
+      expect(result.state).toBe("ok");
+      expect(result.lastRunAt).toBe(run(2).created_at);
+    });
+
+    it("is not stale when the newest run is fresh even though position 0 is past the budget", () => {
+      const result = classifyWorkflow(DAILY, [run(40), run(1)], NOW);
+
+      expect(result.state).toBe("ok");
+      expect(result.lastRunAt).toBe(run(1).created_at);
+    });
+
+    it("still counts the leading failure streak when the list is shuffled", () => {
+      // Newest-first this is: 2f, 26f, 50f, 74f, 98s -> streak 4.
+      const runs: WorkflowRun[] = [
+        run(74, { conclusion: "failure" }),
+        run(98, { conclusion: "success" }),
+        run(2, { conclusion: "failure" }),
+        run(50, { conclusion: "timed_out" }),
+        run(26, { conclusion: "cancelled" }),
+      ];
+      const result = classifyWorkflow(DAILY, runs, NOW);
+
+      expect(result.state).toBe("failing");
+      expect(result.streak).toBe(4);
+    });
+
+    it("judges on the newest COMPLETED run when the in_progress run is mid-list", () => {
+      const runs: WorkflowRun[] = [
+        run(26, { conclusion: "failure" }),
+        run(1, { status: "in_progress", conclusion: null }),
+        run(50, { conclusion: "success" }),
+      ];
+      const result = classifyWorkflow(DAILY, runs, NOW);
+
+      expect(result.state).toBe("failing");
+      expect(result.streak).toBe(1);
+      expect(result.lastRunAt).toBe(run(1).created_at);
+    });
+
+    it("does not mutate the caller's array", () => {
+      const runs: WorkflowRun[] = [run(500), run(2)];
+      const before = runs.map((r) => r.created_at);
+      classifyWorkflow(DAILY, runs, NOW);
+
+      expect(runs.map((r) => r.created_at)).toEqual(before);
+    });
   });
 
   // The 4th argument is the newest SUCCESS of any event type — normally a
@@ -274,5 +334,66 @@ describe("pickLatestSuccess", () => {
 
   it("returns null when there are no runs at all", () => {
     expect(pickLatestSuccess([])).toBeNull();
+  });
+
+  // List position is not recency (stale ordering observed 2026-09-28/29), so
+  // the newest success is chosen by timestamp across the whole page.
+  it("returns the NEWEST success from an unsorted mixed list, not the first or the first success", () => {
+    const runs: WorkflowRun[] = [
+      at("2026-09-02T08:00:00Z", "success"),
+      at("2026-09-10T08:00:00Z", "failure"),
+      at("2026-09-07T08:00:00Z", "success"),
+      at("2026-09-08T08:00:00Z", "cancelled"),
+      at("2026-09-04T08:00:00Z", "success"),
+    ];
+
+    expect(pickLatestSuccess(runs)).toBe("2026-09-07T08:00:00Z");
+  });
+
+  it("returns null for an unsorted list in which nothing succeeded", () => {
+    const runs: WorkflowRun[] = [
+      at("2026-09-02T08:00:00Z", "failure"),
+      at("2026-09-09T08:00:00Z", "timed_out"),
+      at("2026-09-05T08:00:00Z", null),
+    ];
+
+    expect(pickLatestSuccess(runs)).toBeNull();
+  });
+});
+
+describe("sortNewestFirst", () => {
+  const at = (iso: string): WorkflowRun => ({
+    status: "completed",
+    conclusion: "success",
+    created_at: iso,
+  });
+
+  it("orders by created_at descending, regardless of input order", () => {
+    const sorted = sortNewestFirst([
+      at("2026-09-08T12:36:57Z"),
+      at("2026-09-29T08:10:00Z"),
+      at("2026-09-15T08:05:00Z"),
+    ]);
+
+    expect(sorted.map((r) => r.created_at)).toEqual([
+      "2026-09-29T08:10:00Z",
+      "2026-09-15T08:05:00Z",
+      "2026-09-08T12:36:57Z",
+    ]);
+  });
+
+  it("returns a new array and leaves the input untouched", () => {
+    const input = [at("2026-09-08T12:36:57Z"), at("2026-09-29T08:10:00Z")];
+    const sorted = sortNewestFirst(input);
+
+    expect(sorted).not.toBe(input);
+    expect(input.map((r) => r.created_at)).toEqual([
+      "2026-09-08T12:36:57Z",
+      "2026-09-29T08:10:00Z",
+    ]);
+  });
+
+  it("returns an empty array for no runs", () => {
+    expect(sortNewestFirst([])).toEqual([]);
   });
 });

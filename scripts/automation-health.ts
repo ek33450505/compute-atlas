@@ -44,7 +44,9 @@ export interface WorkflowConfig {
 
 /**
  * Monitored workflows and their freshness budgets. Crons verified on disk
- * 2026-09-09.
+ * 2026-09-09, except `nhd-backfill.yml`, which is new in the
+ * fix/map-automation-resilience PR (its cron is `23 4 * * *`, set in that same
+ * PR and not part of the 2026-09-09 verification).
  *
  * 36h on a DAILY job is deliberate slack, not laziness: `neon-sync`'s cron
  * has been observed firing 0.3-11.9h after its nominal time (GitHub delays
@@ -87,6 +89,12 @@ export const MONITORED_WORKFLOWS: WorkflowConfig[] = [
     cronDescription: "0 9 * * 1 (Mondays 09:00 UTC)",
     staleAfterHours: 8 * 24,
   },
+  {
+    file: "nhd-backfill.yml",
+    name: "nhd-backfill",
+    cronDescription: "23 4 * * * (daily 04:23 UTC)",
+    staleAfterHours: 36,
+  },
 ];
 
 /** The subset of the GitHub Actions "list workflow runs" API response this module reads. */
@@ -110,11 +118,26 @@ export interface WorkflowClassification {
 const FAILURE_CONCLUSIONS = new Set(["failure", "timed_out", "cancelled"]);
 
 /**
+ * Newest-first by `created_at`, as a NEW array (the input is not mutated).
+ * Exported so the ordering the classifier depends on is unit-tested rather
+ * than assumed. `Array.prototype.sort` is stable, so runs sharing a timestamp
+ * keep the API's relative order.
+ */
+export function sortNewestFirst(runs: WorkflowRun[]): WorkflowRun[] {
+  return [...runs].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
+}
+
+/**
  * Pure classifier — no network, no Date.now(). `now` is always injected so
  * tests control time exactly; this is the seam automation-health.test.ts
  * exercises directly.
  *
- * `runs` is the API's run list, newest-first (as GitHub returns it).
+ * `runs` may arrive in ANY order: it is sorted by `created_at` here, never
+ * trusted to be newest-first. On 2026-09-28/29 the runs-list API answered with
+ * a stale ordering (a `--limit 4` query returned 2026-09-08 runs while runs from
+ * minutes earlier existed), and trusting position produced "neon-sync — stale,
+ * Last run: 2026-09-08" over a workflow with daily scheduled successes through
+ * 2026-09-29. Position is not recency; the timestamp is.
  */
 export function classifyWorkflow(
   cfg: WorkflowConfig,
@@ -128,8 +151,9 @@ export function classifyWorkflow(
   latestSuccessAt: string | null = null
 ): WorkflowClassification {
   const base = { file: cfg.file, name: cfg.name };
+  const ordered = sortNewestFirst(runs);
 
-  if (runs.length === 0) {
+  if (ordered.length === 0) {
     return {
       ...base,
       state: "never-run",
@@ -139,7 +163,7 @@ export function classifyWorkflow(
     };
   }
 
-  const newest = runs[0];
+  const newest = ordered[0];
   const lastRunAt = newest.created_at;
   const ageMs = now.getTime() - new Date(lastRunAt).getTime();
   const ageHours = ageMs / (1000 * 60 * 60);
@@ -159,7 +183,7 @@ export function classifyWorkflow(
 
   // An in_progress/queued newest run is not evidence of failure — judge on
   // the newest run that has actually completed.
-  const completedRuns = runs.filter((r) => r.status === "completed");
+  const completedRuns = ordered.filter((r) => r.status === "completed");
   if (completedRuns.length === 0) {
     return {
       ...base,
@@ -243,10 +267,14 @@ interface GhRunsResponse {
  * Client-side guard on the "newest success" lookup. The server-side filter is
  * NOT trusted on its own — see `fetchLatestSuccessAt` for why. Exported so the
  * invariant is unit-tested rather than assumed.
+ *
+ * Returns the newest `created_at` among runs that really concluded `success`,
+ * NOT whatever sits at position 0: list order is not recency (see
+ * `classifyWorkflow`), and position 0 may be a failure the filter let through.
  */
 export function pickLatestSuccess(runs: WorkflowRun[]): string | null {
-  const run = runs[0];
-  return run && run.conclusion === "success" ? run.created_at : null;
+  const newestSuccess = sortNewestFirst(runs).find((r) => r.conclusion === "success");
+  return newestSuccess ? newestSuccess.created_at : null;
 }
 
 /**
@@ -272,6 +300,11 @@ export function pickLatestSuccess(runs: WorkflowRun[]): string | null {
  *
  * `pickLatestSuccess` re-checks the conclusion locally anyway, so this stays
  * correct even if the filter's behaviour changes upstream.
+ *
+ * `per_page=20`, not 1: the runs-list API returned a stale ordering on
+ * 2026-09-28/29, so a one-row page can be the wrong row and omit the newest
+ * success entirely. Fetch a window and let `pickLatestSuccess` choose by
+ * timestamp.
  */
 async function fetchLatestSuccessAt(
   owner: string,
@@ -281,7 +314,7 @@ async function fetchLatestSuccessAt(
 ): Promise<string | null> {
   const url =
     `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${file}/runs` +
-    `?status=success&per_page=1`;
+    `?status=success&per_page=20`;
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -296,10 +329,14 @@ async function fetchLatestSuccessAt(
   return pickLatestSuccess(body.workflow_runs);
 }
 
+// `per_page=100` (the API maximum), not 10: position is not recency. On
+// 2026-09-28/29 the runs-list API answered with a stale ordering, so a short
+// page could omit the newest run altogether. A large page puts the newest run
+// in the set; `classifyWorkflow` then picks it by `created_at`, not by position.
 async function fetchRuns(owner: string, repo: string, file: string, token: string): Promise<WorkflowRun[]> {
   const url =
     `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${file}/runs` +
-    `?event=schedule&per_page=10`;
+    `?event=schedule&per_page=100`;
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
