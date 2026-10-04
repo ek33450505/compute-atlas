@@ -1,0 +1,347 @@
+# Nightly NHD backfill (off-peak, unattended).
+#
+# USGS NHD (per-facility nearest-water queries in scripts/build-map-data.mjs)
+# has been degraded during US business hours for ~2 weeks; daytime runs of
+# neon-sync fail its pre-flight, while off-peak runs have been healthy when
+# tried (2026-09-29 23:22Z; 2026-10-04 ~21:30Z). This
+# workflow runs nightly (04:23 UTC, off the top of the hour to avoid batching
+# latency), paying down the NHD debt recorded in data/nhd-backfill-debt.json:
+# facilities that were approved and published while NHD was down, leaving them
+# without nearestWater in siting-context until it could be queried.
+#
+# The debt ledger is maintained by the neon-sync workflow: when NHD is
+# degraded and it falls back to `npm run build:mapdata -- --skip-nhd`, new
+# CONUS facilities are recorded as debt. This workflow pays that debt via
+# `npm run build:mapdata -- --backfill-nhd`, which restricts the per-facility
+# NHD lookup to entries lacking nearestWater only, completing in ~5 min
+# (measured 2026-09-29: 177 records).
+#
+# `--backfill-nhd` pre-flights NHD with a 10-probe quorum and aborts with
+# exit 1 before writing anything if NHD is still degraded. It is a no-op when
+# debt is 0. A coordinate CORRECTION — not a siting-context enrichment — still
+# requires a FULL manual `npm run build:mapdata` (no `--skip` or `--backfill`),
+# because --backfill only fills gaps in nearestWater; it never re-queries an
+# entry that already has one.
+#
+# Requires: NEON_SYNC_PAT secret, scoped to this repo with Contents, Pull
+# requests, and Workflows (read/write). If it is missing, the credential guard
+# fails the run (closed) rather than skipping.
+
+name: NHD Backfill
+
+on:
+  schedule:
+    - cron: "23 4 * * *"  # 04:23 UTC (off-peak, off the hour)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+# Same concurrency group as neon-sync.yml — both rebuild map data, so only
+# one can run at a time. Never run `npm run build:mapdata` twice concurrently.
+concurrency:
+  group: neon-sync
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    name: Backfill NHD Siting Context
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    # HAS_NEON_SYNC_PAT is a BOOLEAN, not the secret itself. The secret is only
+    # read in the steps that use it (preflight, create-pr, auto-merge), following
+    # the pattern in neon-sync.yml: secrets are not available in `if:` expressions
+    # at job level, so the expression is evaluated here (where secrets ARE
+    # available) and only the true/false result is exported.
+    env:
+      HAS_NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+        # Prevents GITHUB_TOKEN from being written to .git/config during npm ci,
+        # where it would be accessible to third-party install scripts. The PAT
+        # (NEON_SYNC_PAT) handles all git operations explicitly in their own steps.
+
+      # GUARD ON THE GUARD. Fail closed if NEON_SYNC_PAT is missing or fails to
+      # render — if this step skips, every subsequent step that gates on the
+      # boolean will also skip, and the workflow reports success having published
+      # nothing. The only path that matters is 'true'; 'false' means the secret is
+      # unset, and an unrenderable value is a configuration error.
+      - name: Verify NEON_SYNC_PAT is present and rendered
+        run: |
+          bad=""
+          msg_pat=""
+
+          case "$HAS_NEON_SYNC_PAT" in
+            true) ;;
+            false) msg_pat="NEON_SYNC_PAT secret is missing or empty" ;;
+            *) msg_pat="expression failed to render as a boolean (value='$HAS_NEON_SYNC_PAT')" ;;
+          esac
+          [ -n "$msg_pat" ] && bad="${bad}${bad:+; }HAS_NEON_SYNC_PAT: $msg_pat"
+
+          if [ -n "$bad" ]; then
+            echo "::error::Credential guard FAILED: $bad. Backfill would skip and this workflow would report success having published nothing. Failing closed."
+            exit 1
+          fi
+          echo "Credential guard: HAS_NEON_SYNC_PAT=$HAS_NEON_SYNC_PAT"
+
+      # PAT WRITE PREFLIGHT — same logic as neon-sync.yml. Runs unconditionally
+      # so a broken token surfaces immediately instead of on the first backfill
+      # day (when the debt check finds work and the push fails). Performs a
+      # real git-receive-pack handshake; `--dry-run` stops before creating the
+      # ref, but the 403 response is real.
+      #
+      # WHAT A PASSING CHECK LOOKS LIKE WHILE THE BUG IS PRESENT: nothing.
+      # This step goes red with the same 403 a real push would.
+      #
+      # HONEST LIMIT: proves Contents:write only, not Workflows (see neon-sync.yml
+      # header for why that can't be pre-flighted). A token missing Workflows
+      # still passes this step and still fails the real push.
+      - name: Preflight — verify the PR token can still write
+        if: env.HAS_NEON_SYNC_PAT == 'true'
+        env:
+          NEON_SYNC_PAT: ${{ secrets.NEON_SYNC_PAT }}
+        run: |
+          set -euo pipefail
+          if git push --dry-run \
+            "https://x-access-token:${NEON_SYNC_PAT}@github.com/${GITHUB_REPOSITORY}.git" \
+            "HEAD:refs/heads/nhd-backfill-write-preflight"; then
+            echo "NEON_SYNC_PAT can write to ${GITHUB_REPOSITORY}."
+          else
+            echo "::error::NEON_SYNC_PAT cannot push to ${GITHUB_REPOSITORY}, so this backfill cannot open its PR. Regenerate the fine-grained PAT scoped to this repo with Contents: read and write, Pull requests: read and write, and Workflows: read and write, then update the NEON_SYNC_PAT secret. Until it is fixed, NHD debt will accumulate."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      # DEFER WHILE A NEON-SYNC PR IS OPEN — this workflow shares concurrency
+      # group "neon-sync" with neon-sync.yml, which serialises only runs, not PR
+      # lifetimes. A backfill PR and a neon-sync PR can open at once, both
+      # rewriting siting-context.json and the ledger, and conflict. If neon-sync
+      # has an open PR, defer to the next night's run. (Residual: a manual
+      # dispatch can still replace a PENDING neon-sync run in the shared group
+      # because cancel-in-progress: false keeps only one pending run, not one run
+      # per trigger source.)
+      - name: Defer while a neon-sync PR is open
+        id: defer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          open="$(gh pr list --head automated/neon-sync --state open --json number --jq 'length')"
+          if ! [[ "$open" =~ ^[0-9]+$ ]]; then
+            echo "::error::Failed to count open neon-sync PRs: '$open' is not an integer."
+            exit 1
+          fi
+          if [ "$open" -gt 0 ]; then
+            echo "::notice::Deferring backfill to next run — $open neon-sync PR(s) open."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # MEASURE NHD DEBT — count the CONUS facilities whose siting-context entry
+      # lacks nearestWater (non-CONUS are legitimately absent per CLAUDE.md).
+      # Must be a non-negative integer; an empty/garbled value fails closed.
+      - name: Measure NHD debt
+        id: measure
+        if: steps.defer.outputs.skip == 'false'
+        run: |
+          set -euo pipefail
+          debt="$(npx tsx scripts/update-nhd-debt.ts --count)"
+          # Validate it is a non-negative integer
+          if ! [[ "$debt" =~ ^[0-9]+$ ]]; then
+            echo "::error::NHD debt count is not a valid integer: '$debt'. Aborting."
+            exit 1
+          fi
+          echo "debt=$debt" >> "$GITHUB_OUTPUT"
+          if [ "$debt" -eq 0 ]; then
+            echo "::notice::NHD debt is 0 — nothing to backfill."
+          else
+            echo "NHD debt: $debt facilities lacking nearestWater"
+          fi
+
+      # BACKFILL NHD — run the restricted NHD pass (fills gaps only, never
+      # re-queries). Pre-flights NHD with 10-probe quorum and aborts if degraded.
+      # continue-on-error so a mid-run NHD failure is HANDLED (discard + hold the
+      # PR open) rather than failing the job entirely. Only runs if measure
+      # succeeded and found debt > 0 (not if measure was skipped due to defer).
+      - name: Backfill NHD
+        id: backfill
+        if: steps.measure.outcome == 'success' && steps.measure.outputs.debt != '0'
+        continue-on-error: true
+        run: npm run build:mapdata -- --backfill-nhd
+
+      # ADDITIVE GUARD — verify siting-context only gained entries/fields, never
+      # dropped or nulled (that would be data loss, not a refresh). Same logic
+      # and pathing as neon-sync.yml. continue-on-error so the failure is
+      # HANDLED rather than crashing the job.
+      #
+      # Baseline is origin/main. The rebuild can take ~90min worst-case (though
+      # backfill is ~5min), so anything merged during it leaves HEAD stale and a
+      # recomputation that is CORRECT for the new state reads as data loss. The
+      # script fetches origin/main itself; if that fails it falls back to HEAD
+      # (stricter, never more permissive). See scripts/check-siting-additive.mjs.
+      #
+      # WHAT A PASSING CHECK LOOKS LIKE WHILE THE BUG IS PRESENT: it does not
+      # pass. Probed by planting a violation 2026-09-05 — the script exited 1
+      # naming the dropped fields with their old values.
+      - name: Verify siting-context changes are additive
+        id: additive
+        if: steps.backfill.outcome == 'success'
+        continue-on-error: true
+        run: node scripts/check-siting-additive.mjs
+
+      # UPDATE DEBT LEDGER — recompute and rewrite data/nhd-backfill-debt.json
+      # only if the count changed. Prints "NHD debt: N (ledger was M)", exit 0
+      # on success. continue-on-error so the step failure is HANDLED.
+      - name: Update NHD debt ledger
+        id: ledger
+        if: steps.additive.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          npx tsx scripts/update-nhd-debt.ts --note "nhd-backfill run ${GITHUB_RUN_ID}"
+          # Capture the updated count for the PR body
+          after="$(npx tsx scripts/update-nhd-debt.ts --count)"
+          # Validate it is a non-negative integer (same as measure step)
+          if ! [[ "$after" =~ ^[0-9]+$ ]]; then
+            echo "::error::NHD debt count is not a valid integer: '$after'. Aborting."
+            exit 1
+          fi
+          echo "after=$after" >> "$GITHUB_OUTPUT"
+
+      # FAIL-CLOSED: revert every generated artifact on ANY failure (backfill
+      # crash, additive violation, ledger error). Paths must COVER (be a superset
+      # of) `add-paths` below; a path in add-paths but not here would bypass the
+      # guard. Only fires when a run actually started (not deferred) and debt > 0.
+      # Uses `outcome`, not `conclusion`, because continue-on-error rewrites conclusion.
+      - name: Discard generated artifacts on failure
+        if: >-
+          steps.defer.outputs.skip == 'false'
+          && steps.measure.outputs.debt != '' && steps.measure.outputs.debt != '0'
+          && (steps.backfill.outcome == 'failure'
+              || steps.additive.outcome == 'failure'
+              || steps.ledger.outcome == 'failure')
+        env:
+          BACKFILL_OUTCOME: ${{ steps.backfill.outcome }}
+          ADDITIVE_OUTCOME: ${{ steps.additive.outcome }}
+        run: |
+          if [ "$BACKFILL_OUTCOME" = "failure" ]; then
+            echo "::error::build:mapdata -- --backfill-nhd FAILED — discarding partial artifacts. NHD debt remains unpaid; check NHD service health and rerun."
+          elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+            echo "::error::build:mapdata SUCCEEDED but its output was NOT additive — it dropped or nulled siting-context fields (see the step above). Discarding artifacts; NHD debt remains unpaid."
+          else
+            echo "::error::NHD debt ledger update FAILED — discarding artifacts to keep data/nhd-backfill-debt.json consistent with the generated files."
+          fi
+          git checkout -- \
+            data/siting-context.json \
+            public/data/water.geojson \
+            public/data/power.geojson \
+            public/data/drought.geojson \
+            public/data/water-stress.geojson \
+            public/data/groundwater-decline.geojson \
+            public/data/aquifers.geojson \
+            public/data/map-layers.json \
+            public/data/hero-points.json \
+            public/data/pipeline-history.json \
+            components/home/hero-plate-paths.ts \
+            data/nhd-backfill-debt.json
+          exit 1
+
+      # DETECT PROGRESS — check if any actual changes were made (not just ledger
+      # rewrites). Overlay files (drought etc.) churn on every rebuild, so
+      # progress is judged by data/siting-context.json alone.
+      - name: Detect progress
+        id: progress
+        if: steps.ledger.outcome == 'success'
+        run: |
+          if git diff --quiet -- data/siting-context.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::NHD backfill ran and validated, but no siting-context changes detected (remaining gaps are likely confirmed NHD absences)."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # DISCARD OVERLAY ARTIFACTS — this PR auto-merges unattended; only
+      # siting-context is guarded (additive check). Overlays refresh on data
+      # waves (neon-sync.yml) and should not come through here. Revert them to
+      # prevent a flaky external API (HIFLD, USDM, Aqueduct, aquifers) from
+      # auto-merging a degraded layer (e.g. empty drought.geojson on a 200
+      # response with features: []). Overlays are rebuilt fresh on the next
+      # neon-sync wave.
+      - name: Discard overlay artifacts before PR
+        if: steps.progress.outputs.changed == 'true'
+        run: |
+          git checkout -- \
+            public/data/water.geojson \
+            public/data/power.geojson \
+            public/data/drought.geojson \
+            public/data/water-stress.geojson \
+            public/data/groundwater-decline.geojson \
+            public/data/aquifers.geojson \
+            public/data/map-layers.json \
+            public/data/hero-points.json \
+            public/data/pipeline-history.json \
+            components/home/hero-plate-paths.ts
+
+      # CREATE PR — only if siting-context actually changed. The branch is
+      # deleted after merge, so re-running a successful backfill on the same day
+      # cleanly recreates the PR.
+      - name: Create PR
+        id: create-pr
+        if: steps.progress.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.NEON_SYNC_PAT }}
+          branch: automated/nhd-backfill
+          base: main
+          title: "chore(data): backfill NHD siting context"
+          body: |
+            Automated backfill of `nearestWater` siting-context entries via off-peak NHD queries.
+
+            This is the unattended nightly backfill that pays down NHD debt — facilities
+            approved while the USGS NHD service was degraded and unable to provide
+            `nearestWater` coordinates. This PR fills those gaps using the healthy
+            off-peak NHD service.
+
+            **Debt ledger:**
+            - Before: ${{ steps.measure.outputs.debt }} facilities
+            - After: ${{ steps.ledger.outputs.after }} facilities
+            - Verified additive: ✅
+
+            **Checklist:**
+            - [ ] Confirm `data/siting-context.json` changes are ADDITIVE (a `value → null` is data loss, not a refresh)
+            - [ ] Merge when ready
+          delete-branch: true
+          add-paths: |
+            data/siting-context.json
+            data/nhd-backfill-debt.json
+
+      # ENABLE AUTO-MERGE — merge once CI passes. Does NOT bypass branch
+      # protection. Skipped on any failure so a human reads the PR on runs that
+      # need investigation. Uses `outcome`, NOT `conclusion`: continue-on-error
+      # rewrites conclusion, so only outcome is reliable.
+      #
+      # Native GitHub auto-merge: if the PAT isn't set or a check genuinely fails,
+      # this call schedules a merge that will simply never become eligible, and
+      # the PR sits for manual attention exactly as it always has. That is safe
+      # and intentional — we never bypass branch protection, only enable it.
+      - name: Enable auto-merge
+        if: >-
+          steps.progress.outputs.changed == 'true'
+          && env.HAS_NEON_SYNC_PAT == 'true'
+          && steps.backfill.outcome != 'failure'
+          && steps.additive.outcome != 'failure'
+          && steps.ledger.outcome != 'failure'
+          && steps.create-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.NEON_SYNC_PAT }}
+          PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
+        run: gh pr merge "$PR_NUMBER" --squash --auto
