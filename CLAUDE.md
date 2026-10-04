@@ -203,7 +203,8 @@ carries every other entry forward untouched. `--skip-nhd` and `--backfill-nhd` a
 and error out together.
 
 ⚠️ **Automated since 2026-10-04.** `neon-sync.yml` no longer stops at a failed full pass: when the
-full `build:mapdata` aborts (NHD pre-flight or throughput guard) it falls back to
+full `build:mapdata` fails (usually a degraded USGS NHD, where the pre-flight or throughput guard
+aborts it; any other failure, e.g. an HIFLD truncation, also lands here) it falls back to
 `build:mapdata -- --skip-nhd`, runs the additive guard on whichever path succeeded, updates the
 debt ledger, and auto-merges — the artifacts are additive and the debt is recorded. A run whose
 artifacts are discarded still holds for a human. `nhd-backfill.yml` (daily 04:23 UTC) pays the debt

@@ -520,6 +520,13 @@ monitor repairs** — **RULED OUT**.
   (the nightly backfill adds them later). Before, the whole map-data artifact
   was discarded and a manual `--skip-nhd` run produced the same partial
   entries by hand. Each such wave is still logged under `### OCCURRED`.
+  `data/siting-context.json` is outside the Vercel ignore-gate's skip list
+  (`scripts/vercel-ignore-build.sh` skips only `data/facilities.json`,
+  `data/facilities.meta.json`, `docs/*`, `.github/*`, `*.md` and the LICENSE
+  files), so every nightly backfill merge that lands (a no-op at debt 0 opens no
+  PR) triggers a production deploy in which facility pages gain nearest-water /
+  ≥230 kV lines. Any backfill merge before 2026-10-10 gets its own
+  `### OCCURRED` entry.
 
 ## Gaps in the pre-registered list
 
