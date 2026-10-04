@@ -1,5 +1,5 @@
 {
-  "ceiling": 52,
-  "asOf": "2026-10-02",
-  "note": "Migrated from the NHD_BACKFILL_DEBT_CEILING literal in lib/siting-context.test.ts (last set in #375)."
+  "ceiling": 0,
+  "asOf": "2026-10-04",
+  "note": "Paid down 52 -> 0 by the full build:mapdata in #377 (2026-10-04)"
 }
