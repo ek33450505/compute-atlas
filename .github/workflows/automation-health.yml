@@ -29,9 +29,9 @@ name: Automation Health
 
 on:
   schedule:
-    # 13:00 UTC daily (09:00 EDT) — clear of every monitored cron (06 canary,
-    # 08 neon-sync, 09 Mon release-please, 22 drift-alert, 23 watchdog) and
-    # early in the maintainer's day, so a new issue is seen the same morning.
+    # 13:00 UTC daily (09:00 EDT) — clear of every monitored cron (04 nhd-backfill,
+    # 06 canary, 08 neon-sync, 09 Mon release-please, 22 drift-alert, 23 watchdog)
+    # and early in the maintainer's day, so a new issue is seen the same morning.
     # The exact hour is not load-bearing: the staleness budgets are 36h/8d
     # precisely so this check is never in a race with the jobs it watches.
     - cron: "0 13 * * *"
