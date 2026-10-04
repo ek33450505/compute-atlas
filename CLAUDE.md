@@ -39,9 +39,9 @@ npm run submissions -- reject <id> "note"
 npm run check-sources                        # source-liveness report (read-only)
 ```
 
-**CI:** eight workflows live in `.github/workflows/` (as of 2026-09-28:
+**CI:** nine workflows live in `.github/workflows/` (as of 2026-10-04:
 `automation-health`, `ci`, `codeql`, `discovery-watchdog`, `drift-alert`,
-`googlebot-canary`, `neon-sync`, `release-please`). `ci.yml` is the PR gate and
+`googlebot-canary`, `neon-sync`, `nhd-backfill`, `release-please`). `ci.yml` is the PR gate and
 runs three jobs — `typecheck · lint · test` (tsc, eslint, vitest), `BATS tests`
 (the discovery, vercel ignore-gate and drift-classifier shell suites), and
 `Playwright e2e` (a11y + e2e). CodeQL scans on every PR and push to `main` plus
@@ -202,6 +202,20 @@ NHD is healthy — it restricts the NHD pass to only the facilities whose existi
 carries every other entry forward untouched. `--skip-nhd` and `--backfill-nhd` are mutually exclusive
 and error out together.
 
+⚠️ **Automated since 2026-10-04.** `neon-sync.yml` no longer stops at a failed full pass: when the
+full `build:mapdata` aborts (NHD pre-flight or throughput guard) it falls back to
+`build:mapdata -- --skip-nhd`, runs the additive guard on whichever path succeeded, updates the
+debt ledger, and auto-merges — the artifacts are additive and the debt is recorded. A run whose
+artifacts are discarded still holds for a human. `nhd-backfill.yml` (daily 04:23 UTC) pays the debt
+off-peak: a no-op at debt 0, otherwise `build:mapdata -- --backfill-nhd`, the additive guard, a
+ledger update, and an auto-merging PR carrying ONLY `data/siting-context.json` and
+`data/nhd-backfill-debt.json` (overlays are reverted — untrusted upstream, not covered by the
+guard). It defers while a same-repo neon-sync PR is open, and fails RED once one has been open >24h,
+which `automation-health` surfaces. Basis: every daytime neon-sync dispatch 2026-09-25 → 10-02
+failed the NHD pre-flight (6/6), while off-peak runs were healthy (2026-09-29 23:22Z; 2026-10-04
+~21:30Z). A hand-run wave should still try the full pass first and, if it falls back to
+`--skip-nhd`, must run `npm run nhd:debt -- --note "<why>"` in the same change.
+
 ⚠️ **CORRECTION (2026-09-29): the "finishing would not have helped" claim formerly in this section was
 false, and the false claim was expensive.** It read: *"the full path rebuilds `computeSitingContext`
 from scratch and never merges the existing file, so scattered timeouts null `nearestWater` on EXISTING
@@ -222,8 +236,11 @@ facility that already has an entry.
 
 ⛔ **Stage 2 is not test-covered by an entry-shape check** — `siting-context.test.ts` asserts an ENTRY
 exists, not that it carries NHD fields — but the outstanding count is now covered by a separate
-mutation-tested ratchet (`NHD_BACKFILL_DEBT_CEILING`, 0 since the 2026-09-29 stage-2 run) that fails if the debt grows *or*
-silently shrinks. Track the raw count explicitly and verify with
+ratchet in `lib/siting-context.test.ts` against the ledger `data/nhd-backfill-debt.json`
+(`{ceiling, asOf, note}`, maintained by `npm run nhd:debt -- --note "<why>"`; `--count` prints the
+live integer) that fails if the debt grows *or* silently shrinks. It is mutation-tested: on 2026-10-04,
+with the live debt at 52, a ledger ceiling of 51 failed the "exceed" test and 53 failed the "paid down"
+test; restored, both pass. Track the raw count explicitly and verify with
 ```bash
 python3 -c "
 import json
@@ -233,12 +250,15 @@ off={'HI','AK','GU','MP','PR','VI'}
 print(sum(1 for i,v in s.items() if 'nearestWater' not in v
           and f.get(i,{}).get('location',{}).get('state') not in off))"
 ```
-Stage 2 ran on 2026-09-29 and took it **177 → 0** in ~5 min (NHD healthy). Expect **0**; anything
-higher is a `--skip-nhd` wave's new debt, and the ratchet will fail on it. ⚠️ The non-CONUS exclusion is REQUIRED: 24 facilities
+Stage 2 ran on 2026-09-29 and took it **177 → 0** in ~5 min (NHD healthy). Four degraded `--skip-nhd`
+waves (#370, #372, #374, #375) re-grew it to 52 (FL/DE/DC/CT/CO/GA), and a full run on 2026-10-04 (#377)
+took it back to **0**, re-querying the 2 moved GA pins on the way. Expect **0**; anything higher is debt
+the nightly backfill has not paid yet, and it must match the ledger or the ratchet fails. ⚠️ The non-CONUS exclusion is REQUIRED: 24 facilities
 (AK 9 · HI 6 · GU 4 · MP 2 · PR 2 · VI 1) legitimately have no NHD match because NHD is CONUS-only,
 so an unscoped count reads 201 and can never reach 0.
 Do NOT treat this as general permission to
-use `--skip-nhd` on a wave — the paragraph above is still the rule.
+use `--skip-nhd` on a hand-run wave — the paragraph above is still the rule there; the automation
+applies it only after the full pass has failed.
 
 ⚠️ **Data-source decision (2026-09-29): keep the live NHD query service, do not migrate to bulk
 download.** Evaluated and rejected replacing the per-facility ArcGIS queries (`nhdQueryLayer`,
