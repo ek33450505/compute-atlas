@@ -19,6 +19,9 @@ setup() {
 	SCRIPT="$REPO_ROOT/scripts/classify-drift-output.sh"
 	SYNC_SCRIPT="$REPO_ROOT/scripts/classify-sync-convergence.sh"
 	DIGEST_SCRIPT="$REPO_ROOT/scripts/classify-digest-output.sh"
+	# Overridable only so the workflow-list tests can be mutation-tested against a
+	# scratch copy; CI and every normal run use the real directory.
+	WORKFLOWS_DIR="${WORKFLOWS_DIR:-$REPO_ROOT/.github/workflows}"
 }
 
 # Writes a JSON array fixture to $BATS_TEST_TMPDIR/<name> and echoes its path.
@@ -509,6 +512,14 @@ write_fixture() {
 # does, one-directionally: every committed output must appear in BOTH lists.
 # The reverse is not asserted — add-paths legitimately also carries
 # data/facilities.json and data/facilities.meta.json, which db:export writes.
+#
+# Every restore list is read from a NAMED step (step_checkout_list), never "the
+# first checkout block in the file": neon-sync.yml's fallback step carries its
+# own restore list ahead of the Discard step, and a file-wide first match read
+# that one as the Discard list — a false failure on one test and a silent pass,
+# against the wrong step, on its sibling. Each extractor also has an
+# anti-vacuity test with a minimum line count, so a renamed step or a reformatted
+# block fails loudly instead of yielding an empty list that covers nothing.
 # ---------------------------------------------------------------------------
 
 # Echoes the committed-output paths from build-map-data.mjs's header block, one
@@ -524,48 +535,86 @@ mapdata_outputs() {
 	' "$REPO_ROOT/scripts/build-map-data.mjs"
 }
 
-# Echoes the paths listed under `add-paths: |` in neon-sync.yml.
+# Echoes the paths listed under `add-paths: |` in workflow $1 (a file under
+# $WORKFLOWS_DIR). Each workflow has exactly one create-pull-request step, so
+# unlike the restore lists this needs no step anchor.
 addpaths_list() {
 	awk '
 		/^          add-paths: \|$/ { f = 1; next }
 		f && /^            [^ ]/ { print $1; next }
 		f { exit }
-	' "$REPO_ROOT/.github/workflows/neon-sync.yml"
+	' "$WORKFLOWS_DIR/$1"
 }
 
-# Echoes the paths reverted by the `Discard generated map data on failure` step.
-discard_list() {
-	awk '
-		/^          git checkout -- \\$/ { f = 1; next }
+# Echoes the paths of the FIRST restore block inside the step named $2 of
+# workflow $1, one per line. Scanning starts at that step's `- name:` line and
+# stops at the next step, so a sibling step's own restore list is never read as
+# this one's.
+step_checkout_list() {
+	awk -v step="      - name: $2" '
+		$0 == step { s = 1; next }
+		s && /^      - name:/ { exit }
+		s && /^          git checkout -- \\$/ { f = 1; next }
 		f && /^            [^ ]/ { print $1; next }
 		f { exit }
-	' "$REPO_ROOT/.github/workflows/neon-sync.yml"
+	' "$WORKFLOWS_DIR/$1"
 }
 
-@test "neon-sync: the output extractor finds the real header block (anti-vacuity)" {
-	# Without this, a header reformat that breaks the awk pattern would make the
-	# two coverage tests below iterate over an EMPTY list and pass forever.
-	run mapdata_outputs
+# Echoes, space-prefixed on one line, every path in list $1 that is absent from
+# list $2 (both newline-separated). Empty output means $2 covers $1.
+missing_paths() {
+	local want="$1" have="$2" path missing=""
+	while IFS= read -r path; do
+		[ -n "$path" ] || continue
+		grep -qxF "$path" <<<"$have" || missing="$missing $path"
+	done <<<"$want"
+	printf '%s' "$missing"
+}
+
+NEON_FALLBACK_STEP="Fall back to build:mapdata --skip-nhd"
+NEON_DISCARD_STEP="Discard generated map data on failure"
+NHD_DISCARD_STEP="Discard generated artifacts on failure"
+NHD_OVERLAY_STEP="Discard overlay artifacts before PR"
+
+@test "each PR-creating workflow has exactly one add-paths key (addpaths_list reads only the first)" {
+	# addpaths_list stops after the first block, so a second create-pull-request
+	# step's add-paths would go unchecked. Count keys at any indent; comments that
+	# mention `add-paths` have no colon after it and are not counted.
+	local wf n
+	for wf in neon-sync.yml nhd-backfill.yml; do
+		n="$(grep -c '^[[:space:]]*add-paths:' "$WORKFLOWS_DIR/$wf")" || n=0
+		[ "$n" -eq 1 ] || {
+			echo "$wf has $n add-paths keys, expected exactly 1"
+			return 1
+		}
+	done
+}
+
+@test "neon-sync: the Discard-step extractor finds that step, not the fallback's list (anti-vacuity)" {
+	run step_checkout_list neon-sync.yml "$NEON_DISCARD_STEP"
+	[ "$status" -eq 0 ]
+	[ "${#lines[@]}" -ge 12 ]
+	# The ledger is in the Discard step's list and NOT in the fallback step's
+	# (which precedes it in the file), so its presence proves the scan landed on
+	# the right step.
+	grep -qxF "data/nhd-backfill-debt.json" <<<"$output"
+	grep -qxF "data/siting-context.json" <<<"$output"
+}
+
+@test "neon-sync: the fallback-step extractor finds that step's restore list (anti-vacuity)" {
+	run step_checkout_list neon-sync.yml "$NEON_FALLBACK_STEP"
 	[ "$status" -eq 0 ]
 	[ "${#lines[@]}" -ge 11 ]
-	[[ "$output" == *"public/data/water.geojson"* ]]
-	[[ "$output" == *"data/siting-context.json"* ]]
-	[[ "$output" == *"components/home/hero-plate-paths.ts"* ]]
-	[[ "$output" == *"public/data/pipeline-history.json"* ]]
-	# A wrapped description line must never be mistaken for a path.
-	[[ "$output" != *"build-hero-plate.mjs;"* ]]
+	grep -qxF "data/siting-context.json" <<<"$output"
 }
 
 @test "neon-sync: add-paths commits every committed output of build:mapdata" {
-	local outputs added missing=""
+	local outputs added missing
 	outputs="$(mapdata_outputs)"
-	added="$(addpaths_list)"
+	added="$(addpaths_list neon-sync.yml)"
 	[ -n "$outputs" ]
 	[ -n "$added" ]
-	while IFS= read -r path; do
-		[ -n "$path" ] || continue
-		grep -qxF "$path" <<<"$added" || missing="$missing $path"
-	done <<<"$outputs"
+	missing="$(missing_paths "$outputs" "$added")"
 	[ -z "$missing" ] || {
 		echo "build:mapdata writes these, but neon-sync.yml add-paths does not commit them:$missing"
 		return 1
@@ -573,15 +622,12 @@ discard_list() {
 }
 
 @test "neon-sync: the failure-discard list reverts every committed output of build:mapdata" {
-	local outputs discarded missing=""
+	local outputs discarded missing
 	outputs="$(mapdata_outputs)"
-	discarded="$(discard_list)"
+	discarded="$(step_checkout_list neon-sync.yml "$NEON_DISCARD_STEP")"
 	[ -n "$outputs" ]
 	[ -n "$discarded" ]
-	while IFS= read -r path; do
-		[ -n "$path" ] || continue
-		grep -qxF "$path" <<<"$discarded" || missing="$missing $path"
-	done <<<"$outputs"
+	missing="$(missing_paths "$outputs" "$discarded")"
 	[ -z "$missing" ] || {
 		echo "build:mapdata writes these, but the fail-closed discard step leaves them in the tree:$missing"
 		return 1
@@ -592,8 +638,8 @@ discard_list() {
 	# The two lists may differ only by db:export's own outputs, which
 	# build:mapdata never touches and which must therefore never be reverted.
 	local added discarded extra=""
-	added="$(addpaths_list)"
-	discarded="$(discard_list)"
+	added="$(addpaths_list neon-sync.yml)"
+	discarded="$(step_checkout_list neon-sync.yml "$NEON_DISCARD_STEP")"
 	[ -n "$added" ]
 	[ -n "$discarded" ]
 	while IFS= read -r path; do
@@ -605,6 +651,93 @@ discard_list() {
 	done <<<"$added"
 	[ -z "$extra" ] || {
 		echo "committed by add-paths but never reverted on a failed build:mapdata:$extra"
+		return 1
+	}
+}
+
+@test "neon-sync: the fallback step restores every output of build:mapdata before re-running it" {
+	# The fallback runs after a failed full build that may have left partial
+	# output behind; it must start from committed state, not from that debris.
+	local outputs restored missing
+	outputs="$(mapdata_outputs)"
+	restored="$(step_checkout_list neon-sync.yml "$NEON_FALLBACK_STEP")"
+	[ -n "$outputs" ]
+	[ -n "$restored" ]
+	missing="$(missing_paths "$outputs" "$restored")"
+	[ -z "$missing" ] || {
+		echo "build:mapdata writes these, but the fallback step does not restore them first:$missing"
+		return 1
+	}
+}
+
+# ---------------------------------------------------------------------------
+# nhd-backfill.yml — what an unattended run may put in its auto-merged PR
+#
+# The PR is auto-merged, so its add-paths is the whole of what an unattended run
+# can publish. It is pinned to the siting-context data plus its debt ledger: the
+# overlay files come from untrusted upstreams (USGS, WRI, HIFLD, drought.gov)
+# and are rebuilt by every neon-sync wave anyway, so none may ride this PR.
+# ---------------------------------------------------------------------------
+
+@test "nhd-backfill: add-paths is exactly siting-context + the debt ledger (no overlay rides the auto-merge)" {
+	run addpaths_list nhd-backfill.yml
+	[ "$status" -eq 0 ]
+	[ "${#lines[@]}" -eq 2 ] || {
+		echo "nhd-backfill.yml add-paths must carry exactly 2 paths, got ${#lines[@]}: $output"
+		return 1
+	}
+	grep -qxF "data/siting-context.json" <<<"$output"
+	grep -qxF "data/nhd-backfill-debt.json" <<<"$output"
+}
+
+@test "nhd-backfill: the failure-discard extractor finds that step's restore list (anti-vacuity)" {
+	run step_checkout_list nhd-backfill.yml "$NHD_DISCARD_STEP"
+	[ "$status" -eq 0 ]
+	[ "${#lines[@]}" -ge 12 ]
+	grep -qxF "data/nhd-backfill-debt.json" <<<"$output"
+	grep -qxF "data/siting-context.json" <<<"$output"
+}
+
+@test "nhd-backfill: the failure-discard step reverts every path add-paths would commit" {
+	local added discarded missing
+	added="$(addpaths_list nhd-backfill.yml)"
+	discarded="$(step_checkout_list nhd-backfill.yml "$NHD_DISCARD_STEP")"
+	[ -n "$added" ]
+	[ -n "$discarded" ]
+	missing="$(missing_paths "$added" "$discarded")"
+	[ -z "$missing" ] || {
+		echo "committed by add-paths but never reverted when the backfill fails:$missing"
+		return 1
+	}
+}
+
+@test "nhd-backfill: the overlay-discard extractor finds that step's restore list (anti-vacuity)" {
+	run step_checkout_list nhd-backfill.yml "$NHD_OVERLAY_STEP"
+	[ "$status" -eq 0 ]
+	[ "${#lines[@]}" -ge 10 ]
+	grep -qxF "public/data/water.geojson" <<<"$output"
+	# This step must revert ONLY the overlays. The failure-discard step, which
+	# precedes it in the file, also lists the siting data and the ledger, so an
+	# unanchored extractor would read that block and include them here.
+	if grep -qxF "data/siting-context.json" <<<"$output" || grep -qxF "data/nhd-backfill-debt.json" <<<"$output"; then
+		echo "the overlay-discard step must not revert the data the PR commits, but its list is: $output"
+		return 1
+	fi
+}
+
+@test "nhd-backfill: the overlay discard plus add-paths accounts for every output of build:mapdata" {
+	# A regenerated overlay is either reverted before the PR or is itself an
+	# add-path; any build:mapdata output in neither could slip into the PR.
+	local outputs reverted added missing
+	outputs="$(mapdata_outputs)"
+	reverted="$(step_checkout_list nhd-backfill.yml "$NHD_OVERLAY_STEP")"
+	added="$(addpaths_list nhd-backfill.yml)"
+	[ -n "$outputs" ]
+	[ -n "$reverted" ]
+	[ -n "$added" ]
+	missing="$(missing_paths "$outputs" "$reverted"$'\n'"$added")"
+	[ -z "$missing" ] || {
+		echo "build:mapdata writes these, but nhd-backfill.yml neither reverts nor adds them:$missing"
 		return 1
 	}
 }
