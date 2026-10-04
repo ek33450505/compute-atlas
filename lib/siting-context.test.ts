@@ -143,7 +143,13 @@ describe("data-integrity: NHD backfill debt", () => {
   // HTTP 502), and twice more when re-probed by hand (layer 4 timed out at
   // [KS interior]; both layers timed out at [PA northeast]). The payoff is
   // still the FULL run, now 52 -> 0. Lower this to 0 in that PR.
-  const NHD_BACKFILL_DEBT_CEILING = 52;
+  //
+  // Lowered 52 -> 0 on 2026-10-04: a FULL build:mapdata ran with NHD healthy
+  // (off-peak, 10/10 quorum probes ok at 300-407ms, ~1.1 facilities/sec over
+  // all 2,328). check-siting-additive: 0 lost, 0 nulled, 4 changed — the two
+  // moved GA pins (Bunkhouse, Springbank) re-queried at their corrected
+  // coordinates. All 52 owed CONUS ids now carry nearestWater.
+  const NHD_BACKFILL_DEBT_CEILING = 0;
 
   // `FacilityStateRow` is the minimal facility shape the debt count needs.
   // stateById/missingNearestWaterOffenders both take optional injected data

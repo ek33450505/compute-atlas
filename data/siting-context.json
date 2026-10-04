@@ -115,6 +115,15 @@
     }
   },
   "365-data-centers-boca-raton-fl": {
+    "nearestWater": {
+      "name": "Lake Rogers",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -197,6 +206,15 @@
     }
   },
   "365-data-centers-fort-lauderdale-fl": {
+    "nearestWater": {
+      "name": "North Fork Middle River",
+      "kind": "river",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -900,6 +918,15 @@
     }
   },
   "ainet-dc-900s-washington-dc": {
+    "nearestWater": {
+      "name": "McMillan Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -3019,6 +3046,15 @@
     }
   },
   "atlas-capital-bloomfield-ct": {
+    "nearestWater": {
+      "name": "Farmington River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -3152,13 +3188,13 @@
   },
   "atlas-project-springbank-adairsville-ga": {
     "nearestWater": {
-      "name": "Oothkalooga Creek",
+      "name": "Sipsey Creek",
       "kind": "river",
-      "distanceMi": 0.5
+      "distanceMi": 0.7
     },
     "nearestTransmission": {
-      "voltageKv": 500,
-      "distanceMi": 2.7
+      "voltageKv": 230,
+      "distanceMi": 0.6
     },
     "waterStress": {
       "cat": 3,
@@ -3170,6 +3206,15 @@
     }
   },
   "atlas-stiles-road-cartersville-ga": {
+    "nearestWater": {
+      "name": "Etowah River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -6463,6 +6508,15 @@
     }
   },
   "centersquare-den1-highlands-ranch-co": {
+    "nearestWater": {
+      "name": "Chatfield Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -6477,6 +6531,15 @@
     }
   },
   "centersquare-den2-englewood-co": {
+    "nearestWater": {
+      "name": "Lone Tree Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -6974,6 +7037,15 @@
     }
   },
   "cigna-windsor-data-center-ct": {
+    "nearestWater": {
+      "name": "Great Pond",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -7220,6 +7292,15 @@
     }
   },
   "cirrus-delaware-middletown-technology-center-de": {
+    "nearestWater": {
+      "name": "Silver Lake",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -7855,6 +7936,15 @@
     }
   },
   "cloud-south-west-palm-beach-fl": {
+    "nearestWater": {
+      "name": "Clear Lake",
+      "kind": "lake",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -8287,6 +8377,15 @@
     }
   },
   "cogent-boca-raton-fl": {
+    "nearestWater": {
+      "name": "Lake Rogers",
+      "kind": "lake",
+      "distanceMi": 2.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -8343,6 +8442,15 @@
     }
   },
   "cogent-hollywood-pembroke-park-fl": {
+    "nearestWater": {
+      "name": "Desoto Lakes",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -8397,6 +8505,15 @@
     }
   },
   "cogent-washington-dc-2-1050-connecticut-ave-dc": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8464,6 +8581,15 @@
     }
   },
   "colo-solutions-downtown-orlando-fl": {
+    "nearestWater": {
+      "name": "Lake Cherokee",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -9678,6 +9804,15 @@
     }
   },
   "coresite-dc2-washington-d-c-dc": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -9692,6 +9827,15 @@
     }
   },
   "coresite-de1-denver-co": {
+    "nearestWater": {
+      "name": "Cherry Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -9706,6 +9850,15 @@
     }
   },
   "coresite-de2-denver-co": {
+    "nearestWater": {
+      "name": "Cherry Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -10460,6 +10613,15 @@
     }
   },
   "ct-das-groton-data-center-ct": {
+    "nearestWater": {
+      "name": "Thames River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11303,6 +11465,15 @@
     }
   },
   "dastor-new-castle-boulden-circle-de": {
+    "nearestWater": {
+      "name": "Nonesuch Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -11317,6 +11488,15 @@
     }
   },
   "dastor-wilmington-1201-north-market-de": {
+    "nearestWater": {
+      "name": "Brandywine Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11331,6 +11511,15 @@
     }
   },
   "data-canopy-newark-pencader-de": {
+    "nearestWater": {
+      "name": "Muddy Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11512,6 +11701,15 @@
     }
   },
   "databank-den1-englewood-co": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -12560,6 +12758,15 @@
     }
   },
   "delaware-dti-biggs-data-center-new-castle-de": {
+    "nearestWater": {
+      "name": "Christina River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -12574,6 +12781,15 @@
     }
   },
   "delaware-dti-william-penn-data-center-dover-de": {
+    "nearestWater": {
+      "name": "Silver Lake",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -12630,6 +12846,15 @@
     }
   },
   "demec-beasley-generation-station-kent-de": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -15094,6 +15319,15 @@
     }
   },
   "edgeconnex-mia01-miami-fl": {
+    "nearestWater": {
+      "name": "The Pocket",
+      "kind": "lake",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -15104,6 +15338,15 @@
     }
   },
   "edgeconnex-mia02-miami-gardens-fl": {
+    "nearestWater": {
+      "name": "Greyknoll Lake",
+      "kind": "lake",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -15251,6 +15494,15 @@
     }
   },
   "edgeconnex-tal01-tallahassee-fl": {
+    "nearestWater": {
+      "name": "Munson Slough",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15674,6 +15926,15 @@
     }
   },
   "eip-energy-innovation-park-new-britain-ct": {
+    "nearestWater": {
+      "name": "Doerrs Pond",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -16141,6 +16402,15 @@
     }
   },
   "engie-solidago-solar-townsend-de": {
+    "nearestWater": {
+      "name": "Appoquinimink River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -16812,6 +17082,15 @@
     }
   },
   "equinix-de1-centennial-co": {
+    "nearestWater": {
+      "name": "Little Dry Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -16826,6 +17105,15 @@
     }
   },
   "equinix-de2-englewood-co": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -19248,6 +19536,15 @@
     }
   },
   "freepoint-cedar-creek-solar-smyrna-de": {
+    "nearestWater": {
+      "name": "Cedar Swamp",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -19262,6 +19559,15 @@
     }
   },
   "freepoint-raceway-solar-harrington-de": {
+    "nearestWater": {
+      "name": "Bright Haines Glade Branch",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -19420,6 +19726,15 @@
     }
   },
   "garrison-energy-center-dover-de": {
+    "nearestWater": {
+      "name": "Little River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -19505,6 +19820,15 @@
     }
   },
   "generate-nb-fuel-cells-new-britain-ct": {
+    "nearestWater": {
+      "name": "Doerrs Pond",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -21692,6 +22016,15 @@
   "hawaiiantel-kawaihae-hi": {},
   "hawaiki-cable-kapolei-hi": {},
   "hay-road-energy-center-de": {
+    "nearestWater": {
+      "name": "Shellpot Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -22560,6 +22893,15 @@
     }
   },
   "im-critical-miami-fl": {
+    "nearestWater": {
+      "name": "Little River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -23600,6 +23942,15 @@
     }
   },
   "jpmorgan-chase-cdc1-bear-de": {
+    "nearestWater": {
+      "name": "Christina River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29291,6 +29642,15 @@
     }
   },
   "nlr-esif-hpc-data-center-golden-co": {
+    "nearestWater": {
+      "name": "Maple Grove Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -30165,6 +30525,15 @@
     }
   },
   "oakley-brown-farm-road-cartersville-ga": {
+    "nearestWater": {
+      "name": "Richland Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -30205,6 +30574,15 @@
     }
   },
   "og-industries-beacon-falls-ct": {
+    "nearestWater": {
+      "name": "Naugatuck River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 11.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -30268,6 +30646,15 @@
     }
   },
   "omega-systems-stamford-ct": {
+    "nearestWater": {
+      "name": "Noroton River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -34694,6 +35081,15 @@
     }
   },
   "renew-riverside-bristol-ct": {
+    "nearestWater": {
+      "name": "Pequabuck River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -34704,6 +35100,15 @@
     }
   },
   "renew-riverside-fuel-cell-bristol-ct": {
+    "nearestWater": {
+      "name": "Pequabuck River",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -36312,6 +36717,15 @@
     }
   },
   "sd-data-center-melbourne-fl": {
+    "nearestWater": {
+      "name": "Indian River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -37140,6 +37554,15 @@
     }
   },
   "skylink-data-centers-naples-fl": {
+    "nearestWater": {
+      "name": "Gordon River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -39017,6 +39440,15 @@
     }
   },
   "switch-keep-2-atlanta-north-cartersville-ga": {
+    "nearestWater": {
+      "name": "Pumpkinvine Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -39511,6 +39943,15 @@
     }
   },
   "t5-colorado-springs-co": {
+    "nearestWater": {
+      "name": "Fountain Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -39839,11 +40280,11 @@
     "nearestWater": {
       "name": "Raccoon Creek",
       "kind": "river",
-      "distanceMi": 0.7
+      "distanceMi": 1.2
     },
     "nearestTransmission": {
       "voltageKv": 500,
-      "distanceMi": 1
+      "distanceMi": 0.7
     },
     "waterStress": {
       "cat": 3,
@@ -41748,6 +42189,15 @@
     }
   },
   "undisclosed-brighton-cr4-50th-ave-co": {
+    "nearestWater": {
+      "name": "Munger Reservoir Number 1",
+      "kind": "lake",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -41808,6 +42258,15 @@
     }
   },
   "university-of-florida-data-center-gainesville-fl": {
+    "nearestWater": {
+      "name": "Little Hatchet Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 12.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -42664,6 +43123,15 @@
     }
   },
   "volico-fll1-pompano-beach-fl": {
+    "nearestWater": {
+      "name": "Sailboat Lake",
+      "kind": "lake",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"

@@ -427,6 +427,29 @@ operator and county hubs). `facilities` family.
     | grep '^+' | grep -o '"state": "[A-Z][A-Z]"' | sort | uniq -c
   ```
 
+**2026-10-04 — branch `data/nhd-debt-full-pass`, siting-context full pass (NHD debt 52 → 0)**
+Category: *content edit to page templates* (data-driven content, no template
+change). `facilities` family only.
+
+- 52 facility pages that had no "nearest water" line gained one, and the same
+  52 gained a "nearest ≥230 kV line" — both render in the "Siting context"
+  panel. By state: CO 10 · CT 9 · DE 13 · DC 3 · FL 14 · GA 3. These are the
+  `--skip-nhd` records from #370, #372, #374 and #375.
+- Two existing pages changed values: the moved GA pins
+  `atlas-project-springbank-adairsville-ga` (water 0.5 → 0.7 mi; line
+  500 kV @ 2.7 mi → 230 kV @ 0.6 mi) and
+  `taurus-digital-realty-project-bunkhouse-stilesboro-ga` (water 0.7 →
+  1.2 mi; line 500 kV @ 1.0 mi → 0.7 mi), re-queried at the coordinates #370
+  corrected. `check-siting-additive`: 0 added, 0 lost, 0 nulled, 4 changed.
+- `public/data/drought.geojson` and `map-layers.json` refreshed (weekly USDM
+  snapshot, `asOf` 2026-10-04). No facility added or removed; the hero plate
+  and hero points are unchanged.
+
+  ```bash
+  git --no-pager diff --stat main...data/nhd-debt-full-pass
+  node scripts/check-siting-additive.mjs
+  ```
+
 ### RULED OUT
 
 Listed because the section's own instruction is to rule confounds out
