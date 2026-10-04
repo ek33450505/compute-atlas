@@ -451,6 +451,271 @@ EOF
 	[[ "$output" == *"30 bytes"* ]]
 }
 
+# --- auth failure class (2026-10-04) ----------------------------------------
+# 2026-10-03 and 10-04 (also 09-26/27): the launchd job's `claude -p` failed in
+# 2-3 s with a 73-byte file, "Failed to authenticate: OAuth session expired and
+# could not be refreshed". That fell through to `no_array` ("no parseable
+# candidate array"), was retried pointlessly, and the second state of the batch
+# then made the same doomed call. `auth` is a hard environmental class like
+# `blocked`: no retry, and no later state in the batch calls claude again.
+
+@test "an expired-login failure classifies as auth and does NOT retry" {
+	export DISCOVERY_ENABLED=true
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "Failed to authenticate: OAuth session expired and could not be refreshed"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	# ONE call, not two — a retry cannot revive a dead login.
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 1 ]
+	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" == *"NOT retrying"* ]]
+	# the operator-facing reason names the login, not a JSON bug
+	[[ "$output" == *"Claude Code login expired or invalid"* ]]
+	[[ "$output" == *"cause=auth"* ]]
+	[[ "$output" != *"cause=no_array"* ]]
+	grep -q '"claudeStatus": "auth"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "an auth message wrapped in an API Error envelope still classifies as auth" {
+	export DISCOVERY_ENABLED=true
+	# THE ORDERING TRAP, auth edition: this text contains BOTH markers. If run.sh
+	# tests `API Error` before the auth patterns it lands in api_error and earns a
+	# pointless retry against a dead login. Mutation-tested by swapping the cases.
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "API Error: Failed to authenticate: OAuth session expired and could not be refreshed"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 1 ]
+	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" != *"cause=api_error"* ]]
+	grep -q '"claudeStatus": "auth"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "an auth failure short-circuits the rest of the batch" {
+	export DISCOVERY_ENABLED=true
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+
+	# Batch is [TX VA]. TX's single attempt hits the dead login; VA must NOT
+	# invoke claude at all (same login, same failure, 2-3 s wasted per state).
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "Failed to authenticate: OAuth session expired and could not be refreshed"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	# exactly ONE claude call across the whole batch (TX only, no retry, no VA)
+	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
+	[ "$call_count" -eq 1 ]
+
+	# VA is named as skipped, in the log and in the failure ledger
+	[[ "$output" == *"skipping claude for VA"* ]]
+	[[ "$output" == *"VA: skipped"* ]]
+	# the batch still completed and still covers both states
+	[[ "$output" == *"discovery batch complete"* ]]
+
+	# per-state heartbeat: TX carries the real class, VA carries `skipped`
+	grep -A1 '"state": "TX"' "$LOG_DIR/heartbeat.json" | grep -q '"claudeStatus": "auth"'
+	grep -A1 '"state": "VA"' "$LOG_DIR/heartbeat.json" | grep -q '"claudeStatus": "skipped"'
+
+	# the submit gate is untouched: nothing reached submit-candidates
+	run grep -c -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	[ "${output//[[:space:]]/}" = "0" ]
+}
+
+# --- re-queue after an environmental failure (2026-10-04) -------------------
+# The cursor advances ONCE, before any research, so a state whose claude call
+# never completed is still consumed: on 2026-10-03/04 an expired login consumed
+# ID KS KY ME, which would not have come round for ~26 days. After the state
+# loop, an `auth` / `skipped` / `blocked` state rewinds the cursor to the first
+# such state. These tests `unset DISCOVERY_STATES` (setup() pins it to a custom
+# list) because the rewind applies ONLY to the default rotation, in which TX is
+# followed by VA, OH.
+
+@test "an auth failure rewinds the cursor to the state it consumed" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "Failed to authenticate: OAuth session expired and could not be refreshed"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	# Batch was [TX VA]; the start-of-run write put the cursor on OH. TX (auth)
+	# and VA (skipped) were researched for nothing, so both come round again.
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "TX" ]
+	[[ "$output" == *"re-queued: cursor rewound OH -> TX (environmental failure: auth); TX VA run again next batch"* ]]
+}
+
+@test "a blocked (session-limit) failure rewinds the cursor to the state it consumed" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	# start-of-run write put the cursor on VA; the rewind puts it back on TX
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "TX" ]
+	[[ "$output" == *"environmental failure: blocked"* ]]
+}
+
+@test "the rewind targets the FIRST environmental failure, never a state that succeeded" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+
+	# Batch [TX VA]: TX (call 1) returns a valid array, VA (call 2) hits the
+	# session limit. The target must be VA, not the batch's first state TX.
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+n=\$((n + 1))
+echo "\$n" >"$CLAUDE_COUNTER_FILE"
+if [ "\$n" -le 1 ]; then
+	echo '[{"name":"First State Facility","facilityType":"data_center"}]'
+	exit 0
+else
+	echo "You've hit your session limit"
+	exit 1
+fi
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "VA" ]
+	[[ "$output" == *"re-queued: cursor rewound OH -> VA (environmental failure: blocked); VA run again next batch"* ]]
+}
+
+@test "a DISCOVERY_STATES override run never rewinds the cursor" {
+	export DISCOVERY_ENABLED=true
+	# The known trap: an override-list state must never be written into the live
+	# cursor.txt by the rewind. Three states so the two candidate answers differ:
+	# the start-of-run write for batch [IA NE] is WA (index 2), while an
+	# unguarded rewind would write IA (the first failed state).
+	export DISCOVERY_STATES="IA NE WA"
+	export STATES_PER_RUN=2
+	rm -f "$LOG_DIR/cursor.txt"
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "Failed to authenticate: OAuth session expired and could not be refreshed"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "WA" ]
+	[[ "$output" != *"re-queued"* ]]
+}
+
+@test "a transient api_error does NOT rewind the cursor" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# Not proven environmental, so the rotation moves on exactly as before.
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "API Error: Connection closed mid-response."
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "VA" ]
+	[[ "$output" != *"re-queued"* ]]
+}
+
+@test "a fully successful default-rotation batch still advances the cursor by 2" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"Fine Facility","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "OH" ]
+	[[ "$output" != *"re-queued"* ]]
+}
+
 @test "a legitimately empty [] is never classified as a failure" {
 	export DISCOVERY_ENABLED=true
 	# candidates-20260713T161505-TX.json is 3 bytes of "[]" and recorded `ok`.

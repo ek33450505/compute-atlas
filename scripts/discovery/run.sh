@@ -192,9 +192,18 @@ fi
 #   DISCOVERY_STATES="IA NE" STATES_PER_RUN=2 bash scripts/discovery/run.sh
 DEFAULT_STATES="IA NE WA OR MN MO UT TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA AL AK AR CA CO CT DC DE FL HI ID KS KY ME MD MA MI MS MT NH NJ NY ND RI SC SD TN VT WV"
 read -r -a STATES <<< "${DISCOVERY_STATES:-$DEFAULT_STATES}"
+# True only when STATES IS the default rotation. The re-queue rewind after the
+# state loop writes a state into cursor.txt, and an override-list state must
+# never land there (a targeted `DISCOVERY_STATES="IA NE"` run would plant a
+# state the live rotation may not even contain).
+ROTATION_IS_DEFAULT=false
+if [[ -z "${DISCOVERY_STATES:-}" ]]; then
+  ROTATION_IS_DEFAULT=true
+fi
 if (( ${#STATES[@]} == 0 )); then
   log "WARN: DISCOVERY_STATES was set but empty — falling back to the default rotation"
   read -r -a STATES <<< "$DEFAULT_STATES"
+  ROTATION_IS_DEFAULT=true
 fi
 CURSOR_FILE="$LOG_DIR/cursor.txt"
 
@@ -399,6 +408,12 @@ fi
 #               (machine slept mid-response, or the subscription session limit
 #               was hit). A retry CANNOT help — on 2026-09-11 the NC "retry"
 #               ran for 3 seconds against a limit that reset hours later.
+#   auth      — hard environmental: the Claude Code login is expired or invalid
+#               ("Failed to authenticate: OAuth session expired and could not
+#               be refreshed"). A retry CANNOT help and neither can any later
+#               state in the batch — on 2026-10-03/04 (and 09-26/27) every run
+#               failed in 2-3 s with a 73-byte file and was reported as
+#               no_array, sending the operator hunting a JSON bug.
 #   api_error — transient API/network fault ("API Error: ..."), e.g. the
 #               2026-07-25 TX and 2026-08-11 VA runs. A retry is reasonable.
 #   no_array  — genuine unparseable model output: prose instead of JSON, as on
@@ -410,7 +425,9 @@ fi
 # mid-response." contains BOTH markers, so the `blocked` patterns MUST be
 # tested BEFORE `API Error`. Reordering these so the generic `API Error` comes
 # first reads tidier and is wrong: every sleep failure would be misclassified
-# as transient and earn a pointless retry into a machine that is asleep.
+# as transient and earn a pointless retry into a machine that is asleep. The
+# same holds for `auth`: an expired-login message can be wrapped in an
+# "API Error: ..." envelope, so `auth` is also tested BEFORE `API Error`.
 classify_candidates_failure() {
   local _head=""
   # Only the first 4 KB: every observed environmental failure is under 100
@@ -418,8 +435,9 @@ classify_candidates_failure() {
   # reason to scan.
   _head="$(head -c 4096 "$1" 2>/dev/null || true)"
   case "$_head" in
-    # blocked FIRST — see the ordering note above. Do not "tidy" this.
+    # blocked and auth FIRST — see the ordering note above. Do not "tidy" this.
     *"went to sleep"* | *"session limit"*) echo "blocked" ;;
+    *"Failed to authenticate"* | *"OAuth session expired"* | *"Please run /login"*) echo "auth" ;;
     *"API Error"*) echo "api_error" ;;
     *) echo "no_array" ;;
   esac
@@ -431,6 +449,7 @@ classify_candidates_failure() {
 classify_candidates_reason() {
   case "$1" in
     blocked) echo "run blocked by the environment (computer slept or session limit)" ;;
+    auth) echo "Claude Code login expired or invalid (run \`claude auth login\`, or refresh the long-lived token)" ;;
     api_error) echo "transient API error before any candidate array" ;;
     *) echo "no parseable candidate array" ;;
   esac
@@ -547,6 +566,11 @@ HB_ELAPSED=()
 # nonzero exit (open item #1) rather than completing silently as before.
 FAILURES=()
 
+# Latched the first time a state's claude call fails with the `auth` class.
+# An expired login is per-machine, not per-state: every later state in the
+# batch would make the same doomed call, so the loop skips claude for them.
+AUTH_FAILED_IN_BATCH=false
+
 # note_overrun: the cap-did-not-enforce detector. Exit status cannot tell us
 # this (a SIGTERM-ignoring process yields 124 whether it was capped at 2s or
 # ran 31s — measured), so wall-clock is the only evidence.
@@ -564,6 +588,24 @@ for STATE in "${BATCH_STATES[@]}"; do
   RUN_ID="$(date '+%Y%m%dT%H%M%S')-${STATE}"
   RUN_IDS+=("$RUN_ID")
   log "starting discovery run $RUN_ID for state=$STATE"
+
+  # --- auth short-circuit ----------------------------------------------------
+  # An earlier state in this batch hit a dead Claude login (class `auth`). Calling
+  # claude again would fail the same way in 2-3 s, so skip it — the existing-
+  # facilities fetch too, which only exists to build that prompt. Nothing is
+  # submitted (CLAUDE_ARRAY_OK stays the only path to submit) and the state is
+  # recorded as a failure so the run still alerts and exits nonzero. Never true
+  # in dry-run: no claude call is made there, so no state can latch it.
+  if [[ "$AUTH_FAILED_IN_BATCH" == "true" ]]; then
+    log "WARN: skipping claude for $STATE — Claude auth failed earlier in this batch"
+    FAILURES+=("$STATE: skipped — Claude auth failed earlier in this batch")
+    HB_RUN_IDS+=("$RUN_ID")
+    HB_STATES+=("$STATE")
+    HB_STATUSES+=("skipped")
+    HB_ELAPSED+=(0)
+    log "discovery run $RUN_ID complete"
+    continue
+  fi
 
   # --- existing-facilities projection (fail-open: empty string on any error) --
   if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
@@ -645,10 +687,13 @@ d
     # A `blocked` class is a hard environmental stop (machine asleep, session
     # limit): the retry below cannot clear it and would only burn a second
     # invocation against the same wall, so it is suppressed and the run carries
-    # the real cause forward instead. `api_error` and `no_array` both still
+    # the real cause forward instead. `auth` (dead login) is the same: a retry
+    # cannot revive an expired session. `api_error` and `no_array` both still
     # retry — that is the pre-existing behaviour and it is right for them.
     if [[ "$CLAUDE_ARRAY_OK" != "true" && "$CLAUDE_FAIL_CLASS" == "blocked" ]]; then
       log "WARN: claude output for $RUN_ID was cut short by a hard environmental block (computer slept mid-response, or the subscription session limit was hit) — ${CLAUDE_FAIL_BYTES} bytes written; NOT retrying, a retry cannot clear it (2026-09-11: the NC retry ran 3s against a limit that reset hours later)"
+    elif [[ "$CLAUDE_ARRAY_OK" != "true" && "$CLAUDE_FAIL_CLASS" == "auth" ]]; then
+      log "WARN: claude output for $RUN_ID was a login failure (Claude Code auth expired or invalid) — ${CLAUDE_FAIL_BYTES} bytes written; NOT retrying, a retry cannot revive a dead login (2026-10-03/04: every retry ran 2s against the same expired session)"
     elif [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
       log "WARN: claude output for $RUN_ID had no parseable JSON array (cause=${CLAUDE_FAIL_CLASS}, ${CLAUDE_FAIL_BYTES} bytes) — retrying once"
       RETRY_STATUS=0
@@ -694,12 +739,18 @@ d
     # days. The class names the cause so the alert is actionable: a `blocked`
     # run needs the machine awake or the session limit reset, not a code fix.
     FAILURES+=("$STATE: $CLAUDE_FAIL_REASON")
+    # Latch the batch-wide short-circuit at the top of the loop. Checked on the
+    # FINAL class (after any retry), so a no_array whose retry surfaced the auth
+    # failure also trips it.
+    [[ "$CLAUDE_FAIL_CLASS" == "auth" ]] && AUTH_FAILED_IN_BATCH=true
   fi
 
   if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
-    # Carries the real class (blocked | api_error | no_array), not a blanket
-    # "no_array". Safe for the watchdog: check-heartbeat.ts reads only the
-    # top-level `status` field, never `claudeStatus`.
+    # Carries the real class (blocked | auth | api_error | no_array), not a
+    # blanket "no_array". (A state skipped by the auth short-circuit records
+    # `skipped` at the top of the loop and never reaches here.) Safe for the
+    # watchdog: check-heartbeat.ts reads only the top-level `status` field,
+    # never `claudeStatus`.
     HEARTBEAT_STATUS="$CLAUDE_FAIL_CLASS"
     [[ "$CLAUDE_ARRAY_OK" == "true" ]] && HEARTBEAT_STATUS="ok"
     HB_RUN_IDS+=("$RUN_ID")
@@ -710,6 +761,53 @@ d
 
   log "discovery run $RUN_ID complete"
 done
+
+# --- re-queue states an environmental failure consumed ----------------------
+# The cursor advance above is written ONCE, before any research (crash-safety —
+# keep that), so a state whose claude call never ran to completion is still
+# consumed from the rotation. On 2026-10-03/04 an expired OAuth session did
+# exactly that: ID KS KY ME were all "visited" with nothing researched, and
+# would not have come round again for ~26 days (51 states / 2 per run).
+#
+# So after the loop, if any state's FINAL status is a hard environmental
+# failure — `auth`, `skipped` (not attempted because auth died earlier in the
+# batch) or `blocked` (machine slept / session limit) — nothing was researched
+# for it and a retry next batch is the right response, so rewind the cursor to
+# the FIRST such state in batch order. `api_error` / `no_array` do NOT rewind:
+# after the bounded retry they are not proven environmental (the model really
+# can emit prose), and re-queueing them would let one bad state stall the
+# rotation on a non-environmental fault.
+#
+# Known cost, accepted: if state A failed environmentally and a LATER state B in
+# the batch succeeded, rewinding to A re-runs B next batch too. Harmless —
+# submissions dedupe — and cheaper than tracking a per-state retry list. A state
+# that succeeded and PRECEDES the first failure is never the target.
+#
+# Consequence worth stating plainly: a permanently broken login now stalls the
+# rotation on the same states instead of silently skipping the whole country.
+# That is correct — the watchdog fails daily on the degraded heartbeat, so the
+# stall is loud, whereas the old behaviour hid a dead pipeline behind a
+# "rotating" cursor.
+#
+# Guards: never on dry-run (no claude call was made, nothing to re-queue), and
+# only on the DEFAULT rotation — a DISCOVERY_STATES override run must not write
+# an override-list state into the live cursor.txt (the known trap).
+if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" && "$ROTATION_IS_DEFAULT" == "true" ]]; then
+  REWIND_INDEX=-1
+  for (( _r = 0; _r < ${#HB_STATES[@]}; _r++ )); do
+    case "${HB_STATUSES[$_r]}" in
+      auth | skipped | blocked)
+        REWIND_INDEX="$_r"
+        break
+        ;;
+    esac
+  done
+  if (( REWIND_INDEX >= 0 )); then
+    REWIND_STATE="${HB_STATES[$REWIND_INDEX]}"
+    log "re-queued: cursor rewound ${STATES[$NEXT_INDEX]} -> ${REWIND_STATE} (environmental failure: ${HB_STATUSES[$REWIND_INDEX]}); ${HB_STATES[*]:$REWIND_INDEX} run again next batch"
+    echo "$REWIND_STATE" > "$CURSOR_FILE"
+  fi
+fi
 
 # --- source-liveness check (read-only — runs ONCE per batch, after all
 # states, including dry-run). Global, not per-state, and takes ~4 minutes —
@@ -862,7 +960,9 @@ log "discovery batch complete: states=${BATCH_STATES[*]} run_ids=${RUN_IDS[*]}"
 
 # Heartbeat: a visible "last real run" marker so a silent launchd skip/crash is
 # obvious at a glance (stale lastRunAt = job not running; claudeStatus=no_array
-# = the run reached claude but got a session-limit/prose reply, not candidates).
+# = the run reached claude but got a session-limit/prose reply, not candidates;
+# claudeStatus=auth = the Claude login is dead; skipped = not attempted because
+# an earlier state in the batch hit auth).
 # Extended to represent the whole batch (one entry per state) so a partial
 # batch — some states ok, some no_array — is visibly distinguishable from a
 # clean one, while staying valid JSON.
