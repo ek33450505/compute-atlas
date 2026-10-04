@@ -14,9 +14,10 @@
 #   classify-sync-convergence.sh --now <epoch-seconds> --grace <seconds> \
 #                                 --prs <file.json> --runs <file.json>
 #
-#   --prs   path to a JSON array from:
-#             gh pr list --head automated/neon-sync --state open \
-#               --json number,createdAt,url
+#   --prs   path to a JSON array from the owner-namespaced pulls query, same-repo
+#           PRs only (a fork's same-named branch must not match):
+#             gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100&head=${GITHUB_REPOSITORY_OWNER}:automated/neon-sync" \
+#               --jq '[.[] | select(.head.repo.full_name == .base.repo.full_name) | {number, createdAt: .created_at, url: .html_url}]'
 #           ([] when none)
 #   --runs  path to a JSON array from:
 #             gh run list --workflow=neon-sync.yml \

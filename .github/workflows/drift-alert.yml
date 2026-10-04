@@ -213,7 +213,12 @@ jobs:
       # means neon-sync.yml is mid-flight and will merge the drift PR shortly.
       #
       # The classifier reads two JSON arrays from gh:
-      #   - PRs from: gh pr list --head automated/neon-sync --state open
+      #   - PRs from: gh api repos/<repo>/pulls with the owner-namespaced head filter
+      #     <owner>:automated/neon-sync, same-repo PRs only, projected to
+      #     {number, createdAt, url}. NOT `gh pr list --head automated/neon-sync`:
+      #     that matches on branch name alone, so a fork PR with that branch name
+      #     could read as a fresh "converging" sync (suppressing the alert) or bury a
+      #     stuck one, and it returns only 30 items by default.
       #   - runs from: gh run list --workflow=neon-sync.yml --status in_progress|queued
       # and applies three rules: any in-flight run -> converging; else a fresh PR
       # (younger than --grace) -> converging; else an old PR -> stuck; else absent.
@@ -238,8 +243,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set +e
-          gh pr list --head automated/neon-sync --state open \
-            --json number,createdAt,url > /tmp/prs.json
+          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100&head=${GITHUB_REPOSITORY_OWNER}:automated/neon-sync" \
+            --jq '[.[] | select(.head.repo.full_name == .base.repo.full_name) | {number, createdAt: .created_at, url: .html_url}]' > /tmp/prs.json
           pr_rc=$?
           gh run list --workflow=neon-sync.yml \
             --status in_progress --status queued \
@@ -308,9 +313,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr list --head automated/neon-sync --state open \
-            --json number,createdAt,url \
-            --jq '.[] | "::error::Sync is STUCK: PR #\(.number) opened \(.createdAt): \(.url)"'
+          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100&head=${GITHUB_REPOSITORY_OWNER}:automated/neon-sync" \
+            --jq '[.[] | select(.head.repo.full_name == .base.repo.full_name) | {number, createdAt: .created_at, url: .html_url}]' \
+            | jq -r '.[] | "::error::Sync is STUCK: PR #\(.number) opened \(.createdAt): \(.url)"'
           exit 1
 
       # Only for ABSENT sync. No sync is running and no open sync PR exists,
