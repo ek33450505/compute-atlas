@@ -579,6 +579,16 @@ explicitly rather than omit them.
   `gh pr diff 384 --name-only | grep -E '^(app/|components/|next\.config|proxy\.ts)'`
   (only `app/robots.test.ts`).
 
+**2026-10-05 — #385, approval watcher gate (backlog A-5)** — **RULED OUT**.
+
+- Server code under `app/api/submissions/` and `lib/`, the cookie-gated admin
+  queue under `app/admin/submissions/`, the `scripts/submissions.ts` CLI, tests,
+  and docs. `/api/` and `/admin/` are both disallowed in `robots.txt` and
+  require a bearer token or admin cookie, so no crawlable page, link, sitemap or
+  robots rule changes. It triggers a production build. Verify:
+  `gh pr diff 385 --name-only | grep -E '^(app/|components/|next\.config|proxy\.ts)' | grep -vE '^app/(admin|api)/'`
+  (empty).
+
 ## Gaps in the pre-registered list
 
 Two things occurred inside the window that the "Named confounds" list does not
