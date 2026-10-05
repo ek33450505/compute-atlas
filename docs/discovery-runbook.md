@@ -263,6 +263,8 @@ npm run submissions -- approve <id> "looks good, verified sources"
 npm run submissions -- reject <id> "source doesn't support the claim"
 ```
 
+Approving a submission whose facility has confirmed watchers emails them. That means an update's target, or a `create` that reuses a retired slug which still has watchers. `list pending` marks those rows, and `approve` refuses them (exit 2) unless you add `--notify-watchers`. The admin UI shows the same count and asks for confirmation.
+
 When approving an update submission with a `statusUpdate` or `enrichmentUpdate` intent, the server applies the append-only transformation: new sources are appended to the facility's sources array, new enrichment fields are merged in (filling only keys present in the intent), and statusHistory entries are appended if present. All existing data is preserved — nothing is replaced or reordered.
 
 Nothing becomes a live facility without one of these explicit human calls.

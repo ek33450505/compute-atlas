@@ -35,6 +35,7 @@ npm run build:mapdata                 # build static map overlays and siting-con
 # Data operations
 npm run submissions -- list pending          # review the staging queue
 npm run submissions -- approve <id> "note"   # promote a pending submission to live
+npm run submissions -- approve <id> "note" --notify-watchers   # required when the facility it writes has confirmed watchers: approving emails them
 npm run submissions -- reject <id> "note"
 npm run check-sources                        # source-liveness report (read-only)
 ```
