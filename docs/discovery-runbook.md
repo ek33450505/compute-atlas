@@ -58,7 +58,42 @@ launchd runs with a bare `PATH`, so the plist's `EnvironmentVariables` must list
 
 ### Auth note
 
-`claude -p` needs an authenticated Claude Code subscription session. Verified (2026-07-15): it authenticates fine from the background launchd context — a scheduled run reaches your subscription without an interactive shell. If it ever regresses, `discovery-logs/launchd.err` is where it surfaces; the fallbacks are a login-session launcher or the manual invocation below.
+`claude -p` needs an authenticated Claude Code subscription session, and the CLI's own refreshable login is not durable enough for an unattended job: it expired **4 times in 9 days** (2026-09-26, 09-27, 10-03, 10-04), each time failing the batch until someone re-ran `claude` interactively. Headless runs should therefore use a **long-lived token** instead. `claude setup-token` mints a subscription token valid for about a year. `run.sh` fetches it from the macOS login keychain at the start of each live run and delivers it to the `claude` call only, over a one-shot **pipe file descriptor** (fd 3, named to the CLI by `CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3`) rather than through the environment. So no process holds it in its environment (not `timeout`, not `claude`, not the `npx`/`tsx` helpers); it is never on a command line where `ps` could show it; and it is never written to the log, `heartbeat.json`, any candidates file, or `bash -x` / `SHELLOPTS=xtrace` output.
+
+Why a pipe and not `CLAUDE_CODE_OAUTH_TOKEN`: the headless session reads untrusted web pages and runs with sandboxed Bash, and a process's exec environment can be read by a sibling process of the same user (`sysctl KERN_PROCARGS2`), so an environment variable would be exposed to a prompt-injected Bash call even though Claude Code scrubs it from the Bash tool's own environment. `run.sh` also sets `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` alongside, as defence in depth across CLI versions.
+
+⚠️ **Version-pinned.** `CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR` exists in the shipped CLI (2.1.288) but is **not** on the public environment-variables docs page. If a future CLI ignores it, `claude` receives no usable token from `run.sh`. While the CLI's stored login is still valid, runs then **silently keep working on it** (the `using long-lived Claude token` log line below records that the token was *delivered*, not that the CLI *used* it); once the stored login lapses, the run fails loudly: classified `auth`, the batch short-circuits, the states are re-queued, and the watchdog goes red.
+
+One-time setup (run these yourself, in a terminal):
+
+```bash
+claude setup-token                      # prints the token; copy it
+security add-generic-password -U -a "$USER" -s compute-atlas-discovery-claude-token -w
+# ^ -w is last on purpose: `security` prompts for the value, so the token never lands in shell history
+pbcopy </dev/null                       # then clear the clipboard, and clear the terminal scrollback (Cmd-K)
+```
+
+(`-T /usr/bin/security` is not needed: the tool that creates an item is trusted to read it by default. That is not a restriction, though: **any process of your user that can run `/usr/bin/security` can read the item without a prompt**, including the headless session's sandboxed Bash tool, since the global settings grant a bare `Bash` allow plus `sandbox.autoAllowBashIfSandboxed` and the sandbox permits keychain access. See Residual risk below.)
+
+Verify without printing it:
+
+```bash
+security find-generic-password -a "$USER" -s compute-atlas-discovery-claude-token >/dev/null && echo present
+```
+
+A run logs `using long-lived Claude token from keychain item compute-atlas-discovery-claude-token` when it found the item and handed it to `claude` (the log names the item, never the value). That line records **delivery, not use**: it cannot show that the CLI honoured the descriptor (see the version pin above).
+
+**Residual risk.** A prompt-injected discovery session could read this item itself by running `security find-generic-password … -w` in its sandboxed Bash. That is the same exposure the CLI's own stored login (the `Claude Code-credentials` keychain item) already has today, so the token does not make it worse; and the pipe/descriptor delivery does not close it, because the session can go straight to the keychain. It is closed only by tightening the headless session's Bash permissions, which is an open maintainer decision (see the CORRECTION comment above `CLAUDE_TOOL_FLAGS` in `scripts/discovery/run.sh`). Creating the item is therefore **optional**: the job works without it and falls back to the stored login, at the cost of the login's short lifetime.
+
+- **The token expires about a year after you create it.** Note the creation date when you make it (a calendar reminder a month early works). When it lapses, **every run fails `auth`** and the watchdog goes red. Rotate by repeating the setup (`-U` updates the existing item).
+- **While the item exists, the stored login is NOT a fallback.** The token takes precedence, so an expired or revoked token fails every run until you rotate it or remove the item.
+- **Remove** with `security delete-generic-password -a "$USER" -s compute-atlas-discovery-claude-token`.
+- **Without the item** (or if `security` is unavailable), `run.sh` logs `no long-lived Claude token in keychain item …` and falls back to the CLI's stored login, the one that expires. That log line is the first thing to look for if auth failures return.
+- **A hung keychain read is bounded.** `security` has no timeout of its own, so a locked keychain or an unanswered access prompt would otherwise stall the run; `run.sh` caps the read at 10 seconds (`DISCOVERY_KEYCHAIN_TIMEOUT_SECS`, needs a `timeout`/`gtimeout` binary), logs `WARN: keychain read … timed out`, and falls back to the stored login for that run.
+- An expired login is classified `auth`, short-circuits the rest of the batch, and re-queues the states it consumed, so a lapse costs a day, not a state's turn in the rotation.
+- `DISCOVERY_CLAUDE_TOKEN_SERVICE` overrides the keychain item name (the test suite uses it so it never touches the real item).
+
+If authentication still fails from the background launchd context, `discovery-logs/launchd.err` is where it surfaces; the fallbacks are a login-session launcher or the manual invocation below.
 
 ### Ollama note
 

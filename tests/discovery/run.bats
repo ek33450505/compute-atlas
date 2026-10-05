@@ -111,6 +111,24 @@ exec "$@"
 EOF
 	chmod +x "$BIN_DIR/caffeinate"
 
+	# --- fake `security` (the macOS keychain CLI). run.sh reads the long-lived
+	# Claude token with `security find-generic-password`; without this shim every
+	# live-path test would query the maintainer's REAL login keychain (and, once the
+	# token is stored there, hand a real credential to the claude shim). The default
+	# shim answers "item not found" (exit 44) — the same answer a machine with no
+	# token gives. The service name is also pointed at a nonexistent item as a second
+	# layer, in case a test rewrites PATH and the shim stops shadowing the real one.
+	cat >"$BIN_DIR/security" <<'EOF'
+#!/usr/bin/env bash
+exit 44
+EOF
+	chmod +x "$BIN_DIR/security"
+	export DISCOVERY_CLAUDE_TOKEN_SERVICE="compute-atlas-discovery-claude-token-BATS-TEST"
+	# A Claude Code session exports these to its own children, so a bats run
+	# launched from one would otherwise hand the token tests an inherited value
+	# and make every "UNSET" / "scrub var forced by run.sh" assertion meaningless.
+	unset CLAUDE_CODE_OAUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR CLAUDE_CODE_SUBPROCESS_ENV_SCRUB
+
 	NOTIFY_CALL_LOG="$TEST_TMP/notify-calls.log"
 	for _surface in terminal-notifier osascript; do
 		cat >"$BIN_DIR/$_surface" <<EOF
@@ -1894,4 +1912,372 @@ EOF
 	[[ "$output" == *"heartbeat: publish failed"* ]]
 	[ -s "$NOTIFY_CALL_LOG" ]
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+}
+
+# --- long-lived Claude token from the macOS keychain -------------------------
+# The launchd job's refreshable login expired 4 times in 9 days, so run.sh reads
+# a `claude setup-token` token from the keychain and hands it to `claude` ONLY,
+# over a pipe file descriptor (fd 3, named by CLAUDE_CODE_OAUTH_TOKEN_FILE_
+# DESCRIPTOR) rather than the environment. Properties tested separately: the token
+# REACHES claude on fd 3; it is in NO process environment (claude, timeout,
+# caffeinate, the npx helpers); it reaches NO log, heartbeat, call log or xtrace
+# line; and a hung keychain read is bounded.
+TOKEN_SENTINEL="tok-SENTINEL-123"
+# What the env scanners grep for. Deliberately a SUBSTRING of the sentinel: under
+# SHELLOPTS=xtrace a shim traces its own `grep` pattern, and that trace line must
+# not itself contain the full sentinel the sink assertions look for.
+TOKEN_SCAN_PATTERN="SENTINEL-123"
+
+# Copy of $PATH with the named binaries removed. A directory that holds one of
+# them is replaced by a symlink farm of everything else it contains, so the rest
+# of the toolchain (bash, date, node...) keeps resolving. Needed because the
+# binary to hide is usually in /usr/bin (security) or a Homebrew bin dir
+# (timeout), which cannot simply be dropped from PATH.
+_path_without() {
+	local _dir _out="" _i=0 _farm _f _name _hide _skip _dirs
+	IFS=: read -ra _dirs <<<"$PATH"
+	for _dir in "${_dirs[@]}"; do
+		_hide=0
+		for _name in "$@"; do
+			[ -e "$_dir/$_name" ] && _hide=1
+		done
+		if [ "$_hide" -eq 1 ]; then
+			_farm="$TEST_TMP/path-farm-$_i"
+			mkdir -p "$_farm"
+			for _f in "$_dir"/*; do
+				_skip=0
+				for _name in "$@"; do
+					[ "${_f##*/}" = "$_name" ] && _skip=1
+				done
+				[ "$_skip" -eq 1 ] || ln -s "$_f" "$_farm/${_f##*/}"
+			done
+			_dir="$_farm"
+		fi
+		_out="${_out:+$_out:}$_dir"
+		_i=$((_i + 1))
+	done
+	printf '%s' "$_out"
+}
+
+# `run` for these tests. bats keeps its own result channel open on fd 3 and lets
+# `run` children inherit it, which would (a) hand the claude/npx shims a stray fd 3
+# and (b) make "fd 3 is closed" assertions false. Close it in the child only.
+_run_no_fd3() {
+	run bash -c 'exec 3>&-; exec "$@"' _ "$@"
+}
+
+# A `security` shim that "finds" the token. Records its own argv (the token is
+# never in argv) so the test can prove the configured service name was queried.
+_install_security_with_token() {
+	SECURITY_CALL_LOG="$TEST_TMP/security-calls.log"
+	cat >"$BIN_DIR/security" <<SHIM
+#!/usr/bin/env bash
+echo "security \$*" >>"$SECURITY_CALL_LOG"
+echo "$TOKEN_SENTINEL"
+exit 0
+SHIM
+	chmod +x "$BIN_DIR/security"
+}
+
+# A `claude` shim that records everything about how it was handed the token:
+# the bytes on fd 3 (the pipe), the fd-number variable, any token in its ENV, the
+# scrub flag, and a scan of its whole environment for the sentinel. It emits a
+# valid array so the run proceeds through submit/heartbeat as normal.
+_install_claude_recording_token() {
+	FD3_SEEN_FILE="$TEST_TMP/claude-fd3-seen"
+	FDVAR_SEEN_FILE="$TEST_TMP/claude-fdvar-seen"
+	TOKENENV_SEEN_FILE="$TEST_TMP/claude-tokenenv-seen"
+	SCRUB_SEEN_FILE="$TEST_TMP/claude-scrub-seen"
+	ENVSCAN_LOG="$TEST_TMP/envscan.log"
+	cat >"$BIN_DIR/claude" <<SHIM
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+if { true <&3; } 2>/dev/null; then cat <&3 >"$FD3_SEEN_FILE"; else echo FD3-CLOSED >"$FD3_SEEN_FILE"; fi
+echo "\${CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR:-UNSET}" >"$FDVAR_SEEN_FILE"
+echo "\${CLAUDE_CODE_OAUTH_TOKEN:-UNSET}" >"$TOKENENV_SEEN_FILE"
+echo "\${CLAUDE_CODE_SUBPROCESS_ENV_SCRUB:-UNSET}" >"$SCRUB_SEEN_FILE"
+echo "claude \$(env | grep -cF -- '$TOKEN_SCAN_PATTERN' || true)" >>"$ENVSCAN_LOG"
+echo '[{"name":"Token Facility","facilityType":"data_center"}]'
+exit 0
+SHIM
+	chmod +x "$BIN_DIR/claude"
+}
+
+# `caffeinate` and `timeout` shims that scan THEIR environment for the sentinel
+# and then behave as the pass-throughs the suite already uses. They sit between
+# run.sh and claude, so a token delivered via the environment would be in theirs.
+_install_env_scanning_wrappers() {
+	cat >"$BIN_DIR/caffeinate" <<SHIM
+#!/usr/bin/env bash
+echo "caffeinate \$(env | grep -cF -- '$TOKEN_SCAN_PATTERN' || true)" >>"$ENVSCAN_LOG"
+while [[ "\${1:-}" == -* ]]; do shift; done
+exec "\$@"
+SHIM
+	cat >"$BIN_DIR/timeout" <<SHIM
+#!/usr/bin/env bash
+echo "timeout \$(env | grep -cF -- '$TOKEN_SCAN_PATTERN' || true)" >>"$ENVSCAN_LOG"
+shift 3   # -k <kill-after> <duration>
+exec "\$@"
+SHIM
+	chmod +x "$BIN_DIR/caffeinate" "$BIN_DIR/timeout"
+}
+
+# Wrap the stock npx shim: record the token variable, the fd-number variable, the
+# scrub flag and whether fd 3 is open for each helper invocation, plus an env scan,
+# then run the stock behaviour unchanged. Every helper (existing-facilities,
+# submit-candidates, check-sources, extract-fields, publish-heartbeat...) goes
+# through npx, so one recorder covers them all.
+_install_npx_recording_token() {
+	NPX_TOKEN_LOG="$TEST_TMP/npx-token-seen.log"
+	ENVSCAN_LOG="$TEST_TMP/envscan.log"
+	mv "$BIN_DIR/npx" "$BIN_DIR/npx.stock"
+	cat >"$BIN_DIR/npx" <<SHIM
+#!/usr/bin/env bash
+fd3=closed
+if { true <&3; } 2>/dev/null; then fd3=open; fi
+echo "\${CLAUDE_CODE_OAUTH_TOKEN:-UNSET}/\${CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR:-UNSET}/\${CLAUDE_CODE_SUBPROCESS_ENV_SCRUB:-UNSET}/\$fd3" >>"$NPX_TOKEN_LOG"
+echo "npx \$(env | grep -cF -- '$TOKEN_SCAN_PATTERN' || true)" >>"$ENVSCAN_LOG"
+exec "$BIN_DIR/npx.stock" "\$@"
+SHIM
+	chmod +x "$BIN_DIR/npx"
+}
+
+# `[[ ]]` mid-body does not fail a bats test on bash 3.2, and `! cmd` never trips
+# errexit on any bash, so both are false-green here. These return 1 explicitly.
+_assert_output_has() {
+	grep -qF -- "$1" <<<"$output" || { echo "output lacks: $1" >&2; return 1; }
+}
+_assert_output_lacks() {
+	if grep -qF -- "$1" <<<"$output"; then echo "output unexpectedly has: $1" >&2; return 1; fi
+}
+
+# claude was handed the token the intended way and no other way.
+_assert_claude_got_token_on_fd3() {
+	[ "$(cat "$FD3_SEEN_FILE")" = "$TOKEN_SENTINEL" ]
+	[ "$(cat "$FDVAR_SEEN_FILE")" = "3" ]
+	[ "$(cat "$SCRUB_SEEN_FILE")" = "1" ]
+	[ "$(cat "$TOKENENV_SEEN_FILE")" = "UNSET" ]
+}
+
+# claude got no credential from run.sh at all (the fallback path).
+_assert_claude_got_no_token() {
+	[ "$(cat "$FD3_SEEN_FILE")" = "FD3-CLOSED" ]
+	[ "$(cat "$FDVAR_SEEN_FILE")" = "UNSET" ]
+	[ "$(cat "$SCRUB_SEEN_FILE")" = "UNSET" ]
+	[ "$(cat "$TOKENENV_SEEN_FILE")" = "UNSET" ]
+}
+
+# No scanned process (claude always, plus whichever of caffeinate/timeout/npx the
+# test installed scanners for) had the sentinel anywhere in its environment.
+_assert_envscan_clean() {
+	[ -s "$ENVSCAN_LOG" ]
+	[ "$(grep -vc ' 0$' "$ENVSCAN_LOG" || true)" -eq 0 ]
+}
+
+# Every sink the token must never reach: the run's own output (which includes any
+# xtrace), everything under LOG_DIR (log, heartbeat.json, candidates files) and the
+# shim call logs.
+_assert_token_not_in_sinks() {
+	local _f
+	_assert_output_lacks "$TOKEN_SENTINEL" || return 1
+	[ -s "$LOG_DIR/heartbeat.json" ] || return 1
+	if grep -rqF -- "$TOKEN_SENTINEL" "$LOG_DIR"; then echo "token leaked under LOG_DIR" >&2; return 1; fi
+	for _f in "$CLAUDE_CALL_LOG" "$NPX_CALL_LOG" "$NOTIFY_CALL_LOG"; do
+		if [ -e "$_f" ] && grep -qF -- "$TOKEN_SENTINEL" "$_f"; then echo "token leaked to $_f" >&2; return 1; fi
+	done
+}
+
+@test "a keychain token reaches claude over fd 3 and is in no process environment, log, heartbeat or call log" {
+	export DISCOVERY_ENABLED=true
+	_install_security_with_token
+	_install_claude_recording_token
+	# Force the TIMEOUT_BIN branch so this test does not depend on the host, and
+	# scan the environment of every process between run.sh and claude.
+	_install_env_scanning_wrappers
+
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	_assert_claude_got_token_on_fd3
+	_assert_envscan_clean
+	# The scan covered the whole chain, not just claude.
+	grep -q '^caffeinate 0$' "$ENVSCAN_LOG"
+	grep -q '^timeout 0$' "$ENVSCAN_LOG"
+	grep -q '^claude 0$' "$ENVSCAN_LOG"
+	grep -q -- "-s $DISCOVERY_CLAUDE_TOKEN_SERVICE" "$SECURITY_CALL_LOG"
+	grep -q -- " -w" "$SECURITY_CALL_LOG"
+	_assert_output_has "using long-lived Claude token from keychain item $DISCOVERY_CLAUDE_TOKEN_SERVICE"
+	_assert_output_lacks "no long-lived Claude token"
+	_assert_token_not_in_sinks
+}
+
+@test "a keychain token also reaches claude over fd 3 on the no-timeout-binary branch" {
+	export DISCOVERY_ENABLED=true
+	_install_security_with_token
+	_install_claude_recording_token
+	NO_TIMEOUT_PATH="$(_path_without timeout gtimeout)"
+	# Precondition: the branch under test really is the uncapped one. Without
+	# this a host that finds `timeout` some other way would pass vacuously.
+	[ -z "$(PATH="$NO_TIMEOUT_PATH" command -v timeout || true)" ]
+	[ -z "$(PATH="$NO_TIMEOUT_PATH" command -v gtimeout || true)" ]
+
+	_run_no_fd3 env PATH="$NO_TIMEOUT_PATH" bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	_assert_output_has "no timeout/gtimeout binary found"
+	_assert_claude_got_token_on_fd3
+	_assert_envscan_clean
+	_assert_token_not_in_sinks
+}
+
+@test "the keychain token is NOT visible to the npx/tsx helper subprocesses" {
+	export DISCOVERY_ENABLED=true
+	_install_security_with_token
+	_install_claude_recording_token
+	_install_npx_recording_token
+
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# claude DID get the token, so UNSET below is not just "feature off".
+	_assert_claude_got_token_on_fd3
+	# Helpers see no token, no fd-number variable, no scrub flag, and NO fd 3.
+	[ -s "$NPX_TOKEN_LOG" ]
+	[ "$(grep -vc '^UNSET/UNSET/UNSET/closed$' "$NPX_TOKEN_LOG" || true)" -eq 0 ]
+	_assert_envscan_clean
+	grep -q '^npx 0$' "$ENVSCAN_LOG"
+}
+
+@test "no keychain item (security exits 44): claude gets no credential, falls back with a logged note, run proceeds" {
+	export DISCOVERY_ENABLED=true
+	_install_claude_recording_token
+	# setup()'s default security shim already exits 44.
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	_assert_claude_got_no_token
+	_assert_output_has "no long-lived Claude token in keychain item $DISCOVERY_CLAUDE_TOKEN_SERVICE"
+	_assert_output_has "docs/discovery-runbook.md#auth-note"
+	_assert_output_lacks "using long-lived Claude token"
+	[ -s "$LOG_DIR/heartbeat.json" ]
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "no security binary on PATH: same fallback as a missing keychain item" {
+	export DISCOVERY_ENABLED=true
+	_install_claude_recording_token
+	rm -f "$BIN_DIR/security"
+	NO_SECURITY_PATH="$(_path_without security)"
+	# Precondition: `security` is genuinely unresolvable under the PATH the run
+	# gets, not merely absent from BIN_DIR (macOS ships the real one in /usr/bin).
+	[ -z "$(PATH="$NO_SECURITY_PATH" command -v security || true)" ]
+
+	_run_no_fd3 env PATH="$NO_SECURITY_PATH" bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	_assert_claude_got_no_token
+	_assert_output_has "no long-lived Claude token in keychain item"
+	_assert_output_lacks "using long-lived Claude token"
+}
+
+@test "a hung security call is bounded by the keychain timeout, falls back, and names the timeout" {
+	[ -n "$TIMEOUT_BIN" ] || skip "no timeout/gtimeout binary — the keychain read is uncapped there by design"
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_KEYCHAIN_TIMEOUT_SECS=1
+	_install_claude_recording_token
+	# A locked keychain / unanswered ACL prompt: `security` just never returns.
+	# `exec` so the sleeper IS this process — timeout's SIGTERM then ends it
+	# directly instead of orphaning a child that holds the $(...) pipe open.
+	cat >"$BIN_DIR/security" <<'SHIM'
+#!/usr/bin/env bash
+exec sleep 30
+SHIM
+	chmod +x "$BIN_DIR/security"
+
+	_t0=$SECONDS
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# Bounded: nowhere near the shim's 30s. (Without the cap the run only returns
+	# after the full sleep, and takes the "no long-lived" branch instead.)
+	[ $((SECONDS - _t0)) -lt 25 ]
+	_assert_output_has "keychain read for item $DISCOVERY_CLAUDE_TOKEN_SERVICE timed out after 1s"
+	_assert_output_has "falling back to the CLI's stored login"
+	_assert_output_lacks "using long-lived Claude token"
+	_assert_claude_got_no_token
+}
+
+@test "a dry run never consults the keychain" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	_install_security_with_token
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[ ! -e "$SECURITY_CALL_LOG" ]
+	_assert_output_lacks "long-lived Claude token"
+}
+
+@test "bash -x does not print the keychain token" {
+	export DISCOVERY_ENABLED=true
+	_install_security_with_token
+	_install_claude_recording_token
+
+	_run_no_fd3 bash -x "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# xtrace really was on for the script (so absence below is not "nothing traced"):
+	# before the keychain read, and again AFTER each guarded region (the guards
+	# restore it — `log` follows the keychain read, `_t1=` follows the claude call).
+	_assert_output_has "+ KEYCHAIN_RC=0"
+	_assert_output_has "+ log 'using long-lived Claude token"
+	_assert_output_has "+ _t1="
+	# ... and the token still made it to claude, so the guarded paths really ran.
+	_assert_claude_got_token_on_fd3
+	_assert_token_not_in_sinks
+}
+
+@test "an inherited SHELLOPTS=xtrace does not print the keychain token" {
+	export DISCOVERY_ENABLED=true
+	_install_security_with_token
+	_install_claude_recording_token
+
+	_run_no_fd3 env SHELLOPTS=xtrace bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	_assert_output_has "+ KEYCHAIN_RC=0"
+	_assert_output_has "+ log 'using long-lived Claude token"
+	_assert_output_has "+ _t1="
+	_assert_claude_got_token_on_fd3
+	_assert_token_not_in_sinks
+}
+
+@test "POSIX-mode bash 3.2 still parses, delivers the token over fd 3, and leaks it to nothing else" {
+	# Two bash 3.2 POSIX-mode (macOS /bin/sh, or an inherited POSIXLY_CORRECT)
+	# hazards this guards: process substitution is a SYNTAX ERROR there (so run.sh
+	# must not use it for the pipe), and an env-assignment prefix on a shell FUNCTION
+	# persists after the call and exports to every later child. Both only reproduce
+	# on 3.x.
+	POSIX_BASH=/bin/bash
+	[ -x "$POSIX_BASH" ] || skip "no /bin/bash — hazards only reproduce on bash 3.2"
+	_major="$("$POSIX_BASH" -c 'echo "${BASH_VERSINFO[0]}"')"
+	[ "$_major" = "3" ] || skip "bash 3.2 not available (/bin/bash is $_major.x) — hazards only reproduce on 3.2"
+
+	export DISCOVERY_ENABLED=true
+	_install_security_with_token
+	_install_claude_recording_token
+	_install_npx_recording_token
+
+	_run_no_fd3 env POSIXLY_CORRECT=1 "$POSIX_BASH" "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	# claude still gets the token over fd 3, and the run really ran (heartbeat
+	# written), so the all-UNSET helper records below are not "run.sh bailed early".
+	_assert_claude_got_token_on_fd3
+	[ -s "$LOG_DIR/heartbeat.json" ]
+	[ -s "$NPX_TOKEN_LOG" ]
+	[ "$(grep -vc '^UNSET/UNSET/UNSET/closed$' "$NPX_TOKEN_LOG" || true)" -eq 0 ]
+	_assert_envscan_clean
+	_assert_token_not_in_sinks
 }

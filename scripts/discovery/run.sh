@@ -333,9 +333,11 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
     CAFFEINATE_PREFIX=(caffeinate -i)
   fi
 
-  # Explicit tool grants for the headless session. ~/.claude/settings.json only
-  # allows WebFetch for github.com/raw.githubusercontent.com/api.github.com;
-  # in `claude -p` there is no human to approve a permission prompt, so every
+  # Explicit tool grants for the headless session. As of the 2026-08-14 repro
+  # ~/.claude/settings.json only allowed WebFetch for github.com/
+  # raw.githubusercontent.com/api.github.com (but see the CORRECTION at the end of
+  # this comment); in `claude -p` there is no human to approve a permission
+  # prompt, so every
   # other WebFetch domain auto-denies. 2026-08-14 repro of the real prompt
   # produced 13 successful WebSearch calls but 3 denied WebFetch calls
   # ("Claude requested permissions to use WebFetch, but you haven't granted it
@@ -359,20 +361,139 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # expanded via the same bash-3.2-safe idiom as CAFFEINATE_PREFIX.
   # `Bash(curl:*)` contains a glob/parens and MUST stay a single array
   # element — never re-split this into a bare string.
+  #
+  # CORRECTION (2026-10-04 security review): the premise above is STALE, and the
+  # curl-only allowlist below is NOT the effective control on Bash. The global
+  # ~/.claude/settings.json carries a bare `Bash` allow and
+  # `sandbox.autoAllowBashIfSandboxed=true`, so the headless session effectively
+  # gets SANDBOXED ARBITRARY Bash, not just curl. Whether to tighten that is an
+  # OPEN DECISION for the maintainer; this comment documents it, behaviour is
+  # deliberately unchanged here.
   CLAUDE_TOOL_FLAGS=(--allowedTools "WebSearch WebFetch Read Glob Grep Bash(curl:*)" --disallowedTools "Write Edit NotebookEdit Agent Task")
+
+  # Long-lived Claude Code token for this headless job. The CLI's own refreshable
+  # login expired 4 times in 9 days (2026-09-26, 09-27, 10-03, 10-04), each time
+  # failing the whole batch as `auth`. `claude setup-token` mints a ~1-year
+  # subscription token; the maintainer keeps it in the login keychain and it is
+  # read here, once per run. An absent token is not an error: fall back to the
+  # CLI's stored login, as before.
+  #
+  # How the value travels (every hop is deliberate):
+  #   - It sits in a plain (NOT exported) shell variable, so npx/tsx/notify and
+  #     every other subprocess of this script never see it.
+  #   - It reaches `claude` over a PIPE FILE DESCRIPTOR (fd 3, see invoke_claude),
+  #     not the environment. An exec environment is readable by a sibling process
+  #     (sysctl KERN_PROCARGS2), including a sandboxed Bash call that a
+  #     prompt-injected session could make, and `caffeinate`/`timeout` would hold
+  #     it too. A pipe is single-read and gone once claude has consumed it.
+  #   - Never as an argv word (`env VAR=… cmd`), which `ps` would expose.
+  #   - Never logged: the log lines below name the keychain item, not the value,
+  #     and each place that expands it switches xtrace off first, so `bash -x` or
+  #     an inherited SHELLOPTS=xtrace cannot print it.
+  # Setup/rotation: docs/discovery-runbook.md#auth-note.
+  DISCOVERY_CLAUDE_TOKEN_SERVICE="${DISCOVERY_CLAUDE_TOKEN_SERVICE:-compute-atlas-discovery-claude-token}"
+
+  # `security` has no timeout of its own: a locked keychain or an unanswered ACL
+  # prompt would hang the whole run unbounded, so the read is capped like the
+  # claude call (TIMEOUT_BIN was resolved above; with none, it runs uncapped, as
+  # claude does). Env-overridable so the BATS suite can probe it in seconds.
+  DISCOVERY_KEYCHAIN_TIMEOUT_SECS="$(validate_positive_int_env DISCOVERY_KEYCHAIN_TIMEOUT_SECS 10)"
+  KEYCHAIN_TIMEOUT_PREFIX=()
+  if [[ -n "$TIMEOUT_BIN" ]]; then
+    KEYCHAIN_TIMEOUT_PREFIX=("$TIMEOUT_BIN" -k 2 "$DISCOVERY_KEYCHAIN_TIMEOUT_SECS")
+  fi
+
+  CLAUDE_TOKEN_VALUE=""
+  CLAUDE_TOKEN_PRESENT=0
+  KEYCHAIN_RC=0
+  _xtrace_was_on=0
+  case $- in *x*) _xtrace_was_on=1 ;; esac
+  { set +x; } 2>/dev/null
+  if command -v security >/dev/null 2>&1; then
+    CLAUDE_TOKEN_VALUE="$("${KEYCHAIN_TIMEOUT_PREFIX[@]+"${KEYCHAIN_TIMEOUT_PREFIX[@]}"}" security find-generic-password -s "$DISCOVERY_CLAUDE_TOKEN_SERVICE" -a "${USER:-$(id -un)}" -w 2>/dev/null)" || KEYCHAIN_RC=$?
+  fi
+  if [[ "$KEYCHAIN_RC" -ne 0 ]]; then
+    CLAUDE_TOKEN_VALUE=""
+  fi
+  if [[ -n "$CLAUDE_TOKEN_VALUE" ]]; then
+    CLAUDE_TOKEN_PRESENT=1
+  fi
+  if [[ "$_xtrace_was_on" -eq 1 ]]; then
+    set -x
+  fi
+
+  if [[ "$CLAUDE_TOKEN_PRESENT" -eq 1 ]]; then
+    log "using long-lived Claude token from keychain item $DISCOVERY_CLAUDE_TOKEN_SERVICE"
+  elif [[ "$KEYCHAIN_RC" -eq 124 || "$KEYCHAIN_RC" -eq 137 ]]; then
+    log "WARN: keychain read for item $DISCOVERY_CLAUDE_TOKEN_SERVICE timed out after ${DISCOVERY_KEYCHAIN_TIMEOUT_SECS}s (locked keychain or an unanswered access prompt?) — falling back to the CLI's stored login, which expires (see docs/discovery-runbook.md#auth-note)"
+  else
+    log "no long-lived Claude token in keychain item $DISCOVERY_CLAUDE_TOKEN_SERVICE — falling back to the CLI's stored login, which expires (see docs/discovery-runbook.md#auth-note)"
+  fi
+
+  # The claude command itself, split out so the token-carrying and token-free
+  # call sites below share ONE definition and cannot drift. It only reads
+  # globals and assigns none, so the token-carrying call site can run it in a
+  # subshell and lose nothing; its exit status is the claude pipeline's own
+  # (timeout's 124/137 included) and must stay the last thing it returns.
+  _run_claude() {
+    if [[ -n "$TIMEOUT_BIN" ]]; then
+      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" "$TIMEOUT_BIN" -k "$DISCOVERY_KILL_AFTER_SECS" "$DISCOVERY_TIMEOUT_SECS" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE"
+    else
+      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE"
+    fi
+  }
 
   # Sets LAST_INVOKE_ELAPSED (seconds of wall-clock) on every path, so the
   # caller can tell an enforced cap from one that silently did nothing —
   # exit status cannot (see the -k measurement above).
   LAST_INVOKE_ELAPSED=0
   invoke_claude() {
-    local _t0 _t1 _status=0
+    local _t0 _t1 _status=0 _xt=0
     _t0="$(date '+%s')"
-    if [[ -n "$TIMEOUT_BIN" ]]; then
-      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" "$TIMEOUT_BIN" -k "$DISCOVERY_KILL_AFTER_SECS" "$DISCOVERY_TIMEOUT_SECS" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE" || _status=$?
-    else
+    if [[ -z "$TIMEOUT_BIN" ]]; then
       log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
-      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE" || _status=$?
+    fi
+    if [[ "$CLAUDE_TOKEN_PRESENT" -eq 1 ]]; then
+      # The token is handed over fd 3 of a one-shot pipe and named to the CLI by
+      # CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3. That variable exists in the
+      # shipped CLI (2.1.288) but is NOT on the public env-vars docs page, so this
+      # is version-pinned behaviour. If a future CLI ignores it, claude gets no
+      # token from us: with no usable stored login the run fails LOUDLY (classified
+      # `auth` -> the batch short-circuits, the states are re-queued, the watchdog
+      # goes red), never silently producing bad data.
+      #
+      # CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 is defence in depth across CLI
+      # versions. Per the Claude Code env-var docs it strips credentials from the
+      # environment of Bash-tool subprocesses, hooks, the status line and stdio MCP
+      # servers (CLI >= 2.1.180). The CLI verified here (2.1.288) already strips
+      # CLAUDE_CODE_OAUTH_TOKEN from Bash-tool environments regardless, and with fd
+      # delivery no environment holds the token at all — so the real exposure the
+      # FD closes is the exec environment of `timeout`/`claude` themselves, not a
+      # `curl …$CLAUDE_CODE_OAUTH_TOKEN`. The flag is kept because it costs nothing
+      # and still covers a future CLI that stops scrubbing by default.
+      #
+      # Why a PIPELINE into a subshell rather than the obvious `3< <(printf …)`:
+      # process substitution is a SYNTAX ERROR in bash 3.2 POSIX mode (macOS
+      # /bin/sh, or an inherited POSIXLY_CORRECT), and because it sits inside the
+      # enclosing `if`, it would stop run.sh from parsing at all there. A pipe has
+      # the same single-read semantics in every mode. Likewise both variables are
+      # exported inside the SUBSHELL, not as an env-assignment prefix on the
+      # `_run_claude` function call: for a shell FUNCTION that prefix persists after
+      # the call in bash 3.2 POSIX mode and would be inherited by every later child
+      # (npx/submit/check-sources). The subshell takes its exports with it.
+      #
+      # The writer ignores SIGPIPE and cannot fail, so an early-exiting reader
+      # (e.g. no `claude` binary) never turns into a spurious status under
+      # pipefail: the pipeline's status is exactly the subshell's. xtrace is
+      # switched off across the one place the value is expanded.
+      case $- in *x*) _xt=1 ;; esac
+      { set +x; } 2>/dev/null
+      { trap '' PIPE; printf '%s' "$CLAUDE_TOKEN_VALUE" || :; } | ( export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3; _run_claude 3<&0 ) || _status=$?
+      if [[ "$_xt" -eq 1 ]]; then
+        set -x
+      fi
+    else
+      _run_claude || _status=$?
     fi
     _t1="$(date '+%s')"
     LAST_INVOKE_ELAPSED=$(( _t1 - _t0 ))
