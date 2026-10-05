@@ -589,6 +589,12 @@ explicitly rather than omit them.
   `gh pr diff 385 --name-only | grep -E '^(app/|components/|next\.config|proxy\.ts)' | grep -vE '^app/(admin|api)/'`
   (empty).
 
+**2026-10-05 — #386, mid-soak index observation (docs only)** — **RULED OUT**.
+
+- This log only (a measurement recorded under "What this does to the 2026-10-13
+  read"), so the Vercel ignore-gate skips the build. Verify:
+  `gh pr diff 386 --name-only` (`docs/seo-soak-2026-09.md`).
+
 ## Gaps in the pre-registered list
 
 Two things occurred inside the window that the "Named confounds" list does not
@@ -638,6 +644,33 @@ exception worth naming: if a confound lifted `facilities` coverage while its
 true baseline was worse, the two could cancel and read flat spuriously. So
 "every family reports the same indexed ratio → drop the thin-hub triage unit"
 remains decidable, with that caveat attached.
+
+**Mid-soak observation, 2026-10-05 (a read-only measurement, not a change).**
+URLs that the URL Inspection API reported as `Discovered - currently not indexed`
+in the 2026-09-26 baseline (`data/index-census-baseline.json`) now mostly report
+`URL is unknown to Google`, in every family. They are still listed in sitemaps
+that Google has fetched.
+
+- Counties panel (the baseline's 162 county hubs, excluding the home, `/counties`
+  and `/metros` URLs; inspected 2026-10-05 01:44–02:05Z): indexed
+  28 → 28; discovered 110 → 9; unknown 24 → 125. 102 went discovered → unknown,
+  and 0 were newly crawled. `/counties` is still discovered and never crawled.
+- Control from the other families (up to 8 per family of their
+  baseline-discovered URLs; inspected 02:06–02:09Z): 20 of 24 now unknown (facilities 8/8, states 5/5,
+  operators 6/8, static 1/2).
+- All 102 county URLs are still in the live `/sitemaps/counties.xml`
+  (408 URLs). Search Console reports that sitemap last downloaded at "2026-10-03 21:58" (the
+  API gives no timezone), with 0 errors.
+- Indexed URLs held, and the home page was re-crawled 2026-10-04.
+
+What it means for the read: the shift hits every family alike, so it does not
+by itself create between-family variation, and the falsifiable test above is
+unaffected. Absolute discovered/unknown counts on 2026-10-13 are **not**
+comparable to the 09-26 baseline as a trend; compare indexed counts and
+per-family ratios instead. The cause is not established. Two candidates, both
+unverified: Google re-keyed discovery when the URLs moved from the flat sitemap
+to the per-family children, or URL Inspection reports sitemap-listed but
+unprocessed URLs as "unknown". The raw results were not written to `data/`.
 
 Choosing between reading 2026-10-13 with these limitations stated, and
 extending the window past the confounds, is a maintainer decision and is
