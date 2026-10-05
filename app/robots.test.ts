@@ -73,6 +73,15 @@ describe("robots", () => {
     expect(userAgents).not.toContain("SemrushBot");
   });
 
+  it("does NOT block Bing's crawlers (regression guard: Bing Search Console is a second, independent crawler-eye)", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    const userAgents = ruleList.flatMap((rule) => [rule.userAgent].flat()).map((ua) => String(ua).toLowerCase());
+    for (const bing of ["bingbot", "adidxbot", "bingpreview", "msnbot"]) {
+      expect(userAgents).not.toContain(bing);
+    }
+  });
+
   it("disallows / for every entry in BLOCKED_AI_CRAWLERS, with no allow", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];
