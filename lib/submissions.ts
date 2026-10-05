@@ -167,7 +167,7 @@ export async function approveSubmission(
       id: writeResult.facility.id,
     });
   } catch (err) {
-    console.error("subscriber notification failed", redactedErrorCode(err));
+    console.error(`subscriber notification failed (sqlstate: ${redactedErrorCode(err)})`);
   }
 
   return {
@@ -211,7 +211,7 @@ export async function rejectSubmission(
   try {
     await notifySubmitterOfReview(id, "rejected", facilityLabelForRejection(row));
   } catch (err) {
-    console.error("submitter notification failed", redactedErrorCode(err));
+    console.error(`submitter notification failed (sqlstate: ${redactedErrorCode(err)})`);
   }
 
   return { ok: true, submission: updated };
@@ -277,7 +277,7 @@ async function notifySubmitterOfReview(
   try {
     notifyRequest = await getSubmissionNotifyRequest(submissionId);
   } catch (err) {
-    console.error("notifySubmitterOfReview: lookup failed", redactedErrorCode(err));
+    console.error(`notifySubmitterOfReview: lookup failed (sqlstate: ${redactedErrorCode(err)})`);
     return;
   }
   if (!notifyRequest) return;
@@ -287,7 +287,7 @@ async function notifySubmitterOfReview(
     try {
       underSendCap = (await checkSubmissionNotifySendCap(notifyRequest.email)).ok;
     } catch (err) {
-      console.error("notifySubmitterOfReview: send-cap check failed", redactedErrorCode(err));
+      console.error(`notifySubmitterOfReview: send-cap check failed (sqlstate: ${redactedErrorCode(err)})`);
       // Fail closed — an unverifiable cap must not be treated as "under".
     }
 
@@ -297,7 +297,7 @@ async function notifySubmitterOfReview(
         await recordSubmissionNotifySend(notifyRequest.email);
         recorded = true;
       } catch (err) {
-        console.error("notifySubmitterOfReview: record send failed", redactedErrorCode(err));
+        console.error(`notifySubmitterOfReview: record send failed (sqlstate: ${redactedErrorCode(err)})`);
         // Fail closed — an unrecorded attempt must not be allowed to send;
         // that is exactly the unrecorded-mail path this fix exists to close.
       }
@@ -315,7 +315,7 @@ async function notifySubmitterOfReview(
             facilitySlug: decision === "approved" ? facility?.id : undefined,
           });
         } catch (err) {
-          console.error("notifySubmitterOfReview: send failed", redactedErrorCode(err));
+          console.error(`notifySubmitterOfReview: send failed (sqlstate: ${redactedErrorCode(err)})`);
         }
       }
     }
@@ -328,7 +328,7 @@ async function notifySubmitterOfReview(
   try {
     await deleteSubmissionNotifyRequest(submissionId);
   } catch (err) {
-    console.error("notifySubmitterOfReview: delete failed", redactedErrorCode(err));
+    console.error(`notifySubmitterOfReview: delete failed (sqlstate: ${redactedErrorCode(err)})`);
   }
 }
 

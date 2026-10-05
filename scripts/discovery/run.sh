@@ -457,10 +457,13 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       # The token is handed over fd 3 of a one-shot pipe and named to the CLI by
       # CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3. That variable exists in the
       # shipped CLI (2.1.288) but is NOT on the public env-vars docs page, so this
-      # is version-pinned behaviour. If a future CLI ignores it, claude gets no
-      # token from us: with no usable stored login the run fails LOUDLY (classified
-      # `auth` -> the batch short-circuits, the states are re-queued, the watchdog
-      # goes red), never silently producing bad data.
+      # is version-pinned behaviour. MEASURED 2026-10-05: 2.1.288 READS the token
+      # from the descriptor, but a valid stored login still authenticates the run
+      # (a bogus token on fd 3 got a reply with no 401; see
+      # docs/discovery-runbook.md#auth-note). Whether the token covers an EXPIRED
+      # login is unmeasured. With no usable credential the run fails LOUDLY
+      # (classified `auth` -> the batch short-circuits, the states are re-queued,
+      # the watchdog goes red), never silently producing bad data.
       #
       # CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 is defence in depth across CLI
       # versions. Per the Claude Code env-var docs it strips credentials from the
