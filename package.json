@@ -109,7 +109,7 @@
     "@esbuild-kit/core-utils": {
       "esbuild": "^0.25.0"
     },
-    "brace-expansion": "^5.0.9",
+    "brace-expansion": "^5.0.12",
     "minimatch": "^10.2.5"
   }
 }
