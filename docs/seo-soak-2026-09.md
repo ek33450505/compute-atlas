@@ -535,6 +535,25 @@ explicitly rather than omit them.
   ≥230 kV lines. Any backfill merge before 2026-10-10 gets its own
   `### OCCURRED` entry.
 
+**2026-10-05 — #380 `aee7d10`, discovery auth classification and re-queue** —
+**RULED OUT**.
+
+- `scripts/discovery/run.sh`, `tests/discovery/run.bats` and
+  `docs/discovery-runbook.md` only. The discovery pipeline runs on the
+  maintainer's machine and stages `pending` rows; nothing it does reaches a
+  live page without a human approval, and each approval wave that lands is
+  logged under `### OCCURRED`. Verify:
+  `gh pr diff 380 --name-only | grep -E '^(app/|components/|next\.config|proxy\.ts)'`
+  (empty).
+
+**2026-10-05 — #382, dev-dependency lockfile bump (brace-expansion, fast-uri)** —
+**RULED OUT**.
+
+- `package-lock.json` (brace-expansion 5.0.9 → 5.0.12, fast-uri 3.1.7 → 3.1.8,
+  both dev-only) and this log. It does trigger a production build, but neither
+  package is in the shipped bundle. Verify:
+  `gh pr diff 382 --name-only` (`docs/seo-soak-2026-09.md`, `package-lock.json`).
+
 ## Gaps in the pre-registered list
 
 Two things occurred inside the window that the "Named confounds" list does not
