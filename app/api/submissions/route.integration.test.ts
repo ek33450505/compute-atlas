@@ -12,13 +12,14 @@ import { eq } from "drizzle-orm";
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
-import { submissionsTable } from "@/lib/db/schema";
+import { submissionsTable, subscriptionsTable } from "@/lib/db/schema";
+import { generateToken } from "@/lib/email";
 import facilitiesRaw from "@/data/facilities.json";
 import type { Facility } from "@/lib/schema";
 
 // Import the route handler AFTER the mocks above so its transitive imports
 // (lib/submissions.ts -> lib/db/client.ts) resolve against the mocked module.
-import { POST } from "./route";
+import { GET, POST } from "./route";
 
 const seedDoc = facilitiesRaw[0] as unknown as Facility; // xai-colossus-memphis-tn
 
@@ -68,5 +69,37 @@ describe("POST /api/submissions (authorized happy path)", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0].status).toBe("pending");
     expect(rows[0].kind).toBe("create");
+  });
+});
+
+describe("GET /api/submissions (watcherCount)", () => {
+  it("returns { count, submissions } with a watcherCount on every row", async () => {
+    await tdb.db.insert(subscriptionsTable).values({
+      email: "watcher@example.com",
+      targetType: "facility",
+      targetId: "watched-facility",
+      status: "confirmed",
+      confirmToken: generateToken(),
+      unsubscribeToken: generateToken(),
+    });
+    const provenance = { sources: ["https://example.com/x"], discoveredBy: "test" };
+    await tdb.db.insert(submissionsTable).values([
+      { kind: "update", targetFacilityId: "watched-facility", payload: {}, provenance },
+      { kind: "create", payload: seedDoc, provenance },
+    ]);
+
+    const res = await GET(
+      new Request("http://localhost/api/submissions?status=pending", {
+        headers: { Authorization: "Bearer test-token" },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.count).toBe(2);
+    const byKind = Object.fromEntries(
+      body.submissions.map((s: { kind: string; watcherCount: number }) => [s.kind, s.watcherCount])
+    );
+    expect(byKind).toEqual({ update: 1, create: 0 });
   });
 });

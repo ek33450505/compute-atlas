@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { eq, desc } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { redactedErrorCode } from "@/lib/db-error";
 import { getDb } from "@/lib/db/client";
-import { submissionsTable, type SubmissionRow } from "@/lib/db/schema";
+import { submissionsTable, subscriptionsTable, type SubmissionRow } from "@/lib/db/schema";
 import { sendSubmissionReviewedEmail } from "@/lib/email";
 import {
   createFacility,
@@ -99,6 +99,111 @@ export async function listSubmissions(status?: string): Promise<SubmissionRow[]>
     return query.where(eq(submissionsTable.status, status)).orderBy(desc(submissionsTable.createdAt));
   }
   return query.orderBy(desc(submissionsTable.createdAt));
+}
+
+/**
+ * Confirmed facility-watcher counts, keyed by facility id, in one grouped query.
+ * Facilities with no watchers are absent from the result (read them as 0).
+ *
+ * The three conditions are exactly the ones `notifySubscribersOfChange` and
+ * `notifySubscribersOfChanges` (lib/notify.ts) select their recipients with —
+ * status `confirmed`, targetType `facility`, targetId = the facility — so this
+ * is the number of people a change to that facility will email. Change them
+ * together; lib/watcher-count-parity.integration.test.ts fails if they drift.
+ * Returns only counts, never an address or token.
+ */
+export async function confirmedWatcherCounts(
+  facilityIds: string[]
+): Promise<Record<string, number>> {
+  const ids = [...new Set(facilityIds)];
+  if (ids.length === 0) return {};
+
+  const db = getDb();
+  const rows = await db
+    .select({ targetId: subscriptionsTable.targetId, watchers: sql<number>`count(*)::int` })
+    .from(subscriptionsTable)
+    .where(
+      and(
+        eq(subscriptionsTable.status, "confirmed"),
+        eq(subscriptionsTable.targetType, "facility"),
+        inArray(subscriptionsTable.targetId, ids)
+      )
+    )
+    .groupBy(subscriptionsTable.targetId);
+
+  const counts: Record<string, number> = {};
+  for (const r of rows) {
+    if (r.targetId !== null) counts[r.targetId] = Number(r.watchers);
+  }
+  return counts;
+}
+
+/**
+ * The facility id approving this submission WRITES — the id `approveSubmission`
+ * hands to `notifySubscribersOfChange`, and so the id whose watchers get mailed.
+ * For a `create` that is `payload.id`, NOT `targetFacilityId`: subscriptions
+ * carry no FK to facilities and nothing prunes a confirmed row when a facility
+ * is retired, so a `create` reusing a retired slug mails that slug's surviving
+ * watchers. Anything else is the row's `targetFacilityId`. Only a non-empty
+ * string counts; a missing or malformed id is `null` (nothing to count).
+ */
+function approvedFacilityId(row: {
+  kind: string;
+  targetFacilityId: string | null;
+  payload: unknown;
+}): string | null {
+  if (row.kind === "create") {
+    const id = (row.payload as Record<string, unknown> | null)?.id;
+    return typeof id === "string" && id !== "" ? id : null;
+  }
+  return row.targetFacilityId || null;
+}
+
+/**
+ * How many confirmed watchers approving this submission would email right now,
+ * keyed on the id the approval writes (see `approvedFacilityId`). 0 for a row
+ * that is not `pending` (the approve call rejects it with its own 404/409
+ * before it mails anyone), for an unknown id, and for a row with no usable id.
+ * Used by the approve route's server-side gate; the admin UI calls
+ * `approveSubmission` directly and is deliberately not behind it.
+ */
+export async function approvalWatcherCount(submissionId: string): Promise<number> {
+  const db = getDb();
+  const [row] = await db
+    .select({
+      kind: submissionsTable.kind,
+      status: submissionsTable.status,
+      targetFacilityId: submissionsTable.targetFacilityId,
+      payload: submissionsTable.payload,
+    })
+    .from(submissionsTable)
+    .where(eq(submissionsTable.id, submissionId));
+  if (!row || row.status !== "pending") return 0;
+
+  const facilityId = approvedFacilityId(row);
+  if (!facilityId) return 0;
+  const counts = await confirmedWatcherCounts([facilityId]);
+  return counts[facilityId] ?? 0;
+}
+
+export type SubmissionWithWatchers = SubmissionRow & { watcherCount: number };
+
+/**
+ * `listSubmissions` plus, per row, how many confirmed watchers an approval
+ * would email — keyed on the id the approval writes (see `approvedFacilityId`),
+ * so a `create` that reuses a watched id reports its watchers too.
+ */
+export async function listSubmissionsWithWatchers(
+  status?: string
+): Promise<SubmissionWithWatchers[]> {
+  const rows = await listSubmissions(status);
+  const facilityIds = rows.map(approvedFacilityId);
+  const counts = await confirmedWatcherCounts(facilityIds.filter((id): id is string => id !== null));
+
+  return rows.map((r, i) => {
+    const facilityId = facilityIds[i];
+    return { ...r, watcherCount: facilityId ? (counts[facilityId] ?? 0) : 0 };
+  });
 }
 
 /**

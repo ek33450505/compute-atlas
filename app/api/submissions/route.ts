@@ -1,8 +1,12 @@
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
 import { requireAdmin, requireIntake } from "@/lib/api-auth";
-import { createSubmission, listSubmissions, REVIEW_STATUSES } from "@/lib/submissions";
+import { createSubmission, listSubmissionsWithWatchers, REVIEW_STATUSES } from "@/lib/submissions";
 
-/** Admin-only: lists staged submissions, optionally filtered by `?status=`. */
+/**
+ * Admin-only: lists staged submissions, optionally filtered by `?status=`.
+ * Each row carries `watcherCount` — how many confirmed facility-watchers its
+ * approval would email — so a reviewer can see it before approving.
+ */
 export async function GET(request: Request): Promise<Response> {
   const denied = requireAdmin(request);
   if (denied) return denied;
@@ -13,7 +17,7 @@ export async function GET(request: Request): Promise<Response> {
     return jsonResponse({ error: "Invalid status parameter" }, { status: 400 });
   }
 
-  const submissions = await listSubmissions(status);
+  const submissions = await listSubmissionsWithWatchers(status);
   return jsonResponse({ count: submissions.length, submissions });
 }
 
