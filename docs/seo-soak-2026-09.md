@@ -568,6 +568,17 @@ explicitly rather than omit them.
   the build. Verify: `gh pr diff 383 --name-only`
   (`docs/discovery-runbook.md`, `docs/seo-soak-2026-09.md`).
 
+**2026-10-05 — #384, backlog hygiene (robots test pin, log format, lint script)** —
+**RULED OUT**.
+
+- `app/robots.test.ts` (a test only: pins Bing's crawlers as not blocked;
+  `app/robots.ts` is unchanged), `lib/submissions.ts` (server-side log message
+  format), `package.json` (one npm script), a comment in
+  `scripts/discovery/run.sh`, and this log. The rendered output, `robots.txt` and
+  sitemaps are unchanged. It triggers a production build. Verify:
+  `gh pr diff 384 --name-only | grep -E '^(app/|components/|next\.config|proxy\.ts)'`
+  (only `app/robots.test.ts`).
+
 ## Gaps in the pre-registered list
 
 Two things occurred inside the window that the "Named confounds" list does not
