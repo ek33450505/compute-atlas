@@ -554,6 +554,20 @@ explicitly rather than omit them.
   package is in the shipped bundle. Verify:
   `gh pr diff 382 --name-only` (`docs/seo-soak-2026-09.md`, `package-lock.json`).
 
+**2026-10-05 — #381 `3f4f8e6`, Dependabot brace-expansion bump** — **RULED OUT**.
+
+- Merged 16 seconds after #382, which already carried the lockfile change. Its
+  merge commit changes only the `package.json` override floor
+  (`"brace-expansion": "^5.0.9"` → `"^5.0.12"`). Dev tooling only. It triggers a
+  production build with no bundle change. Verify:
+  `git --no-pager show --name-only --format='' 3f4f8e6` (`package.json`).
+
+**2026-10-05 — #383, discovery runbook auth correction** — **RULED OUT**.
+
+- `docs/discovery-runbook.md` and this log only, so the Vercel ignore-gate skips
+  the build. Verify: `gh pr diff 383 --name-only`
+  (`docs/discovery-runbook.md`, `docs/seo-soak-2026-09.md`).
+
 ## Gaps in the pre-registered list
 
 Two things occurred inside the window that the "Named confounds" list does not
