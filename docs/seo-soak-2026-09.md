@@ -506,15 +506,21 @@ explicitly rather than omit them.
   `package-lock.json` only (version bump). Verify:
   `git --no-pager show --name-only --format='' 998f2fc`.
 
-**2026-10-04 — branch `fix/map-automation-resilience`, map-data automation and
-monitor repairs** — **RULED OUT**.
+**2026-10-04 — #378 `3cf813d`, map-data automation and monitor repairs** —
+**RULED OUT**.
 
 - Workflows (`neon-sync.yml` falls back to `--skip-nhd`; new nightly
   `nhd-backfill.yml`), scripts, tests, docs and the NHD debt ledger
   (`data/nhd-backfill-debt.json`, read only by a test and a script). Nothing
   under `app/`, `components/`, `next.config.ts` or `proxy.ts`. Verify:
-  `git --no-pager diff --name-only origin/main...fix/map-automation-resilience | grep -E '^(app/|components/|next\.config|proxy\.ts)'`
-  (empty).
+  `git --no-pager show --name-only --format='' 3cf813d | grep -E '^(app/|components/|next\.config|proxy\.ts)'`
+  (empty). (This entry first cited the branch name, which stops resolving once
+  the branch is deleted, so the check would silently print nothing either way.)
+- Its follow-ups (branch `fix/map-automation-followups`: the backfill defer
+  gate moved into `scripts/classify-sync-prs.sh`, fork-proof sync-PR queries in
+  `nhd-backfill.yml` and `drift-alert.yml`, CLI tests, wording) are likewise
+  workflows, scripts, tests and docs only — **RULED OUT**. Verify after merge
+  with the same `git show --name-only` on its squash SHA (empty).
 - Indirect path, named: when NHD is degraded, a wave's new facilities now get
   a Siting context entry without the nearest-water / nearest-≥230 kV lines
   (the nightly backfill adds them later). Before, the whole map-data artifact
