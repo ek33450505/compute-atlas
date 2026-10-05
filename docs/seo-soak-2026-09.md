@@ -519,8 +519,9 @@ explicitly rather than omit them.
 - Its follow-ups (branch `fix/map-automation-followups`: the backfill defer
   gate moved into `scripts/classify-sync-prs.sh`, fork-proof sync-PR queries in
   `nhd-backfill.yml` and `drift-alert.yml`, CLI tests, wording) are likewise
-  workflows, scripts, tests and docs only — **RULED OUT**. Verify after merge
-  with the same `git show --name-only` on its squash SHA (empty).
+  workflows, scripts, tests and docs only — **RULED OUT** (#379). Verify:
+  `gh pr diff 379 --name-only | grep -E '^(app/|components/|next\.config|proxy\.ts)'`
+  (empty).
 - Indirect path, named: when NHD is degraded, a wave's new facilities now get
   a Siting context entry without the nearest-water / nearest-≥230 kV lines
   (the nightly backfill adds them later). Before, the whole map-data artifact
