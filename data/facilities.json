@@ -8975,6 +8975,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "ark-data-centers-boise-victory-view-id",
+    "name": "Ark Data Centers Boise (fka Involta)",
+    "operator": "Ark Data Centers (formerly Involta)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.579984,
+      "lon": -116.290797,
+      "city": "Boise",
+      "county": "Ada",
+      "street": "2653 S Victory View Way",
+      "postalCode": "83709",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/12234",
+        "label": "PeeringDB facility 12234: ark data centers - Boise, ID",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/2653-south-victory-view-way-boise/involta-data-centers/datacenter/idaho-2",
+        "label": "Ark Data Centers Idaho 2 (formerly Involta) -- 2653 South Victory View Way",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Tier 3 colocation facility. Involta rebranded as Ark Data Centers in May 2024. PeeringDB (operator-maintained) lists the facility at this address. Directories also list a second Ark/Involta Boise site on S Eagle Flight Way, but they disagree on its street number (1415 vs 1450) and on which site is 'Boise 1' and which is 'Boise 2'. Only the PeeringDB-confirmed site is proposed here. Square-footage figures differ across directories and are omitted. The pin is PeeringDB's coordinate. aiClassification omitted: general colocation.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "ark-data-centers-green-bay-harrison-campus-wi",
     "name": "Ark Data Centers Green Bay (Harrison Campus)",
     "operator": "Involta (rebranded Ark Data Centers, May 2024)",
@@ -15041,6 +15078,7 @@
       "lon": -94.93,
       "city": "Gardner",
       "county": "Johnson",
+      "street": "Near the NE corner of 191st Street & South Clare Road, eastern Gardner, KS",
       "state": "KS",
       "precision": "exact"
     },
@@ -15058,14 +15096,33 @@
         "label": "KCUR",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://fox4kc.com/news/new-hyperscale-data-center-could-be-coming-to-johnson-county-kansas/amp/",
+        "label": "New hyperscale data center could be coming to Johnson County, Kansas",
+        "publisher": "FOX4 Kansas City (WDAF-TV)",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/beale-gardner-campus",
+        "label": "Beale: Gardner Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-04",
     "notes": "Near 191st St & S Clare Rd. Up to 16 data halls. Distinct from Beale's existing tracked Project Pilot in De Soto, KS. Coordinates are approximate.",
     "energy": {
       "source": "grid",
       "utility": "Evergy",
       "notes": "New private on-site substation plus a new Evergy substation. Part of a Feb 2026 Evergy 1.9GW electric service agreement batch alongside Google and Meta."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.02,
+      "notes": "Developer estimated roughly 20,000 gallons/day for a closed-loop system; the project was withdrawn before construction began."
     },
     "landAcres": 300,
     "community": {
@@ -20583,6 +20640,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "centeris-boise-bethel-court-id",
+    "name": "Centeris Boise (former HP / DataSite data center)",
+    "operator": "Centeris (The Benaroya Company)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.606214,
+      "lon": -116.303601,
+      "city": "Boise",
+      "county": "Ada",
+      "street": "9700 W Bethel Court",
+      "postalCode": "83709",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://idahobusinessreview.com/?p=45117",
+        "label": "Former HP data center in Boise sold to Benaroya partnership (June 2011)",
+        "publisher": "Idaho Business Review",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/2432",
+        "label": "PeeringDB facility 2432: DataSite, Boise (9700 Bethel Court)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/centeris-boise",
+        "label": "Centeris Boise",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "A 60,252 sq ft former Hewlett-Packard data center. In 2011 BCC RPI Boise LLC (The Benaroya Co. and Real Property Investors) bought it to lease to data center tenants. It later operated as DataSite Boise, the name PeeringDB still shows, and is now marketed as Centeris, Benaroya's data center brand. The current operator name relies partly on a directory listing (Baxtel), so verify it before publishing. Baxtel's 7 MW figure is left out under the directory rule. The pin is PeeringDB's coordinate. aiClassification omitted: general colocation.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "centeris-south-hill-puyallup-wa",
     "name": "Centeris South Hill Campus (SH1/SH2)",
     "operator": "Centeris (The Benaroya Company)",
@@ -25225,9 +25326,16 @@
         "publisher": "Hoodline",
         "retrievedAt": "2026-09-23",
         "kind": "press"
+      },
+      {
+        "url": "https://www.tonganoxiemirror.com/top-news/2026/may/07/proposed-data-centers-near-tonganoxie-de-soto-raise-slew-of-questions/",
+        "label": "Proposed data centers near Tonganoxie, De Soto raise slew of questions",
+        "publisher": "Tonganoxie Mirror",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-23",
+    "lastUpdated": "2026-10-04",
     "notes": "Proposed hyperscale data center campus on the former Tailgate Ranch in unincorporated Leavenworth County, south of Tonganoxie and south of the Tonganoxie Business Park, near the Tonganoxie/Eudora interchange on I-70. Reported as roughly 1,000 acres (KSHB; the Lawrence Journal-World writes \"more than 1,000 acres\" and the community lead that surfaced this record claimed 1,100 acres — no source seen states 1,100, so 1,000 is recorded and the discrepancy is noted here). KSHB reports 330 acres set aside for permanent land conservation. The planned capacity recorded here is the reported ceiling: a revised proposal submitted after Leavenworth County's data center moratorium expired in August 2026 roughly doubled the project's electricity demand to \"up to 1.2 gigawatts\" and added an on-site gas power plant; a lower figure appears in one Journal-World reference (\"600-watt data center\", evidently a units error in the source) and is not used. Location precision is approximate: no source seen states coordinates, a street address or a parcel, so the pin is the Tonganoxie town centroid (OpenStreetMap/Nominatim) and the actual footprint lies some distance south of it. Cloverleaf Infrastructure, a Houston-based developer founded by former Microsoft energy executives, describes itself as a site-preparation developer that will introduce an end user later; no hyperscale tenant has been named. Cloverleaf's own site describes a \"multi-billion-dollar taxable investment\" but states no dollar figure, so investmentUsd is omitted. As of 2026-09-23 the project is conceptual: Cloverleaf's FAQ states no formal applications have been submitted to local jurisdictions, and the county's data center planning and zoning regulations are not finalized.",
     "energy": {
       "utility": "Evergy",
@@ -27664,6 +27772,42 @@
     ],
     "lastUpdated": "2026-09-12",
     "notes": "OSM matches a building at this address named 'Commerce Park West' (way/265358816), used in preference to the nearby US Census interpolation (~400m offset on this business-park road). FirstLight Fiber's own directory (via Baxtel) also lists a 'FirstLight Bedford' facility at this SAME address, 8 Commerce Drive. Rather than ship a second record carrying an identical pin (this wave's one-pin-per-parcel rule), that is recorded here as a note instead: it is most likely the same building or business park -- possibly a shared carrier-neutral building housing both ColoSpace's product and a FirstLight point of presence -- and is not independently confirmed as a physically distinct site. colospace.com's own site could not be fetched in this run (expired TLS certificate), so this record rests on two independently fetched third-party directory listings (DataCenterCatalog, Baxtel) plus the address-to-building geocode match, hence 'reported' rather than 'confirmed' confidence.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "colossus-bullock-spring-hill-ks",
+    "name": "Data Center Proposal at 191st & Renner, Spring Hill — cancelled",
+    "operator": "Bullock Capital / Colossus Data Center Advisors",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.7430646,
+      "lon": -94.8255166,
+      "city": "Spring Hill",
+      "county": "Johnson County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-03",
+        "note": "Developers (Bullock Capital / Colossus Data Center Advisors) withdrew their rezoning application for a 316-acre site at 191st St & Renner Rd ahead of a planning-commission meeting, after resident opposition; the City of Spring Hill confirmed no pending zoning request remains for the property",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kshb.com/news/local-news/kansas/johnson-county/developers-drop-application-to-develop-possible-data-center-in-spring-hill",
+        "label": "Developers drop application to develop possible data center in Spring Hill",
+        "publisher": "KSHB",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Proposed M-1 General Industrial rezoning at the SE corner of 191st St & Renner Rd; the companies never explicitly confirmed a data center was the intended use, but Colossus Data Center Advisors' own specialty (site selection/owner's representation for data centers) and trade coverage describe it as a data-center proposal. Recorded as cancelled/never-built for completeness, parallel to the already-tracked McLouth, KS cancelled crypto facility. Single source read; a DatacenterDynamics article on the same story returned HTTP 403 and was not read, so is not cited.",
+    "landAcres": 316,
     "facilityType": "data_center"
   },
   {
@@ -36361,9 +36505,16 @@
         "publisher": "DataBank",
         "retrievedAt": "2026-09-13",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/databank-kansas-city-mci3",
+        "label": "DataBank Kansas City MCI3",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-04",
     "notes": "Operator's own site lists this as (MCI3) South Lake Campus Data Center, 69,762 IT sq ft, 12.75MW critical IT load, 15 onsite carriers -- one of two named DataBank facilities in the Kansas City metro (the other is the separate Pine Ridge / Overland Park site, recorded separately). Coordinates are the US Census geocode of the listed street address, retrieved 2026-09-13; precision set to approximate since the parcel/building footprint was not independently confirmed.",
     "facilityType": "data_center"
   },
@@ -42782,12 +42933,32 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-12",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.diodeventures.com/gemstone-project-updates",
+        "label": "Gemstone Technology Park Updates",
+        "publisher": "Diode Ventures",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-04",
     "notes": "Diode Ventures (a Black & Veatch subsidiary) states on its own project page that the project 'will require more than $1 billion in private investment'; recorded here as the stated investment floor, not a confirmed total. No MW capacity was disclosed in either source fetched. Diode Ventures describes the project as 'early development' with up to five buildings planned. Distinct from the existing Meta Kuna Data Center (14375 S Cole Rd) already in this dataset. Coordinates set 2026-09-12 from the OpenStreetMap building POI at 3250 S Locust Grove Road. The US Census geocoder returns a point 1.6 km north for the same address; both agree on street and ZIP, and a mapped building beats an address-range interpolation, but for a 620-acre campus treat the pin as site-level regardless.",
+    "energy": {
+      "source": "grid",
+      "utility": "Idaho Power",
+      "notes": "Diode names Idaho Power as its utility partner and says Gemstone Technology Park will pay 100% of the costs of interconnection upgrades. The developer has not published a MW figure."
+    },
+    "water": {
+      "notes": "Historical irrigation groundwater rights are being converted to industrial use; the developer says this will reduce the total volume of water used. Wastewater goes to an independent treatment system, and cooling water is treated to Idaho DEQ standards. The cooling method is not specified."
+    },
     "investmentUsd": 1000000000,
     "landAcres": 620,
+    "jobs": {
+      "construction": 800,
+      "permanent": 100,
+      "sourceIndex": 3
+    },
     "community": {
       "status": "contested",
       "notes": "Kuna City Council approved rezoning the site from agricultural to M-1 light industrial in a 3-2 vote on 2025-04-01, with Mayor Joe Stear breaking the tie. Design review approval is still required before construction. Diode Ventures agreed to community payments including $500,000 to the Kuna School District and $10 million over 20 years to the Kuna Police Department, with a Kuna Rural Fire District agreement reported in progress.",
@@ -61555,6 +61726,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "google-project-helium-sharon-ks",
+    "name": "Google Data Center (Project Helium)",
+    "operator": "Google",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.2486335,
+      "lon": -98.4206316,
+      "city": "Sharon",
+      "county": "Barber County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01-12",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-31",
+        "note": "Barber County Commission approved (2-0-1) a development agreement with Google for a data center near Sharon, dubbed 'Project Helium'; construction expected to begin early 2027, initial operations targeted for 2030",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kwch.com/2026/08/31/barber-county-commission-approves-agreement-google-data-center/",
+        "label": "Barber County Commission approves agreement for Google data center",
+        "publisher": "KWCH",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://barber.ks.gov/data-center.html",
+        "label": "Barber County, Kansas — Data Center",
+        "publisher": "Barber County, Kansas",
+        "retrievedAt": "2026-10-04",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "1.7 million sq ft facility near Sharon, ~8 miles east of Medicine Lodge. County materials estimate roughly $327.5M in total ad valorem tax revenue over 20 years (~$138.4M to Barber County) once the project's Kansas data-center tax exemption period lapses; that is a projected tax-revenue figure, not an investment or subsidy amount, and is not recorded as such here. Construction targeted for early 2027; initial operations 2030.",
+    "water": {
+      "coolingType": "air",
+      "notes": "Closed-loop, air-cooled design with no water used for cooling; domestic water drawn from an existing well, all other water purchased from a regulated municipal utility, wastewater disposed through a regulated municipal utility, per the county development agreement."
+    },
+    "jobs": {
+      "permanent": 500,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "google-project-louie-monrovia-in",
     "name": "Google Project Louie (Morgan County)",
     "operator": "Google",
@@ -68417,6 +68639,46 @@
     "facilityType": "data_center"
   },
   {
+    "id": "hyperdatagrid-parsons-ks",
+    "name": "HyperDataGrid Parsons Data Center",
+    "operator": "HyperDataGrid",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.3407838,
+      "lon": -95.2596295,
+      "city": "Parsons",
+      "county": "Labette County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "announcedDate": "2026-07-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-09",
+        "note": "Parsons city commission approved a purchase-option agreement with HyperDataGrid for ~20 acres in Tolen Creek Industrial Park; due diligence underway, construction requires separate approval",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/20mw-data-center-project-proposed-in-parsons-kansas",
+        "label": "20MW data center project proposed in Parsons, Kansas",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Texas-based HyperDataGrid proposes a 20MW, liquid-cooled (direct-to-chip, up to 600kW/rack) facility in Tolen Creek Industrial Park. Company says it could bring the facility online within 12 months of approval; construction has not been separately approved as of this session. Single corroborating source read (a DatacenterDynamics article on the same story returned HTTP 403 and was not read, so is not cited).",
+    "landAcres": 20,
+    "facilityType": "data_center"
+  },
+  {
     "id": "hyperscale-data-dowagiac-mi",
     "name": "Hyperscale Data Dowagiac Campus",
     "operator": "Hyperscale Data, Inc.",
@@ -72018,6 +72280,50 @@
       "offtaker": "Google",
       "notes": "First deployment under the October 2024 Kairos Power-Google Master Plant Development Agreement (Google fleet-wide target of up to 500 MW across multiple Kairos plants by 2035). Power is delivered via a Tennessee Valley Authority PPA (announced 2025-08-18) -- the first US utility PPA for an advanced Gen IV reactor -- intended to serve Google data centers in Montgomery County, TN and Jackson County, AL (grid-region delivery, no single named campus). Shares the Heritage Center/ETTP campus with the earlier, smaller non-power-producing Hermes 1 demonstration reactor but sits on a distinct K-33 parcel. Target operation by 2030."
     }
+  },
+  {
+    "id": "kanza-park-flint-hills-emporia-ks",
+    "name": "Flint Hills Digital Campus",
+    "operator": "Kanza Park Place LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.4040054,
+      "lon": -96.181623,
+      "city": "Emporia",
+      "county": "Lyon County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-02",
+        "note": "City of Emporia reviewing annexation/zoning request and proposed Digital Infrastructure Overlay District for a gigawatt-scale campus in Industrial Park IV",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wibw.com/2026/06/02/flint-hills-digital-campus-proposed-emporia/",
+        "label": "Flint Hills Digital Campus proposed for Emporia and Lyon County",
+        "publisher": "WIBW",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/proposed-gigawatt-scale-data-center-campus-planned-for-kansas",
+        "label": "Gigawatt-Scale Data Center Campus Planned for Kansas",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Proposed gigawatt-scale campus on up to 1,000 acres in Emporia's Industrial Park IV; developer says the project would combine dedicated grid infrastructure with on-site generation. No exact MW, investment, or jobs figures disclosed (developer cites 'thousands' of construction jobs and 'hundreds' of permanent jobs, not exact counts). Public hearing held 2026-06-23. Not yet under construction as of this session.",
+    "landAcres": 1000,
+    "facilityType": "data_center"
   },
   {
     "id": "karis-critical-deep-river-merrillville-in",
@@ -80343,7 +80649,7 @@
     "id": "meta-kuna-id",
     "name": "Meta Kuna Data Center",
     "operator": "Meta",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 43.491,
@@ -80373,6 +80679,12 @@
         "date": "2023-10",
         "note": "Construction resumed after December 2022 pause; new AI-optimized design with denser GPU deployment support",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-04",
+        "note": "Meta's Kuna data center is open and fully operational, serving traffic on Meta's platforms worldwide (reported 2026-09-03).",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -80410,14 +80722,32 @@
         "publisher": "Deseret News",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://idahonews.com/news/local/meta-opens-new-ai-data-center-in-kuna-hopes-to-become-water-positive",
+        "label": "Meta opens new AI data center in Kuna, hopes to become water positive",
+        "publisher": "Idaho News 6 (KIVI)",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.deseret.com/magazine/2026/03/04/idaho-data-centers-agriculture-water-future",
+        "label": "How data centers are reshaping Idaho's farm country",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-10-04",
     "notes": "960,000 sq ft campus (Meta's 15th US data center). Originally Project Peregrine. Construction paused December 2022, restarted October 2023 with AI-optimized architecture; new design 31% cheaper and half the build time. Peak construction employed 1,400 workers. Expected operational end of 2026. Water infrastructure cost sourced to CEG ($70M) but Idaho Business Review cites $100M — discrepancy unresolved; use CEG figure as primary. Coordinates are Kuna city centroid; exact site is west of city center. As of December 2025, the campus was in the \"final stages\" of construction; local reporting notes power demand will not be clear until the site comes online.",
     "energy": {
       "source": "mixed",
       "utility": "Idaho Power",
       "notes": "100% renewable energy committed; Meta adding 200 MW of renewable energy to Idaho grid as part of project"
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Meta describes a closed-loop water cooling system that 'allows us to use virtually no water for the majority of the year' (Idaho News, 2026-09-03). Deseret (2026-03-04) reports about 70,000 gallons/day in winter months and seven water rights equal to roughly 3 million gallons/day. Meta aims to be water positive by 2030."
     },
     "investmentUsd": 800000000,
     "landAcres": 485,
@@ -85865,6 +86195,73 @@
     "facilityType": "data_center"
   },
   {
+    "id": "millcompute-bates-mill-lewiston-me",
+    "name": "MillCompute Bates Mill No. 3 AI Data Center",
+    "operator": "MillCompute LLC",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.0970175,
+      "lon": -70.2183307,
+      "city": "Lewiston",
+      "county": "Androscoggin",
+      "street": "35 Canal Street",
+      "postalCode": "04240",
+      "state": "ME",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 24
+    },
+    "announcedDate": "2025-12-12",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-12",
+        "note": "MillCompute LLC proposed a $300M Tier III AI data center occupying the first two floors of Bates Mill No. 3",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-12-17",
+        "note": "Lewiston City Council voted unanimously (7-0) to reject the proposal after public backlash over power/water use and a requested 20-year tax break",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.bangordailynews.com/2025/12/12/central-maine/central-maine-business/lewiston-mill-300-m-ai-data-center/",
+        "label": "Lewiston mill $300M AI data center",
+        "publisher": "Bangor Daily News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.mainepublic.org/business-and-economy/2025-12-17/lewiston-city-council-shoots-down-data-center-proposal",
+        "label": "Lewiston city council shoots down data center proposal",
+        "publisher": "Maine Public",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/tier-iii-ai-data-center-proposed-for-lewiston-bates-mill-in-maine",
+        "label": "Tier III AI data center proposed for Lewiston Bates Mill",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Proposed to occupy the first two floors (~85,000 sq ft) of Bates Mill No. 3; estimated 20-30 jobs and $300M investment; included a 20-year TIF (90% tax return years 1-10, 85% years 11-20). Phase 2 contemplated an on-site natural gas co-generation system. Rejected unanimously by the Lewiston City Council on 2025-12-17 after sustained public opposition over water/power use and the tax break request.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Initial power from the grid (Central Maine Power service territory); phase 2 planned an on-site natural gas co-generation system."
+    },
+    "investmentUsd": 300000000,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "milligan-1-wind-saline-ne",
     "name": "Milligan I Wind Project",
     "operator": "EDF Renewables",
@@ -88958,6 +89355,43 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "neutron-coeur-dalene-id",
+    "name": "Neutron Coeur d'Alene",
+    "operator": "Neutron LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.700339,
+      "lon": -116.794444,
+      "city": "Coeur d'Alene",
+      "county": "Kootenai",
+      "street": "600 W Appleway Ave",
+      "postalCode": "83814",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/9515",
+        "label": "PeeringDB facility 9515: Neutron - Coeur d'Alene",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/600-west-appleway-avenue-coeur-dalene/neutron-llc/datacenter/coeur-dalene",
+        "label": "Neutron Coeur d'Alene -- 600 West Appleway Avenue",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Colocation facility run by Neutron LLC, offering cabinets, private cages, IP transit and access to the SpokaneIX exchange. Networks on site include Fatbeam and IonSwitch, and directories also list the site as 'IonSwitch CDA01'. It is a different building from the tracked OrbitCom site at 442 W Appleway Ave, about 165 m away. The pin is PeeringDB's coordinate. aiClassification omitted.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "new-carlisle-chicago-trail-data-center-st-joseph-county-in",
     "name": "New Carlisle Chicago Trail Data Center (rezoning denied)",
     "operator": "Undisclosed",
@@ -89133,6 +89567,103 @@
     "facilityType": "data_center",
     "environmental": {
       "waterStress": "unknown"
+    }
+  },
+  {
+    "id": "new-england-energy-sanford-woods-dc-me",
+    "name": "Sanford Woods Data Center",
+    "operator": "New England Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.4387179,
+      "lon": -70.7746224,
+      "city": "Sanford",
+      "county": "York",
+      "state": "ME",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://sanfordspringvalenews.com/company-eyes-sanford-site-for-data-center/",
+        "label": "Company eyes Sanford site for data center",
+        "publisher": "Sanford Spring Vale News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://sanfordspringvalenews.com/data-center-could-pump-2-billion-into-city/",
+        "label": "Data center could pump $2 billion into city",
+        "publisher": "Sanford Spring Vale News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Reported capacity range is 100-300 MW (not a firm committed figure; omitted from capacityMw pending a formal filing). Proposed as one component of the 1,060-acre 'Sanford Woods Industrial and Technical Campus' in south Sanford, bisected by the Mousam River, on land owned since 1975 by the Gibbs family's New England Energy (Randy Gibbs, founder of Multifuels of Houston, TX; co-developer Walt Bussells). Co-located with a planned 300 MW hydrogen fuel-cell power plant (tracked separately as new-england-energy-sanford-woods-power-me), a 50-acre industrial greenhouse, and a cold-storage facility. Cumulative campus investment reported at ~$2.16 billion with ~100 long-term jobs campus-wide -- both figures span the whole campus, not the data center alone, so they are not recorded as this facility's investmentUsd/jobs. Disclosed to the Maine Legislature's Energy and Utilities Committee in February 2026; marketing, partner selection, financing and permitting expected to take ~2 years. Maine's 2026 data-center moratorium debate would allow continued groundwork but block new construction permits before 2028.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Planned to be powered off-grid by on-site generation: a hydrogen fuel-cell plant (initially natural gas, transitioning to hydrogen within ~5 years) plus solar."
+    },
+    "water": {
+      "reportedMgd": 0.3,
+      "notes": "Developer stated a maximum of 300,000 gallons/day of water usage for the full campus (not isolated to the data center)."
+    },
+    "landAcres": 1060,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "new-england-energy-sanford-woods-power-me",
+    "name": "Sanford Woods Hydrogen Fuel Cell Power Plant",
+    "operator": "New England Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.4387179,
+      "lon": -70.7746224,
+      "city": "Sanford",
+      "county": "York",
+      "state": "ME",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://sanfordspringvalenews.com/company-eyes-sanford-site-for-data-center/",
+        "label": "Company eyes Sanford site for data center",
+        "publisher": "Sanford Spring Vale News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://sanfordspringvalenews.com/data-center-could-pump-2-billion-into-city/",
+        "label": "Data center could pump $2 billion into city",
+        "publisher": "Sanford Spring Vale News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Co-located on the same 1,060-acre 'Sanford Woods Industrial and Technical Campus' parcel as new-england-energy-sanford-woods-dc-me, which it is intended to power off-grid. Owner is the Gibbs family's New England Energy (Texas), on land held since 1975. Cumulative campus investment (~$2.16B) and job figures (~100 long-term) are campus-wide and not recorded against this facility specifically.",
+    "energy": {
+      "source": "other",
+      "notes": "Hydrogen fuel cell plant; initial fuel is natural gas, with a planned transition to hydrogen within approximately 5 years."
+    },
+    "landAcres": 1060,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "offtaker": "New England Energy (co-located Sanford Woods Data Center, same owner)",
+      "poweredFacilityIds": [
+        "new-england-energy-sanford-woods-dc-me"
+      ],
+      "notes": "Hydrogen fuel cell technology; initially fueled by natural gas, transitioning to hydrogen within ~5 years."
     }
   },
   {
@@ -93438,6 +93969,76 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "oklo-aurora-inl-id",
+    "name": "Oklo Aurora-INL Powerhouse",
+    "operator": "Oklo",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.5532306,
+      "lon": -112.656889,
+      "county": "Bingham",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 75
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-09-22",
+        "note": "Oklo broke ground on its first Aurora powerhouse at Idaho National Laboratory under DOE's Reactor Pilot Program. Kiewit Nuclear Solutions is the lead constructor.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://world-nuclear-news.org/articles/oklo-breaks-ground-for-first-aurora-powerhouse",
+        "label": "Oklo breaks ground for first Aurora powerhouse",
+        "publisher": "World Nuclear News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Aurora_nuclear_reactor",
+        "label": "Aurora nuclear reactor",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      },
+      {
+        "url": "https://technologies.org/oklo-breaks-ground-on-aurora-inl-powerhouse-at-idaho-national-laboratory",
+        "label": "Oklo Breaks Ground on Aurora-INL Powerhouse at Idaho National Laboratory",
+        "publisher": "Technologies.org",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.modernpowersystems.com/news/oklo-breaks-ground-on-aurora-reactor/",
+        "label": "Oklo breaks ground on Aurora reactor",
+        "publisher": "Modern Power Systems",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Coordinates are Wikipedia's for the Aurora-INL site. The county comes from a US Census reverse-geocode of those coordinates (Bingham County) and should be checked against a DOE/INL siting document. This is separate from the tracked Aalo Atomics reactor (aalo-atomics-inl-id) and from Oklo's Ohio powerhouse (oklo-aurora-pike-county-oh).",
+    "energy": {
+      "source": "nuclear"
+    },
+    "jobs": {
+      "construction": 370,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear_smr",
+      "unitCount": 1,
+      "notes": "Oklo's first Aurora powerhouse: a 75 MWe sodium-cooled fast reactor that runs on metal HALEU fuel and builds on the EBR-II design. WNN reports about 370 construction jobs and 70-80 long-term operating positions. According to Wikipedia, the preliminary documented safety analysis was approved on 2026-06-11, and turbine/generator work was on track for reactor startup in 2028. No site-specific offtaker is sourced. Oklo's data-center letters of intent (e.g. Equinix, Wyoming Hyperscale) are company-wide and not tied to this unit, so offtaker is omitted."
+    }
+  },
+  {
     "id": "oklo-aurora-pike-county-oh",
     "name": "Oklo Aurora Powerhouse",
     "operator": "Oklo",
@@ -95717,10 +96318,20 @@
         "publisher": "WKMS",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/panattoni-project-bluegrass",
+        "label": "Panattoni: Project Bluegrass",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-04",
     "notes": "No capacity, investment, or named end-user figure found as of 2026-09-10; developer identified only as Panattoni. Confidence set to 'reported' pending a primary filing (county P&Z docket) confirming project specifics.",
+    "water": {
+      "coolingType": "closed_loop"
+    },
     "landAcres": 1000,
     "community": {
       "status": "opposed",
@@ -97344,6 +97955,166 @@
       "technology": "solar",
       "offtaker": "Omaha Public Power District",
       "notes": "Spread across roughly 500 acres of privately owned land near Yutan in Saunders County. \"OPPD has a power purchase agreement with the facility's developer and owner/operator, the AES Corporation.\" Described as OPPD's first utility-scale solar project and the largest in Nebraska to date."
+    }
+  },
+  {
+    "id": "pleasant-valley-solar-1-ada-county-id",
+    "name": "Pleasant Valley Solar 1",
+    "operator": "Matrix Renewables (Pleasant Valley Solar, LLC; rPlus Energies minority owner)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.3051268,
+      "lon": -115.9900037,
+      "county": "Ada",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-05-19",
+        "note": "rPlus Energies signed a long-term PPA with Idaho Power for the 200 MW project, which supports Meta's Kuna data center. Construction was expected to start later in 2023.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "operational",
+        "date": "2025-03-02",
+        "note": "Matrix Renewables and rPlus Energies commissioned Pleasant Valley Solar 1. EPC contractor Sundt Renewables completed construction on March 2, 2025.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pv-magazine-usa.com/2025/04/15/largest-solar-installation-in-idaho-power-grid-to-support-data-center/",
+        "label": "Largest solar installation in Idaho Power grid to support data center",
+        "publisher": "pv magazine USA",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/relation/18958397",
+        "label": "OpenStreetMap relation 18958397: Pleasant Valley Solar (EIA 67211)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-04",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/67211-matrix-pleasant-valley",
+        "label": "Matrix Pleasant Valley (EIA plant 67211)",
+        "publisher": "Infrasure",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.nsenergybusiness.com/news/rplus-energies-further-expands-into-idaho-with-200mw-pleasant-valley-solar-project/",
+        "label": "rPlus Energies further expands into Idaho with 200MW Pleasant Valley Solar project",
+        "publisher": "NS Energy",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "The pin is the centre of the OpenStreetMap multipolygon for the plant, which is tagged EIA plant 67211 and sourced from EIA-860 2024. Infrasure's EIA-derived point (43.3022, -115.9879) is about 350 m away. A US Census reverse geocode confirms the county.",
+    "energy": {
+      "source": "solar",
+      "utility": "Idaho Power"
+    },
+    "jobs": {
+      "construction": 220,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via Idaho Power PPA)",
+      "poweredFacilityIds": [
+        "meta-kuna-id"
+      ],
+      "notes": "About 200 MWac / 261 MWdc. The PPA was negotiated with Meta and Idaho Power to support Meta's Kuna data center. Financing was a $283M construction-to-term loan plus a PTC transfer agreement. rPlus developed the project from 2021 and sold majority ownership to Matrix Renewables, which is backed by TPG Rise."
+    }
+  },
+  {
+    "id": "pleasant-valley-solar-2-ada-county-id",
+    "name": "Pleasant Valley Solar 2",
+    "operator": "rPlus Energies",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.2899486,
+      "lon": -116.004687,
+      "county": "Ada",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 125
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-11-14",
+        "note": "rPlus Energies, Idaho Power and Meta announced a long-term PPA that delivers all of the 125 MW project's output to support Meta's Kuna data center, through Idaho Power's Clean Energy Your Way program.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-07",
+        "note": "rPlus Energies commissioned the 125 MWac project (reported 2026-07-22).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.pv-tech.org/developer-rplus-energies-commissions-125mw-idaho-solar-pv-project/",
+        "label": "Developer rPlus Energies commissions 125MW Idaho solar PV project",
+        "publisher": "PV Tech",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.energytech.com/renewables/article/55243022/new-ppa-supports-idaho-solar-farms-committed-to-powering-meta-data-center",
+        "label": "New PPA supports Idaho solar farms committed to powering Meta data center",
+        "publisher": "EnergyTech",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1489620381",
+        "label": "OpenStreetMap way 1489620381: Pleasant Valley Solar 2",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-04",
+        "kind": "osm"
+      },
+      {
+        "url": "https://news.metal.com/en/newscontent/104018787-solar-rplus-commissions-125mw-and-starts-400mw-idaho-solar-project",
+        "label": "rPlus commissions 125MW and starts 400MW Idaho solar project",
+        "publisher": "SMM News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "The pin is the centre of the OpenStreetMap polygon tagged 'Pleasant Valley Solar 2' (125 MW). OSM gives it the same EIA plant id (67211) as phase 1, so a separate EIA id for phase 2 was not confirmed. EnergyTech (Nov 2024) says about 200 construction jobs were planned.",
+    "energy": {
+      "source": "solar",
+      "utility": "Idaho Power"
+    },
+    "jobs": {
+      "construction": 200,
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via Idaho Power PPA)",
+      "poweredFacilityIds": [
+        "meta-kuna-id"
+      ],
+      "notes": "Second phase, next to Pleasant Valley Solar 1; EPC contractor Sundt. PV Tech says Pleasant Valley Solar 2 and Blacks Creek together represent more than $750M of rPlus investment."
     }
   },
   {
@@ -107141,6 +107912,95 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "rhea-data-blacks-creek-campus-ada-county-id",
+    "name": "Rhea Data Blacks Creek Campus",
+    "operator": "Rhea Data (subsidiary of Arevia Power)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.4593323,
+      "lon": -116.1412266,
+      "county": "Ada",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "announcedDate": "2026-09-21",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08",
+        "note": "BLM's Four Rivers Field Office received Rhea Data's application for a large-scale data center campus in August 2025. Rhea supplied more information in spring 2026, and BLM plans to publish a notice of intent in the Federal Register before the end of 2026. That notice opens NEPA review and public comment.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.eastidahonews.com/2026/09/massive-data-center-with-power-plant-planned-for-public-land-in-idaho/",
+        "label": "Massive data center with power plant planned for public land in Idaho",
+        "publisher": "East Idaho News",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/first-data-center-idaho-proposed-045355190.html",
+        "label": "First data center in Idaho proposed on public lands. It would be four times larger than Meta's Kuna facility",
+        "publisher": "KTVB (via Yahoo News)",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.boisestatepublicradio.org/politics-government/2026-09-21/idaho-data-center-blacks-creek-blm",
+        "label": "Idaho's newest data center could be built on public land",
+        "publisher": "Boise State Public Radio",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.washingtonsun.com/climate-environment/trump-administration-data-centers-public-lands-proposals",
+        "label": "Trump Is Considering More Data Centers on Public Lands Than Previously Known",
+        "publisher": "The Washington Sun",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://localnews8.com/news/top-stories/2026/09/25/massive-south-boise-data-center-proposal/",
+        "label": "A 3,700-Acre Data Center Is Proposed for South Boise Public Land",
+        "publisher": "KIFI Local News 8",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Blacks+Creek+Reservoir,+Idaho&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim: Blacks Creek Reservoir, Ada County (way 252041493)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-04",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Proposed 4-million-sq-ft, multi-building campus on BLM-managed public land in southern Ada County, near Blacks Creek Reservoir on Kuna-Mora Road and east of Meta's Kuna data center. Transmission and electrical rights-of-way extend into Elmore County. Acreage differs by outlet: 3,226 acres (BLM spokesperson, the figure recorded here); a ~3,200-acre campus plus ~550 acres of rights-of-way (3,750 total); or ~3,700 acres. The 600 MW data-processing figure comes from a hedged statement by BLM Field Manager Jared Blades ('I think that has a 600-megawatt data processing capacity'), repeated by KIFI. Treat it as preliminary. The pin is the OpenStreetMap feature for Blacks Creek Reservoir, the landmark the sources name. It is not a parcel location; no parcel or legal description has been published. This is a different project from rPlus Energies' Blacks Creek Energy Center solar plant south of the Boise airport. Rhea Data had not responded to media requests when these articles were published.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Idaho Power",
+      "onSiteGenerationMw": 450,
+      "notes": "The preliminary design includes an on-site natural-gas power plant and electrical connection facilities to Idaho Power. BLM Four Rivers Field Manager Jared Blades told KTVB the plant could produce 'about 450 megawatts'. Other outlets say BLM was still holding back the power figure while the design takes shape, so treat both MW figures as preliminary. East Idaho News says the campus is linked to Arevia Power's proposed 400 MW Snake River Energy solar project on BLM land north of Twin Falls."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "As of September 2026, BLM was still asking for details on water demand and on whether cooling would be a closed or open system. No water figure has been published."
+    },
+    "landAcres": 3226,
+    "community": {
+      "status": "contested",
+      "notes": "The Idaho Sierra Club called the proposal 'unacceptable', citing air quality, climate and water. Golden Eagle Audubon Society raised concerns about the adjacent Blacks Creek bird reserve. Boise Mayor Lauren McLean said public lands should stay in public hands and called for a statewide framework before large data centers are approved.",
+      "sourceIndex": 4
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "riot-calvert-city-marshall-ky",
     "name": "Riot Platforms Calvert City Facility",
     "operator": "Riot Platforms",
@@ -108418,6 +109278,89 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "rplus-blacks-creek-energy-center-ada-county-id",
+    "name": "Blacks Creek Energy Center",
+    "operator": "rPlus Energies (Blacks Creek Energy Center, LLC)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.499,
+      "lon": -116.1918,
+      "county": "Ada",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-17",
+        "note": "rPlus Energies acquired the 400 MW solar (+200 MW storage) project from Qcells, with commercial operation expected in 2027.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-07",
+        "note": "PV Tech (2026-07-22) reports that rPlus has started construction on the 400 MWac project. rPlus closed more than $650M of debt financing in March 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.pv-tech.org/developer-rplus-energies-commissions-125mw-idaho-solar-pv-project/",
+        "label": "Developer rPlus Energies commissions 125MW Idaho solar PV project",
+        "publisher": "PV Tech",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://pv-tech.org/ipp-rplus-energies-secures-us650-million-400mw-idaho-solar-pv-project/",
+        "label": "IPP rPlus Energies secures US$650 million for 400MW Idaho solar PV project",
+        "publisher": "PV Tech",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-technology.com/news/rplus-energies-secures-650m-blacks-creek/",
+        "label": "rPlus Energies secures $650m for Blacks Creek",
+        "publisher": "Power Technology",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://renewablewatch.in/2025/11/17/rplus-energies-acquires-900-mw-solar-plus-storage-projects-in-idaho/",
+        "label": "rPlus Energies acquires 900 MW solar-plus-storage projects in Idaho",
+        "publisher": "Renewable Watch",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/69553-blacks-creek-solar",
+        "label": "Blacks Creek Solar (EIA plant 69553)",
+        "publisher": "Infrasure",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "The pin is the EIA-860M-derived plant point that Infrasure reports for EIA plant 69553; it has not been checked against a parcel. This is rPlus's solar project, separate from the Rhea Data data center proposal near Blacks Creek Reservoir.",
+    "energy": {
+      "source": "solar",
+      "utility": "Idaho Power"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via Idaho Power)",
+      "poweredFacilityIds": [
+        "meta-kuna-id"
+      ],
+      "notes": "400 MWac / 520 MWdc. The plant will deliver solar power to Idaho Power's grid, supporting Meta's public commitments for its Kuna data center while also serving other Idaho Power load. It was first described with 200 MW of battery storage. In March 2026 rPlus said the project is currently solar only, with storage a possible future phase. EIA-860M lists a proposed operating date of 2027-06-01."
+    }
   },
   {
     "id": "rsa-dexter-avenue-montgomery-al",
@@ -120824,6 +121767,43 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "syringa-networks-boise-id",
+    "name": "Syringa Networks Boise",
+    "operator": "Syringa Networks",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.567545,
+      "lon": -116.207057,
+      "city": "Boise",
+      "county": "Ada",
+      "street": "3795 S Development Ave",
+      "postalCode": "83705",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/1152",
+        "label": "PeeringDB facility 1152: Syringa Networks Boise",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/3795-development-avenue-boise/syringa-networks/datacenter/syringa-networks-boise",
+        "label": "Syringa Networks Boise -- 3795 Development Avenue",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Colocation and network facility (cabinets and cages, IP transit, Ethernet, wavelengths) run by Boise-based fiber carrier Syringa Networks. PeeringDB lists it with CLLI BOITID. It is a sister site to the tracked syringa-networks-west-valley-city-ut. No MW or square footage is published. The pin is PeeringDB's coordinate. aiClassification omitted.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "syringa-networks-west-valley-city-ut",
     "name": "Syringa Networks West Valley",
     "operator": "Syringa Networks",
@@ -121522,6 +122502,9 @@
       "state": "ID",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 8.25
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -121530,12 +122513,32 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-21",
         "kind": "other"
+      },
+      {
+        "url": "https://www.cityofnampa.us/AgendaCenter/ViewFile/Agenda/_08262025-3390",
+        "label": "City of Nampa notice of public hearings, August 26, 2025 (CUP-00387-2025, T5 Data Centers)",
+        "publisher": "City of Nampa",
+        "retrievedAt": "2026-10-04",
+        "kind": "permit"
+      },
+      {
+        "url": "https://web.archive.org/web/20250926195553id_/https://boisedev.com/news/2025/09/02/data-center-nampa-september-2025/",
+        "label": "New data center could use less power, water than average (archived)",
+        "publisher": "BoiseDev (via Internet Archive)",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-04",
     "notes": "Converting an existing single-story 80,000 sq ft industrial building within the Park 84 industrial site (~20 miles west of Boise) for a single, unnamed client, in five phases, targeted around 2027. The Nampa Planning and Zoning Commission has granted a conditional use permit. No MW capacity or investment amount was disclosed in the source fetched. Coordinate provenance (checked 2026-09-12): the pin is the Nampa city centroid, NOT the stated 8300 Birch Lane address — the US Census geocoder returns no match for that address and the only OpenStreetMap feature named Birch Lane near Nampa carries ZIP 83867 (Silverton, Shoshone County), so it is a different road. The street is recorded because the source states it; the pin is city-level and should not be read as parcel-level.",
     "water": {
-      "coolingType": "air"
+      "coolingType": "air",
+      "notes": "According to the city staff report, the facility will use HVAC cooling rather than more water-intensive cooling. The project engineer estimated daily water use equal to 1-2 households, from bathroom use."
+    },
+    "landAcres": 7.6,
+    "jobs": {
+      "permanent": 11,
+      "sourceIndex": 2
     },
     "facilityType": "data_center"
   },
@@ -124407,6 +125410,72 @@
       "unitCount": 1,
       "notes": "Sodium-cooled fast reactor paired with an integrated molten-salt heat-storage system that can temporarily boost output to 500 MWe. Sited near a retiring coal-fired facility. Supported by the U.S. Department of Energy's Advanced Reactor Demonstration Program."
     }
+  },
+  {
+    "id": "terravolt-raft-river-cassia-county-id",
+    "name": "TerraVolt Southeast Idaho Data Center Campus (Raft River)",
+    "operator": "TerraVolt Infrastructure, Inc. (subsidiary of CalEthos, Inc.)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.5971324,
+      "lon": -113.2361093,
+      "county": "Cassia",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03-16",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-16",
+        "note": "Idaho legislators told BoiseDev that Terra Volt Infrastructure Inc (Tustin, CA) was in talks to develop a master-planned data center campus in Raft River, between Twin Falls and Pocatello. No application was on file.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-05-11",
+        "note": "CalEthos/TerraVolt signed a firm natural gas supply agreement (55,000 MMBtu/day) for a behind-the-meter on-site power plant at the planned Southeast Idaho campus. The initial phase targets 200-240 MW for data center customers.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://web.archive.org/web/20260407143944id_/https://boisedev.com/news/2026/03/16/data-micron-exemption/",
+        "label": "Data center campus possible in Magic Valley as tax cuts continue (archived)",
+        "publisher": "BoiseDev (via Internet Archive)",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1174891/000149315226022148/ex99-1.htm",
+        "label": "CalEthos, Inc. Form 8-K Exhibit 99.1: TerraVolt natural gas supply agreement for planned Southeast Idaho data center campus (May 11, 2026)",
+        "publisher": "CalEthos, Inc. (SEC EDGAR)",
+        "retrievedAt": "2026-10-04",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001174891/000149315226022993/form10-q.htm",
+        "label": "CalEthos, Inc. Form 10-Q for the period ended March 31, 2026",
+        "publisher": "CalEthos, Inc. (SEC EDGAR)",
+        "retrievedAt": "2026-10-04",
+        "kind": "filing"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Raft+River,+Cassia+County,+Idaho&format=json&limit=5",
+        "label": "OpenStreetMap Nominatim: Raft River locality, Cassia County (node 150941672)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-04",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Location: the SEC filings say only 'Southeast Idaho on the Northwest Natural Gas Pipeline'. The Raft River siting comes from Idaho legislators quoted by BoiseDev (March 2026); the governor's office referred BoiseDev's questions to Cassia County's economic development agency. The pin is the OpenStreetMap 'Raft River' locality node near I-84/I-86 in Cassia County. It is a representative point only; no parcel has been disclosed. According to the 10-Q, TerraVolt has only a preliminary joint-venture agreement with a landowner. It expects land-use and conditional zone-change approvals by year-end 2026 and construction approvals in Q2 2027. capacityMw is omitted because the only stated figure is a 200-240 MW range for the power plant. This is unrelated to the separate CalEthos Lithium Valley record in California.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Behind-the-meter natural gas plant on the Northwest Pipeline, with firm supply of 55,000 MMBtu/day. The initial phase is described as 200-240 MW of power for data center customers; that is a power-plant target, not a measured IT load. The 10-Q (period ended 2026-03-31) reports a $3,832,500 gas reservation fee and a letter of credit of up to $6,000,000. It also says power-plant design and environmental documents were to be submitted to state agencies by mid-2026."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "tesla-cortex-2-giga-texas-austin-tx",
@@ -129488,6 +130557,132 @@
       "utility": "Pacific Gas & Electric (PG&E)"
     },
     "landAcres": 12.5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "valorc3-boise-2-id",
+    "name": "ValorC3 Boise 2",
+    "operator": "ValorC3 Data Centers",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.60955,
+      "lon": -116.30185,
+      "city": "Boise",
+      "county": "Ada",
+      "street": "9601 W Emerald St",
+      "postalCode": "83704",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 10
+    },
+    "announcedDate": "2025-05-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-05-05",
+        "note": "ValorC3 announced a second Boise data center, targeting completion in 2027.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-04-30",
+        "note": "ValorC3 closed a credit facility with Apterra Infrastructure Capital to continue building the greenfield Boise facility. The project is backed by a long-term lease with a major hyperscale technology company.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://web.archive.org/web/20260327204641id_/https://boisedev.com/news/2026/03/26/valorc3-emerald/",
+        "label": "Boise data center is set to open next year. Before opening, owners just applied to nearly double it (archived)",
+        "publisher": "BoiseDev (via Internet Archive)",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://idahobusinessreview.com/2025/05/05/valorc3-second-data-center-boise-2027/",
+        "label": "ValorC3 plans second Boise data center for 2027",
+        "publisher": "Idaho Business Review",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/valorc3-lands-financing-for-10mw-boise-data-center",
+        "label": "ValorC3 lands financing for 10MW Boise data center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.commercialsearch.com/news/valorc3-data-centers-eyes-idaho-expansion/",
+        "label": "ValorC3 Data Centers Eyes Idaho Expansion",
+        "publisher": "CommercialSearch",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "A 38,000 sq ft building at 9601 W. Emerald St., next to Boise City Hall West. The City of Boise approved it, and it is valued at more than $20 million (BoiseDev, March 2026). investmentUsd is omitted because that figure is a permit valuation, not total capital cost. The first phase provides 10 MW of 'AI-ready colocation and connectivity'. A preliminary application seeks a further ~31,000 sq ft expansion, likely to start before phase one is finished. The pin was geocoded from the street address with the US Census geocoder, which interpolates along address ranges. aiClassification omitted: 'AI-ready' is marketing, not a stated AI workload.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Designed with air and liquid cooling in a closed-loop cooling system to reduce water waste (Idaho Business Review; CommercialSearch)."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "valorc3-boise-emerald-id",
+    "name": "ValorC3 Boise Data Center (former Fiberpipe)",
+    "operator": "ValorC3 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.60801,
+      "lon": -116.310153,
+      "city": "Boise",
+      "county": "Ada",
+      "street": "10215 W Emerald St",
+      "postalCode": "83704",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/valorc3-lands-financing-for-10mw-boise-data-center",
+        "label": "ValorC3 lands financing for 10MW Boise data center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.commercialsearch.com/news/valorc3-data-centers-eyes-idaho-expansion/",
+        "label": "ValorC3 Data Centers Eyes Idaho Expansion",
+        "publisher": "CommercialSearch",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://idahobusinessreview.com/2025/05/05/valorc3-second-data-center-boise-2027/",
+        "label": "ValorC3 plans second Boise data center for 2027",
+        "publisher": "Idaho Business Review",
+        "retrievedAt": "2026-10-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/9846",
+        "label": "PeeringDB facility 9846: Tonaquint Data Center - Boise ID",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-04",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-04",
+    "notes": "Carrier-neutral colocation facility of about 45,600 sq ft and 2 MW (per CommercialSearch), built around 2000 by Fiberpipe. Tonaquint bought Fiberpipe in 2020 and later rebranded as ValorC3 Data Centers, which is owned by CVC DIF. PeeringDB still lists the site under the Tonaquint name. The pin is PeeringDB's coordinate for the address. This is a different site from ValorC3's greenfield Boise 2 build at 9601 W Emerald St (valorc3-boise-2-id). aiClassification omitted: general enterprise colocation.",
     "facilityType": "data_center"
   },
   {

@@ -2840,6 +2840,20 @@
       "rock": "Sandstone"
     }
   },
+  "ark-data-centers-boise-victory-view-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "ark-data-centers-green-bay-harrison-campus-wi": {
     "nearestWater": {
       "name": "Lake Winnebago 6124",
@@ -6469,6 +6483,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "centeris-boise-bethel-court-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "centeris-south-hill-puyallup-wa": {
     "nearestWater": {
       "name": "McMillin Reservoir",
@@ -8973,6 +9001,12 @@
       "voltageKv": 230,
       "distanceMi": 0.4
     },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
+  "colossus-bullock-spring-hill-ks": {
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -20868,6 +20902,12 @@
       "rock": "Sandstone"
     }
   },
+  "google-project-helium-sharon-ks": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "google-project-louie-monrovia-in": {
     "nearestWater": {
       "name": "White Lick Creek",
@@ -22824,6 +22864,12 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "hyperdatagrid-parsons-ks": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "hyperscale-data-dowagiac-mi": {
     "nearestWater": {
       "name": "Dowagiac Creek",
@@ -24038,6 +24084,12 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "kanza-park-flint-hills-emporia-ks": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "karis-critical-deep-river-merrillville-in": {
@@ -28116,6 +28168,12 @@
       "rock": "Sandstone"
     }
   },
+  "millcompute-bates-mill-lewiston-me": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "milligan-1-wind-saline-ne": {
     "nearestWater": {
       "name": "South Fork Turkey Creek",
@@ -29162,6 +29220,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "neutron-coeur-dalene-id": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Northern Rocky Mountains Intermontane Basins Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "new-carlisle-chicago-trail-data-center-st-joseph-county-in": {
     "nearestWater": {
       "name": "Kankakee River",
@@ -29190,6 +29258,18 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "new-england-energy-sanford-woods-dc-me": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "new-england-energy-sanford-woods-power-me": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "new-era-energy-digital-lea-county-data-center-nm": {
@@ -30626,6 +30706,16 @@
       "label": "Low (<10%)"
     }
   },
+  "oklo-aurora-inl-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "oklo-aurora-pike-county-oh": {
     "nearestWater": {
       "name": "Atomic Energy Commission Pond",
@@ -31983,6 +32073,26 @@
     },
     "aquifer": {
       "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "pleasant-valley-solar-1-ada-county-id": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "pleasant-valley-solar-2-ada-county-id": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -35171,6 +35281,20 @@
       "rock": "Sandstone"
     }
   },
+  "rhea-data-blacks-creek-campus-ada-county-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "riot-calvert-city-marshall-ky": {
     "nearestWater": {
       "name": "Cypress Creek",
@@ -35545,6 +35669,20 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "rplus-blacks-creek-energy-center-ada-county-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "rsa-dexter-avenue-montgomery-al": {
@@ -39759,6 +39897,20 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "syringa-networks-boise-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "syringa-networks-west-valley-city-ut": {
     "nearestWater": {
       "name": "Decker Lake",
@@ -40774,6 +40926,20 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "terravolt-raft-river-cassia-county-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "tesla-cortex-2-giga-texas-austin-tx": {
@@ -42519,6 +42685,34 @@
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "valorc3-boise-2-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "valorc3-boise-emerald-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
