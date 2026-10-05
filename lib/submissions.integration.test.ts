@@ -79,13 +79,22 @@ import {
   submissionsTable,
   submissionNotifyRequestsTable,
   submissionNotifySendsTable,
+  subscriptionsTable,
 } from "@/lib/db/schema";
 import type { DataCenterFacility, Source } from "@/lib/schema";
 import { recordSubmissionNotifyRequest } from "@/lib/submission-notify";
 import { hashNotifyEmail, SUBMISSION_NOTIFY_SEND_CAP_MAX } from "@/lib/rate-limit";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
-import { approveSubmission, createSubmission, rejectSubmission } from "@/lib/submissions";
+import {
+  approvalWatcherCount,
+  approveSubmission,
+  confirmedWatcherCounts,
+  createSubmission,
+  listSubmissionsWithWatchers,
+  rejectSubmission,
+} from "@/lib/submissions";
+import { generateToken } from "@/lib/email";
 
 function makeSource(label: string): Source {
   return {
@@ -943,5 +952,196 @@ describe("notifySubmitterOfReview — a DB failure is logged redacted, never as 
     } finally {
       errorSpy.mockRestore();
     }
+  });
+});
+
+async function insertSubscription(values: {
+  targetType: "facility" | "state";
+  targetId: string;
+  status: "pending" | "confirmed" | "unsubscribed";
+}): Promise<void> {
+  await tdb.db.insert(subscriptionsTable).values({
+    email: `${generateToken().slice(0, 12)}@example.com`,
+    targetType: values.targetType,
+    targetId: values.targetId,
+    status: values.status,
+    confirmToken: generateToken(),
+    unsubscribeToken: generateToken(),
+  });
+}
+
+describe("confirmedWatcherCounts", () => {
+  it("returns {} for an empty list without touching the database", async () => {
+    // `inArray(col, [])` compiles to `false` and would also yield {} — so the
+    // result alone can't tell the early return is there. getDb() is the signal.
+    vi.mocked(dbClient.getDb).mockClear();
+    expect(await confirmedWatcherCounts([])).toEqual({});
+    expect(dbClient.getDb).not.toHaveBeenCalled();
+  });
+
+  it("counts only confirmed rows — pending and unsubscribed rows for the same target are ignored", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "pending" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "unsubscribed" });
+
+    expect(await confirmedWatcherCounts(["fac-a"])).toEqual({ "fac-a": 2 });
+  });
+
+  it("counts facility-type subscriptions only — a state subscription with the same targetId is ignored", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "GA", status: "confirmed" });
+    await insertSubscription({ targetType: "state", targetId: "GA", status: "confirmed" });
+    await insertSubscription({ targetType: "state", targetId: "GA", status: "confirmed" });
+
+    expect(await confirmedWatcherCounts(["GA"])).toEqual({ GA: 1 });
+  });
+
+  it("returns per-target counts for several facilities and omits ones with no watchers", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-b", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-b", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-b", status: "confirmed" });
+    // Watched, but not asked about — must not appear.
+    await insertSubscription({ targetType: "facility", targetId: "fac-other", status: "confirmed" });
+
+    // Repeated ids in the input must not inflate a count.
+    expect(await confirmedWatcherCounts(["fac-a", "fac-b", "fac-b", "fac-none"])).toEqual({
+      "fac-a": 1,
+      "fac-b": 3,
+    });
+  });
+});
+
+describe("listSubmissionsWithWatchers", () => {
+  it("keys non-create rows on targetFacilityId and a create row on payload.id, ignoring a create's targetFacilityId", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "unsubscribed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-b", status: "confirmed" });
+
+    const updateId = await insertSubmission({
+      kind: "update",
+      targetFacilityId: "fac-a",
+      payload: {},
+    });
+    const statusId = await insertSubmission({
+      kind: "status_update",
+      targetFacilityId: "fac-b",
+      payload: {},
+    });
+    const unwatchedId = await insertSubmission({
+      kind: "enrichment_update",
+      targetFacilityId: "fac-unwatched",
+      payload: {},
+    });
+    // A create is keyed on the id it WRITES (payload.id), so a watched
+    // targetFacilityId it happens to carry is irrelevant and this reads 0.
+    const createId = await insertSubmission({
+      kind: "create",
+      targetFacilityId: "fac-a",
+      payload: {},
+    });
+
+    const rows = await listSubmissionsWithWatchers();
+    const byId = Object.fromEntries(rows.map((r) => [r.id, r.watcherCount]));
+    expect(byId).toEqual({
+      [updateId]: 2,
+      [statusId]: 1,
+      [unwatchedId]: 0,
+      [createId]: 0,
+    });
+  });
+
+  it("counts a pending create against its payload.id — a reused slug with surviving watchers and no facility row", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "retired-slug", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "retired-slug", status: "pending" });
+    const createId = await insertSubmission({
+      kind: "create",
+      payload: { id: "retired-slug" },
+    });
+    const freshId = await insertSubmission({ kind: "create", payload: { id: "brand-new-slug" } });
+
+    const rows = await listSubmissionsWithWatchers();
+    const byId = Object.fromEntries(rows.map((r) => [r.id, r.watcherCount]));
+    expect(byId).toEqual({ [createId]: 1, [freshId]: 0 });
+  });
+
+  it.each([
+    ["no id", {}],
+    ["a numeric id", { id: 42 }],
+    ["an empty-string id", { id: "" }],
+    ["a null id", { id: null }],
+  ])("reads a create with %s as 0 even when its targetFacilityId is watched", async (_name, payload) => {
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    const id = await insertSubmission({ kind: "create", targetFacilityId: "fac-a", payload });
+
+    const rows = await listSubmissionsWithWatchers();
+    expect(rows.find((r) => r.id === id)?.watcherCount).toBe(0);
+    expect(await approvalWatcherCount(id)).toBe(0);
+  });
+
+  it("keeps listSubmissions' status filter", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    const pendingId = await insertSubmission({
+      kind: "update",
+      targetFacilityId: "fac-a",
+      payload: {},
+    });
+    const approvedId = await insertSubmission({
+      kind: "update",
+      targetFacilityId: "fac-a",
+      payload: {},
+    });
+    await tdb.db
+      .update(submissionsTable)
+      .set({ status: "approved" })
+      .where(eq(submissionsTable.id, approvedId));
+
+    const rows = await listSubmissionsWithWatchers("pending");
+    expect(rows.map((r) => r.id)).toEqual([pendingId]);
+    expect(rows[0].watcherCount).toBe(1);
+  });
+
+  it("returns [] when there are no submissions", async () => {
+    expect(await listSubmissionsWithWatchers()).toEqual([]);
+  });
+});
+
+describe("approvalWatcherCount", () => {
+  it("counts the confirmed watchers of a pending non-create submission's target", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "pending" });
+    const id = await insertSubmission({ kind: "update", targetFacilityId: "fac-a", payload: {} });
+
+    expect(await approvalWatcherCount(id)).toBe(2);
+  });
+
+  it("counts a pending create against its payload.id, not its targetFacilityId", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "retired-slug", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "retired-slug", status: "confirmed" });
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    const id = await insertSubmission({
+      kind: "create",
+      targetFacilityId: "fac-a",
+      payload: { id: "retired-slug" },
+    });
+
+    expect(await approvalWatcherCount(id)).toBe(2);
+  });
+
+  it("is 0 for a submission that is no longer pending, so the approve call can report its own 409", async () => {
+    await insertSubscription({ targetType: "facility", targetId: "fac-a", status: "confirmed" });
+    const id = await insertSubmission({ kind: "update", targetFacilityId: "fac-a", payload: {} });
+    await tdb.db
+      .update(submissionsTable)
+      .set({ status: "approved" })
+      .where(eq(submissionsTable.id, id));
+
+    expect(await approvalWatcherCount(id)).toBe(0);
+  });
+
+  it("is 0 for an unknown submission id", async () => {
+    expect(await approvalWatcherCount("00000000-0000-0000-0000-000000000000")).toBe(0);
   });
 });

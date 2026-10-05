@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { listSubmissions } from "@/lib/submissions";
+import { listSubmissionsWithWatchers } from "@/lib/submissions";
 import { REVIEW_STATUSES } from "@/lib/submissions";
 import { SubmissionList } from "@/app/admin/submissions/submission-list";
 import { SubmissionDetail } from "@/app/admin/submissions/submission-detail";
@@ -21,7 +21,7 @@ export default async function AdminSubmissionsPage({
 }) {
   const { status: rawStatus } = await searchParams;
   const status = normalizeStatus(rawStatus);
-  const submissions = await listSubmissions(status);
+  const submissions = await listSubmissionsWithWatchers(status);
 
   // SubmissionDetail is an async Server Component. submission-list.tsx is a
   // "use client" file and cannot import-and-invoke it directly, so each row's

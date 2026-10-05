@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 
 import type { ReactNode } from "react";
 import type { SubmissionRow } from "@/lib/db/schema";
+import type { SubmissionWithWatchers } from "@/lib/submissions";
 
 // vi.mock calls are hoisted above imports by Vitest. A plain top-level
 // `const mockX = vi.fn()` is NOT reliably safe to reference inside a
@@ -47,7 +48,7 @@ vi.mock("./actions", () => ({
 
 import { SubmissionList } from "./submission-list";
 
-function makeSubmission(overrides: Partial<SubmissionRow> = {}): SubmissionRow {
+function makeSubmission(overrides: Partial<SubmissionWithWatchers> = {}): SubmissionWithWatchers {
   return {
     id: "sub-1",
     createdAt: new Date("2026-07-01T00:00:00Z"),
@@ -62,8 +63,9 @@ function makeSubmission(overrides: Partial<SubmissionRow> = {}): SubmissionRow {
     },
     reviewNote: null,
     reviewedAt: null,
+    watcherCount: 0,
     ...overrides,
-  } as SubmissionRow;
+  } as SubmissionWithWatchers;
 }
 
 // SubmissionDetail is an async server component (fetches live facility data
@@ -72,7 +74,7 @@ function makeSubmission(overrides: Partial<SubmissionRow> = {}): SubmissionRow {
 // a stand-in per-row detail node instead, matching the shape page.tsx passes
 // in production (a Record<string, ReactNode> keyed by submission id).
 function renderList(
-  submissions: SubmissionRow[],
+  submissions: SubmissionWithWatchers[],
   activeStatus: "pending" | "approved" | "rejected"
 ) {
   const details: Record<string, ReactNode> = Object.fromEntries(
@@ -345,5 +347,104 @@ describe("SubmissionList — reject dialog", () => {
       expect(mockRejectSubmissionAction).toHaveBeenCalledWith("sub-1", "duplicate entry")
     );
     expect(mockToastSuccess).toHaveBeenCalled();
+  });
+});
+
+describe("SubmissionList — watcher-email notice", () => {
+  beforeEach(() => {
+    mockApproveSubmissionAction.mockReset();
+    mockApproveSubmissionAction.mockResolvedValue({ ok: true });
+  });
+
+  function makeWatchedUpdate(watcherCount: number, overrides: Partial<SubmissionWithWatchers> = {}) {
+    return makeSubmission({
+      kind: "update",
+      targetFacilityId: "existing-facility",
+      payload: { name: "Existing Facility", status: "operational" },
+      watcherCount,
+      ...overrides,
+    });
+  }
+
+  it("shows a plural text badge when several watchers would be emailed", () => {
+    renderList([makeWatchedUpdate(2)], "pending");
+
+    expect(screen.getByText("Emails 2 watchers")).toBeInTheDocument();
+  });
+
+  it("uses the singular form for exactly one watcher", () => {
+    renderList([makeWatchedUpdate(1)], "pending");
+
+    expect(screen.getByText("Emails 1 watcher")).toBeInTheDocument();
+    expect(screen.queryByText("Emails 1 watchers")).not.toBeInTheDocument();
+  });
+
+  it("shows no watcher badge when the count is 0", () => {
+    renderList([makeWatchedUpdate(0)], "pending");
+
+    expect(screen.queryByText(/Emails \d+ watcher/)).not.toBeInTheDocument();
+  });
+
+  it("shows no watcher badge on an already-reviewed row, even with a nonzero count", () => {
+    renderList([makeWatchedUpdate(3, { status: "approved" })], "approved");
+
+    expect(screen.queryByText(/Emails \d+ watcher/)).not.toBeInTheDocument();
+  });
+
+  it("approves a row with no watchers immediately, without a confirmation dialog", async () => {
+    const user = userEvent.setup();
+    renderList([makeWatchedUpdate(0)], "pending");
+
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    await waitFor(() => expect(mockApproveSubmissionAction).toHaveBeenCalledWith("sub-1"));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("opens a confirmation dialog stating the watcher count before approving a watched row", async () => {
+    const user = userEvent.setup();
+    renderList([makeWatchedUpdate(2)], "pending");
+
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toHaveAccessibleDescription(
+      "Approving this emails 2 confirmed watchers of this facility."
+    );
+    // Opening the dialog must not approve anything on its own.
+    expect(mockApproveSubmissionAction).not.toHaveBeenCalled();
+  });
+
+  it("uses the singular form in the dialog sentence for exactly one watcher", async () => {
+    const user = userEvent.setup();
+    renderList([makeWatchedUpdate(1)], "pending");
+
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+
+    expect(await screen.findByRole("dialog")).toHaveAccessibleDescription(
+      "Approving this emails 1 confirmed watcher of this facility."
+    );
+  });
+
+  it("approves only after the dialog is confirmed", async () => {
+    const user = userEvent.setup();
+    renderList([makeWatchedUpdate(2)], "pending");
+
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+    await user.click(await screen.findByRole("button", { name: "Confirm approve" }));
+
+    await waitFor(() => expect(mockApproveSubmissionAction).toHaveBeenCalledWith("sub-1"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  it("does not approve when the dialog is cancelled", async () => {
+    const user = userEvent.setup();
+    renderList([makeWatchedUpdate(2)], "pending");
+
+    await user.click(screen.getByRole("button", { name: "Approve" }));
+    await user.click(await screen.findByRole("button", { name: "Cancel" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(mockApproveSubmissionAction).not.toHaveBeenCalled();
   });
 });

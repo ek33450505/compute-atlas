@@ -83,7 +83,8 @@ untagged 24-hour timer and refreshes on its own schedule.
 | `npm run check:schema` | Fail-closed schema-drift guard: exits 1 if the live database is missing a table the code expects, or if `DATABASE_URL` is unset or unreachable |
 | `npm run db:seed` | Bootstrap-only: populate an empty database |
 | `npm run submissions -- list pending` | Review the staging queue |
-| `npm run submissions -- approve <id> "note"` | Promote a pending submission to live |
+| `npm run submissions -- approve <id> "note"` | Promote a pending submission to live. Refuses (exit 2) when the facility it writes has confirmed watchers, because approving emails them; `list pending` marks those rows |
+| `npm run submissions -- approve <id> "note" --notify-watchers` | Approve a watched submission and send its watchers the update. The API refuses the same approval with a 409 unless the body carries `notifyWatchers: true` |
 | `npm run submissions -- reject <id> "note"` | Reject a pending submission |
 | `npm run check-sources` | Source-liveness report (read-only) |
 
