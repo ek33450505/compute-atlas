@@ -741,3 +741,361 @@ NHD_OVERLAY_STEP="Discard overlay artifacts before PR"
 		return 1
 	}
 }
+
+# ---------------------------------------------------------------------------
+# scripts/classify-sync-prs.sh — the "defer while a neon-sync PR is open" gate
+# ---------------------------------------------------------------------------
+# This logic used to be inline YAML shell in nhd-backfill.yml with no test, and
+# produced three bugs in one evening: an empty-vs-'0' compare that made the gate
+# a no-op, a `((n++))` that aborted under `set -e`, and a floored-hours compare
+# that stretched "24h" to ~25h. It also used GNU-only `date -d`. The clock is
+# fixed below so every boundary is exact: NOW = 2025-10-03T14:00:00Z.
+
+SYNC_PRS_NOW=1759500000
+
+# One element of the array the workflow builds from the pulls API.
+pr_json() {
+	printf '{"number":%s,"isCrossRepository":%s,"createdAt":"%s"}' "$1" "$2" "$3"
+}
+
+# Runs the classifier over a JSON fixture at the fixed clock.
+classify_prs() {
+	local path
+	path="$(write_fixture "prs.json" "$1")"
+	"$REPO_ROOT/scripts/classify-sync-prs.sh" "$SYNC_PRS_NOW" <"$path"
+}
+
+# A verdict is exactly one line: the workflow echoes it into a log, where a
+# second line starting "::error::" would be read as a workflow command.
+assert_one_line() {
+	[ "${#lines[@]}" -eq 1 ]
+}
+
+# A rejection is exit 2, an EMPTY stdout (so nothing can be echoed as a verdict)
+# and a message on stderr. Call after `run --separate-stderr`.
+assert_rejected() {
+	[ "$status" -eq 2 ]
+	[ -z "$output" ]
+	grep -q "classify-sync-prs:" <<<"$stderr"
+}
+
+@test "classify-sync-prs: the script is executable (the workflow runs it by path)" {
+	[ -x "$REPO_ROOT/scripts/classify-sync-prs.sh" ]
+}
+
+@test "classify-sync-prs: no open PR -> proceed" {
+	run classify_prs '[]'
+	[ "$status" -eq 0 ]
+	[ "$output" = "proceed" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: one same-repo PR 1h old -> defer 1" {
+	run classify_prs "[$(pr_json 41 false 2025-10-03T13:00:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "defer 1" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: 23h59m old is still fresh -> defer" {
+	run classify_prs "[$(pr_json 41 false 2025-10-02T14:01:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "defer 1" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: exactly 24h old is still fresh (the limit is strictly greater)" {
+	run classify_prs "[$(pr_json 41 false 2025-10-02T14:00:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "defer 1" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: 24h01m old -> stale (not stretched to ~25h by hour flooring)" {
+	run classify_prs "[$(pr_json 41 false 2025-10-02T13:59:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "stale #41 (24h)" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: 30h old -> stale, naming the PR and its age" {
+	run classify_prs "[$(pr_json 41 false 2025-10-02T08:00:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "stale #41 (30h)" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: two same-repo PRs, one stale -> stale names only the old one" {
+	run classify_prs "[$(pr_json 41 false 2025-10-03T13:00:00Z),$(pr_json 42 false 2025-10-02T08:00:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "stale #42 (30h)" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: two stale PRs are both listed, comma-separated, on one line" {
+	run classify_prs "[$(pr_json 41 false 2025-10-02T08:00:00Z),$(pr_json 42 false 2025-10-01T14:00:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "stale #41 (30h), #42 (48h)" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: two fresh same-repo PRs -> defer 2" {
+	run classify_prs "[$(pr_json 41 false 2025-10-03T13:00:00Z),$(pr_json 42 false 2025-10-03T12:00:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "defer 2" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: a fork-only PR is ignored even when 30h old -> proceed" {
+	run classify_prs "[$(pr_json 99 true 2025-10-02T08:00:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "proceed" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: a fork PR is dropped before any other field is read, and nothing in it executes" {
+	local marker="$BATS_TEST_TMPDIR/pwned"
+	# Every other field of these forks is hostile or absent; only the boolean
+	# isCrossRepository is read, so none of it can matter or run.
+	run classify_prs "[$(pr_json 99 true "\$(touch $marker)"),$(pr_json 98 true "\`touch $marker\`"),$(pr_json '"x\n::error::y"' true junk),{\"isCrossRepository\":true}]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "proceed" ]
+	assert_one_line
+	[ ! -e "$marker" ]
+}
+
+@test "classify-sync-prs: fork PR plus a fresh same-repo PR -> defer 1 (the fork does not count)" {
+	run classify_prs "[$(pr_json 99 true 2025-10-02T08:00:00Z),$(pr_json 41 false 2025-10-03T13:00:00Z)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "defer 1" ]
+	assert_one_line
+}
+
+@test "classify-sync-prs: an entry with no isCrossRepository field -> exit 2 (provenance unknown, fail closed)" {
+	run --separate-stderr classify_prs "[$(pr_json 41 false 2025-10-03T13:00:00Z),{\"number\":42,\"createdAt\":\"2025-10-03T13:00:00Z\"}]"
+	assert_rejected
+}
+
+@test "classify-sync-prs: a non-boolean isCrossRepository -> exit 2 (the string 'true' would otherwise not be a fork)" {
+	run --separate-stderr classify_prs "[$(pr_json 41 '"true"' 2025-10-02T08:00:00Z)]"
+	assert_rejected
+}
+
+@test "classify-sync-prs: invalid JSON -> exit 2" {
+	run --separate-stderr classify_prs 'not json'
+	assert_rejected
+}
+
+@test "classify-sync-prs: JSON that is not an array -> exit 2" {
+	run --separate-stderr classify_prs '{"number":41}'
+	assert_rejected
+}
+
+@test "classify-sync-prs: empty stdin (e.g. the API call failed upstream) -> exit 2, never 'proceed'" {
+	run --separate-stderr classify_prs ''
+	assert_rejected
+}
+
+@test "classify-sync-prs: a same-repo PR with no createdAt -> exit 2 (fail closed)" {
+	run --separate-stderr classify_prs '[{"number":41,"isCrossRepository":false}]'
+	assert_rejected
+}
+
+@test "classify-sync-prs: a same-repo PR with an unparseable createdAt -> exit 2 (fail closed)" {
+	run --separate-stderr classify_prs "[$(pr_json 41 false yesterday-ish)]"
+	assert_rejected
+}
+
+@test "classify-sync-prs: a string number carrying a newline + ::error:: is rejected, never echoed" {
+	# Unvalidated, this prints "stale #41" / "::error::pwn (30h)": a second line the
+	# runner would execute as a workflow command.
+	run --separate-stderr classify_prs "[$(pr_json '"41\n::error::pwn"' false 2025-10-02T08:00:00Z)]"
+	assert_rejected
+	! grep -qF "::error::pwn" <<<"$stderr"
+}
+
+@test "classify-sync-prs: a fractional or missing number -> exit 2" {
+	run --separate-stderr classify_prs "[$(pr_json 4.5 false 2025-10-02T08:00:00Z)]"
+	assert_rejected
+	run --separate-stderr classify_prs '[{"isCrossRepository":false,"createdAt":"2025-10-02T08:00:00Z"}]'
+	assert_rejected
+}
+
+@test "classify-sync-prs: a createdAt with a trailing newline + ::error:: is rejected, never echoed" {
+	# jq 1.7's fromdateiso8601 accepts this string (it stops at the newline), so only
+	# the explicit shape check keeps the text out of the verdict path.
+	run --separate-stderr classify_prs "[$(pr_json 41 false '2025-10-02T08:00:00Z\n::error::x')]"
+	assert_rejected
+	! grep -qF "::error::x" <<<"$stderr"
+}
+
+@test "classify-sync-prs: a createdAt with only a trailing newline is rejected (the shape check must be end-anchored)" {
+	run --separate-stderr classify_prs "[$(pr_json 41 false '2025-10-02T08:00:00Z\n')]"
+	assert_rejected
+}
+
+@test "classify-sync-prs: a non-numeric now argument -> exit 2" {
+	run --separate-stderr bash -c "echo '[]' | '$REPO_ROOT/scripts/classify-sync-prs.sh' tomorrow"
+	assert_rejected
+}
+
+@test "classify-sync-prs: with no now argument it uses the real clock (a PR created just now defers)" {
+	local created
+	created="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+	run bash -c "echo '[$(pr_json 41 false "$created")]' | '$REPO_ROOT/scripts/classify-sync-prs.sh'"
+	[ "$status" -eq 0 ]
+	[ "$output" = "defer 1" ]
+	assert_one_line
+}
+
+# EXPECTED TO FAIL until the reviewed draft of nhd-backfill.yml is installed:
+# the committed workflow still carries the inline GNU-date / branch-name version.
+@test "classify-sync-prs: nhd-backfill.yml's defer step pipes the owner-namespaced pulls query into the script" {
+	local code
+	# Comments and the step's error text also name the script and the old query, so
+	# assert on non-comment lines only.
+	code="$(grep -v '^[[:space:]]*#' "$WORKFLOWS_DIR/nhd-backfill.yml")"
+	# A real invocation (the API output piped into it), not just a mention.
+	grep -qE '\|[[:space:]]*(bash[[:space:]]+)?scripts/classify-sync-prs\.sh' <<<"$code"
+	# Server-side, owner-namespaced head filter: a fork's same-named branch cannot match it.
+	grep -qF 'head=${GITHUB_REPOSITORY_OWNER}:automated/neon-sync' <<<"$code"
+	# The bare branch-name filter is the bypass: forks match it, and newest-first
+	# paging lets 100 fork PRs push the real stale PR off the page -> "proceed".
+	if grep -qF -- '--head automated/neon-sync' <<<"$code"; then
+		echo "nhd-backfill.yml still queries by bare branch name (gh pr list --head automated/neon-sync)"
+		return 1
+	fi
+	# Cross-repo is decided from the API's own head vs base repo, not an env var: an
+	# absent or differently-cased GITHUB_REPOSITORY would drop EVERY real PR -> "proceed".
+	grep -qF '.head.repo.full_name != .base.repo.full_name' <<<"$code"
+	if grep -qF 'env.GITHUB_REPOSITORY' <<<"$code"; then
+		echo "nhd-backfill.yml compares against env.GITHUB_REPOSITORY, which fails open when it is absent or cased differently"
+		return 1
+	fi
+	if grep -qF "date -u -d" <<<"$code"; then
+		echo "nhd-backfill.yml still contains GNU-only 'date -u -d' outside a comment"
+		return 1
+	fi
+}
+
+# ---------------------------------------------------------------------------
+# The workflows' `gh api --jq` projections, exercised exactly as they run
+# ---------------------------------------------------------------------------
+# `gh api … --jq` turns the raw GET /repos/{repo}/pulls array into the shape the
+# classifiers consume. The program is extracted from the workflow file itself (never
+# copied here), so these fail if the workflow's compare is wrong, and they fail until
+# the reviewed drafts are installed because the committed files carry no projection.
+# (jq here, gojq inside `gh`; the programs use only field access, select and
+# comparisons, which the two agree on.)
+
+# The Nth `--jq '<program>'` on a non-comment line of workflows/$1.
+workflow_jq_program() {
+	grep -v '^[[:space:]]*#' "$WORKFLOWS_DIR/$1" | sed -n "s/^.*--jq '\(.*\)'.*\$/\1/p" | sed -n "${2}p"
+}
+
+# One element of the raw pulls API array, limited to the fields the projections read.
+# Args: number created_at head_repo base_repo ("null" head_repo = a deleted fork).
+pull_json() {
+	local head=null
+	[ "$3" = null ] || head="{\"full_name\":\"$3\"}"
+	printf '{"number":%s,"created_at":"%s","html_url":"https://github.com/%s/pull/%s","head":{"repo":%s},"base":{"repo":{"full_name":"%s"}}}' \
+		"$1" "$2" "$4" "$1" "$head" "$4"
+}
+
+# Raw pulls array -> nhd-backfill.yml's exact projection -> the classifier.
+nhd_verdict() {
+	local prog path
+	prog="$(workflow_jq_program nhd-backfill.yml 1)"
+	[ -n "$prog" ] || return 1
+	path="$(write_fixture "pulls.json" "$1")"
+	jq -c "$prog" "$path" | "$REPO_ROOT/scripts/classify-sync-prs.sh" "$SYNC_PRS_NOW"
+}
+
+# Raw pulls array -> drift-alert.yml's exact projection (its first query).
+drift_prs() {
+	local prog
+	prog="$(workflow_jq_program drift-alert.yml 1)"
+	[ -n "$prog" ] || return 1
+	jq -c "$prog" "$(write_fixture "pulls.json" "$1")"
+}
+
+@test "nhd-backfill projection: a same-repo PR counts; fork and deleted-fork PRs are dropped" {
+	run nhd_verdict "[$(pull_json 7 2025-10-02T08:00:00Z acme/tracker acme/tracker),$(pull_json 8 2025-10-02T08:00:00Z evil/tracker acme/tracker),$(pull_json 9 2025-10-02T08:00:00Z null acme/tracker)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "stale #7 (30h)" ]
+}
+
+@test "nhd-backfill projection: only a fork and a deleted fork -> proceed" {
+	run nhd_verdict "[$(pull_json 8 2025-10-02T08:00:00Z evil/tracker acme/tracker),$(pull_json 9 2025-10-02T08:00:00Z null acme/tracker)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = "proceed" ]
+}
+
+@test "nhd-backfill projection: the verdict does not depend on GITHUB_REPOSITORY (unset, or differently cased)" {
+	local pulls
+	pulls="[$(pull_json 7 2025-10-02T08:00:00Z acme/tracker acme/tracker),$(pull_json 8 2025-10-02T08:00:00Z evil/tracker acme/tracker)]"
+	unset GITHUB_REPOSITORY
+	run nhd_verdict "$pulls"
+	[ "$status" -eq 0 ]
+	[ "$output" = "stale #7 (30h)" ]
+	export GITHUB_REPOSITORY=ACME/TRACKER
+	run nhd_verdict "$pulls"
+	[ "$status" -eq 0 ]
+	[ "$output" = "stale #7 (30h)" ]
+}
+
+@test "drift-alert projection: emits the {number, createdAt, url} shape the convergence classifier reads, same-repo only" {
+	run drift_prs "[$(pull_json 7 2025-10-03T13:55:00Z acme/tracker acme/tracker),$(pull_json 8 2025-10-03T13:56:00Z evil/tracker acme/tracker),$(pull_json 9 2025-10-03T13:57:00Z null acme/tracker)]"
+	[ "$status" -eq 0 ]
+	[ "$output" = '[{"number":7,"createdAt":"2025-10-03T13:55:00Z","url":"https://github.com/acme/tracker/pull/7"}]' ]
+}
+
+@test "drift-alert projection: a fork PR cannot read as a fresh sync and suppress the alert (real classifier -> absent)" {
+	local prs runs
+	prs="$BATS_TEST_TMPDIR/prs.json"
+	runs="$(write_fixture "runs.json" '[]')"
+	drift_prs "[$(pull_json 8 2025-10-03T13:56:00Z evil/tracker acme/tracker)]" >"$prs"
+	run "$REPO_ROOT/scripts/classify-sync-convergence.sh" --now "$SYNC_PRS_NOW" --grace 900 --prs "$prs" --runs "$runs"
+	[ "$status" -eq 0 ]
+	[ "$output" = "absent" ]
+}
+
+@test "drift-alert projection: a real fresh PR -> converging, a real old PR -> stuck (real classifier)" {
+	local prs runs
+	prs="$BATS_TEST_TMPDIR/prs.json"
+	runs="$(write_fixture "runs.json" '[]')"
+	drift_prs "[$(pull_json 7 2025-10-03T13:55:00Z acme/tracker acme/tracker)]" >"$prs"
+	run "$REPO_ROOT/scripts/classify-sync-convergence.sh" --now "$SYNC_PRS_NOW" --grace 900 --prs "$prs" --runs "$runs"
+	[ "$status" -eq 0 ]
+	[ "$output" = "converging" ]
+	drift_prs "[$(pull_json 7 2025-10-02T08:00:00Z acme/tracker acme/tracker)]" >"$prs"
+	run "$REPO_ROOT/scripts/classify-sync-convergence.sh" --now "$SYNC_PRS_NOW" --grace 900 --prs "$prs" --runs "$runs"
+	[ "$status" -eq 0 ]
+	[ "$output" = "stuck" ]
+}
+
+@test "drift-alert.yml: its two pulls queries carry the identical --jq projection" {
+	local first second
+	first="$(workflow_jq_program drift-alert.yml 1)"
+	second="$(workflow_jq_program drift-alert.yml 2)"
+	[ -n "$first" ]
+	[ "$first" = "$second" ]
+	[ -z "$(workflow_jq_program drift-alert.yml 3)" ]
+}
+
+@test "drift-alert.yml: both sync-PR queries are owner-namespaced and same-repo-filtered, none by bare branch name" {
+	local code n
+	# Comments name the old query too, so assert on non-comment lines only.
+	code="$(grep -v '^[[:space:]]*#' "$WORKFLOWS_DIR/drift-alert.yml")"
+	n="$(grep -cF 'head=${GITHUB_REPOSITORY_OWNER}:automated/neon-sync' <<<"$code")"
+	[ "$n" -eq 2 ]
+	n="$(grep -cF 'select(.head.repo.full_name == .base.repo.full_name)' <<<"$code")"
+	[ "$n" -eq 2 ]
+	# `gh pr list --head <name>` matches fork branches of the same name and returns
+	# only 30 items by default: a fork PR could read as a fresh sync (suppressing the
+	# alert) or bury a stuck one.
+	if grep -qF -- '--head automated/neon-sync' <<<"$code"; then
+		echo "drift-alert.yml still queries by bare branch name (gh pr list --head automated/neon-sync)"
+		return 1
+	fi
+}

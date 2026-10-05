@@ -31,13 +31,14 @@
 # HIFLD ArcGIS, USDM, WRI Aqueduct). A mid-run failure can leave a PARTIALLY written
 # siting-context.json, which is worse than a stale one — it is exactly the
 # `value -> null` data loss CLAUDE.md tells you to diff-read for. On full-path failure
-# the workflow falls back to build:mapdata --skip-nhd (no NHD calls; water/power/drought
-# overlays reused from prior state; Aqueduct + aquifer context refreshed), which is
-# STRUCTURALLY additive and seeds an entry for every facility id. The NHD debt (new
-# CONUS facilities missing nearestWater/nearestTransmission) is logged in
-# data/nhd-backfill-debt.json and paid off by the nightly nhd-backfill.yml. If --skip-nhd
-# also fails or its output is not additive, the artifacts are reverted and the PR opens
-# with facility files only.
+# (usually a degraded USGS NHD; any non-zero exit of the full pass triggers it) the
+# workflow falls back to
+# build:mapdata --skip-nhd (no NHD calls; water/power/drought overlays reused from prior
+# state; Aqueduct + aquifer context refreshed), which is STRUCTURALLY additive and seeds
+# an entry for every facility id. The NHD debt (new CONUS facilities missing
+# nearestWater/nearestTransmission) is logged in data/nhd-backfill-debt.json and paid off
+# by the nightly nhd-backfill.yml. If --skip-nhd also fails or its output is not additive,
+# the artifacts are reverted and the PR opens with facility files only.
 #
 # NOTE: The FIRST run after merge will produce a large one-time diff, as the
 # hand-maintained JSON is canonicalized into the sorted form db:export uses.
@@ -239,17 +240,21 @@ jobs:
         continue-on-error: true
         run: npm run build:mapdata
 
-      # FALLBACK ON NHD DEGRADATION (added 2026-10-04: every daytime dispatch 2026-09-25 → 10-02 failed the NHD pre-flight, 6/6).
-      # When USGS NHD is degraded during US business hours (12s timeouts, HTTP 502),
-      # the full build:mapdata pre-flight fails and the full run never starts.
-      # This fallback runs build:mapdata --skip-nhd: no NHD calls; water/power/drought
-      # overlays reused from prior state; Aqueduct + aquifer context refreshed.
-      # STRUCTURALLY additive (merges {... existing[id], ...envContext[id]}), seeds an
-      # entry for every facility id, and regenerates hero-points.json, hero-plate-paths.ts
-      # and pipeline-history.json. New CONUS facilities will lack nearestWater/
-      # nearestTransmission entries (NHD debt), which is recorded in
-      # data/nhd-backfill-debt.json for the nightly nhd-backfill.yml to pay off.
-      # This step reverts artifacts first to start from committed state.
+      # FALLBACK WHEN THE FULL PASS FAILS (added 2026-10-04: every daytime dispatch
+      # 2026-09-25 → 10-02 failed the NHD pre-flight, 6/6). The usual cause is a
+      # degraded USGS NHD (12s timeouts, HTTP 502), which aborts at the pre-flight
+      # before any work; any other non-zero exit of the full pass (for example an
+      # HIFLD paging mismatch) also lands here. This fallback runs
+      # build:mapdata --skip-nhd: no NHD calls; water/power/drought overlays reused
+      # from prior state; Aqueduct + aquifer context still fetched — so a WRI
+      # Aqueduct or USGS aquifer outage fails this step too, and the Discard step
+      # then holds the PR for a human. STRUCTURALLY additive (merges
+      # {...existing[id], ...envContext[id]}), seeds an entry for every facility id,
+      # and regenerates hero-points.json, hero-plate-paths.ts and
+      # pipeline-history.json. New CONUS facilities lack nearestWater/
+      # nearestTransmission (NHD debt), recorded in data/nhd-backfill-debt.json for
+      # the nightly nhd-backfill.yml to pay off. This step reverts the artifacts
+      # first so it starts from the committed state.
       - name: Fall back to build:mapdata --skip-nhd
         id: mapdata_fallback
         if: steps.check-drift.outputs.drift == 'true' && steps.mapdata.outcome == 'failure'
@@ -427,7 +432,7 @@ jobs:
             elif [ "$MAPPATH" = "full" ]; then
               echo '✅ Map data regenerated — `data/siting-context.json` and the `public/data/` overlays are included, so new facilities have their "Siting context" panel.'
             elif [ "$MAPPATH" = "skip-nhd" ]; then
-              echo "⚠️ **USGS NHD was degraded** — map data was rebuilt with \`--skip-nhd\` (no NHD calls; water/power/drought overlays reused; Aqueduct + aquifer context still refreshed). Every facility has a Siting context entry, but new CONUS facilities lack \`nearestWater\` and \`nearestTransmission\`. NHD debt is now $DEBT_COUNT (recorded in \`data/nhd-backfill-debt.json\`), and the nightly \`nhd-backfill.yml\` fills it off-peak."
+              echo "⚠️ **The full map-data pass failed (usually a degraded USGS NHD)** — map data was rebuilt with \`--skip-nhd\` (no NHD calls; water/power/drought overlays reused; Aqueduct + aquifer context still refreshed). Every facility has a Siting context entry, but new CONUS facilities lack \`nearestWater\` and \`nearestTransmission\`. NHD debt is now $DEBT_COUNT (recorded in \`data/nhd-backfill-debt.json\`), and the nightly \`nhd-backfill.yml\` fills it off-peak."
             fi
             echo "MAPNOTE_EOF"
           } >> "$GITHUB_OUTPUT"

@@ -29,8 +29,8 @@ npm run build:mapdata        # 4. rebuild map overlays + per-facility siting con
 `data/siting-context.json` until it runs, so its page silently renders without the
 "Siting context" panel — no error, just a missing section. Use the full run, not
 `--skip-nhd`: that flag reuses existing `nearestWater` / `nearestTransmission` values,
-which is exactly what new records lack. If NHD is degraded, the automated sync falls back
-to `--skip-nhd` and the nightly backfill pays the resulting debt; a hand-run wave that
+which is exactly what new records lack. If the full pass fails (usually a degraded USGS NHD),
+the automated sync falls back to `--skip-nhd` and the nightly backfill pays the resulting debt; a hand-run wave that
 falls back must record it with `npm run nhd:debt -- --note "<why>"`.
 
 **Diff-read the result.** It should be additive — fills and new entries. Any
@@ -228,12 +228,16 @@ is done, `submit-candidates.ts` no longer reads `API_ADMIN_TOKEN` and the pipeli
 not part of this rotation — rotate `API_INTAKE_TOKEN` there instead, and the in-flight-run caveat
 moves with it.
 
-**3. `NEON_SYNC_PAT`.** Needs `Workflows: RW` and `neon-sync.yml` runs `gh pr merge --squash --auto`,
-so a leaked value can rewrite CI *and* auto-merge to `main` → production. Mint a new **fine-grained**
+**3. `NEON_SYNC_PAT`.** Needs `Workflows: RW`. Two workflows use it and both run
+`gh pr merge --squash --auto`: `neon-sync.yml` (on dispatch) and `nhd-backfill.yml` (every night at
+04:23 UTC, unattended: credential guard, write preflight, Create PR, auto-merge). A leaked value can
+rewrite CI *and* auto-merge to `main` → production. Mint a new **fine-grained**
 PAT (this repo only, Contents/PRs/Workflows RW, with an expiry) → update the secret →
-`gh workflow run neon-sync.yml` → watch the "Preflight — verify the PR token can still write" step.
+`gh workflow run neon-sync.yml` **and** `gh workflow run nhd-backfill.yml` → watch the "Preflight —
+verify the PR token can still write" step in each. (At NHD debt 0 the backfill is a no-op, but it
+still runs the credential guard and that preflight, so a dispatch is enough to exercise the new token.)
 ⚠️ That preflight proves `Contents: write` only and **cannot** prove `Workflows` — a token missing that
-scope passes preflight and fails at the real push. Revoke the old PAT after one green run.
+scope passes preflight and fails at the real push. Revoke the old PAT after one green run of each.
 
 **4. `RESEND_API_KEY`.** Can send as `alerts@compute-atlas.com` (reputational, not data — the key is
 verified send-only: Resend answers `401 restricted_api_key` to key/domain/email reads). New

@@ -129,50 +129,52 @@ jobs:
       # automation-health surfaces it, as a stalled PR blocks the backfill
       # indefinitely. (Residual: a manual dispatch can still replace a PENDING
       # neon-sync run in the shared group because cancel-in-progress: false keeps
-      # only one pending run, not one run per trigger source. Fork PRs cannot defer
-      # via this query: isCrossRepository filters them out.)
+      # only one pending run, not one run per trigger source.) Fork PRs cannot
+      # defer: the query's head filter is owner-namespaced (<owner>:automated/neon-sync),
+      # which a fork's same-named branch does not match. (`gh pr list --head <name>`
+      # matches on branch name alone and lists newest-first, so 100 newer fork PRs
+      # could push the real, stale same-repo PR off the page and read as "proceed".)
+      # The decision lives in scripts/classify-sync-prs.sh (tested in
+      # tests/workflows/run.bats), whose isCrossRepository filter is defence in depth.
       - name: Defer while a neon-sync PR is open
         id: defer
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          now=$(date -u +%s)
 
-          # Get open same-repo (isCrossRepository == false) neon-sync PRs.
-          # --limit 100 prevents fork PRs from pushing the real same-repo PR off the page.
-          open_data=$(gh pr list --head automated/neon-sync --state open --limit 100 --json number,isCrossRepository,createdAt | jq -c '.[] | select(.isCrossRepository == false)')
+          # Server-side filter on <owner>:automated/neon-sync, so only PRs whose head
+          # branch lives in THIS owner's namespace come back (a fork's does not).
+          # head.repo is null for a deleted fork, which compares as cross-repo. The
+          # compare is head.repo vs base.repo, deliberately NOT against an env var:
+          # an absent or differently-cased GITHUB_REPOSITORY would make every real
+          # PR read as cross-repo, be dropped, and silently turn the gate into "proceed".
+          # The classifier prints one of: proceed | defer <count> | stale <#n (Hh)>[, ...]
+          # and exits 2 on input it cannot classify, which (pipefail + set -e) fails
+          # this step closed.
+          decision="$(
+            gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100&head=${GITHUB_REPOSITORY_OWNER}:automated/neon-sync" \
+              --jq '[.[] | {number, isCrossRepository: (.head.repo.full_name != .base.repo.full_name), createdAt: .created_at}]' \
+              | scripts/classify-sync-prs.sh
+          )"
 
-          old_prs=""
-          new_count=0
-
-          while IFS= read -r pr_line; do
-            [ -z "$pr_line" ] && continue
-            pr_num=$(echo "$pr_line" | jq -r '.number')
-            created_at=$(echo "$pr_line" | jq -r '.createdAt')
-
-            # Convert ISO8601 timestamp to Unix seconds. GNU date (ubuntu runner);
-            # BSD/macOS `date` has no `-d`, so a local dry-run fails closed.
-            pr_timestamp=$(date -u -d "$created_at" +%s)
-            age_secs=$(( now - pr_timestamp ))
-            age_hours=$(( age_secs / 3600 ))
-
-            if [ "$age_secs" -gt 86400 ]; then
-              old_prs="${old_prs:+$old_prs, }#$pr_num (${age_hours}h old)"
-            else
-              new_count=$((new_count + 1))
-            fi
-          done <<< "$open_data"
-
-          if [ -n "$old_prs" ]; then
-            echo "::error::An automated/neon-sync PR has been open more than 24 hours; NHD backfill is blocked — merge or close: $old_prs"
-            exit 1
-          elif [ "$new_count" -gt 0 ]; then
-            echo "::warning::Deferring backfill — $new_count neon-sync PR(s) open."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
+          case "$decision" in
+            proceed)
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+              ;;
+            defer\ *)
+              echo "::warning::Deferring backfill — ${decision#defer } neon-sync PR(s) open."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              ;;
+            stale\ *)
+              echo "::error::An automated/neon-sync PR has been open more than 24 hours; NHD backfill is blocked — merge or close: ${decision#stale }"
+              exit 1
+              ;;
+            *)
+              echo "::error::scripts/classify-sync-prs.sh returned an unexpected decision: '$decision'"
+              exit 1
+              ;;
+          esac
 
       # MEASURE NHD DEBT — count the CONUS facilities whose siting-context entry
       # lacks nearestWater (non-CONUS are legitimately absent per CLAUDE.md).
