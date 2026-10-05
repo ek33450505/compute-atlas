@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-02T18:14:01.267Z",
+  "asOf": "2026-10-05T18:25:07.226Z",
   "statuses": [
     "operational",
     "under_construction",
@@ -8,17 +8,17 @@
     "cancelled"
   ],
   "coverage": {
-    "totalFacilities": 2328,
-    "withHistory": 1467,
-    "excludedNoHistory": 861,
+    "totalFacilities": 2347,
+    "withHistory": 1479,
+    "excludedNoHistory": 868,
     "earliestEvent": "1961-01-01",
-    "latestEvent": "2026-10-02",
+    "latestEvent": "2026-10-04",
     "quartersOmitted": 236,
     "knownAtStart": 123,
     "datePrecision": {
       "year": 290,
-      "month": 684,
-      "day": 959
+      "month": 688,
+      "day": 974
     },
     "unparseableDates": 0,
     "ambiguousPeak": {
@@ -26,7 +26,7 @@
       "count": 61,
       "entry": 42,
       "status": 19,
-      "known": 521,
+      "known": 523,
       "share": 11.7
     }
   },
@@ -229,7 +229,7 @@
     {
       "quarter": "2023Q2",
       "end": "2023-06-30",
-      "known": 241,
+      "known": 242,
       "ambiguous": 12,
       "ambiguousEntry": 11,
       "ambiguousStatus": 1,
@@ -237,14 +237,14 @@
         "operational": 167,
         "under_construction": 16,
         "permitted": 21,
-        "proposed": 35,
+        "proposed": 36,
         "cancelled": 2
       }
     },
     {
       "quarter": "2023Q3",
       "end": "2023-09-30",
-      "known": 255,
+      "known": 256,
       "ambiguous": 12,
       "ambiguousEntry": 11,
       "ambiguousStatus": 1,
@@ -252,14 +252,14 @@
         "operational": 171,
         "under_construction": 19,
         "permitted": 22,
-        "proposed": 39,
+        "proposed": 40,
         "cancelled": 4
       }
     },
     {
       "quarter": "2023Q4",
       "end": "2023-12-31",
-      "known": 273,
+      "known": 274,
       "ambiguous": 1,
       "ambiguousEntry": 0,
       "ambiguousStatus": 1,
@@ -267,14 +267,14 @@
         "operational": 180,
         "under_construction": 22,
         "permitted": 27,
-        "proposed": 40,
+        "proposed": 41,
         "cancelled": 4
       }
     },
     {
       "quarter": "2024Q1",
       "end": "2024-03-31",
-      "known": 328,
+      "known": 329,
       "ambiguous": 35,
       "ambiguousEntry": 28,
       "ambiguousStatus": 7,
@@ -282,14 +282,14 @@
         "operational": 209,
         "under_construction": 32,
         "permitted": 27,
-        "proposed": 55,
+        "proposed": 56,
         "cancelled": 5
       }
     },
     {
       "quarter": "2024Q2",
       "end": "2024-06-30",
-      "known": 349,
+      "known": 350,
       "ambiguous": 34,
       "ambiguousEntry": 27,
       "ambiguousStatus": 7,
@@ -297,14 +297,14 @@
         "operational": 220,
         "under_construction": 36,
         "permitted": 28,
-        "proposed": 58,
+        "proposed": 59,
         "cancelled": 7
       }
     },
     {
       "quarter": "2024Q3",
       "end": "2024-09-30",
-      "known": 375,
+      "known": 376,
       "ambiguous": 35,
       "ambiguousEntry": 27,
       "ambiguousStatus": 8,
@@ -312,14 +312,14 @@
         "operational": 230,
         "under_construction": 41,
         "permitted": 34,
-        "proposed": 62,
+        "proposed": 63,
         "cancelled": 8
       }
     },
     {
       "quarter": "2024Q4",
       "end": "2024-12-31",
-      "known": 420,
+      "known": 422,
       "ambiguous": 6,
       "ambiguousEntry": 0,
       "ambiguousStatus": 6,
@@ -327,128 +327,128 @@
         "operational": 240,
         "under_construction": 47,
         "permitted": 42,
-        "proposed": 82,
+        "proposed": 84,
         "cancelled": 9
       }
     },
     {
       "quarter": "2025Q1",
       "end": "2025-03-31",
-      "known": 521,
+      "known": 523,
       "ambiguous": 61,
       "ambiguousEntry": 42,
       "ambiguousStatus": 19,
       "counts": {
-        "operational": 259,
+        "operational": 260,
         "under_construction": 78,
         "permitted": 60,
-        "proposed": 111,
+        "proposed": 112,
         "cancelled": 13
       }
     },
     {
       "quarter": "2025Q2",
       "end": "2025-06-30",
-      "known": 561,
+      "known": 564,
       "ambiguous": 57,
       "ambiguousEntry": 39,
       "ambiguousStatus": 18,
       "counts": {
-        "operational": 263,
+        "operational": 264,
         "under_construction": 85,
         "permitted": 70,
-        "proposed": 125,
+        "proposed": 127,
         "cancelled": 18
       }
     },
     {
       "quarter": "2025Q3",
       "end": "2025-09-30",
-      "known": 643,
+      "known": 648,
       "ambiguous": 51,
       "ambiguousEntry": 34,
       "ambiguousStatus": 17,
       "counts": {
-        "operational": 277,
-        "under_construction": 96,
+        "operational": 278,
+        "under_construction": 97,
         "permitted": 83,
-        "proposed": 166,
+        "proposed": 169,
         "cancelled": 21
       }
     },
     {
       "quarter": "2025Q4",
       "end": "2025-12-31",
-      "known": 749,
+      "known": 756,
       "ambiguous": 17,
       "ambiguousEntry": 0,
       "ambiguousStatus": 17,
       "counts": {
-        "operational": 295,
-        "under_construction": 118,
+        "operational": 296,
+        "under_construction": 119,
         "permitted": 95,
-        "proposed": 210,
-        "cancelled": 31
+        "proposed": 214,
+        "cancelled": 32
       }
     },
     {
       "quarter": "2026Q1",
       "end": "2026-03-31",
-      "known": 946,
+      "known": 955,
       "ambiguous": 103,
       "ambiguousEntry": 70,
       "ambiguousStatus": 33,
       "counts": {
-        "operational": 316,
-        "under_construction": 168,
+        "operational": 317,
+        "under_construction": 169,
         "permitted": 127,
-        "proposed": 289,
-        "cancelled": 46
+        "proposed": 294,
+        "cancelled": 48
       }
     },
     {
       "quarter": "2026Q2",
       "end": "2026-06-30",
-      "known": 1086,
+      "known": 1096,
       "ambiguous": 99,
       "ambiguousEntry": 66,
       "ambiguousStatus": 33,
       "counts": {
-        "operational": 330,
-        "under_construction": 204,
+        "operational": 331,
+        "under_construction": 206,
         "permitted": 133,
-        "proposed": 348,
-        "cancelled": 71
+        "proposed": 353,
+        "cancelled": 73
       }
     },
     {
       "quarter": "2026Q3",
       "end": "2026-09-30",
-      "known": 1459,
+      "known": 1471,
       "ambiguous": 93,
       "ambiguousEntry": 59,
       "ambiguousStatus": 34,
       "counts": {
-        "operational": 489,
-        "under_construction": 250,
+        "operational": 491,
+        "under_construction": 253,
         "permitted": 165,
-        "proposed": 447,
-        "cancelled": 108
+        "proposed": 452,
+        "cancelled": 110
       }
     },
     {
       "quarter": "2026Q4",
       "end": "2026-12-31",
-      "known": 1467,
+      "known": 1479,
       "ambiguous": 33,
       "ambiguousEntry": 0,
       "ambiguousStatus": 33,
       "counts": {
-        "operational": 497,
-        "under_construction": 251,
+        "operational": 500,
+        "under_construction": 253,
         "permitted": 165,
-        "proposed": 447,
-        "cancelled": 107
+        "proposed": 452,
+        "cancelled": 109
       },
       "partial": true
     }

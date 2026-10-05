@@ -1,5 +1,5 @@
 {
-  "ceiling": 0,
-  "asOf": "2026-10-04",
-  "note": "Paid down 52 -> 0 by the full build:mapdata in #377 (2026-10-04)"
+  "ceiling": 19,
+  "asOf": "2026-10-05",
+  "note": "neon-sync skip-nhd run 37355712709"
 }
