@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-05T18:25:07.226Z",
+  "asOf": "2026-10-06T19:25:56.907Z",
   "statuses": [
     "operational",
     "under_construction",
@@ -8,17 +8,17 @@
     "cancelled"
   ],
   "coverage": {
-    "totalFacilities": 2347,
+    "totalFacilities": 2349,
     "withHistory": 1479,
-    "excludedNoHistory": 868,
+    "excludedNoHistory": 870,
     "earliestEvent": "1961-01-01",
-    "latestEvent": "2026-10-04",
+    "latestEvent": "2026-10-06",
     "quartersOmitted": 236,
     "knownAtStart": 123,
     "datePrecision": {
       "year": 290,
       "month": 688,
-      "day": 974
+      "day": 975
     },
     "unparseableDates": 0,
     "ambiguousPeak": {
@@ -444,8 +444,8 @@
       "ambiguousEntry": 0,
       "ambiguousStatus": 33,
       "counts": {
-        "operational": 500,
-        "under_construction": 253,
+        "operational": 501,
+        "under_construction": 252,
         "permitted": 165,
         "proposed": 452,
         "cancelled": 109

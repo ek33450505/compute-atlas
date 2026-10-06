@@ -795,7 +795,7 @@
         "url": "https://365datacenters.com/marlborough-data-center/",
         "label": "Marlborough Data Center - 365 Data Centers",
         "publisher": "365 Data Centers",
-        "retrievedAt": "2026-09-27",
+        "retrievedAt": "2026-10-06",
         "kind": "other"
       },
       {
@@ -813,10 +813,11 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-27",
+    "lastUpdated": "2026-10-06",
     "notes": "64,000 sq ft facility described by the operator as its \"premiere business continuity center in the northeast quadrant,\" serving Boston, Providence and Springfield enterprise customers. Certified PCI-DSS, HIPAA, SOC 1, SOC 2, SSAE 18, ISAE 3402. No AI/HPC capacity named at this site, so aiClassification is left unset.",
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "780-ton N+1 chilled-water cooling plant (Liebert equipment) serving the raised-floor data hall."
     },
     "facilityType": "data_center"
   },
@@ -2586,6 +2587,43 @@
     "notes": "Operated by One Blockchain LLC, wholly owned by AIB Data Centers Inc. (NYSE American: AIB; renamed from BlockchAIn Digital Infrastructure on 2026-06-25). The 10-Q states an existing 40 MW facility on leased land in Spartanburg County being repurposed into the ~65 MW CLT-01 AI/HPC campus via project entity AIB CLT1 LLC (formed 2026-06-23); revenue today is bitcoin hosting, hence aiClassification mixed_use. Baxtel reports the address as 389 Tyger River Industrial Drive; that address is NOT in the SEC filing, so it is recorded here only as a note and the coordinate is the Tyger River Industrial Drive road centroid (approximate, not parcel-confirmed). Same industrial park as the cancelled TigerDC Project Spero record but a different operator and a different, already-built facility.",
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "ainet-beltsville-wdc1-md",
+    "name": "AiNET Beltsville WDC-1",
+    "operator": "AiNET",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.0528524,
+      "lon": -76.9258808,
+      "city": "Beltsville",
+      "county": "Prince George's County",
+      "street": "11700 Montgomery Road",
+      "postalCode": "20705",
+      "state": "MD",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/11700-montgomery-road-beltsville/ainet/datacenter/ainet-corporation-beltsville",
+        "label": "AiNET Corporation – Beltsville data center listing",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-06",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/ainet-beltsville-wdc-1",
+        "label": "AiNET Beltsville WDC-1",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-06",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-06",
+    "notes": "Operational AiNET colocation facility at 11700 Montgomery Road, Beltsville, MD (Prince George's County) — a distinct AiNET site from the already-tracked Glen Burnie CyberNAP and Baltimore One Market Center carrier hotel.",
+    "facilityType": "data_center"
   },
   {
     "id": "ainet-cybernap-glen-burnie-md",
@@ -12618,7 +12656,7 @@
         "url": "https://baxtel.com/news/amazon-buys-two-data-centers-in-massachusetts-for-26-7m",
         "label": "Amazon Buys Two Data Centers in Massachusetts For $26.7m",
         "publisher": "Baxtel",
-        "retrievedAt": "2026-09-12",
+        "retrievedAt": "2026-10-06",
         "kind": "press"
       },
       {
@@ -12636,7 +12674,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-06",
     "notes": "Amazon Data Services Inc. purchased a 155,000 sq ft building on a 1.8-acre lot on Centennial Drive in Grafton (within CenTech Park, a technology park spanning Grafton and Shrewsbury) for $15.1M, per a November 24, 2022 report. Cleanview's tracker still lists status as \"Planned\" as of this check (2026-09-12); no independent confirmation of construction start or energization was found, so status is recorded as proposed. The exact street number was reported by secondary press coverage but could not be confirmed on a source this run actually fetched (the primary WBJ article 403'd), so only the street name is recorded. investmentUsd reflects the disclosed real-estate acquisition price, not a separately-disclosed build-out cost. Coordinates set 2026-09-12 to the OSM way centroid for Centennial Drive, North Grafton (the source names the street but no house number, so the US Census address geocoder returns no match); pin is street-level, not parcel-level.",
     "investmentUsd": 15100000,
     "landAcres": 1.8,
@@ -14557,7 +14595,7 @@
         "url": "https://baxtel.com/news/amazon-buys-two-data-centers-in-massachusetts-for-26-7m",
         "label": "Amazon Buys Two Data Centers in Massachusetts For $26.7m",
         "publisher": "Baxtel",
-        "retrievedAt": "2026-09-12",
+        "retrievedAt": "2026-10-06",
         "kind": "press"
       },
       {
@@ -14575,7 +14613,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-06",
     "notes": "Amazon Data Services Inc. purchased 600 Friberg Parkway (an existing ~99,150 sq ft former State Street Corp data center) and the adjacent 800 Friberg Parkway (greenfield land at the time of sale) for $11.6M combined, per a November 24, 2022 report — the two parcels total 19 acres, treated here as one representative multi-site record. Cleanview's tracker still lists status as \"Planned\" as of this check (2026-09-12); no independent confirmation of construction start or energization was found, so status is recorded as proposed rather than under_construction. investmentUsd reflects the disclosed real-estate acquisition price, not a separately-disclosed build-out cost.",
     "investmentUsd": 11600000,
     "landAcres": 19,
@@ -28850,14 +28888,22 @@
         "publisher": "American Nuclear Society / Nuclear Newswire",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.constellationenergy.com/news/2026/09/constellation-and-amazon-announce-20-year-power-purchase-agreement-at-calvert-cliffs.html",
+        "label": "Constellation and Amazon Announce 20-Year Power Purchase Agreement at Calvert Cliffs",
+        "publisher": "Constellation Energy",
+        "retrievedAt": "2026-10-06",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-10-06",
     "notes": "Company-stated intention to explore, not a filed project — recorded at 'reported' confidence with no reactor technology, unit count or in-service date asserted because none has been published. Distinct from the withdrawn AWS Calvert Technology Center data center proposal at the same site.",
     "energy": {
       "source": "nuclear",
       "notes": "Proposed next-generation nuclear units at the existing Calvert Cliffs Clean Energy Center, which Constellation says would roughly double the site's output. Separately, Constellation says uprates could add about 190 MW (10%) to the existing units and is pursuing a 20-year licence renewal."
     },
+    "investmentUsd": 3000000000,
     "facilityType": "power_generation",
     "generation": {
       "technology": "nuclear",
@@ -77832,10 +77878,21 @@
         "publisher": "PeeringDB",
         "retrievedAt": "2026-09-15",
         "kind": "other"
+      },
+      {
+        "url": "https://www.markleygroup.com/data-center",
+        "label": "Markley Group Data Center",
+        "publisher": "Markley Group",
+        "retrievedAt": "2026-10-06",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-06",
     "notes": "Markley's original flagship facility (1 Summer St, atop former Macy's), 920,000 sq ft, largest commercial internet exchange point (BOSIX) in New England. Distinct facility from the separately-tracked Markley Lowell (One Lowell Data Center) site.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Bi-directional chilled-water loop combining five independent chiller plants in an N+1 configuration."
+    },
     "facilityType": "data_center"
   },
   {
@@ -77849,8 +77906,12 @@
       "lon": -71.3162,
       "city": "Lowell",
       "county": "Middlesex",
+      "street": "2 Prince Ave",
       "state": "MA",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 50
     },
     "poweredBy": "Grid; 27 on-site diesel backup generators",
     "announcedDate": "2015-01",
@@ -77902,9 +77963,23 @@
         "publisher": "Working Mass",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/business/markley-building-out-50mw-boston-metro-data-center",
+        "label": "Markley Building Out 50MW Boston-Metro Data Center",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.govtech.com/analytics/massachusetts-residents-protest-data-farm-expansion",
+        "label": "Massachusetts Residents Protest Data Farm Expansion",
+        "publisher": "GovTech",
+        "retrievedAt": "2026-10-06",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-06",
     "notes": "Coordinates are approximate city centroid (Sacred Heart/Back Central neighborhoods, Lowell). Facility serves 100+ customers including hospitals, universities, and police departments. Expansion includes land purchases by Markley near old power plant. Expansion plans stalled by moratorium. AI demand cited as driver of expansion since 2022. Delivered permanent-job counts are disputed - the abatement promised 100 jobs; the city and critics count ~26-30 full-time local workers while Markley cites ~100 total, with construction peaking ~120 (IBEW Local 103); recorded as unresolved (honest-zero). No confirmed total capital-investment figure is public ('hundreds of millions'). Massachusetts' 2024 sales-tax exemption is statutory eligibility, not a confirmed Markley award.",
     "energy": {
       "source": "grid",
@@ -77923,6 +77998,8 @@
         "sourceIndex": 3
       }
     ],
+    "investmentUsd": 350000000,
+    "landAcres": 14,
     "community": {
       "status": "litigation",
       "notes": "Massachusetts' first data center lawsuit filed April 27, 2026 in Middlesex County Superior Court by Honest Future for Lowell (10 plaintiffs) represented by Yale Law School Environmental Justice Clinic, Fitch Law Partners, and Conservation Law Foundation. Plaintiffs allege unlawful permitting; facility sits 84 feet from closest diesel engine to residential properties. Sacred Heart and Back Central neighborhoods are designated environmental justice communities. One-year moratorium on expansion passed by Lowell City Council.",
@@ -82337,7 +82414,7 @@
         "url": "https://en.wikipedia.org/wiki/Massachusetts_Green_High_Performance_Computing_Center",
         "label": "Massachusetts Green High Performance Computing Center",
         "publisher": "Wikipedia",
-        "retrievedAt": "2026-07-17",
+        "retrievedAt": "2026-10-06",
         "kind": "other"
       },
       {
@@ -82376,7 +82453,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-06",
     "notes": "90,300 sq ft, opened 2012, hydro-powered university research-computing consortium (100 Bigelow St). Explicitly exempted from Holyoke's 2026 data center ban. Houses the MIT Lincoln Laboratory Supercomputing Center (LLSC / TX-GAIA) — recorded as one facility, not two.",
     "energy": {
       "source": "grid",
@@ -82386,6 +82463,15 @@
     "water": {
       "coolingType": "air"
     },
+    "subsidies": [
+      {
+        "program": "state pledge toward MGHPCC construction costs",
+        "amountUsd": 25000000,
+        "jurisdiction": "Massachusetts",
+        "sourceIndex": 0
+      }
+    ],
+    "landAcres": 8.6,
     "facilityType": "data_center"
   },
   {
@@ -109094,7 +109180,7 @@
     "id": "rowan-digital-frederick-md",
     "name": "Rowan Digital Infrastructure Frederick Campus (Bauxite I)",
     "operator": "Rowan Digital Infrastructure",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 39.265,
@@ -109120,6 +109206,12 @@
         "date": "2024-01",
         "note": "Ground broken 2024 on Bauxite I (300MW, Phase 1). Phase 2 financing: $1.24B closed February 2025, led by SMBC and MUFG; $2.2B total secured. AWS Maryland availability zone expected 2026.",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-06",
+        "note": "Rowan Digital Infrastructure's own CEO blog post confirms Bauxite I at the Frederick campus was energized and turned over to its first tenant, delivering 200+MW — the campus's first phase coming online.",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -109157,9 +109249,16 @@
         "publisher": "Nature Forward",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "http://rowan.com/?p=264",
+        "label": "Five Years In — A message from Rowan CEO Charley Daitch",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-10-06",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-10-06",
     "notes": "Rowan (Quinbrook Infrastructure Partners + Birch Infrastructure JV) serves as AWS hyperscale host at Quantum Frederick. Three campuses planned on-site total; Bauxite I is Phase 1 at 300MW. 777,150 sq ft total campus footprint. Coordinates approximate for same Quantum Frederick campus area as Aligned record. Location.city set to Adamstown per the more recent, project-specific Frederick News-Post coverage (2025-11-11, via Yahoo Finance); the 2021 Maryland Dept. of Commerce announcement had said \"near Buckeystown\" — recorded here so the choice is auditable rather than looking arbitrary. AWS is the confirmed tenant of Bauxite I on this former Alcoa Eastalco Works site — AWS's first Maryland data center; no source confirms go-live as of this pass.",
     "energy": {
       "source": "grid",
@@ -109484,6 +109583,7 @@
       "lat": 38.578,
       "lon": -75.945,
       "county": "Dorchester",
+      "street": "Linkwood Road near Linkwood (approx. 7 miles east of Cambridge), Dorchester County",
       "state": "MD",
       "precision": "approximate"
     },
@@ -109512,9 +109612,16 @@
         "publisher": "RWE Clean Energy",
         "retrievedAt": "2026-08-26",
         "kind": "other"
+      },
+      {
+        "url": "https://psc.maryland.gov/news/2026/virtual-public-hearing-set-for-solar-battery-storage-facility-proposed-for-dorchester-county/",
+        "label": "Virtual Public Hearing Set for Solar/Battery Storage Facility Proposed for Dorchester County",
+        "publisher": "Maryland Public Service Commission",
+        "retrievedAt": "2026-10-06",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-06",
     "notes": "Sited about 0.5 miles southwest of East New Market and immediately north of Linkwood: 555 fenced acres within an 818-acre leased agricultural tract. Far and away the largest generation project in the Maryland PSC's current CPCN review queue, where the rest are 2-18 MW community-scale solar. Developer projects $39.5 million in county revenue over a 40-year life. Re-checked 2026-09-10: status remains PROPOSED, consistent with a 2026-02-18 PSC virtual public hearing before PULJ Christine L. Burke that had not yet concluded proceedings. No formal street address exists for this site -- RWE's own project page describes the location only as a rural tract, not a postal address -- so location.street is intentionally NOT populated to avoid inventing one. Total site size given as approximately 555 fenced-in acres within an 818-acre leased agricultural tract (landAcres not touched -- already present in existing record). No investment dollar figure found.",
     "energy": {
       "source": "solar",
@@ -113712,7 +113819,7 @@
         "url": "https://baxtel.com/data-center/westfield-data-center-campus",
         "label": "Westfield Data Center Campus",
         "publisher": "Baxtel",
-        "retrievedAt": "2026-07-17",
+        "retrievedAt": "2026-10-06",
         "kind": "other"
       },
       {
@@ -113750,11 +113857,13 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-06",
     "notes": "Would-be first Massachusetts hyperscale data center: 10-building, 2.7M sq ft campus over a long buildout (191/199 Servistar Industrial Way). Tax exemption secured 2024. Status is early and thin — no confirmed groundbreaking; conflicting signals on whether the project is still active.",
     "energy": {
       "utility": "City of Westfield"
     },
+    "investmentUsd": 2700000000,
+    "landAcres": 155,
     "community": {
       "status": "contested",
       "notes": "Westfield City Council voted unanimously on July 6, 2026 to enact a 365-day citywide moratorium on new data-center permits/construction after residents packed hearings over water and power-strain concerns; the moratorium is framed as not formally targeting Servistar's existing 2021 approvals.",
@@ -127602,6 +127711,46 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "tpc-konterra-1-laurel-md",
+    "name": "TPC Konterra 1 Data Center",
+    "operator": "TPC Data Centers (TPC DC Mid-Atlantic LLC)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.09,
+      "lon": -76.9,
+      "city": "Laurel",
+      "county": "Prince George's County",
+      "street": "6201 Frost Place",
+      "postalCode": "20707",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 12
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/tpc-konterra-1",
+        "label": "TPC: Konterra 1",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-06",
+        "kind": "other"
+      },
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/tpc-konterra-1-data-center-md--98c30314-5bcf-4686-90c6-5ebc841743e6",
+        "label": "TPC Konterra 1 Data Center tracker entry",
+        "publisher": "More Than Just Parks",
+        "retrievedAt": "2026-10-06",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-06",
+    "notes": "Powered-shell data center planned by TPC Data Centers (subsidiary of Twin Palms Capital Group) at 6201 Frost Place, Laurel, near the Burtonsville substation; 150,000 sq ft across two floors, year-planned 2027, claimed PUE of 1.1; company materials suggest potential expansion to 30MW across two sites totaling 160MW. Single-source trade coverage — confidence reported, not confirmed.",
+    "facilityType": "data_center"
   },
   {
     "id": "tpx-communications-las-vegas-nv",
