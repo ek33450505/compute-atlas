@@ -645,6 +645,7 @@
       "city": "Southfield",
       "county": "Oakland",
       "street": "24660 Lahser Road",
+      "postalCode": "48034",
       "state": "MI",
       "precision": "exact"
     },
@@ -663,9 +664,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-13",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?country=US&state__in=MI,Michigan",
+        "label": "PeeringDB facility registry (Michigan): 365 Data Centers Detroit (DT1), fac 2021",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-07",
     "notes": "Standalone 12,000 sq ft colocation retrofit facility with a 160-ton cooling plant, 12-inch raised floor, and 3x203kW UPS units for AC customer backup (365datacenters.com spec sheet, retrieved 2026-09-13). A total facility power-capacity figure of ~4.5MW appears on third-party aggregator/broker sites (datacenterhawk, inflect) but was not confirmed against a primary source this session, so capacityMw is omitted rather than guessed. Coolant/water system details were not stated on the pages fetched, so `water` is omitted. Originally built in 2000 as a Switch & Data facility, acquired by Equinix in 2010, and sold to 365 Data Centers in November 2012 (per baxtel.com).",
     "energy": {
       "onSiteGenerationMw": 0.75,
@@ -2330,9 +2338,16 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-09",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-07",
     "notes": "⚠️ ADJUDICATE — SCOPE JUDGEMENT CALL, flagged as instructed. This is a grid-connected corporate-PPA wind farm, not on-site generation dedicated to one compute campus like the xAI Southaven turbines or the Entergy stations built for the AWS load. Include it only if the tracker's power_generation scope covers contracted renewables that a hyperscaler names as part of its data-center power story: Amazon's own $25B Mississippi data-center announcement (source 2) names Delta Wind as 'the state's first utility-scale wind farm', and Canary Media (source 1) says Amazon buys the power 'to support its growing data center operations and logistics hubs in the region' — but POWER Magazine (source 0) describes the same offtake as covering fulfillment centers, delivery stations and a Whole Foods, so the load is NOT exclusively compute. If the scope is on-site/dedicated generation only, DISCARD. Coordinates: no source states a lat/lon or a town, and HARD RULE 2 forbids deriving a point from a county name — so the coordinate is the arithmetic centroid of the 41 wind-turbine nodes OpenStreetMap records inside Tunica County (bbox 34.4634..34.5318 N, -90.4247..-90.3365 W), a count that exactly matches the sourced 41 turbines; precision 'representative_multi_site' because the farm spans 14,000 acres. Capacity: POWER Magazine and Amazon say 184.5 MW, Canary Media rounds to 184 — 184.5 recorded. Confirmed absences: no source fetched states a construction job count precisely ('nearly 300 jobs during peak construction' is a floor-less approximation, so jobs is omitted) and none states a subsidy or abatement; Canary Media reports the project is 'expected to provide $100 million in local property tax revenue over the life of the project', which is revenue TO the county, not a subsidy, and is therefore recorded here rather than in subsidies. Amazon states it has five other renewable projects in Mississippi (solar); none is individually named in any source fetched in this run, so no solar records are proposed.",
     "investmentUsd": 350000000,
     "landAcres": 14000,
@@ -10816,7 +10831,7 @@
         "url": "https://www.prnewswire.com/news-releases/avaio-digital-to-build-new-ai-ready-6-billion-data-center-hub-in-brandon-mississippi-302533141.html",
         "label": "AVAIO Digital Taurus announcement press release",
         "publisher": "PR Newswire / AVAIO Digital Partners",
-        "retrievedAt": "2026-07-07",
+        "retrievedAt": "2026-10-07",
         "kind": "press"
       },
       {
@@ -10862,7 +10877,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "Distinct from AVAIO's 'Leo' campus in Little Rock/Pulaski County AR — do not conflate. Site: East Metropolitan Center Business and Industrial Park, Brandon. Land acreage: AVAIO's own project page and groundbreaking materials cite 329 acres; the August 19 press release cited 175 acres — 329 used as more authoritative per operator's site. Capacity: 116 MW initial via executed ESA with Entergy Mississippi (energized June 2027 per operator site); Entergy guiding an additional 420 MW of grid power available by end of 2030; access to Gulf South Pipeline for up to 500 MW of on-site behind-the-meter thermal generation starting Q2 2027 — total baseload path to over 1 GW. The 116 MW planned figure reflects the executed first-phase ESA only; full buildout remains a projection. Investment: $6B stated without 'up to' qualifier across operator, MDA, and Governor's office sources; Governor's office describes it as the third-largest economic development project in Mississippi history. Jobs: 'at least 60 direct, high-tech jobs' and 'hundreds of indirect jobs ranging from construction to other related industries' — projections, not firm figures; no construction vs permanent breakdown confirmed. Rooftop solar of 20+ MW planned (behind-the-meter). Recycled water and new sewer line extension cited by operator as water infrastructure options. Estimated $23M in ad valorem tax revenue annually per Rankin First (county economic development group). Coordinates approximate (Brandon city center, Rankin County).",
     "energy": {
       "source": "mixed",
@@ -13606,7 +13621,7 @@
     "id": "aws-project-atlas-madison-county-ms",
     "name": "AWS Project Atlas – Madison County Mega Site (Canton)",
     "operator": "Amazon Web Services",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 32.6121,
@@ -13631,6 +13646,12 @@
         "status": "under_construction",
         "date": "2024",
         "note": "Construction underway across approximately 1,700 acres in two Madison County industrial parks; completion expected 2027 [Scope note added 2026-09-10: this note is preserved verbatim as the 2024 historical record, when this row covered BOTH Madison County campuses. The row was narrowed to the Canton Mega Site (927 acres) on 2026-09-10; the Ridgeland Costas Property is tracked separately as aws-costas-ridgeland-ms. Read the acreage and the 'two parks' framing here as history, not as this record's current scope.]"
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-07",
+        "note": "The City of Clarksdale's March 2026 data center FAQ describes the AWS Project Atlas campus in Madison County as the only data center project in operation in Mississippi, with five hyperscale building developments in operation and more under construction.",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -13668,9 +13689,16 @@
         "publisher": "Mississippi Free Press",
         "retrievedAt": "2026-09-09",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.cityofclarksdale.org/wp-content/uploads/2026/03/City-of-Clarksdale-Data-Center-Frequently-Asked-Questions-_FAQ_.pdf",
+        "label": "Proposed Hyperscale Data Center Project, Clarksdale, MS: Frequently Asked Questions",
+        "publisher": "City of Clarksdale",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-07",
     "notes": "Two distinct complexes: Madison County Mega Site (outside Canton) and Costas Property (west of Tougaloo College near County Line Rd, Ridgeland). Amazon's total Mississippi statewide commitment expanded to $25B including subsequent Warren County ($3B) and Hinds County ($1B) announcements. Coordinates are approximate Canton-area centroid. Veolia water partnership claim removed: About Amazon source names Arable (not Veolia) as water replenishment partner; recycled wastewater target of 83M gallons/year by 2027 is confirmed. NARROWED TO CANTON 2026-09-10 (maintainer adjudication): this record previously combined two campuses. Madison County's own tax administration treats them as separate — it 'has entered into two fee-in-lieu-of-taxes agreements with the tech giant for its data center campuses in Canton and Ridgeland' (Mississippi Free Press, 2026-08-19) — and Magnolia Tribune (2024-07-24) gives the physical split: the Madison County Mega Site is '927 acres ... located off Highway 22 and Nissan Parkway in Canton', while the Costas Property is 'an additional 786 acres in Ridgeland'. The Ridgeland campus is therefore now tracked separately as aws-costas-ridgeland-ms, and landAcres here was reduced from the combined 1,700 to Canton's 927 so the two records do not double-count acreage. ⚠️ capacityMw, investmentUsd and jobs on this record remain PROGRAM-LEVEL figures from the original Project Atlas announcement covering BOTH Madison County campuses; they are deliberately left in place here rather than split, because no source apportions them per campus. Do NOT sum them with aws-costas-ridgeland-ms, which carries no capacity, investment or jobs figures for exactly this reason. location.precision was also corrected from 'exact' to 'approximate': this record's own notes already stated the coordinate is a Canton-area centroid, so the 'exact' claim was wrong. CORRECTION: this record aggregates two campuses that Madison County's own tax/incentive administration treats as legally and financially separate -- the Madison County Mega Site (927 acres, off Highway 22 and Nissan Parkway, Canton) and the Costas Property (786 acres, Highland Colony Parkway / West County Line Road, Ridgeland) -- confirmed by a 2026-08-19 Mississippi Free Press report on Madison County's denial of AWS's Canton tax-valuation appeal: the county 'has entered into two fee-in-lieu-of-taxes agreements with the tech giant for its data center campuses in Canton and Ridgeland.' Recommend re-scoping this record to the Canton (Madison County Mega Site) campus alone -- its location.lat/lon (32.6121, -90.039) and 'exact' precision already read as Canton-specific, closer to Canton than to Ridgeland -- and using the companion new-facility record aws-costas-ridgeland-ms (786 acres, Highland Colony Pkwy/West County Line Rd intersection) for Ridgeland. Do NOT attempt to apportion this record's combined capacityMw (1000 MW planned), investmentUsd ($10B), or jobs (7,000/1,000) by site -- no source fetched in this run or last wave's states a per-site breakdown of those figures; apportioning by acreage share (54%/46%) would be a fabricated estimate. Note also that Ridgeland is itself within Madison County, so the aggregate's 'Madison County' framing is not geographically wrong, only combined.",
     "energy": {
       "source": "solar",
@@ -15905,6 +15933,44 @@
       "notes": "Bentaus's February 2026 announcement describes support for 'up to 200 megawatts (MW) of power capacity'; the Texarkana Gazette reports 'an initial 48MW' secured through an Electric Service Agreement. The plans also call for 'access to pipeline-quality natural gas, allowing the facility to generate power on site as the project expands.' The electric service provider is not established: SWEPCO denied involvement and Southwest Arkansas Electric Cooperative declined to discuss the project, citing a possible nondisclosure agreement - so no utility is recorded here."
     },
     "landAcres": 2700,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "benton-township-yore-avenue-ai-data-center-mi",
+    "name": "Benton Township AI Data Center (Yore Avenue, near Lake Michigan College)",
+    "operator": "Undisclosed developer",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.0952439,
+      "lon": -86.388123,
+      "city": "Benton Charter Township",
+      "county": "Berrien",
+      "street": "Yore Avenue",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-04",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://abc57.com/news/jackie",
+        "label": "$3 billion A.I. data center potentially heading to Michiana",
+        "publisher": "ABC57",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/benton-harbor-proposed",
+        "label": "Benton Harbor (Proposed) data center listing",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "An unnamed company considered a potential $3 billion AI data center on 280 acres on Yore Avenue near Lake Michigan College (ABC57, April 2024). Local officials cited power from the Cook Plant and Palisades and water for cooling. ABC57 reported that state tax-exemption legislation had to pass before the project could proceed. Baxtel lists it as 'land secured for future development' with the developer unknown. DCD later reported the plans had stalled, but that article could not be fetched, so the stall is not asserted from it. The $3B figure is a 'potential' value, so it is not recorded as investmentUsd. The pin is a point on Yore Avenue near the college (OSM), not a parcel.",
+    "landAcres": 280,
     "facilityType": "data_center"
   },
   {
@@ -20082,9 +20148,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -23091,6 +23164,58 @@
     ],
     "lastUpdated": "2026-09-22",
     "notes": "Downtown Charleston colocation facility with fully redundant HVAC and dual high-capacity power feeds. No MW, square footage or certification figure is published by the operator. Geocode matched the exact house number.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "clarksdale-hyperscale-data-center-ms",
+    "name": "Clarksdale Hyperscale Data Center Project",
+    "operator": "Undisclosed",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.2006,
+      "lon": -90.5702,
+      "city": "Clarksdale",
+      "county": "Coahoma",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-23",
+        "note": "The Clarksdale Board of Mayor and Commissioners rezoned a 648-acre site from commercial/agricultural to light industrial for a potential hyperscale data center, with conditions including a $5M impact fee, water-use limits and setbacks.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cityofclarksdale.org/wp-content/uploads/2026/03/City-of-Clarksdale-Data-Center-Frequently-Asked-Questions-_FAQ_.pdf",
+        "label": "Proposed Hyperscale Data Center Project, Clarksdale, MS: Frequently Asked Questions",
+        "publisher": "City of Clarksdale",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.actionnews5.com/2026/03/24/clarksdale-passes-motion-that-allows-rezoning-potential-data-center",
+        "label": "Clarksdale passes motion that allows rezoning for potential data center",
+        "publisher": "Action News 5",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "The site is between the Sunflower River, U.S. 278, Tallahatchie Street and the Roundyard neighborhood. The developer is not named; the city's FAQ estimates 200-300 permanent jobs and calls it a multi-billion-dollar project. As of March 23, 2026 no development application had been filed. The coordinates are the OSM centroid of Clarksdale, not the site.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "City conditions cap water use at a 300,000 gallons/day average over 365 days. The city says the project intends to use closed-loop cooling."
+    },
+    "landAcres": 648,
+    "jobs": {
+      "construction": 1000,
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -26361,6 +26486,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cogent-detroit-1320-3rd-st-mi",
+    "name": "Cogent Detroit Data Center (1320 3rd St)",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.330743,
+      "lon": -83.055773,
+      "city": "Detroit",
+      "county": "Wayne",
+      "street": "1320 3rd St",
+      "postalCode": "48226",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cogentco.com/en/cogent-detroit",
+        "label": "Cogent Communications -- Detroit and Troy data centers",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/15594",
+        "label": "PeeringDB facility record: Cogent Detroit",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cogent-communications-announces-closing-of-sale-of-10-data-center-facilities-302813574.html",
+        "label": "Cogent Communications Announces Closing of Sale of 10 Data Center Facilities",
+        "publisher": "Cogent Communications / PR Newswire",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "Cogent's own page describes a 31,149 sq ft colocation facility with 42U cabinets, backup generator, and ports up to 100GE. The pin comes from PeeringDB's geocode of the street address. The June 29, 2026 sale of 10 Cogent data centers to I Squared Capital did not include Detroit or Troy, so Cogent is still recorded as operator.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cogent-elkridge-howard-md",
     "name": "Cogent Data Center – Elkridge",
     "operator": "Cogent Communications",
@@ -26551,6 +26720,50 @@
     "lastUpdated": "2026-10-02",
     "notes": "This is a former Sprint facility. Cogent got it from T-Mobile in 2022, when T-Mobile sold its wireline business to Cogent for $1; that is an entity-level deal, not a value for this site. The building is 10,320 sq ft on a 2.5-acre site with 800 kW of power. Carriers on site are Hawaiian Tel, Lumen and Spectrum, and it sits next to an AT&T facility. In March 2025 Cogent listed the building for sale as 'move-in-ready' at an $8M asking price, through Hawaii Commercial Real Estate. No sale, vacancy or closure was confirmed this session, so status is operational but confidence is reported. A completed sale or vacancy should prompt a re-check. capacityMw.operational is the stated 800 kW building power, not a measured IT load. Coordinates are the OSM building at this address tagged office=telecommunication.",
     "landAcres": 2.5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cogent-troy-big-beaver-mi",
+    "name": "Cogent Troy Data Center (3331 W. Big Beaver Rd)",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.5594738,
+      "lon": -83.193147,
+      "city": "Troy",
+      "county": "Oakland",
+      "street": "3331 W. Big Beaver Road",
+      "postalCode": "48084",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://cogentco.com/en/cogent-detroit",
+        "label": "Cogent Communications -- Detroit and Troy data centers",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/node/5557517226",
+        "label": "OpenStreetMap node: Cogent Communications, 3331 West Big Beaver Road, Troy",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-07",
+        "kind": "osm"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/cogent-communications-announces-closing-of-sale-of-10-data-center-facilities-302813574.html",
+        "label": "Cogent Communications Announces Closing of Sale of 10 Data Center Facilities",
+        "publisher": "Cogent Communications / PR Newswire",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "Cogent's own page lists a 5,624 sq ft colocation data center in Troy with 42U cabinets, backup generator, and ports up to 10GE. The pin is the OSM node tagged 'Cogent Communicatons' (sic) at the address. Michigan sites were not part of Cogent's June 2026 sale of 10 data centers to I Squared Capital.",
     "facilityType": "data_center"
   },
   {
@@ -28407,9 +28620,16 @@
         "publisher": "Site Selection Magazine",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://msbusinessjournal.com/compass-datacenters-to-invest-10-billion-in-lauderdale-county/",
+        "label": "Compass Datacenters to Invest $10 Billion in Lauderdale County",
+        "publisher": "Mississippi Business Journal",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "Eight-data-center campus over an eight-year buildout at the I-20/59 Industrial Park, Meridian. Groundbreaking Jan 28 2025 (under construction). Mississippi Power to supply ~500 MW via a dedicated substation. INVESTMENT OMITTED: the widely cited $10B is a projected full-occupancy total INCLUDING future tenants' IT equipment ('an investment of $10 billion, including future tenants' information technology equipment'), not a firm Compass outlay. 'Thousands of jobs' is a projection. First confirmed tenant: Corderill LLC ($100M equipment, 20 jobs, April 2026). Coordinates are the Meridian centroid (no parcel coordinates published).",
     "energy": {
       "source": "grid",
@@ -31586,6 +31806,59 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "cpv-jugfork-solar-lee-union-ms",
+    "name": "CPV Jugfork Solar",
+    "operator": "Competitive Power Ventures (CPV Jugfork Solar, LLC)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.4265,
+      "lon": -88.7892,
+      "county": "Lee",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07-21",
+        "note": "Petition for a certificate of public convenience and necessity (MS PSC docket 2025-UA-69) for a solar facility in Lee and Union counties; still pending on the October 2026 utility docket.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cpv.com/wp-content/uploads/2026/01/CPV-Jugfork-Solar-Project-Fact-Sheet-January2026.pdf",
+        "label": "CPV Jugfork Solar Project Fact Sheet (January 2026)",
+        "publisher": "Competitive Power Ventures",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.psc.ms.gov/sites/default/files/2026-09/10-2026-UTILITY-DOCKET.pdf",
+        "label": "Mississippi PSC October 2026 Utility Docket (2025-UA-69, CPV Jugfork Solar, LLC)",
+        "publisher": "Mississippi Public Service Commission",
+        "retrievedAt": "2026-10-07",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "Spans Lee and Union counties. The coordinates are the OSM location of the Jug Fork hamlet in Lee County, which the project is named for, not the array footprint.",
+    "investmentUsd": 320000000,
+    "jobs": {
+      "construction": 200,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "200 MW solar PV paired with a 20 MW / 4-hour battery storage system. Interconnects to TVA's Union-Tupelo #3 161 kV line. CPV's January 2026 fact sheet estimates construction start in 2027 and commercial operation in 2029."
+    }
   },
   {
     "id": "crane-clean-energy-center-tmi-pa",
@@ -39170,9 +39443,16 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-22",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "Coordinate taken from the OSM plant outline centroid; the EIA row carries only two decimal places (33.5/-90.1), which is too coarse for a pin.",
     "energy": {
       "source": "solar"
@@ -45435,6 +45715,8 @@
       "lon": -83.2626336,
       "city": "Detroit (Oakland County)",
       "county": "Oakland",
+      "street": "21005 Lahser Rd",
+      "postalCode": "48033",
       "state": "MI",
       "precision": "exact"
     },
@@ -45460,9 +45742,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?country=US&state__in=MI,Michigan",
+        "label": "PeeringDB facility registry (Michigan): EdgeConneX Detroit (EDCDET01), fac 1927",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-07",
     "notes": "Confirmed via official page: facility code DET01, Tier 3 designed, ENERGY STAR certified, 39,900 sq ft (9,930 sq ft raised floor), operational.",
     "energy": {
       "utility": "DTE Energy"
@@ -47476,9 +47765,16 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-07",
     "notes": "Jobs are the fact sheet's own per-project figures ('100+ jobs created' during construction, '3 jobs created' permanent); the construction number is a stated floor, recorded as 100. Coordinates are Global Energy Monitor's plant point, marked approximate — no parcel coordinate was published by EDPR.",
     "energy": {
       "source": "solar",
@@ -57992,6 +58288,9 @@
       "state": "MS",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 15
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -58007,10 +58306,24 @@
         "publisher": "IT BOLTWISE",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://www.djournal.com/monroe/news/bitcoin-mining-project-locating-in-amory/article_149c359c-1f06-4e48-ae9d-ba19ebdd159e.html",
+        "label": "Bitcoin mining project locating in Amory",
+        "publisher": "Monroe Journal / Daily Journal",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-07",
     "notes": "Odessa, Texas-based Gawk Enerpower Ltd is building a small, containerized Bitcoin-mining operation ('a few shipping containers on the site filled with equipment') on a 5-acre lot along Waterway Drive next to the Jimmy Bost Training Center in Amory. Amory Utilities Manager Mike King said the load is intended to help 'offset the load on utilities' and should not meaningfully affect customer service; local coverage explicitly distinguishes it from 'a large data center.' As of the most recent reporting found (2026-05-30), the city targeted an August 2026 completion; no source located this session confirms the facility has actually gone live, so status is carried as under_construction rather than assumed operational. No capacity (MW), investment or job figures were disclosed in the available coverage.",
+    "energy": {
+      "source": "grid",
+      "utility": "Amory Utilities"
+    },
+    "water": {
+      "notes": "Small 2-inch municipal water tap; most water is recirculated. Not drawn from the Tennessee-Tombigbee Waterway."
+    },
     "landAcres": 5,
     "facilityType": "crypto_mining"
   },
@@ -58303,6 +58616,35 @@
       "notes": "Reporting states the Pacolet center sits about three miles from two hydroelectric generation plants operated by Lockhart Power."
     },
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "genh-lake-billings-dam-manton-mi",
+    "name": "GenH Lake Billings Dam Data Services Facility",
+    "operator": "GenH",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.4137447,
+      "lon": -85.3944105,
+      "city": "Manton",
+      "county": "Wexford",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cadillacnews.com/news/manton-wary-of-lake-billings-data-center-proposal/article_81fc6587-837e-4e89-a949-b889d28ecd35.html",
+        "label": "Manton wary of Lake Billings data center proposal",
+        "publisher": "Cadillac News",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "Boston-based GenH proposed installing a run-of-river hydropower system at the Lake Billings dam in Manton to power an adjacent modular data services facility in a 10 by 15-foot container. The city would receive rent-style payments. Presented to the Manton city commission on July 23, 2026, where several commissioners said they were not interested. No MW figure has been published. The pin is the OSM centroid of Lake Billings, not the dam. This is a separate site from GenH's tracked Morley Dam (Mecosta County) proposal.",
+    "facilityType": "data_center"
   },
   {
     "id": "genh-morley-dam-mecosta-mi",
@@ -59124,6 +59466,48 @@
       "notes": "Worcester County staff determined the proposed cable landing station does not qualify as a public utility and is not permitted under the site's current C-2 zoning. After 'months of debate' and public hearings, the County Commissioners unanimously enacted a 12-month moratorium (Resolution No. 26-18, enacted 2026-07-21) on the submittal and issuance of permits for both data centers and cable landing stations, applying to Globalinx's pending application while the county drafts new zoning rules.",
       "sourceIndex": 2
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "gm-enterprise-data-center-warren-mi",
+    "name": "General Motors Enterprise Data Center (Warren Technical Center)",
+    "operator": "General Motors",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.5155048,
+      "lon": -83.0377165,
+      "city": "Warren",
+      "county": "Macomb",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://sustainablebrands.com/read/gm-facility-among-5-of-data-centers-to-earn-leed-gold-certification",
+        "label": "GM Facility Among 5% of Data Centers to Earn LEED Gold Certification",
+        "publisher": "Sustainable Brands",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.3blmedia.com/news/gm-data-center-goes-green-leed",
+        "label": "GM Data Center Goes Green for LEED",
+        "publisher": "3BL Media / General Motors",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.informationweek.com/sustainability/why-general-motors-went-green-but-not-cloud-",
+        "label": "Why General Motors Went Green (But Not Cloud)",
+        "publisher": "InformationWeek",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "Enterprise (single-tenant) data center at the GM Technical Center campus in Warren, LEED Gold certified in September 2013. It was one of two Michigan data centers GM built to consolidate 23 data centers worldwide; the second was at Milford and is not included here because no current-status source was fetched. Sources describe flywheel-plus-diesel UPS instead of batteries, in-row cooling, and water chilled outdoors so that mechanical cooling runs only about a quarter of the year. The pin is the OSM centroid of the Technical Center campus, not the building.",
     "facilityType": "data_center"
   },
   {
@@ -65862,6 +66246,43 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "harbor-farmz-full-circle-drive-kalamazoo-mi",
+    "name": "Harbor Farmz Inference Data Center Conversion (2839 Full Circle Drive)",
+    "operator": "Harbor Farmz",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.291707,
+      "lon": -85.5872286,
+      "city": "Kalamazoo",
+      "county": "Kalamazoo",
+      "street": "2839 Full Circle Drive",
+      "state": "MI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06-09",
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://secondwavemedia.com/from-cannabis-to-ai-proposed-kalamazoo-data-center-sparks-questions-about-the-future-in-milwood/",
+        "label": "From cannabis to AI: Proposed Kalamazoo data center sparks questions about its future in Milwood",
+        "publisher": "Second Wave Media",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://gandernewsroom.com/2026/03/02/how-many-ai-data-centers-are-planned-in-michigan-we-counted/",
+        "label": "How many AI data centers are planned in Michigan? We counted.",
+        "publisher": "Gander Newsroom",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "Harbor Farmz is offering to convert its 32,850 sq ft indoor cannabis facility in the Davis Creek Business Park (zoned M2, built 2020) into an inference data center. Second Wave reports about 1 MW drawn today, potential expansion to 15 MW, and a 600 kW backup generator. No formal application had been filed as of July 2026, and Gander describes it as a marketed 4-acre site with no developer named. The city's planning department said the conversion would be a permitted use. The pin is a Kalamazoo city centroid placeholder because neither OSM nor the Census geocoder resolved the street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "harner-sr-14-ravenna-portage-oh",
     "name": "SR-14 Data Center Proposal (Ravenna)",
     "operator": "Ray Harner (landowner-developer)",
@@ -65939,9 +66360,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -65981,9 +66409,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -66851,9 +67286,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "Distinct from the 396 MW Apex Clean Energy 'Soul City Solar' proposal also sited in Hinds County (different owner and capacity); a human reviewer should confirm they are not the same site before publishing.",
     "energy": {
       "source": "solar"
@@ -82355,11 +82797,11 @@
         "url": "https://gandernewsroom.com/2026/03/02/how-many-ai-data-centers-are-planned-in-michigan-we-counted/",
         "label": "How many AI data centers are planned in Michigan? We counted. — \"LA-based developer Metrobloks LLC has received site plan approval from the Southfield City Council for a 100-megawatt data center\"",
         "publisher": "Gander Newsroom",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-07",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-07",
     "notes": "217,030-230,000 sq ft, two-story building on ~12.19 acres of vacant land along Inkster Road north of 11 Mile Road, Southfield's northwest corner. Los Angeles-based developer Metrobloks (already tracked elsewhere in MO/IN/FL) has not completed a data center build anywhere yet per reporting. City of Southfield's own statement explicitly says the facility is NOT intended as 'an artificial intelligence repository' -- omitting aiClassification here rather than defaulting to 'likely'. City Council approved the site plan 5-2 on Dec 16, 2025; the city notes 'Approval of the proposal does not remove City oversight' -- still subject to further permitting. A named IT-engineer public commenter said the real target may be closer to 150 MW by groundbreaking; unconfirmed beyond that public comment. Closed-loop cooling planned, city says 'minimal long-term water use.' Coordinates are an approximate Inkster/11 Mile intersection estimate, not parcel-geocoded.",
     "energy": {
       "source": "grid",
@@ -84716,11 +85158,19 @@
         "publisher": "Michigan Public",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://gandernewsroom.com/2026/03/02/how-many-ai-data-centers-are-planned-in-michigan-we-counted/",
+        "label": "How many AI data centers are planned in Michigan? We counted.",
+        "publisher": "Gander Newsroom",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-07",
     "notes": "Proposed ~$1B hyperscale campus at Covenant Business Park, Lowell Township, outside Grand Rapids. Originally filed under Franklin Lowell LLC / Franklin Partners (that application was withdrawn in Dec 2025 amid opposition); Microsoft has since publicly identified itself as the developer (named itself Jan 2026 per secondary reporting, not independently re-confirmed this session) and is pursuing a revamped proposal. Lowell Township's board rejected a proposed moratorium 2-5 and instead formed a committee to draft a data-center-specific ordinance -- i.e. the township itself stayed open to the project even as public reaction has been heavily negative at open houses. Only one independent outlet directly verified this session (WoodTV and Crain's Detroit coverage exist but returned 403 on fetch) -- kept at 'reported' rather than 'confirmed' pending a second direct source. Coordinates are an approximate Lowell Township estimate, not parcel-geocoded. Status re-check, NO change: the rezoning application has been neither approved nor denied - the planning commission took no decision and continued the matter to further meetings - so the record correctly stays 'proposed'. No megawatt, acreage, jobs or water figures were stated. Separately, secondary reporting says the City of Lowell suspended water/sewer negotiations with the township over the project; I could not confirm that from a fetchable page (WOODTV returned 403), so it is flagged as an unverified lead rather than recorded.",
     "investmentUsd": 1000000000,
+    "landAcres": 237,
     "community": {
       "status": "mixed",
       "notes": "Two public open houses drew large, largely critical crowds; the township board itself voted against a moratorium and is drafting an ordinance rather than blocking the project outright."
@@ -87425,9 +87875,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -90360,9 +90817,16 @@
         "publisher": "Mississippi Public Service Commission",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "Capacity is recorded as 170 MW, the figure given by both the developer's own project page and Entergy's portfolio; Global Energy Monitor lists 200 MWac for the same plant and that higher figure is NOT used. The 300 construction jobs figure is stated by NextEra as a ceiling ('up to 300'). Coordinates are Global Energy Monitor's plant point, marked approximate.",
     "energy": {
       "source": "solar",
@@ -90735,9 +91199,16 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-07",
     "notes": "Sources disagree on lifecycle stage and are recorded rather than smoothed over: Entergy's own July 2026 portfolio lists Wildwood among delivered projects with a 2025 commercial operation date, while Global Energy Monitor still records it as under construction with a 2026 planned start, and the local paper reported the developer 'targeting May 2026 for the initiation of commercial operations'. Status follows the most recent utility disclosure; confidence is held at 'reported' because of the disagreement. Acreage is omitted — the local paper gives approximately 1,000 acres while NextEra's own materials cite approximately 1,500. Jobs are omitted because the source gives a 200-300 range rather than a figure. Coordinates are Global Energy Monitor's plant point, marked approximate.",
     "energy": {
       "source": "solar",
@@ -93695,9 +94166,16 @@
         "publisher": "WDIV ClickOnDetroit",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://gandernewsroom.com/2026/03/02/how-many-ai-data-centers-are-planned-in-michigan-we-counted/",
+        "label": "How many AI data centers are planned in Michigan? We counted.",
+        "publisher": "Gander Newsroom",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-07",
     "notes": "Proposed shared university/industry colocation facility on OU's campus (Auburn Hills/Rochester border); site shifted from Parking Lot 35 to Parking Lot 37 to increase distance from a campus hall, a nature preserve, and a Native American heritage site. Cleveland-based Fairmount Properties funds construction, operations, and eventual decommissioning; OU pays nothing and gains an 8x expansion of its own computing capacity. Board of Trustees voted 7-0-1 to proceed into due diligence, design, and construction phases (June 2026); published timeline has due diligence running Oct 2026-June 2027, design July 2027-Fall 2028. Coordinates are an approximate campus-area estimate, not parcel-geocoded. Status re-check, NO change: the only 2026 milestone on the university's own timeline is a Board of Trustees authorization to proceed into due diligence and design (June 2026, already before the record's 2026-08-08 basis). A governing-board authorization is not a municipal permit and no construction start is claimed, so the record stays 'proposed'.",
     "energy": {
       "source": "grid",
@@ -93905,6 +94383,7 @@
     "capacityMw": {
       "planned": 100
     },
+    "poweredBy": "fuelcell energy",
     "statusHistory": [],
     "sources": [
       {
@@ -93920,6 +94399,12 @@
         "publisher": "Hartford Courant via Yahoo News",
         "retrievedAt": "2026-09-30",
         "kind": "press"
+      },
+      {
+        "url": "http://www.fuelcellenergy.com",
+        "label": "Correction source",
+        "retrievedAt": "2026-10-07",
+        "kind": "other"
       }
     ],
     "lastUpdated": "2026-09-30",
@@ -95493,9 +95978,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "The filing's own county (Covington) and its coordinate disagree: 31.4395/-89.4846 falls roughly 13 km south of the Covington County line, near Sumrall in Lamar County. Coordinate recorded as approximate and the conflict left visible rather than silently resolved — a reviewer should pin this before it goes live.",
     "energy": {
       "source": "solar"
@@ -95544,9 +96036,16 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-07",
     "notes": "The $344 million figure is Origis' stated project construction and term loan facility. Coordinates are Global Energy Monitor's Phase 1 point, marked approximate. Part of a four-project Origis portfolio for TVA in Mississippi (Golden Triangle I and II in Lowndes County, Optimist and Hope in Clay County) totalling 750 MWac plus 350 MW of storage on completion; portfolio-wide figures are not attributed to this record.",
     "energy": {
       "source": "solar",
@@ -95598,9 +96097,16 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-07",
     "notes": "Distinct phase and distinct coordinates from origis-golden-triangle-i-lowndes-ms, roughly 400 m apart on the same complex; both are recorded separately because Origis and Global Energy Monitor treat them as separate projects with separate capacities and commercial operation dates. Construction and permanent job figures on Origis' page are stated identically for both phases and are therefore not recorded as per-site counts. Coordinates are Global Energy Monitor's Phase 2 point, marked approximate.",
     "energy": {
       "source": "solar",
@@ -95651,9 +96157,16 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-07",
     "notes": "The two sources disagree on lifecycle stage and the disagreement is recorded rather than smoothed over: Origis' own project page marks the project Operating with a January 2026 COD, while Global Energy Monitor still lists it as pre-construction with a 2026 planned start. Status follows the owner's own page; confidence is held at 'reported' because of the conflict. Coordinates are Global Energy Monitor's plant point, marked approximate. The fourth project in the same Origis/TVA Mississippi portfolio, Hope Solar + Storage (Clay County, 200 MWac plus 200 MW / 800 MWh, targeted end-2028), is NOT recorded here because no source read this session published a coordinate for it.",
     "energy": {
       "source": "solar",
@@ -97170,9 +97683,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -101101,9 +101621,30 @@
         "publisher": "Planet Detroit",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.michiganpublic.org/transportation-infrastructure/2026-10-02/google-data-center-michigan-van-buren-township",
+        "label": "Michigan regulators OK DTE contracts for Google data center",
+        "publisher": "Michigan Public",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://planetdetroit.org/2026/10/dte-google-data-center-contract-approval/",
+        "label": "Michigan regulators OK DTE contracts for Google data center",
+        "publisher": "Planet Detroit",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://gandernewsroom.com/2026/03/02/how-many-ai-data-centers-are-planned-in-michigan-we-counted/",
+        "label": "How many AI data centers are planned in Michigan? We counted.",
+        "publisher": "Gander Newsroom",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-07",
     "notes": "Google confirmed evaluating the site. Coordinates are approximate. Developer: Panattoni Development Co. Status re-check, NO change: only PRELIMINARY site plan approval has been granted (February 2026, already before the record's 2026-08-08 basis). The final site plan vote is still pending, so the record correctly remains 'proposed'.",
     "energy": {
       "source": "mixed",
@@ -101121,6 +101662,13 @@
         "jurisdiction": "Charter Township of Van Buren, Michigan",
         "year": "2026",
         "sourceIndex": 2
+      },
+      {
+        "program": "Wayne County tax exemption (County Commission overrode the executive's veto)",
+        "amountUsd": 125000000,
+        "jurisdiction": "Wayne County, MI",
+        "year": "2026",
+        "sourceIndex": 8
       }
     ],
     "landAcres": 282,
@@ -115509,11 +116057,11 @@
         "url": "https://gandernewsroom.com/2026/03/02/how-many-ai-data-centers-are-planned-in-michigan-we-counted/",
         "label": "How many AI data centers are planned in Michigan? We counted.",
         "publisher": "Gander Newsroom",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-07",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-07",
     "notes": "26 MW proposal on Enterprise Drive south of I-94, near homes and Melvindale High School. Status 'cancelled' records the DENIED site plan; the source does not report an appeal or resubmission. CONFIRMED ABSENCES: no acreage, investment figure, or job count is stated in either source. Coordinates are Nominatim's street-level match for Enterprise Drive, the only location the source gives (no house number); the parcel is not confirmed.",
     "water": {
       "coolingType": "unknown",
@@ -116251,9 +116799,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "Single federal source; confidence held at 'reported' pending a second citation.",
     "energy": {
       "source": "solar"
@@ -116295,9 +116850,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "In Lauderdale County, the same county as the tracked Compass Datacenters Meridian campus, but a separate site and operator — not a duplicate of that record.",
     "energy": {
       "source": "solar"
@@ -116338,9 +116900,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -118813,7 +119382,7 @@
         "url": "https://cdispatch.com/news/planning-commission-rejects-bitcoin-mining-facility/",
         "label": "Planning Commission rejects bitcoin mining facility",
         "publisher": "The Commercial Dispatch",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-10-07",
         "kind": "press"
       },
       {
@@ -118822,10 +119391,22 @@
         "publisher": "The Reflector (Mississippi State University)",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://cdispatch.com/news/crypto-mining-center-pitched-for-industrial-park-road/",
+        "label": "Crypto mining center pitched for Industrial Park Road",
+        "publisher": "The Commercial Dispatch",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "notes": "Would draw up to 30 MW continuously and become Starkville Utilities' second-largest electrical customer behind Mississippi State University. The $10 million figure is how Mayor Spruill characterised the investment; no operator has been named in either source read, so operator is recorded as undisclosed. Coordinates are an OpenStreetMap geocode of Industrial Park Road, Starkville — the road named as the site, not a parcel point. No confirmed approval had been issued as of the latest reporting read.",
+    "energy": {
+      "source": "grid",
+      "utility": "Starkville Utilities",
+      "notes": "Would draw up to 30 MW from Starkville Utilities (TVA power), becoming its second-largest electric customer after MSU. Developers would fund about $800,000 of transmission improvements."
+    },
     "water": {
       "reportedMgd": 0.02,
       "notes": "Proposal calls for up to 20,000 gallons of water per day, used primarily for cooling the hardware (0.02 MGD)."
@@ -120054,9 +120635,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -120097,9 +120685,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -120181,9 +120776,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -129859,9 +130461,16 @@
         "publisher": "Los Alamos National Laboratory",
         "retrievedAt": "2026-09-09",
         "kind": "press"
+      },
+      {
+        "url": "https://gandernewsroom.com/2026/03/02/how-many-ai-data-centers-are-planned-in-michigan-we-counted/",
+        "label": "How many AI data centers are planned in Michigan? We counted.",
+        "publisher": "Gander Newsroom",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-07",
     "notes": "144-acre site on Textile Road near Bridge Road in Ypsilanti Charter Township, far eastern Washtenaw County, near the Huron River. LANL's own announcement (source 1) states the site will house TWO computing centers — one for Los Alamos national-security AI research and development and an adjacent academic computing center for U-M faculty, students and partner universities. They are recorded here as a single campus record because both sources describe one adjacent pair on one site; if township approvals end up treating them as separately-permitted buildings, this should be split. CONFIRMED ABSENCES: neither source states a megawatt capacity ('capacity figures: none disclosed' per LANL), a water or cooling design, or job counts — those fields are omitted rather than estimated. LANL states the funding mix was not finalised at announcement; the $1.2B total and the $100M state grant are Bridge Michigan's figures. aiClassification 'confirmed' — both sources describe the facility's explicit purpose as AI research. Coordinates are the US Census geocoder's match for the Textile Rd / Bridge Rd intersection named in the sources; the 144-acre parcel boundary is not confirmed.",
     "subsidies": [
       {
@@ -134602,9 +135211,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.eia.gov/electricity/data/eia860m/xls/august_generator2026.xlsx",
+        "label": "EIA-860M Preliminary Monthly Electric Generator Inventory (August 2026)",
+        "publisher": "U.S. Energy Information Administration",
+        "retrievedAt": "2026-10-07",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-07",
     "energy": {
       "source": "solar"
     },
@@ -135729,6 +136345,51 @@
         "asOf": "2026-08-26"
       }
     ],
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "xai-tulane-road-southaven-ms",
+    "name": "xAI Tulane Road Data Center (Southaven)",
+    "operator": "xAI (SpaceXAI)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.9897,
+      "lon": -90.043,
+      "city": "Southaven",
+      "county": "DeSoto",
+      "street": "8325 Tulane Road",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09-02",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-02",
+        "note": "Southaven Board of Aldermen approved zoning changes (one dissenting vote) after a unanimous Planning Commission vote, for a 660,000 sq ft data center on the city's former training-facility site on Tulane Road, obtained through a land swap.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.actionnews5.com/2026/09/02/southaven-approves-new-spacexai-data-center-fifth-location-area/",
+        "label": "Southaven approves new SpaceXAI data center, fifth location in area",
+        "publisher": "Action News 5",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.desototimes.com/news/southaven-approves-new-xai-data-center/article_093ce052-262d-4d77-a0a4-8b9ffe2e09bc.html",
+        "label": "Southaven approves new XAI data center",
+        "publisher": "DeSoto Times-Tribune",
+        "retrievedAt": "2026-10-07",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-07",
+    "notes": "xAI's fifth Memphis-area data center: a 660,000 sq ft building on the city's old training-facility property at 8325 Tulane Road, next to the xAI power plant on Stanton Road. xAI got the land in a land swap with Southaven and gave $40 million toward a new city training facility. Ward 2 Alderman Charles Hoots voted no, citing unfinished turbine-noise commitments. The coordinates are the OSM centroid of Tulane Road, not the parcel.",
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },

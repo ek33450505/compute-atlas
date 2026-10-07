@@ -1,5 +1,5 @@
 {
-  "ceiling": 0,
+  "ceiling": 9,
   "asOf": "2026-10-07",
-  "note": "nhd-backfill run 37612159491"
+  "note": "neon-sync skip-nhd run 37675668772"
 }
