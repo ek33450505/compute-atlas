@@ -4910,6 +4910,12 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "benton-township-yore-avenue-ai-data-center-mi": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "bermuda-hundred-data-center-chesterfield-va": {
     "nearestWater": {
       "name": "Redwater Creek",
@@ -7421,6 +7427,20 @@
       "rock": "Sandstone"
     }
   },
+  "clarksdale-hyperscale-data-center-ms": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "cleanarc-ruther-glen-va": {
     "nearestWater": {
       "name": "Long Creek",
@@ -8487,6 +8507,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "cogent-detroit-1320-3rd-st-mi": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "cogent-elkridge-howard-md": {
     "nearestWater": {
       "name": "Deep Run",
@@ -8571,6 +8601,12 @@
     "aquifer": {
       "name": "Hawaiian Volcanic-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "cogent-troy-big-beaver-mi": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "cogent-washington-dc-2-1050-connecticut-ave-dc": {
@@ -10281,6 +10317,12 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "cpv-jugfork-solar-lee-union-ms": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "crane-clean-energy-center-tmi-pa": {
@@ -19960,6 +20002,12 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "genh-lake-billings-dam-manton-mi": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "genh-morley-dam-mecosta-mi": {
     "nearestWater": {
       "name": "Morley Pond",
@@ -20270,6 +20318,12 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "gm-enterprise-data-center-warren-mi": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "gmi-computing-mountain-pine-ar": {
@@ -22036,6 +22090,12 @@
       "voltageKv": 345,
       "distanceMi": 0.2
     },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "harbor-farmz-full-circle-drive-kalamazoo-mi": {
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -44594,6 +44654,20 @@
       "voltageKv": 500,
       "distanceMi": 0.8
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "xai-tulane-road-southaven-ms": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
