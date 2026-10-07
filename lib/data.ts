@@ -478,6 +478,11 @@ function roundMw(sum: number): number {
  * inflated by withdrawn announcements. They are intentionally independent
  * (running vs announced) rather than a combined max/total.
  *
+ * Each MW sum covers only the rows that disclose that capacity, not every row
+ * in its population. The `*ReportingCount` fields (with `activeCount` and
+ * `underConstructionCount`) are the denominators: read a sum together with its
+ * count, never as a total for the whole dataset.
+ *
  * All three summed fields are rounded to 1 decimal place — see `roundMw`.
  */
 export async function getStats(): Promise<{
@@ -492,9 +497,22 @@ export async function getStats(): Promise<{
    * representation that stays correct as jurisdictions are added.
    */
   stateCodes: string[];
+  /** Sum over `operationalMwReportingCount` of the `activeCount` non-cancelled rows. */
   operationalMw: number;
+  /** Sum over `plannedMwReportingCount` of the `activeCount` non-cancelled rows. */
   plannedMw: number;
+  /** Sum over `underConstructionMwReportingCount` of the `underConstructionCount` rows. */
   underConstructionMw: number;
+  /** Non-cancelled facilities: the population `operationalMw` and `plannedMw` are drawn from. */
+  activeCount: number;
+  /** Non-cancelled rows that disclose `capacityMw.operational` (a disclosed 0 counts). */
+  operationalMwReportingCount: number;
+  /** Non-cancelled rows that disclose `capacityMw.planned` (a disclosed 0 counts). */
+  plannedMwReportingCount: number;
+  /** Facilities with status `under_construction`: the population `underConstructionMw` is drawn from. */
+  underConstructionCount: number;
+  /** `under_construction` rows that disclose `capacityMw.planned` (a disclosed 0 counts). */
+  underConstructionMwReportingCount: number;
 }> {
   const facilities = await loadFacilities();
   const count = facilities.length;
@@ -509,12 +527,26 @@ export async function getStats(): Promise<{
   const plannedMw = roundMw(
     active.reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
   );
+  const underConstruction = facilities.filter((f) => f.status === "under_construction");
   const underConstructionMw = roundMw(
-    facilities
-      .filter((f) => f.status === "under_construction")
-      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
+    underConstruction.reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
   );
-  return { count, states, includesDc, stateCodes, operationalMw, plannedMw, underConstructionMw };
+  return {
+    count,
+    states,
+    includesDc,
+    stateCodes,
+    operationalMw,
+    plannedMw,
+    underConstructionMw,
+    activeCount: active.length,
+    operationalMwReportingCount: active.filter((f) => f.capacityMw?.operational != null).length,
+    plannedMwReportingCount: active.filter((f) => f.capacityMw?.planned != null).length,
+    underConstructionCount: underConstruction.length,
+    underConstructionMwReportingCount: underConstruction.filter(
+      (f) => f.capacityMw?.planned != null
+    ).length,
+  };
 }
 
 // ============================================================

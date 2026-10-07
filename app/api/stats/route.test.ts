@@ -57,6 +57,32 @@ describe("GET /api/stats", () => {
     }
   });
 
+  it("reports how many records back each MW sum, computed independently from the dataset", async () => {
+    type Row = { status?: string; capacityMw?: { operational?: number | null; planned?: number | null } | null };
+    const rows = facilitiesRaw as unknown as Row[];
+    const active = rows.filter((f) => f.status !== "cancelled");
+    const uc = rows.filter((f) => f.status === "under_construction");
+    const body = await (await GET(req())).json();
+
+    expect(body.activeCount).toBe(active.length);
+    expect(body.operationalMwReportingCount).toBe(
+      active.filter((f) => f.capacityMw?.operational != null).length
+    );
+    expect(body.plannedMwReportingCount).toBe(
+      active.filter((f) => f.capacityMw?.planned != null).length
+    );
+    expect(body.underConstructionCount).toBe(uc.length);
+    expect(body.underConstructionMwReportingCount).toBe(
+      uc.filter((f) => f.capacityMw?.planned != null).length
+    );
+
+    expect(body.operationalMwReportingCount).toBeLessThanOrEqual(body.activeCount);
+    expect(body.plannedMwReportingCount).toBeLessThanOrEqual(body.activeCount);
+    expect(body.underConstructionMwReportingCount).toBeLessThanOrEqual(body.underConstructionCount);
+    expect(body.underConstructionCount).toBeLessThanOrEqual(body.count);
+    expect(body.activeCount).toBeLessThanOrEqual(body.count);
+  });
+
   it("carries the shared CORS header", async () => {
     const res = await GET(req());
     expect(res.headers.get("access-control-allow-origin")).toBe("*");
