@@ -895,6 +895,15 @@
     }
   },
   "ainet-beltsville-wdc1-md": {
+    "nearestWater": {
+      "name": "Little Paint Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -41883,6 +41892,15 @@
     }
   },
   "tpc-konterra-1-laurel-md": {
+    "nearestWater": {
+      "name": "Bear Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
