@@ -59,7 +59,7 @@ const READ_ENDPOINTS: Endpoint[] = [
     method: "GET",
     path: "/api/stats",
     description:
-      "Aggregate dataset figures: { count, states, operationalMw, plannedMw, underConstructionMw }.",
+      "Aggregate dataset figures: { count, states, operationalMw, plannedMw, underConstructionMw, activeCount, operationalMwReportingCount, plannedMwReportingCount, underConstructionCount, underConstructionMwReportingCount }. Each MW figure sums only the records that disclose that capacity, so read it with its *ReportingCount (out of activeCount, or underConstructionCount for underConstructionMw), not as a national total. Cancelled projects are excluded from activeCount.",
   },
   {
     method: "GET",
