@@ -570,6 +570,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "act-colstrip-data-center-colstrip-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "actapio-east-wenatchee-wa": {
     "nearestWater": {
       "name": "Columbia River",
@@ -8465,6 +8475,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "cogent-billings-data-center-billings-mt": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "cogent-boca-raton-fl": {
     "nearestWater": {
       "name": "Lake Rogers",
@@ -11416,6 +11436,12 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "dartmouth-college-data-center-lebanon-nh": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "dartpoints-btr1-baton-rouge-la": {
@@ -18275,6 +18301,18 @@
       "label": "Low (<10%)"
     }
   },
+  "firstlight-keene-nh": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
+  "firstlight-lebanon-nh": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "firstlight-manchester-nh": {
     "nearestWater": {
       "name": "Merrimack River",
@@ -21475,6 +21513,12 @@
       "label": "Medium - High (2-4 cm/y)"
     }
   },
+  "granite-shore-merrimack-station-bow-nh": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "grant-town-power-plant-crypto-mine-marion-county-wv": {
     "nearestWater": {
       "name": "Eastern Gas and Fuel Lake",
@@ -24369,6 +24413,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "krambu-bonner-mill-data-center-bonner-mt": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "ku-ew-brown-12-mercer-ky": {
     "nearestWater": {
       "name": "Dix River",
@@ -24812,6 +24866,12 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "liberty-mutual-portsmouth-nh": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "lightedge-ames-ia": {
     "nearestWater": {
       "name": "Ioway Creek",
@@ -25106,6 +25166,12 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "locke-road-micro-data-center-concord-nh": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "logistix-hamilton-innovation-center-butler-county-oh": {
@@ -28639,6 +28705,20 @@
       "rock": "Sandstone"
     }
   },
+  "montana-opticom-four-corners-bozeman-mt": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Rocky Mountains Intermontane Basins Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "montana-property-group-high-falls-road-spalding-ga": {
     "nearestWater": {
       "name": "Grape Creek",
@@ -29987,6 +30067,16 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "north-data-center-great-falls-mt": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
     }
   },
   "north-port-holdings-300-deep-park-north-port-fl": {
@@ -31736,6 +31826,16 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "parsec-data-management-billings-mt": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
     }
   },
   "pathone-hull-ia": {
@@ -37966,6 +38066,12 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "sns-littleton-nh": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "socrates-north-new-albany-oh": {
     "nearestWater": {
       "name": "South Fork Licking River",
@@ -40470,6 +40576,16 @@
     "aquifer": {
       "name": "Valley And Ridge Carbonate-rock Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "tac-project-cardinal-great-falls-mt": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
     }
   },
   "takanock-goshen-elkhart-county-in": {
@@ -43572,6 +43688,54 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "vision-net-billings-central-ave-billings-mt": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "vision-net-billings-fiber-hotel-billings-mt": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
+  "vision-net-helena-hustad-center-helena-mt": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Rocky Mountains Intermontane Basins Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "vision-net-missoula-broadway-center-missoula-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Rocky Mountains Intermontane Basins Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "vme-lockport-star-innovation-district-il": {

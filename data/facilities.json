@@ -1780,6 +1780,50 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "act-colstrip-data-center-colstrip-mt",
+    "name": "ACT Colstrip Data Center",
+    "operator": "Advanced Communications Technology (Range)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.89347,
+      "lon": -106.618344,
+      "city": "Colstrip",
+      "county": "Rosebud",
+      "street": "227 Power Rd",
+      "postalCode": "59323",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Listed as an active facility in PeeringDB and Inflect.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/2539",
+        "label": "PeeringDB facility 2539: ACT Colstrip, 227 Power Rd",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/227-power-road-colstrip/advanced-communications-technology/datacenter/advanced-communications-technology-act-colstrip",
+        "label": "Range Colstrip, 227 Power Road, Colstrip MT",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "A small colocation facility. PeeringDB names the operator Advanced Communications Technology and Inflect names it Range.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "actapio-east-wenatchee-wa",
     "name": "Actapio East Wenatchee Data Center",
     "operator": "Actapio, Inc.",
@@ -9884,12 +9928,21 @@
         "publisher": "Montana Standard",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://northwesternenergy.com/about-us/news-articles-events/2024/12/19/northwestern-energy-to-supply-power-for-butte-montana-data-center-atlas-power-group",
+        "label": "NorthWestern Energy to Supply Power for Butte, Montana Data Center Atlas Power Group",
+        "publisher": "NorthWestern Energy",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-10-08",
     "notes": "Former Mike Mansfield Advanced Technology Center (MSE Technologies) campus at Basin Creek TEDD south of Butte. CryptoWatt LLC (subsidiary of The Burrell Group) launched bitcoin mining here in 2018; the site was later acquired/rebranded and now operates as Atlas Power (already the named operator by a Dec 2022 equipment-supplier lawsuit against BlockFills). Atlas mines crypto (ASIC/bitcoin, later pivoted partly to GPU/Ethereum) and offers ML/data-processing hosting. Reported capacity figures conflict across sources (permitted ~75MW; one listing shows 150MW; actual draw reported as low as 25MW during the ETH pivot) so capacity is left unset here pending a primary-source figure I could personally verify. NorthWestern Energy has agreed to supply Atlas 75MW of grid power beginning 2026 with a further ~75MW expected within 3-5 years (Datacenter Dynamics). A related 1,600-acre Basin Creek Solar Project expansion (intended to help power the site) was denied by the Butte Zoning Board in the face of strong public opposition.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "NorthWestern Energy",
+      "notes": "NorthWestern Energy is to supply 75 MW beginning in 2026, with growth of up to another 75 MW in the following three to five years. Atlas is already a NorthWestern transmission service customer."
     },
     "community": {
       "status": "mixed"
@@ -26392,6 +26445,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cogent-billings-data-center-billings-mt",
+    "name": "Cogent Billings Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.740895,
+      "lon": -108.591913,
+      "city": "Billings",
+      "county": "Yellowstone",
+      "street": "3025 Hesper Rd",
+      "postalCode": "59102",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Cogent lists a Billings Data Center at 3025 Hesper Road: 1,201 sq ft, 42U cabinets, UPS and backup generator.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/en/cogent-great-plains",
+        "label": "Cogent Great Plains: Billings Data Center, 3025 Hesper Road",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/16447",
+        "label": "PeeringDB facility 16447: Cogent Billings, 3025 Hesper Road",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "A small carrier-neutral colocation facility of 1,201 sq ft, per the operator.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cogent-boca-raton-fl",
     "name": "Cogent Boca Raton Data Center",
     "operator": "Cogent Communications",
@@ -28001,6 +28098,7 @@
       "city": "Bedford",
       "county": "Hillsborough",
       "street": "8 Commerce Drive",
+      "postalCode": "03110",
       "state": "NH",
       "precision": "approximate"
     },
@@ -28019,9 +28117,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/3457",
+        "label": "PeeringDB facility record: ColoSpace - Bedford, NH, 8 Commerce Dr, Bedford, NH 03110 (org: FirstLight Fiber, Inc.)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-08",
     "notes": "OSM matches a building at this address named 'Commerce Park West' (way/265358816), used in preference to the nearby US Census interpolation (~400m offset on this business-park road). FirstLight Fiber's own directory (via Baxtel) also lists a 'FirstLight Bedford' facility at this SAME address, 8 Commerce Drive. Rather than ship a second record carrying an identical pin (this wave's one-pin-per-parcel rule), that is recorded here as a note instead: it is most likely the same building or business park -- possibly a shared carrier-neutral building housing both ColoSpace's product and a FirstLight point of presence -- and is not independently confirmed as a physically distinct site. colospace.com's own site could not be fetched in this run (expired TLS certificate), so this record rests on two independently fetched third-party directory listings (DataCenterCatalog, Baxtel) plus the address-to-building geocode match, hence 'reported' rather than 'confirmed' confidence.",
     "facilityType": "data_center"
   },
@@ -29044,6 +29149,7 @@
       "city": "Manchester",
       "county": "Hillsborough",
       "street": "770 Elm St",
+      "postalCode": "03101",
       "state": "NH",
       "precision": "approximate"
     },
@@ -29062,9 +29168,16 @@
         "publisher": "Data Center Journal",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/4104",
+        "label": "PeeringDB facility record: Consolidated - 770 Elm St., Manchester, NH 03101 (org: Consolidated Communications, Inc.)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-08",
     "notes": "Address confirmed by two independently fetched directory listings (Baxtel, Data Center Journal) and by an OpenStreetMap building match explicitly named 'Consolidated Communications' at this address (way/1019398284, used in preference to the very close US Census interpolation). Trade coverage describes it as a Tier-III-equivalent carrier interconnection facility originally built out by FairPoint Communications before FairPoint's New England operations came under Consolidated Communications; that corporate history is not independently re-confirmed here. Data Center Journal lists colocation floor space as only 506 sq ft -- notably smaller than the 'interconnection hub' framing used in other coverage, so both figures are flagged rather than one being picked. No MW capacity figure could be confirmed from a source actually fetched in this run, so capacityMw is omitted.",
     "facilityType": "data_center"
   },
@@ -35294,6 +35407,56 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "dartmouth-college-data-center-lebanon-nh",
+    "name": "Dartmouth College Data Center (Etna Road)",
+    "operator": "Dartmouth College",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.6600753,
+      "lon": -72.2430802,
+      "city": "Lebanon",
+      "county": "Grafton",
+      "street": "56 Etna Rd",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Directory listings show an active Dartmouth College data center on Etna Rd, Lebanon.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kadoa.com/datacenter/state/new-hampshire",
+        "label": "New Hampshire data centers: Dartmouth College Data Center, 56 Etna Rd, Lebanon, operational",
+        "publisher": "Kadoa US Datacenter Tracker",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://dchub.cloud/facilities/dartmouth-college-data-center-6a8fc01a",
+        "label": "DARTMOUTH COLLEGE DATA CENTER, Etna Rd, Lebanon NH: active",
+        "publisher": "DC Hub",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://services.dartmouth.edu/TDClient/1806/Portal/Requests/ServiceDet?ID=31708",
+        "label": "Dartmouth ITC data center service description",
+        "publisher": "Dartmouth College",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "The college's enterprise data center for ITC (Information, Technology & Consulting). Dartmouth's own service page describes the data center service but gives no address, so the Etna Rd location rests on two directories. The coordinates match the OSM commercial building at 56 Etna Rd. Dartmouth's separate Hanover machine rooms, listed elsewhere, are not included.",
+    "facilityType": "data_center"
   },
   {
     "id": "dartpoints-btr1-baton-rouge-la",
@@ -53761,6 +53924,106 @@
     "facilityType": "data_center"
   },
   {
+    "id": "firstlight-keene-nh",
+    "name": "FirstLight Keene Data Center",
+    "operator": "FirstLight Fiber",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.9258906,
+      "lon": -72.2672342,
+      "city": "Keene",
+      "county": "Cheshire",
+      "street": "310 Marlboro Street",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Baxtel lists it as fully operational at 310 Marlboro Street, and FirstLight's own site has a Keene, NH Data Center product page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/firstlight-keene",
+        "label": "FirstLight Keene, 310 Marlboro Street, Keene NH",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.firstlight.net/keene-nh-data-center/",
+        "label": "Keene, NH Data Center (operator product page)",
+        "publisher": "FirstLight Fiber",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://brightlio.com/data-centers-and-colocationin-in-new-hampshire/",
+        "label": "Data Centers in New Hampshire: lists FirstLight Keene at 310 Marlboro Street",
+        "publisher": "Brightlio",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "A small FirstLight colocation site. The operator page confirms the facility exists by name, but its spec text did not render when fetched, so no capacity is recorded. The coordinates match the OSM commercial building at 310 Marlboro St, which agrees with the Census geocode to within about 100 m. Distinct from the tracked FirstLight Manchester and Portsmouth records and from ColoSpace/FirstLight Bedford.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "firstlight-lebanon-nh",
+    "name": "FirstLight Lebanon Data Center (Dartmouth Regional Technology Center)",
+    "operator": "FirstLight Fiber",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.6788826,
+      "lon": -72.2561477,
+      "city": "Lebanon",
+      "county": "Grafton",
+      "street": "16 Cavendish Court",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Baxtel lists it as fully operational at 16 Cavendish Court, also known as the Dartmouth Regional Technology Center, and FirstLight has a Lebanon, NH data center product page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/firstlight-lebanon",
+        "label": "FirstLight Lebanon, 16 Cavendish Court, Lebanon NH (Dartmouth Regional Technology Center)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://firstlight.net/lebanon-nh-data-center",
+        "label": "Lebanon, NH Data Center (operator product page)",
+        "publisher": "FirstLight Fiber",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://brightlio.com/data-centers-and-colocationin-in-new-hampshire/",
+        "label": "Data Centers in New Hampshire: lists FirstLight Lebanon at 16 Cavendish Court",
+        "publisher": "Brightlio",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "Inside the Dartmouth Regional Technology Center in the Centerra park. The US Census geocoder wrongly resolved this address to '16 Cavendish St', so the OSM building match for 16 Cavendish Court is used instead. No capacity is published. Not the same as the Dartmouth College data center on Etna Rd.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "firstlight-manchester-nh",
     "name": "FirstLight Manchester Data Center",
     "operator": "FirstLight Fiber",
@@ -64330,6 +64593,90 @@
     "facilityType": "data_center"
   },
   {
+    "id": "granite-shore-merrimack-station-bow-nh",
+    "name": "Merrimack Station Data Center (proposed, Bow)",
+    "operator": "Granite Shore Power (site owner; end developer not publicly identified)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.1411,
+      "lon": -71.4692,
+      "city": "Bow",
+      "county": "Merrimack",
+      "street": "97 River Rd",
+      "postalCode": "03304",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 350
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-23",
+        "note": "PSNH filed a Viability Assessment Agreement (VSA-PSNH-001) with Granite Shore Power, LLC at FERC for a potential 350 MW load interconnection. A Bow town official later confirmed high-level talks about a data center at the site, but no application has been filed with the town.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.concordmonitor.com/wp-content/uploads/2026/09/Eversource-connection-for-data-center.pdf",
+        "label": "PSNH/Eversource FERC filing (Accession 20260423-5055, filed 2026-04-23): Viability Assessment Agreement VSA-PSNH-001 with Granite Shore Power, LLC for a potential 350 MW load interconnection",
+        "publisher": "Federal Energy Regulatory Commission filing (hosted by Concord Monitor)",
+        "retrievedAt": "2026-10-08",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.nhpr.org/nh-news/2026-09-01/bow-in-talks-to-become-site-of-new-data-center",
+        "label": "Could Bow be home to a new data center?",
+        "publisher": "New Hampshire Public Radio",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://concordmonitor.com/2026/09/01/bow-ai-data-center-talks/",
+        "label": "Bow in talks over AI data center at Merrimack Station",
+        "publisher": "Concord Monitor",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.concordmonitor.com/2026/09/23/bow-residents-oppose-data-center/",
+        "label": "'Please, do not allow this to happen': Residents call for proactive steps to prevent data center in Bow",
+        "publisher": "Concord Monitor",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.vermontpublic.org/2026-09-23/were-not-willing-to-trade-lower-taxes-for-this-bow-residents-speak-out-against-proposed-data-centers",
+        "label": "'We're not willing to trade lower taxes for this': Bow residents speak out against proposed data centers",
+        "publisher": "Vermont Public / NHPR",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/merrimack/2364",
+        "label": "Merrimack power plant (EIA plant 2364), 97 River Rd, Bow NH: coordinates 43.1411, -71.4692",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "This is the former Merrimack Station coal plant site, which stopped coal generation in 2025; its two small kerosene combustion turbines are still listed as active. Granite Shore Power owns 343 acres there, in an industrial zone. That is the owner's site holding, not a confirmed data-center footprint, so landAcres is left blank. The FERC agreement says only 'a 350 MW facility' and never says data center. The data-center use comes from a Bow town official confirming high-level talks, as reported by NHPR and the Concord Monitor. The end developer has not been named and no application has been filed with the town, so confidence is 'reported'. Coordinates are the EIA plant point, so precision is approximate.",
+    "energy": {
+      "utility": "Eversource (Public Service Company of New Hampshire)",
+      "notes": "The 350 MW figure is the load size in a Viability Assessment Agreement between PSNH (Eversource) and Granite Shore Power, LLC. Under it, PSNH studies a 'potential load interconnection of a 350 MW facility' to its transmission system, at the customer's sole cost. This is a study agreement, not an interconnection award. NH's Consumer Advocate separately said Eversource staff mentioned a developer considering 'up to 200 MW' in Bow."
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "At a Bow Select Board meeting on 2026-09-23, an overwhelming majority of residents who spoke opposed the project, citing noise, water and air pollution. A rally against it was held on 2026-09-22. Governor Kelly Ayotte has said she opposes it and plans to propose a statewide data-center moratorium.",
+      "sourceIndex": 4
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "grant-town-power-plant-crypto-mine-marion-county-wv",
     "name": "Grant Town Power Plant Cryptocurrency Mining Containers",
     "operator": "Undisclosed operator (Grant Town Power Plant site; plant operated by American Bituminous Power Partners for owner Horizon Ventures)",
@@ -73174,6 +73521,73 @@
     "facilityType": "data_center"
   },
   {
+    "id": "krambu-bonner-mill-data-center-bonner-mt",
+    "name": "Krambu Bonner Data Center (former UFP Edge building, Bonner Mill Industrial Park)",
+    "operator": "Krambu",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 46.8709014,
+      "lon": -113.872499,
+      "city": "Bonner",
+      "county": "Missoula",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 29
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-23",
+        "note": "Krambu submitted a preliminary application to put a data center at the former Bonner Mill. The county land-use board review was set for May 6, 2026.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-07-06",
+        "note": "The property owner withdrew his signature from Krambu's special-exception application. Missoula County planning says the application cannot proceed without it.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://montanafreepress.org/2026/07/06/property-owner-of-proposed-bonner-data-center-backs-out/",
+        "label": "Property owner of proposed Bonner data center backs out",
+        "publisher": "Montana Free Press",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kpax.com/news/proposed-bonner-ai-data-center-now-dead-in-the-water-after-property-owner-removes-signature-on-application",
+        "label": "Proposed Bonner AI data center now dead in the water after property owner removes signature on application",
+        "publisher": "KPAX",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://missoulacurrent.com/krambu-data-center/",
+        "label": "Krambu data center at Bonner Mill",
+        "publisher": "Missoula Current",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "This is a separate 2026 project from the earlier HyperBlock bitcoin mine at the Bonner mill site: different operator, different building (the former UFP Edge building) and different era. The pin is on Bonner Mill Road inside the industrial park, from an OSM geocode. Krambu sought about 7 MW initially and up to 29 MW at full build-out, and said it could eventually reach 100 MW.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Montana Free Press reports a closed-loop cooling system. Water requirement unspecified."
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Residents raised concerns about water use, noise and possible pollution of the Blackfoot River. The industrial park's general manager then withdrew his signature from the special-exception application.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "ku-ew-brown-12-mercer-ky",
     "name": "E.W. Brown Unit 12",
     "operator": "Kentucky Utilities Company",
@@ -74754,6 +75168,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "liberty-mutual-portsmouth-nh",
+    "name": "Liberty Mutual Portsmouth Data Center",
+    "operator": "Liberty Mutual",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.0617779,
+      "lon": -70.7931847,
+      "city": "Portsmouth",
+      "county": "Rockingham",
+      "street": "225 Borthwick Ave",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Directory listings show an active Liberty Mutual data center on Borthwick Ave, Portsmouth.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dchub.cloud/facilities/liberty-mutual-data-center-5ac875d5",
+        "label": "LIBERTY MUTUAL DATA CENTER, Borthwick Ave, Portsmouth NH: active",
+        "publisher": "DC Hub",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.kadoa.com/datacenter/state/new-hampshire",
+        "label": "New Hampshire data centers: 225 Borthwick Ave, Portsmouth, Liberty Mutual, operational",
+        "publisher": "Kadoa US Datacenter Tracker",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "An enterprise (single-tenant) data center on Liberty Mutual's Portsmouth campus near the Pease International Tradeport. It rests on directory listings only, with no operator confirmation, hence 'reported'. One aggregator (dcmap.us) shows a 7.5 MW figure but labels it 'estimated', so it is not used. The coordinates are the OSM address point, which agrees with the Census geocode to within about 150 m.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lightedge-ames-ia",
     "name": "LightEdge Ames Edge Colocation Data Center",
     "operator": "LightEdge Solutions",
@@ -75560,6 +76017,66 @@
     "mining": {
       "hardwareType": "asic"
     }
+  },
+  {
+    "id": "locke-road-micro-data-center-concord-nh",
+    "name": "Locke Road Micro Data Center",
+    "operator": "Granite Municipal Manufacturing & Sales, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.2441282,
+      "lon": -71.5460077,
+      "city": "Concord",
+      "county": "Merrimack",
+      "street": "52 Locke Road",
+      "postalCode": "03301",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-14",
+        "note": "Northpoint Engineering filed a site-plan application for an 8,160 sq ft building: about 7,220 sq ft of micro data center, plus an office, a garage and a caretaker unit. The Planning Board's decision deadline is 2026-11-20.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.concordmonitor.com/2026/09/14/concord-plans-micro-data-center/",
+        "label": "Concord plans: micro data center proposed at 52 Locke Road",
+        "publisher": "Concord Monitor",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.concordmonitor.com/2026/09/17/citizens-oppose-new-concord-datacenter/",
+        "label": "'Small dogs still bite': Proposed micro data center elicits resistance as development advances through application process",
+        "publisher": "Concord Monitor",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/locke-road-micro-data-center-nh--36825728-0139-4548-905f-5f46138a1ea9",
+        "label": "Locke Road Micro Data Center (tracker entry; coordinates 43.2441282, -71.5460077)",
+        "publisher": "More Than Just Parks",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "Northpoint Engineering, LLC is the applicant. Granite Municipal Manufacturing & Sales, LLC owns the land and is developing it; it bought the land in 2024. The parcel is nearly 21 acres, of which about 9.3 are buildable. About 54,780 sq ft of wooded buffer was cleared beforehand. No power capacity or investment figure has been published. The coordinates match the OSM address point for 52 Locke Road; the Census geocoder puts it about 600 m away. Precision is approximate.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The applicant describes single-phase immersion cooling as a 'closed-loop system' that sends heat to heat exchangers for reuse or dissipation. It says no water is needed for normal cooling, but the application still includes a six-inch water service, and city staff asked when water would be used."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Residents opposed the application at the Planning Board, which advanced it on 2026-09-17 and set a public hearing for 2026-10-21.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "logistix-hamilton-innovation-center-butler-county-oh",
@@ -87768,6 +88285,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "montana-opticom-four-corners-bozeman-mt",
+    "name": "Montana Opticom Data Center (Four Corners)",
+    "operator": "Montana Opticom LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.673641,
+      "lon": -111.19004,
+      "city": "Bozeman",
+      "county": "Gallatin",
+      "street": "144 Quail Run Rd",
+      "postalCode": "59718",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Listed as an active facility in PeeringDB and Inflect.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/1895",
+        "label": "PeeringDB facility 1895: Montana Opticom, 144 Quail Run Road, Bozeman",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/144-quail-run-road-bozeman/montana-opticom/datacenter/montana-opticom",
+        "label": "Montana Opticom Bozeman, 144 Quail Run Road, Four Corners MT",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "A small colocation facility in Four Corners, west of Bozeman. Inflect lists 300 kVA of power capacity and a 30-ton HVAC system.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "montana-property-group-high-falls-road-spalding-ga",
     "name": "High Falls Road Data Center Campus (Montana Property Group)",
     "operator": "Montana Property Group LLC (developer; end user undisclosed)",
@@ -91893,6 +92454,57 @@
     }
   },
   {
+    "id": "north-data-center-great-falls-mt",
+    "name": "North Data Center Great Falls",
+    "operator": "North Data Center, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.505324297557,
+      "lon": -111.300459399499,
+      "city": "Great Falls",
+      "county": "Cascade",
+      "street": "417 Central Ave, Suite 328",
+      "postalCode": "59401",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "The operator advertises a carrier-neutral N+1 colocation data center in downtown Great Falls.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "http://www.northdatacenter.com/",
+        "label": "North Data Center: N+1 data center in downtown Great Falls, Montana",
+        "publisher": "North Data Center, LLC",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/5794",
+        "label": "PeeringDB facility 5794: North Data Center, LLC, 417 Central Ave Suite 328",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/417-central-avenue-great-falls/north-data-center/datacenter/great-falls",
+        "label": "North Data Center Great Falls, 417 Central Avenue",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "Small carrier-neutral colocation facility. The operator lists Zayo, CenturyLink, Vision Net and Hurricane Electric as carriers.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "north-port-holdings-300-deep-park-north-port-fl",
     "name": "Deep Park Data Center (North Port 300)",
     "operator": "North Port Holdings 300 LLC (end operator undisclosed)",
@@ -93983,7 +94595,7 @@
         "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5262-05.pdf",
         "label": "MAQP #5262-05 Kraken Central Site permit",
         "publisher": "Montana DEQ",
-        "retrievedAt": "2026-08-05",
+        "retrievedAt": "2026-10-08",
         "kind": "permit"
       },
       {
@@ -94006,12 +94618,20 @@
         "publisher": "Montana Free Press",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://bitcoinmagazine.com/news/nydig-to-acquire-crusoes-bitcoin-mining-operations",
+        "label": "NYDIG to Acquire Crusoe's Bitcoin Mining Operations",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-10-08",
     "notes": "One of several small well-pad bitcoin-mining sites NYDIG DFM, LLC operates in the Bakken oil field portion of Richland County, MT, continuing the flared/stranded 'Digital Flare Mitigation' gas-to-bitcoin model NYDIG acquired from Crusoe Energy's bitcoin-mining business in 2025 (Crusoe itself sourced this gas from well pads in the area since ~2021). The Kraken Central Site's Aug/Oct 2025 DEQ air-quality permit (MAQP #5262-05) covers eight 2,500-brake-horsepower engines burning well-pad field gas to power a modular data center; capacity is expressed in engine horsepower, not MW, in the source and is not converted here. Sibling NYDIG DFM permits for nearby pads in the same county (Kennedy Pad MAQP #5301-01, Nate Facility MAQP #5314-01, and others: 5268-02/03, 5313-02, 5328-01) indicate this is a multi-site cluster, not a single facility -- only the best-documented site (Kraken Central) is logged here.",
     "energy": {
-      "source": "on_site_gas"
+      "source": "on_site_gas",
+      "notes": "MAQP #5262-05 describes a natural-gas generator station that powers small data centers on site. It permits seven rich-burn natural-gas generator engines of up to 2,500 bhp each, plus diesel backup: five 500-kW engines and one 1,099-kW engine. Location: Section 8, T25N, R59E, about 15 miles northeast of Sidney."
     },
     "facilityType": "crypto_mining",
     "mining": {
@@ -97087,6 +97707,57 @@
       "notes": "The site includes land hosting Frightland, a well-known Delaware Halloween attraction, which would be demolished. The proposal has drawn resident backlash over energy-cost and environmental impact, which Spotlight Delaware cites as a driver of New Castle County's new data-center zoning ordinance (buffer/setback, noise, and cooling-water rules).",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "parsec-data-management-billings-mt",
+    "name": "Parsec Data Management Billings",
+    "operator": "Parsec Data Management, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.742945,
+      "lon": -108.602984,
+      "city": "Billings",
+      "county": "Yellowstone",
+      "street": "3450 Gabel Rd",
+      "postalCode": "59102",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "The operator describes itself as a Montana-based Tier 3 data center offering colocation and IaaS.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.parsecdata.com/",
+        "label": "Parsec Data Management: Montana Data Center",
+        "publisher": "Parsec Data Management",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/1663",
+        "label": "PeeringDB facility 1663: Parsec, 3450 Gabel Rd, Billings",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/3450-gabel-road-billings/parsec-data-management-inc/datacenter/parsec",
+        "label": "Parsec Data Management Billings, 3450 Gabel Road",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "Colocation and IaaS provider, self-described as Tier 3. The facility address comes from PeeringDB and Inflect. The operator's site lists 3470 Gabel Rd as its contact address.",
     "facilityType": "data_center"
   },
   {
@@ -106414,9 +107085,23 @@
         "publisher": "Quantica Infrastructure",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://montanafreepress.org/2026/06/17/agreement-between-data-center-developer-and-union-federation-thin-on-details/",
+        "label": "Agreement between data center developer and union federation thin on details",
+        "publisher": "Montana Free Press",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kpax.com/news/montana-news/quantica-seeking-to-boost-energy-capacity-at-broadview-data-center-site-to-7-235-mw",
+        "label": "Quantica seeking to boost energy capacity at Broadview data center site to 7,235 MW",
+        "publisher": "KPAX",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-08",
     "notes": "5,100-acre site in Yellowstone County between Broadview and Billings ('north of Billings'). Shovel-ready powered land; grid power expected 2027. Interconnection application filed May 2026 for 1,100 MW. Backed by EnCap Investments (~$2.7B under management). Construction planned to begin 2026. Coordinates approximate between Billings and Broadview.",
     "energy": {
       "source": "mixed",
@@ -110693,10 +111378,23 @@
         "publisher": "Bozeman Daily Chronicle",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://bebeez.eu/2025/10/20/sabey-dc-acquires-land-for-data-center-in-butte-montana/",
+        "label": "Sabey DC acquires land for data center in Butte, Montana",
+        "publisher": "BeBeez",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-08",
     "notes": "Sabey withdrew/terminated its buy-sell agreement on 2026-05-13 after REC Silicon exercised a right of first refusal (dating to 1996) over part of the 606.5-acre Montana Connections parcel in April 2026. The project had planned an initial 50MW of power under a non-binding LOI with NorthWestern Energy for 2027, with scalability to 250MW+ by 2029 -- the higher figure is an aspirational scale-up target, not recorded in capacityMw. Butte-Silver Bow officials said afterward they were working with Sabey to identify an alternative parcel within or adjacent to the same industrial park; no replacement site was confirmed in sources checked this run (2026-09-13). Coordinate is a road-level OSM Nominatim geocode of German Gulch Road near the Ramsay/Ramsay-Butte area (Silver Bow County), not a confirmed parcel boundary.",
+    "energy": {
+      "source": "grid",
+      "utility": "NorthWestern Energy",
+      "notes": "NorthWestern Energy was to supply 50 MW beginning in 2027, with expansion potential to 250 MW or more by 2029."
+    },
+    "landAcres": 600,
     "facilityType": "data_center"
   },
   {
@@ -115729,6 +116427,56 @@
       "notes": "Initial proposal is 8 Supermicro systems using direct liquid cooling. The operator does not publish a water-use figure."
     },
     "landAcres": 39.39,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "sns-littleton-nh",
+    "name": "SNS Littleton Data Center",
+    "operator": "Secured Network Services (a Thrive company)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.2933025,
+      "lon": -71.7985028,
+      "city": "Littleton",
+      "county": "Grafton",
+      "street": "775 Industrial Park Rd",
+      "state": "NH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Listed as operational at 775 Industrial Park Rd under Secured Network Services, Inc.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kadoa.com/datacenter/state/new-hampshire",
+        "label": "New Hampshire data centers: 775 Industrial Park Rd, Littleton, Secured Network Services, Inc., operational",
+        "publisher": "Kadoa US Datacenter Tracker",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/sns-littleton-data-center-nh--ae4bc6af-e610-482f-b335-86441849ac11",
+        "label": "SNS Littleton Data Center: operator Secured Network Services (a Thrive Company), operating",
+        "publisher": "More Than Just Parks",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://thrivenextgen.com/thrive-acquires-secured-network-services/",
+        "label": "Thrive Acquires Secured Network Services (2025-02-13)",
+        "publisher": "Thrive",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "Thrive acquired Secured Network Services, which is based in New Hampshire, on 2025-02-13. Thrive's press release does not mention the Littleton data center, so the 'a Thrive company' operator label rests on the tracker entry. The coordinates match the OSM commercial building at 775 Industrial Park Rd, which agrees with the Census geocode to within about 100 m. No capacity is published, and this is a small regional MSP colocation site.",
     "facilityType": "data_center"
   },
   {
@@ -123524,6 +124272,71 @@
     "community": {
       "status": "supported",
       "notes": "Wythe County Administrator Stephen Bear welcomed the TAC project for its tax-revenue benefit; TAC's general counsel framed the campus as designed to minimize traffic/visual/noise/water impact. Wythe County has no zoning ordinance, so TAC needs only building and state environmental permits (no rezoning hearing). IMPORTANT CONTEXT: the same article reports organized resident opposition (water/electricity use, air pollution, noise, visual impact) to a DIFFERENT, separate data center proposal in the same county (Solis Arx, not in our facility dataset), which is what is now driving the county to draft its first zoning ordinance. TAC itself was not the target of that opposition per this source.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tac-project-cardinal-great-falls-mt",
+    "name": "Project Cardinal (TAC Data Centers Great Falls Campus)",
+    "operator": "TAC Data Centers (The Ardent Companies)",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.5048851,
+      "lon": -111.29189,
+      "city": "Great Falls",
+      "county": "Cascade",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "announcedDate": "2025-06-17",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-06-17",
+        "note": "TAC Data Centers announced Project Cardinal, a hyperscale campus of about 2 million sq ft that would need up to 600 MW, on a 569-acre site just outside Great Falls' northeast boundary between Malmstrom AFB and the Missouri River.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-11-18",
+        "note": "TAC released its option to lease the 569 acres. NorthWestern Energy's power timelines did not fit the project.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://theelectricgf.com/2025/11/18/proposed-data-center-project-off/",
+        "label": "Proposed data center project off",
+        "publisher": "The Electric (Great Falls)",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://montanafreepress.org/2025/06/24/for-massive-great-falls-data-center-proposal-energy-supply-is-crucial-to-push-project-forward/",
+        "label": "For massive Great Falls data center proposal, energy supply is crucial to push project forward",
+        "publisher": "Montana Free Press",
+        "retrievedAt": "2026-10-08",
+        "kind": "press"
+      },
+      {
+        "url": "https://servercountry.org/data/states/montana/",
+        "label": "Montana Data Center Projects (lists TAC Project Cardinal, Great Falls, 600 MW, canceled)",
+        "publisher": "ServerCountry",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "The pin is the Great Falls city centroid, not the parcel. The site was 569 acres adjacent to AgriTech Park, north of Malmstrom Air Force Base, outside city limits. The reported investment was $1-1.5 billion. Job figures are the low ends of the reported ranges: 1,500-2,000 construction and 150-200 permanent.",
+    "landAcres": 569,
+    "jobs": {
+      "construction": 1500,
+      "permanent": 150,
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -133167,6 +133980,182 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "vision-net-billings-central-ave-billings-mt",
+    "name": "Vision Net Billings 2 (1030 Central Avenue)",
+    "operator": "Vision Net",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.76973999352,
+      "lon": -108.542169482237,
+      "city": "Billings",
+      "county": "Yellowstone",
+      "street": "1030 Central Ave",
+      "postalCode": "59102",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Listed as an operating Vision Net colocation data center on the Inflect marketplace.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/1030-central-avenue-billings/vision-net/datacenter/iconnect-montana-billings",
+        "label": "Vision Net Billings 2, 1030 Central Avenue, Billings MT",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "Single-source directory listing. Census geocode of the street address. It is a colocation facility, not an AI campus.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "vision-net-billings-fiber-hotel-billings-mt",
+    "name": "Vision Net Billings Fiber Hotel (Granite Tower, formerly iConnect Billings)",
+    "operator": "Vision Net",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.781098,
+      "lon": -108.512522,
+      "city": "Billings",
+      "county": "Yellowstone",
+      "street": "222 N 32nd St",
+      "postalCode": "59101",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Listed as an active colocation/interconnection facility in PeeringDB and Inflect.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/380",
+        "label": "PeeringDB facility 380: iConnect Billings Fiber Hotel (Granite Tower)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/222-north-32nd-street-billings/vision-net/datacenter/iconnect-montana-billings-fiber-hotel",
+        "label": "Vision Net Billings 1, 222 North 32nd Street, Billings MT",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://servercountry.org/data/states/montana/",
+        "label": "Montana Data Center Projects (Vision Net, formerly iConnect Montana, Billings, operational)",
+        "publisher": "ServerCountry",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "A carrier-neutral regional interconnection hub. The Yellowstone Regional Internet Exchange (YRIX) is in the same building (PeeringDB facility 766). It is a colocation facility, not an AI campus.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "vision-net-helena-hustad-center-helena-mt",
+    "name": "Vision Net Helena (Hustad Center, formerly iConnect Helena)",
+    "operator": "Vision Net",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 46.597378163862,
+      "lon": -112.022845486634,
+      "city": "Helena",
+      "county": "Lewis and Clark",
+      "street": "1084 Helena Ave",
+      "postalCode": "59601",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Listed as an active facility in PeeringDB and Inflect.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/379",
+        "label": "PeeringDB facility 379: iConnect Helena (Hustad Center, 1084 Helena Avenue)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/1084-helena-avenue-helena/vision-net/datacenter/iconnect-montana-helena",
+        "label": "Vision Net Helena, 1084 Helena Avenue, Helena MT",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "Colocation facility. Census geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "vision-net-missoula-broadway-center-missoula-mt",
+    "name": "Vision Net Missoula (Broadway Center, formerly iConnect Missoula)",
+    "operator": "Vision Net",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 46.872113622302,
+      "lon": -113.993786742356,
+      "city": "Missoula",
+      "county": "Missoula",
+      "street": "110 E Broadway St",
+      "postalCode": "59802",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-08",
+        "note": "Listed as an active facility in PeeringDB and Inflect.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/381",
+        "label": "PeeringDB facility 381: iConnect Missoula (Broadway Center, 110 East Broadway)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/110-east-broadway-street-missoula/vision-net/datacenter/iconnect-montana-missoula",
+        "label": "Vision Net Missoula, 110 East Broadway Street, Missoula MT",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-08",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-08",
+    "notes": "Colocation facility. Census geocode of the street address.",
+    "facilityType": "data_center"
   },
   {
     "id": "vme-lockport-star-innovation-district-il",
