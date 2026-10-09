@@ -27,6 +27,7 @@ import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { redactedErrorCode } from "../lib/db-error";
 import { computeDocDiff } from "../lib/doc-diff";
+import { isEntrypoint } from "./is-entrypoint";
 
 export interface BackfillResult {
   /** Facilities that had no history row and got a backfilled `create` row (0 for --dry-run). */
@@ -128,7 +129,7 @@ async function main() {
 // Only run the CLI when this file is executed directly (e.g. `tsx
 // backfill-facility-history.ts`), not when `backfillFacilityHistory` is
 // imported by the test suite — matches scripts/seed.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

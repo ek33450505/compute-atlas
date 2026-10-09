@@ -42,6 +42,7 @@ import { verifySource, type VerifyClaim, type VerificationResult } from "./verif
 import { fetchPageText } from "./fetch-page-text";
 import { callOllama } from "./ollama-client";
 import { loadFacilities } from "./load-facilities";
+import { isEntrypoint } from "../is-entrypoint";
 
 // --- environment -------------------------------------------------------------
 
@@ -1449,7 +1450,7 @@ export async function main(): Promise<void> {
 // submit-candidates.ts ...`), not when `runSubmit`/`normalizeCandidates` are
 // imported by the test suite — otherwise importing this module for testing
 // would also parse `process.argv` and call `process.exit`.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

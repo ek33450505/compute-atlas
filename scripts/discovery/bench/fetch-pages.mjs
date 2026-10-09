@@ -17,7 +17,8 @@
 // canonical string), not truncated from the head. Windows are entity-anchored,
 // NOT unit-anchored: anchoring on "MW" would hand the model pre-filtered evidence
 // and inflate recall. The real pipeline needs this same windowing for the same reason.
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 import { htmlToText } from "./html.mjs";
 
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
@@ -135,7 +136,15 @@ function readExistingPages() {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Symlink/space-safe entrypoint check — see scripts/is-entrypoint.ts (plain node cannot import .ts).
+function isEntrypoint() {
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+if (isEntrypoint()) {
   const targets = JSON.parse(readFileSync(new URL("./targets.json", import.meta.url).pathname, "utf8"));
   const args = process.argv.slice(2);
   const REFRESH = args.includes("--refresh");

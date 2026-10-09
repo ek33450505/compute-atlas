@@ -71,6 +71,7 @@ import { eq } from "drizzle-orm";
 
 import { getDb, hasDatabaseUrl } from "../../lib/db/client";
 import { discoveryHeartbeatTable, type DiscoveryHeartbeatRow } from "../../lib/db/schema";
+import { isEntrypoint } from "../is-entrypoint";
 
 // --- threshold -----------------------------------------------------------
 
@@ -309,7 +310,7 @@ async function main(): Promise<void> {
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by the test suite — matches the isMain guard used across this
 // directory's other check-*/publish-*.ts scripts.
-const isMainModule = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main();
 }

@@ -61,6 +61,7 @@ import { createSign } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { isEntrypoint } from "./is-entrypoint";
 
 export const SITE_URL = "sc-domain:compute-atlas.com";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -311,7 +312,7 @@ async function main(): Promise<void> {
 
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by the test suite — matches scripts/check-schema-drift.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error("::error::googlebot access check errored:", err instanceof Error ? err.message : String(err));

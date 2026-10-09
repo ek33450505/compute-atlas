@@ -23,6 +23,7 @@ import { missingEnrichableFamilies } from "../../lib/enrichment-update";
 import type { Facility } from "../../lib/schema";
 import type { SourceCheckResult, SourceHealthReport } from "./check-sources";
 import { loadFacilities } from "./load-facilities";
+import { isEntrypoint } from "../is-entrypoint";
 
 /**
  * Latest statusHistory date, or lastUpdated if statusHistory is empty/absent.
@@ -190,7 +191,7 @@ async function main(): Promise<void> {
 
 // Only run main() when executed directly (not when imported by tests).
 // Matches scripts/discovery/submit-candidates.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

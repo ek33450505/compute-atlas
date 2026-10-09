@@ -35,6 +35,7 @@ import path from "node:path";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { runWithConcurrency } from "./net-guard";
 import { distinctiveEntityTokens } from "./verify-source";
+import { isEntrypoint } from "../is-entrypoint";
 
 // --- the token rule --------------------------------------------------------
 
@@ -650,7 +651,7 @@ async function main(): Promise<void> {
   console.log(formatSummary(triaged, Date.now() - startedAt));
 }
 
-const isMainModule = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
     console.error(err);

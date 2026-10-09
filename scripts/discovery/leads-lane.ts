@@ -115,6 +115,7 @@ import { geocodeUS, type GeocodeResult } from "../../lib/geocode";
 import { verifySource, type VerifyClaim } from "./verify-source";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
+import { isEntrypoint } from "../is-entrypoint";
 
 // ============================================================================
 // Extraction shape — grounded, never coordinates
@@ -666,7 +667,7 @@ async function main(): Promise<void> {
 // Only run the CLI when this file is executed directly, not when
 // `runLeadsLane` is imported by the test suite — matches submit-candidates.ts's
 // isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

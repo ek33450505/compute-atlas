@@ -15,8 +15,8 @@
  *
  * Uses relative imports throughout, matching the other scripts in this folder.
  */
-import { readFileSync, realpathSync } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { readFileSync } from "node:fs";
+import { isEntrypoint } from "./is-entrypoint";
 
 const BASE_URL = process.env.API_BASE_URL ?? "http://localhost:3000";
 const TOKEN = process.env.API_ADMIN_TOKEN;
@@ -244,21 +244,8 @@ async function main(): Promise<void> {
 
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by the test suite — same guard as scripts/check-googlebot-access.ts.
-// Compared as pathToFileURL(realpath(argv[1])): import.meta.url is percent-encoded
-// and symlink-resolved, argv[1] is neither. A raw `file://${argv[1]}` never
-// matches a path with a space, and even pathToFileURL alone never matches one
-// reached through a symlink (e.g. macOS /var -> /private/var) — in both cases
-// the CLI would silently do nothing.
-function isEntrypoint(): boolean {
-  const entry = process.argv[1];
-  if (entry === undefined) return false;
-  try {
-    return import.meta.url === pathToFileURL(realpathSync(entry)).href;
-  } catch {
-    return false;
-  }
-}
-const isMain = isEntrypoint();
+// See scripts/is-entrypoint.ts for why a raw `file://` comparison is not enough.
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

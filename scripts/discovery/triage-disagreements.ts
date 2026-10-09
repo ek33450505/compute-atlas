@@ -87,6 +87,7 @@ import path from "node:path";
 import { matchMachineDataRule } from "./census-triage";
 import type { SourceVerification, VerifyFieldsSummary } from "./verify-fields";
 import type { Facility } from "../../lib/schema";
+import { isEntrypoint } from "../is-entrypoint";
 
 // ============================================================================
 // URL normalization
@@ -511,7 +512,7 @@ async function main(): Promise<void> {
   }
 }
 
-const isMainModule = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
     console.error(`[triage-disagreements] ${(err as Error).message ?? err}`);

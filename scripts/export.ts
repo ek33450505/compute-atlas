@@ -21,6 +21,7 @@ import { facilitiesSchema } from "../lib/schema";
 import { facilitiesTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { rowToFacility } from "../lib/db/serialize";
+import { isEntrypoint } from "./is-entrypoint";
 
 /** Bumped only when the Zod `facilitySchema` shape changes in a breaking way — mirrors the API's `X-API-Version`. */
 const SCHEMA_VERSION = 1;
@@ -117,7 +118,7 @@ async function main() {
 // Only run the CLI when this file is executed directly (e.g. `tsx
 // export.ts`), not when `buildExportMeta` is imported by the test suite —
 // matches scripts/discovery/submit-candidates.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

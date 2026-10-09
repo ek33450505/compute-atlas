@@ -55,6 +55,7 @@ import { existsSync, readFileSync } from "node:fs";
 
 import { appendCensusHistory, BASELINE_PATH, buildHistoryEntry, HISTORY_PATH } from "./census-history";
 import { classifyCoverageState, OUTPUT_PATH, type IndexCensusReport } from "./index-census";
+import { isEntrypoint } from "./is-entrypoint";
 
 export interface FamilyDiff {
   /** Was not indexed in the baseline, is indexed now. */
@@ -260,7 +261,7 @@ export async function main(argv: string[]): Promise<void> {
 
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by the test suite — matches scripts/index-census.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main(process.argv.slice(2)).catch((err) => {
     console.error(err instanceof Error ? err.message : String(err));

@@ -166,6 +166,7 @@ import {
   type InspectionResult,
   type ServiceAccountCredentials,
 } from "./check-googlebot-access";
+import { isEntrypoint } from "./is-entrypoint";
 
 const HOST = "www.compute-atlas.com";
 export const SITEMAP_INDEX_URL = `https://${HOST}/sitemap.xml`;
@@ -870,7 +871,7 @@ export async function main(
 
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by the test suite — matches scripts/indexnow.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main(process.argv.slice(2)).catch((err) => {
     console.error(err instanceof Error ? err.message : String(err));

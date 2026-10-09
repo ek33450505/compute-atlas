@@ -137,6 +137,7 @@ import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
 import { findWaybackSnapshotUrl } from "./wayback";
 import { loadFacilities } from "./load-facilities";
 import { isNonDocumentSource } from "./non-document-source";
+import { isEntrypoint } from "../is-entrypoint";
 
 // ============================================================================
 // Fields covered
@@ -2360,7 +2361,7 @@ async function main(): Promise<void> {
 // Only run the CLI when this file is executed directly, not when its
 // functions are imported by the test suite — matches submit-candidates.ts's
 // isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

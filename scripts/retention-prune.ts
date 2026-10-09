@@ -41,6 +41,7 @@ import {
   subscribeAttemptsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
+import { isEntrypoint } from "./is-entrypoint";
 
 // --- retention windows -------------------------------------------------
 // Single source of truth (scripts/discovery/run.sh's nightly lane points
@@ -369,7 +370,7 @@ async function main() {
 // Only run the CLI when this file is executed directly (e.g. `tsx
 // retention-prune.ts`), not when `runRetentionPrune` is imported by the test
 // suite — matches scripts/export.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

@@ -33,6 +33,7 @@ import { isNull } from "drizzle-orm";
 
 import { getDb, hasDatabaseUrl } from "../../lib/db/client";
 import { stateDigestRunsTable, type StateDigestRunRow } from "../../lib/db/schema";
+import { isEntrypoint } from "../is-entrypoint";
 
 // --- errors ---------------------------------------------------------------
 
@@ -166,7 +167,7 @@ async function main(): Promise<void> {
 // Only run the CLI when this file is executed directly, not when imported
 // by the test suite — matches the isMain guard used across this directory's
 // other check-*/publish-*.ts scripts.
-const isMainModule = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main();
 }

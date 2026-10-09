@@ -205,12 +205,13 @@ describe("run input validation", () => {
 // The real thing the workflows invoke: `npx tsx scripts/update-nhd-debt.ts`.
 // run() is pointed at a temp dir in-process above; here the CLI entry itself
 // (the isMain guard, the real stdout, the exit code) is exercised from a copy
-// of the script and its one lib import placed next to the fixture data.
+// of the script, its entrypoint helper and its one lib import placed next to the fixture data.
 describe("CLI process", () => {
   function execCli(args: string[]) {
     mkdirSync(path.join(root, "scripts"));
     mkdirSync(path.join(root, "lib"));
     copyFileSync(path.join(SCRIPTS_DIR, "update-nhd-debt.ts"), path.join(root, "scripts/update-nhd-debt.ts"));
+    copyFileSync(path.join(SCRIPTS_DIR, "is-entrypoint.ts"), path.join(root, "scripts/is-entrypoint.ts"));
     copyFileSync(path.join(REPO_ROOT, "lib/nhd-debt.ts"), path.join(root, "lib/nhd-debt.ts"));
     return spawnSync(
       path.join(REPO_ROOT, "node_modules/.bin/tsx"),

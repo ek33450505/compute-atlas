@@ -56,6 +56,7 @@ import path from "node:path";
 
 import { runWithConcurrency } from "./net-guard";
 import type { VerifyClaim, VerificationResult } from "./verify-source";
+import { isEntrypoint } from "../is-entrypoint";
 
 // --- types -----------------------------------------------------------------
 
@@ -1071,7 +1072,7 @@ async function main(): Promise<void> {
   }
 }
 
-const isMainModule = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
     console.error(err);

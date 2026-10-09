@@ -22,9 +22,9 @@
  * Usage: node scripts/build-hero-plate.mjs
  */
 
-import { writeFileSync, mkdirSync, readFileSync } from 'fs';
+import { writeFileSync, mkdirSync, readFileSync, realpathSync } from 'fs';
 import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
@@ -435,7 +435,15 @@ export function buildHeroPlate() {
 }
 
 // Runnable directly: node scripts/build-hero-plate.mjs
-if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
+// Symlink/space-safe entrypoint check — see scripts/is-entrypoint.ts (plain node cannot import .ts).
+function isEntrypoint() {
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+if (isEntrypoint()) {
   try {
     const r = buildHeroPlate();
     console.log(
