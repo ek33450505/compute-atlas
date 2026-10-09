@@ -30,6 +30,9 @@
  *
  * ## Flow (see `processLead`)
  *
+ * 0. Triage duplicate: if the lead's triage (recorded at submit time) already
+ *    found live facilities citing its URL, defer it immediately — BEFORE any
+ *    fetch or model work — with a note pointing at /admin/leads.
  * 1. Fetch the lead's URL. A fetch failure leaves the lead `new` (a
  *    bot-walled page is not a bad tip) and does not count against it.
  * 2. Ask the model to extract name/operator/facilityType/status/city/state/
@@ -51,11 +54,12 @@
  *    not evidence either way) and `"unavailable"` are NEVER treated as
  *    rejection: escalate leaves the lead untouched (`new`) for a human to
  *    look at from the normal queue; unavailable aborts the entire run.
- * 5. Duplicate guard: if the lead's triage already found live facilities
- *    citing its URL, or a live facility has the same operator in the same
+ * 5. Duplicate guard: if a live facility has the same operator in the same
  *    state (`findPossibleDuplicatesImpl`), the lead moves to `deferred` with
  *    a note pointing at /admin/leads (stage an update, not a second create).
- *    Deliberately broad — a false positive costs a human glance.
+ *    Deliberately broad — a false positive costs a human glance. A DB error
+ *    in this query propagates and ABORTS the run (fail-closed), unlike a
+ *    geocode error (step 6), which leaves the lead `new`.
  * 6. Geocode `city, state` (or bare `state` if no city was extracted) via
  *    `geocodeUS`. Zero results -> `deferred` (a real, verified lead a
  *    human should manually locate), never invent a location. A THROWN
@@ -340,9 +344,31 @@ function hasUsableIdentity(extraction: LeadExtraction): extraction is LeadExtrac
   );
 }
 
+/** Shared "possible duplicate" defer: log, count, and (unless dry run) move the
+ * lead to `deferred` with a note pointing at /admin/leads. */
+async function deferPossibleDuplicate(
+  lead: LeadForLane,
+  duplicateIds: string[],
+  opts: RunLeadsLaneOptions,
+  deps: LeadsLaneDeps,
+  summary: RunLeadsLaneSummary
+): Promise<void> {
+  const deferLabel = opts.dryRun ? "would defer (dry run)" : "deferred";
+  console.log(`lead ${lead.id}: possible duplicate of ${duplicateIds.join(", ")} — ${deferLabel}`);
+  summary.possibleDuplicate++;
+  if (!opts.dryRun) {
+    await deps.markDeferredImpl(
+      lead.id,
+      `leads-lane: possible duplicate of ${duplicateIds.join(", ")} — stage an update via /admin/leads`
+    );
+  }
+}
+
 /**
- * Processes exactly one lead: fetch -> extract -> verify -> duplicate guard -> geocode -> stage.
- * Mutates `summary` in place and returns void; every branch either writes
+ * Processes exactly one lead: triage-duplicate check -> fetch -> extract -> verify -> DB duplicate guard -> geocode -> stage.
+ * A triage duplicate is deferred BEFORE any fetch/model work; a DB error in the
+ * duplicate query propagates and aborts the run (fail-closed), unlike a geocode
+ * error, which leaves the lead `new`. Mutates `summary` in place and returns void; every branch either writes
  * nothing (fetch failure, escalate, geocode error), moves the lead to `deferred`
  * (unusable/rejected/possible-duplicate/geocode-empty/schema-rejected), or stages + promotes
  * it. Throws `LeadsLaneUnavailableError` — never caught here — when the model
@@ -358,6 +384,16 @@ async function processLead(
   // status when this is not a dry run, so the log says what would happen
   // rather than asserting a mutation that never occurred.
   const deferLabel = opts.dryRun ? "would defer (dry run)" : "deferred";
+
+  // Triage duplicates are known before any network/model work: POST /api/leads
+  // recorded the live facilities already citing this exact URL. Defer first —
+  // no fetch, no Ollama call. `duplicateFacilityIds` exists only on a
+  // successful triage fetch.
+  const triageDuplicateIds = lead.triage?.ok ? (lead.triage.duplicateFacilityIds ?? []) : [];
+  if (triageDuplicateIds.length > 0) {
+    await deferPossibleDuplicate(lead, triageDuplicateIds, opts, deps, summary);
+    return;
+  }
 
   const fetchResult = await deps.fetchPageTextImpl(lead.url);
   if (!fetchResult.ok) {
@@ -421,26 +457,20 @@ async function processLead(
     return;
   }
 
+  // A DB error here propagates and aborts the run (fail-closed): staging a
+  // duplicate `create` is worse than stopping, unlike a geocode error.
   const duplicateIds = [
-    ...new Set([
-      ...(lead.triage?.duplicateFacilityIds ?? []),
-      ...(await deps.findPossibleDuplicatesImpl({
+    ...new Set(
+      await deps.findPossibleDuplicatesImpl({
         name: extraction.name,
         operator: extraction.operator,
         state: extraction.state,
         city: extraction.city,
-      })),
-    ]),
+      })
+    ),
   ];
   if (duplicateIds.length > 0) {
-    console.log(`lead ${lead.id}: possible duplicate of ${duplicateIds.join(", ")} — ${deferLabel}`);
-    summary.possibleDuplicate++;
-    if (!opts.dryRun) {
-      await deps.markDeferredImpl(
-        lead.id,
-        `leads-lane: possible duplicate of ${duplicateIds.join(", ")} — stage an update via /admin/leads`
-      );
-    }
+    await deferPossibleDuplicate(lead, duplicateIds, opts, deps, summary);
     return;
   }
 
