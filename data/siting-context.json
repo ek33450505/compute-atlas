@@ -65,6 +65,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "1547-orny1-orangeburg-ny": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "1623-farnam-omaha-ne": {
     "nearestWater": {
       "name": "Missouri River",
@@ -222,6 +232,16 @@
     "aquifer": {
       "name": "Biscayne Aquifer",
       "rock": "Carbonate-rock"
+    }
+  },
+  "365-data-centers-ny10-65-broadway-ny": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
     }
   },
   "365-data-centers-washington-dc": {
@@ -5362,6 +5382,12 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "blackrock-amherst-ny": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "blackstone-data-services-bluestone-tazewell-va": {
     "nearestWater": {
       "name": "Mud Fork",
@@ -5873,6 +5899,16 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "bnl-sdcc-b725-upton-ny": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "bny-mellon-tennessee-processing-center-nashville-tn": {
@@ -9556,6 +9592,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "continent-8-atlantic-city-ocean-casino-resort-nj": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "continent-8-west-virginia-dc1-south-charleston-wv": {
     "nearestWater": {
       "name": "Kanawha River",
@@ -11318,6 +11368,12 @@
       "voltageKv": 345,
       "distanceMi": 11.3
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "cyrusone-nym7-wappingers-falls-ny": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -20814,6 +20870,12 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "google-hunt-midwest-kc-northland-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "google-jackson-county-stevenson-al": {
     "nearestWater": {
       "name": "Tennessee River",
@@ -21971,6 +22033,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "h5-buffalo-iii-350-main-street-buffalo-ny": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "New York And New England Carbonate-rock Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "h5-data-centers-albuquerque-nm": {
     "nearestWater": {
       "name": "Rio Grande",
@@ -22439,6 +22511,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "hekemian-montvale-kpmg-site-data-center-nj": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "helion-orion-malaga-wa": {
     "nearestWater": {
       "name": "Columbia River",
@@ -22756,6 +22838,20 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "holtec-oyster-creek-smr-300-lacey-township-nj": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "holtwood-hydroelectric-lancaster-county-pa": {
@@ -23512,6 +23608,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "ipark-84-data-center-east-fishkill-ny": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "New York And New England Carbonate-rock Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "iren-horizon-childress-tx": {
@@ -24682,6 +24788,12 @@
       "voltageKv": 345,
       "distanceMi": 7.5
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "lambda-midamerica-industrial-park-chouteau-ok": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29729,6 +29841,12 @@
       "rock": "Sandstone"
     }
   },
+  "new-hook-road-data-center-bayonne-nj": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "newberry-bitcoin-mine-luce-county-mi": {
     "nearestWater": {
       "name": "The Spreads",
@@ -30126,6 +30244,20 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "njr-mcgraw-hill-solar-farm-east-windsor-nj": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     },
     "groundwaterDecline": {
       "cat": 1,
@@ -31461,6 +31593,16 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "opti9-ny1-garden-city-ny": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "oracle-elk-grove-village-il": {
@@ -33410,6 +33552,20 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "princeton-university-hpcrc-plainsboro-nj": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
     },
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
@@ -36160,6 +36316,12 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "rpi-center-for-computational-innovations-troy-ny": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "rplus-blacks-creek-energy-center-ada-county-id": {
     "nearestWater": {
       "name": "Eightmile Creek",
@@ -36222,6 +36384,16 @@
     },
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "russo-600-commerce-boulevard-carlstadt-nj": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
     }
   },

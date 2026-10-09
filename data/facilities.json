@@ -245,6 +245,73 @@
     "facilityType": "data_center"
   },
   {
+    "id": "1547-orny1-orangeburg-ny",
+    "name": "fifteenfortyseven ORNY1 (1 Ramland Road, Orangeburg)",
+    "operator": "fifteenfortyseven Critical Systems Realty (1547), in a joint venture with Harrison Street",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.034512,
+      "lon": -73.97584,
+      "city": "Orangeburg",
+      "county": "Rockland",
+      "street": "1 Ramland Road",
+      "postalCode": "10962",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 18
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2015-05",
+        "note": "1547 announced a ribbon-cutting for its flagship Orangeburg facility (press release dated April 29, 2015).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-05",
+        "note": "Reported fully leased at about 18 MW of critical IT load, and pre-approved for an additional 230,000 sq ft building.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://1547realty.com/resource/fifteenfortyseven-announces-ribbon-cutting-ceremony-for-flagship-facility-in-orangeburg-ny",
+        "label": "Fifteenfortyseven Announces Ribbon Cutting Ceremony For Flagship Facility In Orangeburg, NY",
+        "publisher": "fifteenfortyseven Critical Systems Realty",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://rocklandtimes.com/2026/05/08/orangeburg-pre-approved-for-additional-2300000-sq-ft-data-center/",
+        "label": "Orangeburg Pre-Approved for Additional 230,000 sq. ft. Data Center",
+        "publisher": "Rockland County Times",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/10862",
+        "label": "PeeringDB: ORNY1 (1547 Critical Systems Realty), 1 Ramland Rd, Orangeburg NY 10962",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.nyiso.com/documents/20142/1407078/NYISO-Interconnection-Queue.xlsx",
+        "label": "NYISO Interconnection Queue, Load Projects: #1715 '1547 CSR - Orangeburg LLC', 30 MW, Rockland County, O&R, status 10 (Accepted Cost Allocation / IA in progress)",
+        "publisher": "New York Independent System Operator",
+        "retrievedAt": "2026-10-09",
+        "kind": "iso_queue"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "The 2015 release describes a 232,000 sq ft data center plus a separate 60,000 sq ft business-continuity center on a 32-acre campus, with 24 MW of usable utility power and approvals for an additional 50 MW on-site substation. The May 2026 Rockland County Times report describes a 1547 / Harrison Street Asset Management joint venture. It says the site had about 3.7 MW of critical IT load at its 2021 acquisition, about 14 MW was added since, and it now carries about 18 MW. A 12 MW utility feed is under development. A further 230,000 sq ft building is pre-approved, to be served by a planned 60 MW on-site substation. No planned IT MW was stated, so capacityMw.planned is omitted. The NYISO row (#1715) gives Rockland County but reads 'NJ' in its state column, which appears to be a data-entry error. PeeringDB also lists a ColoHouse presence at the same address (a tenant). This campus is distinct from databank-lga3-orangeburg-ny (2000 Corporate Dr), bloomberg-orangeburg-ny (155 Corporate Dr) and jpmorgan-chase-orangeburg-ny. Coordinates are the PeeringDB geocode.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "1623-farnam-omaha-ne",
     "name": "1623 Farnam",
     "operator": "1623 Farnam",
@@ -368,6 +435,8 @@
       "lon": -74.004641,
       "city": "New York",
       "county": "New York",
+      "street": "32 Avenue of the Americas",
+      "postalCode": "10013",
       "state": "NY",
       "precision": "exact"
     },
@@ -401,9 +470,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/120",
+        "label": "PeeringDB: Digital Realty NYC (32 AofA), 32 6th Ave (Avenue of the Americas), New York NY 10013",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-10-09",
     "notes": "Former AT&T Long Distance Building, built 1932, converted to a carrier hotel by Rudin Management after their 1999 acquisition. Represented as ONE consolidated facility record rather than one per tenant. Digital Realty (branded \"JFK13\") occupies 132,500 sq ft per Digital Realty's own facility page — no power (MW) figure is disclosed by Digital Realty itself for this site; a widely-repeated 9.0 MW figure traces only to third-party aggregator listings, not a Digital Realty or building-primary source, and is not repeated here as fact. CoreSite (branded \"NY1\") occupies 48,000+ sq ft per CoreSite's own facility page, also with no MW figure disclosed. No whole-building data-center square footage or power total is disclosed anywhere; capacityMw is deliberately left unset rather than synthesized by summing incomplete tenant figures. Coordinates are a building-centroid geocode (Wikidata, sourced from building records) — plausible but not independently cross-checked against a primary GIS source.",
     "energy": {
       "utility": "Con Edison"
@@ -564,7 +640,7 @@
         "url": "https://365datacenters.com/carlstadt-data-center/",
         "label": "365 Data Centers Carlstadt, New Jersey data center page",
         "publisher": "365 Data Centers",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -575,8 +651,11 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-09",
     "notes": "187,600 sq ft data center plus a 4,000 sq ft admin area, over 120,000 sq ft of raised floor, 18 MW of data center power, four 2 MW and six 2.5 MW generators rated for 40 hours at full load, and a 4,000-ton N+1 cooling plant. Two OSM address points exist for 410 Commerce Boulevard; the registry point is used, hence 'approximate'.",
+    "energy": {
+      "notes": "Operator: redundant utility service from diverse substations and 2N UPS. The overview lists four 2 MW and six 2.5 MW generators, while the spec sheet says N+1 generator; the page does not reconcile the two."
+    },
     "facilityType": "data_center"
   },
   {
@@ -723,6 +802,57 @@
     ],
     "lastUpdated": "2026-10-02",
     "notes": "PeeringDB describes this as the former Cybergate/eSpire/Affinity, Hostway and Host.net facility. Coordinates are PeeringDB's and approximate. This is a different site from Flexential FLL01/02 (5301 NW 33rd Ave).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "365-data-centers-ny10-65-broadway-ny",
+    "name": "365 Data Centers NY10 (65 Broadway)",
+    "operator": "365 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.707335,
+      "lon": -74.012583,
+      "city": "New York",
+      "county": "New York",
+      "street": "65 Broadway",
+      "postalCode": "10006",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-05",
+        "note": "An operator cut sheet (uploaded May 2023) describes NY10 as a colocation and network facility. The PeeringDB record was last updated 2025-09-26.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://365datacenters.com/wp-content/uploads/2023/05/365_CUTSHEET_FINAL_NYC_V3.pdf",
+        "label": "365 Data Centers: New York NY10 (65 Broadway) cut sheet",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/2014",
+        "label": "PeeringDB: 365 Data Centers New York (NY10), 65 Broadway Floor 3, New York NY 10006",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.storagenewsletter.com/?p=299885",
+        "label": "H5 Data Centers Announces Acquisition of Three Locations from 365 Data Centers (Buffalo, Nashville, Tampa)",
+        "publisher": "StorageNewsletter (press release)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "The operator cut sheet describes a 16,000 sq ft data center with 3 x 203 kW UPS (N+1) for AC customers, an on-site 750 kW diesel generator, a 170-ton N+1 cooling plant and a 24-inch raised floor. No facility MW figure is published, so capacityMw is omitted. PeeringDB notes it is the former Switch & Data / Equinix facility. The February 2026 H5 acquisition covered 365's Buffalo, Nashville and Tampa sites, not this NYC site. This site is distinct from the tracked 75-broad-street-manhattan-ny. Coordinates are the PeeringDB geocode.",
     "facilityType": "data_center"
   },
   {
@@ -1162,6 +1292,8 @@
       "lon": -74.008348,
       "city": "New York",
       "county": "New York",
+      "street": "60 Hudson Street",
+      "postalCode": "10013",
       "state": "NY",
       "precision": "exact"
     },
@@ -1198,9 +1330,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/10",
+        "label": "PeeringDB: Digital Realty NYC (60 Hudson), 60 Hudson St, New York NY 10013-3315",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-08",
+    "lastUpdated": "2026-10-09",
     "notes": "Landmarked 1930 Art Deco former Western Union building in TriBeCa, Manhattan — the East Coast's most important carrier hotel / interconnection point, hosting 100+ telecom and data-center tenants. Represented as ONE consolidated facility record rather than one per tenant, since the physical building is the meaningful unit. Total building size is 1,149,619 sq ft, 24 stories + basement, per an authoritative SEC EDGAR CMBS filing (2023) — this is whole-building square footage, not data-center-specific space. No whole-building data-center power (MW) figure is disclosed by any verifiable primary source; a 50MW figure appears on aggregator sites but traces to an unverified 2014 reference and is not repeated here as fact. The one solidly-verified tenant figure: Hudson Interxchange (HIX) occupies ~173,000 sq ft with a 15MW Con Edison feed (+2MW expansion announced), confirmed via Data Center Dynamics (2024-08-21). Figures for Digital Realty and DataBank's space in this building could not be independently confirmed from primary sources in this research pass (conflicting numbers across aggregator sites) and are deliberately omitted rather than guessed — capacityMw is left unset for the same reason (no reliable whole-building total exists). Coordinates are a building-level geocode from a map aggregator, not independently verified against a primary GIS source.",
     "energy": {
       "utility": "Con Edison"
@@ -6732,7 +6871,7 @@
         "url": "https://www.govtech.com/artificial-intelligence/after-a-data-center-proposal-new-jersey-town-bans-them",
         "label": "'After a Data Center Proposal, New Jersey Town Bans Them' — Government Technology, 12 June 2026",
         "publisher": "Government Technology",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-09",
         "kind": "press"
       },
       {
@@ -6743,8 +6882,14 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-09",
     "notes": "American Tower proposed a 16,000 sq ft data storage facility, roughly 21 feet tall, with about 3,500 sq ft of power-equipment housing and nearly 4 megawatts of power, in the Mount Royal section of East Greenwich Township. The megawatt figure is reported as 'nearly 4' rather than an exact value, so capacityMw is omitted. No parcel address appears in the public reporting; coordinates are the Mount Royal locality centroid and must not be read as a site pin.",
+    "landAcres": 6,
+    "community": {
+      "status": "opposed",
+      "notes": "Residents organized through East Greenwich Grassroots, Protectegnj.com, local Facebook groups and door-to-door outreach before American Tower withdrew. The Township Committee then adopted an ordinance prohibiting future data centers.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -6970,6 +7115,7 @@
       "lon": -74.7381,
       "city": "Andover",
       "county": "Sussex",
+      "street": "248 Stickles Pond Road",
       "state": "NJ",
       "precision": "exact"
     },
@@ -7003,9 +7149,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.govtech.com/artificial-intelligence/developer-sues-new-jersey-town-after-data-center-ban",
+        "label": "Developer sues New Jersey town after data center ban",
+        "publisher": "Government Technology (NJ.com via Tribune Content Agency)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-10-09",
     "notes": "Coordinates are approximate for Andover Township, Sussex County; exact parcel at 248 Stickles Pond Road. Former Newton Airport closed 2013. No capacity MW disclosed. PILOT estimate of $4.5-5.2M annual revenue cited by mayor. Town moving to ban all data centers as of May 2026, but no project has been formally cancelled since no application was filed.",
     "energy": {
       "source": "grid",
@@ -8627,6 +8780,9 @@
       "state": "NY",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 933
+    },
     "statusHistory": [
       {
         "status": "proposed",
@@ -8647,7 +8803,7 @@
         "url": "https://cleanview.co/data-centers/new-york",
         "label": "Data Centers in New York — 'Arsenal Data Site', Arconic Corporation, St. Lawrence, 933 MW planned",
         "publisher": "Cleanview",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -8656,9 +8812,16 @@
         "publisher": "US EPA",
         "retrievedAt": "2026-09-21",
         "kind": "other"
+      },
+      {
+        "url": "https://www.nyiso.com/documents/20142/1407078/NYISO-Interconnection-Queue.xlsx",
+        "label": "NYISO Interconnection Queue, Load Projects: #1728/#1729/#1730 'Arsenal Data Site 250/500/1000', Arconic Corporation, peak MW 233 / 233 / 467 (DAT-AI), status 5",
+        "publisher": "New York Independent System Operator",
+        "retrievedAt": "2026-10-09",
+        "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "Lead only: known from three NYISO large-load queue positions filed by Arconic Corporation in March 2025 (250/500/1,000 MW alternatives — not summed here), all at the Denniston/Dennison substation. No site plan, permit application or public announcement was found this session; a local report that Arconic wants to use excess plant space for a ~933 MW data center could not be fetched (nny360 rate-limited). Apollo Global Management owns both Arconic and Stream Data Centers. Coordinates are the OSM landuse centroid for Arconic Massena Operations, not a data-center parcel.",
     "energy": {
       "utility": "New York Power Authority (NYPA) / National Grid",
@@ -17383,6 +17546,61 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "blackrock-amherst-ny",
+    "name": "BlackRock Data Center, Amherst (CrossPoint Business Park)",
+    "operator": "BlackRock, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.0432075,
+      "lon": -78.7493887,
+      "city": "Amherst",
+      "county": "Erie",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2015-01",
+        "note": "Trade press reported construction of BlackRock's Amherst data center in CrossPoint Business Park was set to start.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-02",
+        "note": "BlackRock's FY2025 Form 10-K lists an owned 43,000 square foot data center in Amherst, New York.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/2012383/000119312526071966/blk-20251231.htm",
+        "label": "BlackRock, Inc. Form 10-K (FY2025), Item 2 Properties: owned 43,000 sq ft data center in Amherst, New York",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-10-09",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/data-center-construction/report-blackrock-s-new-york-state-data-center-construction-set-to-start",
+        "label": "Report: BlackRock's New York State Data Center Construction Set to Start (Jan 2015)",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=json&limit=5&q=CrossPoint%20Parkway%2C%20Amherst%2C%20NY",
+        "label": "OpenStreetMap/Nominatim: Crosspoint Parkway, Crosspoint Business Park, Town of Amherst (OSM way 12311252)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "This is an enterprise data center. The 10-K gives 43,000 sq ft; the 2015 plan described a 31,000 sq ft building in Uniland's CrossPoint Business Park. The 2015 report called it an '$80 million data center construction project', but its itemized costs (about $16M build, $1.3M land, over $16M equipment) total about $33M. investmentUsd is omitted because of that unreconciled gap. The same report cites about $6.8M in sales-tax, $2.15M in property-tax and about $165K in mortgage-recording-tax savings. Those figures are not recorded as subsidies because the fetched article does not name the granting agency or confirm final approval. No MW figure is published. No street address was found in a fetched source. Coordinates are the OSM centroid of Crosspoint Parkway, not the building.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "blackstone-data-services-bluestone-tazewell-va",
     "name": "Blackstone Data Services — Bluestone Business and Technology Park",
     "operator": "Blackstone Data Services",
@@ -17892,12 +18110,20 @@
         "publisher": "Niagara Gazette via Yahoo News",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nyiso.com/documents/20142/1407078/NYISO-Interconnection-Queue.xlsx",
+        "label": "NYISO Interconnection Queue, Load Projects: #1741 'North East Data LLC Data Center', 500 MW, POI 230 kV lines 77 and 78, utility National Grid (NM-NG)",
+        "publisher": "New York Independent System Operator",
+        "retrievedAt": "2026-10-09",
+        "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "Operated by subsidiary North East Data, LLC at a converted former coal-power-plant site on Frontier Avenue. Per the company's Nov 19, 2025 release (ahead of a ~$450M SPAC merger with Blue Acquisition Corp), 46MW is energized/operating with a path to 100MW+ Tier 3. A July 2026 report describes a non-binding LOI for up to 300MW of AI/HPC capacity at this same campus - an AI pivot layered on top of the operating bitcoin-mining load. NO fields, deliberately. (1) capacityMw is already populated on this record — flagging that the November 2025 merger release states 46 MW energized and over 100 MW planned, in case the stored value differs. (2) energy.source NOT filled: the release says only 'clean energy-powered' and 'converted a retired coal facility'. Niagara Falls hydro is the obvious inference but the fetched text never says hydroelectric, and the enum has no 'clean energy' member — filling 'hydro' here would be inference. (3) investmentUsd NOT filled: the only figures are a $450M pre-money equity value and ~$900M of FORWARD-LOOKING capex assumptions, neither of which is spend on this facility.",
     "energy": {
       "source": "hydro",
+      "utility": "National Grid",
       "notes": "Form 425 (2026-09-16): campus 'powered predominantly by hydroelectric power' via an existing large-scale grid interconnection in NYISO Zone A; hydro is grid-delivered, not on-site generation."
     },
     "community": {
@@ -18827,6 +19053,57 @@
       "notes": "Site has no less than 2,700 kVA of existing electrical transformer capacity; additional capacity is contingent on contracting with Wells Rural Electric."
     },
     "landAcres": 2,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "bnl-sdcc-b725-upton-ny",
+    "name": "Brookhaven National Laboratory Scientific Data and Computing Center (Building 725)",
+    "operator": "Brookhaven National Laboratory (U.S. Department of Energy)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.8679786,
+      "lon": -72.876393,
+      "city": "Upton",
+      "county": "Suffolk",
+      "postalCode": "11973",
+      "state": "NY",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 9.6,
+      "operational": 3.6
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021",
+        "note": "Construction finished in 2021Q3 and the facility became operational in 2021Q4. IT load migrated from the old Building 515 data center through FY2023.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://indico.jlab.org/event/459/papers/11607/files/718-CHEP-2023-BNL-Data-Center-paper.pdf",
+        "label": "Finalizing Transition to the New Data Center at BNL (Latif, Misawa, Zaytsev; CHEP 2023)",
+        "publisher": "Brookhaven National Laboratory / CHEP 2023",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/471294208",
+        "label": "OpenStreetMap way 471294208: '725 - CSI' building, Brookhaven National Laboratory",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "The Computing Facility Revitalization project repurposed the former NSLS-I light-source building (Building 725) as a Tier III-class data center for the SDCC. It hosts the US ATLAS Tier-1 site, the US Belle II Tier-1 site, RHIC experiments (STAR, PHENIX, sPHENIX) and the BNL Institutional Cluster. The initial build-out supports 3.6 MW of IT load (recorded as operational) with 3.5 MW of diesel backup. The full build-out supports 9.6 MW of IT load (recorded as planned) with 14 MW of diesel backup and 478 racks. IT floor space is about 1,600 m2 (17,000 sq ft), and the design PUE target is 1.2 (a target, not a measured value). The paper's most recent data is from 2023. Coordinates are the OSM footprint centroid of building '725 - CSI'.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "The lab's CHEP 2023 paper says all support equipment except the cooling towers, high-voltage switchgear and diesel generators sits inside the building shell. It also says the data center can run without BNL campus chilled water. Recorded as evaporative because the heat-rejection path includes cooling towers. No water volume is published."
+    },
     "facilityType": "data_center"
   },
   {
@@ -21044,7 +21321,7 @@
         "url": "https://www.csquare.com/data-centers/new-york-new-jersey",
         "label": "Centersquare New York / New Jersey data centers (Weehawken EWR2 specs)",
         "publisher": "Centersquare",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -21055,14 +21332,15 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "199,110 sq ft raised floor; Hudson River waterfront campus less than 10 miles from the NYC Financial District; 28 service providers on site. Formerly the Cyxtera EWR2 campus. Shares the 300 Boulevard East building with other operators' facilities already tracked (Digital Realty EWR10, Lumen Weehawken 1); this record is the Centersquare-operated space. Coordinates are an OSM geocode of the street address.",
     "energy": {
       "source": "grid",
       "notes": "Operator lists 45.7 MW utility power, 20.7 MW UPS capacity and 31 MW generator capacity for the Weehawken EWR2 campus."
     },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "Chilled-water cooling per the operator spec. The heat-rejection method is not published, so coolingType is omitted."
     },
     "facilityType": "data_center"
   },
@@ -21098,7 +21376,7 @@
         "url": "https://www.csquare.com/data-centers/new-york-new-jersey",
         "label": "Centersquare New York / New Jersey data centers (Piscataway EWR3 specs)",
         "publisher": "Centersquare",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -21109,14 +21387,15 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "47,490 sq ft raised floor; ~40 miles from the NYC Financial District; 8 service providers on site. Formerly the Cyxtera EWR3 campus. Coordinates from the PeeringDB facility record for 3 Corporate Place.",
     "energy": {
       "source": "grid",
       "notes": "Operator lists 54.8 MW utility power, 8.1 MW UPS capacity and 14 MW generator capacity for the Piscataway EWR3 campus."
     },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "Chilled-water cooling per the operator spec. The heat-rejection method is not published, so coolingType is omitted."
     },
     "facilityType": "data_center"
   },
@@ -21152,7 +21431,7 @@
         "url": "https://www.csquare.com/data-centers/new-york-new-jersey",
         "label": "Centersquare (Csquare) New York/New Jersey colocation data centers page",
         "publisher": "Centersquare",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -21170,10 +21449,14 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "Centersquare lists Secaucus EWR5 with 59,572 sq ft of raised floor and 45.7/26.3 MW-class utility service (26.3 MW for this site). The published figure is incoming utility capacity, not a stated IT load, so it is deliberately not recorded in capacityMw. Centersquare is Brookfield Infrastructure's 2024 combination of Evoque and the acquired Cyxtera assets.",
+    "energy": {
+      "notes": "Operator spec for EWR5: utility power 26.3 MW, UPS capacity 11.6 MW, generator capacity 16 MW; 59,572 sq ft raised floor."
+    },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "Chilled-water cooling per the operator spec. The heat-rejection method is not published, so coolingType is omitted."
     },
     "facilityType": "data_center"
   },
@@ -28029,11 +28312,11 @@
         "url": "https://cologix.com/data-centers/new-jersey/",
         "label": "New Jersey Data Centers & Disaster Recovery Facilities",
         "publisher": "Cologix",
-        "retrievedAt": "2026-09-12",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-09",
     "notes": "Described by the operator as a 'next-generation standalone data center' in Parsippany, NJ — one of Cologix's four current New Jersey sites (with NNJ2 and NNJ4 nearby in Cedar Knolls, recorded as a separate combined record). Coordinates are the Parsippany-Troy Hills township centroid (Wikipedia), not a confirmed parcel geocode for 200 Webro Road — marked approximate. Power capacity and square footage are not stated on the operator's current page; a since-superseded third-party listing cited 15 MW / 120,000 sq ft, but that figure could not be independently confirmed via a source fetched in this run, so it is omitted rather than reported.",
     "facilityType": "data_center"
   },
@@ -29412,6 +29695,50 @@
     ],
     "lastUpdated": "2026-09-21",
     "notes": "Data center inside the Atlantic City Convention Center serving licensed online gaming and sports-wagering platforms; built as a CRDA public-private partnership and licensed by the NJ Division of Gaming Enforcement. A later expansion (DC3) at the same building was reported by Continent 8. Capacity, sq ft and investment were not stated in the sources read. Coordinates from the Colo Map facility record.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "continent-8-atlantic-city-ocean-casino-resort-nj",
+    "name": "Continent 8 Atlantic City (Ocean Casino Resort)",
+    "operator": "Continent 8 Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.3624135,
+      "lon": -74.4147501,
+      "city": "Atlantic City",
+      "county": "Atlantic",
+      "street": "500 Boardwalk",
+      "postalCode": "08401",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2018-06",
+        "note": "Continent 8 opened its second Atlantic City data center at Ocean Resort Casino in June 2018, driven by demand following New Jersey's sports-betting legislation.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.roi-nj.com/2018/06/26/tech/continent-8-opens-new-data-center-at-ocean-resort-casino/",
+        "label": "Continent 8 opens new data center at Ocean Resort Casino",
+        "publisher": "ROI-NJ",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/api/0.6/way/624006115",
+        "label": "OpenStreetMap way 624006115: Ocean Resort Casino, 500 Boardwalk",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "An online-gaming data center inside Ocean Casino Resort, opened in June 2018 as Continent 8's second Atlantic City site. It is separate from the Convention Center facility, which is tracked as continent-8-atlantic-city-convention-center-nj. Size and power are not published. Current operation since 2018 was not re-verified this session. Coordinates are the OSM footprint of the casino building, not the data hall.",
     "facilityType": "data_center"
   },
   {
@@ -31200,6 +31527,8 @@
       "lon": -74.0652426,
       "city": "Secaucus",
       "county": "Hudson",
+      "street": "2 Emerson Lane",
+      "postalCode": "07094",
       "state": "NJ",
       "precision": "exact"
     },
@@ -31209,7 +31538,7 @@
         "url": "https://coresite.com/data-center/ny2-secaucus-nj",
         "label": "CoreSite facility directory",
         "publisher": "CoreSite",
-        "retrievedAt": "2026-07-22",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -31227,7 +31556,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-10-09",
     "notes": "CoreSite's directory lists only one Secaucus facility (NY2); no separate 'NY3' or 'Secaucus Campus' facility exists per official page.",
     "energy": {
       "utility": "PSE&G"
@@ -31628,6 +31957,7 @@
       "city": "Kenilworth",
       "county": "Union",
       "street": "2000 Galloping Hill Road",
+      "postalCode": "07033",
       "state": "NJ",
       "precision": "exact"
     },
@@ -31692,9 +32022,16 @@
         "publisher": "RealClear AI",
         "retrievedAt": "2026-09-21",
         "kind": "other"
+      },
+      {
+        "url": "https://www.coreweave.com/ai-data-center-development/kenilworth-new-jersey",
+        "label": "Kenilworth, New Jersey: an existing site, redeveloped for AI",
+        "publisher": "CoreWeave",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "energy": {
       "source": "grid",
       "utility": "PSE&G",
@@ -34690,7 +35027,7 @@
         "url": "https://www.cyrusone.com/data-centers/north-america/somerset-nj",
         "label": "CyrusOne facility directory",
         "publisher": "CyrusOne",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -34728,7 +35065,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "Confirmed via WebSearch listing directly to operator's own Somerset NJ: NYM1 page. AI/HPC (likely): Named as an Intelliscale AI-infrastructure-available site.",
     "energy": {
       "source": "grid",
@@ -34736,7 +35073,8 @@
       "notes": "NYM1 connects to the standard PSE&G grid. No site-specific renewable PPA or on-site generation found for this campus; CyrusOne's fleet-wide '100% sustainable power' goal is corporate-level, not a defining site story."
     },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "The operator lists Liebert 60-ton CRAH units and N+2 redundant Trane chillers. The heat-rejection method is not published."
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -34773,7 +35111,7 @@
         "url": "https://www.cyrusone.com/data-centers/north-america/totowa-nj-nym2",
         "label": "CyrusOne Totowa, NJ: NYM2 data center page",
         "publisher": "CyrusOne",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -34791,10 +35129,14 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "200,000 sq ft campus with 50,000 sq ft of data center space on 36-inch raised flooring, 60,000 sq ft of work-area-recovery space, 6 MW total IT capacity and 2,500 tons of N+1 cooling from water-cooled centrifugal chillers. CyrusOne's page lists 53.10% carbon-free or renewable electricity; that reads as a grid-mix statistic rather than a facility procurement claim, so it is not recorded as a renewable-percent field. Heat-rejection method for the chiller plant is not published, so water.coolingType is omitted.",
+    "energy": {
+      "notes": "The operator page reports 53.10% carbon-free or renewable electricity and lists 6 MW 'Total IT Capacity' across a 200,000 sq ft, two-building site (50,000 sq ft of data center space)."
+    },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "Water-cooled centrifugal chillers with 2,500 tons of N+1 cooling capacity per the operator. The heat-rejection equipment is not named, so coolingType is omitted."
     },
     "facilityType": "data_center"
   },
@@ -34846,6 +35188,60 @@
     "water": {
       "coolingType": "air"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cyrusone-nym7-wappingers-falls-ny",
+    "name": "CyrusOne NYM7 (Wappingers Falls)",
+    "operator": "CyrusOne",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.599043,
+      "lon": -73.882221,
+      "city": "Wappingers Falls",
+      "county": "Dutchess",
+      "street": "155 Myers Corners Road",
+      "postalCode": "12590",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 3
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2001",
+        "note": "Cleanview lists the facility as operating since 2001. CyrusOne's own site currently lists NYM7 among its active data centers.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/wappingers-falls-ny",
+        "label": "CyrusOne: Wappingers Falls, NY (NYM7) data center page",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/2355",
+        "label": "PeeringDB: CyrusOne Wappingers Falls (fac 2355), 155 Myers Corners Road, Wappingers Falls NY 12590",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/new-york/5041/cyrusone-nym7---building-1",
+        "label": "Cleanview: CyrusOne NYM7 - Building 1 (Dutchess County, year operational 2001)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "The operator page describes a 100,000 sq ft facility with 37,000 sq ft of raised white floor, 25,000 sq ft of work-area recovery space, 3 MW of total IT capacity and 1,800 tons of N+1 cooling. It also lists 'Water-Free Cooling' as a sustainability badge. water.coolingType is not set because the page does not describe the heat-rejection method. Third-party listings give 10 MW and 15 MW. Those figures are not recorded; the 3 MW operational figure is the operator's own. CyrusOne acquired the site with Cervalis. Coordinates are the PeeringDB geocode, not a surveyed parcel.",
     "facilityType": "data_center"
   },
   {
@@ -36784,7 +37180,7 @@
         "url": "https://www.databank.com/data-centers/new-jersey/",
         "label": "DataBank New Jersey data centers page (EWR1 Newark, EWR2 Piscataway)",
         "publisher": "DataBank",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -36795,7 +37191,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "22,590 IT square feet and 3 MW critical IT load with 9 on-site carriers, per DataBank's own location page.",
     "facilityType": "data_center"
   },
@@ -37012,6 +37408,7 @@
       "city": "Orangeburg",
       "county": "Rockland",
       "street": "2000 Corporate Dr.",
+      "postalCode": "10962",
       "state": "NY",
       "precision": "approximate"
     },
@@ -37034,10 +37431,29 @@
         "publisher": "Data Center Frontier",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://www.databank.com/data-centers/new-york/",
+        "label": "DataBank: New York data centers (LGA3 and LGA4, 2000 Corporate Dr., 10962)",
+        "publisher": "DataBank",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://rcbizjournal.com/2026/07/09/a-positive-seqra-declaration-on-databanks-expansion-plans-in-orangeburg-sets-the-stage-for-more-rigorous-environmental-review/",
+        "label": "A positive SEQRA declaration on DataBank's expansion plans in Orangeburg sets the stage for more rigorous environmental review (July 9, 2026)",
+        "publisher": "Rockland County Business Journal",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-09",
     "notes": "DataBank's third metro-NYC facility, described by DataBank's own site (fetched 2026-09-13) as 20 MW critical IT load operational across 110,000 IT sq ft, with the full campus planned to reach 40 MW / 200,000 sq ft across 5 data halls. Data Center Frontier's trade-press coverage states different figures for the same campus (30 MW initially available with planned expansion to 45 MW, 200,000 sq ft at full build-out) -- both figures are reported here rather than reconciled; the operator's own current site is treated as the more current figure for the operational MW. A second planned facility, LGA4, is also referenced by Data Center Frontier at 45 MW but not yet named on DataBank's own site as of this fetch -- omitted as a separate record since it is not yet independently confirmed as a distinct, addressable site. Data Center Frontier ties the campus's HPC/AI-oriented data-hall design to New York's Empire AI Consortium initiative, but does not name a specific AI tenant or offtaker at this site -- aiClassification omitted rather than guessed (colocation is multi-tenant and general-purpose). Distinct from the existing bloomberg-orangeburg-ny and the newly-added jpmorgan-chase-orangeburg-ny records -- three separate Orangeburg, Rockland County data-center campuses. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed parcel), hence approximate precision.",
+    "community": {
+      "status": "contested",
+      "notes": "In July 2026 the Orangetown Planning Board unanimously issued a positive SEQRA declaration on the 77,862 sq ft Phase II expansion, which requires a full EIS. Residents from New York and New Jersey, Food & Water Watch and others raised grid-strain, Lake Tappan Reservoir water-quality, diesel-generator noise and air-quality concerns. The Town Board stopped short of halting the application.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -39956,7 +40372,7 @@
     "id": "diamond-farms-gateway-digital-villa-ridge-mo",
     "name": "Diamond Farms (Gateway Digital Campus)",
     "operator": "Provident Data Centers",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 38.484,
@@ -39968,7 +40384,14 @@
       "precision": "approximate"
     },
     "announcedDate": "2026-04-23",
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-15",
+        "note": "Franklin County Board of Commissioners unanimously approved rezoning for the Gateway Digital Campus (and a second, separate project).",
+        "sourceIndex": 2
+      }
+    ],
     "sources": [
       {
         "url": "https://www.ksdk.com/article/news/politics/franklin-county-planning-and-zoning-commission-backs-one-data-center-diamond-farms-rejects-another-crooked-creek/63-89185f2a-d50e-4ac5-bfe9-f5e8209fa9e0",
@@ -39983,10 +40406,17 @@
         "publisher": "The Missouri Times",
         "retrievedAt": "2026-08-24",
         "kind": "press"
+      },
+      {
+        "url": "https://spectrumlocalnews.com/mo/st-louis/news/2026/09/16/franklin-county-beltline-gateway-digital-campus-data-centers",
+        "label": "Franklin County commissioners approve rezoning for two data center projects",
+        "publisher": "Spectrum News",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-24",
-    "notes": "Franklin County Planning & Zoning Commission recommended approval 5-4 on 2026-04-21/23; final rezoning decision rests with the three-member Franklin County Commission, which had not voted as of this session. Also marketed by the developer as 'Gateway Digital Campus.' The companion Crooked Creek (Beltline Energy) proposal in the same county was withdrawn on 2026-08-07 and is not included here.",
+    "lastUpdated": "2026-10-09",
+    "notes": "Franklin County Planning & Zoning Commission recommended approval 5-4 on 2026-04-21/23. On 2026-09-15 the Franklin County Board of Commissioners unanimously approved rezoning for this project (reported by Spectrum News as the 'Gateway Digital Campus', planned near the Shaw Nature Reserve along I-44) and for a second, separate project. Spectrum reports that a developer has contacted the county to proceed and that the county still has to review board regulations not yet sent to it, so rezoning is not construction approval. Also marketed by the developer as 'Gateway Digital Campus.' The companion Crooked Creek (Beltline Energy) proposal in the same county was reported withdrawn on 2026-08-07; the 2026-09-16 Spectrum report describes a Beltline Energy Project south of Pacific as also rezoned, which this dataset has not reconciled and does not include here.",
     "landAcres": 600,
     "jobs": {
       "construction": 2000,
@@ -40274,12 +40704,20 @@
         "publisher": "Niagara County GIS / Assessor",
         "retrievedAt": "2026-07-18",
         "kind": "other"
+      },
+      {
+        "url": "https://www.nyiso.com/documents/20142/1407078/NYISO-Interconnection-Queue.xlsx",
+        "label": "NYISO Interconnection Queue, Load Projects: #1465 'Digihost load', Digihost Technologies Inc., 50.2 MW, POI Walck Rd. 115 kV, utility National Grid (NM-NG)",
+        "publisher": "New York Independent System Operator",
+        "retrievedAt": "2026-10-09",
+        "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-09",
     "notes": "1070 Erie Ave, North Tonawanda, NY. 60 MW operating with potential for another 60 MW unbuilt. Under an unresolved legal/regulatory cloud: a NY Supreme Court ruling (Nov 2024) required the Public Service Commission to complete a CLCPA climate-impact review of the site's power-plant-sale approval; the NY Appellate Division, Third Dept affirmed that ruling on May 28, 2026 — the required CLCPA review remains incomplete as of this writing, and the facility continues operating pending it. The company (now \"Digi Power X,\" ticker DGXX) has filed for Planning Commission approval to convert the site to an 80,000 sq ft AI/HPC data center, but this is blocked by North Tonawanda's data-center moratorium (imposed July 2024, extended again ~June 2026 after resident pushback) — the AI pivot is a real, filed proposal, not vaporware, but has no live AI hosting revenue at this site. A New York statewide bill (Responsible Data Center Development Act, S10642/A11560) passed both legislative chambers June 4, 2026 and remained unsigned/pending before Gov. Hochul as of July 2026; it would impose a one-year moratorium on new permits for large (≥20MW) data centers. This would be a second, largely redundant obstacle behind North Tonawanda's own binding local moratorium, which already blocks the AI/HPC conversion described above.",
     "energy": {
       "source": "on_site_gas",
+      "utility": "National Grid",
       "onSiteGenerationMw": 55,
       "notes": "The site is the former Fortistar North Tonawanda gas plant, purchased by Digihost in 2022 (PSC-approved) and used to power 24/7 mining. Earthjustice describes it as a 55-megawatt gas plant that was rarely utilised before the sale."
     },
@@ -41918,7 +42356,7 @@
         "url": "https://www.digitalrealty.com/data-centers/americas/new-york/ewr12",
         "label": "Digital Realty official facility page (verified via WebFetch)",
         "publisher": "Digital Realty",
-        "retrievedAt": "2026-07-22",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -41936,10 +42374,11 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-10-09",
     "notes": "Address 365 S. Randolphville Road, Piscataway Township, NJ 08854; part of Digital Piscataway campus.",
     "energy": {
-      "utility": "PSE&G"
+      "utility": "PSE&G",
+      "notes": "The operator page lists renewable energy at 100%, LEED Silver certification, 2N UPS and 2N cooling redundancy. No MW figure is published."
     },
     "facilityType": "data_center"
   },
@@ -51720,7 +52159,7 @@
     "id": "equinix-ny3-secaucus-nj",
     "name": "Equinix NY3",
     "operator": "Equinix",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 40.774179,
@@ -51731,7 +52170,14 @@
       "state": "NJ",
       "precision": "approximate"
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-09",
+        "note": "Baxtel lists Equinix NY3 (600 Jefferson Ave, Secaucus) as operational: 'Phase 1 is live with about 1,200 cabinets; the full site is planned for roughly 5,050 cabinets', first built in 2025 with expansions through 2027. DatacenterHawk's listing is internally inconsistent (under construction, but tagged commissioned), so this rests on one aggregator. Verify against Equinix before approving.",
+        "sourceIndex": 2
+      }
+    ],
     "sources": [
       {
         "url": "https://www.datacenterfrontier.com/network/article/33008176/equinix-ny5-ny11-data-centers-generate-digital-economic-magnetism-in-ny-nj",
@@ -51746,9 +52192,16 @@
         "publisher": "Inflect",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/equinix-ny3",
+        "label": "Equinix: NY3 (facility listing)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-09",
     "notes": "Data Center Frontier (retrieved 2026-09-12): 'NY3, a new 300,000 sq ft facility, is under construction on the Secaucus campus,' first phase supporting roughly 1,200 colocation cabinets at 9-10 kW average density — described there as Equinix's largest planned NY-metro site. Status recorded here as under_construction on that basis; however Inflect's current listing for the same address already shows marketed/usable leasing space figures, so this facility may have since opened or begun partial delivery. Flagged for re-verification on a future pass rather than asserted as still under construction today.",
     "facilityType": "data_center"
   },
@@ -51956,6 +52409,7 @@
       "city": "New York",
       "county": "New York",
       "street": "111 8th Avenue",
+      "postalCode": "10011",
       "state": "NY",
       "precision": "approximate"
     },
@@ -51965,11 +52419,11 @@
         "url": "https://www.peeringdb.com/fac/38",
         "label": "Equinix NY9 - New York, 111 8th Avenue",
         "publisher": "PeeringDB",
-        "retrievedAt": "2026-09-13",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-09",
     "notes": "Equinix-operated colocation floors (Suites 518, 536, 734, and 1533) within 111 8th Avenue, a large multi-tenant carrier hotel in Manhattan's Chelsea neighborhood. Distinct facility record from the existing digital-realty-jfk10-manhattan-ny record (Digital Realty's separately-leased floors in the same building) -- this is genuinely a different operator's colocation space, not a duplicate of the same footprint. Hosts 78 networks and 4 internet exchanges (DE-CIX New York, Equinix Internet Exchange New York, MegaIX New York, NetIX) per PeeringDB. No capacity, investment, or AI-use figure found as of 2026-09-13, omitted rather than guessed. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed suite/floor footprint), hence approximate precision. aiClassification omitted -- general-purpose colocation, no AI/GPU capacity confirmed at this specific site.",
     "facilityType": "data_center"
   },
@@ -52648,7 +53102,7 @@
         "url": "https://evocative.com/data-centers/secaucus-nj-data-center-ewr1/",
         "label": "Evocative EWR1 Secaucus NJ data center page",
         "publisher": "Evocative",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -52659,8 +53113,11 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-09",
     "notes": "105,000 sq ft with 10 MW total capacity, fed by 2 x 5 MW diverse underground feeds expandable to 20 MW, and four 2 MW generators in N+1 rated for 48 hours at 100% load.",
+    "energy": {
+      "notes": "Operator: two 5 MW diverse underground feeds, expandable to 20 MW; UPS of 4 × 1.4 MW; generators of 4 × 2 MW (N+1) with 48 hours at full load."
+    },
     "water": {
       "coolingType": "closed_loop",
       "notes": "Evocative lists four 400-ton air-cooled chillers in an N+1 design plus a 600 gal/min N+1 closed-loop system — a recirculating water circuit rejecting heat to air, with no evaporative tower published."
@@ -61070,6 +61527,110 @@
     "facilityType": "data_center"
   },
   {
+    "id": "google-hunt-midwest-kc-northland-mo",
+    "name": "Google Kansas City Data Center (Hunt Midwest Business Center)",
+    "operator": "Google",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.17256,
+      "lon": -94.46443,
+      "city": "Kansas City",
+      "county": "Clay",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2019-07",
+        "note": "Port KC board resolution authorizing bonds for a tentative $600 million Google data center on a 78-acre site within Hunt Midwest Business Center, reported under the code name Project Shale",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2024",
+        "note": "Google's regional head of data center public affairs said Google broke ground on its first Missouri data center campus in 2024 and that it is still under construction (reported Feb 2026)",
+        "sourceIndex": 5
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://huntmidwest.com/hunt-midwest-newsroom/google-announces-1-billion-data-center-at-hunt-midwest-business-center/",
+        "label": "Google announces $1 billion data center at Hunt Midwest Business Center (2024-03-20)",
+        "publisher": "Hunt Midwest",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://irei.com/news/google-looks-invest-600m-kansas-city-data-center-development/",
+        "label": "Google looks to invest $600m in Kansas City data center development (2019-07-23)",
+        "publisher": "Institutional Real Estate, Inc.",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/google-considers-building-a-kansas-city-data-center-in-northland",
+        "label": "Google considers building a Kansas City data center in Northland (2019-07-23)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/google-proposes-to-build-a-data-center-in-kansas-city",
+        "label": "Google proposes to build a data center in Kansas City (2023-09-11)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/google-announces-1b-data-center-in-kansas-citys-northland",
+        "label": "Google announces $1B data center in Kansas City's Northland",
+        "publisher": "KSHB",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/google-confirms-10b-500-acre-120000333.html",
+        "label": "Google confirms $10B, 500-acre data center in Kansas City's Northland (Kansas City Star, 2026-02-14)",
+        "publisher": "Kansas City Star (via Yahoo News)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://datacenters.google/locations/kansas-city-missouri/",
+        "label": "Kansas City, Missouri - Google Data Center Location",
+        "publisher": "Google",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/google-kansas-city",
+        "label": "Google: Project Shale Data Center (listing)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/news/google-buys-236-acres-of-land-in-kansas-city",
+        "label": "Google buys 236 acres of land in Kansas City (2021-12-27)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "Google's first Kansas City-area campus, in Hunt Midwest Business Center, Northland, Clay County, announced by Hunt Midwest on 20 March 2024 as a new $1 billion Google data center. Distinct from google-project-mica-kc-northland-mo (Project Mica, the second campus); the Kansas City Star reports Google's Evergy agreement covers energy costs for 'both' campuses, and Google's own Kansas City page lists two new data centers, status 'In development'. Location: the 2023 Baxtel report on Google's planning applications (filed under the alias Shalerock LLC) places the work between NE Parvin Road and N Arlington Avenue, and the land comprises 78.9 acres bought in 2019 plus 236.4 acres bought in December 2021 (315.3 acres in total). The pin is the OpenStreetMap node where NE Parvin Road meets N Arlington Avenue (39.17256, -94.46443); the campus lies in the surrounding Hunt Midwest land, so it is approximate. A third-party Baxtel listing gives 9900 NE Parvin Rd, which Nominatim and the Census geocoder could not resolve to a building, so it is not used; a 2019 Baxtel report separately describes the 78-acre parcel as the former AK Steel site near MO-210 and N Arlington Avenue. Code name 'Project Shale': appears in two 2019 reports (Institutional Real Estate, Inc. and Baxtel, both relaying local coverage of the 22 July 2019 Port KC board meeting) for the 78-acre Hunt Midwest parcel. The 2023 Baxtel report ties the same 78.9-acre 2019 purchase to Shalerock LLC, and Shalerock/Shale is consistent, but no 2024-2026 source fetched uses 'Project Shale' for the $1 billion campus, so the identification is an inference from the shared site, not a stated one (hence confidence 'reported'). Status: only Google's 2026 statement (via the Kansas City Star) is dated and says 'under construction'; Google's own page says 'In development'. Baxtel's listing says 'Operational' with year built 2025, which conflicts and is not relied on; no source fetched reports the campus opening. A 2024 announcement reportedly expected the first data center online in 2025 (not independently confirmed here). Investment: $1 billion announced March 2024 (the 2019 report cited $600 million). Baxtel lists up to 1.435 million sq ft in four phases plus ancillary buildings on 315 acres, which matches the 2023 planning filing as reported, and Evergy as utility; no per-building size or count is stated. No facility MW load is stated in any source fetched; the 400 MW is new carbon-free generation (Beavertail Solar) contracted to offset demand, not the campus load.",
+    "energy": {
+      "source": "grid",
+      "utility": "Evergy",
+      "notes": "KSHB (2024) says the site will be powered with 400 MW of carbon-free solar from the Beavertail Solar farm under a power purchase agreement with Ranger Power and D. E. Shaw Renewable Investments; Google's Kansas City page also cites 400 MW of new-to-the-grid carbon-free capacity. The 400 MW is contracted supply, not the campus load."
+    },
+    "investmentUsd": 1000000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "google-jackson-county-stevenson-al",
     "name": "Google Jackson County Campus",
     "operator": "Google",
@@ -61388,18 +61949,31 @@
     "id": "google-lincoln-ne",
     "name": "Google Lincoln Data Center",
     "operator": "Google",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
-      "lat": 40.81,
-      "lon": -96.675,
+      "lat": 40.8968,
+      "lon": -96.6437,
       "city": "Lincoln",
       "county": "Lancaster",
       "state": "NE",
       "precision": "approximate"
     },
     "announcedDate": "2023",
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023",
+        "note": "Google's Nebraska locations page: development of the Lincoln data center was announced in 2023",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026",
+        "note": "Google's Nebraska locations page lists a 2026 milestone: the Lincoln data center 'comes online' (no month given). KLKN-TV (2026-08-06) quotes Google calling it an operational data center so far, with construction still underway and a couple hundred people working on site.",
+        "sourceIndex": 1
+      }
+    ],
     "sources": [
       {
         "url": "https://datacenters.google/locations/nebraska/",
@@ -61421,12 +61995,22 @@
         "publisher": "1011 NOW (KOLN)",
         "retrievedAt": "2026-09-16",
         "kind": "press"
+      },
+      {
+        "url": "https://www.1011now.com/2026/09/30/more-questions-than-answers-about-lincolns-google-data-center-water-electricity-usage/",
+        "label": "Improper redaction reveals Lincoln's Google Data Center water and electricity usage (More questions than answers about Lincoln's Google data center water, electricity usage)",
+        "publisher": "1011 NOW (KOLN)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-16",
-    "notes": "Google's FOURTH Nebraska site by official count and genuinely distinct from both Papillion (Sarpy Co.) and Omaha (Douglas Co.) -- also DISTINCT from the separate proposed Google/Tenaska gas-plant mega-campus already tracked as google-nebraska-ai-campus-proposed (that one is a ~4-county, still-undeveloped 1,000-3,000MW proposal; this one is Google's confirmed, currently-building third/fourth site in north Lincoln). Google's own Nebraska locations page (fetched) confirms Lincoln as a distinct site, 'development announced in 2023', part of a $1.2B investment announced that year across all three then-existing NE locations. A local TV station (KLKN, fetched) confirms the site is 'currently operational with ongoing construction phases' with roughly 200 on-site personnel, and that Google has committed to work with the city on water infrastructure; the city says it is not currently approving additional data centers beyond this one. IMPORTANT CAVEAT: widely-repeated secondary figures for this project (codename 'Agate', ~580 acres, ~$600M, sited northwest of N. 56th St & I-80) come from outlets that 403'd or paywalled on direct fetch this session (Lincoln Journal Star/tollbit, Nebraska Examiner) -- those specific numbers are NOT independently verified here and are omitted from the structured fields (capacityMw/investmentUsd/landAcres) rather than risk propagating an unverified figure; coordinates are Lincoln-city-center-level only. Recommend a follow-up pass to re-fetch a non-paywalled primary source for the acreage/investment/MW specifics. Public-reception check (2026-09-10): Checked Google's own data center locations page (2026-09-10); it describes community partnerships/workforce programs in generic marketing terms but documents no specific public hearing, resident testimony, or independently-reported local reaction.",
+    "lastUpdated": "2026-10-09",
+    "notes": "Google's FOURTH Nebraska site by official count and genuinely distinct from both Papillion (Sarpy Co.) and Omaha (Douglas Co.) -- also DISTINCT from the separate proposed Google/Tenaska gas-plant mega-campus already tracked as google-nebraska-ai-campus-proposed (that one is a ~4-county, still-undeveloped 1,000-3,000MW proposal; this one is Google's confirmed third/fourth site in north Lincoln, operational with construction continuing on site per KLKN 2026-08-06). Google's own Nebraska locations page (fetched) confirms Lincoln as a distinct site, 'development announced in 2023', part of a $1.2B investment announced that year across all three then-existing NE locations. A local TV station (KLKN, fetched) confirms the site is 'currently operational with ongoing construction phases' with roughly 200 on-site personnel, and that Google has committed to work with the city on water infrastructure; the city says it is not currently approving additional data centers beyond this one. IMPORTANT CAVEAT: widely-repeated secondary figures for this project (codename 'Agate', ~580 acres, ~$600M, sited northwest of N. 56th St & I-80) come from outlets that 403'd or paywalled on direct fetch this session (Lincoln Journal Star/tollbit, Nebraska Examiner) -- those specific numbers are NOT independently verified here and are omitted from the structured fields (capacityMw/investmentUsd/landAcres) rather than risk propagating an unverified figure; coordinates mark the N. 56th Street / I-80 interchange, where 1011 NOW places the cooling system and KLKN (2019) places the land northwest of the 56th Street exit; the building footprint itself is not pinned. Recommend a follow-up pass to re-fetch a non-paywalled primary source for the acreage/investment/MW specifics. Public-reception check (2026-09-10): Checked Google's own data center locations page (2026-09-10); it describes community partnerships/workforce programs in generic marketing terms but documents no specific public hearing, resident testimony, or independently-reported local reaction.",
+    "energy": {
+      "notes": "1011 NOW (published 2026-09-30) reports that Agate LLC's filing to the Nebraska DWEE states 52.65 megawatts of electricity 'during peak electrical demand'. This is a self-reported peak demand figure, not energy consumed (MWh) and not a contracted or planned capacity; the article gives no reporting period and no source/utility."
+    },
     "water": {
-      "notes": "Google is funding a $10 million, roughly three-mile dedicated line carrying non-contact cooling water from the data center's cooling system at 56th Street and Interstate 80 to Lincoln's Northeast Water Resource Recovery Facility at North 70th and McCormick Drive. The line is sized for 2,040 gallons per minute at peak — about 2.9 million gallons per day — and the water is dechlorinated and discharged to Salt Creek, bypassing standard wastewater treatment. Construction began June 2026 with completion expected January 2027. This is the discharge line's peak design capacity, NOT measured or reported facility water use; do not publish it as consumption. coolingType is left unset: 'non-contact cooling water' does not map cleanly onto the enum's evaporative/closed_loop/air distinction."
+      "notes": "Google is funding a $10 million, roughly three-mile dedicated line carrying non-contact cooling water from the data center's cooling system at 56th Street and Interstate 80 to Lincoln's Northeast Water Resource Recovery Facility at North 70th and McCormick Drive. The line is sized for 2,040 gallons per minute at peak — about 2.9 million gallons per day — and the water is dechlorinated and discharged to Salt Creek, bypassing standard wastewater treatment. Construction began June 2026 with completion expected January 2027. This is the discharge line's peak design capacity, NOT measured or reported facility water use; do not publish it as consumption. coolingType is left unset: 'non-contact cooling water' does not map cleanly onto the enum's evaporative/closed_loop/air distinction. Separately, 1011 NOW (published 2026-09-30) reports, from a filing by Agate LLC to the Nebraska Department of Water, Energy, and Environment (DWEE), that the site used 13.299 megagallons (about 13 million gallons) of water 'between cooling towers, evaporative systems and site operations in the last year'. The article does not name a calendar year for this figure, and the filing was reported on after its redacted text was recovered by copying; the figure is the operator's self-report, not an independent measurement. reportedMgd is left unset because no daily rate is stated."
     },
     "facilityType": "data_center"
   },
@@ -62286,14 +62870,24 @@
         "publisher": "1011 NOW (KOLN/KGIN)",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.1011now.com/2026/09/30/more-questions-than-answers-about-lincolns-google-data-center-water-electricity-usage/",
+        "label": "Improper redaction reveals Lincoln's Google Data Center water and electricity usage (More questions than answers about Lincoln's Google data center water, electricity usage)",
+        "publisher": "1011 NOW (KOLN)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-10-09",
     "notes": "Google data center at 14706 Schram Rd, Papillion, Sarpy County — announced Feb 2019 (built under shell entity Fireball Group LLC / 'Project Wizard'), a $600M project on ~275 acres, groundbreaking Oct 2019, operational ~2021. Confirmed by Google's own Nebraska location page (which lists Papillion, Omaha, and Lincoln as Google Nebraska sites). DISTINCT from the separate tracked proposed Google/Tenaska gas-plant project in SE Nebraska (Gage/Otoe area). No site-specific IT-load MW is disclosed. Coordinates are an approximate geocode of the disclosed Schram Rd address; a county-parcel pass could upgrade precision to exact.",
     "energy": {
       "source": "solar",
       "utility": "Omaha Public Power District (OPPD)",
       "notes": "Google and OPPD built a joint procurement framework enabling Google to supply carbon-free energy resources to OPPD in support of Google's 24/7 clean energy goal, anchored by the Pierce County Energy Center — a 420 MW solar system with 680 MWh of battery storage expected online in 2027."
+    },
+    "water": {
+      "notes": "Fireball Group LLC (the Google entity at this site) reports 547.88 megagallons (about 548 million gallons) as its '2025 Annual Water Consumption', per 1011 NOW (published 2026-09-30) citing filings to the Nebraska Department of Water, Energy, and Environment (DWEE). The article calls this the highest annual use among the six data centers that had reported; the six together reported 765 million gallons for the prior year. Operator self-report, not independently measured. reportedMgd and coolingType are left unset: the figure is an annual total, and no cooling method is stated."
     },
     "investmentUsd": 600000000,
     "landAcres": 275,
@@ -62646,16 +63240,15 @@
     "status": "under_construction",
     "confidence": "confirmed",
     "location": {
-      "lat": 39.274,
-      "lon": -94.651,
+      "lat": 39.3097,
+      "lon": -94.5845,
       "city": "Kansas City",
       "county": "Clay",
-      "street": "12701 N Arrowhead Trafficway",
       "state": "MO",
-      "precision": "exact"
+      "precision": "approximate"
     },
     "capacityMw": {
-      "planned": 500
+      "planned": 700
     },
     "poweredBy": "Evergy (Large Load Power Tariff)",
     "announcedDate": "2026-02",
@@ -62699,10 +63292,17 @@
         "publisher": "KCTV5",
         "retrievedAt": "2026-08-24",
         "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/google-confirms-project-mica-a-10-billion-data-center-campus-in-kansas-city/",
+        "label": "Google confirms Project Mica, a $10 billion data center campus in Kansas City",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-24",
-    "notes": "Five hyperscale data center buildings on 493 acres, northeast of I-435 and US-169 in KC Northland (near Smithville, Clay County). Google committed $1.5M to Smithville School District and $250K to Northland Career Center. Coordinates are approximate for the site northeast of the I-435/US-169 interchange.",
+    "lastUpdated": "2026-10-09",
+    "notes": "Five hyperscale data center buildings on 493 acres, northeast of I-435 and US-169 in KC Northland (near Smithville, Clay County). Google committed $1.5M to Smithville School District and $250K to Northland Career Center. Coordinates mark the I-435/US-169 interchange; Port KC places the ~500-acre campus at its northeast corner.",
     "energy": {
       "source": "grid",
       "utility": "Evergy",
@@ -65358,12 +65958,20 @@
         "publisher": "WENY News",
         "retrievedAt": "2026-09-09",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.nyiso.com/documents/20142/1407078/NYISO-Interconnection-Queue.xlsx",
+        "label": "NYISO Interconnection Queue, Load Projects: #0776 'Greenidge Load' (60 MW, DAT-CM, Greenidge 115 kV) and #1725 'Greenidge 200 MW Data Center Project'; utility NYSEG",
+        "publisher": "New York Independent System Operator",
+        "retrievedAt": "2026-10-09",
+        "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-09",
     "notes": "590 Plant Road, Dresden, NY — the flagship New York crypto-mining regulatory case, having driven the state's 2022 moratorium law and a multi-year DEC Title V air-permit fight (DEC denial 2022, upheld in court 2024). Resolved via a DEC settlement agreement dated November 2025: DEC will issue a Title V permit modification, and Greenidge commits to a 44% reduction in permitted GHG emissions (>282,000 tons CO2e/year) and a minimum 25% reduction in actual emissions, with no emissions increase allowed during the renewed permit term. The permit modification still requires a public comment period before DEC issues a final decision, so this should be read as resolved-in-principle, not fully closed. Coordinates are a town-level geocode of the Dresden address, not a confirmed parcel pin. DELIBERATELY NO fields. Two attractive-looking values were NOT recorded, both for sourcing reasons. (1) water: the 139 MGD withdrawal figure is an advocacy-group spokesperson's characterisation of a permit, not the permit; and it describes the POWER PLANT's once-through lake cooling, which the coolingType enum (evaporative/air/closed_loop/hybrid) cannot express and which is not the data hall's heat rejection. Reading the SPDES permit directly is the right next step. (2) jobs: '40 to 50 full-time jobs' is a range attributed to the company second-hand. Flagging both for adjudication rather than guessing. The Greenidge crypto-mining operation runs behind-the-meter at the same Torrey/Dresden power plant covered by this Yates County IDA PILOT (same source as reported against greenidge-generating-station-torrey-ny). Reporting it for both facility records with this caveat -- hand review may prefer to attribute it solely to the power_generation record instead. SUBSIDY ATTRIBUTION NOTE (maintainer adjudication 2026-09-10): the Yates County IDA PILOT agreements totalling $146,150 paid across the three taxing jurisdictions in 2020 cover the POWER PLANT and its 4.6-mile gas pipeline, and are recorded on greenidge-generating-station-torrey-ny. They are deliberately not duplicated onto this crypto-mining record, which runs behind the meter at the same Torrey/Dresden site, so the abatement is not counted twice.",
     "energy": {
       "source": "on_site_gas",
+      "utility": "New York State Electric & Gas (NYSEG)",
       "notes": "Converted coal-then-gas power plant on the western shore of Seneca Lake; nameplate capacity is reported as both 106 MW and 107 MW (DEC-permitted) across sources — recorded here as 106 MW nameplate, with the 107 MW DEC-permitted figure noted as a close, contested alternative rather than resolved to one number."
     },
     "community": {
@@ -65658,6 +66266,9 @@
       "state": "NY",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 100
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -65673,15 +66284,45 @@
         "publisher": "Rockefeller Institute of Government",
         "retrievedAt": "2026-09-09",
         "kind": "other"
+      },
+      {
+        "url": "https://cbs6albany.com/news/local/albany-data-center-proposal-faces-new-questions-after-hochuls-statewide-moratorium-kenwood-doane-new-york-wrgb",
+        "label": "Albany data center proposal faces new questions after Hochul's statewide moratorium (July 14, 2026)",
+        "publisher": "CBS6 Albany (WRGB)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wamc.org/news/2026-08-06/kenwood-data-center-albany-community-meeting",
+        "label": "Kenwood data center developers try to assuage community concerns (Aug 6, 2026)",
+        "publisher": "WAMC Northeast Public Radio",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nyiso.com/documents/20142/1407078/NYISO-Interconnection-Queue.xlsx",
+        "label": "NYISO Interconnection Queue, Load Projects: #1754 'Kenwood Tech Center', EKG Group LLC, 180 MW, POI Albany-Bethlehem 115 kV Line #18, utility National Grid, status 4",
+        "publisher": "New York Independent System Operator",
+        "retrievedAt": "2026-10-09",
+        "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-09",
     "notes": "Proposed data center inside a mixed-use redevelopment of the 76-acre former Kenwood convent / Doane Stuart School property in Albany. capacityMw IS DELIBERATELY OMITTED, and this is the point of the record: \"Guild Ventures... filed an application with the New York Independent System Operator to use 180MW for the project,\" but the developer told CBS6 the 180 MW is \"a theoretical ceiling for the entire mixed-use development\" at full buildout and NOT the data center's expected use. Recording 180 as the facility's capacity would therefore be wrong; the smaller data-center-only figure reported elsewhere (up to 100 MW) was not confirmed in a source fetched in this run, so it is not recorded either. The Rockefeller Institute's tracker separately describes it as \"a 180 MW data center as part of a mixed-use development\" - that reading conflicts with the developer's own clarification, which is why confidence is 'reported'. The developer describes the compute component as a \"boutique, edge-scale colocation center\" on \"approximately 5 acres\" of the 76-acre parcel serving hospitals, institutions, nanotech, government services and local employers - hence aiClassification 'mixed_use'. landAcres = 76 is the whole redevelopment parcel, not the data center footprint. Confirmed absences (2026-09-09): no permits had been submitted to the City of Albany as of the fetched reporting, no investment figure is given in the fetched article, and no job counts, utility, or IDA/PILOT agreement is stated. Coordinates geocoded to the named Kenwood / Doane Stuart site in Albany, approximate.",
+    "energy": {
+      "utility": "National Grid",
+      "notes": "NYISO load queue #1754 (EKG Group LLC, 'Kenwood Tech Center') lists National Grid as the connecting utility. The 180 MW request is a whole-site study ceiling for the mixed-use development; the developer says the data center itself could use up to 100 MW and would be on its own meter."
+    },
     "water": {
       "coolingType": "closed_loop",
       "notes": "CBS6 reports the developer describes \"cooling that repurposes heat for local use rather than consuming water.\" Recorded as closed_loop on the recirculating-circuit rule; no design document was fetched and no water figure is published."
     },
     "landAcres": 76,
+    "community": {
+      "status": "contested",
+      "notes": "About 75 people attended an August 2026 Council of Albany Neighborhood Associations meeting on the plan. An opponent from No Kings Collective Albany raised electricity, environmental and affordability concerns. The Albany Common Council passed a resolution supporting a statewide moratorium. The developers said no formal application has been filed.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
   },
@@ -65850,6 +66491,8 @@
       "lon": -78.74808845761379,
       "city": "Lockport",
       "county": "Niagara",
+      "street": "5369 Crown Drive",
+      "postalCode": "14094",
       "state": "NY",
       "precision": "exact"
     },
@@ -65893,9 +66536,16 @@
         "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-09-09",
         "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/16045",
+        "label": "PeeringDB: H5 Data Centers Buffalo II, 5369 Crown Dr, Lockport NY 14094 (H5 Buffalo Campus)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-09",
     "notes": "5365 Crown Dr, Lockport, NY — confirmed as a genuinely separate building (~0.25 mi from H5 Buffalo I / 5319 Enterprise Dr, not a duplicate listing), part of the same Lockport campus. Built 2015 as part of a $170M expansion announced 2013 (the campus's second facility). Acquired by H5 alongside Buffalo I in the same Dec 2024 Yahoo sale-leaseback deal. Specific square footage and power capacity for this building alone are paywalled on data-center directories and not independently confirmed — deliberately omitted rather than estimated from the shared 409,200 sq ft campus total (which spans both buildings). Coordinates are a nearby-offset approximation of the campus location, not an independently confirmed parcel pin for this specific building.",
     "energy": {
       "source": "hydro",
@@ -65909,6 +66559,61 @@
     "investmentUsd": 170000000,
     "community": {
       "status": "unknown"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "h5-buffalo-iii-350-main-street-buffalo-ny",
+    "name": "H5 Data Centers Buffalo III (350 Main Street / Main Place Tower)",
+    "operator": "H5 Data Centers (joint venture with Novacap)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.88427,
+      "lon": -78.875707,
+      "city": "Buffalo",
+      "county": "Erie",
+      "street": "350 Main Street",
+      "postalCode": "14202",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-02",
+        "note": "H5 Data Centers, in a joint venture with Novacap, announced the acquisition of three 365 Data Centers locations: Buffalo, Nashville and Tampa.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/buffalo-III-colocation.html",
+        "label": "H5 Data Centers: Buffalo III Colocation (350 Main Street)",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/2087",
+        "label": "PeeringDB: H5 Data Centers Buffalo III (fac 2087), 350 Main Street Suite 102, Buffalo NY 14202",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.storagenewsletter.com/?p=299885",
+        "label": "H5 Data Centers Announces Acquisition of Three Locations from 365 Data Centers (Feb 6, 2026)",
+        "publisher": "StorageNewsletter (press release)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "This is a downtown Buffalo carrier-hotel colocation facility of 19,000 sq ft inside Main Place Tower. The operator lists 21 on-net carriers, 2N UPS and 2N backup generators. PeeringDB notes it is the former Switch & Data / Equinix facility. H5 operates the data center, not the building. The PeeringDB NY registry also lists ixColo and CentriLogic Buffalo (BUF) at 350 Main Street, which makes it a multi-tenant site. No MW figure is published. This site is distinct from colocrossing-buf1-buffalo-ny (325 Delaware Ave) and from the H5 Lockport campus. Coordinates are the PeeringDB geocode.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "The operator page lists N+1 chillers, N+1 cooling towers and N+1 CRAHs. Classified evaporative because the heat-rejection path includes cooling towers. No water figure is published."
     },
     "facilityType": "data_center"
   },
@@ -66228,7 +66933,7 @@
         "url": "https://h5datacenters.com/new-jersey-data-center.html",
         "label": "H5 Data Centers New Jersey (Secaucus) facility page",
         "publisher": "H5 Data Centers",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-09",
         "kind": "other"
       },
       {
@@ -66239,7 +66944,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-09",
     "notes": "More than 38,000 sq ft of Tier III colocation with 2N UPS, multiple diesel generators rated for 48 hours of runtime, N+1 chillers/cooling towers/CRACs, and 10 on-net providers. H5 publishes no MW figure, so capacityMw is omitted. Coordinates are the operator-supplied registry point for the address, not a parcel-confirmed footprint.",
     "water": {
       "coolingType": "evaporative",
@@ -67206,6 +67911,63 @@
     "facilityType": "data_center"
   },
   {
+    "id": "hekemian-montvale-kpmg-site-data-center-nj",
+    "name": "Montvale KPMG Site Data Center (3 Chestnut Ridge Road)",
+    "operator": "S. Hekemian Group (settlement party: SHG Montvale MB VI, LLC)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.0474026,
+      "lon": -74.0694211,
+      "city": "Montvale",
+      "county": "Bergen",
+      "street": "3 Chestnut Ridge Road",
+      "postalCode": "07645",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-02",
+        "note": "Montvale filed its affordable-housing settlement on March 2, 2026. It gives the developer of the former KPMG campus the choice between up to 250 homes and a data center. A revised settlement in April 2026 would allow the data center under a PILOT.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://thepressgroup.net/data-center-option-at-former-kpmg-site-montvales-mayor-affordable-housing-group-clash/",
+        "label": "Data center option at former KPMG site? Montvale's mayor, affordable housing group clash",
+        "publisher": "Pascack Press (The Press Group)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.foodandwaterwatch.org/2026/05/18/housing-enviro-advocates-call-on-montvale-to-reject-ai-data-center-plan/",
+        "label": "Housing, Enviro Advocates Call on Montvale to Reject AI Data Center Plan",
+        "publisher": "Food & Water Watch",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=3+Chestnut+Ridge+Road%2C+Montvale%2C+NJ&format=json&limit=3&addressdetails=1",
+        "label": "OpenStreetMap Nominatim geocode: 3 Chestnut Ridge Road, Montvale (Building 1)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "The data center is an option in Montvale's fourth-round affordable-housing settlement for the KPMG property, not a filed site plan. Food & Water Watch gives the size as 322,822 sq ft and calls it hyperscale; no MW figure is published. The two sources disagree on acreage (34 vs 44 acres), so landAcres is omitted. The mayor calls a data center an already-permitted use and says state and county officials are helping facilitate a project. KPMG still occupies one building on the site. Coordinates are the OSM point for Building 1 at 3 Chestnut Ridge Road, not a data center footprint.",
+    "community": {
+      "status": "contested",
+      "notes": "Fair Share Housing Center and environmental groups oppose using the housing settlement to allow a data center, and residents spoke against it at a council meeting. The mayor supports keeping the data center option.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "helion-orion-malaga-wa",
     "name": "Helion Orion fusion power plant",
     "operator": "Helion Energy",
@@ -68137,6 +68899,77 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "holtec-oyster-creek-smr-300-lacey-township-nj",
+    "name": "Oyster Creek SMR-300 Project (four units)",
+    "operator": "Holtec International",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.8150476,
+      "lon": -74.2051869,
+      "city": "Lacey Township",
+      "county": "Ocean",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1360
+    },
+    "announcedDate": "2025-08-18",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-30",
+        "note": "The NRC approved Oyster Creek's License Termination Plan. Holtec says the redevelopment is planned to feature four SMR-300 units with an expected combined capacity of 1,360 MWe.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://holtecinternational.com/hh-41-13/",
+        "label": "Oyster Creek's License Termination Plan Approved by the USNRC; Oyster Creek Project Planned to Feature Four SMR-300 Units",
+        "publisher": "Holtec International",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://patch.com/new-jersey/lacey/shuttered-oyster-creek-power-plant-could-get-new-life-under-proposal",
+        "label": "Shuttered Oyster Creek Power Plant Could Get New Life Under Proposal",
+        "publisher": "Patch (Lacey)",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Oyster+Creek+Nuclear+Generating+Station&format=json&limit=3&addressdetails=1",
+        "label": "OpenStreetMap Nominatim geocode: Oyster Creek Nuclear Generating Station",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "Planned new nuclear generation at the former Oyster Creek Generating Station, which shut down in September 2018 and is more than half decommissioned. Holtec lists the 'potential integration of AI data centers' as an expected benefit. No data center operator, offtaker or PPA is named, so no offtaker is recorded. Patch (Aug 2025) reported that no formal proposal had been made at that point and that leftover land could host solar. Coordinates are the OSM landuse polygon for the generating station.",
+    "energy": {
+      "source": "nuclear"
+    },
+    "jobs": {
+      "construction": 4000,
+      "permanent": 400,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "supported",
+      "notes": "Lacey Township Committee members back redeveloping the site for energy and economic reasons. The deputy mayor cited rising data center electricity demand.",
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear_smr",
+      "unitCount": 4,
+      "notes": "Four Holtec SMR-300 units, 1,360 MWe combined (Holtec, July 30, 2026). Holtec cites potential AI data center integration, but no compute offtaker is named."
+    }
   },
   {
     "id": "holtwood-hydroelectric-lancaster-county-pa",
@@ -70462,6 +71295,80 @@
     ],
     "lastUpdated": "2026-09-16",
     "notes": "Operator-published figures: 5,817 sq ft white space, 5,000 kW critical power, up to 17.2 kW per rack, SOC 2 Type II and HIPAA compliant, carrier-neutral with a meet-me room. Coordinates geocoded from the operator's published street address to an OpenStreetMap building-level match. IP Pathways also operates data centers in Omaha, NE and Kansas City, MO; only the Iowa site is recorded here.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ipark-84-data-center-east-fishkill-ny",
+    "name": "iPark 84 Data Center (745 East Drive, former IBM East Fishkill fab building)",
+    "operator": "iPark East Fishkill LLC (iPark 84; campus marketed by Lincoln Property Company and Saber-Hightower)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5385513,
+      "lon": -73.8210084,
+      "city": "Hopewell Junction",
+      "county": "Dutchess",
+      "street": "745 East Drive",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-25",
+        "note": "iPark East Fishkill LLC filed NYISO load interconnection request #1760 ('iPark 84 Data Center Interconnection', 150 MW, end-use DAT). The POI is a new 115 kV line from the CHG&E East Fishkill substation (Central Hudson). Status 5: SIS in progress.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nyiso.com/documents/20142/1407078/NYISO-Interconnection-Queue.xlsx",
+        "label": "NYISO Interconnection Queue, Load Projects: #1760 'iPark 84 Data Center Interconnection', iPark East Fishkill LLC, 150 MW, Dutchess County",
+        "publisher": "New York Independent System Operator",
+        "retrievedAt": "2026-10-09",
+        "kind": "iso_queue"
+      },
+      {
+        "url": "https://www.commercialcafe.com/commercial-property/us/ny/fishkill/745-east-drive/",
+        "label": "CommercialCafe listing: 745 East Drive, Fishkill NY (iPark 84; Lincoln Property Company / Saber-Hightower)",
+        "publisher": "CommercialCafe",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://irei.com/news/lincoln-saber-hightower-waterfall-acquire-450m-tri-state-mixed-asset-portfolio/",
+        "label": "Lincoln, Saber-Hightower, Waterfall acquire $450M Tri-State mixed-asset portfolio (Aug 19, 2026)",
+        "publisher": "IREI",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/new-york/2253/ipark-84-data-center",
+        "label": "Cleanview: iPark 84 Data Center (planned, Dutchess County)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.alittlebeaconblog.com/blog/by-unanimous-vote-east-fishkill-town-board-passes-3-year-moratorium-on-data-centers",
+        "label": "By Unanimous Vote, East Fishkill Town Board Passes 3 Year Moratorium On Data Centers (June 25, 2026)",
+        "publisher": "A Little Beacon Blog",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=json&limit=3&addressdetails=0&q=745%20East%20Drive%2C%20Hopewell%20Junction%2C%20NY",
+        "label": "OpenStreetMap/Nominatim geocode of 745 East Drive (OSM node 8448151242, iPark 84, Town of East Fishkill)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "The broker listing says the 270,000 sq ft former chip-fabrication building at 745 East Drive 'will be repurposed to a state-of-the-art data center'. It says the campus has 90 MW of gross utility power, 49 MW of it allocated to this building, which 'can be energized as early as Q3 2026' (the highlights say Q2 2027). It also cites a will-serve letter for an additional 150 MW from Central Hudson, says 'The ISO study for 150mW from Central Hudson is underway', lists Data Hall 1 at 9 MW, and calls the building 'Entitled for data center use'. capacityMw.planned = 150 is the NYISO request, unconverted. A Lincoln Property / Saber-Hightower / Waterfall joint venture acquired the iPark 84 portfolio (IREI, Aug 2026). Cleanview attributes development to National Resources, the prior owner, so ownership is in flux. The Town of East Fishkill passed a three-year data center moratorium on June 25, 2026; the listing's 'entitled' claim was not checked against it. No tenant, investment or town application was found. This is a different site from treetop-east-fishkill-ny (Donovan Drive Holdings, NYISO #1738, 1 GW, warehouse site off I-84 / Lime Kiln Road): it has a different applicant, queue position and parcel. Coordinates come from the OSM address node.",
     "facilityType": "data_center"
   },
   {
@@ -74017,6 +74924,62 @@
     ],
     "investmentUsd": 500000000,
     "landAcres": 16.9,
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
+    "id": "lambda-midamerica-industrial-park-chouteau-ok",
+    "name": "Lambda MidAmerica Industrial Park Data Center",
+    "operator": "Lambda",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.1859,
+      "lon": -95.343,
+      "city": "Chouteau",
+      "county": "Mayes",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09-27",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-27",
+        "note": "Lambda announces plans to build a data center in the south section of MidAmerica Industrial Park; no construction start, completion date or total cost announced.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lambda.ai/blog/new-lambda-data-center-in-oklahoma",
+        "label": "New Lambda data center in Oklahoma",
+        "publisher": "Lambda",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://okcfox.com/news/local/ai-cloud-company-plans-data-center-in-mayes-county",
+        "label": "AI cloud company plans data center in Mayes County",
+        "publisher": "KOKH FOX 25",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "Lambda announced plans on 2026-09-27 for a data center in the south section of MidAmerica Industrial Park, Mayes County, within the Chouteau-Mazie Public School District tax boundary. Capacity, GPU count, acreage, street address, timeline and total cost are not stated in the sources. The park was selected through a 'reverse RFP' by MidAmerica Industrial Park; Grand River Dam Authority (GRDA) is the power provider and Lambda is to fund the upfront infrastructure needed to serve the project; Cloverleaf Infrastructure was selected by GRDA and MidAmerica to ready the site. Lambda says it will pay 100% of the facility's energy costs and plans to act as a flexible grid customer. Company-stated figures: up to 1,000 construction jobs, up to 100 permanent positions, about $500M in tax revenue over ten years at current rates. Separate from Google's existing Pryor campus (google-pryor-ok), also in Mayes County. Coordinates are the Chouteau city point (OSM Nominatim), not the site; the sources give no parcel or address.",
+    "energy": {
+      "utility": "Grand River Dam Authority (GRDA)",
+      "notes": "Lambda states it will pay 100% of the facility's energy costs and fund upfront infrastructure to serve the project, and plans to be a flexible grid customer able to shift or reduce certain loads during peak demand."
+    },
+    "water": {
+      "coolingType": "closed_loop"
+    },
+    "jobs": {
+      "construction": 1000,
+      "permanent": 100,
+      "sourceIndex": 0
+    },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -89574,10 +90537,26 @@
         "publisher": "Rockefeller Institute of Government",
         "retrievedAt": "2026-09-09",
         "kind": "other"
+      },
+      {
+        "url": "https://www.northcountrypublicradio.org/news/story/54053/20261007/ny-hit-pause-on-large-data-centers-a-massive-project-in-massena-may-be-exempt",
+        "label": "NY hit pause on large data centers. A massive project in Massena may be exempt (Oct 7, 2026)",
+        "publisher": "North Country Public Radio",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-09",
     "notes": "⚠️ ADJUDICATION REQUIRED - POSSIBLE OVERLAP WITH AN EXISTING ROW. NCPR states \"the facility would include three buildings totaling nearly 1.5 million square feet at the former Reynolds site, about eight miles outside of the village of Massena and near the bridge to Canada. The operation would consume 635 megawatts of power. That equates to roughly 70% of the power produced at the Moses-Saunders Power Dam. The developer, North Country Collocation Services, or NCCS, presented its plan to the board.\" The former Reynolds Metals plant is the same industrial complex as the 'Alcoa East' site that the existing crypto_mining row coinmint-massena-ny sits on (that row is at 44.9777, -74.7327), and trade press frames this as NYDIG - the current owner of that mining operation - seeking to EXPAND at the Massena site. I have recorded it as a separate proposed data_center because the three buildings, the 635 MW load and the planning-board proceeding are a distinct new project with a distinct developer entity, but if the maintainer prefers one row per site this should be folded into coinmint-massena-ny instead. Coordinates are an approximate placement on that industrial complex derived from the source's description, NOT a surveyed parcel. Confirmed absences (2026-09-09): the fetched sources state no investment figure, no job counts, no acreage, no water-use figure, no utility, and no subsidy or IDA agreement. NOT recorded because unverified in this run: reporting elsewhere describes 316 diesel generators on site and a zoning question referred to the Zoning Board of Appeals over whether a large-scale data center is a permitted use in the industrial zone.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "NCPR (Oct 7, 2026): 'NCCS says no local water will be used for cooling because it plans a fully sealed loop system.' Recorded as closed_loop on the recirculating-circuit rule. No water withdrawal or consumption figure is published."
+    },
+    "jobs": {
+      "construction": 2000,
+      "permanent": 200,
+      "sourceIndex": 2
+    },
     "community": {
       "status": "contested",
       "notes": "NCPR reports \"about 80 people\" attended the May 21, 2026 planning board meeting, that \"some shouted their opposition and questions from the audience,\" and quotes a resident of Akwesasne (the Mohawk territory less than two miles from the site) asking for more community engagement. The meeting was not a public hearing; the board chair said a public hearing will follow and \"the process could take months.\" A residents' group, Massena Data Center Watch, campaigns against the project.",
@@ -90287,6 +91266,7 @@
       "city": "New York",
       "county": "New York",
       "street": "325 Hudson Street",
+      "postalCode": "10013",
       "state": "NY",
       "precision": "approximate"
     },
@@ -90305,9 +91285,16 @@
         "publisher": "Netrality Properties",
         "retrievedAt": "2026-09-09",
         "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/1816",
+        "label": "PeeringDB: H5 Data Centers New York, 325 Hudson Street, New York NY 10013",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-09",
     "notes": "Third Manhattan carrier hotel, distinct from the two aggregate rows already in the dataset (60 Hudson Street and 32 Avenue of the Americas) - a different building on a different street. ADJUDICATION NOTE: like those two, this is a multi-tenant building rather than a single-operator facility, so it is recorded in the same aggregate style; H5 Data Centers is a named operator inside it and is NOT proposed as a separate row. H5 describes it as a \"225,000 square-foot data center and carrier hotel\" on \"the fiber-dense Hudson Street corridor\" with \"access to more than 40 communications carriers\"; Netrality states it is \"owned in Joint Venture with Jamestown, LP.\" Confirmed absences (2026-09-09): neither fetched source states an MW capacity (H5 says only \"access to multiple Megawatts\"), a cooling type, an investment figure, a job count, or any subsidy agreement. Square footage is recorded here in prose only because the schema has no square-footage field.",
     "facilityType": "data_center"
   },
@@ -90892,6 +91879,73 @@
     ],
     "lastUpdated": "2026-09-13",
     "notes": "Tier 3 colocation facility built in 2020, offering colocation, cross-connects, remote hands, backup generation and managed services. New Era Technology's own locations page lists only a Milwaukee-area office (10400 West Innovation Drive, Wauwatosa) and does not mention Appleton, so the address rests on a directory listing corroborated by the Journal Sentinel's statewide map — hence \"reported\". The directory also publishes a PUE of 1.40, which is not recorded here because it is not attributed to the operator.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "new-hook-road-data-center-bayonne-nj",
+    "name": "69-71 New Hook Road Data Center (Constable Hook)",
+    "operator": "Undisclosed",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.6565644,
+      "lon": -74.0944372,
+      "city": "Bayonne",
+      "county": "Hudson",
+      "street": "69-71 New Hook Road",
+      "postalCode": "07002",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-12-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-03",
+        "note": "On Dec 3, 2025 the Planning Board took up an amendment to the New Hook Road Redevelopment Plan adding data centers as a permitted use at the site of an existing Delta Storage facility. The council advanced the ordinance on first reading on Dec 17, 2025.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://gathergov.com/articles/bayonne-data-center",
+        "label": "Bayonne data center at 69-71 New Hook Road: rezoning and council response",
+        "publisher": "GatherGov",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://hudpost.com/bayonne-bans-data-centers-citywide-in-unanimous-council-vote/",
+        "label": "Bayonne bans data centers citywide in unanimous council vote",
+        "publisher": "HudPost",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://newjerseyglobe.com/campaigns/bayonne-mayoral-candidates-spar-over-data-center-vote/",
+        "label": "Bayonne mayoral candidates spar over data center vote",
+        "publisher": "New Jersey Globe",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?street=69+New+Hook+Road&city=Bayonne&state=NJ&format=json&limit=5",
+        "label": "OpenStreetMap Nominatim geocode: New Hook Road, Bayonne",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "The site was rezoned at an applicant's request to allow a data center; no site plan filing has been reported. Reporting says the site would draw power directly from the adjacent Bayonne Energy Center, with no capacity figure given. On Aug 12, 2026 the City Council voted 5-0 to ban data centers in all zones citywide. The business administrator said projects on previously approved sites are unlikely to advance because they need further approvals. Status stays 'proposed' because no source states this project was withdrawn or cancelled; a reviewer may judge the citywide ban to be a cancellation. Coordinates are an OSM street-level point on New Hook Road next to Bayonne Energy Center, not the parcel.",
+    "energy": {
+      "notes": "GatherGov reports the site would draw power directly from the adjacent Bayonne Energy Center; no MW figure disclosed."
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Residents organized against the plan, and it became an issue in the 2026 mayoral race. The council passed a citywide data center ban 5-0 on Aug 12, 2026.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -92204,6 +93258,72 @@
     },
     "landAcres": 10,
     "facilityType": "data_center"
+  },
+  {
+    "id": "njr-mcgraw-hill-solar-farm-east-windsor-nj",
+    "name": "McGraw-Hill Solar Farm (QTS East Windsor campus)",
+    "operator": "NJR Clean Energy Ventures",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.2773364,
+      "lon": -74.5564195,
+      "city": "East Windsor",
+      "county": "Mercer",
+      "state": "NJ",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 14.1
+    },
+    "announcedDate": "2011-06-13",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011-12",
+        "note": "Half of the capacity was expected online in December 2011 and the rest by March 2012. OSM, citing EIA-860, records a 2011-12 start date.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://investor.spglobal.com/news-releases/news-details/2011/McGraw-Hill-and-NJR-Clean-Energy-Ventures-Announce-Largest-Solar-Energy-Site-of-its-Kind-in-the-Western-Hemisphere-2011-6-13/default.aspx",
+        "label": "McGraw-Hill and NJR Clean Energy Ventures Announce Largest Solar Energy Site of its Kind in the Western Hemisphere",
+        "publisher": "S&P Global (McGraw-Hill) investor relations",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://q.com/data-centers/east-windsor/",
+        "label": "QTS East Windsor data center",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.openstreetmap.org/api/0.6/way/524222095",
+        "label": "OpenStreetMap way 524222095: McGraw-Hill Solar Farm (EIA-860 plant 57662)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "A ground-mount, net-metered PV array on a 50-acre parcel of the East Windsor data center campus. NJR Clean Energy Ventures built it in 2011 for $60M to offset McGraw-Hill's offices and data center. QTS now markets the '50-acre 14 MW solar field' as part of its East Windsor campus. The 2011 release gives 14.1 MW; OSM's EIA-860 (2022) tags list 12 MW, likely the AC rating. The operator name comes from those EIA-derived tags (2022) and was not re-verified for 2026.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 60000000,
+    "landAcres": 50,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "QTS Data Centers (East Windsor campus, net-metered)",
+      "poweredFacilityIds": [
+        "qts-east-windsor-nj"
+      ],
+      "notes": "Built in 2011 to offset McGraw-Hill's East Windsor offices and data center. QTS's current East Windsor page markets the 14 MW solar field as part of the campus."
+    }
   },
   {
     "id": "nlr-esif-hpc-data-center-golden-co",
@@ -96216,6 +97336,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "opti9-ny1-garden-city-ny",
+    "name": "Opti9 NY1 (formerly Webair NY-1), Garden City",
+    "operator": "Opti9 Technologies (formerly Webair)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.722759,
+      "lon": -73.631821,
+      "city": "Garden City",
+      "county": "Nassau",
+      "street": "501 Franklin Avenue",
+      "postalCode": "11530",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022",
+        "note": "Rebranded from Webair to Opti9 in early 2022 and listed as a fully operational facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/opti9-ny-1",
+        "label": "Baxtel: Opti9 NY-1 (501 Franklin Ave, Garden City)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/1040",
+        "label": "PeeringDB: 501 Franklin Ave (Webair, fac 1040), Garden City NY 11530",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "Baxtel describes 25,000 sq ft of raised floor and 200 tons of N+2 cooling delivered by 10-20 ton CRAC units. It lists 1 MW of backup power from three paralleled generators and describes the facility as Tier III, SSAE18, HIPAA and Open-IX certified. No IT MW figure is published by the operator. Aggregator figures conflict (1.2 to 4 MW) and are not recorded. Cooling type is not set because the CRAC heat-rejection path is not described. This site is distinct from long-island-interconnect-westbury-ny (1025 Old Country Road). Coordinates are the PeeringDB geocode.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "oracle-elk-grove-village-il",
     "name": "Oracle Elk Grove Village Data Center",
     "operator": "Oracle",
@@ -99904,6 +101068,9 @@
       "state": "NY",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 250
+    },
     "statusHistory": [
       {
         "status": "proposed",
@@ -99933,9 +101100,16 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-14",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.nyiso.com/documents/20142/1407078/NYISO-Interconnection-Queue.xlsx",
+        "label": "NYISO Interconnection Queue, Load Projects: #1745 'Pontoon Bridge Road Data Center', American Data Center Partners LLC, 250 MW peak load, POI Haverstock-Adirondack 345 kV (NYPA), status 4 (SRIS/SIS pending)",
+        "publisher": "New York Independent System Operator",
+        "retrievedAt": "2026-10-09",
+        "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-09",
     "notes": "One of four Massena-area data-center initiatives named in May 2026 local coverage of the NYISO large-load requests (alongside an NCCS expansion, a former-Sears conversion and a Petawatt Holdings substation). No megawatt figure is recorded here: a 250 MW interconnection request is attributed to this project by a third-party tracker whose capacity fields are behind a paywall and could not be read, and the news account's only stated figure — 1,935 MW as the largest pending request — is not attributed to any named project. Entity-name spelling varies between sources (\"American Data Center Partners LLC\" / \"American Data Centers Partners, LLC\"). Coordinates are a street-address geocode.",
     "facilityType": "data_center"
   },
@@ -101995,6 +103169,78 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "princeton-university-hpcrc-plainsboro-nj",
+    "name": "Princeton University High-Performance Computing Research Center (Forrestal Campus)",
+    "operator": "Princeton University",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.3461201,
+      "lon": -74.6160723,
+      "city": "Plainsboro",
+      "county": "Middlesex",
+      "street": "151 Forrestal Road",
+      "state": "NJ",
+      "precision": "exact"
+    },
+    "announcedDate": "2010-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2010-01",
+        "note": "Princeton announced a new HPC data center on university-owned land on the Forrestal Campus, scheduled to be operational in 2011.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2011",
+        "note": "The facility was scheduled to open in 2011 and is in service. Princeton Alumni Weekly reported in April 2024 that the university's new 300-GPU Nvidia H100 cluster is housed there.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterknowledge.com/supercomputers/princeton-u-to-build-new-hpc-data-center",
+        "label": "Princeton U. to Build New HPC Data Center",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gensler.com/projects/high-performance-research-computing-center-at-princeton",
+        "label": "High-Performance Research Computing Center at Princeton University",
+        "publisher": "Gensler",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://paw.princeton.edu/article/research-photo-advancing-ai",
+        "label": "Research Photo: Advancing AI",
+        "publisher": "Princeton Alumni Weekly",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/api/0.6/way/239801861",
+        "label": "OpenStreetMap way 239801861: High Performance Computing Research Center, 151 Forrestal Road",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "A university research-computing data center. Gensler gives 47,000 sq ft in total, including a 12,000 sq ft data center, with Tier II space for administrative services and Tier I for HPC. DCK (2010) described it as 40,000 sq ft over two stories with a possible second phase. It houses general research systems (for example galaxy-formation modeling) and, since 2024, a 300-GPU Nvidia H100 cluster used for Princeton Language and Intelligence (PLI) AI research. That mix is why aiClassification is mixed_use. No MW figure is published. Coordinates are the OSM building footprint named 'High Performance Computing Research Center'.",
+    "energy": {
+      "notes": "Gensler: a gas-powered backup generator with co-generation recovers waste heat for chilled water."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Gensler lists cooling louvers and cooling towers. A gas-fired backup generator with co-generation captures waste heat to chill water."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "priseda-prosperity-drive-silver-spring-md",
@@ -110612,6 +111858,49 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "rpi-center-for-computational-innovations-troy-ny",
+    "name": "Rensselaer Center for Computational Innovations (CCI), Rensselaer Technology Park",
+    "operator": "Rensselaer Polytechnic Institute",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.68056,
+      "lon": -73.69722,
+      "city": "Troy",
+      "county": "Rensselaer",
+      "state": "NY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2007",
+        "note": "The CCI was founded in 2007 (as the Computational Center for Nanotechnology Innovations) and remains listed by RPI as an active computing resource.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://foci.rpi.edu/computing-resources/center-computational-innovations",
+        "label": "Center for Computational Innovations: RPI Future of Computing Institute",
+        "publisher": "Rensselaer Polytechnic Institute",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Center_for_Computational_Innovations",
+        "label": "Center for Computational Innovations (Wikipedia)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "RPI describes a 22,000 sq ft facility with a 4,500 sq ft machine room at the Rensselaer Technology Park. It hosts the AiMOS supercomputer (14 racks, 252 nodes, 1,512 NVIDIA V100 GPUs), an AiMOSx GPU cluster, Xeon and EPYC clusters, and 11 PB of storage. AiMOS also serves as the test bed for the NYS-IBM Research AI Hardware Center. aiClassification is mixed_use because AI hardware runs alongside co-equal general HPC clusters. The center originated as a $100M RPI-IBM-New York State collaboration. No power figure is published. Coordinates are the Wikipedia point (42°40′50″N 73°41′50″W). It is in the same technology park as, but distinct from, metlife-north-greenbush-ny (500 Jordan Road).",
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "rplus-blacks-creek-energy-center-ada-county-id",
     "name": "Blacks Creek Energy Center",
     "operator": "rPlus Energies (Blacks Creek Energy Center, LLC)",
@@ -110804,6 +112093,56 @@
       "notes": "The City of Russell passed a six-month moratorium on the construction and operation of data centers within city limits in June 2026. Rubix answered a city due-diligence questionnaire and scheduled a public meeting with county officials and residents.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "russo-600-commerce-boulevard-carlstadt-nj",
+    "name": "Russo Data Center (600 Commerce Boulevard)",
+    "operator": "Russo Development (owner/landlord; tenant confidential)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.8275493,
+      "lon": -74.0492103,
+      "city": "Carlstadt",
+      "county": "Bergen",
+      "street": "600 Commerce Boulevard",
+      "state": "NJ",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2008",
+        "note": "Purpose-built in 2008 for a global bank. NJBIZ reported a full-building lease to a confidential data center tenant on March 16, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://njbiz.com/exclusive-cresa-carlstadt-data-center-lease-russo",
+        "label": "Exclusive: Cresa completes 249K-sf Carlstadt data center lease for Russo",
+        "publisher": "NJBIZ",
+        "retrievedAt": "2026-10-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/russo-development-carlstadt",
+        "label": "Russo Development: Carlstadt (facility listing)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?street=600+Commerce+Boulevard&city=Carlstadt&state=NJ&format=json&limit=5",
+        "label": "OpenStreetMap Nominatim geocode: Commerce Boulevard, Carlstadt",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-09",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-09",
+    "notes": "A 249,640 sq ft data center built in 2008 for a global bank and upgraded several times since. In March 2026 it was fully leased to a confidential tenant, with Cresa representing Russo. Baxtel lists the street as '600 Central Blvd' while NJBIZ uses 600 Commerce Blvd, and the NJBIZ address is used here. No MW figure is published. This is a different building from 365 Data Centers Carlstadt at 410 Commerce Blvd. Coordinates are an OSM street-level point on Commerce Boulevard, not the parcel.",
     "facilityType": "data_center"
   },
   {
@@ -111814,6 +113153,7 @@
       "city": "New York",
       "county": "New York",
       "street": "375 Pearl Street",
+      "postalCode": "10038",
       "state": "NY",
       "precision": "approximate"
     },
@@ -111828,9 +113168,16 @@
         "publisher": "Sabey Data Centers",
         "retrievedAt": "2026-09-09",
         "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/1690",
+        "label": "PeeringDB: 375 Pearl, Intergate.Manhattan (Sabey Data Centers), New York NY 10038",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-09",
     "notes": "Net-new relative to the two existing aggregate carrier-hotel rows: 375 Pearl Street is a separate building from 60 Hudson Street and 32 Avenue of the Americas, and is single-owner (Sabey), not a multi-tenant carrier hotel, so this is not a named tenant inside an already-aggregated building. Operator states \"18 MW of aggregate power delivered to the campus\" and a \"222k Square Feet Dedicated Data Center Footprint\"; trade press reports a larger planned build-out figure, which is deliberately NOT recorded here because the operator's own page states 18. Coordinates geocoded from the street address the operator publishes (375 Pearl Street, New York, NY 10038), hence approximate. No subsidy, investment, jobs, or AI-workload statement found on the operator page.",
     "water": {
       "coolingType": "evaporative",
@@ -125412,6 +126759,7 @@
       "city": "New York",
       "county": "New York",
       "street": "85 10th Avenue",
+      "postalCode": "10011",
       "state": "NY",
       "precision": "approximate"
     },
@@ -125430,9 +126778,16 @@
         "publisher": "Telehouse America",
         "retrievedAt": "2026-09-21",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/1272",
+        "label": "PeeringDB: Telehouse - New York Chelsea, 85 10th Avenue, New York NY 10011",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-09",
     "notes": "Telehouse leases and operates carrier-neutral colocation space within an 11-story, 635,000 sq ft former Nabisco factory building (owned by Related Companies and Vornado Realty Trust) on the border of West Chelsea and the Meatpacking District; PUE reported as 1.69. Acquired by Telehouse in 2011 (previously a Lehman Brothers data center). Distinct building and operator from the existing 32 Avenue of the Americas, 60 Hudson Street, and 325 Hudson Street carrier-hotel records already in the dataset. No capacity in MW, investment, or AI-use figure found as of 2026-09-13, omitted rather than guessed. Coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed floor footprint), hence approximate precision. aiClassification omitted -- general-purpose carrier-neutral colocation, no AI/GPU capacity confirmed at this specific site.",
     "water": {
       "coolingType": "closed_loop"
@@ -125451,6 +126806,7 @@
       "city": "Staten Island",
       "county": "Richmond",
       "street": "7 Teleport Drive",
+      "postalCode": "10311",
       "state": "NY",
       "precision": "approximate"
     },
@@ -125469,9 +126825,16 @@
         "publisher": "Telehouse",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/737",
+        "label": "PeeringDB: Telehouse - Teleport Center (New York), 7 Teleport Drive, Staten Island NY 10311",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-09",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-09",
     "notes": "Carrier-neutral colocation data center within the Staten Island Teleport, a ~100-acre office park (440 acres total) operated by the Port Authority of NY/NJ; construction began 1989. Facility carries dual utility feeds (Con Edison and PSE&G). Not previously in the dataset's NY carrier-hotel coverage (existing records are Manhattan-only: 32 Avenue of the Americas, 60 Hudson Street, 325 Hudson Street, JFK10). No capacity, investment, or AI-use figures found as of 2026-09-13; coordinates geocoded from the street address via US Census geocoder (address-range interpolation, not a confirmed parcel/building footprint), hence approximate precision.",
     "facilityType": "data_center"
   },
