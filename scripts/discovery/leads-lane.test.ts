@@ -24,7 +24,7 @@ const PAGE_TEXT =
   "Example Facility is a proposed data center located in Austin, Texas, with a planned capacity of 50 megawatts.";
 
 function makeLead(overrides: Partial<LeadForLane> = {}): LeadForLane {
-  return { id: "lead-1", url: "https://example.com/article", note: null, attribution: null, ...overrides };
+  return { id: "lead-1", url: "https://example.com/article", note: null, attribution: null, triage: null, ...overrides };
 }
 
 function pageOk(text: string = PAGE_TEXT): FetchPageTextResult {
@@ -103,6 +103,7 @@ function makeDeps(overrides: Partial<LeadsLaneDeps> = {}): LeadsLaneDeps {
     fetchPageTextImpl: vi.fn(async () => pageOk()),
     callOllamaImpl: sequencedOllama([extractionOk(extraction()), verdictResult(VERIFIED_QUOTE)]),
     geocodeImpl: vi.fn(async (): Promise<GeocodeResult[]> => [{ lat: 30.1, lon: -97.7, label: "Austin, TX" }]),
+    findPossibleDuplicatesImpl: vi.fn(async (): Promise<string[]> => []),
     createSubmissionImpl: vi.fn(
       async (): Promise<SubmissionResult> => ({ ok: true, id: "22222222-2222-2222-2222-222222222222" })
     ),
@@ -518,5 +519,107 @@ describe("leads-lane writes `deferred`, never `researching`", () => {
 
   it("defines `deferred` as a lead status", () => {
     expect(LEAD_STATUSES).toContain("deferred");
+  });
+});
+
+// --- geocode outage --------------------------------------------------------------
+
+describe("runLeadsLane — geocode throws", () => {
+  it("leaves the lead untouched and continues to the next lead", async () => {
+    let call = 0;
+    const geocodeImpl = vi.fn(async (): Promise<GeocodeResult[]> => {
+      call++;
+      if (call === 1) throw new Error("Geocoding failed (403)");
+      return [{ lat: 30.1, lon: -97.7, label: "Austin, TX" }];
+    });
+    const deps = makeDeps({
+      listNewLeadsImpl: vi.fn(async () => [makeLead({ id: "lead-a" }), makeLead({ id: "lead-b" })]),
+      callOllamaImpl: sequencedOllama([
+        extractionOk(extraction()),
+        verdictResult(VERIFIED_QUOTE),
+        extractionOk(extraction()),
+        verdictResult(VERIFIED_QUOTE),
+      ]),
+      geocodeImpl,
+    });
+
+    const summary = await runLeadsLane(baseOpts(), deps);
+
+    expect(summary.geocodeErrored).toBe(1);
+    expect(summary.geocodeFailed).toBe(0);
+    expect(summary.staged).toBe(1);
+    expect(summary.stagedLeadIds).toEqual(["lead-b"]);
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+    expect(deps.promoteLeadImpl).not.toHaveBeenCalledWith("lead-a", expect.anything(), expect.anything());
+  });
+});
+
+// --- duplicate guard -------------------------------------------------------------
+
+describe("runLeadsLane — possible duplicate", () => {
+  it("defers when the lead's triage already lists duplicate facilities", async () => {
+    const deps = makeDeps({
+      listNewLeadsImpl: vi.fn(async () => [
+        makeLead({
+          triage: { fetchedAt: "2026-10-09", ok: true, duplicateFacilityIds: ["google-lincoln-ne"] },
+        }),
+      ]),
+    });
+
+    const summary = await runLeadsLane(baseOpts(), deps);
+
+    expect(summary.possibleDuplicate).toBe(1);
+    expect(summary.staged).toBe(0);
+    expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
+    expect(deps.geocodeImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith(
+      "lead-1",
+      "leads-lane: possible duplicate of google-lincoln-ne — stage an update via /admin/leads"
+    );
+  });
+
+  it("defers when findPossibleDuplicates returns ids", async () => {
+    const deps = makeDeps({
+      findPossibleDuplicatesImpl: vi.fn(async () => ["example-tx-1", "example-tx-2"]),
+    });
+
+    const summary = await runLeadsLane(baseOpts(), deps);
+
+    expect(deps.findPossibleDuplicatesImpl).toHaveBeenCalledWith({
+      name: "Example Facility",
+      operator: "Example Corp",
+      state: "TX",
+      city: "Austin",
+    });
+    expect(summary.possibleDuplicate).toBe(1);
+    expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith(
+      "lead-1",
+      expect.stringContaining("example-tx-1, example-tx-2")
+    );
+  });
+
+  it("writes nothing in a dry run but still counts it", async () => {
+    const deps = makeDeps({ findPossibleDuplicatesImpl: vi.fn(async () => ["example-tx-1"]) });
+
+    const summary = await runLeadsLane(baseOpts({ dryRun: true }), deps);
+
+    expect(summary.possibleDuplicate).toBe(1);
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+    expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
+  });
+
+  it("stages as before when there is no duplicate", async () => {
+    const deps = makeDeps({
+      listNewLeadsImpl: vi.fn(async () => [
+        makeLead({ triage: { fetchedAt: "2026-10-09", ok: true, duplicateFacilityIds: [] } }),
+      ]),
+    });
+
+    const summary = await runLeadsLane(baseOpts(), deps);
+
+    expect(summary.possibleDuplicate).toBe(0);
+    expect(summary.staged).toBe(1);
+    expect(deps.createSubmissionImpl).toHaveBeenCalledTimes(1);
   });
 });

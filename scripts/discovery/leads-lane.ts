@@ -51,17 +51,25 @@
  *    not evidence either way) and `"unavailable"` are NEVER treated as
  *    rejection: escalate leaves the lead untouched (`new`) for a human to
  *    look at from the normal queue; unavailable aborts the entire run.
- * 5. Geocode `city, state` (or bare `state` if no city was extracted) via
+ * 5. Duplicate guard: if the lead's triage already found live facilities
+ *    citing its URL, or a live facility has the same operator in the same
+ *    state (`findPossibleDuplicatesImpl`), the lead moves to `deferred` with
+ *    a note pointing at /admin/leads (stage an update, not a second create).
+ *    Deliberately broad — a false positive costs a human glance.
+ * 6. Geocode `city, state` (or bare `state` if no city was extracted) via
  *    `geocodeUS`. Zero results -> `deferred` (a real, verified lead a
- *    human should manually locate), never invent a location.
- * 6. Build the `create` payload in exactly the shape `buildCreatePayload`
+ *    human should manually locate), never invent a location. A THROWN
+ *    geocode error (HTTP/network) leaves the lead `new` and the run
+ *    continues — an outage is not a judgement about the lead. Node callers
+ *    must send a User-Agent (`LEADS_LANE_USER_AGENT`) or Nominatim 403s.
+ * 7. Build the `create` payload in exactly the shape `buildCreatePayload`
  *    (lib/contribute.ts) produces, then validate it against `facilitySchema`
  *    before ever calling `createSubmission` — the same belt-and-suspenders
  *    order `submitContribution` uses.
- * 7. `createSubmission({ kind: "create", ... })` — this lane NEVER writes a
+ * 8. `createSubmission({ kind: "create", ... })` — this lane NEVER writes a
  *    live facility, it only ever stages a `pending` submission. Nothing here
  *    imports or calls lib/facility-write.ts.
- * 8. On success, `promoteLead` moves the lead to `promoted` and records the
+ * 9. On success, `promoteLead` moves the lead to `promoted` and records the
  *    new submission id, in one write (see lib/leads.ts).
  *
  * `runLeadsLane` is the testable core (no CLI/process/DB concerns) — `main()`
@@ -96,6 +104,9 @@ import {
   type LeadActionResult,
 } from "../../lib/leads";
 import { createSubmission, type SubmissionResult } from "../../lib/submissions";
+import { and, eq, sql } from "drizzle-orm";
+import { getDb } from "../../lib/db/client";
+import { facilitiesTable } from "../../lib/db/schema";
 import { geocodeUS, type GeocodeResult } from "../../lib/geocode";
 import { verifySource, type VerifyClaim } from "./verify-source";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
@@ -179,7 +190,11 @@ function isLeadExtraction(data: unknown): data is LeadExtraction {
 // Pipeline driver
 // ============================================================================
 
-export type LeadForLane = Pick<AdminLeadRow, "id" | "url" | "note" | "attribution">;
+export type LeadForLane = Pick<AdminLeadRow, "id" | "url" | "note" | "attribution" | "triage">;
+
+/** Nominatim 403s Node's default fetch User-Agent (measured 2026-10-09); its
+ * usage policy wants an identifying one. */
+export const LEADS_LANE_USER_AGENT = "compute-atlas-leads-lane/1.0 (+https://www.compute-atlas.com)";
 
 /**
  * Thrown when either the extraction model call or the verification gate
@@ -209,6 +224,17 @@ export interface LeadsLaneDeps {
    * `callOllama<T>` signature. */
   callOllamaImpl: <T>(opts: Omit<CallOllamaOptions, "fetchImpl">) => Promise<CallOllamaResult<T>>;
   geocodeImpl: (query: string) => Promise<GeocodeResult[]>;
+  /**
+   * Ids of live facilities this extraction may already describe (same
+   * operator in the same state). Deliberately broad: a false positive costs a
+   * human glance, a false negative stages a duplicate `create`.
+   */
+  findPossibleDuplicatesImpl: (extraction: {
+    name: string;
+    operator: string;
+    state: string;
+    city: string | null;
+  }) => Promise<string[]>;
   createSubmissionImpl: (input: unknown) => Promise<SubmissionResult>;
   /**
    * Writes `deferred` — the machine-set "I tried and could not extract a
@@ -254,6 +280,13 @@ export interface RunLeadsLaneSummary {
    * lead is left untouched (`new`), not moved to `deferred`. */
   escalated: number;
   geocodeFailed: number;
+  /** The geocoder THREW (HTTP error / network) — an outage, not a judgement
+   * about the lead, so the lead is left untouched (`new`) and the run goes on. */
+  geocodeErrored: number;
+  /** The lead's triage already found live facilities citing its URL, or a live
+   * facility with the same operator exists in the same state — moved to
+   * `deferred` so a human can stage an update instead of a duplicate create. */
+  possibleDuplicate: number;
   schemaRejected: number;
   errors: number;
 }
@@ -268,6 +301,8 @@ function freshSummary(runId: string): RunLeadsLaneSummary {
     unusable: 0,
     escalated: 0,
     geocodeFailed: 0,
+    geocodeErrored: 0,
+    possibleDuplicate: 0,
     schemaRejected: 0,
     errors: 0,
   };
@@ -306,10 +341,10 @@ function hasUsableIdentity(extraction: LeadExtraction): extraction is LeadExtrac
 }
 
 /**
- * Processes exactly one lead: fetch -> extract -> verify -> geocode -> stage.
+ * Processes exactly one lead: fetch -> extract -> verify -> duplicate guard -> geocode -> stage.
  * Mutates `summary` in place and returns void; every branch either writes
- * nothing (fetch failure, escalate), moves the lead to `deferred`
- * (unusable/rejected/geocode-failed/schema-rejected), or stages + promotes
+ * nothing (fetch failure, escalate, geocode error), moves the lead to `deferred`
+ * (unusable/rejected/possible-duplicate/geocode-empty/schema-rejected), or stages + promotes
  * it. Throws `LeadsLaneUnavailableError` — never caught here — when the model
  * itself could not be reached at either the extraction or verification step.
  */
@@ -386,8 +421,41 @@ async function processLead(
     return;
   }
 
+  const duplicateIds = [
+    ...new Set([
+      ...(lead.triage?.duplicateFacilityIds ?? []),
+      ...(await deps.findPossibleDuplicatesImpl({
+        name: extraction.name,
+        operator: extraction.operator,
+        state: extraction.state,
+        city: extraction.city,
+      })),
+    ]),
+  ];
+  if (duplicateIds.length > 0) {
+    console.log(`lead ${lead.id}: possible duplicate of ${duplicateIds.join(", ")} — ${deferLabel}`);
+    summary.possibleDuplicate++;
+    if (!opts.dryRun) {
+      await deps.markDeferredImpl(
+        lead.id,
+        `leads-lane: possible duplicate of ${duplicateIds.join(", ")} — stage an update via /admin/leads`
+      );
+    }
+    return;
+  }
+
   const geocodeQuery = extraction.city ? `${extraction.city}, ${extraction.state}` : extraction.state;
-  const geocodeResults = await deps.geocodeImpl(geocodeQuery);
+  let geocodeResults: GeocodeResult[];
+  try {
+    geocodeResults = await deps.geocodeImpl(geocodeQuery);
+  } catch (err) {
+    // An HTTP/network failure is an outage, not a verdict on the lead.
+    console.log(
+      `lead ${lead.id}: geocode errored (${err instanceof Error ? err.message : String(err)}) — leaving lead 'new'`
+    );
+    summary.geocodeErrored++;
+    return;
+  }
   const top = geocodeResults[0];
   if (!top) {
     console.log(`lead ${lead.id}: geocoding "${geocodeQuery}" returned no results — ${deferLabel}`);
@@ -519,6 +587,7 @@ async function listNewLeadsReal(limit: number): Promise<LeadForLane[]> {
     url: row.url,
     note: row.note,
     attribution: row.attribution,
+    triage: row.triage,
   }));
 }
 
@@ -534,7 +603,19 @@ function buildRealDeps(): LeadsLaneDeps {
     listNewLeadsImpl: listNewLeadsReal,
     fetchPageTextImpl: (url) => fetchPageText(url, { fetchImpl: fetch }),
     callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
-    geocodeImpl: (query) => geocodeUS(query),
+    geocodeImpl: (query) => geocodeUS(query, undefined, { userAgent: LEADS_LANE_USER_AGENT }),
+    findPossibleDuplicatesImpl: async ({ operator, state }) => {
+      const rows = await getDb()
+        .select({ id: facilitiesTable.id })
+        .from(facilitiesTable)
+        .where(
+          and(
+            sql`lower(trim(${facilitiesTable.operator})) = ${operator.trim().toLowerCase()}`,
+            eq(facilitiesTable.state, state.trim().toUpperCase())
+          )
+        );
+      return rows.map((r) => r.id);
+    },
     createSubmissionImpl: (input) => createSubmission(input),
     markDeferredImpl: (id, note) => updateLeadStatus(id, "deferred", note),
     promoteLeadImpl: (id, submissionId, note) => promoteLead(id, submissionId, note),
