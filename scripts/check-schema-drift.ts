@@ -38,6 +38,7 @@ import { PgTable } from "drizzle-orm/pg-core";
 
 import * as schema from "../lib/db/schema";
 import { getDb, hasDatabaseUrl } from "../lib/db/client";
+import { isEntrypoint } from "./is-entrypoint";
 
 /**
  * Derives the list of table names the CODE expects to exist straight from
@@ -214,7 +215,7 @@ async function main(): Promise<void> {
 
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by the test suite — matches scripts/sync-to-neon.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main();
 }

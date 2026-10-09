@@ -1,4 +1,9 @@
-import { listLeadsForAdmin, LEAD_STATUSES, type LeadStatus } from "@/lib/leads";
+import {
+  listLeadsForAdmin,
+  listLeadSubmissionOutcomes,
+  LEAD_STATUSES,
+  type LeadStatus,
+} from "@/lib/leads";
 import { LeadList } from "@/app/admin/leads/lead-list";
 
 const DEFAULT_STATUS: LeadStatus = "new";
@@ -18,6 +23,7 @@ export default async function AdminLeadsPage({
   const { status: rawStatus } = await searchParams;
   const status = normalizeStatus(rawStatus);
   const leads = await listLeadsForAdmin(status);
+  const outcomes = await listLeadSubmissionOutcomes(leads);
 
   return (
     <div className="flex flex-col gap-6">
@@ -28,7 +34,7 @@ export default async function AdminLeadsPage({
           into a submission.
         </p>
       </div>
-      <LeadList leads={leads} activeStatus={status} />
+      <LeadList leads={leads} activeStatus={status} outcomes={outcomes} />
     </div>
   );
 }

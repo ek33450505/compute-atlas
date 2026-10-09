@@ -31,6 +31,7 @@ import { getDb } from "../lib/db/client";
 import { docToRow } from "../lib/db/serialize";
 import { computeDocDiff } from "../lib/doc-diff";
 import { insertFacilityHistoryRow } from "../lib/facility-history";
+import { isEntrypoint } from "./is-entrypoint";
 
 export interface SeedResult {
   /** Ids present in the JSON but absent from the DB — always inserted. */
@@ -179,7 +180,7 @@ async function main() {
 // Only run the CLI when this file is executed directly (e.g. `tsx seed.ts`),
 // not when `seedFacilities` is imported by the test suite — matches
 // scripts/export.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

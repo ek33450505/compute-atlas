@@ -31,6 +31,7 @@ import {
   type FacilityStateRow,
   type SitingEntryRow,
 } from "../lib/nhd-debt";
+import { isEntrypoint } from "./is-entrypoint";
 
 export const LEDGER_RELATIVE_PATH = "data/nhd-backfill-debt.json";
 
@@ -118,7 +119,7 @@ export function run(argv: string[], root: string, today: string): void {
 
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by a test suite — matches scripts/census-diff.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   const today = new Date().toISOString().slice(0, 10); // UTC

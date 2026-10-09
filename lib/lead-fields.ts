@@ -70,6 +70,21 @@ export type AdminLeadRow = Pick<
   | "promotedSubmissionId"
 >;
 
+/**
+ * One submission linked to a lead, with the review outcome the admin leads
+ * screen shows. Deliberately narrow: never the full payload or provenance.
+ */
+export interface LeadSubmissionOutcome {
+  id: string;
+  kind: string;
+  /** `targetFacilityId` for an update, else `payload.id` for a create. */
+  facilityId: string | null;
+  status: "pending" | "approved" | "rejected";
+  createdAt: Date;
+  reviewedAt: Date | null;
+  reviewNote: string | null;
+}
+
 /** Input to `stageLeadSubmission` (lib/leads.ts). Lives here so the admin client component can type it. */
 export interface StageLeadInput {
   kind: "create" | "update";

@@ -2281,3 +2281,108 @@ SHIM
 	_assert_envscan_clean
 	_assert_token_not_in_sinks
 }
+
+# --- STATES_PER_RUN default (3) and the nightly community-leads lane ----------
+# leads-lane.ts is shimmed by the catch-all `*) exit 0` in setup()'s fake npx;
+# these assert run.sh's own invocation of it, not the lane's behavior.
+
+@test "STATES_PER_RUN unset defaults to a 3-state batch and the cursor advances by 3" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	unset STATES_PER_RUN
+	echo "TX" >"$LOG_DIR/cursor.txt"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[[ "$output" == *"states=TX VA OH"* ]]
+	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
+	[ "$outfile_count" = "3" ]
+	# TX VA OH consumed -> next up is GA
+	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
+	[ "$cursor_after" = "GA" ]
+}
+
+@test "a live run invokes the leads lane with the default --limit=10" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	unset LEADS_LIMIT
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	leads_line="$(grep "leads-lane.ts" "$NPX_CALL_LOG" | head -1)"
+	[ -n "$leads_line" ]
+	[[ "$leads_line" == *"--limit=10"* ]]
+	[[ "$leads_line" == *"--run-id="*"-leads"* ]]
+	[ -n "$(find "$LOG_DIR" -name 'leads-lane-*-leads.json' -print -quit)" ]
+}
+
+@test "LEADS_LIMIT overrides the leads lane --limit" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export LEADS_LIMIT=4
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	leads_line="$(grep "leads-lane.ts" "$NPX_CALL_LOG" | head -1)"
+	[[ "$leads_line" == *"--limit=4"* ]]
+}
+
+@test "an invalid LEADS_LIMIT warns and falls back to the default 10" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export LEADS_LIMIT=abc
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	[[ "$output" == *"LEADS_LIMIT=abc is not a positive integer"* ]]
+	leads_line="$(grep "leads-lane.ts" "$NPX_CALL_LOG" | head -1)"
+	[[ "$leads_line" == *"--limit=10"* ]]
+	[[ "$leads_line" != *"abc"* ]]
+}
+
+@test "DISCOVERY_DRY_RUN=true does not invoke the leads lane" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	run grep -c "leads-lane.ts" "$NPX_CALL_LOG"
+	[ "$output" = "0" ]
+}
+
+@test "a failing leads lane is reported as a FAIL but later steps still run" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	cat >"$BIN_DIR/npx" <<EOF
+#!/usr/bin/env bash
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*)
+	exec "$REAL_NPX" "\$@"
+	;;
+*existing-facilities.ts*)
+	echo ""
+	exit 0
+	;;
+*check-sources.ts*)
+	exit 1
+	;;
+*leads-lane.ts*)
+	exit 1
+	;;
+*)
+	exit 0
+	;;
+esac
+EOF
+	chmod +x "$BIN_DIR/npx"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
+	[[ "$output" == *"leads: lane failed"* ]]
+	# retention-prune runs AFTER the leads lane; it must not have been skipped
+	grep -q "retention-prune.ts" "$NPX_CALL_LOG"
+	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+}

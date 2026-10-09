@@ -56,6 +56,7 @@ import path from "node:path";
 
 import { facilitySchema } from "../lib/schema";
 import type { Facility, Source } from "../lib/schema";
+import { isEntrypoint } from "./is-entrypoint";
 
 const WRITE = process.argv.includes("--write");
 const DATA_PATH = path.join(process.cwd(), "data", "facilities.json");
@@ -249,5 +250,5 @@ function main(): void {
 
 // Guarded so the test suite can import `dedupeRecord` without executing the
 // migration — the same `isMain` pattern scripts/normalize-county-suffixes.ts uses.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) main();

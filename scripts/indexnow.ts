@@ -67,6 +67,7 @@ import {
   isSitemapIndex,
   parseLocs,
 } from "../lib/sitemap-urls";
+import { isEntrypoint } from "./is-entrypoint";
 
 export const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 
@@ -309,7 +310,7 @@ export async function main(argv: string[]): Promise<void> {
 
 // Only run the CLI when this file is executed directly, not when its exports are
 // imported by the test suite — matches scripts/sync-to-neon.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main(process.argv.slice(2)).catch((err) => {
     console.error(err instanceof Error ? err.message : err);

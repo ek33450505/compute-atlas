@@ -576,6 +576,54 @@ describe("runLeadsLane — possible duplicate", () => {
       "lead-1",
       "leads-lane: possible duplicate of google-lincoln-ne — stage an update via /admin/leads"
     );
+    // Known before any network/model work: nothing is fetched or asked.
+    expect(deps.fetchPageTextImpl).not.toHaveBeenCalled();
+    expect(deps.callOllamaImpl).not.toHaveBeenCalled();
+    expect(deps.findPossibleDuplicatesImpl).not.toHaveBeenCalled();
+  });
+
+  it("dry run: a triage duplicate writes nothing, does no work, but is counted", async () => {
+    const deps = makeDeps({
+      listNewLeadsImpl: vi.fn(async () => [
+        makeLead({ triage: { fetchedAt: "2026-10-09", ok: true, duplicateFacilityIds: ["google-lincoln-ne"] } }),
+      ]),
+    });
+
+    const summary = await runLeadsLane(baseOpts({ dryRun: true }), deps);
+
+    expect(summary.possibleDuplicate).toBe(1);
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+    expect(deps.fetchPageTextImpl).not.toHaveBeenCalled();
+    expect(deps.callOllamaImpl).not.toHaveBeenCalled();
+  });
+
+  it("ignores duplicateFacilityIds when triage did not succeed (ok: false) and proceeds normally", async () => {
+    const deps = makeDeps({
+      listNewLeadsImpl: vi.fn(async () => [
+        makeLead({
+          triage: { fetchedAt: "2026-10-09", ok: false, duplicateFacilityIds: ["google-lincoln-ne"] },
+        }),
+      ]),
+    });
+
+    const summary = await runLeadsLane(baseOpts(), deps);
+
+    expect(summary.possibleDuplicate).toBe(0);
+    expect(summary.staged).toBe(1);
+    expect(deps.fetchPageTextImpl).toHaveBeenCalled();
+    expect(deps.findPossibleDuplicatesImpl).toHaveBeenCalled();
+  });
+
+  it("propagates a DB error from the duplicate query (fail-closed) and stages nothing", async () => {
+    const deps = makeDeps({
+      findPossibleDuplicatesImpl: vi.fn(async () => {
+        throw new Error("db down");
+      }),
+    });
+
+    await expect(runLeadsLane(baseOpts(), deps)).rejects.toThrow("db down");
+    expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
   });
 
   it("defers when findPossibleDuplicates returns ids", async () => {

@@ -23,6 +23,7 @@ import path from "node:path";
 
 import { getDb } from "../../lib/db/client";
 import { discoveryHeartbeatTable } from "../../lib/db/schema";
+import { isEntrypoint } from "../is-entrypoint";
 
 // --- types -------------------------------------------------------------
 
@@ -158,7 +159,7 @@ async function main(): Promise<void> {
   );
 }
 
-const isMainModule = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
     console.error(err instanceof Error ? err.message : err);

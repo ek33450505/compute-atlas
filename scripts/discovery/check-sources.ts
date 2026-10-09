@@ -34,6 +34,7 @@ import {
 } from "./net-guard";
 import { loadFacilities } from "./load-facilities";
 import type { Facility } from "../../lib/schema";
+import { isEntrypoint } from "../is-entrypoint";
 
 // --- types -----------------------------------------------------------------
 
@@ -300,7 +301,7 @@ async function main(): Promise<void> {
   console.log(`${summarize(results)} -> ${logPath}`);
 }
 
-const isMainModule = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
     console.error(err);

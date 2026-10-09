@@ -201,6 +201,7 @@ describe("isMain guard", () => {
       mkdirSync(nested);
       const copy = join(nested, "submissions.ts");
       copyFileSync(source(), copy);
+      copyFileSync(join(process.cwd(), "scripts", "is-entrypoint.ts"), join(nested, "is-entrypoint.ts"));
 
       const run = runCli(copy);
       expect(run.stderr).toContain("API_ADMIN_TOKEN is not set");
@@ -213,6 +214,7 @@ describe("isMain guard", () => {
       const real = join(dir, "real.ts");
       const link = join(dir, "via-link.ts");
       copyFileSync(source(), real);
+      copyFileSync(join(process.cwd(), "scripts", "is-entrypoint.ts"), join(dir, "is-entrypoint.ts"));
       symlinkSync(real, link);
 
       const run = runCli(link);

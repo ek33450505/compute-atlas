@@ -29,6 +29,7 @@
  * the ambient vars a GitHub Actions job already provides.
  */
 import { writeFileSync } from "node:fs";
+import { isEntrypoint } from "./is-entrypoint";
 
 export type WorkflowState = "ok" | "failing" | "stale" | "never-run";
 
@@ -536,7 +537,7 @@ async function main() {
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by the test suite — matches scripts/check-schema-drift.ts's
 // isMain guard (same underlying pattern as scripts/sync-to-neon.ts).
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main();
 }

@@ -60,6 +60,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 import { normalizeCounty } from "../lib/metros";
 import type { Facility } from "../lib/schema";
+import { isEntrypoint } from "./is-entrypoint";
 
 const DATA_PATH = "data/facilities.json";
 
@@ -246,7 +247,7 @@ function main() {
 
 // Guarded so importing this module from the test suite does not run the CLI —
 // matches scripts/export.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main();
 }

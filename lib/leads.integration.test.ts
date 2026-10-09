@@ -19,6 +19,7 @@ import {
   promoteLead,
   resetLeadToNew,
   stageLeadSubmission,
+  listLeadSubmissionOutcomes,
 } from "@/lib/leads";
 import { submissionsTable, leadsTable } from "@/lib/db/schema";
 import type { Facility } from "@/lib/schema";
@@ -615,5 +616,137 @@ describe("stageLeadSubmission — hardening", () => {
     expect(
       await stageLeadSubmission(await insertLead(null), null as unknown as Parameters<typeof stageLeadSubmission>[1])
     ).toMatchObject({ ok: false, status: 400 });
+  });
+});
+
+describe("listLeadSubmissionOutcomes", () => {
+  async function insertLead(): Promise<string> {
+    const [row] = await tdb.db
+      .insert(leadsTable)
+      .values({ url: "https://example.com/a", submitterIpHash: "h" })
+      .returning({ id: leadsTable.id });
+    return row.id;
+  }
+
+  async function insertSubmission(values: {
+    discoveredBy: string;
+    createdAt: Date;
+    status?: string;
+    kind?: string;
+    targetFacilityId?: string;
+    payload?: Record<string, unknown>;
+    reviewNote?: string;
+    reviewedAt?: Date;
+  }): Promise<string> {
+    const [row] = await tdb.db
+      .insert(submissionsTable)
+      .values({
+        kind: values.kind ?? "create",
+        status: values.status ?? "pending",
+        targetFacilityId: values.targetFacilityId,
+        payload: values.payload ?? {},
+        provenance: { sources: [], discoveredBy: values.discoveredBy },
+        createdAt: values.createdAt,
+        reviewNote: values.reviewNote,
+        reviewedAt: values.reviewedAt,
+      })
+      .returning({ id: submissionsTable.id });
+    return row.id;
+  }
+
+  it("returns {} for no leads", async () => {
+    expect(await listLeadSubmissionOutcomes([])).toEqual({});
+  });
+
+  it("returns every lead:<id> submission in createdAt order with its facility id", async () => {
+    const leadId = await insertLead();
+    const later = await insertSubmission({
+      discoveredBy: `lead:${leadId}`,
+      createdAt: new Date("2026-10-02T00:00:00Z"),
+      kind: "update",
+      targetFacilityId: "existing-site",
+    });
+    const earlier = await insertSubmission({
+      discoveredBy: `lead:${leadId}`,
+      createdAt: new Date("2026-10-01T00:00:00Z"),
+      status: "approved",
+      payload: { id: "new-site" },
+      reviewedAt: new Date("2026-10-03T00:00:00Z"),
+    });
+
+    const result = await listLeadSubmissionOutcomes([{ id: leadId, promotedSubmissionId: null }]);
+
+    expect(result[leadId].map((o) => o.id)).toEqual([earlier, later]);
+    expect(result[leadId][0]).toMatchObject({ facilityId: "new-site", status: "approved" });
+    expect(result[leadId][1]).toMatchObject({ facilityId: "existing-site", status: "pending" });
+  });
+
+  it("links a lane-style submission only through promotedSubmissionId", async () => {
+    const leadId = await insertLead();
+    const subId = await insertSubmission({
+      discoveredBy: "leads-lane",
+      createdAt: new Date("2026-10-01T00:00:00Z"),
+      payload: { id: "lane-site" },
+    });
+
+    const result = await listLeadSubmissionOutcomes([{ id: leadId, promotedSubmissionId: subId }]);
+
+    expect(result[leadId].map((o) => o.id)).toEqual([subId]);
+  });
+
+  it("carries reviewedAt and reviewNote on a rejected submission", async () => {
+    const leadId = await insertLead();
+    await insertSubmission({
+      discoveredBy: `lead:${leadId}`,
+      createdAt: new Date("2026-10-01T00:00:00Z"),
+      status: "rejected",
+      reviewNote: "not enough evidence",
+      reviewedAt: new Date("2026-10-04T00:00:00Z"),
+    });
+
+    const [outcome] = (await listLeadSubmissionOutcomes([{ id: leadId, promotedSubmissionId: null }]))[
+      leadId
+    ];
+
+    expect(outcome.status).toBe("rejected");
+    expect(outcome.reviewNote).toBe("not enough evidence");
+    expect(outcome.reviewedAt).toEqual(new Date("2026-10-04T00:00:00Z"));
+  });
+
+  it("lists a submission once when both link paths match", async () => {
+    const leadId = await insertLead();
+    const subId = await insertSubmission({
+      discoveredBy: `lead:${leadId}`,
+      createdAt: new Date("2026-10-01T00:00:00Z"),
+    });
+
+    const result = await listLeadSubmissionOutcomes([{ id: leadId, promotedSubmissionId: subId }]);
+
+    expect(result[leadId]).toHaveLength(1);
+  });
+
+  it("excludes unrelated submissions and keeps leads separate", async () => {
+    const leadA = await insertLead();
+    const leadB = await insertLead();
+    const subA = await insertSubmission({
+      discoveredBy: `lead:${leadA}`,
+      createdAt: new Date("2026-10-01T00:00:00Z"),
+    });
+    await insertSubmission({
+      discoveredBy: "leads-lane",
+      createdAt: new Date("2026-10-01T00:00:00Z"),
+    });
+    await insertSubmission({
+      discoveredBy: "lead:00000000-0000-0000-0000-000000000000",
+      createdAt: new Date("2026-10-01T00:00:00Z"),
+    });
+
+    const result = await listLeadSubmissionOutcomes([
+      { id: leadA, promotedSubmissionId: null },
+      { id: leadB, promotedSubmissionId: null },
+    ]);
+
+    expect(Object.keys(result)).toEqual([leadA]);
+    expect(result[leadA].map((o) => o.id)).toEqual([subA]);
   });
 });

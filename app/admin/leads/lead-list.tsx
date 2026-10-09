@@ -6,7 +6,12 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { AlertTriangle, CheckCircle2, Clock, ExternalLink } from "lucide-react";
 
-import type { LeadTriage, AdminLeadRow, StageLeadInput } from "@/lib/lead-fields";
+import type {
+  LeadTriage,
+  AdminLeadRow,
+  LeadSubmissionOutcome,
+  StageLeadInput,
+} from "@/lib/lead-fields";
 import { LEAD_STATUSES, type LeadStatus } from "@/lib/lead-fields";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -394,7 +399,78 @@ function StageDialog({
   );
 }
 
-function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
+const LINK_CLASS =
+  "text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+/** UTC calendar date, so the label is identical on the server, the client and CI. */
+function formatReviewDate(value: Date | string): string {
+  return new Date(value).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function outcomeLabel(outcome: LeadSubmissionOutcome): string {
+  if (outcome.status === "pending") return "Pending";
+  const verb = outcome.status === "approved" ? "Approved" : "Rejected";
+  return outcome.reviewedAt ? `${verb} ${formatReviewDate(outcome.reviewedAt)}` : verb;
+}
+
+/** The review outcome of each submission staged from a lead. Text carries the status, not color. */
+function SubmissionOutcomes({ outcomes }: { outcomes: LeadSubmissionOutcome[] }) {
+  return (
+    <ul aria-label="Staged submissions" className="flex flex-col gap-1.5 text-xs">
+      {outcomes.map((outcome) => (
+        <li key={outcome.id} className="flex flex-wrap items-center gap-2">
+          <Badge
+            variant={
+              outcome.status === "rejected"
+                ? "destructive"
+                : outcome.status === "approved"
+                  ? "default"
+                  : "outline"
+            }
+          >
+            {outcomeLabel(outcome)}
+          </Badge>
+          <span className="text-muted-foreground">{outcome.kind}</span>
+          {outcome.status === "approved" && outcome.facilityId ? (
+            <Link
+              href={`/facilities/${outcome.facilityId}`}
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label={`View facility ${outcome.facilityId} (opens in new tab)`}
+              className={LINK_CLASS}
+            >
+              {outcome.facilityId}
+            </Link>
+          ) : (
+            <Link
+              href="/admin/submissions"
+              aria-label={`Submission ${outcome.id}${outcome.facilityId ? ` for ${outcome.facilityId}` : ""} in Submissions`}
+              className={LINK_CLASS}
+            >
+              {outcome.facilityId ?? outcome.id.slice(0, 8)}
+            </Link>
+          )}
+          {outcome.status === "rejected" && outcome.reviewNote ? (
+            <span className="text-muted-foreground">Reason: {outcome.reviewNote}</span>
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function LeadRowCard({
+  lead,
+  outcomes,
+}: {
+  lead: AdminLeadRow;
+  outcomes: LeadSubmissionOutcome[];
+}) {
   const router = useRouter();
   const [dismissOpen, setDismissOpen] = useState(false);
   const [stageOpen, setStageOpen] = useState(false);
@@ -415,7 +491,8 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
   // promoteLead() writes promotedSubmissionId in the same statement that sets
   // the status, so a promoted lead with a null id was marked promoted by hand
   // (legacy) and has no submission behind it.
-  const promotedWithoutSubmission = lead.status === "promoted" && !lead.promotedSubmissionId;
+  const promotedWithoutSubmission =
+    lead.status === "promoted" && !lead.promotedSubmissionId && outcomes.length === 0;
 
   function handleResearching() {
     startTransition(async () => {
@@ -508,7 +585,8 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
             Marked promoted manually — no submission was created.
           </p>
         ) : null}
-        {lead.promotedSubmissionId ? (
+        {outcomes.length > 0 ? <SubmissionOutcomes outcomes={outcomes} /> : null}
+        {outcomes.length === 0 && lead.promotedSubmissionId ? (
           <p className="text-xs text-muted-foreground">
             Staged as submission{" "}
             <Link
@@ -605,9 +683,11 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
 export function LeadList({
   leads,
   activeStatus,
+  outcomes = {},
 }: {
   leads: AdminLeadRow[];
   activeStatus: LeadStatus;
+  outcomes?: Record<string, LeadSubmissionOutcome[]>;
 }) {
   const router = useRouter();
 
@@ -633,7 +713,7 @@ export function LeadList({
             ) : (
               <div className="flex flex-col gap-3">
                 {leads.map((lead) => (
-                  <LeadRowCard key={lead.id} lead={lead} />
+                  <LeadRowCard key={lead.id} lead={lead} outcomes={outcomes[lead.id] ?? []} />
                 ))}
               </div>
             )

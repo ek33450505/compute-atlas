@@ -208,31 +208,35 @@ fi
 CURSOR_FILE="$LOG_DIR/cursor.txt"
 
 # STATES_PER_RUN: how many states this invocation processes, each with its own
-# claude call/submit. Default 2 (2026-08-14, ~3x daily-output push — the other
-# ~1.5x comes from the raised review cap below). Env-overridable for tests/
-# tuning. Clamped to [1, ${#STATES[@]}] so a bad value (0, negative, or bigger
-# than the rotation) can't loop forever or index out of STATES' bounds.
+# claude call/submit. Default 3 (2026-10-09; was 2 from 2026-08-14, a ~3x
+# daily-output push). Env-overridable for tests/tuning. Clamped to
+# [1, ${#STATES[@]}] so a bad value (0, negative, or bigger than the rotation)
+# can't loop forever or index out of STATES' bounds.
 #
-# Deliberately NOT raised alongside the 2026-09-13 rotation expansion to 51
-# states (see DEFAULT_STATES above) — that would stack an unmeasured
-# throughput change on top of an unmeasured 2.3x scope change in the same
-# commit, making any regression unattributable to either. This round's
-# throughput lever is STEADY_CAP (raised 25 -> 30 below) instead: states run
-# sequentially within one invocation and the wall-clock cap is known NOT to
-# reliably enforce (see the OVERRUN_LIMIT_SECS note below — overruns of
-# 6399s/4232s/5456s against a 3000s cap, 2026-08-15), so a third state would
-# add another effectively-unbounded window, and a mid-batch death (machine
-# sleep or subscription session limit, both observed) costs every remaining
-# state in the batch. Raising the per-state cap does more work inside an
-# invocation that is already being paid for, without that risk.
+# History: it was deliberately NOT raised alongside the 2026-09-13 rotation
+# expansion to 51 states (see DEFAULT_STATES above) — that would have stacked
+# an unmeasured throughput change on top of an unmeasured 2.3x scope change in
+# the same commit, making any regression unattributable to either. The lever
+# then was STEADY_CAP (raised 25 -> 30 below). The wall-clock cap was known NOT
+# to reliably enforce (see the OVERRUN_LIMIT_SECS note below — overruns of
+# 6399s/4232s/5456s against a 3000s cap, 2026-08-15), and a mid-batch death
+# (machine sleep or subscription session limit, both observed) costs every
+# remaining state in the batch.
 #
-# Rotation arithmetic: with STATES_PER_RUN unchanged at 2, 51 states / 2 per
-# day = ~26-day full cycle (was 22 states / 2 per day = 11-day cycle before
-# the 2026-09-13 expansion). That is the real cost of covering every state —
-# say it plainly so nobody discovers a 26-day cycle by surprise. 51 does NOT
-# divide evenly by 2, so pairings still vary cycle to cycle, same as the old
-# 22/2 and 15/2 rotations — fine and intended, not a bug.
-STATES_PER_RUN="${STATES_PER_RUN:-2}"
+# Raised 2 -> 3 on 2026-10-09 (Ed's decision) after measuring
+# discovery-logs/launchd.out: zero OVERRUN warnings logged since 2026-09-16, no
+# session-limit hits, and 2-state batches took 68-118 min (so 3 states should
+# take roughly 100-175 min). The 51-state rotation has run ~4 weeks. The
+# 2026-10-05..10-07 failures were an expired Claude login, not load. If
+# OVERRUN warnings or session-limit hits return, this is the first lever to
+# revert.
+#
+# Rotation arithmetic: 51 states / 3 per day = exactly a 17-day full cycle
+# (was ~26 days at 2 per day, and 11 days at 22 states / 2 before the
+# 2026-09-13 expansion). Unlike 2, 51 DOES divide evenly by 3, so the same
+# triples of states recur together every cycle rather than shifting — a
+# consequence worth knowing, not a bug.
+STATES_PER_RUN="${STATES_PER_RUN:-3}"
 (( STATES_PER_RUN < 1 )) && STATES_PER_RUN=1
 (( STATES_PER_RUN > ${#STATES[@]} )) && STATES_PER_RUN=${#STATES[@]}
 
@@ -606,7 +610,10 @@ candidates_file_bytes() {
 # this change (2026-09-13 is 45 days past BURST_START_DATE, past BURST_DAYS=20).
 #
 # STEADY_CAP raised 25 -> 30 (2026-09-13, +20%: 2 x 25 = 50/day -> 2 x 30 =
-# 60/day), deliberately WITHOUT raising STATES_PER_RUN or BURST_CAP — see
+# 60/day; STATES_PER_RUN went 2 -> 3 on 2026-10-09, so the per-state discovery
+# ceiling is now 3 x 30 = 90/day, and the real nightly ceiling including the
+# enrichment submit is 3 x 30 + 30 = 120 — see the PER SUBMIT CALL note below),
+# deliberately WITHOUT raising STATES_PER_RUN or BURST_CAP — see
 # STATES_PER_RUN's comment above for why STATES_PER_RUN specifically was left
 # alone. Three reasons for choosing this lever, and for the size:
 #   1. The wall-clock cap is known NOT to reliably enforce (three overruns of
@@ -639,8 +646,10 @@ candidates_file_bytes() {
 # Applied PER SUBMIT CALL below (a ceiling per call, not a per-batch total).
 # There are STATES_PER_RUN of those calls inside the per-state loop, plus ONE
 # more for the enrichment lane, which runs once per batch outside the loop — so
-# the real nightly ceiling is (STATES_PER_RUN x cap) + cap = 90 at the current
-# defaults (2 x 30 + 30), up from 75 (2 x 25 + 25).
+# the real nightly ceiling is (STATES_PER_RUN x cap) + cap = 120 at the current
+# defaults (3 x 30 + 30, since 2026-10-09); it was 90 at 2 states (2 x 30 + 30)
+# and 75 before the 2026-09-13 cap raise (2 x 25 + 25). The leads lane does not
+# use this cap; it is bounded separately by LEADS_LIMIT.
 # It is a ceiling, not a target: whole-run yield measured ~14-34 approved/day
 # across all states, i.e. the busiest days sit around 45% of the old ceiling.
 # Headroom is real but not vast — raising STATES_PER_RUN or the cap raises what
@@ -1058,6 +1067,26 @@ else
     >"$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.log" 2>>"$LOG_DIR/verify-fields.err"; then
     log "WARN: verify-fields failed for $ENRICHMENT_RUN_ID — continuing (see verify-fields.err)"
     FAILURES+=("enrichment: verify-fields failed")
+  fi
+
+  # --- community-leads lane ---------------------------------------------------
+  # Works the public URL tips (`new` leads): fetch -> local Ollama extraction ->
+  # verify -> duplicate guard -> geocode -> stage a PENDING submission. It never
+  # writes a live facility; every row still needs a human approve. Leads it
+  # cannot use go to `deferred` for review at /admin/leads. Bounded because each
+  # lead costs >=2 Ollama calls plus up to 2 fetches; 10/night is ample at the
+  # current tip volume (~1/day). Inside the dry-run guard because it mutates
+  # lead status and stages submissions. A failure is recorded but never aborts
+  # the rest of the run. Summary JSON goes to stdout, so it is captured to file.
+  LEADS_LIMIT="$(validate_positive_int_env LEADS_LIMIT 10)"
+  LEADS_RUN_ID="$(date '+%Y%m%dT%H%M%S')-leads"
+  log "working community leads (limit=${LEADS_LIMIT})"
+  if ! npx tsx --env-file=.env.local scripts/discovery/leads-lane.ts \
+    --limit="$LEADS_LIMIT" \
+    --run-id="$LEADS_RUN_ID" \
+    >"$LOG_DIR/leads-lane-${LEADS_RUN_ID}.json" 2>>"$LOG_DIR/leads-lane.err"; then
+    log "WARN: leads lane failed for $LEADS_RUN_ID — continuing (see leads-lane.err)"
+    FAILURES+=("leads: lane failed")
   fi
 fi
 

@@ -74,6 +74,7 @@ import { canonicalize, canonicalStringify, changedTopLevelKeys } from "../lib/ca
 import { tagsForFacility, isValidCacheTag, MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
 import { notifySubscribersOfChanges } from "../lib/notify";
 import { redactedErrorCode } from "../lib/db-error";
+import { isEntrypoint } from "./is-entrypoint";
 
 /**
  * `facility_history.source` for rows this tool writes — a new value alongside
@@ -781,7 +782,7 @@ async function main(): Promise<void> {
 
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by the test suite — matches scripts/seed.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);

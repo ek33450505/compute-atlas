@@ -470,6 +470,28 @@ Category: *content edit to page templates*. `/activity` and the homepage
   git --no-pager show --stat --format='' <that-sha>
   ```
 
+**2026-10-09 — #400, NJ/NY wave + community leads (neon-sync, `--skip-nhd` fallback)**
+Category: *new pages* **and** *content edit to page templates* (data-driven
+content, no template change). `facilities` family plus its hubs.
+
+- 2,376 → 2,394 facilities: 18 new routes (NY 9, NJ 7, MO 1, OK 1) and 36
+  changed records. Includes the first records staged from public URL tips
+  through `/admin/leads` (`lambda-midamerica-industrial-park-chouteau-ok`,
+  `google-hunt-midwest-kc-northland-mo`) and follow-up corrections.
+- Daytime NHD was degraded, so the map data fell back to `--skip-nhd`: the new
+  CONUS records lack nearest-water / ≥230 kV lines (NHD debt 0 → 18), which the
+  nightly backfill adds later — each such backfill merge is its own entry.
+- Two existing pins moved: `google-lincoln-ne` (10.0 km, to the N 56th St /
+  I-80 interchange) and `google-project-mica-kc-northland-mo` (6.96 km, to the
+  I-435 / US-169 interchange). `--skip-nhd` and `--backfill-nhd` both keep their
+  existing nearest-water / ≥230 kV values, which were measured from the old
+  pins, so those two lines stay stale until a full `build:mapdata` pass.
+
+  ```bash
+  gh pr diff 400 --name-only
+  git --no-pager diff <pre-#400-main> <#400-merge> -- data/facilities.meta.json
+  ```
+
 ### RULED OUT
 
 Listed because the section's own instruction is to rule confounds out
@@ -614,6 +636,16 @@ explicitly rather than omit them.
 - This log only (a measurement recorded under "What this does to the 2026-10-13
   read"), so the Vercel ignore-gate skips the build. Verify:
   `gh pr diff 386 --name-only` (`docs/seo-soak-2026-09.md`).
+
+**2026-10-09 — branch `feature/lead-followups`, lead outcomes, refresh-totals control, discovery scripts** — **RULED OUT**.
+
+- Cookie-gated admin pages (`app/admin/leads/`, `app/admin/submissions/`),
+  `lib/lead*.ts`, scripts (entrypoint guards, the leads lane, `run.sh` now 3
+  states/run plus a nightly leads lane), tests and docs. `/admin/` is disallowed
+  in `robots.txt` and needs the admin cookie, so no crawlable page, link, sitemap
+  or robots rule changes. It triggers a production build. Verify:
+  `git --no-pager diff --name-only 4dc103f <merge-sha> | grep -E '^(app/|components/|next\.config|proxy\.ts)' | grep -vE '^app/admin/'`
+  (empty).
 
 ## Gaps in the pre-registered list
 

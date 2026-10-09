@@ -32,6 +32,7 @@ import { eq, isNotNull } from "drizzle-orm";
 import { getDb } from "../lib/db/client";
 import { apiAccessGrantsTable, subscriptionsTable } from "../lib/db/schema";
 import { hashToken, isHashedToken } from "../lib/token-hash";
+import { isEntrypoint } from "./is-entrypoint";
 
 export interface BackfillColumnOutcome {
   table: string;
@@ -189,7 +190,7 @@ async function main() {
 // Only run the CLI when this file is executed directly (e.g. `tsx
 // hash-tokens-backfill.ts`), not when `runHashTokensBackfill` is imported by
 // the test suite — matches scripts/retention-prune.ts's isMain guard.
-const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
     console.error(err);
