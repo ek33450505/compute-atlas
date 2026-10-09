@@ -4,7 +4,14 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/admin-session";
-import { updateLeadStatus, resetLeadToNew, type LeadActionResult } from "@/lib/leads";
+import {
+  updateLeadStatus,
+  resetLeadToNew,
+  stageLeadSubmission,
+  type LeadActionResult,
+  type StageLeadInput,
+  type StageLeadResult,
+} from "@/lib/leads";
 
 /**
  * Server Actions are independently callable (not gated by middleware page
@@ -66,15 +73,21 @@ export async function resetLeadToNewAction(
   return result;
 }
 
-export async function markLeadPromotedAction(
+/**
+ * The admin path from a lead to the approve queue: stages a `pending`
+ * submission (never a live facility) and links the lead. The maintainer then
+ * approves it from /admin/submissions. See `stageLeadSubmission`.
+ */
+export async function stageLeadSubmissionAction(
   id: string,
-  reviewNote?: string
-): Promise<LeadActionResult> {
+  input: StageLeadInput
+): Promise<StageLeadResult> {
   await assertAdminSession();
 
-  const result = await updateLeadStatus(id, "promoted", reviewNote);
+  const result = await stageLeadSubmission(id, input);
   if (result.ok) {
     revalidatePath("/admin/leads");
+    revalidatePath("/admin/submissions");
   }
   return result;
 }

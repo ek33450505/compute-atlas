@@ -12,12 +12,14 @@ const {
   mockVerifySessionCookie,
   mockUpdateLeadStatus,
   mockResetLeadToNew,
+  mockStageLeadSubmission,
   mockRevalidatePath,
 } = vi.hoisted(() => ({
   mockGetCookie: vi.fn(),
   mockVerifySessionCookie: vi.fn(),
   mockUpdateLeadStatus: vi.fn(),
   mockResetLeadToNew: vi.fn(),
+  mockStageLeadSubmission: vi.fn(),
   mockRevalidatePath: vi.fn(),
 }));
 
@@ -39,11 +41,12 @@ vi.mock("@/lib/admin-session", () => ({
 vi.mock("@/lib/leads", () => ({
   updateLeadStatus: mockUpdateLeadStatus,
   resetLeadToNew: mockResetLeadToNew,
+  stageLeadSubmission: mockStageLeadSubmission,
 }));
 
 import {
   markLeadResearchingAction,
-  markLeadPromotedAction,
+  stageLeadSubmissionAction,
   dismissLeadAction,
   resetLeadToNewAction,
 } from "./actions";
@@ -106,35 +109,45 @@ describe("markLeadResearchingAction", () => {
   });
 });
 
-describe("markLeadPromotedAction", () => {
+describe("stageLeadSubmissionAction", () => {
+  const input = { kind: "create" as const, payload: { id: "x" } };
+
   beforeEach(() => {
     mockGetCookie.mockClear();
     mockVerifySessionCookie.mockClear();
-    mockUpdateLeadStatus.mockClear();
+    mockStageLeadSubmission.mockClear();
     mockRevalidatePath.mockClear();
     mockGetCookie.mockReturnValue({ value: "some-cookie-value" });
   });
 
-  it("rejects and never calls updateLeadStatus when the session cookie is invalid", async () => {
+  it("rejects and never calls stageLeadSubmission when the session cookie is invalid", async () => {
     mockVerifySessionCookie.mockReturnValue(false);
 
-    await expect(markLeadPromotedAction("lead-1")).rejects.toThrow();
+    await expect(stageLeadSubmissionAction("lead-1", input)).rejects.toThrow();
 
-    expect(mockUpdateLeadStatus).not.toHaveBeenCalled();
+    expect(mockStageLeadSubmission).not.toHaveBeenCalled();
   });
 
-  it("calls updateLeadStatus(id, 'promoted') and revalidates on success", async () => {
+  it("calls stageLeadSubmission and revalidates leads and submissions on success", async () => {
     mockVerifySessionCookie.mockReturnValue(true);
-    mockUpdateLeadStatus.mockResolvedValue({
-      ok: true,
-      lead: { id: "lead-1", status: "promoted" },
-    });
+    mockStageLeadSubmission.mockResolvedValue({ ok: true, submissionId: "sub-1", leadPromoted: true });
 
-    const result = await markLeadPromotedAction("lead-1", "looks good");
+    const result = await stageLeadSubmissionAction("lead-1", input);
 
-    expect(mockUpdateLeadStatus).toHaveBeenCalledWith("lead-1", "promoted", "looks good");
+    expect(mockStageLeadSubmission).toHaveBeenCalledWith("lead-1", input);
     expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/leads");
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/submissions");
     expect(result.ok).toBe(true);
+  });
+
+  it("does not revalidate when staging fails", async () => {
+    mockVerifySessionCookie.mockReturnValue(true);
+    mockStageLeadSubmission.mockResolvedValue({ ok: false, status: 409, error: "nope" });
+
+    const result = await stageLeadSubmissionAction("lead-1", input);
+
+    expect(result.ok).toBe(false);
+    expect(mockRevalidatePath).not.toHaveBeenCalled();
   });
 });
 

@@ -1,16 +1,32 @@
 import { z } from "zod";
-import { eq, desc } from "drizzle-orm";
+import { and, eq, desc, ne, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
-import { leadsTable, type LeadRow } from "@/lib/db/schema";
+import { facilitiesTable, leadsTable, submissionsTable, type LeadRow } from "@/lib/db/schema";
 import { httpUrlSchema, sanitizeAttribution } from "@/lib/intake-fields";
-import { LEAD_STATUSES, type LeadStatus, type LeadTriage, type AdminLeadRow } from "@/lib/lead-fields";
+import { facilitySchema } from "@/lib/schema";
+import { createSubmission } from "@/lib/submissions";
+import {
+  LEAD_STATUSES,
+  type LeadStatus,
+  type LeadTriage,
+  type AdminLeadRow,
+  type StageLeadInput,
+  type StageLeadResult,
+} from "@/lib/lead-fields";
 
 // Re-exported so existing server-side callers (app/admin/leads/page.tsx,
 // app/admin/leads/actions.ts, this module's own tests) keep importing from
 // "@/lib/leads" unchanged. Client components must import these from the
 // client-safe "@/lib/lead-fields" leaf directly — see that file's header.
-export { LEAD_STATUSES, type LeadStatus, type LeadTriage, type AdminLeadRow };
+export {
+  LEAD_STATUSES,
+  type LeadStatus,
+  type LeadTriage,
+  type AdminLeadRow,
+  type StageLeadInput,
+  type StageLeadResult,
+};
 
 export const leadInputSchema = z.object({
   url: httpUrlSchema,
@@ -156,9 +172,17 @@ export async function promoteLead(
       reviewNote: reviewNote ?? null,
       promotedSubmissionId: submissionId,
     })
-    .where(eq(leadsTable.id, id))
+    // Conditional so a concurrent promote/dismiss between the read above and
+    // this write cannot be overwritten (that would clobber the first
+    // promotedSubmissionId or resurrect a dismissed lead).
+    .where(
+      and(eq(leadsTable.id, id), ne(leadsTable.status, "promoted"), ne(leadsTable.status, "dismissed"))
+    )
     .returning();
 
+  if (!updated) {
+    return { ok: false, status: 409, error: "Lead changed — refresh and try again" };
+  }
   return { ok: true, lead: updated };
 }
 
@@ -230,4 +254,138 @@ export async function setLeadTriage(id: string, triage: LeadTriage): Promise<Lea
     return { ok: false, status: 404, error: "Lead not found" };
   }
   return { ok: true, lead: row };
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * The only admin path from a lead to the approve queue: stages a `pending`
+ * submission built from a lead (plus the maintainer's researched payload) so
+ * it is approved through the existing /admin/submissions flow. Staging only —
+ * this never writes a live facility.
+ *
+ * The payload is validated against `facilitySchema` here (for an update, as the
+ * shallow top-level merge `updateFacility` will perform) so a payload approve
+ * would reject fails now rather than sitting in the queue. A create whose id
+ * already exists 409s: that is the duplicate guard.
+ *
+ * `provenance.discoveredBy` is `lead:<id>` — the convention the hand-promoted
+ * community leads already use, and the only link from a submission back to its
+ * lead. A lead that is already promoted (one article covering several
+ * facilities) may stage further submissions: its first `promotedSubmissionId`
+ * is left alone and the extras are linked by `discoveredBy` alone.
+ */
+export async function stageLeadSubmission(
+  leadId: string,
+  input: StageLeadInput
+): Promise<StageLeadResult> {
+  if (!UUID_RE.test(leadId)) {
+    return { ok: false, status: 404, error: "Lead not found" };
+  }
+  if (typeof input !== "object" || input === null) {
+    return { ok: false, status: 400, error: "Invalid input" };
+  }
+  const db = getDb();
+  const [lead] = await db.select().from(leadsTable).where(eq(leadsTable.id, leadId));
+  if (!lead) {
+    return { ok: false, status: 404, error: "Lead not found" };
+  }
+  if (lead.status === "dismissed") {
+    return { ok: false, status: 409, error: "Lead is dismissed — return it to new first" };
+  }
+
+  const payload = input.payload;
+  if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
+    return { ok: false, status: 400, error: "Payload must be a JSON object" };
+  }
+  const patch = payload as Record<string, unknown>;
+
+  if (input.kind === "create") {
+    const parsed = facilitySchema.safeParse(patch);
+    if (!parsed.success) {
+      return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };
+    }
+    const existing = await db
+      .select({ id: facilitiesTable.id })
+      .from(facilitiesTable)
+      .where(eq(facilitiesTable.id, parsed.data.id));
+    if (existing.length > 0) {
+      return {
+        ok: false,
+        status: 409,
+        error: `Facility ${parsed.data.id} already exists — stage an update instead`,
+      };
+    }
+    const pending = await db
+      .select({ id: submissionsTable.id })
+      .from(submissionsTable)
+      .where(
+        and(
+          eq(submissionsTable.status, "pending"),
+          eq(submissionsTable.kind, "create"),
+          sql`${submissionsTable.payload}->>'id' = ${parsed.data.id}`
+        )
+      );
+    if (pending.length > 0) {
+      return {
+        ok: false,
+        status: 409,
+        error: `A pending submission already proposes ${parsed.data.id}`,
+      };
+    }
+  } else if (input.kind === "update") {
+    const targetId = input.targetFacilityId?.trim();
+    if (!targetId) {
+      return { ok: false, status: 400, error: "targetFacilityId is required for an update" };
+    }
+    const [existing] = await db
+      .select()
+      .from(facilitiesTable)
+      .where(eq(facilitiesTable.id, targetId));
+    if (!existing) {
+      return { ok: false, status: 404, error: "Facility not found" };
+    }
+    const parsed = facilitySchema.safeParse({ ...existing.doc, ...patch, id: targetId });
+    if (!parsed.success) {
+      return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };
+    }
+  } else {
+    return { ok: false, status: 400, error: "kind must be create or update" };
+  }
+
+  const extraSources = input.extraSources ?? [];
+  for (const url of extraSources) {
+    if (!httpUrlSchema.safeParse(url).success) {
+      return { ok: false, status: 400, error: `Invalid source URL: ${url}` };
+    }
+  }
+  const sources = [...new Set([lead.url, ...extraSources])];
+
+  const note = input.note?.trim() || lead.note || undefined;
+  const attribution = sanitizeAttribution(lead.attribution ?? undefined);
+  const provenance = {
+    sources,
+    discoveredBy: `lead:${lead.id}`,
+    discoveredAt: lead.createdAt.toISOString().slice(0, 10),
+    ...(note ? { note } : {}),
+    ...(attribution ? { attribution } : {}),
+  };
+
+  const created = await createSubmission({
+    kind: input.kind,
+    ...(input.kind === "update" ? { targetFacilityId: input.targetFacilityId?.trim() } : {}),
+    payload: patch,
+    provenance,
+  });
+  if (!created.ok) {
+    return { ok: false, status: created.status, error: created.error, issues: created.issues };
+  }
+
+  let leadPromoted = false;
+  if (lead.status !== "promoted") {
+    // The submission already exists; a failed link must not report staging as failed.
+    const promoted = await promoteLead(lead.id, created.id, `Staged as submission ${created.id}`);
+    leadPromoted = promoted.ok;
+  }
+  return { ok: true, submissionId: created.id, leadPromoted };
 }

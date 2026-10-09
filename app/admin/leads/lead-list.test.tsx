@@ -16,8 +16,9 @@ const {
   mockRefresh,
   mockToastSuccess,
   mockToastError,
+  mockToastWarning,
   mockMarkResearching,
-  mockMarkPromoted,
+  mockStage,
   mockDismiss,
   mockResetToNew,
 } = vi.hoisted(() => ({
@@ -25,8 +26,9 @@ const {
   mockRefresh: vi.fn(),
   mockToastSuccess: vi.fn(),
   mockToastError: vi.fn(),
+  mockToastWarning: vi.fn(),
   mockMarkResearching: vi.fn(),
-  mockMarkPromoted: vi.fn(),
+  mockStage: vi.fn(),
   mockDismiss: vi.fn(),
   mockResetToNew: vi.fn(),
 }));
@@ -39,12 +41,13 @@ vi.mock("sonner", () => ({
   toast: {
     success: mockToastSuccess,
     error: mockToastError,
+    warning: mockToastWarning,
   },
 }));
 
 vi.mock("./actions", () => ({
   markLeadResearchingAction: mockMarkResearching,
-  markLeadPromotedAction: mockMarkPromoted,
+  stageLeadSubmissionAction: mockStage,
   dismissLeadAction: mockDismiss,
   resetLeadToNewAction: mockResetToNew,
 }));
@@ -254,11 +257,11 @@ describe("LeadList — row rendering", () => {
     expect(screen.queryByRole("button", { name: "Dismiss" })).not.toBeInTheDocument();
   });
 
-  it("shows only Mark promoted / Dismiss (not Start researching) for a researching lead", () => {
+  it("shows only Stage / Dismiss (not Start researching) for a researching lead", () => {
     renderList([makeLead({ status: "researching" })], "researching");
 
     expect(screen.queryByRole("button", { name: "Start researching" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Mark promoted (no submission)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Stage as submission" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Dismiss" })).toBeInTheDocument();
   });
 });
@@ -393,7 +396,6 @@ describe("LeadList — promoted-without-submission warning", () => {
 describe("LeadList — status actions", () => {
   beforeEach(() => {
     mockMarkResearching.mockClear();
-    mockMarkPromoted.mockClear();
     mockDismiss.mockClear();
     mockToastSuccess.mockClear();
     mockToastError.mockClear();
@@ -410,28 +412,6 @@ describe("LeadList — status actions", () => {
     await waitFor(() => expect(mockMarkResearching).toHaveBeenCalledWith("lead-1"));
     await waitFor(() => expect(mockToastSuccess).toHaveBeenCalled());
     expect(mockRefresh).toHaveBeenCalled();
-  });
-
-  it("calls markLeadPromotedAction and refreshes on success", async () => {
-    mockMarkPromoted.mockResolvedValue({ ok: true });
-    const user = userEvent.setup();
-    renderList([makeLead()], "new");
-
-    await user.click(screen.getByRole("button", { name: "Mark promoted (no submission)" }));
-
-    await waitFor(() => expect(mockMarkPromoted).toHaveBeenCalledWith("lead-1"));
-    expect(mockRefresh).toHaveBeenCalled();
-  });
-
-  it("shows an error toast and does not refresh when an action fails", async () => {
-    mockMarkPromoted.mockResolvedValue({ ok: false, status: 409, error: "Lead already promoted" });
-    const user = userEvent.setup();
-    renderList([makeLead()], "new");
-
-    await user.click(screen.getByRole("button", { name: "Mark promoted (no submission)" }));
-
-    await waitFor(() => expect(mockToastError).toHaveBeenCalledWith("Lead already promoted"));
-    expect(mockRefresh).not.toHaveBeenCalled();
   });
 
   it("disables the dismiss confirm button until a non-empty reason is entered", async () => {
@@ -480,7 +460,7 @@ describe("LeadList — a deferred lead", () => {
     );
 
     // Forward moves stay available: the machine gave up, a human has not.
-    expect(screen.getByRole("button", { name: "Mark promoted (no submission)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Stage as submission" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Dismiss" })).toBeInTheDocument();
     // And the way back into the lane's `new` queue.
     expect(screen.getByRole("button", { name: "Return to new" })).toBeInTheDocument();
@@ -502,5 +482,198 @@ describe("LeadList — a deferred lead", () => {
     await userEvent.click(screen.getByRole("button", { name: "Return to new" }));
 
     await waitFor(() => expect(mockResetToNew).toHaveBeenCalledWith("lead-1"));
+  });
+});
+
+describe("LeadList — stage as submission", () => {
+  beforeEach(() => {
+    mockStage.mockReset();
+    mockToastSuccess.mockClear();
+    mockToastError.mockClear();
+    mockToastWarning.mockClear();
+    mockRefresh.mockClear();
+  });
+
+  function openDialog() {
+    const user = userEvent.setup();
+    return user.click(screen.getByRole("button", { name: "Stage as submission" })).then(() => user);
+  }
+
+  it("opens the dialog and no longer offers 'Mark promoted (no submission)'", async () => {
+    renderList([makeLead()], "new");
+    expect(screen.queryByRole("button", { name: "Mark promoted (no submission)" })).not.toBeInTheDocument();
+
+    await openDialog();
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByLabelText("Payload JSON")).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "New facility" })).toBeChecked();
+  });
+
+  it("shows an inline error and does not call the action on invalid JSON", async () => {
+    renderList([makeLead()], "new");
+    const user = await openDialog();
+
+    await user.type(screen.getByLabelText("Payload JSON"), "not json");
+    await user.click(screen.getByRole("button", { name: "Stage submission" }));
+
+    expect(screen.getByText("Payload is not valid JSON.")).toBeInTheDocument();
+    expect(mockStage).not.toHaveBeenCalled();
+  });
+
+  it("calls the action with the parsed payload, sources and note, then refreshes", async () => {
+    mockStage.mockResolvedValue({ ok: true, submissionId: "abcdef12-0000", leadPromoted: true });
+    renderList([makeLead()], "new");
+    const user = await openDialog();
+
+    await user.click(screen.getByLabelText("Payload JSON"));
+    await user.paste('{"id":"x"}');
+    await user.click(screen.getByLabelText("Extra source URLs (one per line, optional)"));
+    await user.paste("https://a.example/1\n\nhttps://a.example/2");
+    await user.type(screen.getByLabelText("Note (optional)"), "  hi  ");
+    await user.click(screen.getByRole("button", { name: "Stage submission" }));
+
+    await waitFor(() =>
+      expect(mockStage).toHaveBeenCalledWith("lead-1", {
+        kind: "create",
+        payload: { id: "x" },
+        extraSources: ["https://a.example/1", "https://a.example/2"],
+        note: "hi",
+      })
+    );
+    await waitFor(() =>
+      expect(mockToastSuccess).toHaveBeenCalledWith(
+        "Staged as submission abcdef12 — approve it in Submissions"
+      )
+    );
+    expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  it("inserts a template pre-filled with the lead url for a new facility", async () => {
+    renderList([makeLead()], "new");
+    const user = await openDialog();
+
+    await user.click(screen.getByRole("button", { name: "Insert template" }));
+
+    const text = (screen.getByLabelText("Payload JSON") as HTMLTextAreaElement).value;
+    expect(JSON.parse(text).sources[0].url).toBe("https://example.com/tip");
+  });
+
+  it("defaults to update with the target prefilled when exactly one duplicate exists", async () => {
+    const triage = { ok: true, duplicateFacilityIds: ["existing-site"] } as AdminLeadRow["triage"];
+    renderList([makeLead({ triage })], "new");
+    const user = await openDialog();
+
+    expect(screen.getByRole("radio", { name: "Update existing facility" })).toBeChecked();
+    expect(screen.getByLabelText("Target facility id")).toHaveValue("existing-site");
+    expect(screen.getByText(/replace the existing value wholesale/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Insert template" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByLabelText("Payload JSON"));
+    await user.paste('{"status":"operational"}');
+    mockStage.mockResolvedValue({ ok: true, submissionId: "12345678", leadPromoted: true });
+    await user.click(screen.getByRole("button", { name: "Stage submission" }));
+
+    await waitFor(() =>
+      expect(mockStage).toHaveBeenCalledWith("lead-1", {
+        kind: "update",
+        targetFacilityId: "existing-site",
+        payload: { status: "operational" },
+      })
+    );
+  });
+
+  it("defaults to a new facility when there are several duplicates", async () => {
+    const triage = { ok: true, duplicateFacilityIds: ["a", "b"] } as AdminLeadRow["triage"];
+    renderList([makeLead({ triage })], "new");
+    await openDialog();
+
+    expect(screen.getByRole("radio", { name: "New facility" })).toBeChecked();
+  });
+
+  it("toasts the error and lists validation issues inline on failure", async () => {
+    mockStage.mockResolvedValue({
+      ok: false,
+      status: 400,
+      error: "Invalid facility",
+      issues: [{ path: ["location", "state"], message: "Required" }],
+    });
+    renderList([makeLead()], "new");
+    const user = await openDialog();
+
+    await user.click(screen.getByLabelText("Payload JSON"));
+    await user.paste("{}");
+    await user.click(screen.getByRole("button", { name: "Stage submission" }));
+
+    await waitFor(() => expect(mockToastError).toHaveBeenCalledWith("Invalid facility"));
+    expect(screen.getByText("location.state: Required")).toBeInTheDocument();
+    expect(mockRefresh).not.toHaveBeenCalled();
+  });
+
+  it("warns instead of succeeding when the lead could not be linked", async () => {
+    mockStage.mockResolvedValue({ ok: true, submissionId: "abcdef12-0000", leadPromoted: false });
+    renderList([makeLead()], "new");
+    const user = await openDialog();
+
+    await user.click(screen.getByLabelText("Payload JSON"));
+    await user.paste("{}");
+    await user.click(screen.getByRole("button", { name: "Stage submission" }));
+
+    await waitFor(() =>
+      expect(mockToastWarning).toHaveBeenCalledWith(expect.stringContaining("could not be linked"))
+    );
+    expect(mockToastSuccess).not.toHaveBeenCalled();
+  });
+
+  it("reports success, not a warning, when an already-promoted lead stages another", async () => {
+    mockStage.mockResolvedValue({ ok: true, submissionId: "abcdef12-0000", leadPromoted: false });
+    renderList([makeLead({ status: "promoted", promotedSubmissionId: "sub-1" })], "promoted");
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Stage another submission" }));
+
+    await user.click(screen.getByLabelText("Payload JSON"));
+    await user.paste("{}");
+    await user.click(screen.getByRole("button", { name: "Stage submission" }));
+
+    await waitFor(() =>
+      expect(mockToastSuccess).toHaveBeenCalledWith(
+        "Staged as submission abcdef12 (lead already linked to an earlier submission)"
+      )
+    );
+    expect(mockToastWarning).not.toHaveBeenCalled();
+  });
+
+  it("wires the JSON error into the textarea's accessible description", async () => {
+    renderList([makeLead()], "new");
+    const user = await openDialog();
+
+    await user.type(screen.getByLabelText("Payload JSON"), "nope");
+    await user.click(screen.getByRole("button", { name: "Stage submission" }));
+
+    expect(screen.getByLabelText("Payload JSON")).toHaveAccessibleDescription("Payload is not valid JSON.");
+  });
+
+  it("resets the form each time the dialog is reopened", async () => {
+    renderList([makeLead()], "new");
+    const user = await openDialog();
+    await user.type(screen.getByLabelText("Payload JSON"), "{{}");
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Stage as submission" }));
+
+    expect(screen.getByLabelText("Payload JSON")).toHaveValue("");
+  });
+
+  it("hides the button for a dismissed lead", () => {
+    renderList([makeLead({ status: "dismissed" })], "dismissed");
+    expect(screen.queryByRole("button", { name: /Stage (as|another)/ })).not.toBeInTheDocument();
+  });
+
+  it("labels the button 'Stage another submission' for a promoted lead and links the staged one", () => {
+    renderList([makeLead({ status: "promoted", promotedSubmissionId: "sub-1" })], "promoted");
+
+    expect(screen.getByRole("button", { name: "Stage another submission" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "sub-1" })).toHaveAttribute("href", "/admin/submissions");
   });
 });
