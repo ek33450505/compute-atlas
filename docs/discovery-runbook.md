@@ -48,7 +48,7 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.compute-atlas.discov
 launchctl print gui/$(id -u)/com.compute-atlas.discovery   # verify: state, runs, path
 ```
 
-The job runs daily at 13:00 local, processing `STATES_PER_RUN` states per invocation (default 2, unchanged — the rotation was expanded to all 50 states + DC on 2026-09-13 and the review cap raised 25 → 30, but `STATES_PER_RUN` itself was deliberately left alone; see `docs/discovery-pipeline.md`) from a rotation cursor. It stays a no-op until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default).
+The job runs daily at 13:00 local, processing `STATES_PER_RUN` states per invocation (default 3 since 2026-10-09; it was 2 from 2026-08-14 — the rotation was expanded to all 50 states + DC on 2026-09-13 and the review cap raised 25 → 30, and `STATES_PER_RUN` was raised 2 → 3 on 2026-10-09 after zero overrun warnings since 2026-09-16; see `docs/discovery-pipeline.md` and the `STATES_PER_RUN` comment in `scripts/discovery/run.sh`) from a rotation cursor. It stays a no-op until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default).
 
 Midday (rather than overnight) is deliberate: macOS `launchd` defers a missed `StartCalendarInterval` to the next wake, so an early-morning slot is simply skipped whenever the Mac is asleep. 13:00 assumes the machine is normally awake and lid-open then — if your usage differs, pick an hour when the Mac is reliably on, or move the job off the laptop entirely (e.g. a cron/CI runner with an API key instead of the subscription). Once a run *has* started, `run.sh` wraps the `claude -p` call in `caffeinate -i` (macOS only; a no-op elsewhere) so idle sleep can't suspend a long research call mid-run.
 
@@ -462,15 +462,24 @@ The bench deliberately duplicates the shipped quote-gate logic (see
 
 For each `new` lead (oldest first):
 
+0. If the lead's triage (recorded at submit time) already lists live facilities citing its URL, the lead is deferred as a possible duplicate **before any fetch or model call**, with a note pointing at `/admin/leads`.
 1. Fetches the lead's URL. A fetch failure leaves the lead `new` — a bot-walled page is not a bad tip — and is not counted against it.
 2. Asks the model to extract `name`, `operator`, `facilityType`, `status`, `city`, `state`, and `capacityMw`, explicitly instructed to return `null` for anything the page does not state. **The model never produces coordinates** — that field does not exist in the extraction schema at all.
 3. If the extraction has no usable identity (`name`/`operator`/`state` all required), the lead moves to `deferred` — a human should look. A lead is never `dismissed` automatically; only a human dismisses a lead.
 4. Re-verifies the extracted name (plus any capacity figure, as a numeric hint) against the page via the same mechanical gate discovery submissions already use (`verify-source.ts`). Only a `"verified"` verdict proceeds. `"rejected"` (checked and it didn't hold up) moves the lead to `deferred`. `"escalate"` (the fetcher couldn't structurally ingest the page) leaves the lead untouched at `new` for a human to look at from the normal queue — it is deliberately never treated as a rejection. `"unavailable"` (the model itself could not be reached) **aborts the entire run**, exactly like the discovery submission gate — never silently reclassified as "nothing found."
-5. Geocodes the extracted `city, state` via `geocodeUS` (`lib/geocode.ts`) — coordinates are derived ONLY this way, never proposed by the model. Zero geocode results moves the lead to `deferred`.
-6. Builds the `create` payload in exactly the shape `buildCreatePayload` (`lib/contribute.ts`) produces — `confidence: "rumored"`, `location.precision: "approximate"`, the lead's URL as the source — and validates it against `facilitySchema` before ever calling `createSubmission`.
-7. On success, `promoteLead` (`lib/leads.ts`) moves the lead to `promoted` and records the new submission id, in one write.
+5. Duplicate guard: if a live facility has the same operator in the same state, the lead moves to `deferred` with a note ("possible duplicate of <ids> — stage an update via /admin/leads") instead of proposing a second facility. The match is deliberately broad, since a false positive costs a human glance. A DB error in this query **aborts the run** (fail-closed); unlike a geocode error, it is not treated as a judgement about the lead.
+6. Geocodes the extracted `city, state` via `geocodeUS` (`lib/geocode.ts`) — coordinates are derived ONLY this way, never proposed by the model. Zero geocode results moves the lead to `deferred`. A thrown geocode error (network/HTTP) leaves the lead `new` and the run continues. The request sends an identifying User-Agent (`LEADS_LANE_USER_AGENT`), because Nominatim returns 403 to Node's default one.
+7. Builds the `create` payload in exactly the shape `buildCreatePayload` (`lib/contribute.ts`) produces — `confidence: "rumored"`, `location.precision: "approximate"`, the lead's URL as the source — and validates it against `facilitySchema` before ever calling `createSubmission`.
+8. Stages the `pending` submission via `createSubmission`.
+9. On success, `promoteLead` (`lib/leads.ts`) moves the lead to `promoted` and records the new submission id, in one write.
+
+The lead also has a human path: `/admin/leads` offers "Stage as submission", which links the lead to a submission the same way. Each lead card then shows that submission's outcome (Pending / Approved <date> / Rejected <date>).
 
 ### Usage
+
+**Nightly:** `scripts/discovery/run.sh` runs the leads lane every night after the field-extraction/verification block, with `LEADS_LIMIT` (default 10, validated as a positive integer). Its summary goes to `discovery-logs/leads-lane-<run-id>.json` and stderr to `leads-lane.err`. It is skipped on `DISCOVERY_DRY_RUN=true`. A non-zero exit (Ollama unavailable or a DB error) marks the run FAIL with "leads: lane failed" but does not stop the rest of the run.
+
+Manual runs use the npm script:
 
 ```bash
 # Real run (default) — processes up to 10 new leads.

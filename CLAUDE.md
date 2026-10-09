@@ -348,6 +348,8 @@ re-proposing either. The scheduled invocation bakes that list in, and bounds eac
 `ENRICHMENT_LIMIT` (60) / `VERIFY_LIMIT` (40) — a full sweep is ~10 hours (rescaled from the
 measured 12h/2,525-gap figure now that the pinned list totals 2,190 gaps, measured 2026-09-01), and an unparseable
 limit would otherwise disable the bound entirely, so `run.sh` validates both before use.
+The leads lane (`leads-lane.ts`: public URL tips → pending submissions) also runs nightly in
+`run.sh`, after the field-extraction lane, bounded by `LEADS_LIMIT` (default 10).
 Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics
 (launchd, `ollama pull`, running it by hand): `docs/discovery-runbook.md`. It uses the Claude Code subscription (not the metered
 API) and runs via `launchd` on the maintainer's machine — treat it as an operator

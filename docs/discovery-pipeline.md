@@ -248,9 +248,9 @@ request list, an RTO's generation queue) rather than the aggregator.
   `DISCOVERY_ENABLED=true` is set in the environment, or if
   `discovery-logs/DISABLED` exists. The launchd plist deliberately does NOT
   set `DISCOVERY_ENABLED` — enabling it is a separate, deliberate step.
-- **Bounded per run:** `STATES_PER_RUN` states per run (default **2**,
-  unchanged — see below) from the rotation cursor, each capped at `--max`
-  candidates (new + updated combined). The cap **self-reverts**: burst for the
+- **Bounded per run:** `STATES_PER_RUN` states per run (default **3** since
+  2026-10-09; was 2 from 2026-08-14 — see below) from the rotation cursor, each
+  capped at `--max` candidates (new + updated combined). The cap **self-reverts**: burst for the
   first 20 days from the burst-start date baked into `run.sh`, then the steady
   value — no manual step to revert. `STEADY_CAP` was raised **25 → 30**
   (2026-09-13, +20%: 2×25=50/day → 2×30=60/day) alongside the rotation
@@ -267,8 +267,11 @@ request list, an RTO's generation queue) rather than the aggregator.
   this round's throughput lever.
   The cap applies **per submit call**: one per state inside the rotation loop,
   **plus** a separate enrichment submit that runs once per batch outside it. So
-  the real nightly ceiling is `(STATES_PER_RUN × cap) + cap` — **90** at the
-  current defaults (2 × 30 + 30), up from 75 (2 × 25 + 25). It is a ceiling,
+  the real nightly ceiling is `(STATES_PER_RUN × cap) + cap` — **120** at the
+  current defaults (3 × 30 + 30, since 2026-10-09). It was **90** at 2 states
+  (2 × 30 + 30) and **75** before the 2026-09-13 cap raise (2 × 25 + 25). This
+  counts only the per-state and enrichment `submit-candidates` calls; the
+  leads lane (`LEADS_LIMIT`, see the runbook) is bounded separately. It is a ceiling,
   not a target: measured from Neon on 2026-09-09, the prior 14 days ran
   ~14–34 approved submissions/day across all states, against a pending queue
   of 0. `MAX_CANDIDATES` in the environment overrides the computed cap
@@ -383,8 +386,13 @@ There is no fan-out, no multi-agent workflow, and no `/data-wave` invocation
 from this pipeline.
 
 **Cadence:** The combined-pass model runs daily via launchd, processing
-`STATES_PER_RUN` states per invocation (default **2**, unchanged) from a
-rotation cursor. `STATES_PER_RUN` was deliberately NOT raised alongside the
+`STATES_PER_RUN` states per invocation (default **3** since 2026-10-09; 2 from
+2026-08-14 until then) from a rotation cursor. Raising it to 3 was Ed's
+decision on 2026-10-09, based on zero OVERRUN warnings since 2026-09-16 and
+2-state batches taking 68–118 min (`run.sh` comment at `STATES_PER_RUN`). The
+2026-10-05..07 failures were an expired Claude login, not load. The reasoning
+below was the case for NOT raising it on 2026-09-13. `STATES_PER_RUN` was
+deliberately NOT raised alongside the
 2026-09-13 rotation expansion below — see "Bounded per run" above for the
 three reasons (wall-clock cap known not to reliably enforce; the 2026-09-09
 cap bump is only four days old as of this change; stacking a second unmeasured
@@ -413,12 +421,14 @@ change); the 29 states newly added were not in the rotation at all before this
 change — not even pre-2026-08-14 — so a flat `lastUpdated` in one of them means
 nobody has ever looked, a stronger signal than a flat `lastUpdated` in one of
 the original 22 (which only means the pipeline looked and found nothing).
-With `STATES_PER_RUN` unchanged at 2, 22 states cycled in about 11 days (up
-from 7.5 before the first rebalance); 51 states now cycle in about **26
-days** — the real cost of covering every state without losing re-check
-coverage on the rest, stated plainly so nobody discovers it by surprise. 51
-does not divide evenly by 2, so pairings still vary cycle to cycle, same as
-the old 22/2 and 15/2 rotations — fine and intended, not a bug.
+With `STATES_PER_RUN` at **3** (raised from 2 on 2026-10-09), 51 states cycle
+in exactly **17 days**. At the prior default of 2, 51 states cycled in about
+**26 days** (until 2026-10-09) — the real cost of covering every state without
+losing re-check coverage on the rest, stated plainly so nobody discovers it by
+surprise. 22 states cycled in about 11 days at 2 per run (up from 7.5 before
+the first rebalance). 51 divides evenly by 3, so the same triples of states
+recur together every cycle rather than shifting; the old 22/2 and 15/2
+rotations and 51/2 vary cycle to cycle. Both are fine and intended, not a bug.
 
 `DISCOVERY_STATES` overrides the rotation entirely (space-separated). That is
 the supported way to drive a targeted run without editing the script, and it is
