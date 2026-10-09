@@ -571,6 +571,15 @@
     }
   },
   "act-colstrip-data-center-colstrip-mt": {
+    "nearestWater": {
+      "name": "East Fork Armells Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4921,6 +4930,15 @@
     }
   },
   "benton-township-yore-avenue-ai-data-center-mi": {
+    "nearestWater": {
+      "name": "Ox Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -7438,6 +7456,15 @@
     }
   },
   "clarksdale-hyperscale-data-center-ms": {
+    "nearestWater": {
+      "name": "Big Sunflower River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8476,6 +8503,15 @@
     }
   },
   "cogent-billings-data-center-billings-mt": {
+    "nearestWater": {
+      "name": "Hogans Slough",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -8528,6 +8564,15 @@
     }
   },
   "cogent-detroit-1320-3rd-st-mi": {
+    "nearestWater": {
+      "name": "Detroit River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8624,6 +8669,15 @@
     }
   },
   "cogent-troy-big-beaver-mi": {
+    "nearestWater": {
+      "name": "River Rouge",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -10340,6 +10394,15 @@
     }
   },
   "cpv-jugfork-solar-lee-union-ms": {
+    "nearestWater": {
+      "name": "Camp Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -11439,6 +11502,15 @@
     }
   },
   "dartmouth-college-data-center-lebanon-nh": {
+    "nearestWater": {
+      "name": "Mascoma River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 20.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -18302,12 +18374,30 @@
     }
   },
   "firstlight-keene-nh": {
+    "nearestWater": {
+      "name": "Beaver Brook",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
     }
   },
   "firstlight-lebanon-nh": {
+    "nearestWater": {
+      "name": "Mink Brook",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 20.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -20041,6 +20131,15 @@
     }
   },
   "genh-lake-billings-dam-manton-mi": {
+    "nearestWater": {
+      "name": "Billings Lake",
+      "kind": "lake",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 19.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -20359,6 +20458,15 @@
     }
   },
   "gm-enterprise-data-center-warren-mi": {
+    "nearestWater": {
+      "name": "McCoy Drain",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -21514,6 +21622,15 @@
     }
   },
   "granite-shore-merrimack-station-bow-nh": {
+    "nearestWater": {
+      "name": "Merrimack River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -22140,6 +22257,15 @@
     }
   },
   "harbor-farmz-full-circle-drive-kalamazoo-mi": {
+    "nearestWater": {
+      "name": "Portage Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -24414,6 +24540,15 @@
     }
   },
   "krambu-bonner-mill-data-center-bonner-mt": {
+    "nearestWater": {
+      "name": "Blackfoot River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -24867,6 +25002,15 @@
     }
   },
   "liberty-mutual-portsmouth-nh": {
+    "nearestWater": {
+      "name": "Great Bog",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -25169,6 +25313,15 @@
     }
   },
   "locke-road-micro-data-center-concord-nh": {
+    "nearestWater": {
+      "name": "Merrimack River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -28706,6 +28859,15 @@
     }
   },
   "montana-opticom-four-corners-bozeman-mt": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 19.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -30070,6 +30232,15 @@
     }
   },
   "north-data-center-great-falls-mt": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -31829,6 +32000,15 @@
     }
   },
   "parsec-data-management-billings-mt": {
+    "nearestWater": {
+      "name": "Hogans Slough",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -38067,6 +38247,15 @@
     }
   },
   "sns-littleton-nh": {
+    "nearestWater": {
+      "name": "Ammonoosuc River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -40579,6 +40768,15 @@
     }
   },
   "tac-project-cardinal-great-falls-mt": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -43691,6 +43889,15 @@
     }
   },
   "vision-net-billings-central-ave-billings-mt": {
+    "nearestWater": {
+      "name": "Hogans Slough",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -43701,6 +43908,15 @@
     }
   },
   "vision-net-billings-fiber-hotel-billings-mt": {
+    "nearestWater": {
+      "name": "Yellowstone River",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -43711,6 +43927,15 @@
     }
   },
   "vision-net-helena-hustad-center-helena-mt": {
+    "nearestWater": {
+      "name": "Tenmile Creek",
+      "kind": "river",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 18.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -43725,6 +43950,15 @@
     }
   },
   "vision-net-missoula-broadway-center-missoula-mt": {
+    "nearestWater": {
+      "name": "Clark Fork",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44832,6 +45066,15 @@
     }
   },
   "xai-tulane-road-southaven-ms": {
+    "nearestWater": {
+      "name": "Horn Lake Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
