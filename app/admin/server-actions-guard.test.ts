@@ -259,8 +259,10 @@ describe("admin server actions — assertAdminSession is structurally required",
     expect(submissions.map((action) => action.name)).toEqual([
       "approveSubmissionAction",
       "rejectSubmissionAction",
+      "refreshAggregatesAction",
     ]);
     expect(submissions[0].body).not.toContain("rejectSubmissionAction");
     expect(submissions[1].body).not.toContain("approveSubmissionAction");
+    expect(submissions[2].body).not.toContain("rejectSubmissionAction");
   });
 });
