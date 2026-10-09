@@ -8,7 +8,9 @@ interface ActivityListProps {
 
 /**
  * Renders a reverse-chronological list of activity entries — facility name
- * linked to its detail page, a short change label, and a timestamp.
+ * linked to its detail page, a short change label, and a timestamp. Entries
+ * whose change came from a community submission carry a "Community submission"
+ * badge, and a contributor handle when one was opted in.
  *
  * Deliberately does NOT render a diff/summary of what changed — that's the
  * separate audit-log feature. This is a lightweight "what happened" feed.
@@ -45,6 +47,11 @@ export function ActivityList({ entries }: ActivityListProps) {
             <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               {entry.label}
             </span>
+            {entry.community ? (
+              <span className="inline-flex items-center rounded-sm border border-border px-1.5 py-0.5 font-mono text-[0.65rem] uppercase tracking-wider text-foreground">
+                Community submission
+              </span>
+            ) : null}
             {entry.attribution ? (
               <span className="font-mono text-xs text-muted-foreground">
                 contributed by {entry.attribution}

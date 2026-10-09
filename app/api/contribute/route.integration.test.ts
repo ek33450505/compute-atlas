@@ -37,6 +37,7 @@ import type { Facility } from "@/lib/schema";
 // Import the route handler AFTER the mocks above so its transitive imports
 // (lib/contribute.ts, lib/rate-limit.ts, lib/data.ts -> lib/db/client.ts)
 // resolve against the mocked module.
+import { isCommunityDiscoveredBy } from "@/lib/community-provenance";
 import { POST } from "./route";
 
 const seedDoc = facilitiesRaw[0] as unknown as Facility; // 123net-dc1-southfield-mi
@@ -120,6 +121,9 @@ describe("POST /api/contribute (public, unauthenticated happy path)", () => {
     expect(
       (rows[0].provenance as { discoveredBy?: string }).discoveredBy
     ).toBe("public-contribution");
+    expect(
+      isCommunityDiscoveredBy((rows[0].provenance as { discoveredBy?: string }).discoveredBy)
+    ).toBe(true);
   });
 
   it("honeypot: returns 201 ok but inserts zero submission rows", async () => {
@@ -398,6 +402,10 @@ describe("POST /api/contribute — honeypot type symmetry (Finding 3)", () => {
     expect(rows[0].kind).toBe("update");
     expect(rows[0].targetFacilityId).toBe(seedDoc.id);
     expect((rows[0].payload as { operator?: string }).operator).toBe("New Op");
+    // Writer-side pin: the activity feed's community badge keys off this value.
+    const discoveredBy = (rows[0].provenance as { discoveredBy?: string }).discoveredBy;
+    expect(discoveredBy).toBe("public-correction");
+    expect(isCommunityDiscoveredBy(discoveredBy)).toBe(true);
 
     const submissionsAfter = await tdb.db
       .select()
