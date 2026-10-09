@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, eq, desc, ne, sql } from "drizzle-orm";
+import { and, asc, eq, desc, inArray, ne, or, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { facilitiesTable, leadsTable, submissionsTable, type LeadRow } from "@/lib/db/schema";
@@ -11,6 +11,7 @@ import {
   type LeadStatus,
   type LeadTriage,
   type AdminLeadRow,
+  type LeadSubmissionOutcome,
   type StageLeadInput,
   type StageLeadResult,
 } from "@/lib/lead-fields";
@@ -24,6 +25,7 @@ export {
   type LeadStatus,
   type LeadTriage,
   type AdminLeadRow,
+  type LeadSubmissionOutcome,
   type StageLeadInput,
   type StageLeadResult,
 };
@@ -102,6 +104,81 @@ export async function listLeadsForAdmin(status?: string): Promise<AdminLeadRow[]
     return query.where(eq(leadsTable.status, status)).orderBy(desc(leadsTable.createdAt));
   }
   return query.orderBy(desc(leadsTable.createdAt));
+}
+
+/**
+ * The review outcome of every submission linked to each of the given leads,
+ * keyed by lead id, in ONE query. A lead has two link paths and both are needed:
+ *
+ * 1. `leads.promotedSubmissionId` — the only link for the discovery leads lane
+ *    (`provenance.discoveredBy` is the constant "leads-lane", no lead id), and
+ *    the FIRST submission for an admin-staged lead.
+ * 2. `provenance.discoveredBy = "lead:<id>"` — written by `stageLeadSubmission`
+ *    for every admin-staged submission; the only link for the 2nd+ submission
+ *    of a multi-facility article, since `promotedSubmissionId` holds just one.
+ *
+ * Selects only the narrow outcome columns plus the two jsonb scalars it needs
+ * (`payload->>'id'`, `provenance->>'discoveredBy'`) — never the full payload or
+ * provenance. A submission matching both paths appears once per lead.
+ */
+export async function listLeadSubmissionOutcomes(
+  leads: Pick<AdminLeadRow, "id" | "promotedSubmissionId">[]
+): Promise<Record<string, LeadSubmissionOutcome[]>> {
+  if (leads.length === 0) return {};
+
+  const leadIdByPromotedId = new Map<string, string[]>();
+  const leadIdByTag = new Map<string, string>();
+  for (const lead of leads) {
+    leadIdByTag.set(`lead:${lead.id}`, lead.id);
+    if (lead.promotedSubmissionId) {
+      const list = leadIdByPromotedId.get(lead.promotedSubmissionId) ?? [];
+      list.push(lead.id);
+      leadIdByPromotedId.set(lead.promotedSubmissionId, list);
+    }
+  }
+
+  const discoveredBy = sql<string | null>`${submissionsTable.provenance}->>'discoveredBy'`;
+  const conditions = [inArray(discoveredBy, [...leadIdByTag.keys()])];
+  if (leadIdByPromotedId.size > 0) {
+    conditions.push(inArray(submissionsTable.id, [...leadIdByPromotedId.keys()]));
+  }
+
+  const db = getDb();
+  const rows = await db
+    .select({
+      id: submissionsTable.id,
+      kind: submissionsTable.kind,
+      targetFacilityId: submissionsTable.targetFacilityId,
+      payloadId: sql<string | null>`${submissionsTable.payload}->>'id'`,
+      discoveredBy,
+      status: submissionsTable.status,
+      createdAt: submissionsTable.createdAt,
+      reviewedAt: submissionsTable.reviewedAt,
+      reviewNote: submissionsTable.reviewNote,
+    })
+    .from(submissionsTable)
+    .where(or(...conditions))
+    .orderBy(asc(submissionsTable.createdAt));
+
+  const out: Record<string, LeadSubmissionOutcome[]> = {};
+  for (const row of rows) {
+    const outcome: LeadSubmissionOutcome = {
+      id: row.id,
+      kind: row.kind,
+      facilityId: row.targetFacilityId ?? (row.kind === "create" ? row.payloadId : null),
+      status: row.status as LeadSubmissionOutcome["status"],
+      createdAt: row.createdAt,
+      reviewedAt: row.reviewedAt,
+      reviewNote: row.reviewNote,
+    };
+    const leadIds = new Set(leadIdByPromotedId.get(row.id) ?? []);
+    const tagged = row.discoveredBy ? leadIdByTag.get(row.discoveredBy) : undefined;
+    if (tagged) leadIds.add(tagged);
+    for (const leadId of leadIds) {
+      (out[leadId] ??= []).push(outcome);
+    }
+  }
+  return out;
 }
 
 /**

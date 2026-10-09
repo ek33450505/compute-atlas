@@ -2,7 +2,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import type { AdminLeadRow } from "@/lib/leads";
+import type { AdminLeadRow, LeadSubmissionOutcome } from "@/lib/leads";
 import { type LeadStatus } from "@/lib/lead-fields";
 
 // vi.mock calls are hoisted above imports by Vitest. A plain top-level
@@ -70,8 +70,12 @@ function makeLead(overrides: Partial<AdminLeadRow> = {}): AdminLeadRow {
   };
 }
 
-function renderList(leads: AdminLeadRow[], activeStatus: LeadStatus) {
-  return render(<LeadList leads={leads} activeStatus={activeStatus} />);
+function renderList(
+  leads: AdminLeadRow[],
+  activeStatus: LeadStatus,
+  outcomes: Record<string, LeadSubmissionOutcome[]> = {}
+) {
+  return render(<LeadList leads={leads} activeStatus={activeStatus} outcomes={outcomes} />);
 }
 
 describe("LeadList — tabs and empty state", () => {
@@ -675,5 +679,91 @@ describe("LeadList — stage as submission", () => {
 
     expect(screen.getByRole("button", { name: "Stage another submission" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "sub-1" })).toHaveAttribute("href", "/admin/submissions");
+  });
+});
+
+function makeOutcome(overrides: Partial<LeadSubmissionOutcome> = {}): LeadSubmissionOutcome {
+  return {
+    id: "11111111-aaaa-bbbb-cccc-000000000001",
+    kind: "create",
+    facilityId: "site-one",
+    status: "pending",
+    createdAt: new Date("2026-10-01T00:00:00Z"),
+    reviewedAt: null,
+    reviewNote: null,
+    ...overrides,
+  };
+}
+
+describe("LeadList — submission outcomes", () => {
+  const promoted = makeLead({ status: "promoted", promotedSubmissionId: "sub-1" });
+
+  it("shows Pending, Approved <UTC date> and Rejected <UTC date> with the reason", () => {
+    renderList([promoted], "promoted", {
+      "lead-1": [
+        makeOutcome({ id: "s-pending", facilityId: "site-pending" }),
+        makeOutcome({
+          id: "s-approved",
+          facilityId: "site-approved",
+          status: "approved",
+          // 23:30 UTC on Oct 9: a local-TZ formatter west of UTC would print Oct 8 or 9 inconsistently.
+          reviewedAt: new Date("2026-10-09T23:30:00Z"),
+        }),
+        makeOutcome({
+          id: "s-rejected",
+          facilityId: "site-rejected",
+          status: "rejected",
+          reviewedAt: new Date("2026-10-10T00:30:00Z"),
+          reviewNote: "Source does not support it",
+        }),
+      ],
+    });
+
+    expect(screen.getByText("Pending")).toBeInTheDocument();
+    expect(screen.getByText("Approved Oct 9, 2026")).toBeInTheDocument();
+    expect(screen.getByText("Rejected Oct 10, 2026")).toBeInTheDocument();
+    expect(screen.getByText("Reason: Source does not support it")).toBeInTheDocument();
+  });
+
+  it("links an approved row's facility id to its page, in a new tab", () => {
+    renderList([promoted], "promoted", {
+      "lead-1": [
+        makeOutcome({ status: "approved", reviewedAt: new Date("2026-10-09T12:00:00Z") }),
+      ],
+    });
+
+    const link = screen.getByRole("link", { name: "View facility site-one (opens in new tab)" });
+    expect(link).toHaveAttribute("href", "/facilities/site-one");
+    expect(link).toHaveAttribute("target", "_blank");
+  });
+
+  it("links a pending row to /admin/submissions, not the facility page", () => {
+    renderList([promoted], "promoted", { "lead-1": [makeOutcome()] });
+
+    expect(screen.getByRole("link", { name: /Submission .* in Submissions/ })).toHaveAttribute(
+      "href",
+      "/admin/submissions"
+    );
+    expect(screen.queryByRole("link", { name: /View facility/ })).not.toBeInTheDocument();
+  });
+
+  it("does not show the legacy warning when outcomes exist, even without a promotedSubmissionId", () => {
+    renderList([makeLead({ status: "promoted", promotedSubmissionId: null })], "promoted", {
+      "lead-1": [makeOutcome()],
+    });
+
+    expect(screen.queryByText(/no submission was created/)).not.toBeInTheDocument();
+  });
+
+  it("keeps the legacy warning for a promoted lead with no id and no outcomes", () => {
+    renderList([makeLead({ status: "promoted", promotedSubmissionId: null })], "promoted", {});
+
+    expect(screen.getByText(/no submission was created/)).toBeInTheDocument();
+  });
+
+  it("renders no outcomes list on a new lead", () => {
+    renderList([makeLead()], "new");
+
+    expect(screen.queryByRole("list", { name: "Staged submissions" })).not.toBeInTheDocument();
   });
 });
