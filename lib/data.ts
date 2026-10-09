@@ -28,6 +28,7 @@ import { operatorSlug, personSlug } from "@/lib/operator-slug";
 import { getGenerationFuelClass } from "@/lib/generation";
 import { containsDc } from "@/lib/us-states";
 import { getSitingContext, type SitingContext } from "@/lib/siting-context";
+import { isCommunityDiscoveredBy } from "@/lib/community-provenance";
 
 /**
  * Validated view of the bundled JSON fallback, memoized for the process
@@ -2456,6 +2457,8 @@ export interface ActivityEntry {
   timestamp: Date;
   /** Optional public contributor handle, when the change came from an attributed public submission. */
   attribution?: string;
+  /** True when the change came from an approved community submission: public form, public correction, or a public URL tip. */
+  community?: boolean;
 }
 
 /**
@@ -2504,6 +2507,7 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
         changeType: facilityHistoryTable.changeType,
         changedAt: facilityHistoryTable.changedAt,
         attribution: sql<string | null>`${submissionsTable.provenance} ->> 'attribution'`,
+        discoveredBy: sql<string | null>`${submissionsTable.provenance} ->> 'discoveredBy'`,
       })
       .from(facilityHistoryTable)
       .innerJoin(facilitiesTable, eq(facilityHistoryTable.facilityId, facilitiesTable.id))
@@ -2523,6 +2527,7 @@ export async function getRecentActivity(limit = 50): Promise<ActivityEntry[]> {
       label: row.changeType === "create" ? "new facility added" : "facility updated",
       timestamp: row.changedAt,
       ...(row.attribution ? { attribution: row.attribution } : {}),
+      ...(isCommunityDiscoveredBy(row.discoveredBy) ? { community: true } : {}),
     }));
   } catch (err) {
     // A live query failure (DB unreachable or over-quota) degrades to an empty

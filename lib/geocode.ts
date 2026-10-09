@@ -73,7 +73,8 @@ interface NominatimItem {
  */
 export async function geocodeUS(
   query: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  opts?: { userAgent?: string }
 ): Promise<GeocodeResult[]> {
   const trimmed = query.trim();
   if (!trimmed) return [];
@@ -88,10 +89,14 @@ export async function geocodeUS(
 
   // Nominatim usage policy is satisfied by the browser automatically supplying
   // Referer/Origin headers. User-Agent is a forbidden header for browser fetch
-  // and is silently dropped — do NOT attempt to set it here.
+  // and is silently dropped, so browser callers omit `opts.userAgent`. Node
+  // callers MUST pass one: Nominatim answers 403 to Node's default fetch
+  // User-Agent (measured 2026-10-09).
+  const headers: Record<string, string> = { Accept: "application/json" };
+  if (opts?.userAgent) headers["User-Agent"] = opts.userAgent;
   const res = await fetch(`${NOMINATIM_URL}?${params.toString()}`, {
     signal,
-    headers: { Accept: "application/json" },
+    headers,
   });
 
   if (!res.ok) {

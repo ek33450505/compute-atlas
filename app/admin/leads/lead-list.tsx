@@ -6,7 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { AlertTriangle, CheckCircle2, Clock, ExternalLink } from "lucide-react";
 
-import type { LeadTriage, AdminLeadRow } from "@/lib/lead-fields";
+import type { LeadTriage, AdminLeadRow, StageLeadInput } from "@/lib/lead-fields";
 import { LEAD_STATUSES, type LeadStatus } from "@/lib/lead-fields";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   markLeadResearchingAction,
-  markLeadPromotedAction,
+  stageLeadSubmissionAction,
   dismissLeadAction,
   resetLeadToNewAction,
 } from "@/app/admin/leads/actions";
@@ -152,9 +152,252 @@ function TriagePanel({ triage, submittedUrl }: { triage: LeadTriage | null; subm
   );
 }
 
+const TEXTAREA_CLASS =
+  "rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50";
+
+function buildCreateTemplate(sourceUrl: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  return JSON.stringify(
+    {
+      id: "",
+      name: "",
+      operator: "",
+      facilityType: "data_center",
+      status: "proposed",
+      confidence: "rumored",
+      location: { lat: null, lon: null, state: "", city: "", precision: "approximate" },
+      sources: [{ url: sourceUrl, label: "", retrievedAt: today, kind: "press" }],
+      lastUpdated: today,
+    },
+    null,
+    2
+  );
+}
+
+interface StageIssue {
+  path?: unknown;
+  message?: unknown;
+}
+
+function formatIssue(issue: StageIssue): string {
+  const path = Array.isArray(issue.path) ? issue.path.join(".") : "";
+  const message = typeof issue.message === "string" ? issue.message : "Invalid";
+  return path ? `${path}: ${message}` : message;
+}
+
+/**
+ * Stages a pending submission from a lead. Staging only: the maintainer still
+ * approves it from /admin/submissions. JSON.parse here is UX only — the server
+ * action re-validates everything against facilitySchema.
+ */
+function StageDialog({
+  lead,
+  duplicateIds,
+  open,
+  onOpenChange,
+}: {
+  lead: AdminLeadRow;
+  duplicateIds: string[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const singleDuplicate = duplicateIds.length === 1 ? duplicateIds[0] : "";
+  const [kind, setKind] = useState<"create" | "update">(singleDuplicate ? "update" : "create");
+  const [targetId, setTargetId] = useState(singleDuplicate);
+  const [payloadText, setPayloadText] = useState("");
+  const [sourcesText, setSourcesText] = useState("");
+  const [note, setNote] = useState("");
+  const [parseError, setParseError] = useState<string | null>(null);
+  const [issues, setIssues] = useState<string[]>([]);
+
+  const idPrefix = `stage-${lead.id}`;
+  const describedBy =
+    [kind === "update" ? `${idPrefix}-payload-help` : null, parseError ? `${idPrefix}-payload-error` : null]
+      .filter(Boolean)
+      .join(" ") || undefined;
+
+  function handleSubmit() {
+    setIssues([]);
+    let payload: unknown;
+    try {
+      payload = JSON.parse(payloadText);
+    } catch {
+      setParseError("Payload is not valid JSON.");
+      return;
+    }
+    setParseError(null);
+
+    const extraSources = sourcesText
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const input: StageLeadInput = {
+      kind,
+      ...(kind === "update" ? { targetFacilityId: targetId.trim() } : {}),
+      payload,
+      ...(extraSources.length > 0 ? { extraSources } : {}),
+      ...(note.trim() ? { note: note.trim() } : {}),
+    };
+
+    startTransition(async () => {
+      const result = await stageLeadSubmissionAction(lead.id, input);
+      if (result.ok) {
+        const short = result.submissionId.slice(0, 8);
+        if (result.leadPromoted) {
+          toast.success(`Staged as submission ${short} — approve it in Submissions`);
+        } else if (lead.status === "promoted") {
+          toast.success(`Staged as submission ${short} (lead already linked to an earlier submission)`);
+        } else {
+          toast.warning(
+            `Staged as submission ${short} — but the lead could not be linked; refresh before staging again.`
+          );
+        }
+        onOpenChange(false);
+        router.refresh();
+      } else {
+        toast.error(formatActionError(result));
+        if (Array.isArray(result.issues)) {
+          setIssues(result.issues.slice(0, 5).map((issue) => formatIssue(issue as StageIssue)));
+        }
+      }
+    });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Stage as submission</DialogTitle>
+          <DialogDescription>
+            Creates a pending submission from this lead. Nothing goes live until you approve it in
+            Submissions.
+          </DialogDescription>
+        </DialogHeader>
+        <div
+          tabIndex={0}
+          role="group"
+          aria-label="Stage submission form"
+          className="flex max-h-[60vh] flex-col gap-3 overflow-y-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <fieldset className="flex flex-col gap-1.5">
+            <legend className="text-sm font-medium">Kind</legend>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name={`${idPrefix}-kind`}
+                checked={kind === "create"}
+                onChange={() => setKind("create")}
+                className="focus-visible:ring-2 focus-visible:ring-ring"
+              />
+              New facility
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name={`${idPrefix}-kind`}
+                checked={kind === "update"}
+                onChange={() => setKind("update")}
+                className="focus-visible:ring-2 focus-visible:ring-ring"
+              />
+              Update existing facility
+            </label>
+          </fieldset>
+          {kind === "update" ? (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`${idPrefix}-target`}>Target facility id</Label>
+              <input
+                id={`${idPrefix}-target`}
+                value={targetId}
+                onChange={(e) => setTargetId(e.target.value)}
+                className={`h-9 ${TEXTAREA_CLASS}`}
+              />
+            </div>
+          ) : null}
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor={`${idPrefix}-payload`}>Payload JSON</Label>
+              {kind === "create" ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setPayloadText(buildCreateTemplate(lead.url))}
+                >
+                  Insert template
+                </Button>
+              ) : null}
+            </div>
+            {kind === "update" ? (
+              <p id={`${idPrefix}-payload-help`} className="text-xs text-muted-foreground">
+                Top-level keys replace the existing value wholesale — send complete nested objects
+                (e.g. the full `water` object).
+              </p>
+            ) : null}
+            <textarea
+              id={`${idPrefix}-payload`}
+              value={payloadText}
+              onChange={(e) => setPayloadText(e.target.value)}
+              aria-describedby={describedBy}
+              aria-invalid={parseError ? true : undefined}
+              spellCheck={false}
+              className={`min-h-48 font-mono ${TEXTAREA_CLASS}`}
+            />
+            {parseError ? (
+              <p id={`${idPrefix}-payload-error`} role="alert" className="text-xs text-destructive">
+                {parseError}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor={`${idPrefix}-sources`}>Extra source URLs (one per line, optional)</Label>
+            <textarea
+              id={`${idPrefix}-sources`}
+              value={sourcesText}
+              onChange={(e) => setSourcesText(e.target.value)}
+              className={`min-h-16 ${TEXTAREA_CLASS}`}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor={`${idPrefix}-note`}>Note (optional)</Label>
+            <input
+              id={`${idPrefix}-note`}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder={lead.note ?? undefined}
+              className={`h-9 ${TEXTAREA_CLASS}`}
+            />
+          </div>
+          {issues.length > 0 ? (
+            <ul role="alert" className="list-disc pl-5 text-xs text-destructive">
+              {issues.map((issue, i) => (
+                <li key={i}>{issue}</li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+        <DialogFooter>
+          <DialogClose
+            render={
+              <Button variant="outline" type="button">
+                Cancel
+              </Button>
+            }
+          />
+          <Button disabled={isPending || !payloadText.trim()} onClick={handleSubmit}>
+            Stage submission
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
   const router = useRouter();
   const [dismissOpen, setDismissOpen] = useState(false);
+  const [stageOpen, setStageOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -170,8 +413,8 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
   // one-way door out of it. Offer a way back from all four.
   const canReset = lead.status !== "new";
   // promoteLead() writes promotedSubmissionId in the same statement that sets
-  // the status, so a promoted lead with a null id was triage-marked by the
-  // button below and has no submission behind it.
+  // the status, so a promoted lead with a null id was marked promoted by hand
+  // (legacy) and has no submission behind it.
   const promotedWithoutSubmission = lead.status === "promoted" && !lead.promotedSubmissionId;
 
   function handleResearching() {
@@ -179,18 +422,6 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
       const result = await markLeadResearchingAction(lead.id);
       if (result.ok) {
         toast.success("Moved to researching.");
-        router.refresh();
-      } else {
-        toast.error(formatActionError(result));
-      }
-    });
-  }
-
-  function handlePromoted() {
-    startTransition(async () => {
-      const result = await markLeadPromotedAction(lead.id);
-      if (result.ok) {
-        toast.success("Marked promoted.");
         router.refresh();
       } else {
         toast.error(formatActionError(result));
@@ -277,7 +508,23 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
             Marked promoted manually — no submission was created.
           </p>
         ) : null}
+        {lead.promotedSubmissionId ? (
+          <p className="text-xs text-muted-foreground">
+            Staged as submission{" "}
+            <Link
+              href="/admin/submissions"
+              className="text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {lead.promotedSubmissionId}
+            </Link>
+          </p>
+        ) : null}
         <div className="flex flex-wrap items-center gap-2 pt-1">
+          {lead.status !== "dismissed" ? (
+            <Button size="sm" disabled={isPending} onClick={() => setStageOpen(true)}>
+              {lead.status === "promoted" ? "Stage another submission" : "Stage as submission"}
+            </Button>
+          ) : null}
           {!isTerminal ? (
             <>
               {lead.status === "new" ? (
@@ -290,9 +537,6 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
                   Start researching
                 </Button>
               ) : null}
-              <Button size="sm" disabled={isPending} onClick={handlePromoted}>
-                Mark promoted (no submission)
-              </Button>
               <Button
                 size="sm"
                 variant="outline"
@@ -310,6 +554,16 @@ function LeadRowCard({ lead }: { lead: AdminLeadRow }) {
           ) : null}
         </div>
       </div>
+
+      {/* Mounted only while open so every open starts from fresh defaults. */}
+      {stageOpen ? (
+        <StageDialog
+          lead={lead}
+          duplicateIds={duplicateIds}
+          open={stageOpen}
+          onOpenChange={setStageOpen}
+        />
+      ) : null}
 
       <Dialog open={dismissOpen} onOpenChange={setDismissOpen}>
         <DialogContent>

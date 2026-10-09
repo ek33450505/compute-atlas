@@ -450,6 +450,26 @@ change). `facilities` family only.
   node scripts/check-siting-additive.mjs
   ```
 
+**2026-10-09 — branch `feature/community-lead-staging`, "Community submission" badge (shipped mid-soak by Ed's decision)**
+Category: *content edit to page templates*. `/activity` and the homepage
+"recent activity" teaser only.
+
+- `app/activity/activity-list.tsx` now renders a small "Community submission"
+  chip on entries whose approved submission came from the public
+  (`lib/community-provenance.ts`). `ActivityList` is shared, so the homepage
+  teaser (`components/home/open-record.tsx`) changes too.
+- At ship time 1 of the 50 `/activity` entries carried the chip; the six
+  community submissions approved the same day add more, and can fill the
+  5-row teaser. No URL, link, title, heading or structured data changed.
+- The same branch's admin-lead staging (`app/admin/leads/*`, `lib/leads.ts`),
+  leads-lane script and `lib/geocode.ts` (Node-only `User-Agent` option;
+  browser callers unchanged) touch no crawlable surface.
+
+  ```bash
+  git --no-pager log --first-parent main --format='%h %s' -- app/activity/activity-list.tsx | head -1
+  git --no-pager show --stat --format='' <that-sha>
+  ```
+
 ### RULED OUT
 
 Listed because the section's own instruction is to rule confounds out

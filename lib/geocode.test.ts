@@ -66,6 +66,24 @@ describe("geocodeUS", () => {
     );
     await expect(geocodeUS("Denver")).rejects.toThrow("Geocoding failed (429)");
   });
+
+  it("sends a User-Agent header when opts.userAgent is given", async () => {
+    const spy = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(mockFetch([MOCK_ITEM]) as typeof fetch);
+    await geocodeUS("Denver", undefined, { userAgent: "test-agent/1.0" });
+    const init = spy.mock.calls[0][1] as RequestInit;
+    expect(init.headers).toMatchObject({ "User-Agent": "test-agent/1.0" });
+  });
+
+  it("omits the User-Agent header when no userAgent is given (browser callers)", async () => {
+    const spy = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(mockFetch([MOCK_ITEM]) as typeof fetch);
+    await geocodeUS("Denver");
+    const init = spy.mock.calls[0][1] as RequestInit;
+    expect(init.headers).not.toHaveProperty("User-Agent");
+  });
 });
 
 describe("parseCoordinateString", () => {

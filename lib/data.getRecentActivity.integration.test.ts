@@ -105,3 +105,56 @@ describe("getRecentActivity — attribution LEFT JOIN (PGlite)", () => {
     expect(entry?.attribution).toBeUndefined();
   });
 });
+
+describe("getRecentActivity — community flag (PGlite)", () => {
+  async function entryFor(id: string, discoveredBy: string | null) {
+    const doc = makeDoc(id);
+    await seedFacility(tdb.db, doc);
+    let source = "admin-direct";
+    if (discoveredBy !== null) {
+      const [submission] = await tdb.db
+        .insert(submissionsTable)
+        .values({
+          kind: "create",
+          payload: {},
+          status: "approved",
+          provenance: { sources: ["https://ex/x"], discoveredBy },
+        })
+        .returning({ id: submissionsTable.id });
+      source = submission.id;
+    }
+    await tdb.db.insert(facilityHistoryTable).values({
+      facilityId: doc.id,
+      changeType: "create",
+      diff: [],
+      source,
+    });
+    const entries = await getRecentActivity(10);
+    return entries.find((e) => e.facilityId === doc.id);
+  }
+
+  it("flags a lead:<uuid> submission as community", async () => {
+    const entry = await entryFor(
+      "community-lead",
+      "lead:123e4567-e89b-12d3-a456-426614174000"
+    );
+    expect(entry?.community).toBe(true);
+  });
+
+  it("flags a public-contribution submission as community", async () => {
+    const entry = await entryFor("community-public", "public-contribution");
+    expect(entry?.community).toBe(true);
+  });
+
+  it("does not flag a discovery-pipeline submission", async () => {
+    const entry = await entryFor("community-pipeline", "discovery-pipeline");
+    expect(entry).toBeDefined();
+    expect(entry?.community).toBeUndefined();
+  });
+
+  it("does not flag an admin-direct history row with no submission", async () => {
+    const entry = await entryFor("community-admin", null);
+    expect(entry).toBeDefined();
+    expect(entry?.community).toBeUndefined();
+  });
+});

@@ -69,3 +69,16 @@ export type AdminLeadRow = Pick<
   | "reviewedAt"
   | "promotedSubmissionId"
 >;
+
+/** Input to `stageLeadSubmission` (lib/leads.ts). Lives here so the admin client component can type it. */
+export interface StageLeadInput {
+  kind: "create" | "update";
+  targetFacilityId?: string;
+  payload: unknown;
+  extraSources?: string[];
+  note?: string;
+}
+
+export type StageLeadResult =
+  | { ok: true; submissionId: string; leadPromoted: boolean }
+  | { ok: false; status: number; error: string; issues?: unknown };

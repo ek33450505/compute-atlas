@@ -98,4 +98,28 @@ describe("ActivityList", () => {
     render(<ActivityList entries={entries} />);
     expect(screen.queryByText(/contributed by/i)).not.toBeInTheDocument();
   });
+
+  it("shows a Community submission badge only for community entries", () => {
+    render(
+      <ActivityList
+        entries={[{ ...entries[0], community: true }, entries[1]]}
+      />
+    );
+    expect(screen.getAllByText("Community submission")).toHaveLength(1);
+  });
+
+  it("shows no badge when no entry is community", () => {
+    render(<ActivityList entries={entries} />);
+    expect(screen.queryByText("Community submission")).not.toBeInTheDocument();
+  });
+
+  it("shows the badge alongside the contributor attribution", () => {
+    render(
+      <ActivityList
+        entries={[{ ...entries[0], community: true, attribution: "gridwatcher" }]}
+      />
+    );
+    expect(screen.getByText("Community submission")).toBeInTheDocument();
+    expect(screen.getByText("contributed by gridwatcher")).toBeInTheDocument();
+  });
 });
