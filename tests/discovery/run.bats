@@ -265,6 +265,42 @@ teardown() {
 	grep -q -- "--append-system-prompt" "$CLAUDE_CALL_LOG"
 }
 
+# The isolated CLAUDE_CONFIG_DIR stops claude loading ~/.claude/settings.json, so
+# model + effort must be explicit argv (2026-10-11: silent Sonnet/default-effort run).
+@test "claude is invoked with --model opus --effort high by default" {
+	export DISCOVERY_ENABLED=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q -- "--model opus --effort high" "$CLAUDE_CALL_LOG"
+	[[ "$output" == *"claude model=opus effort=high"* ]]
+}
+
+@test "DISCOVERY_CLAUDE_MODEL and DISCOVERY_CLAUDE_EFFORT overrides are honoured" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_MODEL=sonnet DISCOVERY_CLAUDE_EFFORT=xhigh
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q -- "--model sonnet --effort xhigh" "$CLAUDE_CALL_LOG"
+}
+
+@test "invalid DISCOVERY_CLAUDE_EFFORT fails before claude is invoked" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_EFFORT=turbo
+	run bash "$RUN_SH"
+	[ "$status" -ne 0 ]
+	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_EFFORT"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+@test "DISCOVERY_CLAUDE_MODEL with whitespace fails before claude is invoked" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_MODEL="opus extra"
+	run bash "$RUN_SH"
+	[ "$status" -ne 0 ]
+	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_MODEL"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
 @test "retry recovers when first claude call emits prose with no JSON array" {
 	export DISCOVERY_ENABLED=true
 	# Reproduces the 2026-07-15 AZ failure mode: first call emits a prose

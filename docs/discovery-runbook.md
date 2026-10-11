@@ -72,6 +72,8 @@ Why a pipe and not `CLAUDE_CODE_OAUTH_TOKEN`: the headless session reads untrust
 CLAUDE_CONFIG_DIR=$(mktemp -d) CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3 claude -p ok 3< <(printf '%s' sk-ant-oat01-bogus)
 ```
 
+⛔ **Measured 2026-10-11: the isolated config dir also drops the MODEL and EFFORT, which confirms the inference above at the cost of a day's run.** `~/.claude/settings.json` carried `"model": "opus"` and `"effortLevel": "high"`, and the headless call had silently depended on both. The first scheduled run after #404 (VT WV IA) used `claude-sonnet-5-5` at default effort. It made 2 WebSearches per state, answered `[]` in 14–20s and reported `status=ok`. Earlier stored-login runs used Opus with 89–173 tool uses at 10–45 min per state. `run.sh` now passes `--model "$DISCOVERY_CLAUDE_MODEL" --effort "$DISCOVERY_CLAUDE_EFFORT"` (defaults `opus` / `high`) on every call, validates both before any state runs, and logs `claude model=… effort=…` once per batch. Anything else the call used to inherit from `~/.claude` is gone too, so pin it explicitly instead of relying on a settings file. Headless transcripts now live under `~/.compute-atlas-discovery/claude-config/projects/`, not `~/.claude/projects/`. Look there for the `model` field and the tool-use count.
+
 One-time setup (run these yourself, in a terminal):
 
 ```bash

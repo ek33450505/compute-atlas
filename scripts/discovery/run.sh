@@ -400,6 +400,27 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # login outranks the fd-3 token otherwise; see the comment in invoke_claude).
   DISCOVERY_CLAUDE_CONFIG_DIR="${DISCOVERY_CLAUDE_CONFIG_DIR:-$HOME/.compute-atlas-discovery/claude-config}"
 
+  # Model + effort are pinned explicitly because the isolated config dir above
+  # stops claude loading ~/.claude/settings.json (which carried model=opus,
+  # effortLevel=high). On 2026-10-11 the run silently fell to Sonnet at default
+  # effort, did 2 searches per state, returned [] for 3 states and reported ok.
+  # Validated up front so a typo fails the run before any state is spent.
+  DISCOVERY_CLAUDE_MODEL="${DISCOVERY_CLAUDE_MODEL:-opus}"
+  DISCOVERY_CLAUDE_EFFORT="${DISCOVERY_CLAUDE_EFFORT:-high}"
+  if [[ ! "$DISCOVERY_CLAUDE_MODEL" =~ ^[^[:space:]]+$ ]]; then
+    log "ERROR: DISCOVERY_CLAUDE_MODEL='${DISCOVERY_CLAUDE_MODEL}' must be non-empty with no whitespace - refusing to run"
+    exit 1
+  fi
+  case "$DISCOVERY_CLAUDE_EFFORT" in
+    low | medium | high | xhigh | max) ;;
+    *)
+      log "ERROR: DISCOVERY_CLAUDE_EFFORT='${DISCOVERY_CLAUDE_EFFORT}' is not one of low medium high xhigh max - refusing to run"
+      exit 1
+      ;;
+  esac
+  CLAUDE_TOOL_FLAGS+=(--model "$DISCOVERY_CLAUDE_MODEL" --effort "$DISCOVERY_CLAUDE_EFFORT")
+  log "claude model=${DISCOVERY_CLAUDE_MODEL} effort=${DISCOVERY_CLAUDE_EFFORT}"
+
   # `security` has no timeout of its own: a locked keychain or an unanswered ACL
   # prompt would hang the whole run unbounded, so the read is capped like the
   # claude call (TIMEOUT_BIN was resolved above; with none, it runs uncapped, as
