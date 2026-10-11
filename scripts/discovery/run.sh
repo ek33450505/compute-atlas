@@ -396,6 +396,9 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   #     an inherited SHELLOPTS=xtrace cannot print it.
   # Setup/rotation: docs/discovery-runbook.md#auth-note.
   DISCOVERY_CLAUDE_TOKEN_SERVICE="${DISCOVERY_CLAUDE_TOKEN_SERVICE:-compute-atlas-discovery-claude-token}"
+  # Isolated CLI config dir used ONLY when a keychain token is present (a stored
+  # login outranks the fd-3 token otherwise; see the comment in invoke_claude).
+  DISCOVERY_CLAUDE_CONFIG_DIR="${DISCOVERY_CLAUDE_CONFIG_DIR:-$HOME/.compute-atlas-discovery/claude-config}"
 
   # `security` has no timeout of its own: a locked keychain or an unanswered ACL
   # prompt would hang the whole run unbounded, so the read is capped like the
@@ -427,7 +430,7 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   fi
 
   if [[ "$CLAUDE_TOKEN_PRESENT" -eq 1 ]]; then
-    log "using long-lived Claude token from keychain item $DISCOVERY_CLAUDE_TOKEN_SERVICE"
+    log "using long-lived Claude token from keychain item $DISCOVERY_CLAUDE_TOKEN_SERVICE (isolated config dir $DISCOVERY_CLAUDE_CONFIG_DIR)"
   elif [[ "$KEYCHAIN_RC" -eq 124 || "$KEYCHAIN_RC" -eq 137 ]]; then
     log "WARN: keychain read for item $DISCOVERY_CLAUDE_TOKEN_SERVICE timed out after ${DISCOVERY_KEYCHAIN_TIMEOUT_SECS}s (locked keychain or an unanswered access prompt?) — falling back to the CLI's stored login, which expires (see docs/discovery-runbook.md#auth-note)"
   else
@@ -451,8 +454,15 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # caller can tell an enforced cap from one that silently did nothing —
   # exit status cannot (see the -k measurement above).
   LAST_INVOKE_ELAPSED=0
+  # Set to 1 when the token-present branch could not create the isolated config
+  # dir (claude was never started, so OUTFILE has no text to classify). The
+  # caller maps it to class `auth`: that class already means "credential setup
+  # is broken, a retry cannot fix it" and carries the no-retry, batch-latch,
+  # re-queue and heartbeat handling, so no new class is needed.
+  LAST_INVOKE_CONFIG_FAILED=0
   invoke_claude() {
     local _t0 _t1 _status=0 _xt=0
+    LAST_INVOKE_CONFIG_FAILED=0
     _t0="$(date '+%s')"
     if [[ -z "$TIMEOUT_BIN" ]]; then
       log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
@@ -461,13 +471,22 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       # The token is handed over fd 3 of a one-shot pipe and named to the CLI by
       # CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3. That variable exists in the
       # shipped CLI (2.1.288) but is NOT on the public env-vars docs page, so this
-      # is version-pinned behaviour. MEASURED 2026-10-05: 2.1.288 READS the token
-      # from the descriptor, but a valid stored login still authenticates the run
-      # (a bogus token on fd 3 got a reply with no 401; see
-      # docs/discovery-runbook.md#auth-note). Whether the token covers an EXPIRED
-      # login is unmeasured. With no usable credential the run fails LOUDLY
-      # (classified `auth` -> the batch short-circuits, the states are re-queued,
-      # the watchdog goes red), never silently producing bad data.
+      # is version-pinned behaviour. MEASURED 2026-10-10 (CLI 2.1.294): a STORED
+      # LOGIN (~/.claude / keychain `Claude Code-credentials`) OUTRANKS the fd-3
+      # token - default config + a bogus token still got a reply. With
+      # CLAUDE_CONFIG_DIR at a fresh empty dir and no token: "Not logged in";
+      # same empty dir + a bogus token: 401 (the token IS honoured when no stored
+      # login exists). So the token only takes effect under an isolated config
+      # dir, which is set below. Consequences: user-level ~/.claude settings,
+      # hooks and MCP should no longer load for the headless discovery call
+      # (INFERRED from CLAUDE_CONFIG_DIR semantics, NOT measured; tool
+      # permissions come from the explicit CLAUDE_TOOL_FLAGS, so nothing needed
+      # is lost). CAST hook telemetry therefore stops recording the discovery
+      # session. Upside: the user-level CLAUDE.md/memory no longer contaminates
+      # the headless discovery prompt. And an invalid token now fails the run LOUDLY (classified
+      # `auth` -> the batch short-circuits, the states are re-queued, the
+      # watchdog goes red) even when the interactive login is fine. See
+      # docs/discovery-runbook.md#auth-note.
       #
       # CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 is defence in depth across CLI
       # versions. Per the Claude Code env-var docs it strips credentials from the
@@ -495,7 +514,13 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       # switched off across the one place the value is expanded.
       case $- in *x*) _xt=1 ;; esac
       { set +x; } 2>/dev/null
-      { trap '' PIPE; printf '%s' "$CLAUDE_TOKEN_VALUE" || :; } | ( export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3; _run_claude 3<&0 ) || _status=$?
+      if ! { mkdir -p "$DISCOVERY_CLAUDE_CONFIG_DIR" && chmod 700 "$DISCOVERY_CLAUDE_CONFIG_DIR"; } 2>/dev/null; then
+        log "ERROR: cannot create isolated Claude config dir $DISCOVERY_CLAUDE_CONFIG_DIR - refusing to fall back to the stored login"
+        _status=1
+        LAST_INVOKE_CONFIG_FAILED=1
+      else
+        { trap '' PIPE; printf '%s' "$CLAUDE_TOKEN_VALUE" || :; } | ( export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3 CLAUDE_CONFIG_DIR="$DISCOVERY_CLAUDE_CONFIG_DIR"; _run_claude 3<&0 ) || _status=$?
+      fi
       if [[ "$_xt" -eq 1 ]]; then
         set -x
       fi
@@ -800,7 +825,7 @@ d
       log "WARN: claude invocation for $RUN_ID timed out after DISCOVERY_TIMEOUT_SECS=${DISCOVERY_TIMEOUT_SECS}s (${STATE_ELAPSED}s wall-clock) — output may be empty or an error string; submit may be skipped"
     elif [[ "$INVOKE_STATUS" -eq 137 ]]; then
       log "WARN: claude invocation for $RUN_ID ignored SIGTERM and was SIGKILLed by --kill-after=${DISCOVERY_KILL_AFTER_SECS}s (${STATE_ELAPSED}s wall-clock) — the cap enforced correctly"
-    elif [[ "$INVOKE_STATUS" -ne 0 ]]; then
+    elif [[ "$INVOKE_STATUS" -ne 0 && "$LAST_INVOKE_CONFIG_FAILED" -ne 1 ]]; then
       log "WARN: claude invocation for $RUN_ID exited nonzero (session limit / timeout / crash, ${STATE_ELAPSED}s wall-clock) — output may be empty or an error string; submit may be skipped"
     fi
     note_overrun "claude invocation for $RUN_ID" "$STATE_ELAPSED" || true
@@ -816,6 +841,8 @@ d
     if [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
       CLAUDE_FAIL_CLASS="$(classify_candidates_failure "$OUTFILE")"
       CLAUDE_FAIL_BYTES="$(candidates_file_bytes "$OUTFILE")"
+      # claude never ran (isolated config dir uncreatable): no output to classify.
+      [[ "$LAST_INVOKE_CONFIG_FAILED" -eq 1 ]] && CLAUDE_FAIL_CLASS="auth"
     fi
     # A `blocked` class is a hard environmental stop (machine asleep, session
     # limit): the retry below cannot clear it and would only burn a second
@@ -846,6 +873,8 @@ d
       if [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
         CLAUDE_FAIL_CLASS="$(classify_candidates_failure "$OUTFILE")"
         CLAUDE_FAIL_BYTES="$(candidates_file_bytes "$OUTFILE")"
+        # The retry's mkdir can fail even if the first call's succeeded.
+        [[ "$LAST_INVOKE_CONFIG_FAILED" -eq 1 ]] && CLAUDE_FAIL_CLASS="auth"
         log "WARN: retry for $RUN_ID still produced no parseable candidate array (cause=${CLAUDE_FAIL_CLASS}, ${CLAUDE_FAIL_BYTES} bytes) — skipping submit"
       fi
     fi
