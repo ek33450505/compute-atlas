@@ -1207,7 +1207,7 @@
     "id": "5c-mem01-memphis-tn",
     "name": "5C MEM01 Memphis (former Fred's headquarters)",
     "operator": "5C Data Centers",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 35.0301213,
@@ -1228,6 +1228,12 @@
         "date": "2026-09-14",
         "note": "Construction is under way rather than merely proposed: 5C MEM01 LLC closed on the former Fred's headquarters for $25 million (deed of record), and drone footage in January 2026 captured ongoing construction on the rear of the building including what appeared to be turbines.",
         "sourceIndex": 3
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-10",
+        "note": "Daily Memphian (2026-09-03) reports '5C is now operating in 200,000 square feet' of the former Fred's headquarters on Getwell Road. That is a partial operating start, with room to expand.",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -1265,9 +1271,16 @@
         "publisher": "5C",
         "retrievedAt": "2026-09-21",
         "kind": "other"
+      },
+      {
+        "url": "https://dailymemphian.com/article/66232",
+        "label": "The AM/DM podcast: Is Memphis at a turning point?",
+        "publisher": "Daily Memphian",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-10",
     "notes": "Conversion of the former Fred's discount-retail headquarters, a multi-storey warehouse and office complex bought by Olymbec in 2019. DCD (2025-05-06), citing WREG, reports plans were submitted to Shelby County in late 2024 to convert 4300 Getwell Road into a data center supporting an initial 15MW IT load in phase one; the 15 MW phase-one figure is what is recorded as planned capacity. 5C's own site separately listed a Memphis facility, MEM01, at 20MW in 2025 and 60MW from 2027 — those larger figures are second-hand in this source and are deliberately NOT recorded as capacity. The 965,000 sq ft / 59-acre complex figures are Olymbec's, for the whole property, not for the data-center footprint. Quebec firms Adag Group and Hypertec are involved; 5C was subsequently acquired by Hypertec. Status is proposed and confidence reported: no source fetched here confirms permit issuance or construction start. Separately, Memphis City Council members led by JB Smiley Jr. introduced a proposed ordinance on 2026-08-16 for a temporary moratorium on new data-center developments citywide, which is context for this site but is not stated to apply to it.",
     "energy": {
       "notes": "5C's facility table lists the Memphis site's power source as 'GRID BTM' and shows 20 MW for 2026 with 64 MW in 2027 and a further 35 MW in 2029+; FOX13 reported 20 MW current capacity with a 35 MW planned expansion"
@@ -2763,7 +2776,7 @@
         "url": "https://www.sec.gov/Archives/edgar/data/2070542/000121390026089151/ea0301093-10q_aibdata.htm",
         "label": "AIB Data Centers Inc. Form 10-Q for the quarter ended 2026-06-30",
         "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-10-10",
         "kind": "filing"
       },
       {
@@ -2781,8 +2794,12 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-10",
     "notes": "Operated by One Blockchain LLC, wholly owned by AIB Data Centers Inc. (NYSE American: AIB; renamed from BlockchAIn Digital Infrastructure on 2026-06-25). The 10-Q states an existing 40 MW facility on leased land in Spartanburg County being repurposed into the ~65 MW CLT-01 AI/HPC campus via project entity AIB CLT1 LLC (formed 2026-06-23); revenue today is bitcoin hosting, hence aiClassification mixed_use. Baxtel reports the address as 389 Tyger River Industrial Drive; that address is NOT in the SEC filing, so it is recorded here only as a note and the coordinate is the Tyger River Industrial Drive road centroid (approximate, not parcel-confirmed). Same industrial park as the cancelled TigerDC Project Spero record but a different operator and a different, already-built facility.",
+    "energy": {
+      "source": "grid",
+      "notes": "A 15-year Electric Service Agreement executed in Q2 2026 provides 65,000 kVA of contract demand (25 MW added to the existing 40 MW energized facility). The existing 40 MW facility was de-energized on June 5, 2026 and had not resumed hosting as of Aug. 13, 2026."
+    },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
   },
@@ -17592,6 +17609,72 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "black-hills-lange-ii-rapid-city-sd",
+    "name": "Lange II Generating Station",
+    "operator": "Black Hills Energy",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.1203,
+      "lon": -103.26,
+      "city": "Rapid City",
+      "county": "Pennington",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 99
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-08-14",
+        "note": "Ceremonial groundbreaking marked the start of construction.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.blackhillsenergy.com/our-company/delivering-energy/lange-ii-generating-station-rapid-city",
+        "label": "Lange II Generating Station - Rapid City",
+        "publisher": "Black Hills Energy",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.bhpioneer.com/local_news/bh-energy-starts-construction-of-280-million-lange-ii-generating-station-in-rapid-city/article_5e2d057b-503e-4667-b9ba-e8ca6968e5aa.html",
+        "label": "BH Energy starts construction of $280 million Lange II Generating Station in Rapid City",
+        "publisher": "Black Hills Pioneer",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/List_of_power_stations_in_South_Dakota",
+        "label": "List of power stations in South Dakota (existing Lange GT coordinates)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "99 MW gas plant next to Black Hills' existing Lange facility on Deadwood Avenue, Rapid City, serving customers in South Dakota and eastern Wyoming. Groundbreaking was Aug 2025. The company targets commercial operation in Q4 2026, with commissioning Q3-Q4 2026. ~200 peak construction workers and 2-3 permanent technicians. Coordinates are Wikipedia's point for the adjacent existing Lange GT.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "investmentUsd": 280000000,
+    "jobs": {
+      "construction": 200,
+      "permanent": 2,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 6,
+      "notes": "Six dual-fuel (natural gas/diesel) reciprocating internal combustion engines. Replaces the 1960s-era Ben French units on Deadwood Ave, which retire in 2027."
+    }
+  },
+  {
     "id": "blackrock-amherst-ny",
     "name": "BlackRock Data Center, Amherst (CrossPoint Business Park)",
     "operator": "BlackRock, Inc.",
@@ -20477,14 +20560,33 @@
         "publisher": "Santee Cooper",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://newsroom.santeecooper.com/news/Dominion-Energy-Santee-Cooper-Joint-Project-Receives-Key-Regulatory-Approval/",
+        "label": "Dominion Energy, Santee Cooper Joint Project Receives Key Regulatory Approval",
+        "publisher": "Santee Cooper",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.live5news.com/2026/05/14/sc-regulators-approve-2200-megawatt-canadys-station-gas-plant-critics-warn-impacts/",
+        "label": "SC regulators approve 2,200-megawatt Canadys Station gas plant; critics warn of impacts",
+        "publisher": "Live 5 News (WCSC)",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-10",
     "notes": "Dedicated generation build-out driven in significant part by South Carolina large-load growth. Deliberately NOT linked to a named compute offtaker: no source ties its output to a specific campus, so `generation.offtaker` is omitted. Cost figures of roughly $5 billion and a target commercial operation date in the early 2030s appear in regulatory coverage but are not stated on either fetched company page, so they are not asserted here. Distinct from the tracked Project Boulder data center, which is also in Colleton County but is a different site and facility type. Coordinates are an approximate geocode of the Canadys community.",
     "energy": {
       "source": "on_site_gas",
       "utility": "Santee Cooper and Dominion Energy",
       "onSiteGenerationMw": 2200
+    },
+    "community": {
+      "status": "contested",
+      "notes": "SELC, representing the Coastal Conservation League and the Southern Alliance for Clean Energy, intervened, citing ACE Basin and community impacts, rising rates, and cost growth from $2.5B to $5B. The PSC approved 7-0 on May 14, 2026. A proposed 71-mile pipeline still needs approval.",
+      "sourceIndex": 7
     },
     "facilityType": "power_generation",
     "generation": {
@@ -22622,9 +22724,16 @@
         "publisher": "South Carolina Department of Commerce",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wistv.com/2025/06/24/companys-first-sc-data-center-be-built-cherokee-county/",
+        "label": "Company's first SC data center to be built in Cherokee County",
+        "publisher": "WIS",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-10",
     "notes": "Announcement describes four buildings of roughly 400,000 sq ft each plus an associated electrical substation, at '000 Ford Road, Gaffney'. Initial operations expected online by year-end 2028. Coordinates are an approximate geocode of Ford Road — no parcel-level location was published. A 300 MW full-build-out figure appears in trade coverage but is not stated in the state announcement, so capacity is omitted here.",
     "investmentUsd": 2100000000,
     "jobs": {
@@ -23546,6 +23655,69 @@
     ],
     "lastUpdated": "2026-09-22",
     "notes": "Downtown Charleston colocation facility with fully redundant HVAC and dual high-capacity power feeds. No MW, square footage or certification figure is published by the operator. Geocode matched the exact house number.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "clarendon-county-ram-bay-data-center-manning-sc",
+    "name": "Potential Data Center, Ram Bay Industrial Park (Clarendon County)",
+    "operator": "Undisclosed data center company",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.6382891,
+      "lon": -80.2708259,
+      "city": "Manning",
+      "county": "Clarendon County",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-19",
+        "note": "County says a data center has contracted with Santee Electric to secure one of its buildings in Ram Bay Industrial Park. Not yet official.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://media-002-us.cdn.govstack.com/clarendoncountygov-us/media/xqjbymc5/public-notice-data-center-project-august-19-2026.pdf",
+        "label": "Public Notice: Potential Data Center - Addressing Concerns, Answering Questions (as of Aug. 19, 2026)",
+        "publisher": "Clarendon County",
+        "retrievedAt": "2026-10-10",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.wistv.com/2026/08/19/clarendon-county-administration-responds-pushback-proposed-data-center/",
+        "label": "Clarendon County administration responds to pushback on proposed data center",
+        "publisher": "WIS",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=us&q=Ram%20Bay%2C%20Clarendon%20County%2C%20SC",
+        "label": "OSM Nominatim: Ram Bay Road, Clarendon County",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-10",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "An existing Santee Electric-owned building in Ram Bay Industrial Park, Manning. The pin is Ram Bay Road, not the building. Third-party trackers list a 15 MW 'Project 59 (Clarendon County Industrial Park)' that probably refers to this site, but neither the name nor the 15 MW was confirmed in a source read this session, so both are omitted.",
+    "energy": {
+      "source": "grid",
+      "utility": "Santee Electric Cooperative",
+      "notes": "Awaiting the results of Santee Electric's power-capacity study. Santee Electric buys its power from Santee Cooper."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Per the county notice: ~40,000 gallons for the initial closed-loop fill, serviced about every 10 years, plus ~4,000-8,000 gallons per day of grey water for restrooms and irrigation. The City of Manning approved water capacity."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Residents pushed back. The county presented a first reading of a data center moratorium on Aug. 10, 2026 and published a fact sheet on Aug. 19, 2026.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -27026,6 +27198,43 @@
     ],
     "lastUpdated": "2026-10-02",
     "notes": "Cogent groups this site with its Miami market as the 'Hollywood, FL' data center at 3924 Pembroke Rd, Pembroke Park. The operator page publishes no size or power. Coordinates are an OSM address interpolation and approximate.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cogent-nashville-woodycrest-tn",
+    "name": "Cogent Data Center - Nashville (338 Woodycrest Ave)",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.132143,
+      "lon": -86.752262,
+      "city": "Nashville",
+      "county": "Davidson",
+      "street": "338 Woodycrest Avenue",
+      "postalCode": "37210",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-06-04",
+        "note": "WSMV listed Cogent Data Center - Nashville at 338 Woodycrest Ave. as one of 12 existing Nashville-area data centers.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wsmv.com/2026/06/04/how-many-data-centers-are-there-nashville-heres-map-where-theyre-located/",
+        "label": "How many data centers are there in Nashville? Here's a map of where they're located",
+        "publisher": "WSMV",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Carrier/colocation facility. The coordinates come from a US Census geocode of the street address, not a parcel footprint. Third-party directories report about 27,500 sq ft and 2.5 MW, but those figures were not read from a fetched page, so no capacity is recorded.",
     "facilityType": "data_center"
   },
   {
@@ -33027,6 +33236,58 @@
     "facilityType": "data_center"
   },
   {
+    "id": "crowned-ridge-energy-storage-codington-county-sd",
+    "name": "Crowned Ridge Battery Energy Storage System",
+    "operator": "NextEra Energy Resources (Crowned Ridge Energy Storage I, LLC)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.0483,
+      "lon": -96.9227,
+      "city": "Waverly",
+      "county": "Codington",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 120
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-14",
+        "note": "Facility permit application filed with SD PUC (Docket EL26-014). Codington County CUP was obtained 2024-05-20.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2026/el26-014/Application.pdf",
+        "label": "Application for a Facility Permit to Construct a 120-MW Battery Energy Storage System (EL26-014)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://puc.sd.gov/Dockets/Electric/2026/EL26-014.aspx",
+        "label": "Docket EL26-014",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Project area is ~52.7 acres in Sections 1 and 2, T118N R51W, southeast of 464th Ave and 161st St, Codington County. The permanent BESS footprint is ~7.8 acres. Construction is expected May 2027, with commercial operation in May 2028. The PUC docket was pending as of Sept 2026 (data requests exchanged; procedural schedule set 2026-08-14). Coordinates are approximate: 0.3 mile north of the residence the application cites at 16138 464th Ave (Census geocode).",
+    "investmentUsd": 174000000,
+    "landAcres": 52.7,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "battery",
+      "offtaker": "Northern States Power (Xcel Energy)",
+      "notes": "120 MW / 4-hour BESS sited within the existing Crowned Ridge Wind project area and sharing its collector substation. 15-year Energy Storage Agreement with Northern States Power executed 2025-10-24. Surplus interconnection service via Otter Tail Power/MISO."
+    }
+  },
+  {
     "id": "crusoe-abilene-onsite-generation-tx",
     "name": "Crusoe Abilene on-site gas generation (Project Ludicrous)",
     "operator": "Crusoe",
@@ -33797,6 +34058,70 @@
       "coolingType": "closed_loop"
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "csre-properties-blockchain-rapid-city-sd",
+    "name": "CSRE Properties South Dakota Blockchain Facility (Ben French Substation)",
+    "operator": "CSRE Properties South Dakota, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.0872,
+      "lon": -103.2611,
+      "city": "Rapid City",
+      "county": "Pennington",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-19",
+        "note": "Black Hills Power filed a Blockchain Interruptible Electric Service Agreement for PUC approval (Docket EL26-008). An amended agreement was filed 2026-08-18. Still pending.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2026/EL26-008/Application.pdf",
+        "label": "Application of Black Hills Power for Approval of a Blockchain Interruptible Service Contract (Docket EL26-008)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2026/EL26-008/Exh1081926.pdf",
+        "label": "Public Amended Exhibit 1 - Blockchain Interruptible Electric Service Agreement (EL26-008)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://puc.sd.gov/Dockets/Electric/2026/EL26-008.aspx",
+        "label": "Docket EL26-008",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/List_of_power_stations_in_South_Dakota",
+        "label": "List of power stations in South Dakota (Ben French station coordinates)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Per the public amended agreement, the Facility is the customer's 'data mining and processing equipment located and/or to be installed in the vicinity of Company's Ben French substation in Rapid City.' The agreement only takes effect once a real-estate purchase between the customer and Black Hills Power closes; the original deadline was 2026-06-30, and an amended agreement was filed 2026-08-18. The customer's principal place of business is 490 Deadwood Ave., Rapid City. The Ben French generators on Deadwood Ave are slated to retire in 2027, when Lange II replaces them. No MW figure is public; the agreement is largely confidential. The entity name matches the 'CSRE Properties' naming of CleanSpark's real-estate subsidiaries, but no source read this session confirms the affiliation. Coordinates are Wikipedia's Ben French station point.",
+    "energy": {
+      "source": "grid",
+      "utility": "Black Hills Energy (Black Hills Power, Inc.)",
+      "notes": "Blockchain Interruptible Service: Black Hills may interrupt service in part or in full for up to 300 hours per calendar year. The customer reimburses utility-side interconnection capital."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "grid"
+    }
   },
   {
     "id": "ct-das-groton-data-center-ct",
@@ -38568,9 +38893,16 @@
         "publisher": "SC Biz News",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://www.lightwaveonline.com/data-center/article/14299551/dc-blox-sets-berkeley-county-south-carolina-as-its-next-data-center-site",
+        "label": "DC BLOX sets Berkeley County, South Carolina, as its next data center site",
+        "publisher": "Lightwave",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-10",
     "notes": "Third DC BLOX site committed in South Carolina (after Myrtle Beach cable landing station and Greenville colocation): DC BLOX purchased 27.5 acres from Santee Cooper in the Camp Hall commerce park, Berkeley County (announced 2023-09-27), with a preliminary plan of four buildings totaling approximately 200,000 sq ft and 45 MW of planned power; build-to-suit options available. Both sources describe it as still in the planning/land-secured phase with no stated construction start date, hence status 'proposed'. No source gives a street address or parcel for the specific building site within the multi-thousand-acre Camp Hall park, so the coordinates used here are the Berkeley County centroid (from OSM Nominatim) as an explicitly disclosed county-level placeholder, not even a city-level pin -- do not read this as parcel- or city-level precision. A third-party aggregator (baxtel.com) lists larger figures for this same project (64.5 acres, 1,131,000 sq ft, 3 buildings) attributed to 2027, which was not used here because it conflicts with the operator's own press release and no primary source confirming an expansion was found this session; flagging for a future refresh check.",
     "landAcres": 27.5,
     "facilityType": "data_center"
@@ -40413,6 +40745,49 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "deuel-harvest-wind-deuel-county-sd",
+    "name": "Deuel Harvest Wind Energy",
+    "operator": "Southern Power",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.8636,
+      "lon": -96.5346,
+      "county": "Deuel",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 300
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021",
+        "note": "Global Energy Monitor lists commissioning year 2021 (EIA-860M).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Deuel_Harvest_Wind_Energy",
+        "label": "Deuel Harvest Wind Energy",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "300 MW onshore wind in Deuel County, commissioned 2021. GEM lists Southern Power as owner and Invenergy as operator; Invenergy developed it. Distinct from Invenergy's South Deuel Wind project to the south. Single-source. Coordinates are GEM's.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "diamond-farms-gateway-digital-villa-ridge-mo",
@@ -45016,9 +45391,23 @@
         "publisher": "Utility Dive",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://investors.duke-energy.com/news/news-details/2026/Regulators-approve-Duke-Energys-proposal-for-new-natural-gas-generation-to-support-South-Carolinas-growing-energy-needs/default.aspx",
+        "label": "Regulators approve Duke Energy's proposal for new natural gas generation to support South Carolina's growing energy needs",
+        "publisher": "Duke Energy",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://scelp.org/news/proposed-gas-power-plant-in-anderson-county",
+        "label": "Proposed gas power plant in Anderson County",
+        "publisher": "South Carolina Environmental Law Project",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-10",
     "notes": "PSC of South Carolina granted final construction approval 2026-03-26. Air permit application submitted to SCDES March 2026. Construction expected to begin summer 2027; in-service date given as 2031 by trade press (Duke's own release said 'early 2031'). No named compute offtaker is identified in the PSC approval or the air-permit application, and Duke frames the plant as general system capacity rather than a dedicated behind-the-meter supply for one facility, so `generation.offtaker` is deliberately left unset rather than guessed. It is tracked here because South Carolina's large-load growth is the stated driver, not because a compute buyer is on record.",
     "investmentUsd": 3200000000,
     "landAcres": 200,
@@ -45026,11 +45415,72 @@
       "construction": 700,
       "permanent": 125
     },
+    "community": {
+      "status": "contested",
+      "notes": "SCELP raised concerns about air pollution, siting near Beaver Creek wetlands, water supply and costs. SCDES issued draft PSD air permit PSD-50000026 on Sept. 11, 2026. A public hearing is set for Oct. 13, 2026, with comments due Oct. 20, 2026.",
+      "sourceIndex": 4
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
       "offtaker": "General large-load / data center demand growth in Duke Energy Carolinas' South Carolina territory (not dedicated to a single named customer)",
       "notes": "Combined-cycle plant; nominal capacity split among Duke Energy (~1,170 MW), Central Electric Power Cooperative (95 MW), and North Carolina Electric Membership Corporation (100 MW). Duke states the design uses ~90% less water than traditional wet cooling and produces no vapor plume; the company describes it as its first new generation facility in a decade."
+    }
+  },
+  {
+    "id": "duke-bad-creek-ii-pumped-storage-oconee-county-sc",
+    "name": "Bad Creek II Pumped Storage Expansion",
+    "operator": "Duke Energy Carolinas",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.00667,
+      "lon": -82.99444,
+      "county": "Oconee County",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-15",
+        "note": "Duke removed Bad Creek II from a grid impact study, pushing the earliest in-service date to 2040. Duke says it remains committed to exploring it but has no specific timeline.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.canarymedia.com/articles/hydropower/duke-energy-retreating-major-pumped-hydro-expansion",
+        "label": "Duke Energy retreating from major pumped hydro expansion",
+        "publisher": "Canary Media",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.renewableenergyworld.com/energy-business/energy-finance/new-duke-energy-resource-plan-updates-on-bad-creek-pumped-storage-expansion-plan/",
+        "label": "New Duke Energy resource plan updates on Bad Creek pumped storage expansion plan",
+        "publisher": "Renewable Energy World",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Bad_Creek_Hydroelectric_Station",
+        "label": "Bad Creek Hydroelectric Station (coordinates of existing station)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "The pin is the existing Bad Creek station (approximate for the proposed second powerhouse). Duke's 2023 plan targeted mid-2033. The 2026 plan includes it in only 1 of 10 pathways, and the earliest date is now 2040.",
+    "energy": {
+      "source": "hydro"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "hydro",
+      "unitCount": 4,
+      "notes": "A second four-turbine powerhouse and new tunnel at the existing Bad Creek pumped storage station, with Lake Jocassee as the lower reservoir. Capacity is stated inconsistently across sources (~1,700 MW in Duke's 2023 plan; roughly 1.8 GW per Canary Media, Jan. 2026), so it is omitted."
     }
   },
   {
@@ -45377,6 +45827,55 @@
     }
   },
   {
+    "id": "duke-william-states-lee-iii-nuclear-cherokee-county-sc",
+    "name": "William States Lee III Nuclear Station (proposed new units)",
+    "operator": "Duke Energy Carolinas",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.03333,
+      "lon": -81.51111,
+      "city": "Gaffney",
+      "county": "Cherokee County",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-01",
+        "note": "Duke's 2025 Carolinas Resource Plan names Lee as a candidate site for new large-reactor generation. No build decision has been made.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.world-nuclear-news.org/articles/duke-energy-brings-large-scale-new-build-into-resource-plan",
+        "label": "Duke Energy brings large-scale new-build into resource plan",
+        "publisher": "World Nuclear News",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/William_States_Lee_III_Nuclear_Generating_Station",
+        "label": "William States Lee III Nuclear Generating Station",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Capacity is omitted because the plan cites a single ~1,117 MW AP1000 for whichever site is developed first (Lee or Belews Creek), while the COLs cover two units.",
+    "energy": {
+      "source": "nuclear"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear",
+      "notes": "NRC issued combined licenses on Dec. 19, 2016 for two Westinghouse AP1000 units. Duke sought to cancel the project in 2017 but kept the licenses. Duke's 2025 Carolinas Resource Plan identifies Lee as a preferred site for new large light-water reactors: up to 1,117 MW, with a potential 2037 in-service date if Lee is chosen over SMRs at Belews Creek, NC. WNN says the licenses would need significant amendments."
+    }
+  },
+  {
     "id": "dulles-cloud-south-gainesville-prince-william-va",
     "name": "Dulles Cloud South (Dulles South Innovation Center)",
     "operator": "Undisclosed",
@@ -45691,6 +46190,75 @@
     "community": {
       "status": "litigation",
       "notes": "Twiggs County residents sued in Twiggs County Superior Court on 2025-09-26 to cancel the rezoning, alleging the county posted the hearing notice on the wrong property with an incorrect date and approved a Development of Regional Impact without the required Middle Georgia Regional Commission review.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "eagle-rock-rhodes-technology-park-colleton-county-sc",
+    "name": "Rhodes Technology Park",
+    "operator": "Eagle Rock Partners",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.0509477,
+      "lon": -80.7911503,
+      "county": "Colleton County",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "announcedDate": "2026-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-22",
+        "note": "Eagle Rock Partners presented a single-user hyperscale campus (10 data centers, two substations, 1,000 MW, $6B) at a public information session. A development agreement is being finalized.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.live5news.com/2026/09/23/new-proposed-colleton-county-data-center-campus-draws-residents-questions/",
+        "label": "New proposed Colleton County data center campus draws residents' questions",
+        "publisher": "Live 5 News (WCSC)",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://abcnews4.com/news/local/colleton-county-residents-raise-concerns-over-proposed-data-center-power-plant-projects",
+        "label": "Colleton County residents raise concerns over proposed data center, power plant projects",
+        "publisher": "ABC News 4 (WCIV)",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=json&limit=3&countrycodes=us&q=Mount%20Carmel%20Road%2C%20Colleton%20County%2C%20SC",
+        "label": "OSM Nominatim: Mount Carmel Road, Colleton County (segment west of I-95, ZIP 29493)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-10",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "A campus of more than 1,200 acres west of I-95 off Mount Carmel Road, inside Colleton County's new overlay district. Construction is expected around 2028-2029. The pin is an approximate point on the Mount Carmel Road segment west of I-95 (checked against I-95's OSM geometry), not the parcel. Same developer and the same 1,000 MW and $6B as the tracked project-boulder-colleton-county-sc, but on a different parcel: Boulder was ~859 acres at Cooks Hill Road in the ACE Basin, and an Oct. 5, 2026 settlement places that tract in a Data Center Exclusion Area. This may be a relocated successor to Boulder, so a reviewer should decide whether to merge it.",
+    "energy": {
+      "notes": "Developer says it will pay for all off-site transmission. Construction timing depends on an energy and transmission study with Santee Cooper. Project leaders say it is not tied to the Canadys gas plant."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer says the campus will use a closed-loop, non-evaporative cooling system. No water-use figure was given."
+    },
+    "investmentUsd": 6000000000,
+    "jobs": {
+      "permanent": 500,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Residents raised concerns at a Sept. 22, 2026 information session, held about a week after the county passed a Digital Infrastructure Overlay District that allows data centers across much of its rural land.",
       "sourceIndex": 1
     },
     "facilityType": "data_center"
@@ -49757,6 +50325,49 @@
     }
   },
   {
+    "id": "engie-north-bend-wind-hyde-county-sd",
+    "name": "North Bend Wind Project",
+    "operator": "ENGIE",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.3773,
+      "lon": -99.6601,
+      "county": "Hyde",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 200
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023",
+        "note": "Global Energy Monitor lists commissioning year 2023 (EIA-860M).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/North_Bend_Wind_Project",
+        "label": "North Bend Wind Project",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "200 MW onshore wind in Hyde County, commissioned 2023, owned by ENGIE per GEM (EIA-860M basis). Single-source, so confidence is reported. Coordinates are GEM's. Distinct from ENGIE's Triple H project, also in Hyde County.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
+  },
+  {
     "id": "engie-solidago-solar-townsend-de",
     "name": "Solidago Solar (Amazon Solar Farm Delaware – Solidago)",
     "operator": "ENGIE North America (ENGIE Solidago Solar LLC)",
@@ -49828,6 +50439,49 @@
       "technology": "solar",
       "offtaker": "Amazon",
       "notes": "Amazon buys the output under a PPA, and the array is branded Amazon Solar Farm Delaware – Solidago. EIA-860M also lists a planned 12.5 MW battery (BESS) at the same plant, '(P) Planned for installation, but regulatory approvals not initiated', for June 2027."
+    }
+  },
+  {
+    "id": "engie-triple-h-wind-hyde-county-sd",
+    "name": "Triple H Wind Project",
+    "operator": "ENGIE North America",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.4765,
+      "lon": -99.6373,
+      "county": "Hyde",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 250.2
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020",
+        "note": "Global Energy Monitor lists commissioning year 2020 (EIA-860M).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Triple_H_Wind_Project",
+        "label": "Triple H Wind Project",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "250.2 MW onshore wind in Hyde County (near Highmore), commissioned 2020. GEM lists Engie North America as 100% owner and GE Renewable Energy as O&M operator. Single-source. Coordinates are GEM's.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
     }
   },
   {
@@ -65373,6 +66027,56 @@
     "facilityType": "data_center"
   },
   {
+    "id": "grant-solar-mccook-county-sd",
+    "name": "Grant Solar",
+    "operator": "Geronimo Power",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.5835,
+      "lon": -97.2678,
+      "county": "McCook",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 99
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-01-16",
+        "note": "McCook County commissioners, sitting as board of adjustment, voted 5-0 to grant a conditional use permit with conditions.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.mitchellrepublic.com/news/local/mccook-county-commission-approves-conditional-use-permit-for-165m-solar-farm",
+        "label": "McCook County Commission approves conditional use permit for $165M solar farm",
+        "publisher": "Mitchell Republic",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "99 MW PV on ~735 acres in McCook County near Salem (447th Ave area, Grant Township). National Grid Renewables was the 2024 applicant; EIA now lists Geronimo Power as operator, with planned operation 2027-10-01. CUP conditions include setback waivers, a 100-ft right-of-way setback, screening and a traffic study. No construction-start report was found. Coordinates are an OSM midpoint of 447th Avenue in Grant Township.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 165000000,
+    "landAcres": 735,
+    "community": {
+      "status": "contested",
+      "notes": "Landowners opposed it over safety, farmland, property values and grain-route traffic. No public speakers supported it at the Jan 2024 hearing.",
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
     "id": "grant-town-power-plant-crypto-mine-marion-county-wv",
     "name": "Grant Town Power Plant Cryptocurrency Mining Containers",
     "operator": "Undisclosed operator (Grant Town Power Plant site; plant operated by American Bituminous Power Partners for owner Horizon Ventures)",
@@ -65854,6 +66558,49 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "greenbacker-fall-river-solar-sd",
+    "name": "Fall River Solar",
+    "operator": "Greenbacker Renewable Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.1552,
+      "lon": -103.3439,
+      "county": "Fall River",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 80
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023",
+        "note": "Global Energy Monitor lists commissioning year 2023 (EIA-860M).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Fall_River_Solar",
+        "label": "Fall River Solar",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "80 MWac PV in Fall River County, commissioned 2023. GEM lists Greenbacker Renewable Energy as owner/operator. Single-source. Coordinates are GEM's.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
   },
   {
     "id": "greenidge-columbus-ms",
@@ -75345,18 +76092,18 @@
         "url": "https://www.newschannel5.com/news/despite-strong-opposition-plans-for-a-data-center-moves-forward-in-lawrenceburg",
         "label": "Despite strong opposition, plans for a data center move forward in Lawrenceburg (NewsChannel 5): 4.9 MW network/edge facility; site plan passed planning commission unanimously; water figures from Lawrenceburg Utilities System",
         "publisher": "NewsChannel 5 (WTVF)",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-10",
         "kind": "press"
       },
       {
         "url": "https://www.newschannel5.com/news/one-lawrence-co-city-to-vote-on-data-center-another-tries-to-ban-facilities-altogether",
         "label": "One Lawrence Co. city to vote on data center, another tries to ban facilities altogether (NewsChannel 5): planning commission to vote on permits for the 'Scalepoint TN data processing center' on Flatwoods Road",
         "publisher": "NewsChannel 5 (WTVF)",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-10",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-10",
     "notes": "Developer/operator has not been publicly named in any source retrieved. Status is recorded as permitted on the strength of the completed rezoning; a site-plan review was scheduled for July 9, 2026 and its outcome was not found. Coordinates are the Lawrenceburg town point — no parcel location on Flatwoods Road has been published.",
     "water": {
       "coolingType": "closed_loop",
@@ -75879,10 +76626,29 @@
         "publisher": "Aberdeen Insider",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sdpb.org/politics/2026-09-09/leola-data-center-electricity-to-be-served-by-mdu-next-faces-county-permitting",
+        "label": "Leola data center electricity to be served by MDU, next faces county permitting",
+        "publisher": "SDPB",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.thedakotascout.com/p/mcpherson-county-officials-want-legal-assurances-on-data-center-pledges",
+        "label": "McPherson County officials want legal assurances on data center pledges",
+        "publisher": "The Dakota Scout",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-10",
     "notes": "Site is legally described as Section 28 (part E1/2), Township 126N, Range 68W, McPherson County -- a 20-acre parcel adjacent to Montana-Dakota Utilities' Leola Substation, at the SW corner of 358th Avenue (Highway 17) and 116th Street, about 5 miles southwest of Leola. The CUP application itself lists 11641 358th Avenue, Leola, SD 57456 as the site's general area/street address, which is what was geocoded here (US Census geocoder); precision is approximate because this is a street-level geocode, not a confirmed parcel-corner survey point. As of 2026-09-13 no final CUP decision had been located in sources checked this run.",
+    "energy": {
+      "source": "grid",
+      "utility": "Montana-Dakota Utilities (MDU)",
+      "notes": "In Sept 2026 the SD PUC unanimously approved a settlement letting MDU serve the site (next to MDU's Leola substation, inside FEM Electric's area). Minimum load is 2,000 kW per billing period. The PUC said the vote does not authorize construction."
+    },
     "water": {
       "coolingType": "closed_loop",
       "notes": "McPherson County CUP supplemental filing (2024-11-07) describes a closed-loop, 30:70 glycol:water immersion cooling process, with the glycol:water solution itself air-cooled via low-noise fans -- a recirculating water circuit is present, so this is closed_loop under the schema's tie-breaker rule, not air."
@@ -76550,11 +77316,30 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-22",
         "kind": "other"
+      },
+      {
+        "url": "https://www.foxcarolina.com/2026/08/26/spartanburg-county-zoning-board-upholds-denial-data-center-jones-road/",
+        "label": "Spartanburg County zoning board upholds denial of data center on Jones Road",
+        "publisher": "FOX Carolina",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wspa.com/news/lighthouse-data-centers-proposal-denied/amp/",
+        "label": "LightHouse Data Centers proposal denied",
+        "publisher": "WSPA 7News",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-10",
     "notes": "Former LSC Communications / R.R. Donnelley printing plant at 300 Jones Road, bought by Greenidge in 2021 and sold on 2025-12-11 for $18M cash plus up to $18M in earnouts ($180,000 per MW energised above the secured 60 MW before 2031). capacityMw.planned records the 60 MW of power secured for delivery by September 2026, not a built IT load. Status kept at proposed: the SEC filing establishes the land and power position but no source read this session confirms construction. Coordinate is the OSM footprint of the LSC Communications parcel (approximate). This is the same parcel as the tracked, cancelled greenidge-spartanburg-sc crypto project — a different operator, facility type and project, recorded separately rather than as a status change on that record.",
     "landAcres": 152,
+    "community": {
+      "status": "opposed",
+      "notes": "County staff denied the 300 Jones Road application on June 26, 2026 (Unified Land Management Ordinance noncompliance plus a pending moratorium). The Board of Zoning Appeals unanimously upheld the denial on Aug. 25, 2026, and residents cheered. The developer says it invested more than $28M. Per FOX Carolina the developer can reapply, but a moratorium could block that.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -78322,6 +79107,87 @@
     "energy": {
       "utility": "Xcel Energy"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-nashville-9th-ave-n-tn",
+    "name": "Lumen Nashville (2208 9th Avenue North) — Level(3)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.189148,
+      "lon": -86.804111,
+      "city": "Nashville",
+      "county": "Davidson",
+      "street": "2208 9th Avenue North",
+      "postalCode": "37208",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-06-04",
+        "note": "WSMV listed 'Lumen Nashville 3' at 2208 9th Avenue North as an existing data center. PeeringDB lists 'Level(3) Nashville (9th Ave)' as an active facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wsmv.com/2026/06/04/how-many-data-centers-are-there-nashville-heres-map-where-theyre-located/",
+        "label": "How many data centers are there in Nashville? Here's a map of where they're located",
+        "publisher": "WSMV",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/1983",
+        "label": "PeeringDB facility 1983 — Level(3) Nashville (9th Ave)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Carrier facility. The coordinates are PeeringDB's listed point.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-nashville-perimeter-place-tn",
+    "name": "Lumen Nashville 2 (2530 Perimeter Place Drive)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.147409,
+      "lon": -86.681369,
+      "city": "Nashville",
+      "county": "Davidson",
+      "street": "2530 Perimeter Place Drive",
+      "postalCode": "37214",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-06-04",
+        "note": "WSMV listed 'Lumen Nashville 2' at 2530 Perimeter Place Drive as an existing Nashville-area data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wsmv.com/2026/06/04/how-many-data-centers-are-there-nashville-heres-map-where-theyre-located/",
+        "label": "How many data centers are there in Nashville? Here's a map of where they're located",
+        "publisher": "WSMV",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Separate from the tracked Lumen Sidco Drive site (lumen-nashville-sidco-drive-tn), which WSMV lists as 'Lumen Nashville 1'. The coordinates are a US Census geocode of the street address.",
     "facilityType": "data_center"
   },
   {
@@ -88221,6 +89087,72 @@
     }
   },
   {
+    "id": "midco-sioux-falls-sd",
+    "name": "Midco Sioux Falls Data Center",
+    "operator": "Midco (Midcontinent Communications)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.4968,
+      "lon": -96.7845,
+      "city": "Sioux Falls",
+      "street": "5401 S Solberg Ave",
+      "postalCode": "57108",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://business.midco.com/services/data-centers/sioux-falls-data-center/",
+        "label": "Sioux Falls Data Center",
+        "publisher": "Midco Business",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://web.archive.org/web/20250209083058/https://www.datacentermap.com/usa/south-dakota/sioux-falls/solberg/",
+        "label": "Midco Sioux Falls Data Center | 5401 S Solberg Ave (archived)",
+        "publisher": "Data Center Map (via Internet Archive)",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Tier III, SOC 2 colocation facility, ~11,000 sq ft with 9,000+ sq ft raised floor. Wholesale and retail colocation, with fiber PoP links to Minneapolis, Chicago, Omaha, Kansas City and Denver. Street address is from the archived Data Center Map listing. Coordinates are a US Census geocoder match.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "midco-yankton-sd",
+    "name": "Midco Yankton Data Center",
+    "operator": "Midco (Midcontinent Communications)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.8908,
+      "lon": -97.417,
+      "city": "Yankton",
+      "county": "Yankton",
+      "street": "2106 W City Limits Rd",
+      "postalCode": "57078",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://web.archive.org/web/20250217163307/https://www.datacentermap.com/usa/south-dakota/sioux-falls/midco-yankton/",
+        "label": "Midco Yankton Data Center (archived)",
+        "publisher": "Data Center Map (via Internet Archive)",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "5,000 sq ft Tier II, SOC 2 Type II colocation facility with dual fiber entrances, carrier neutrality and a backup generator (per a Feb 2025 archived listing). Single archived directory source, so current operation is not independently confirmed. Coordinates are a US Census geocoder match.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "midcon-recovery-solutions-oklahoma-city-ok",
     "name": "MIDCON Recovery Solutions Data Center",
     "operator": "MIDCON Recovery Solutions",
@@ -94054,6 +94986,72 @@
     "generation": {
       "technology": "solar",
       "offtaker": "General Motors"
+    }
+  },
+  {
+    "id": "northwestern-hub-city-energy-park-aberdeen-sd",
+    "name": "Hub City Energy Park",
+    "operator": "NorthWestern Energy",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.4339,
+      "lon": -98.49,
+      "city": "Aberdeen",
+      "county": "Brown",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 131
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-02",
+        "note": "Energy conversion facility permit application received by SD PUC (Docket EL26-031).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2026/EL26-031/EL26-031NoticeofApplication.pdf",
+        "label": "Notice of Application; Order for and Notice of Public Input Meeting (EL26-031)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2026/EL26-031/Application.pdf",
+        "label": "Application for an Energy Conversion Facility Permit - Hub City Energy Park (EL26-031)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://puc.sd.gov/Dockets/Electric/2026/EL26-031.aspx",
+        "label": "Docket EL26-031",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "On ~176 acres of NorthWestern-owned land adjacent to and north of the existing Aberdeen Generating Station: SW1/4 of Section 25, T123N R64W, at the NE corner of County Road 14W (135th St) and County Road 10 (South 5th St), ~3 miles south of downtown Aberdeen. Construction is expected late 2027/early 2028, with in-service in the first half of 2030. PUC public input meeting is 2026-11-23. Peak construction ~200 workers; up to 10 permanent employees. The cost estimate is redacted in the public application. Coordinates are the SW1/4 centroid of Section 25, computed from BLM PLSS geometry.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "landAcres": 176,
+    "jobs": {
+      "construction": 200,
+      "permanent": 10,
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 3,
+      "notes": "Nominal 131 MW (gross): three simple-cycle combustion turbines with SCR/oxidation catalysts. Gen-tie to the Siebrecht substation at the existing Aberdeen Generating Station, plus a gas lateral to the Northern Border Pipeline. Formerly called Aberdeen III Generating Station."
     }
   },
   {
@@ -100203,6 +101201,89 @@
     "facilityType": "data_center"
   },
   {
+    "id": "philip-wind-haakon-county-sd",
+    "name": "Philip Wind Project",
+    "operator": "Invenergy (Philip Wind Partners, LLC)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.2874,
+      "lon": -101.7227,
+      "city": "Philip",
+      "county": "Haakon",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 324.5
+    },
+    "announcedDate": "2025-08-15",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-02-12",
+        "note": "SD PUC accepted the settlement and granted energy facility permits (Docket EL25-029).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-07-13",
+        "note": "Blattner began full-project construction 2026-07-13 after mud-mat work in June 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://puc.sd.gov/News/2026/02132026.aspx",
+        "label": "South Dakota PUC gives go ahead to Philip Wind Project",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2025/EL25-029/LTR083126.pdf",
+        "label": "Philip Wind monthly construction report, Aug 31, 2026 (EL25-029)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://electrek.co/2026/02/17/south-dakota-just-approved-its-largest-wind-farm-ever/",
+        "label": "South Dakota just approved its largest wind farm ever",
+        "publisher": "Electrek",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sdpb.org/business-economics/2026-02-13/puc-approves-wind-farm-near-philip-will-be-the-largest-in-the-state",
+        "label": "PUC approves wind farm near Philip; 'Will be the largest in the state'",
+        "publisher": "SDPB",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2025/EL25-029/AttachA060326.pdf",
+        "label": "Philip Wind initial construction notice, turbine locations (EL25-029)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "A few miles north of Philip, Haakon County, on 68,300 acres. Permitted 2026-02-12. Full construction began 2026-07-13, with turbine installation planned June-December 2027 and commercial operation targeted for March 2028. No offtaker is named in the sources. Coordinates are the SW1/4 of Section 21, T4N R20E (turbine 37 location per AttachA), computed from BLM PLSS geometry.",
+    "energy": {
+      "source": "wind"
+    },
+    "investmentUsd": 750000000,
+    "landAcres": 68300,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "unitCount": 55,
+      "notes": "55 Nordex N163/5.9 MW turbines (324.5 MW nameplate, up to 300 MW at the point of interconnection), per the Aug 2026 report. The permit allowed up to 87 turbines / 333 MW. Interconnects via a 5.5-mile 230-kV gen-tie and a new WAPA Philip North switchyard."
+    }
+  },
+  {
     "id": "phoenixnap-phx02-phoenix-az",
     "name": "phoenixNAP PHX02",
     "operator": "phoenixNAP",
@@ -101147,6 +102228,76 @@
       "coolingType": "air",
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "pollard-mccormick-county-data-center-sc",
+    "name": "Pollard Data Center Site (McCormick County)",
+    "operator": "Undisclosed end user (site facilitated by Pollard Lumber Company)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.8992855,
+      "lon": -82.2674735,
+      "city": "McCormick",
+      "county": "McCormick County",
+      "state": "SC",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-10",
+        "note": "McCormick County Council approved the ~1,000-acre rezoning for the data center site 3-2.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wrdw.com/2026/08/12/hundreds-gather-debate-proposed-mccormick-county-data-center/",
+        "label": "Hundreds gather to debate proposed McCormick County data center",
+        "publisher": "WRDW/WAGT",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wrdw.com/2026/09/11/mccormick-county-council-approves-data-center-rezoning-while-tempers-flare/",
+        "label": "McCormick County council approves data center rezoning while tempers flare",
+        "publisher": "WRDW/WAGT",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wrdw.com/2026/09/16/mccormick-county-chairman-discusses-approved-data-center-site/",
+        "label": "McCormick County chairman discusses approved data center site",
+        "publisher": "WRDW/WAGT",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?format=json&limit=3&countrycodes=us&q=Whitetown%20Road%2C%20McCormick%2C%20SC",
+        "label": "OSM Nominatim: Whitetown Road, McCormick County",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-10",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "The site is Pollard Lumber Company land between Whitetown Road and Main Street, a few miles from downtown McCormick. The pin is the Whitetown Road segment nearest town, approximate only. Construction is estimated at about 6 years. No end user, MW or investment figure has been disclosed. The chairman said he does not know whether the full project will happen.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Pollard representatives said the site would be 100% gas-powered through a new natural gas pipeline built with Kinder Morgan. The pipeline is estimated at $200M-$280M and would be paid for by the data center's user. The route is undisclosed under an NDA."
+    },
+    "water": {
+      "notes": "Pollard representatives estimated 300,000-500,000 gallons per day once operational."
+    },
+    "landAcres": 1000,
+    "community": {
+      "status": "contested",
+      "notes": "Nearly 400 residents attended a July 28, 2026 information session. The planning commission recommended a pause and denied the rezoning, but on about Sept. 10, 2026 the county council rejected the pause (3-2) and approved the Pollard rezoning on final vote (3-2) amid an outcry.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "pontoon-bridge-road-massena-ny",
@@ -102623,6 +103774,55 @@
     "investmentUsd": 6000000000,
     "landAcres": 1000,
     "facilityType": "data_center"
+  },
+  {
+    "id": "prevailing-wind-park-sd",
+    "name": "Prevailing Wind Park",
+    "operator": "AES (sPower)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.1225,
+      "lon": -98.1127,
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 220
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020",
+        "note": "GEM and EIA-based listings give 2020 commissioning.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Prevailing_Wind_Park",
+        "label": "Prevailing Wind Park",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/62247-prevailing-wind-park",
+        "label": "Prevailing Wind Park (EIA plant 62247)",
+        "publisher": "Infrasure",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "220 MW onshore wind, commissioned 2020. GEM lists Sustainable Power Group (sPower) as owner. EIA (via Infrasure) lists AES Distributed Energy as owner/operator; sPower is an AES-affiliated company, which this session did not independently re-verify. Location sources conflict: GEM gives 43.1225, -98.1127 (used here); Infrasure gives 43.0390, -97.5260 near Yankton. County is omitted because sources disagree.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "prime-1231-comstock-santa-clara-ca",
@@ -104193,10 +105393,26 @@
         "publisher": "NewsChannel 9 / WTVC",
         "retrievedAt": "2026-09-09",
         "kind": "press"
+      },
+      {
+        "url": "https://newschannel9.com/news/local/story/bradley-county-family-proposes-113b-data-center-project-west-of-cleveland-project-river-wright-brothers-lower-river-road-forestry-jobs-utility-bills-opposition-environmental-concerns-noise-concerns-data-center-issues-midterms-political-liability-growth",
+        "label": "$11.3B data center pitch in Bradley County comes amid growing local skepticism",
+        "publisher": "WTVC NewsChannel 9",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-10",
     "notes": "The generation half of Project River, recorded separately because the developer states the power plant is the certain element and its offtaker is not yet chosen. Investment split as itemised in press coverage of the $11.3bn total: $7.3bn data center, $1.5bn natural gas generation, $1.25bn biomass and pyrolysis, $750m grid interconnect and balance of plant, $500m site/civil/buildings; Chattanoogan reports the behind-the-meter generation facility as a $4bn component, and that $4bn figure is what is recorded here rather than a sum computed from the itemisation. Jobs recorded as 250 power generation plus 125 biomass handling from the developer's own site; a further 1,700 indirect regional forestry jobs are claimed and are deliberately not recorded as permanent on-site jobs. The biomass feedstock is framed as surplus timber previously taken by paper mills such as Resolute Forest Products.",
+    "energy": {
+      "source": "mixed",
+      "onSiteGenerationMw": 1500,
+      "notes": "Behind-the-meter generation of 1,500 MW: about 500 MW from a biomass plant burning Southern pine plus two natural gas plants providing about 1,000 MW. The developers also requested 360 MW from TVA for backup and peak demand."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developers say the campus would not draw municipal water for daily operations. Biomass drying could recover about 200 gallons per minute, and after an initial fill the captured water would circulate continuously through a closed-loop system."
+    },
     "investmentUsd": 4000000000,
     "landAcres": 850,
     "jobs": {
@@ -108967,6 +110183,7 @@
       "lon": -86.7837,
       "city": "Nashville",
       "county": "Davidson",
+      "street": "2902 Brick Church Pike",
       "state": "TN",
       "precision": "approximate"
     },
@@ -109009,9 +110226,16 @@
         "publisher": "Nashville Electric Service",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wsmv.com/2026/06/04/how-many-data-centers-are-there-nashville-heres-map-where-theyre-located/",
+        "label": "How many data centers are there in Nashville? Here's a map of where they're located",
+        "publisher": "WSMV",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-10",
     "energy": {
       "source": "grid",
       "utility": "Nashville Electric Service"
@@ -114851,9 +116075,16 @@
         "publisher": "American Public Power Association",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://newsroom.santeecooper.com/?p=82",
+        "label": "More Energy, More Reliability: Powering What's Next",
+        "publisher": "Santee Cooper",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-10",
     "notes": "Part of the same board-approved generation package as Canadys Station, the Winyah combustion turbines, and the Pinopolis/Jefferies battery project. Distinct from Duke Energy's separate, unrelated Anderson Plant gas project (also in Anderson County — see duke-anderson-plant-anderson-county-sc). No named compute offtaker appears in the board materials — the package is described as meeting future electric demand generally — so `generation.offtaker` is deliberately left unset rather than inferred from the fact that data-center load is driving that demand.",
     "investmentUsd": 201000000,
     "facilityType": "power_generation",
@@ -114900,9 +116131,16 @@
         "publisher": "American Public Power Association",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://newsroom.santeecooper.com/?p=82",
+        "label": "More Energy, More Reliability: Powering What's Next",
+        "publisher": "Santee Cooper",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-10",
     "notes": "Board-approved 2025-10-24 as part of a package of generation projects (alongside Canadys Station, the Pinopolis/Jefferies battery project, and the Rainey Station expansion) that Santee Cooper's board described as needed to meet future electric demand. No named compute offtaker appears in the board materials — the package is described as meeting future electric demand generally — so `generation.offtaker` is deliberately left unset rather than inferred from the fact that data-center load is driving that demand.",
     "facilityType": "power_generation",
     "generation": {
@@ -115174,6 +116412,49 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "scout-sweetland-wind-hand-county-sd",
+    "name": "Sweetland Wind Farm",
+    "operator": "Scout Clean Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.2465,
+      "lon": -98.4779,
+      "county": "Hand",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 200
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023",
+        "note": "Global Energy Monitor lists commissioning year 2023 (EIA-860M).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Sweetland_wind_farm",
+        "label": "Sweetland wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "200 MW onshore wind in Hand County, commissioned 2023. GEM lists Scout Clean Energy as 100% owner and operator. Single-source. Coordinates are GEM's.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
   },
   {
     "id": "sd-data-center-melbourne-fl",
@@ -116027,6 +117308,9 @@
       "state": "SD",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 2
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -116042,9 +117326,16 @@
         "publisher": "KOTA TV",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://rapidcitypost.com/?p=76434",
+        "label": "Data Center Promises Low Impact on Rapid City",
+        "publisher": "The Rapid City Post",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-10",
     "notes": "Capacity is disputed between the two sources fetched this run and is deliberately omitted from capacityMw rather than guessed: Baxtel states an initial 2MW phase scaling to 10MW; KOTA TV separately reports 15MW for the same project (also citing a 1.3 PUE design target vs. an industry average of 1.8-2.0). Tier 3 edge computing facility, greenfield, an initial ~30,000 sq ft building on a 1-acre footprint within a 10-acre site, expandable to five data halls across 7 acres. Construction was reported (both sources) to begin late summer 2026 with a roughly 14-month build targeting a 2027 opening; no source checked this run (2026-09-13) confirms construction has actually started. Coordinate is an OSM Nominatim road-level geocode of S Highway 79, Rapid City -- not a confirmed parcel.",
     "energy": {
       "utility": "Black Hills Energy",
@@ -116055,6 +117346,10 @@
       "notes": "Closed-loop cooling system with a one-time water fill of approximately 19,000 gallons (Baxtel, fetched 2026-09-13)."
     },
     "landAcres": 10,
+    "jobs": {
+      "permanent": 3,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -117448,6 +118743,72 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "simple-mining-madison-sd",
+    "name": "Simple Mining Madison Bitcoin Hosting Site",
+    "operator": "Simple Mining LLC",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.0061,
+      "lon": -97.114,
+      "city": "Madison",
+      "county": "Lake",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 10
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-09-15",
+        "note": "Madison Board of Adjustment approved a conditional use permit and variance. The City Commission still has to approve a land lease and an electric service agreement.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.capjournal.com/news/south-dakota/city-of-madison-continues-talks-on-possible-data-center",
+        "label": "City of Madison continues talks on possible data center",
+        "publisher": "Madison Daily Leader (via Capital Journal)",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.madisondailyleader.com/news/local/simple-mining-data-center-hoping-to-come-to-madison",
+        "label": "Simple Mining data center hoping to come to Madison",
+        "publisher": "Madison Daily Leader",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.dakotanewsnow.com/2026/09/22/madison-city-council-discusses-possible-digital-currency-mining-facility/",
+        "label": "Madison city council discusses possible digital currency mining facility",
+        "publisher": "Dakota News Now",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Small-scale (max 10 MW, typically 5-10 MW) bitcoin hosting site on 3.73 acres of city-owned land along SD-34 in Madison, north of Highway 34 and west of the city's southeast substation. Four modular container-sized units. Simple Mining (Cedar Falls, IA) would run the machines; other parties would own them. Board of Adjustment granted the CUP and variance on 2026-09-15. The City Commission took no action on 2026-09-21; the lease and electric service agreement were still pending as of late Sept 2026. Construction is estimated at ~3 months once approved. This follows Giga Energy's earlier 10 MW proposal on parcels next to the Madison Generating Plant, which the city ended in June 2026 over interruptibility terms. Coordinates are the OSM centroid of Madison, not the parcel.",
+    "energy": {
+      "source": "grid",
+      "utility": "City of Madison municipal utility (supply from Heartland Energy)",
+      "notes": "Power is bought from Heartland Energy through the City of Madison at the open-market rate. Service is interruptible, as the city requires."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Sept 2026 plan: closed-loop liquid cooling with no water consumption. The July 2026 pitch said air cooling first, then a closed-loop glycol system after 12-18 months, with no connection to the local water system."
+    },
+    "landAcres": 3.73,
+    "facilityType": "crypto_mining",
+    "mining": {
+      "coolingType": "hydro",
+      "powerArrangement": "grid"
+    }
+  },
+  {
     "id": "simple-mining-manchester-ia",
     "name": "Simple Mining Manchester",
     "operator": "Simple Mining",
@@ -118718,6 +120079,75 @@
     }
   },
   {
+    "id": "south-deuel-wind-deuel-county-sd",
+    "name": "South Deuel Wind Project",
+    "operator": "Invenergy (Deuel Harvest Wind Energy South, LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.7067,
+      "lon": -96.6778,
+      "city": "Clear Lake",
+      "county": "Deuel",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 260
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-02-28",
+        "note": "SD PUC voted to grant the permit with 50+ conditions (Docket EL24-023).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://puc.sd.gov/News/2025/022825.aspx",
+        "label": "PUC approves construction permit with conditions for South Deuel Wind Project",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2024/EL24-023/QuarterlyReport063026.pdf",
+        "label": "South Deuel Wind quarterly progress report, June 30, 2026 (EL24-023)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://sdpb.org/business-economics/2025-03-03/puc-approves-261-million-wind-farm-project-in-deuel-county",
+        "label": "PUC approves wind farm project in Deuel County",
+        "publisher": "SDPB",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2024/EL24-023/AttachC051826.pdf",
+        "label": "South Deuel Wind limited construction notice, turbine sites (EL24-023)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "East of Clear Lake in Deuel County (Blom, Brandt, Clear Lake, Norden and Scandinavia townships). Only mud mats have been built (turbine sites 37/38 in Aug 2025, 11/28 in June 2026). Commercial operation has slipped from the permit's December 2026 to December 2029/2030; the project still awaits a Department of War mitigation agreement for FAA determinations. A customer contract was being signed per the June 2026 report. Cost is $621M per Invenergy (SDPB correction). Coordinates are the SW1/4 of Section 2, T114N R49W (turbine 11), computed from BLM PLSS geometry. Distinct from the operating Deuel Harvest farm to the north.",
+    "energy": {
+      "source": "wind"
+    },
+    "investmentUsd": 621000000,
+    "landAcres": 29258,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "unitCount": 68,
+      "notes": "Up to 68 turbines, with a ~6-mile 345-kV gen-tie to the Astoria switchyard. The MISO generator interconnection agreement was executed May 2026, with target backfeed in 2030 (possibly 2029)."
+    }
+  },
+  {
     "id": "south-front-networks-davenport-ia",
     "name": "South Front Networks IA-Davenport Interconnection Facility",
     "operator": "South Front Networks",
@@ -119221,11 +120651,24 @@
         "publisher": "U.S. Department of Energy / NNSA",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nucnet.org/news/amentum-chosen-for-negotiations-on-lease-for-savannah-river-ai-data-centre-7-3-2026",
+        "label": "Amentum chosen for negotiations on lease for Savannah River AI data centre",
+        "publisher": "NucNet",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-10",
     "notes": "NNSA (DOE) announced 2026-07-20 that Amentum was selected to enter negotiations for a phased lease to build a ~1 GW AI data center at the Savannah River Site, paired with ~2 GW of dedicated on-site generation (companion record: srs-energy-generation-savannah-river-site-sc). SRS spans Aiken, Barnwell, and Allendale counties, SC; NNSA has identified 10 candidate tracts within the site but has not publicly designated a specific tract, county, or parcel. Coordinates are the SRS site centroid, not a specific tract — precision approximate. Selection for negotiation is NOT a final lease award; subject to successful negotiation, permitting, and federal safety/security review.",
-    "facilityType": "data_center"
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 2000,
+      "notes": "About 2 GW of on-site generation, initially natural gas, with plans to move to advanced nuclear. Lease is still in negotiation."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "srs-energy-generation-savannah-river-site-sc",
@@ -119252,10 +120695,21 @@
         "publisher": "U.S. Department of Energy / NNSA",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nucnet.org/news/amentum-chosen-for-negotiations-on-lease-for-savannah-river-ai-data-centre-7-3-2026",
+        "label": "Amentum chosen for negotiations on lease for Savannah River AI data centre",
+        "publisher": "NucNet",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-10",
     "notes": "Companion generation project to srs-ai-data-center-savannah-river-site-sc, intended to serve the data center without drawing on the existing utility grid. Selection for lease negotiation announced 2026-07-20; not a final award. Coordinates are the SRS site centroid — precision approximate.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Approximately 2 GW of on-site generation, initially natural gas, with plans to transition to advanced nuclear."
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -129900,6 +131354,36 @@
     "facilityType": "data_center"
   },
   {
+    "id": "tierpoint-sioux-falls-east-sd",
+    "name": "TierPoint Sioux Falls - East (SFE)",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.5947,
+      "lon": -96.7193,
+      "city": "Sioux Falls",
+      "county": "Minnehaha",
+      "street": "700 East 54th Street North",
+      "postalCode": "57104",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/south-dakota/sioux-falls-east/",
+        "label": "Sioux Falls - East Data Center",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Colocation facility listed as 'Now Available'. 16,000+ sq ft total, 4,200+ sq ft raised floor, 8,100+ sq ft business-continuity seating, two 800 kW redundant generators (48-hour minimum runtime), A/B power. Interconnected with TierPoint Sioux Falls - West (already tracked as a separate record) and Omaha. Coordinates are a US Census geocoder match for the street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "tierpoint-sioux-falls-west-sd",
     "name": "TierPoint Sioux Falls - West",
     "operator": "TierPoint",
@@ -130290,6 +131774,60 @@
     "notes": "Coordinates are a township-level geocode, not the parcel. Gander Newsroom reports a temporary township moratorium on data center development was subsequently adopted; no capacity, investment or end user has been published.",
     "landAcres": 150,
     "facilityType": "data_center"
+  },
+  {
+    "id": "toronto-power-plant-deuel-county-sd",
+    "name": "Toronto Power Plant",
+    "operator": "Missouri River Energy Services / Western Minnesota Municipal Power Agency",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.6052,
+      "lon": -96.6273,
+      "city": "Toronto",
+      "county": "Deuel",
+      "state": "SD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 145
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-07",
+        "note": "Energy facility permit application received by SD PUC (Docket EL25-028).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://puc.sd.gov/commission/dockets/electric/2025/EL25-028/AttachA082825.pdf",
+        "label": "Landowner notice and PUC notice of application, Toronto Power Plant (EL25-028 Attachment A)",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://puc.sd.gov/Dockets/Electric/2025/EL25-028.aspx",
+        "label": "Docket EL25-028",
+        "publisher": "South Dakota Public Utilities Commission",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "SE1/4 of Section 7, T113N R48W, Scandinavia Township, ~3 miles north of Toronto, SD. The application projected commercial operation in 2029. On 2026-06-30 the applicants moved to extend the decision deadline six months to 'evaluate the feasibility of the Project at this location given the recent zoning and moratorium developments in Deuel County'; the PUC granted this 2026-07-15. Docket still pending (latest filing 2026-10-09). Coordinates are the SE1/4 centroid of Section 7, computed from BLM PLSS geometry.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "investmentUsd": 378000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 4,
+      "notes": "145 MW dual-fuel plant with four combustion turbine-generator sets, plus a ~4.9-mile 345-kV gen-tie to the existing Astoria substation."
+    }
   },
   {
     "id": "town-of-janesville-data-center-rock-county-wi",
@@ -133491,7 +135029,7 @@
     "id": "valara-holdings-hpcc-generation-spartanburg-sc",
     "name": "Valara Holdings High Performance Compute Center — On-Site Gas Generation",
     "operator": "Valara Holdings, LLC",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "confirmed",
     "location": {
       "lat": 34.923,
@@ -133499,13 +135037,21 @@
       "city": "Spartanburg",
       "county": "Spartanburg",
       "street": "4000 S Pine Street",
+      "postalCode": "29302",
       "state": "SC",
       "precision": "exact"
     },
     "capacityMw": {
       "planned": 457
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-10-10",
+        "note": "On Sept. 18, 2026 SCDES Bureau of Air Quality approved Valara Holdings' second Synthetic Minor Air Construction Permit to build and operate 11 natural gas-fired simple-cycle combustion turbines, after the June 25 hearing and the comment period that closed July 31. A Memo of Final Decision and Response to Comments was published.",
+        "sourceIndex": 3
+      }
+    ],
     "sources": [
       {
         "url": "https://des.sc.gov/sites/des/files/Documents/BAQ/Valara/Application.pdf",
@@ -133527,12 +135073,49 @@
         "publisher": "SC Public Service Commission DMS",
         "retrievedAt": "2026-09-10",
         "kind": "filing"
+      },
+      {
+        "url": "https://des.sc.gov/community/community-engagement/environmental-sites-projects/valara-holdings-high-performance-compute-center",
+        "label": "Valara Holdings High Performance Compute Center (SCDES project page, updated Sept. 18, 2026)",
+        "publisher": "South Carolina Department of Environmental Services",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.des.sc.gov/sites/des/files/Documents/BAQ/DepartmentDecisions/Valara/DepartmentDecision.pdf",
+        "label": "SCDES Department Decision, AIR-Construction Permit CP-50000316 v1.0 (Sept. 17, 2025)",
+        "publisher": "South Carolina Department of Environmental Services",
+        "retrievedAt": "2026-10-10",
+        "kind": "permit"
+      },
+      {
+        "url": "https://cleanenergy.org/press-archive/residents-sue-over-data-center-permits-seek-utility-regulator-scrutiny-of-natura/",
+        "label": "Residents sue over data center permits, seek utility regulator scrutiny of natural gas plant",
+        "publisher": "Southern Alliance for Clean Energy",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wspa.com/news/sc-commission-rules-valara-data-center/amp/",
+        "label": "SC commission rules on Valara data center",
+        "publisher": "WSPA 7News",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-10",
     "notes": "PSC Docket 2026-158-E (opened 2026-06-19): Concerned Citizens of Spartanburg County and the Southern Alliance for Clean Energy petitioned for a declaratory order that the expansion requires Utility Facility Siting Act certification; Valara disputes PSC jurisdiction over private, non-grid generation. No ruling issued as of retrieval (2026-09-10); oral argument was rescheduled multiple times, most recently to 2026-08-05. SCDES public comment period on the expansion permit ran through 2026-07-31 with no permit decision yet issued.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "About 450 MW of the developer's own gas generation: 11 natural gas turbines (400+ MW) plus permanent gas generators (~50 MW; 24 x 2,103 kW under CP-50000316). The PSC ruled the plant is not subject to the Utility Siting Act because it will not export power to the grid."
+    },
     "water": {
       "coolingType": "evaporative"
+    },
+    "community": {
+      "status": "litigation",
+      "notes": "Concerned Citizens of Spartanburg County (represented by SELC) sued Valara, Spartanburg County and the county administrator in July 2026 over land-development permitting. A PSC Siting Act petition (Docket 2026-158-E) was rejected unanimously; reconsideration was requested on Sept. 24, 2026. The separate lawsuit continues.",
+      "sourceIndex": 5
     },
     "facilityType": "power_generation",
     "generation": {
@@ -137394,6 +138977,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "white-county-pleasant-hill-road-crypto-mine-tn",
+    "name": "Pleasant Hill Road Crypto Mining Facility (White County)",
+    "operator": "Undisclosed",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.8821,
+      "lon": -85.4688,
+      "city": "Sparta",
+      "county": "White",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 4.9
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-11",
+        "note": "Proposed 4.9 MW cryptocurrency mining operation on a ~5-acre parcel at the end of Pleasant Hill Road near Sparta, made public by County Executive-elect Kyle Goff; not yet approved.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hoodline.com/2026/08/white-county-s-data-center-ban-meets-its-match-on-pleasant-hill-road/",
+        "label": "White County's data center ban meets its match on Pleasant Hill Road",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Operator not named. The pin is the OpenStreetMap centroid of Pleasant Hill Road in White County. The parcel at the road's end was not located. 4.9 MW is below HB 1847's 50 MW threshold.",
+    "community": {
+      "status": "contested",
+      "notes": "The White County Commission voted on July 20, 2026 to ban grid-connected AI and data center facilities countywide, but the project appears able to proceed: the county lacks comprehensive zoning and the parcel avoided regional planning review. The outgoing County Executive said he is reviewing legal options to prevent or limit it.",
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "white-oak-technology-park-columbia-county-ga",
     "name": "White Oak Technology Park",
     "operator": "Trammell Crow Company (CBRE subsidiary)",
@@ -139025,6 +140651,43 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "zayo-nashville-10th-ave-s-tn",
+    "name": "Zayo Nashville (209 10th Ave. S)",
+    "operator": "Zayo Group",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.155165,
+      "lon": -86.782559,
+      "city": "Nashville",
+      "county": "Davidson",
+      "street": "209 10th Avenue South",
+      "postalCode": "37203",
+      "state": "TN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-09-26",
+        "note": "PeeringDB lists the facility with status ok (record last updated 2025-09-26).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/2936",
+        "label": "PeeringDB facility 2936 — Zayo Nashville - 209 10th Ave. S",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "notes": "Network/carrier facility from PeeringDB only. The coordinates are PeeringDB's listed point.",
+    "facilityType": "data_center"
   },
   {
     "id": "zenith-tooele-valley-burmester-ut",
