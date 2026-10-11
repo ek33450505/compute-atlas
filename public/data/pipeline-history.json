@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-09T19:06:06.762Z",
+  "asOf": "2026-10-10T23:22:08.812Z",
   "statuses": [
     "operational",
     "under_construction",
@@ -8,17 +8,17 @@
     "cancelled"
   ],
   "coverage": {
-    "totalFacilities": 2394,
-    "withHistory": 1521,
+    "totalFacilities": 2395,
+    "withHistory": 1522,
     "excludedNoHistory": 873,
     "earliestEvent": "1961-01-01",
-    "latestEvent": "2026-10-09",
+    "latestEvent": "2026-10-10",
     "quartersOmitted": 236,
     "knownAtStart": 132,
     "datePrecision": {
       "year": 299,
       "month": 698,
-      "day": 1006
+      "day": 1008
     },
     "unparseableDates": 0,
     "ambiguousPeak": {
@@ -394,7 +394,7 @@
     {
       "quarter": "2026Q1",
       "end": "2026-03-31",
-      "known": 976,
+      "known": 977,
       "ambiguous": 104,
       "ambiguousEntry": 70,
       "ambiguousStatus": 34,
@@ -402,14 +402,14 @@
         "operational": 330,
         "under_construction": 170,
         "permitted": 127,
-        "proposed": 300,
+        "proposed": 301,
         "cancelled": 49
       }
     },
     {
       "quarter": "2026Q2",
       "end": "2026-06-30",
-      "known": 1118,
+      "known": 1119,
       "ambiguous": 100,
       "ambiguousEntry": 66,
       "ambiguousStatus": 34,
@@ -417,14 +417,14 @@
         "operational": 344,
         "under_construction": 207,
         "permitted": 133,
-        "proposed": 360,
+        "proposed": 361,
         "cancelled": 74
       }
     },
     {
       "quarter": "2026Q3",
       "end": "2026-09-30",
-      "known": 1498,
+      "known": 1499,
       "ambiguous": 94,
       "ambiguousEntry": 59,
       "ambiguousStatus": 35,
@@ -432,22 +432,22 @@
         "operational": 504,
         "under_construction": 254,
         "permitted": 167,
-        "proposed": 461,
+        "proposed": 462,
         "cancelled": 112
       }
     },
     {
       "quarter": "2026Q4",
       "end": "2026-12-31",
-      "known": 1521,
+      "known": 1522,
       "ambiguous": 33,
       "ambiguousEntry": 0,
       "ambiguousStatus": 33,
       "counts": {
-        "operational": 530,
-        "under_construction": 252,
+        "operational": 531,
+        "under_construction": 251,
         "permitted": 167,
-        "proposed": 461,
+        "proposed": 462,
         "cancelled": 111
       },
       "partial": true
