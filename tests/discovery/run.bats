@@ -127,7 +127,7 @@ EOF
 	# A Claude Code session exports these to its own children, so a bats run
 	# launched from one would otherwise hand the token tests an inherited value
 	# and make every "UNSET" / "scrub var forced by run.sh" assertion meaningless.
-	unset CLAUDE_CODE_OAUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR CLAUDE_CODE_SUBPROCESS_ENV_SCRUB
+	unset CLAUDE_CODE_OAUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR CLAUDE_CODE_SUBPROCESS_ENV_SCRUB CLAUDE_CONFIG_DIR
 
 	NOTIFY_CALL_LOG="$TEST_TMP/notify-calls.log"
 	for _surface in terminal-notifier osascript; do
@@ -1996,6 +1996,12 @@ if { true <&3; } 2>/dev/null; then cat <&3 >"$FD3_SEEN_FILE"; else echo FD3-CLOS
 echo "\${CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR:-UNSET}" >"$FDVAR_SEEN_FILE"
 echo "\${CLAUDE_CODE_OAUTH_TOKEN:-UNSET}" >"$TOKENENV_SEEN_FILE"
 echo "\${CLAUDE_CODE_SUBPROCESS_ENV_SCRUB:-UNSET}" >"$SCRUB_SEEN_FILE"
+echo "\${CLAUDE_CONFIG_DIR:-UNSET}" >"$TEST_TMP/claude-confdir-seen"
+if [ -n "\${CLAUDE_CONFIG_DIR:-}" ] && [ -d "\$CLAUDE_CONFIG_DIR" ]; then
+  ls -ld "\$CLAUDE_CONFIG_DIR" | cut -c1-10 >"$TEST_TMP/claude-confdir-mode"
+else
+  echo NODIR >"$TEST_TMP/claude-confdir-mode"
+fi
 echo "claude \$(env | grep -cF -- '$TOKEN_SCAN_PATTERN' || true)" >>"$ENVSCAN_LOG"
 echo '[{"name":"Token Facility","facilityType":"data_center"}]'
 exit 0
@@ -2036,6 +2042,7 @@ _install_npx_recording_token() {
 fd3=closed
 if { true <&3; } 2>/dev/null; then fd3=open; fi
 echo "\${CLAUDE_CODE_OAUTH_TOKEN:-UNSET}/\${CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR:-UNSET}/\${CLAUDE_CODE_SUBPROCESS_ENV_SCRUB:-UNSET}/\$fd3" >>"$NPX_TOKEN_LOG"
+echo "\${CLAUDE_CONFIG_DIR:-UNSET}" >>"$TEST_TMP/npx-confdir-seen.log"
 echo "npx \$(env | grep -cF -- '$TOKEN_SCAN_PATTERN' || true)" >>"$ENVSCAN_LOG"
 exec "$BIN_DIR/npx.stock" "\$@"
 SHIM
@@ -2109,6 +2116,110 @@ _assert_token_not_in_sinks() {
 	_assert_output_has "using long-lived Claude token from keychain item $DISCOVERY_CLAUDE_TOKEN_SERVICE"
 	_assert_output_lacks "no long-lived Claude token"
 	_assert_token_not_in_sinks
+}
+
+@test "token present: claude runs under the isolated config dir (exists, mode 700); token absent: CLAUDE_CONFIG_DIR untouched" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_CONFIG_DIR="$TEST_TMP/isolated-claude-config"
+	_install_security_with_token
+	_install_claude_recording_token
+	_install_npx_recording_token
+
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	_assert_claude_got_token_on_fd3
+	[ "$(cat "$TEST_TMP/claude-confdir-seen")" = "$DISCOVERY_CLAUDE_CONFIG_DIR" ]
+	[ "$(cat "$TEST_TMP/claude-confdir-mode")" = "drwx------" ]
+	_assert_output_has "isolated config dir $DISCOVERY_CLAUDE_CONFIG_DIR"
+	# Does not leak to later children (npx/tsx helpers).
+	[ -s "$TEST_TMP/npx-confdir-seen.log" ]
+	[ "$(grep -vc '^UNSET$' "$TEST_TMP/npx-confdir-seen.log" || true)" -eq 0 ]
+}
+
+@test "token absent: claude sees no CLAUDE_CONFIG_DIR and no isolated dir is created" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_CONFIG_DIR="$TEST_TMP/isolated-claude-config"
+	_install_claude_recording_token
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	_assert_claude_got_no_token
+	[ "$(cat "$TEST_TMP/claude-confdir-seen")" = "UNSET" ]
+	[ ! -e "$DISCOVERY_CLAUDE_CONFIG_DIR" ]
+}
+
+@test "token present but the isolated config dir cannot be created: run fails, no fallback to the stored login" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	: >"$TEST_TMP/not-a-dir"
+	export DISCOVERY_CLAUDE_CONFIG_DIR="$TEST_TMP/not-a-dir/config"
+	_install_security_with_token
+	_install_claude_recording_token
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	_assert_output_has "cannot create isolated Claude config dir"
+	# claude was never started (no fallback to the stored login), and there was no retry.
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	_assert_output_lacks "retrying once"
+	_assert_output_has "NOT retrying"
+	# Classified as auth: heartbeat, log, and the state is re-queued.
+	_assert_output_has "cause=auth"
+	grep -q '"claudeStatus": "auth"' "$LOG_DIR/heartbeat.json"
+	_assert_output_has "re-queued: cursor rewound OH -> TX (environmental failure: auth); TX VA run again next batch"
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+}
+
+@test "config dir creatable on the first call but not on the retry: still auth, re-queued" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	export DISCOVERY_CLAUDE_CONFIG_DIR="$TEST_TMP/cfg-dir"
+	_install_security_with_token
+	# First call: prose (no array -> no_array -> retry). The stub then swaps the
+	# config dir for a plain file so the retry's mkdir fails.
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+echo "I could not produce JSON this time."
+rm -rf "$DISCOVERY_CLAUDE_CONFIG_DIR"
+: >"$DISCOVERY_CLAUDE_CONFIG_DIR"
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	_assert_output_has "retrying once"
+	_assert_output_has "cannot create isolated Claude config dir"
+	# Only the first attempt reached claude; the retry never started it.
+	[ "$(grep -c '^claude ' "$CLAUDE_CALL_LOG")" -eq 1 ]
+	_assert_output_has "cause=auth"
+	grep -q '"claudeStatus": "auth"' "$LOG_DIR/heartbeat.json"
+	_assert_output_has "re-queued: cursor rewound OH -> TX (environmental failure: auth)"
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+}
+
+@test "the real-world 401 string classifies as auth and does NOT retry" {
+	export DISCOVERY_ENABLED=true
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+echo "\$((n + 1))" >"$CLAUDE_COUNTER_FILE"
+echo "Failed to authenticate. API Error: 401 OAuth access token is invalid."
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(cat "$CLAUDE_COUNTER_FILE")" -eq 1 ]
+	[[ "$output" == *"cause=auth"* ]]
+	[[ "$output" != *"retrying once"* ]]
+	grep -q '"claudeStatus": "auth"' "$LOG_DIR/heartbeat.json"
 }
 
 @test "a keychain token also reaches claude over fd 3 on the no-timeout-binary branch" {
