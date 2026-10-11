@@ -8028,7 +8028,7 @@
     "id": "applied-digital-polaris-forge-1-ellendale-nd",
     "name": "Applied Digital Polaris Forge 1",
     "operator": "Applied Digital Corporation",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 46.003,
@@ -8061,6 +8061,12 @@
         "date": "2025-12",
         "note": "Building 1 fully operational at 100 MW; Buildings 2 (150 MW) and 3 (150 MW) under construction for CoreWeave",
         "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-10",
+        "note": "Campus has live, operational capacity and is no longer solely under construction: Building 1 (100MW) and Building 2 Phase 1 (75MW) have both reached Ready for Service, bringing total live critical IT load to 175MW against a fully-leased, 400MW CoreWeave build-out.",
+        "sourceIndex": 4
       }
     ],
     "sources": [
@@ -8090,9 +8096,23 @@
         "label": "InForum — \"Applied Digital plans to expand in Ellendale, ND\"",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://ir.applieddigital.com/_assets/_f6377ac165e571402492e7df82cea1ee/appliedblockchaininc/news/2026-07-01_Applied_Digital_Delivers_Second_Building_at_157.pdf",
+        "label": "Applied Digital Delivers Second Building at Polaris Forge 1",
+        "publisher": "Applied Digital Corporation (Investor Relations)",
+        "retrievedAt": "2026-10-10",
+        "kind": "filing"
+      },
+      {
+        "url": "https://datacenterdynamics.com/en/news/applied-digital-adds-75mw-of-capacity-at-ellendale-data-center-campus-in-north-dakota",
+        "label": "Applied Digital adds 75MW of capacity at Ellendale data center campus in North Dakota",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-10",
     "notes": "Campus is 400 MW fully contracted to CoreWeave under ~15-year lease agreements valued at ~$11B total revenue. Three buildings: Building 1 (100 MW) complete Dec 2025; Building 2 (150 MW) expected mid-2026; Building 3 (150 MW) expected 2027. Coordinates are Ellendale city centroid; exact site is northeast of the city. Local jobs are reported only as projections — 'as many as 85 new jobs' (Dec 2024) and up to ~110 total local workforce at full expansion — not confirmed headcounts. No confirmed total campus capital-expenditure figure is public (the ~$11B CoreWeave figure is 15-year lease revenue, not capex); North Dakota's data-center sales-tax exemption applies but individual award amounts are statutorily confidential. investmentUsd reflects Applied Digital's own infrastructure spend (~$1.3B committed + ~$4B anticipated); the company's '$20B total campus' figure additionally counts ~$15B of customer/tenant capital.",
     "energy": {
       "source": "grid",
@@ -8179,9 +8199,16 @@
         "publisher": "Valley News Live",
         "retrievedAt": "2026-09-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.valleynewslive.com/2026/03/10/applied-digital-closes-215b-deal-build-out-harwood-ai-campus/",
+        "label": "Applied Digital closes $2.15B deal to build out Harwood AI campus",
+        "publisher": "Valley News Live",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-10",
     "notes": "Two purpose-built facilities totaling more than 1.8 million sq ft. As of the August 2025 announcement, Applied Digital was in advanced negotiations with a U.S.-based investment-grade hyperscaler; no customer or lease value publicly confirmed. Partial operations expected end of 2026; full capacity early 2027. Coordinates are Harwood city centroid; site is approximately 900 acres near this community north of Fargo.",
     "energy": {
       "source": "grid",
@@ -17488,10 +17515,29 @@
         "publisher": "Bleeding Heartland",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://rebusinessonline.com/bitzero-to-redevelop-cold-war-era-missile-defense-site-in-north-dakota-into-secure-data-center-for-500m/",
+        "label": "Bitzero to Redevelop Cold War-Era Missile Defense Site in North Dakota into Secure Data Center for $500M",
+        "publisher": "REBusinessOnline",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://route-fifty.com/infrastructure/2022/11/cold-war-missile-defense-site-heats-states-data-center-economy-onsite-gardens/379398",
+        "label": "Cold-War missile defense site heats up state's data center economy, onsite gardens",
+        "publisher": "Route Fifty",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-10-10",
     "notes": "Bitzero acquired the Cold War-era Stanley R. Mickelsen Safeguard Complex ('the Pyramid') near Nekoma, Cavalier County, ND from the Cavalier County Job Development Authority (signed July 2022, closed Dec 2022) and is redeveloping the ~184-193 acre site into a data center, up to $500M planned. Bitzero's June 2025 press release states 2.5MW currently live, 30MW prepped, up to 300MW potential. A Feb 2024 Bleeding Heartland investigation flagged due-diligence concerns (2023 CEO resignation, foreign-ownership ties, unpaid CCJDA bills); site is real and multi-source confirmed, but self-reported operational MW is company-sourced, hence confidence=reported. ~90mi NW of Grand Forks in Cavalier County (built to defend Grand Forks AFB).",
+    "investmentUsd": 500000000,
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 3
+    },
     "facilityType": "crypto_mining",
     "mining": {
       "hardwareType": "unknown",
@@ -59080,6 +59126,56 @@
     "lastUpdated": "2026-09-12",
     "notes": "GCI's own site describes this, without naming a street address, as Alaska's largest and most advanced data center, built on self-contained pods with isolated power and cooling and a 99.9999% uptime design. Multiple third-party directories consistently cite 6831 Arctic Blvd, Anchorage for this specific facility, but three separate attempts to fetch a page confirming that address (two on datacentermap.com, one on mapcarta.com) returned HTTP 429/403 this session. The Anchorage Chamber listing (fetched successfully) instead gives 2550 Denali St Suite 1000 — likely GCI's corporate headquarters rather than this data center's site, illustrating exactly why the two shouldn't be conflated. Pin is therefore an Anchorage city-level approximation (Nominatim), not either street address.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "gdq-ess-battery-storage-north-kingstown-ri",
+    "name": "GDQ ESS Battery Energy Storage Facility",
+    "operator": "GDQ ESS, LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.599428,
+      "lon": -71.434243,
+      "city": "North Kingstown",
+      "county": "Washington",
+      "state": "RI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 208
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-09",
+        "note": "RI Energy Facility Siting Board Docket SB-2026-02 opened for the 208 MW battery storage proposal",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ecori.org/208-mw-battery-storage-facility-proposed-for-north-kingstown/",
+        "label": "208 MW battery storage facility proposed for North Kingstown",
+        "publisher": "ecoRI News",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wpri.com/news/local-news/south-county/battery-storage-facility-proposed-for-north-kingstown/amp/",
+        "label": "Battery storage facility proposed for North Kingstown",
+        "publisher": "WPRI 12",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-10",
+    "landAcres": 10,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "battery",
+      "unitCount": 102,
+      "notes": "Lithium iron phosphate battery energy storage system proposed by GDQ ESS, LLC (Green Development LLC) on about 10 acres leased from Quonset Development Corporation along Callahan Road in Quonset Business Park. Under review by the RI Energy Facility Siting Board, Docket SB-2026-02; point of interconnection near the Davisville substation. Would be Rhode Island's largest battery storage facility if built (the state's first, in Pascoag, is 3 MW)."
+    }
   },
   {
     "id": "gemini-data-center-sioux-falls-sd",
@@ -110969,10 +111065,29 @@
         "publisher": "InForum / The Dickinson Press",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://www.grandforksherald.com/news/north-dakota/data-center-concerns-rise-in-2nd-western-north-dakota-county-as-nextera-basin-eye-project",
+        "label": "Data center concerns rise in 2nd western North Dakota county as NextEra, Basin eye project",
+        "publisher": "Grand Forks Herald",
+        "retrievedAt": "2026-10-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.nexteraenergyresources.com/river-run-energy-center/faq.html",
+        "label": "River Run Energy Center FAQ",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-10-10",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-10",
     "notes": "Location is a representative pin for Stanton, the Mercer County seat and site of the project's public open house (Stanton Civic Center) -- no source checked this run states a specific parcel, township/range, or road for the plant/data-center site itself. NextEra subsidiary Boulevard Associates holds real-estate purchase-option agreements on roughly 530 acres across four landowner parcels in Mercer County, signed December 2025-January 2026, but the exact parcel location was not disclosed in sources fetched this run. Treat this coordinate as county/town-level context, not a site-level pin.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Basin Electric Power Cooperative",
+      "notes": "1,450MW combined-cycle natural gas plant developed jointly with NextEra Energy Resources, with Roughrider Electric Cooperative and Upper Missouri Power Cooperative as partners, intended as the foundation for an associated multi-gigawatt data center campus."
+    },
     "investmentUsd": 18000000000,
     "jobs": {
       "permanent": 230,
