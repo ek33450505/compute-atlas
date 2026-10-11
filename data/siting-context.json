@@ -5400,6 +5400,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "black-hills-lange-ii-rapid-city-sd": {
+    "nearestWater": {
+      "name": "Boxelder Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "blackrock-amherst-ny": {
     "nearestWater": {
       "name": "Tonawanda Creek",
@@ -7527,6 +7546,29 @@
       "rock": "Sandstone"
     }
   },
+  "clarendon-county-ram-bay-data-center-manning-sc": {
+    "nearestWater": {
+      "name": "Davis Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "clarksdale-hyperscale-data-center-ms": {
     "nearestWater": {
       "name": "Big Sunflower River",
@@ -8637,9 +8679,9 @@
   },
   "cogent-detroit-1320-3rd-st-mi": {
     "nearestWater": {
-      "name": "Lake Tacoma",
-      "kind": "lake",
-      "distanceMi": 3.2
+      "name": "Detroit River",
+      "kind": "river",
+      "distanceMi": 0.6
     },
     "nearestTransmission": {
       "voltageKv": 230,
@@ -8693,6 +8735,25 @@
     },
     "aquifer": {
       "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "cogent-nashville-woodycrest-tn": {
+    "nearestWater": {
+      "name": "Browns Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 9.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ordovician Aquifers",
       "rock": "Carbonate-rock"
     }
   },
@@ -10677,6 +10738,21 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "crowned-ridge-energy-storage-codington-county-sd": {
+    "nearestWater": {
+      "name": "Mud Creek",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "crusoe-abilene-onsite-generation-tx": {
     "nearestWater": {
       "name": "Truitt Davis Lake",
@@ -10914,6 +10990,21 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "csre-properties-blockchain-rapid-city-sd": {
+    "nearestWater": {
+      "name": "Rapid Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "ct-das-groton-data-center-ct": {
@@ -13278,6 +13369,21 @@
       "rock": "Carbonate-rock"
     }
   },
+  "deuel-harvest-wind-deuel-county-sd": {
+    "nearestWater": {
+      "name": "Crow Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "diamond-farms-gateway-digital-villa-ridge-mo": {
     "nearestWater": {
       "name": "Brush Creek",
@@ -14986,6 +15092,25 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "duke-bad-creek-ii-pumped-storage-oconee-county-sc": {
+    "nearestWater": {
+      "name": "Lake Jocassee",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "duke-energy-belews-creek-smr-stokes-county-nc": {
     "nearestWater": {
       "name": "Belews Lake",
@@ -15127,6 +15252,25 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "duke-william-states-lee-iii-nuclear-cherokee-county-sc": {
+    "nearestWater": {
+      "name": "Broad River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "dulles-cloud-south-gainesville-prince-william-va": {
     "nearestWater": {
       "name": "Catharpin Creek",
@@ -15258,6 +15402,29 @@
     "aquifer": {
       "name": "Southeastern Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "eagle-rock-rhodes-technology-park-colleton-county-sc": {
+    "nearestWater": {
+      "name": "Bear Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "east-kentucky-network-ivel-floyd-ky": {
@@ -16735,6 +16902,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "engie-north-bend-wind-hyde-county-sd": {
+    "nearestWater": {
+      "name": "Chapelle Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "engie-solidago-solar-townsend-de": {
     "nearestWater": {
       "name": "Appoquinimink River",
@@ -16756,6 +16938,21 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "engie-triple-h-wind-hyde-county-sd": {
+    "nearestWater": {
+      "name": "South Fork Medicine Knoll Creek",
+      "kind": "river",
+      "distanceMi": 2.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "enseva-hiawatha-ia": {
@@ -16825,9 +17022,9 @@
   },
   "entergy-cypress-harvest-solar-iberville-la": {
     "nearestWater": {
-      "name": "Sullivan Lake",
-      "kind": "lake",
-      "distanceMi": 5.7
+      "name": "Bayou Jacob",
+      "kind": "river",
+      "distanceMi": 1.4
     },
     "nearestTransmission": {
       "voltageKv": 500,
@@ -21776,6 +21973,21 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "grant-solar-mccook-county-sd": {
+    "nearestWater": {
+      "name": "Battle Creek",
+      "kind": "river",
+      "distanceMi": 2.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 10.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "grant-town-power-plant-crypto-mine-marion-county-wv": {
     "nearestWater": {
       "name": "Eastern Gas and Fuel Lake",
@@ -21922,6 +22134,21 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "greenbacker-fall-river-solar-sd": {
+    "nearestWater": {
+      "name": "Day Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "greenidge-columbus-ms": {
@@ -26027,6 +26254,44 @@
       "rock": "Sandstone"
     }
   },
+  "lumen-nashville-9th-ave-n-tn": {
+    "nearestWater": {
+      "name": "Bush Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12.2
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ordovician Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "lumen-nashville-perimeter-place-tn": {
+    "nearestWater": {
+      "name": "Sims Branch",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.7
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ordovician Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "lumen-nashville-sidco-drive-tn": {
     "nearestWater": {
       "name": "East Fork Browns Creek",
@@ -28725,6 +28990,36 @@
       "label": "Low (<10%)"
     }
   },
+  "midco-sioux-falls-sd": {
+    "nearestWater": {
+      "name": "Big Sioux River",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.1
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
+  "midco-yankton-sd": {
+    "nearestWater": {
+      "name": "Marne Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "midcon-recovery-solutions-oklahoma-city-ok": {
     "nearestWater": {
       "name": "Dry Creek",
@@ -30639,6 +30934,21 @@
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "northwestern-hub-city-energy-park-aberdeen-sd": {
+    "nearestWater": {
+      "name": "Foot Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "nova-energy-cryptomine-frenchcreek-venango-county-pa": {
@@ -32708,6 +33018,21 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "philip-wind-haakon-county-sd": {
+    "nearestWater": {
+      "name": "Kroetch Lake",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "phoenixnap-phx02-phoenix-az": {
     "nearestWater": {
       "name": "Salt River",
@@ -33022,6 +33347,25 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "pollard-mccormick-county-data-center-sc": {
+    "nearestWater": {
+      "name": "Rocky Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 19.3
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "pontoon-bridge-road-massena-ny": {
@@ -33485,6 +33829,21 @@
     "aquifer": {
       "name": "Surficial Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "prevailing-wind-park-sd": {
+    "nearestWater": {
+      "name": "Dry Choteau Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.5
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "prime-1231-comstock-santa-clara-ca": {
@@ -37701,6 +38060,21 @@
       "label": "Low (<10%)"
     }
   },
+  "scout-sweetland-wind-hand-county-sd": {
+    "nearestWater": {
+      "name": "Sand Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 11.7
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "sd-data-center-melbourne-fl": {
     "nearestWater": {
       "name": "Indian River",
@@ -38412,6 +38786,21 @@
       "rock": "Carbonate-rock"
     }
   },
+  "simple-mining-madison-sd": {
+    "nearestWater": {
+      "name": "Silver Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 19.4
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "simple-mining-manchester-ia": {
     "nearestWater": {
       "name": "Maquoketa River",
@@ -38897,6 +39286,21 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "south-deuel-wind-deuel-county-sd": {
+    "nearestWater": {
+      "name": "Hidewood Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.9
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "south-front-networks-davenport-ia": {
@@ -42391,6 +42795,21 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "tierpoint-sioux-falls-east-sd": {
+    "nearestWater": {
+      "name": "Silver Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "tierpoint-sioux-falls-west-sd": {
     "nearestWater": {
       "name": "Willow Creek",
@@ -42536,6 +42955,21 @@
     "nearestTransmission": {
       "voltageKv": 345,
       "distanceMi": 3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "toronto-power-plant-deuel-county-sd": {
+    "nearestWater": {
+      "name": "Cobb Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
     },
     "waterStress": {
       "cat": 0,
@@ -44972,6 +45406,25 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "white-county-pleasant-hill-road-crypto-mine-tn": {
+    "nearestWater": {
+      "name": "Calfkiller River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12.7
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "white-oak-technology-park-columbia-county-ga": {
     "nearestWater": {
       "name": "Pollards Lake",
@@ -45514,6 +45967,25 @@
     },
     "aquifer": {
       "name": "New York And New England Carbonate-rock Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "zayo-nashville-10th-ave-s-tn": {
+    "nearestWater": {
+      "name": "Cumberland River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.9
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ordovician Aquifers",
       "rock": "Carbonate-rock"
     }
   },
