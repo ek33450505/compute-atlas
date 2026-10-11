@@ -1276,7 +1276,7 @@ export async function runSubmitAndLog(
  * Constructs the real verification gate: verify-source.ts composed with
  * fetch-page-text.ts and ollama-client.ts, both bound to the real global
  * `fetch`. Called ONLY from inside `main()`, never at module scope —
- * tests/discovery/run.bats's retry-gate check (`candidates_file_has_array()`)
+ * tests/discovery/run.bats's retry-gate check (`candidates_file_shape()`)
  * really does execute this module's top-level scope, via a real `tsx -e`
  * with no Ollama available in CI (see run.bats:43-52 and its Task 7
  * "import safety" regression tests). Importing `verifySource`/

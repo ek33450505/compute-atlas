@@ -14,7 +14,7 @@ setup() {
 	# import-safety script, both used only by the Task 7 "verification-gate
 	# import safety" tests near the bottom of this file — mirrors run.sh's
 	# own TIMEOUT_BIN resolution and the `npx tsx -e` inline script inside
-	# candidates_file_has_array() exactly. (Cite names, not line numbers: see
+	# candidates_file_shape() exactly. (Cite names, not line numbers: see
 	# the note above notify() in run.sh.)
 	TIMEOUT_BIN=""
 	if command -v timeout >/dev/null 2>&1; then
@@ -65,7 +65,7 @@ EOF
 echo "npx \$*" >>"$NPX_CALL_LOG"
 case "\$*" in
 *"tsx -e"*)
-	# The retry gate's candidates_file_has_array() validation call — MUST be
+	# The retry gate's candidates_file_shape() validation call — MUST be
 	# checked before the *submit-candidates.ts* case below, because this
 	# call's inline script imports from "./scripts/discovery/submit-candidates.ts",
 	# which would otherwise match that case first. Delegate to the REAL
@@ -83,7 +83,7 @@ case "\$*" in
 	;;
 *check-sources.ts*)
 	# Simulate the shimmed failure/empty-input case; run.sh's source-liveness
-	# lane wraps this call in `if ! npx ...; then log WARN; fi`, so a nonzero
+	# lane wraps this call in an if-not-npx-then-log-WARN guard, so a nonzero
 	# exit here must NOT fail the overall run.
 	exit 1
 	;;
@@ -158,6 +158,12 @@ EOF
 	# assert (one claude call, one cursor advance, etc.) without weakening any
 	# assertion. The dedicated multi-state tests below override this per-test.
 	export STATES_PER_RUN=1
+
+	# The stubs below return `[]` instantly; run.sh's suspect_short guard
+	# (DISCOVERY_MIN_CLAUDE_SECS, default 120) would flag every such run. 0
+	# disables it so the pre-existing tests keep asserting what they always did.
+	# The suspect_short tests set the threshold they need explicitly.
+	export DISCOVERY_MIN_CLAUDE_SECS=0
 }
 
 teardown() {
@@ -263,6 +269,232 @@ teardown() {
 	[ "$status" -eq 0 ]
 	[ -s "$CLAUDE_CALL_LOG" ]
 	grep -q -- "--append-system-prompt" "$CLAUDE_CALL_LOG"
+}
+
+# The isolated CLAUDE_CONFIG_DIR stops claude loading ~/.claude/settings.json, so
+# model + effort must be explicit argv (2026-10-11: silent Sonnet/default-effort run).
+@test "claude is invoked with --model opus --effort high by default" {
+	export DISCOVERY_ENABLED=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q -- "--model opus --effort high" "$CLAUDE_CALL_LOG"
+	[[ "$output" == *"claude model=opus effort=high"* ]]
+}
+
+@test "DISCOVERY_CLAUDE_MODEL and DISCOVERY_CLAUDE_EFFORT overrides are honoured" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_MODEL=sonnet DISCOVERY_CLAUDE_EFFORT=xhigh
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q -- "--model sonnet --effort xhigh" "$CLAUDE_CALL_LOG"
+}
+
+@test "invalid DISCOVERY_CLAUDE_EFFORT fails before claude is invoked" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_EFFORT=turbo
+	run bash "$RUN_SH"
+	[ "$status" -ne 0 ]
+	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_EFFORT"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+@test "DISCOVERY_CLAUDE_MODEL with whitespace fails before claude is invoked" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_MODEL="opus extra"
+	run bash "$RUN_SH"
+	[ "$status" -ne 0 ]
+	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_MODEL"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+@test "DISCOVERY_CLAUDE_MODEL with a leading dash fails before claude is invoked" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CLAUDE_MODEL="-p"
+	run bash "$RUN_SH"
+	[ "$status" -ne 0 ]
+	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_MODEL"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+@test "invalid DISCOVERY_MIN_CLAUDE_SECS fails before claude is invoked" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=abc
+	run bash "$RUN_SH"
+	[ "$status" -ne 0 ]
+	[[ "$output" == *"ERROR: DISCOVERY_MIN_CLAUDE_SECS"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+# --- suspect_short: a valid-but-empty array returned implausibly fast --------
+
+@test "an instant empty [] is classified suspect_short: degraded, cursor rewound, never retried" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=120
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+
+	[[ "$output" == *"suspected misconfigured run"* ]]
+	[[ "$output" != *"retrying once"* ]]
+	# Exactly one claude call: no retry.
+	# (the logged prompt spans many lines; count call records, not lines)
+	[ "$(grep -c '^claude ' "$CLAUDE_CALL_LOG")" = "1" ]
+	# Nothing to stage: the empty array must not reach submit-candidates.ts.
+	! grep -q -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	grep -q '"claudeStatus": "suspect_short"' "$LOG_DIR/heartbeat.json"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	# Cursor advanced at start-of-run, then rewound to the consumed state.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[[ "$output" == *"environmental failure: suspect_short"* ]]
+}
+
+@test "an instant empty [] is ok when DISCOVERY_MIN_CLAUDE_SECS=0 disables the guard" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=0
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+	grep -q -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+}
+
+@test "an instant NON-empty array is ok even under the default threshold (guard is empty-only)" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=120
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo '[{"name":"X","facilityType":"data_center"}]'
+exit 0
+EOF
+	chmod +x "$BIN_DIR/claude"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+	[[ "$output" != *"suspected misconfigured run"* ]]
+}
+
+@test "dry-run is unaffected by the suspect_short guard" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	export DISCOVERY_MIN_CLAUDE_SECS=120
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"suspected misconfigured run"* ]]
+}
+
+@test "shape helper failing to spawn reads as bad: no_array path, retried, never ok" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=120
+	cat >"$BIN_DIR/npx" <<EOS
+#!/usr/bin/env bash
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*) exit 1 ;;
+esac
+exit 0
+EOS
+	chmod +x "$BIN_DIR/npx"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"retrying once"* ]]
+	! grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+	! grep -q -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+}
+
+@test "suspect_short rewinds once and records the state in suspect-short-requeued.txt" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=120
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/suspect-short-requeued.txt")" = "TX" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+}
+
+@test "second consecutive suspect_short on the same state does NOT rewind" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=120
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"suspect_short twice in a row"* ]]
+	[[ "$output" != *"re-queued: cursor rewound"* ]]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" != "TX" ]
+	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
+	# still red for the watchdog
+	grep -q '"claudeStatus": "suspect_short"' "$LOG_DIR/heartbeat.json"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "a clean batch clears suspect-short-requeued.txt" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=0
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
+}
+
+@test "suspect_short twice for state A then a blocked state B: rewinds to B, warns for A, clears the marker" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=120
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
+	# Batch [TX VA]: TX (call 1) returns an instant [] (suspect_short, second
+	# time in a row); VA (call 2) hits the session limit (blocked).
+	CLAUDE_COUNTER_FILE="$TEST_TMP/claude-call-count"
+	echo 0 >"$CLAUDE_COUNTER_FILE"
+	cat >"$BIN_DIR/claude" <<EOF
+#!/usr/bin/env bash
+echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+n="\$(cat "$CLAUDE_COUNTER_FILE")"
+n=\$((n + 1))
+echo "\$n" >"$CLAUDE_COUNTER_FILE"
+if [ "\$n" -le 1 ]; then
+	echo '[]'
+	exit 0
+else
+	echo "You've hit your session limit"
+	exit 1
+fi
+EOF
+	chmod +x "$BIN_DIR/claude"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	[[ "$output" == *"suspect_short twice in a row"* ]]
+	[[ "$output" == *"environmental failure: blocked"* ]]
+	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
+}
+
+@test "a non-suspect rewind (blocked) clears suspect-short-requeued.txt" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_MIN_CLAUDE_SECS=120
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
+	cat >"$BIN_DIR/claude" <<'EOS'
+#!/usr/bin/env bash
+echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "You've hit your session limit"
+exit 1
+EOS
+	chmod +x "$BIN_DIR/claude"
+	run bash "$RUN_SH"
+	[[ "$output" == *"re-queued: cursor rewound"* ]]
+	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
 }
 
 @test "retry recovers when first claude call emits prose with no JSON array" {
@@ -798,7 +1030,7 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
 
-	# The retry gate's candidates_file_has_array() call is a `tsx -e` inline
+	# The retry gate's candidates_file_shape() call is a `tsx -e` inline
 	# script that itself imports from submit-candidates.ts, so a bare
 	# "submit-candidates.ts" grep would false-positive on it — match on the
 	# actual submit invocation's --run-id flag instead.
@@ -939,7 +1171,7 @@ EOF
 # ollama-client.ts at module scope (Task 6). The ONE place a BATS run
 # genuinely executes that module scope for REAL — not the shimmed `npx`
 # no-op at the `*submit-candidates.ts*` case in setup() above — is
-# candidates_file_has_array()'s "tsx -e" inline import in run.sh;
+# candidates_file_shape()'s "tsx -e" inline import in run.sh;
 # this file's npx shim deliberately delegates any "tsx -e" invocation to the
 # real npx/tsx (see the comment at the top of that case). The gate's real
 # verifyImpl is constructed only inside submit-candidates.ts's main() (see
@@ -2116,6 +2348,16 @@ _assert_token_not_in_sinks() {
 	_assert_output_has "using long-lived Claude token from keychain item $DISCOVERY_CLAUDE_TOKEN_SERVICE"
 	_assert_output_lacks "no long-lived Claude token"
 	_assert_token_not_in_sinks
+}
+
+@test "the fd-3 token branch still passes --model opus --effort high to claude" {
+	export DISCOVERY_ENABLED=true
+	_install_security_with_token
+	_install_claude_recording_token
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	_assert_claude_got_token_on_fd3
+	grep -q -- "--model opus --effort high" "$CLAUDE_CALL_LOG"
 }
 
 @test "token present: claude runs under the isolated config dir (exists, mode 700); token absent: CLAUDE_CONFIG_DIR untouched" {

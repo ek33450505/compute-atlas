@@ -298,7 +298,7 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # hardcoded 600s cap (Aug 6=420s, Aug 7=489s, Aug 5/8=~510s) — right at the
   # edge. It tipped over: timeout sent SIGTERM, claude emitted an
   # error_during_execution result, and the literal 15-byte string
-  # "Execution error" landed in the candidates file, so candidates_file_has_array
+  # "Execution error" landed in the candidates file, so candidates_file_shape
   # below found no array and submit was silently skipped for every run since.
   # Raised well above the observed ceiling so the same margin doesn't erode again.
   DISCOVERY_TIMEOUT_SECS="${DISCOVERY_TIMEOUT_SECS:-3000}"
@@ -399,6 +399,39 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # Isolated CLI config dir used ONLY when a keychain token is present (a stored
   # login outranks the fd-3 token otherwise; see the comment in invoke_claude).
   DISCOVERY_CLAUDE_CONFIG_DIR="${DISCOVERY_CLAUDE_CONFIG_DIR:-$HOME/.compute-atlas-discovery/claude-config}"
+
+  # Model + effort are pinned explicitly because the isolated config dir above
+  # stops claude loading ~/.claude/settings.json (which carried model=opus,
+  # effortLevel=high). On 2026-10-11 the run silently fell to Sonnet at default
+  # effort, did 2 searches per state, returned [] for 3 states and reported ok.
+  # Validated up front so a typo fails the run before any state is spent.
+  DISCOVERY_CLAUDE_MODEL="${DISCOVERY_CLAUDE_MODEL:-opus}"
+  DISCOVERY_CLAUDE_EFFORT="${DISCOVERY_CLAUDE_EFFORT:-high}"
+  # No leading dash either: `--model -p` would swallow the next flag as the value.
+  if [[ ! "$DISCOVERY_CLAUDE_MODEL" =~ ^[^-[:space:]][^[:space:]]*$ ]]; then
+    log "ERROR: DISCOVERY_CLAUDE_MODEL='${DISCOVERY_CLAUDE_MODEL}' must be non-empty, with no whitespace and no leading dash - refusing to run"
+    exit 1
+  fi
+  case "$DISCOVERY_CLAUDE_EFFORT" in
+    low | medium | high | xhigh | max) ;;
+    *)
+      log "ERROR: DISCOVERY_CLAUDE_EFFORT='${DISCOVERY_CLAUDE_EFFORT}' is not one of low medium high xhigh max - refusing to run"
+      exit 1
+      ;;
+  esac
+  CLAUDE_TOOL_FLAGS+=(--model "$DISCOVERY_CLAUDE_MODEL" --effort "$DISCOVERY_CLAUDE_EFFORT")
+
+  # Minimum wall-clock for an EMPTY result to be believed. A genuine "nothing
+  # new" run still does many searches and takes minutes (shortest healthy run
+  # observed ~5 min); on 2026-10-11 a misconfigured run returned a valid `[]` in
+  # 14-20 s for 3 states and was reported ok. 0 disables the guard. Non-negative
+  # integer (validate_positive_int_env cannot express 0), so a typo fails loudly.
+  DISCOVERY_MIN_CLAUDE_SECS="${DISCOVERY_MIN_CLAUDE_SECS:-120}"
+  if [[ ! "$DISCOVERY_MIN_CLAUDE_SECS" =~ ^[0-9]+$ ]]; then
+    log "ERROR: DISCOVERY_MIN_CLAUDE_SECS='${DISCOVERY_MIN_CLAUDE_SECS}' must be a non-negative integer (0 disables) - refusing to run"
+    exit 1
+  fi
+  log "claude model=${DISCOVERY_CLAUDE_MODEL} effort=${DISCOVERY_CLAUDE_EFFORT}"
 
   # `security` has no timeout of its own: a locked keychain or an unanswered ACL
   # prompt would hang the whole run unbounded, so the read is capped like the
@@ -532,20 +565,31 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
     return "$_status"
   }
 
-  # candidates_file_has_array: mirrors parseCandidatesJson's accept/reject
-  # semantics exactly (raw array, or a preamble-tolerant [ .. ] slice) so a
-  # legitimately empty `[]` result is never mistaken for a parse failure.
-  candidates_file_has_array() {
-    npx tsx -e '
+  # candidates_file_shape: ONE parse of the candidates file, mirroring
+  # parseCandidatesJson's accept/reject semantics exactly (raw array, or a
+  # preamble-tolerant [ .. ] slice) so a legitimately empty `[]` is never
+  # mistaken for a parse failure. Prints exactly one of:
+  #   empty    — parses to an array with ZERO elements (parsed, not byte-counted)
+  #   nonempty — parses to an array with >= 1 element
+  #   bad      — unparseable, not an array, OR the helper itself failed to spawn
+  # Fail-closed: callers treat anything but empty|nonempty as "no array", so a
+  # failed spawn can never read as ok.
+  candidates_file_shape() {
+    local _shape
+    _shape="$(npx tsx -e '
 import { parseCandidatesJson } from "./scripts/discovery/submit-candidates.ts";
 import { readFileSync } from "node:fs";
 try {
   const a = parseCandidatesJson(readFileSync(process.argv[1], "utf8"));
-  process.exit(Array.isArray(a) ? 0 : 1);
+  console.log(Array.isArray(a) ? (a.length === 0 ? "empty" : "nonempty") : "bad");
 } catch {
-  process.exit(1);
+  console.log("bad");
 }
-' "$1" >/dev/null 2>&1
+' "$1" 2>/dev/null)" || _shape="bad"
+    case "$_shape" in
+      empty | nonempty) echo "$_shape" ;;
+      *) echo bad ;;
+    esac
   }
 fi
 
@@ -604,6 +648,7 @@ classify_candidates_reason() {
     blocked) echo "run blocked by the environment (computer slept or session limit)" ;;
     auth) echo "Claude Code login expired or invalid (run \`claude auth login\`, or refresh the long-lived token)" ;;
     api_error) echo "transient API error before any candidate array" ;;
+    suspect_short) echo "claude returned an empty array implausibly fast (suspected misconfigured run)" ;;
     *) echo "no parseable candidate array" ;;
   esac
 }
@@ -785,6 +830,8 @@ for STATE in "${BATCH_STATES[@]}"; do
   # Failure diagnosis for this state, overwritten the moment a failure is seen.
   CLAUDE_FAIL_CLASS="no_array"
   CLAUDE_FAIL_BYTES=0
+  SUSPECT_SHORT=false
+  CANDIDATES_SHAPE=bad
 
   if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
     log "DISCOVERY_DRY_RUN=true — skipping claude call, using empty candidate set"
@@ -829,7 +876,9 @@ d
       log "WARN: claude invocation for $RUN_ID exited nonzero (session limit / timeout / crash, ${STATE_ELAPSED}s wall-clock) — output may be empty or an error string; submit may be skipped"
     fi
     note_overrun "claude invocation for $RUN_ID" "$STATE_ELAPSED" || true
-    CLAUDE_ARRAY_OK=$(candidates_file_has_array "$OUTFILE" && echo true || echo false)
+    CANDIDATES_SHAPE="$(candidates_file_shape "$OUTFILE")"
+    CLAUDE_ARRAY_OK=false
+    [[ "$CANDIDATES_SHAPE" == "empty" || "$CANDIDATES_SHAPE" == "nonempty" ]] && CLAUDE_ARRAY_OK=true
 
     # Bounded single retry: on 2026-07-15 the AZ run inherited the maintainer's
     # ~/.claude persona and ended its turn with a prose summary + journal write
@@ -869,7 +918,9 @@ d
         log "WARN: retry claude invocation for $RUN_ID exited nonzero (${LAST_INVOKE_ELAPSED}s wall-clock)"
       fi
       note_overrun "retry claude invocation for $RUN_ID" "$LAST_INVOKE_ELAPSED" || true
-      CLAUDE_ARRAY_OK=$(candidates_file_has_array "$OUTFILE" && echo true || echo false)
+      CANDIDATES_SHAPE="$(candidates_file_shape "$OUTFILE")"
+      CLAUDE_ARRAY_OK=false
+      [[ "$CANDIDATES_SHAPE" == "empty" || "$CANDIDATES_SHAPE" == "nonempty" ]] && CLAUDE_ARRAY_OK=true
       if [[ "$CLAUDE_ARRAY_OK" != "true" ]]; then
         CLAUDE_FAIL_CLASS="$(classify_candidates_failure "$OUTFILE")"
         CLAUDE_FAIL_BYTES="$(candidates_file_bytes "$OUTFILE")"
@@ -878,12 +929,28 @@ d
         log "WARN: retry for $RUN_ID still produced no parseable candidate array (cause=${CLAUDE_FAIL_CLASS}, ${CLAUDE_FAIL_BYTES} bytes) — skipping submit"
       fi
     fi
+
+    # suspect_short: a parseable but EMPTY array that came back faster than any
+    # real research could (see DISCOVERY_MIN_CLAUDE_SECS). Checked after the
+    # retry block and deliberately NOT retried: a retry under the same config
+    # reproduces it and burns session budget. The elapsed test runs first so the
+    # shape comes from the single parse above (no second spawn to fail open).
+    if [[ "$CLAUDE_ARRAY_OK" == "true" ]] \
+      && (( STATE_ELAPSED < DISCOVERY_MIN_CLAUDE_SECS )) \
+      && [[ "$CANDIDATES_SHAPE" == "empty" ]]; then
+      SUSPECT_SHORT=true
+      CLAUDE_FAIL_CLASS="suspect_short"
+      log "WARN: claude returned an empty array for $RUN_ID in ${STATE_ELAPSED}s (< DISCOVERY_MIN_CLAUDE_SECS=${DISCOVERY_MIN_CLAUDE_SECS}s) — a real run takes minutes; likely causes: wrong model/effort, tools unavailable. NOT retrying (same config reproduces it)"
+      FAILURES+=("$STATE: claude returned an empty array in ${STATE_ELAPSED}s (< ${DISCOVERY_MIN_CLAUDE_SECS}s) — suspected misconfigured run")
+    fi
   fi
 
   # --- submit step (deterministic — staging queue only) ---------------------
   # `if !` (never bare) so a nonzero submit exit for THIS state cannot trip
   # set -e and abort the remaining states in the batch.
-  if [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then
+  if [[ "$SUSPECT_SHORT" == "true" ]]; then
+    log "skipping submit for $RUN_ID (suspect_short empty array — nothing to stage)"
+  elif [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then
     log "submitting candidates from $OUTFILE"
     if ! npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
       --run-id="$RUN_ID" \
@@ -908,13 +975,13 @@ d
   fi
 
   if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
-    # Carries the real class (blocked | auth | api_error | no_array), not a
+    # Carries the real class (blocked | auth | api_error | no_array | suspect_short), not a
     # blanket "no_array". (A state skipped by the auth short-circuit records
     # `skipped` at the top of the loop and never reaches here.) Safe for the
     # watchdog: check-heartbeat.ts reads only the top-level `status` field,
     # never `claudeStatus`.
     HEARTBEAT_STATUS="$CLAUDE_FAIL_CLASS"
-    [[ "$CLAUDE_ARRAY_OK" == "true" ]] && HEARTBEAT_STATUS="ok"
+    [[ "$CLAUDE_ARRAY_OK" == "true" && "$SUSPECT_SHORT" != "true" ]] && HEARTBEAT_STATUS="ok"
     HB_RUN_IDS+=("$RUN_ID")
     HB_STATES+=("$STATE")
     HB_STATUSES+=("$HEARTBEAT_STATUS")
@@ -933,7 +1000,10 @@ done
 #
 # So after the loop, if any state's FINAL status is a hard environmental
 # failure — `auth`, `skipped` (not attempted because auth died earlier in the
-# batch) or `blocked` (machine slept / session limit) — nothing was researched
+# batch), `blocked` (machine slept / session limit) or `suspect_short` (an empty
+# array returned faster than DISCOVERY_MIN_CLAUDE_SECS: the run never really
+# researched the state, so a misconfigured model/effort or missing tools is the
+# likely cause — environmental, not a finding of "nothing new") — nothing was researched
 # for it and a retry next batch is the right response, so rewind the cursor to
 # the FIRST such state in batch order. `api_error` / `no_array` do NOT rewind:
 # after the bounded retry they are not proven environmental (the model really
@@ -951,10 +1021,21 @@ done
 # stall is loud, whereas the old behaviour hid a dead pipeline behind a
 # "rotating" cursor.
 #
+# `suspect_short` is bounded to ONE consecutive rewind per state (see below).
+#
 # Guards: never on dry-run (no claude call was made, nothing to re-queue), and
 # only on the DEFAULT rotation — a DISCOVERY_STATES override run must not write
 # an override-list state into the live cursor.txt (the known trap).
 if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" && "$ROTATION_IS_DEFAULT" == "true" ]]; then
+  # suspect_short is bounded: a state that deterministically returns a fast `[]`
+  # would otherwise pin the cursor forever. It rewinds at most ONCE in a row —
+  # $SUSPECT_REQUEUE_FILE holds the state last re-queued for suspect_short, and a
+  # suspect_short status for that SAME state no longer counts. The failure is
+  # still in FAILURES/heartbeat, so the watchdog stays red; only the rotation
+  # moves on. Any batch that does not rewind for suspect_short clears the file.
+  SUSPECT_REQUEUE_FILE="$LOG_DIR/suspect-short-requeued.txt"
+  SUSPECT_PREV=""
+  [[ -f "$SUSPECT_REQUEUE_FILE" ]] && SUSPECT_PREV="$(tr -d ' \n' <"$SUSPECT_REQUEUE_FILE" 2>/dev/null || true)"
   REWIND_INDEX=-1
   for (( _r = 0; _r < ${#HB_STATES[@]}; _r++ )); do
     case "${HB_STATUSES[$_r]}" in
@@ -962,12 +1043,27 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" && "$ROTATION_IS_DEFAULT" == "true
         REWIND_INDEX="$_r"
         break
         ;;
+      suspect_short)
+        if [[ "${HB_STATES[$_r]}" == "$SUSPECT_PREV" ]]; then
+          log "WARN: ${HB_STATES[$_r]} is suspect_short twice in a row — NOT re-queuing again; the rotation is moving on (failure still recorded, watchdog stays red)"
+        else
+          REWIND_INDEX="$_r"
+          break
+        fi
+        ;;
     esac
   done
   if (( REWIND_INDEX >= 0 )); then
     REWIND_STATE="${HB_STATES[$REWIND_INDEX]}"
     log "re-queued: cursor rewound ${STATES[$NEXT_INDEX]} -> ${REWIND_STATE} (environmental failure: ${HB_STATUSES[$REWIND_INDEX]}); ${HB_STATES[*]:$REWIND_INDEX} run again next batch"
     echo "$REWIND_STATE" > "$CURSOR_FILE"
+    if [[ "${HB_STATUSES[$REWIND_INDEX]}" == "suspect_short" ]]; then
+      echo "$REWIND_STATE" > "$SUSPECT_REQUEUE_FILE"
+    else
+      rm -f "$SUSPECT_REQUEUE_FILE"
+    fi
+  else
+    rm -f "$SUSPECT_REQUEUE_FILE"
   fi
 fi
 

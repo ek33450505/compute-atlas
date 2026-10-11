@@ -72,6 +72,17 @@ Why a pipe and not `CLAUDE_CODE_OAUTH_TOKEN`: the headless session reads untrust
 CLAUDE_CONFIG_DIR=$(mktemp -d) CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3 claude -p ok 3< <(printf '%s' sk-ant-oat01-bogus)
 ```
 
+⛔ **Measured 2026-10-11: the isolated config dir also drops the MODEL and EFFORT, which confirms the inference above at the cost of a day's run.** `~/.claude/settings.json` carried `"model": "opus"` and `"effortLevel": "high"`, and the headless call had silently depended on both. The first scheduled run after #404 (VT WV IA) used `claude-sonnet-5-5` at default effort. It made 2 WebSearches per state, answered `[]` in 14–20s and reported `status=ok`. Earlier stored-login runs used Opus with 89–173 tool uses at 10–45 min per state. `run.sh` now passes `--model "$DISCOVERY_CLAUDE_MODEL" --effort "$DISCOVERY_CLAUDE_EFFORT"` (defaults `opus` / `high`) on every call, validates both before any state runs, and logs `claude model=… effort=…` once per batch. Anything else the call used to inherit from `~/.claude` is gone too, so pin it explicitly instead of relying on a settings file. Headless transcripts now live under `~/.compute-atlas-discovery/claude-config/projects/`, not `~/.claude/projects/`. Look there for the `model` field and the tool-use count.
+
+**Guard: an empty result that comes back too fast is now a failure (`suspect_short`).** That run reported `ok` because a valid `[]` counted as success, no matter how quickly it arrived. Now, when a live run's `claude` call returns a parseable **empty** array in under `DISCOVERY_MIN_CLAUDE_SECS` (default `120`; `0` disables the guard), `run.sh` handles that state like this:
+- It records `claudeStatus: "suspect_short"`.
+- It adds the state to `FAILURES`, so the heartbeat reads `degraded` and the watchdog goes red.
+- It skips the submit and does not retry, since a retry under the same config would reproduce the result.
+- It rewinds the cursor the same way it does for `auth`, `skipped` and `blocked`, but **at most once in a row per state**: `discovery-logs/suspect-short-requeued.txt` records the state last re-queued for this reason. A second consecutive `suspect_short` on that state logs a WARN and lets the rotation move on. The failure still reaches the heartbeat, so the watchdog stays red. This stops a state that deterministically returns a fast `[]` from pinning the cursor forever.
+- **Operator escape:** set `DISCOVERY_MIN_CLAUDE_SECS=0` to disable the guard for a run. A `DISCOVERY_STATES` override is **not** an escape from the guard: it still records `suspect_short`, skips the submit and degrades the heartbeat. It only avoids touching the cursor. That also means an override run or a dry run never clears `suspect-short-requeued.txt`, so a stale marker can suppress a later default-rotation rewind for that same state. That costs a re-queue, never the alert. Delete the file by hand to reset it.
+
+A genuine "nothing new" result still searches for minutes; the shortest healthy run seen so far was ~5 min. An empty array that took at least the threshold stays `ok`. A non-empty array is never affected, however fast it arrives. If the guard fires, read the session transcript, not the code.
+
 One-time setup (run these yourself, in a terminal):
 
 ```bash
