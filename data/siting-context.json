@@ -764,6 +764,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "adobe-or1-hillsboro-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "adp-ladysmith-data-hub-caroline-va": {
     "nearestWater": {
       "name": "Lake Caroline",
@@ -1663,6 +1673,12 @@
       "rock": "Sandstone"
     }
   },
+  "alliant-burlington-rice-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "alliant-cedar-river-generating-station-ia": {
     "nearestWater": {
       "name": "Cedar River",
@@ -1680,6 +1696,12 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "alliant-creston-solar-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "alliant-decorah-bess-ia": {
@@ -4646,6 +4668,16 @@
     "aquifer": {
       "name": "Texas Coastal Uplands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "basic-mining-superior-nuckolls-ne": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "bayou-galion-solar-morehouse-parish-la": {
@@ -8175,6 +8207,16 @@
       "label": "Low (<10%)"
     }
   },
+  "clop-omaha-papillion-ne": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "cloud-south-west-palm-beach-fl": {
     "nearestWater": {
       "name": "Clear Lake",
@@ -8801,6 +8843,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "cogent-seattle-federal-way-wa": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "cogent-troy-big-beaver-mi": {
     "nearestWater": {
       "name": "River Rouge",
@@ -8837,6 +8889,16 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "coggon-solar-linn-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "cognovum-trumbull-ct": {
@@ -9769,6 +9831,20 @@
       "rock": "Sandstone"
     }
   },
+  "copia-charlestown-data-center-hermiston-or": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "copia-griffin-energy-stanfield-az": {
     "nearestWater": {
       "name": "Greene Wash",
@@ -10564,6 +10640,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "cpv-shay-energy-center-doddridge-county-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "crane-clean-energy-center-tmi-pa": {
     "nearestWater": {
       "name": "Susquehanna River",
@@ -10785,6 +10871,12 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "crusoe-monolith-hallam-lancaster-ne": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "crusoe-nolan-county-tx": {
@@ -11681,6 +11773,16 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "dallesport-server-farm-webster-orchards-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "darkhorse-cathedra-rockwood-tn": {
@@ -15484,6 +15586,16 @@
       "rock": "Sandstone"
     }
   },
+  "ecg-coon-rapids-ia": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "echostar-cheyenne-wy": {
     "nearestWater": {
       "name": "Wyoming Hereford Ranch Reservoir Number One",
@@ -16774,6 +16886,26 @@
     "aquifer": {
       "name": "Lower Tertiary Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "energizer-data-center-hoctor-road-klickitat-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "energizer-ii-data-center-goodnoe-hills-klickitat-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "energy-storage-solutions-fayetteville-cumberland-county-nc": {
@@ -18482,6 +18614,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "fbi-cjis-division-clarksburg-harrison-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "fbi-greywolf-pocatello-id": {
     "nearestWater": {
       "name": "Pocatello Creek",
@@ -18650,6 +18792,16 @@
       "label": "Low (<10%)"
     }
   },
+  "fidelity-papillion-data-center-ne": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "fidium-des-moines-ia": {
     "nearestWater": {
       "name": "Des Moines River",
@@ -18675,6 +18827,12 @@
       "voltageKv": 345,
       "distanceMi": 5.1
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "firstlight-burlington-cherry-st-vt": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -19899,6 +20057,16 @@
       "rock": "Sandstone"
     }
   },
+  "fort-rock-data-center-bend-or": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "fort-spunky-pacifico-energy-hood-county-tx": {
     "nearestWater": {
       "name": "Lake Granbury",
@@ -20254,6 +20422,16 @@
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
+    }
+  },
+  "gala-solar-crook-county-or": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "galaxy-digital-mcgregor-tx": {
@@ -22825,6 +23003,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "heartland-technology-jesup-ia": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "hekemian-montvale-kpmg-site-data-center-nj": {
     "nearestWater": {
       "name": "Bear Brook",
@@ -23706,6 +23894,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "imon-713-nebraska-sioux-city-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "impactdata-greensboro-nc": {
     "nearestWater": {
       "name": "Muddy Creek",
@@ -23905,6 +24103,16 @@
     },
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "invenergy-prairie-hills-wind-custer-ne": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -25005,6 +25213,16 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "krambu-newport-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "ku-ew-brown-12-mercer-ky": {
     "nearestWater": {
       "name": "Dix River",
@@ -25079,6 +25297,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "lakeside-industries-dallesport-data-center-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "lambda-aligned-plano-tx": {
@@ -25257,6 +25485,20 @@
     "aquifer": {
       "name": "Valley And Ridge Carbonate-rock Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "leaning-juniper-iib-wind-gilliam-county-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "leeward-huckleberry-solar-mayes-county-ok": {
@@ -25473,6 +25715,12 @@
       "voltageKv": 345,
       "distanceMi": 0.1
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "lightboard-vermont-south-burlington-vt": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -25855,6 +26103,16 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "long-lines-sioux-city-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
     }
   },
   "long-ridge-hannibal-power-plant-monroe-oh": {
@@ -26408,6 +26666,12 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "lumen-pleasant-hill-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "lumen-salt-lake-city-ut": {
@@ -28960,6 +29224,12 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "midamerican-arbor-hill-solar-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "midamerican-holliday-creek-solar-ia": {
     "nearestWater": {
       "name": "Holliday Creek",
@@ -28988,6 +29258,12 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "midamerican-mills-solar-ia": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "midco-sioux-falls-sd": {
@@ -29067,6 +29343,12 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "millican-solar-energy-crook-county-or": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "milligan-1-wind-saline-ne": {
@@ -29255,6 +29537,16 @@
       "rock": "Sandstone"
     }
   },
+  "mon-power-fort-martin-solar-monongalia-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "mon-power-maidsville-energy-center-monongalia-county-wv": {
     "nearestWater": {
       "name": "Laurel Run",
@@ -29265,6 +29557,26 @@
       "voltageKv": 500,
       "distanceMi": 2.4
     },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "mon-power-marlowe-solar-berkeley-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "mon-power-rivesville-solar-marion-county-wv": {
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29386,6 +29698,20 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "montague-wind-gilliam-county-or": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "montana-opticom-four-corners-bozeman-mt": {
@@ -30259,6 +30585,16 @@
       "rock": "Sandstone"
     }
   },
+  "new-haven-pv-solar-mason-county-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "new-hook-road-data-center-bayonne-nj": {
     "nearestWater": {
       "name": "Clove Lake",
@@ -30622,6 +30958,16 @@
     "aquifer": {
       "name": "New York And New England Carbonate-rock Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "nicholas-county-solar-project-nicholas-county-wv": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "nine-mile-data-myton-duchesne-county-ut": {
@@ -33440,6 +33786,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "potomac-hills-energy-solar-mineral-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "powerconnex-i-new-albany-oh": {
     "nearestWater": {
       "name": "South Fork Licking River",
@@ -33749,6 +34105,12 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "powertransitions-vermont-yankee-vernon-vt": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "prado-ai-jackson-metro-ms": {
@@ -36819,6 +37181,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "rowan-meriwether-forest-grove-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "rowan-temple-tx": {
     "nearestWater": {
       "name": "Williamson Branch",
@@ -37781,6 +38153,16 @@
     "aquifer": {
       "name": "Colorado Plateaus Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "sandhills-butler-county-solar-ne": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "sandia-725e-hpc-data-center-albuquerque-nm": {
@@ -39322,6 +39704,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "south-front-networks-emery-mason-city-ia": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "sovereign-gazelle-somerville-al": {
     "nearestWater": {
       "name": "Stringer Branch",
@@ -40180,6 +40572,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "starwood-project-horizon-kearney-ne": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "starwood-tamarack-west-columbia-mason-wv": {
     "nearestWater": {
       "name": "Ice Creek",
@@ -40647,6 +41049,16 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "sunstone-solar-morrow-county-or": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "sunzia-wind-central-nm": {
@@ -43394,6 +43806,12 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "travelers-data-center-sarpy-ne": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "treaty-oak-redfield-solar-grant-county-ar": {
     "nearestWater": {
       "name": "Town Branch",
@@ -43756,6 +44174,22 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "uniti-des-moines-ia": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
+  "uniti-lincoln-1440-m-street-ne": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "university-of-alabama-hpc-tuscaloosa-al": {
     "nearestWater": {
       "name": "University Branch",
@@ -43985,6 +44419,42 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "uscg-operations-systems-center-kearneysville-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "usshc-monticello-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "uvm-vacc-south-burlington-vt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "va-capital-region-readiness-center-martinsburg-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "valar-atomics-ward-250-orangeville-ut": {
@@ -45667,6 +46137,16 @@
       "voltageKv": 765,
       "distanceMi": 17.7
     },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "wolf-summit-energy-harrison-county-wv": {
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
