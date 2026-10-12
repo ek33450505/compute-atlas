@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { gzipSync, gunzipSync } from "node:zlib";
 import facilitiesRaw from "@/data/facilities.json";
 import { canonicalCountyName } from "@/lib/counties";
+import { findUnpoweredDataCenter } from "@/lib/test-fixtures/unpowered-facility";
 import {
   getAllFacilities,
   getFacilityById,
@@ -2180,7 +2181,7 @@ describe("getPoweredByGenerators", () => {
   });
 
   it("returns [] for a facility no plant powers", async () => {
-    const facility = await getFacilityById("meta-prineville-or");
+    const facility = await findUnpoweredDataCenter();
     expect(facility).toBeDefined();
     expect(await getPoweredByGenerators(facility!)).toEqual([]);
   });

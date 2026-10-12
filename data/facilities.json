@@ -1220,7 +1220,8 @@
       "precision": "approximate"
     },
     "capacityMw": {
-      "planned": 15
+      "planned": 15,
+      "operational": 20
     },
     "statusHistory": [
       {
@@ -1255,7 +1256,7 @@
         "url": "https://www.fox13memphis.com/news/data-center-company-purchases-freds-headquarters-building-for-25-million-records-show/article_4cae4b04-ee6a-41a6-9ac3-279134616909.html",
         "label": "Data center company purchases Fred's headquarters building for $25 million, records show — address from property records",
         "publisher": "FOX13 Memphis",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-11",
         "kind": "press"
       },
       {
@@ -1280,7 +1281,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-10",
+    "lastUpdated": "2026-10-11",
     "notes": "Conversion of the former Fred's discount-retail headquarters, a multi-storey warehouse and office complex bought by Olymbec in 2019. DCD (2025-05-06), citing WREG, reports plans were submitted to Shelby County in late 2024 to convert 4300 Getwell Road into a data center supporting an initial 15MW IT load in phase one; the 15 MW phase-one figure is what is recorded as planned capacity. 5C's own site separately listed a Memphis facility, MEM01, at 20MW in 2025 and 60MW from 2027 — those larger figures are second-hand in this source and are deliberately NOT recorded as capacity. The 965,000 sq ft / 59-acre complex figures are Olymbec's, for the whole property, not for the data-center footprint. Quebec firms Adag Group and Hypertec are involved; 5C was subsequently acquired by Hypertec. Status is proposed and confidence reported: no source fetched here confirms permit issuance or construction start. Separately, Memphis City Council members led by JB Smiley Jr. introduced a proposed ordinance on 2026-08-16 for a temporary moratorium on new data-center developments citywide, which is context for this site but is not stated to apply to it.",
     "energy": {
       "notes": "5C's facility table lists the Memphis site's power source as 'GRID BTM' and shows 20 MW for 2026 with 64 MW in 2027 and a further 35 MW in 2029+; FOX13 reported 20 MW current capacity with a 35 MW planned expansion"
@@ -2324,6 +2325,54 @@
       "offtaker": "Meta Platforms",
       "notes": "Adapture reports 185 MW at substantial completion and commercial operation in July 2026; the plant is carried in EIA-derived registries as 'Cherry Valley PV I' at 135 MWac, and the project's own community site (developed by TED Renewables on roughly 850 acres) also states 135 MW. The two figures are most likely a DC/AC difference but have not been reconciled by a single source. Final project in Adapture's three-site, 441 MW Titanium Portfolio; Meta is among the five Arkansas solar projects it has contracted."
     }
+  },
+  {
+    "id": "adobe-or1-hillsboro-or",
+    "name": "Adobe Hillsboro Data Center (OR1)",
+    "operator": "Adobe",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5494337,
+      "lon": -122.9334563,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "street": "4455 NE Dawson Creek Dr",
+      "postalCode": "97124",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2013",
+        "note": "Adobe says the site was selected in 2011 and completed in 2013.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.adobe.com/corporate-responsibility/sustainability/data-centers.html",
+        "label": "Adobe's strategic environmental considerations for our data centers",
+        "publisher": "Adobe",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/adobe-hillsboro",
+        "label": "Adobe Hillsboro",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Adobe says it owns and operates one major data center in Hillsboro (OR1). It cites enterprise-zone tax incentives and access to low-cost, largely hydroelectric power, and says the site was designed for future photovoltaic installations. The street address and 11-acre lot come from Baxtel. Baxtel estimates about 60,000 sq ft and 6 MW; those figures are not recorded as facts. Adobe is also among the companies named in the 2026 Hillsboro Enterprise Zone applications now under legal challenge. The coordinates are a point on NE Dawson Creek Dr from OSM, not the parcel.",
+    "energy": {
+      "notes": "Adobe cites access to low-cost, high-percentage large hydroelectric power and the potential to transition to 100% renewable energy over the facility's life."
+    },
+    "landAcres": 11,
+    "facilityType": "data_center"
   },
   {
     "id": "adp-ladysmith-data-hub-caroline-va",
@@ -5111,10 +5160,59 @@
     "aiClassification": "likely"
   },
   {
+    "id": "alliant-burlington-rice-ia",
+    "name": "Burlington Generating Station RICE Units",
+    "operator": "Alliant Energy (Interstate Power and Light)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.7422,
+      "lon": -91.117,
+      "city": "Burlington",
+      "county": "Des Moines",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 94
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-02-16",
+        "note": "Iowa Utilities Commission unanimously approved the certificate of public convenience, use and necessity.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alliantenergy.com/news/news-center/2026/02/021626-regulators-ok-updates-at-burlington",
+        "label": "Alliant Energy: Regulators OK updates at Burlington Generating Station",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/1104-burlington-ia",
+        "label": "Infrasure plant profile: Burlington (IA), EIA plant 1104",
+        "publisher": "Infrasure",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 5,
+      "notes": "Five reciprocating internal combustion engine units totaling 94 MW. They replace combustion turbines that ran at the Burlington site for more than 30 years. Construction was anticipated in spring 2026, with operation in 2029."
+    }
+  },
+  {
     "id": "alliant-cedar-river-generating-station-ia",
     "name": "Cedar River Generating Station",
     "operator": "Alliant Energy",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 41.9468018,
@@ -5136,6 +5234,12 @@
         "date": "2026-02-09",
         "note": "Alliant Energy announced plans for a 94 MW natural gas generating station of five reciprocating internal combustion engines on the Prairie Creek Generating Station property in southwest Cedar Rapids, with construction expected to begin in early 2026 and operation in 2027.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-10-11",
+        "note": "The Iowa Utilities Commission approved the Cedar River Generating Station (94 MW RICE at the Prairie Creek site) in June. A Linn County Public Health air-permit hearing was held 2026-01-28, and operation is targeted for June 2027.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -5145,9 +5249,30 @@
         "publisher": "KCRG-TV9",
         "retrievedAt": "2026-09-16",
         "kind": "press"
+      },
+      {
+        "url": "https://corridorbusiness.com/alliant-plans-for-natural-gas-fired-power-plant-at-prairie-creek-moving-forward/",
+        "label": "Alliant plans for natural gas-fired power plant at Prairie Creek moving forward",
+        "publisher": "Corridor Business Journal",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.thegazette.com/energy/alliants-new-cedar-rapids-generating-station-to-be-operational-by-mid-2027/",
+        "label": "Alliant's new Cedar Rapids generating station to be operational by mid-2027",
+        "publisher": "The Gazette",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://corridorbusiness.com/alliant-plans-for-natural-gas-fired-power-plant-at-prairie-creek-moving-forward/",
+        "label": "Alliant plans for natural gas-fired power plant at Prairie Creek moving forward",
+        "publisher": "Corridor Business Journal",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "Distinct from Alliant's other tracked Iowa gas projects: Bobcat Energy Center (720 MW, Marshalltown), Riverhawk Energy Center (1,200 MW, Cerro Gordo County) and Morgan Valley Energy Center (unincorporated Linn County, 2030). Status is recorded conservatively as proposed: reporting from February 2026 stated construction was expected to start in early 2026, but no source retrieved this session confirms that construction has actually begun. Coordinates are approximate - the address is the existing Prairie Creek Generating Station, on whose property the new units will sit.",
     "energy": {
       "source": "on_site_gas"
@@ -5157,6 +5282,59 @@
       "technology": "natural_gas",
       "unitCount": 5,
       "notes": "Five reciprocating internal combustion engine (RICE) units, described by the utility as able to start in about five minutes and ramp quickly. Built on the same property as the Prairie Creek Generating Station, which stopped burning coal at the end of 2025."
+    }
+  },
+  {
+    "id": "alliant-creston-solar-ia",
+    "name": "Creston Solar Project",
+    "operator": "Alliant Energy (Interstate Power and Light)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.07071,
+      "lon": -94.31849,
+      "city": "Creston",
+      "county": "Union",
+      "street": "1798 160th Street",
+      "postalCode": "50801",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 50
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-10",
+        "note": "EIA-derived first operation date October 2024; Alliant announced the project in service on 2024-11-25.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alliantenergy.com/news/news-center/2024/11/112524-creston-wever-operational",
+        "label": "Alliant Energy: Creston and Wever solar projects operational",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/creston-solar-50-mw/67536",
+        "label": "GridInfo plant profile: Creston Solar (50 MW)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "50 MW utility-scale solar placed in service in 2024 together with the 150 MW Wever Solar Project."
     }
   },
   {
@@ -5196,11 +5374,11 @@
         "url": "https://api.openstreetmap.org/api/0.6/way/1464602551.json",
         "label": "OpenStreetMap way 1464602551 - Decorah Battery (2.5 MW, EIA 64375, in service 2021-06)",
         "publisher": "OpenStreetMap",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-11",
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "Alliant's first Iowa battery project. Secondary reporting describes a 2.9 MWh rating and a $200,000 Iowa Economic Development Authority grant; neither was confirmed against a source retrieved this session, so both are left off the record.",
     "facilityType": "power_generation",
     "generation": {
@@ -5245,11 +5423,11 @@
         "url": "https://api.openstreetmap.org/api/0.6/way/1177362113.json",
         "label": "OpenStreetMap way 1177362113 - Deer Run Battery Storage (5 MW / 10 MWh, EIA 65531)",
         "publisher": "OpenStreetMap",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-11",
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "One of Alliant's earliest Iowa storage installations, predating the Lansing, Wever, Golden Plains and Whispering Willow North projects already tracked.",
     "facilityType": "power_generation",
     "generation": {
@@ -5319,6 +5497,9 @@
       "state": "IA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 150
+    },
     "statusHistory": [
       {
         "status": "permitted",
@@ -5354,10 +5535,21 @@
         "publisher": "The Standard Newspaper (Waukon)",
         "retrievedAt": "2026-09-04",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.energy.gov/sites/default/files/2026-02/260211_IPL%20Lansing%20BESS_CX_FINAL.pdf",
+        "label": "DOE Categorical Exclusion CX-270902: Lansing Battery Energy Storage System",
+        "publisher": "U.S. Department of Energy",
+        "retrievedAt": "2026-10-11",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-10-11",
     "notes": "Alliant's own project page is dated to August 2026 and describes active site preparation. Coordinate is a town-level approximation; the site is south of Lansing at the former generating station.",
+    "water": {
+      "notes": "No onsite water storage or wells planned; water for fire response would be brought to site by emergency vehicles (DOE CX-270902)."
+    },
+    "landAcres": 20,
     "facilityType": "power_generation",
     "generation": {
       "technology": "battery",
@@ -5374,6 +5566,8 @@
       "lat": 42.1193687,
       "lon": -91.8020582,
       "county": "Linn County",
+      "street": "3300 DAEC Road",
+      "postalCode": "52324",
       "state": "IA",
       "precision": "exact"
     },
@@ -5402,12 +5596,27 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-16",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/duane-arnold-solar-i-50-mw/67140",
+        "label": "GridInfo: Pleasant Creek Unit 1 (formerly Duane Arnold Solar I, 50 MW)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://gridinfo.com/plant/duane-arnold-solar-ii-150mw/67537",
+        "label": "GridInfo: Pleasant Creek Unit 2 (formerly Duane Arnold Solar II, 150 MW)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "Reported at approximately 1,100 acres in Linn County. Distinct from the tracked Duane Arnold Energy Center (nuclear restart) and from Alliant's battery projects, though co-located with the Duane Arnold site.",
     "energy": {
-      "source": "solar"
+      "source": "solar",
+      "utility": "Interstate Power and Light"
     },
     "facilityType": "power_generation",
     "generation": {
@@ -5561,9 +5770,16 @@
         "publisher": "Alliant Energy",
         "retrievedAt": "2026-09-16",
         "kind": "other"
+      },
+      {
+        "url": "https://www.alliantenergy.com/news/news-center/2024/11/112524-creston-wever-operational",
+        "label": "Alliant Energy: Creston and Wever solar projects operational",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "The generating field itself is not currently tracked; only the co-located battery storage system (alliant-wever-bess-ia) is. Alliant's own storage page confirms the neighbouring solar project's 150 MW rating.",
     "energy": {
       "source": "solar"
@@ -5612,11 +5828,11 @@
         "url": "https://www.alliantenergy.com/our-energy/energy-storage/whispering-willow-north",
         "label": "Whispering Willow North Battery Energy Storage System — project page",
         "publisher": "Alliant Energy",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-11",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "Alliant states the project exists to meet growing energy demand and boost grid reliability. Coordinate is a town-level approximation for Latimer, Franklin County.",
     "landAcres": 9,
     "facilityType": "power_generation",
@@ -7493,9 +7709,19 @@
         "publisher": "Morrow County Planning Commission / Johnson Economics",
         "retrievedAt": "2026-08-14",
         "kind": "permit"
+      },
+      {
+        "url": "https://columbiacommunityconnection.com/sherman-gilliam-county-1/gilliam-county-puts-a-little-juice-in-apple",
+        "label": "Gilliam County puts a little juice in Apple",
+        "publisher": "Columbia Community Connection",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-10-12",
+    "energy": {
+      "notes": "Renewable supply via PPAs from Avangrid's Montague Wind farm (200.85 MW, Gilliam County, commercial operation 2019-10-24) and Gala Solar (69.9 MWdc, near Prineville, commercial operation 2017-10-31), per Avangrid's July 2020 release."
+    },
     "subsidies": [
       {
         "program": "Oregon long-term rural enterprise zone (LTREZ), 15-year property tax abatement"
@@ -8329,7 +8555,7 @@
         "url": "https://www.spokesman.com/stories/2026/aug/02/company-proposing-massive-west-plains-data-center-/",
         "label": "Company proposing massive West Plains data center",
         "publisher": "The Spokesman-Review",
-        "retrievedAt": "2026-08-22",
+        "retrievedAt": "2026-10-12",
         "kind": "press"
       },
       {
@@ -8340,8 +8566,13 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-22",
+    "lastUpdated": "2026-10-12",
     "notes": "Conceptual-stage dual hydrogen-production-plus-data-center project; Avista's own engineering study projects only ~50MW available by 2030 (vs. the company's aspirational 1,000MW target), rising to ~650MW by 2033; no formal county application filed as of Aug 2026.",
+    "energy": {
+      "source": "grid",
+      "utility": "Avista",
+      "notes": "County records say up to 1,000 MW eventually; an Avista engineering study found ~50 MW deliverable by 2030 and up to 650 MW by 2033, with ~$184M assumed for new transmission, substations and interconnections."
+    },
     "landAcres": 514,
     "community": {
       "status": "contested",
@@ -9883,7 +10114,7 @@
         "url": "https://www.tricitiesbusinessnews.com/articles/richland-oks-option-agreement-for-atlas-agro-data-center",
         "label": "Richland OKs option agreement for Atlas Agro data center",
         "publisher": "Tri-Cities Area Journal of Business",
-        "retrievedAt": "2026-09-10",
+        "retrievedAt": "2026-10-12",
         "kind": "press"
       },
       {
@@ -9901,8 +10132,11 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-12",
     "notes": "Swiss fertilizer developer Atlas Agro offered the City of Richland just under $24 million for 275 acres in the Northwest Advanced Clean Energy Park, adjacent to its planned zero-carbon nitrate fertilizer plant. The campus would comprise five data center buildings of roughly 500,000 sq ft each, with construction targeted to begin in 2027. Columbia Riverkeeper's February 2026 report puts the campus's power requirement at at least 320 MW. Power would come via a Bonneville Power Administration line serving both the data center and the fertilizer plant. Atlas Agro's North American president describes the data center as 'a partner that helps us build the necessary power and utility infrastructure.' Coordinates are an approximate geocode of the stated address.",
+    "energy": {
+      "notes": "Project depends on a power line the Bonneville Power Administration plans to build, shared with Atlas Agro's planned fertilizer plant."
+    },
     "investmentUsd": 500000000,
     "landAcres": 275,
     "jobs": {
@@ -11427,9 +11661,16 @@
         "publisher": "The Times-Journal (Condon, OR)",
         "retrievedAt": "2026-09-17",
         "kind": "press"
+      },
+      {
+        "url": "https://bendbulletin.com/?p=417891",
+        "label": "Amazon plans major data center expansion in tiny Eastern Oregon town",
+        "publisher": "Bend Bulletin / The Oregonian",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-17",
+    "lastUpdated": "2026-10-12",
     "energy": {
       "utility": "PacifiCorp",
       "notes": "The Times-Journal (July 2026): AWS will not proceed with the Arlington water infrastructure until it has reliable electricity, which is not expected before 2031; the article cites a six-to-seven-year BPA transmission backlog and AWS's Oregon PUC complaint against PacifiCorp over data center service."
@@ -11893,7 +12134,7 @@
         "url": "https://lincolnchronicle.org/oregon-communities-envision-9100-acres-for-new-data-centers-quadrupling-the-industrys-footprint/",
         "label": "Oregon Communities Envision 9,100 Acres for New Data Centers",
         "publisher": "Lincoln Chronicle / The Oregonian",
-        "retrievedAt": "2026-07-06",
+        "retrievedAt": "2026-10-12",
         "kind": "press"
       },
       {
@@ -11917,7 +12158,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-12",
     "notes": "Amazon confirmed the land purchase ($37M per Morrow County property records, confirmed by multiple news sources) but stated development plans are not final. Planning documents submitted to Morrow County describe a 1 GW exascale campus with 20 buildings across 4 million sq ft; Johnson Economics estimated $8B-$12B total investment. Land previously owned by Threemile Canyon Farms dairy. Distinct from Amazon's existing ~800 acres of operating/under-construction OR facilities. Lincoln Chronicle source URL returned 403 on fetch — primary claim supported by DCD source. energy.utility corrected from 'Bonneville Power Administration' (wholesale) to 'PacifiCorp (Pacific Power)' (retail utility). Coordinates are Boardman city centroid; exact site not publicly confirmed. Johnson Economics' economic-impact analysis (Morrow County Planning Commission, Jan 2025) models the full 1 GW campus at roughly $8 billion investment (potential range $7-12 billion), about 6,400 construction FTE over an eight-year build (~800/year) and about 560 operations FTE, assuming an Oregon Strategic Investment Program (SIP) property-tax abatement — modeled projections for a still-proposed campus, not firm commitments.",
     "energy": {
       "source": "hydro",
@@ -11929,6 +12170,10 @@
       "notes": "Reflects Amazon's documented Oregon cooling practice — primarily free-air cooling with evaporative assist, with up to ~96% of cooling water returned to local farmers. Planning documents model roughly 35 million gallons/year for the full 1 GW campus (a projection). The specific cooling design for this proposed campus is not confirmed."
     },
     "landAcres": 1300,
+    "jobs": {
+      "permanent": 560,
+      "sourceIndex": 1
+    },
     "community": {
       "status": "mixed",
       "notes": "Morrow County Planning Commission approved Amazon's 'PDX154' land-use application (816,000 sq ft / 4 buildings, part of the broader campus) on March 31, 2026 with conditions attached (stormwater/wastewater mitigation, airport-lighting restrictions).",
@@ -15111,6 +15356,48 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "basic-mining-superior-nuckolls-ne",
+    "name": "Basic Mining Superior Hosting Site",
+    "operator": "Basic Mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.020847,
+      "lon": -98.070044,
+      "city": "Superior",
+      "county": "Nuckolls",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-08",
+        "note": "Vinanz reported 30 Antminer S19k Pro miners hashing 3.6 PH/s at its Superior, Nebraska cluster hosted by Basic Mining.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.share-talk.com/vinanz-limited-bitcoin-mining-fleet-increases-by-50-in-nebraska/",
+        "label": "Vinanz Limited - Bitcoin Mining Fleet Increases by 50% in Nebraska",
+        "publisher": "Share Talk (Vinanz Limited announcement)",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Superior,+Nuckolls+County,+Nebraska&format=json&limit=3",
+        "label": "OpenStreetMap: Superior, Nuckolls County, Nebraska",
+        "publisher": "OpenStreetMap / Nominatim",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Bitcoin-mining hosting site run by Basic Mining in Superior, Nebraska. London/OTC-listed Vinanz Limited hosts a miner cluster there at a contracted 6.5 cents/kWh. The site's total MW and exact parcel are undisclosed, and no 2025-2026 confirmation of continued operation was retrieved. Coordinates are the town of Superior.",
+    "facilityType": "crypto_mining"
+  },
+  {
     "id": "bayou-galion-solar-morehouse-parish-la",
     "name": "Bayou Galion Solar",
     "operator": "Recurrent Energy",
@@ -17242,6 +17529,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 18,
       "operational": 18
     },
     "announcedDate": "2021-11-11",
@@ -17293,14 +17581,29 @@
         "publisher": "GlobeNewswire (via Crypto Reporter)",
         "retrievedAt": "2026-08-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.keelinfra.com/campuses/moses-lake",
+        "label": "Keel Infrastructure: Moses Lake campus",
+        "publisher": "Keel Infrastructure",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yoursourceone.com/columbia_basin/bitfarms-plans-to-turn-former-bitcoin-mine-near-moses-lake-into-ai-data-center/article_58d0d37e-122a-4d0a-b781-7461acf13b1e.html",
+        "label": "Source ONE: Bitfarms plans to turn former bitcoin mine near Moses Lake into AI data center (Jan 28, 2026)",
+        "publisher": "Source ONE News",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-12",
     "notes": "18 MW is the current operating capacity per the FY2025 10-K property table (down from the 24 MW nameplate acquired in 2021). Powered by Grant County PUD hydroelectric power. A binding, fully-funded HPC/AI conversion agreement with Vertiv Group is disclosed -- reported as $128M in the Nov 2025 press release and $129M in the FY2025 10-K (a genuine cross-filing discrepancy, both cited); target hardware is NVIDIA GB300 (up to 190kW/rack), liquid cooling, target PUE 1.2-1.3, targeting completion December 2026. No GPUs are installed/operating as of the most recent filing -- aiClassification is 'likely,' not 'confirmed.' A widely-repeated 6-acre/~60,000 sq ft site-size claim could not be confirmed in any SEC filing and is omitted. No exact street address disclosed. Grant PUD has imposed regional load-growth limits on data-center customers and approved a 10.6% rate increase (2026-01-27) for its crypto-mining rate schedule -- a supply-constraint risk factor, not site-specific opposition. Public-reception check (2026-09-10): Checked Bitfarms' own SEC material-change report (dated 2021-11-11, filed with respect to the Moses Lake hydro-power facility acquisition, $26M/24MW); it covers only the transaction and expansion MOU, with no mention of community sentiment or local-government engagement.",
     "energy": {
       "source": "hydro",
       "utility": "Grant County PUD"
     },
+    "landAcres": 6,
     "facilityType": "crypto_mining",
     "aiClassification": "likely",
     "mining": {
@@ -18742,10 +19045,22 @@
         "publisher": "The Spokesman-Review",
         "retrievedAt": "2026-09-05",
         "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/08/cle-elum-outlaws-data-centers-but-this-200m-project-could-slip-through/",
+        "label": "Hoodline: Cle Elum outlaws data centers, but this $200M project could slip through (Aug 2026)",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-05",
+    "lastUpdated": "2026-10-12",
     "notes": "Roughly 100,000 sq ft near Interstate 90, inside a residential and commercial development already under construction in Cle Elum. Developer projects 20 to 40 full-time positions. Because the site is covered by a pre-existing development agreement with the city, it may proceed despite the moratorium. Single-source; coordinates are an approximate geocode of the described location.",
+    "energy": {
+      "source": "grid",
+      "utility": "Puget Sound Energy",
+      "notes": "PSE determined the facility can be reliably served; Blue Fern agreed to fund needed infrastructure upgrades."
+    },
     "water": {
       "coolingType": "closed_loop",
       "notes": "Developer describes a closed-loop cooling system using about 80,000 gallons in the first year and significantly less thereafter because the water recirculates."
@@ -19283,7 +19598,7 @@
     "id": "bobcat-energy-center-ia",
     "name": "Bobcat Energy Center",
     "operator": "Alliant Energy",
-    "status": "permitted",
+    "status": "under_construction",
     "confidence": "confirmed",
     "location": {
       "lat": 42.0494,
@@ -19308,6 +19623,12 @@
         "date": "2026-08-11",
         "note": "Iowa DNR approved the air permits, completing the required approvals.",
         "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-10-11",
+        "note": "Alliant announced on 2026-08-11 that construction is underway after it received the Iowa DNR air permit. Commercial operation is expected in 2029.",
+        "sourceIndex": 4
       }
     ],
     "sources": [
@@ -19331,9 +19652,23 @@
         "publisher": "Alliant Energy",
         "retrievedAt": "2026-09-16",
         "kind": "press"
+      },
+      {
+        "url": "https://www.alliantenergy.com/news/news-center/2026/081126-bobcat-construction-started",
+        "label": "Alliant Energy's Bobcat Energy Center receives air permit; construction underway",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.alliantenergy.com/news/news-center/2026/081126-bobcat-construction-started",
+        "label": "Alliant Energy's Bobcat Energy Center receives air permit; construction underway",
+        "publisher": "Alliant Energy",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "720 MW gas peaker in Marshalltown, fully permitted. The Iowa Utilities Commission unanimously approved Alliant's Certificate of Public Convenience, Use and Necessity on 2025-12-16, and the Iowa DNR approved the air permits in early August 2026. Construction anticipated to begin in Q3 2026 with an operational date of 2029. Status is 'permitted' rather than 'under_construction' because no source fetched this session confirms construction has actually started.",
     "energy": {
       "source": "on_site_gas",
@@ -20143,7 +20478,7 @@
     "id": "burt-county-solar-tekamah-ne",
     "name": "Burt County Solar",
     "operator": "Sandhills Energy",
-    "status": "proposed",
+    "status": "under_construction",
     "confidence": "reported",
     "location": {
       "lat": 41.7778,
@@ -20162,6 +20497,12 @@
         "date": "2026-05",
         "note": "OPPD announced agreements tied to the project; in-service expected within 2029.",
         "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-10-12",
+        "note": "OPPD's Aug 18, 2026 New Generation & Transmission Update reports the OPPD-Sandhills PPA was finalized in May and that 'earliest stages of construction have already started, including road work and site prep' for the 250 MW Burt County Solar project east of Tekamah (estimated online 2029).",
+        "sourceIndex": 1
       }
     ],
     "sources": [
@@ -20171,9 +20512,16 @@
         "publisher": "Omaha Public Power District",
         "retrievedAt": "2026-08-21",
         "kind": "press"
+      },
+      {
+        "url": "https://oppd.com/media/321694/2026-8-aug-new-generation-and-transmission-update.pdf",
+        "label": "New Generation & Transmission Update — All Committee Meeting, August 18, 2026 (Burt County Solar slide)",
+        "publisher": "Omaha Public Power District",
+        "retrievedAt": "2026-10-12",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-21",
+    "lastUpdated": "2026-10-12",
     "energy": {
       "source": "solar",
       "utility": "Omaha Public Power District"
@@ -25436,11 +25784,11 @@
         "url": "https://api.openstreetmap.org/api/0.6/relation/13705201.json",
         "label": "OpenStreetMap relation 13705201 - Wapello Solar (100 MW, EIA 63378, in service 2021-03-08)",
         "publisher": "OpenStreetMap",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-11",
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "capacityMw records the 100 MW AC rating that matches EIA-860; the developer's 127.5 MWdc figure is a DC nameplate and the two are not interchangeable. Its offtaker, CIPCO, is the same cooperative behind the tracked Hickory Grove Generating Station.",
     "energy": {
       "source": "solar"
@@ -25451,6 +25799,54 @@
       "technology": "solar",
       "notes": "127.5 MWdc nameplate; OpenStreetMap/EIA-860 record 100 MW AC (EIA plant ID 63378). Built on nearly 800 acres with 318,000 bifacial panels on single-axis trackers and 34 inverters; EPC was RES, completed in about six months with roughly 250 peak construction jobs. Offtake is an exclusive 25-year PPA with Central Iowa Power Cooperative, whose adjacent transmission system it interconnects to."
     }
+  },
+  {
+    "id": "clop-omaha-papillion-ne",
+    "name": "CLOP Omaha NE Data Center (5 MW)",
+    "operator": "CLOP Omaha NE, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1783633,
+      "lon": -96.1621103,
+      "city": "Papillion",
+      "county": "Sarpy",
+      "street": "11684 S 158th Street",
+      "postalCode": "68138",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 5
+    },
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-06",
+        "note": "NDWEE public notice of a proposed air construction permit for a new 5 MW data center with seven diesel emergency generators; comment period Oct 6 - Nov 7, 2025.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dwee.nebraska.gov/node/5401",
+        "label": "Public notice: CLOP Omaha NE, LLC air construction permit (FID 122487)",
+        "publisher": "Nebraska Department of Water, Energy, and Environment",
+        "retrievedAt": "2026-10-12",
+        "kind": "permit"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?street=S+158th+St&county=Sarpy&state=Nebraska&format=json&limit=8",
+        "label": "OpenStreetMap: South 158th Street, Sarpy County (68138)",
+        "publisher": "OpenStreetMap / Nominatim",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "New five-megawatt data center (SIC 7374) with seven diesel-fired emergency generator engines and their diesel storage tanks. Anticipated NOx 39.66 tpy. The beneficial owner behind CLOP Omaha NE, LLC is not identified. Whether the permit was issued after the comment period was not confirmed this session, so status stays proposed. Coordinates are a point on S 158th St in ZIP 68138, not the parcel.",
+    "facilityType": "data_center"
   },
   {
     "id": "cloud-south-west-palm-beach-fl",
@@ -27358,6 +27754,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cogent-seattle-federal-way-wa",
+    "name": "Cogent Seattle Data Center (Federal Way)",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.3117738,
+      "lon": -122.2948339,
+      "city": "Federal Way",
+      "county": "King",
+      "street": "32275 32nd Avenue South",
+      "postalCode": "98001",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-12",
+        "note": "Listed as an operating colocation data center offering cabinets and cages.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/32275-32nd-avenue-south-federal-way/cogent/datacenter/cogent-seattle",
+        "label": "Inflect: Cogent Federal Way, 32275 32nd Avenue South",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://dcmap.us/states/washington/",
+        "label": "dcmap.us Washington data center map (Cogent Data Center - Seattle, Federal Way, operational, 5.3 MW)",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=32275+32nd+Avenue+South,+Federal+Way,+WA&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for 32275 32nd Ave S, Federal Way",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "A small colocation site. A tracker lists 5.3 MW of power; the operator does not confirm that figure, so it is not recorded as capacity.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cogent-troy-big-beaver-mi",
     "name": "Cogent Troy Data Center (3331 W. Big Beaver Rd)",
     "operator": "Cogent Communications",
@@ -27461,6 +27908,57 @@
       "utility": "Pepco"
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "coggon-solar-linn-ia",
+    "name": "Coggon Solar",
+    "operator": "Coggon Solar LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.2809574,
+      "lon": -91.5305979,
+      "city": "Coggon",
+      "county": "Linn",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2022-11",
+        "note": "Iowa Utilities Board issued a generating certificate (GCU-2021-0001).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://int.cbs2iowa.com/news/local/coggon-duane-arnold-solar-projects-get-the-green-light-from-iowa-utilities-board",
+        "label": "Coggon, Duane Arnold solar projects get the green light from Iowa Utilities Board",
+        "publisher": "CBS2 Iowa",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/power-projects/planned/solar-farms/iowa/68939_COGPV/coggon-solar-llc",
+        "label": "Cleanview: Coggon Solar LLC (planned)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "About 2.75 miles west of Coggon. The coordinate is the Coggon place centroid. A third-party tracker expects commercial operation in December 2027."
+    }
   },
   {
     "id": "cognovum-trumbull-ct",
@@ -30149,6 +30647,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "copia-charlestown-data-center-hermiston-or",
+    "name": "Charlestown Data Center and Battery Energy Storage System",
+    "operator": "Copia Power",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.8404101,
+      "lon": -119.28946,
+      "city": "Hermiston",
+      "county": "Umatilla",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-08",
+        "note": "Copia applied to the BLM for a right-of-way to site the project on BLM land near Hermiston. Its most recent submission was a draft development plan dated May 8, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.opb.org/article/2026/09/29/data-centers-proposed-federal-land-eastern-oregon/",
+        "label": "Data centers proposed on federal land in Eastern Oregon, Western states",
+        "publisher": "OPB / Oregon Capital Chronicle",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://news.theregistryps.com/copia-power-seeks-106-acres-of-blm-land-near-hermiston-for-oregons-first-federal-land-data-center/",
+        "label": "Copia Power Seeks 106 Acres of BLM Land Near Hermiston for Oregon's First Federal-Land Data Center",
+        "publisher": "The Registry Pacific Northwest",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Copia Power (founded by Carlyle and bought by EQT in 2026) filed to site a data center and battery storage project on 106 acres of Bureau of Land Management land near Hermiston in Umatilla County. It would be the first data center proposed on federal public land in Oregon. The OPB lede gives about 100 acres; the body text and The Registry give 106. No MW figure or timeline has been reported, and Copia declined to comment. The coordinates are Hermiston's town centroid from OpenStreetMap, not the parcel.",
+    "landAcres": 106,
+    "facilityType": "data_center"
+  },
+  {
     "id": "copia-griffin-energy-stanfield-az",
     "name": "Griffin Energy Project",
     "operator": "Copia Power",
@@ -32566,6 +33107,73 @@
     }
   },
   {
+    "id": "cpv-shay-energy-center-doddridge-county-wv",
+    "name": "CPV Shay Energy Center",
+    "operator": "Competitive Power Ventures (CPV Shay, LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.2645618,
+      "lon": -80.7141606,
+      "city": "Blandville",
+      "county": "Doddridge",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2060
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-04-29",
+        "note": "Public Service Commission of West Virginia granted a siting certificate for the 2,060 MW combined-cycle plant at Blandville.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wvpublic.org/story/energy-environment/psc-approves-construction-of-gas-power-plant-in-doddridge-county/",
+        "label": "PSC approves construction of gas power plant in Doddridge County",
+        "publisher": "West Virginia Public Broadcasting",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://wvmetronews.com/2024/04/30/psc-approves-siting-certificate-for-planned-gas-powered-plant-in-doddridge-county/",
+        "label": "PSC approves siting certificate for planned gas-powered plant in Doddridge County",
+        "publisher": "WV MetroNews",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/CPV_Shay_Clean_Energy_Center",
+        "label": "CPV Shay Clean Energy Center — Global Energy Monitor (3 x 686.6 MW CC units, pre-construction, coordinates 39.2645618, -80.7141606)",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "Plant planned at Blandville, about 4.5 miles southeast of West Union, with carbon capture and a 9-mile 500 kV line to Mon Power's Flint Run substation. Output goes to the regional wholesale grid. 2024 coverage said construction would start in late 2025; GEM still lists the project as pre-construction with a 2031 planned start year, so it is recorded as permitted only. Investment is the commission's $3.3 billion estimate (WVPB reported $3 billion). Coordinates come from GEM and are marked approximate.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "2,060 MW natural gas combined-cycle with planned carbon capture; sells to the regional grid, not to WV ratepayers."
+    },
+    "investmentUsd": 3300000000,
+    "jobs": {
+      "construction": 1300,
+      "permanent": 60,
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 3,
+      "notes": "GEM lists three combined-cycle units of 686.6 MW each, with GE 7HA.03 turbines. Parent per GEM: OPC Energy Ltd."
+    }
+  },
+  {
     "id": "crane-clean-energy-center-tmi-pa",
     "name": "Crane Clean Energy Center (Three Mile Island Unit 1)",
     "operator": "Constellation Energy",
@@ -33437,6 +34045,85 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "crusoe-monolith-hallam-lancaster-ne",
+    "name": "Crusoe Hallam Data Center (Monolith Olive Creek campus)",
+    "operator": "Crusoe",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.5485515,
+      "lon": -96.782795,
+      "city": "Hallam",
+      "county": "Lancaster",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 35
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-10",
+        "note": "Monolith announced plans for a data center on its Olive Creek campus with Crusoe as the prospective partner; it sought a Hallam zoning amendment to add 'data center' as an authorized use.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-10-05",
+        "note": "Hallam Village Board approved zoning rights for the data center.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.1011now.com/2026/07/10/monolith-seeks-build-data-center-hallam-application-be-submitted-by-mid-july/",
+        "label": "Monolith seeks to build data center in Hallam, application to be submitted by mid-July",
+        "publisher": "1011 NOW (KOLN)",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wowt.com/2026/07/24/hallam-residents-question-monolith-data-center-proposal-packed-town-hall/",
+        "label": "Hallam residents question Monolith data center proposal at packed town hall",
+        "publisher": "WOWT",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wowt.com/2026/10/06/hallam-village-board-approves-zoning-rights-data-center/",
+        "label": "Hallam Village Board approves zoning rights for data center",
+        "publisher": "WOWT / KOLN",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Monolith+Olive+Creek,+Hallam,+Nebraska&format=json&limit=5",
+        "label": "OpenStreetMap: Monolith Olive Creek 1, Hallam",
+        "publisher": "OpenStreetMap / Nominatim",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Phase 1 is modular, shipping-container-sized buildings on about 10 acres in the northeast part of Monolith's Olive Creek carbon-black campus (I-2 Heavy Industrial), 35 MW, 15 jobs. A larger Phase 2 parcel east of the campus would need a separate approval. Crusoe Technologies is named as the data center developer; Monolith signed a special permit with Crusoe in July 2026. No construction timeline has been released. This is distinct from the Sagebrush Hallam hyperscale campus and from NPPD's Sheldon and Princeton Road stations. Coordinates are the Monolith Olive Creek plant point from OSM, not the 10-acre parcel.",
+    "water": {
+      "notes": "Preliminary figures: 770,000 gallons per year or less. Version-one units would be air-cooled; a second version would use closed-loop cooling (Monolith). The method is not yet fixed."
+    },
+    "landAcres": 10,
+    "jobs": {
+      "permanent": 15,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "More than 200 people attended a July 2026 town hall, raising concerns about private wells, noise and light. At the Oct 2026 vote, about half the room applauded and some residents were disappointed.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "crusoe-nolan-county-tx",
@@ -36113,6 +36800,60 @@
     ],
     "investmentUsd": 250000000,
     "landAcres": 228,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "dallesport-server-farm-webster-orchards-wa",
+    "name": "Dallesport Server Farm (Webster Orchards / Williams Ranch site)",
+    "operator": "Webster Orchards (landowner; developer not selected)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.6173426,
+      "lon": -121.179515,
+      "city": "Dallesport",
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-05-27",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-27",
+        "note": "KPUD submitted interconnection requests for a data center on the Webster Orchards (Williams Ranch) property; landowner says no final decisions on any project or development partner.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.goldendalesentinel.com/news/data-center-proposed-for-a-dallesport-site/article_64ef39a5-3f41-4d4d-be45-289ea6d4b17f.html",
+        "label": "Goldendale Sentinel: Data center proposed for a Dallesport site (May 27, 2026)",
+        "publisher": "The Goldendale Sentinel",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.columbiagorgenews.com/news/another-data-center/article_e81e8737-9db6-49c5-bd3e-594e8976cdd4.html",
+        "label": "Columbia Gorge News: Dallesport Server Farm on Scott Webster orchard zoned industrial park (Aug 26, 2026)",
+        "publisher": "Columbia Gorge News",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Dallesport,+Washington&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for Dallesport, WA (approximate point)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Parcel reported as 345.96 acres in the KPUD request and 296 acres in the broker listing (sources disagree). No developer, buyer, or end user has been selected per the landowner. KPUD said it had not seen a water plan.",
+    "energy": {
+      "utility": "Klickitat Public Utility District",
+      "notes": "KPUD large-load interconnection request dated 2025-08-19 states initial data center load of 300-350 MW with additional expansion; requested network energization 2026-12-01 and radial load energization 2029-10-01. A since-removed Cushman & Wakefield ad described a potential 500 MW load supported by up to 1 GW of natural gas generation plus 50 MW solar."
+    },
     "facilityType": "data_center"
   },
   {
@@ -46426,6 +47167,51 @@
     }
   },
   {
+    "id": "ecg-coon-rapids-ia",
+    "name": "Energy Conversion Group Coon Rapids Bitcoin Mine",
+    "operator": "Energy Conversion Group (ECG)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.8708561,
+      "lon": -94.6781764,
+      "city": "Coon Rapids",
+      "county": "Carroll",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 19.2
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-08",
+        "note": "Containerized site with more than 6,100 miners on the west edge of Coon Rapids. The first 768 miners were energized for testing, with full operation expected by month end.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://carrollspaper.com/news/crypto-mining-operation-prepares-to-go-online/article_33737516-3fad-11ee-8bb6-5b151e356586.html",
+        "label": "Crypto mining operation prepares to go online",
+        "publisher": "Carroll Times Herald",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "energy": {
+      "source": "grid",
+      "utility": "Coon Rapids Municipal Utilities",
+      "notes": "Interruptible rate; the utility built a dedicated substation. Southwest Power Pool region."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "grid"
+    }
+  },
+  {
     "id": "echostar-cheyenne-wy",
     "name": "EchoStar Cheyenne Data Center and Satellite Uplink Facility",
     "operator": "EchoStar",
@@ -50046,6 +50832,111 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "energizer-data-center-hoctor-road-klickitat-wa",
+    "name": "Energizer Data Center (BPA L0493 / L0497)",
+    "operator": "Savion (Shell Energy subsidiary), per BPA application documents",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.7770659,
+      "lon": -120.8128216,
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-02",
+        "note": "Reported as an in-progress BPA large-load request for a data center along Hoctor Road in the Columbia Hills area; land owned by 101 Bar Ranches LLC.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.goldendalesentinel.com/news/more-data-centers-possible-for-county/article_b656c420-736c-4751-be22-209654a24211.html",
+        "label": "Goldendale Sentinel: More data centers possible for county (Sep 2, 2026)",
+        "publisher": "The Goldendale Sentinel",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.spokesman.com/stories/2026/oct/07/rural-klickitat-county-faces-surge-in-data-center-/",
+        "label": "Spokesman-Review: Shell Energy/Savion named on Energizer applications (Oct 7, 2026)",
+        "publisher": "The Spokesman-Review / Washington State Standard",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Hoctor+Road,+Klickitat+County,+Washington&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for Hoctor Road, Klickitat County (approximate)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Savion said preliminary feasibility work is underway. The location is a road-segment point, not a parcel.",
+    "energy": {
+      "source": "grid",
+      "utility": "Klickitat Public Utility District",
+      "notes": "BPA line-and-load queue L0493 (submitted 2021-06-29, 78 MW, facility study completed, point of interconnection KPUD Energizer Substation) and L0497 'Energizer Data Center Expanded Capacity' (queued 2021-07-29, 200 MW, active). Queue positions are not awards."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "energizer-ii-data-center-goodnoe-hills-klickitat-wa",
+    "name": "Energizer II Data Center (BPA L0702)",
+    "operator": "Savion (Shell Energy subsidiary), per BPA application documents",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.7754842,
+      "lon": -120.8009807,
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-02",
+        "note": "Reported as a 1,000 MW BPA large-load request between Chamberlain Goodnoe Road and Goodnoe Hills Road; land owned by 101 Bar Ranches LLC; described as a data center, an AI center, or both, in due diligence.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.goldendalesentinel.com/news/more-data-centers-possible-for-county/article_b656c420-736c-4751-be22-209654a24211.html",
+        "label": "Goldendale Sentinel: More data centers possible for county (Sep 2, 2026)",
+        "publisher": "The Goldendale Sentinel",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.spokesman.com/stories/2026/oct/07/rural-klickitat-county-faces-surge-in-data-center-/",
+        "label": "Spokesman-Review: Energizer II described as AI data center in application documents (Oct 7, 2026)",
+        "publisher": "The Spokesman-Review / Washington State Standard",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Goodnoe+Hills+Road,+Klickitat+County,+Washington&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for Goldendale Goodnoe Hills Road (approximate)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "This is a queue position, not an award. Savion says preliminary feasibility work is underway.",
+    "energy": {
+      "notes": "BPA queue L0702, 1,000 MW, In Progress (Phase 1 scoping). Per application documents it would start at full capacity and need an external power source beyond Bonneville."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "energy-storage-solutions-fayetteville-cumberland-county-nc",
@@ -54460,6 +55351,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "fbi-cjis-division-clarksburg-harrison-county-wv",
+    "name": "FBI Criminal Justice Information Services (CJIS) Division Data Center",
+    "operator": "Federal Bureau of Investigation",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.3257988,
+      "lon": -80.2680771,
+      "city": "Clarksburg",
+      "county": "Harrison",
+      "street": "1000 Custer Hollow Road",
+      "postalCode": "26306",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.nextgov.com/digital-government/2013/07/fbi-data-center-program-connotes-things-come/67373/",
+        "label": "FBI data center efficiency program the way of the future? (CJIS data center in Clarksburg, W.Va.)",
+        "publisher": "Nextgov",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://news.lockheedmartin.com/2002-09-17-Lockheed-Martin-Wins-Contract-to-Refresh-FBI-West-Virginia-Center-Technology",
+        "label": "Lockheed Martin wins contract to refresh FBI West Virginia center technology (CJIS 'System of Systems')",
+        "publisher": "Lockheed Martin",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.som.com/?p=9976",
+        "label": "FBI Biometric Technology Center on the CJIS campus, Clarksburg",
+        "publisher": "SOM",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=1000+Custer+Hollow+Road+Clarksburg+WV&format=json",
+        "label": "OpenStreetMap Nominatim geocode — FBI Criminal Justice Information Services, 1000 Custer Hollow Road, Clarksburg, WV 26306",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "The FBI's central repository for criminal justice information. Systems include NCIC, NICS, the fingerprint identification system and UCR/NIBRS (per Lockheed Martin's 2002 contract release). Nextgov (2013) describes the CJIS data center in Clarksburg as a candidate to absorb workloads consolidated from less efficient FBI data centers. No capacity, power or cooling figures are published, so those fields are omitted, as is a commissioning date. Pin is the OSM point for the CJIS campus.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "fbi-greywolf-pocatello-id",
     "name": "FBI Grey Wolf Data Center",
     "operator": "Federal Bureau of Investigation (U.S. Department of Justice)",
@@ -55001,6 +55943,58 @@
     }
   },
   {
+    "id": "fidelity-papillion-data-center-ne",
+    "name": "Fidelity Investments Papillion Data Center (Project Photon)",
+    "operator": "Fidelity Investments",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.1655405,
+      "lon": -96.083617,
+      "city": "Papillion",
+      "county": "Sarpy",
+      "street": "11050 Cornhusker Rd",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "announcedDate": "2012-10-12",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2012-10",
+        "note": "Fidelity announced a $200 million Papillion data center (Project Photon), with construction starting immediately and operations expected in 2014.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterknowledge.com/investing/fidelity-announces-200-million-data-center-in-nebraska",
+        "label": "Fidelity Announces $200 Million Data Center in Nebraska",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kadoa.com/datacenter/state/nebraska",
+        "label": "US Datacenter Tracker — Nebraska (FIDELITY INVESTMENTS DATA CTR, 11050 Cornhusker Rd, Papillion, operational)",
+        "publisher": "Kadoa",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Fidelity,+Papillion,+Nebraska&format=json&limit=10",
+        "label": "OpenStreetMap: Fidelity building, Cornhusker Road, Papillion",
+        "publisher": "OpenStreetMap / Nominatim",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "First user of Nebraska Advantage Act's 'Tier 2 Plus - Large Data Center' provision (min. $200M investment and 30 jobs); 30-35 employees expected; designed to qualify for LEED. Current operating status rests on a third-party tracker listing, not a primary source; no opening announcement was retrieved this session. Coordinates are an OSM building tagged 'Fidelity' on Cornhusker Road, consistent with the tracker's street address.",
+    "investmentUsd": 200000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "fidium-des-moines-ia",
     "name": "Fidium Des Moines Data Center",
     "operator": "Fidium (Consolidated Communications)",
@@ -55078,6 +56072,49 @@
     ],
     "lastUpdated": "2026-09-14",
     "notes": "OSM directly names the building 'Oxford Networks' at this exact address (way/667796922) -- Oxford Networks is a legacy regional-ISP brand confirmed (via its own website's 301 redirect during this run) to now route to firstlight.net, i.e. the same FirstLight Fiber corporate family reported in Baxtel's listing. US Census had no match for this street (likely too new for the TIGER address-range dataset -- 'Resilient Circle' is a newly-named street at the redeveloped former Brunswick Naval Air Station business park), so the OSM building match is the only geocode available here. Baxtel lists the facility as 'fully operational' with power/space figures redacted; no numeric MW capacity confirmed.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "firstlight-burlington-cherry-st-vt",
+    "name": "FirstLight Burlington Data Center (110 Cherry St, former Sovernet)",
+    "operator": "FirstLight Fiber",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.479557,
+      "lon": -73.213218,
+      "city": "Burlington",
+      "county": "Chittenden",
+      "street": "110 Cherry St.",
+      "state": "VT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=VT",
+        "label": "PeeringDB facility records for Vermont (SoVerNet Burlington, 110 Cherry St.)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/datacenters/usa/vermont/burlington",
+        "label": "Inflect: Burlington, VT data centers (Firstlight Fiber Burlington, 110 Cherry Street)",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.telecompetitor.com/firstlight-sovernet-deal-completed-augmenting-northeast-fiber-network/",
+        "label": "FirstLight-Sovernet deal completed (Mar 14, 2017)",
+        "publisher": "Telecompetitor",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "PeeringDB lists 'SoVerNet Burlington' at 110 Cherry St., Burlington 05401. Inflect lists the same address as 'Firstlight Fiber Burlington'. Telecompetitor (2017) reports that Oak Hill combined Sovernet into FirstLight, including 'Sovernet's Tier III data center in Burlington'. That article gives no street address, so tying it to 110 Cherry St. is an inference from the directory records. This is a different site from the tracked FirstLight facility at 45 Krupp Dr., Williston. No capacity is published.",
     "facilityType": "data_center"
   },
   {
@@ -55311,6 +56348,7 @@
       "city": "Williston",
       "county": "Chittenden",
       "street": "45 Krupp Drive",
+      "postalCode": "05495",
       "state": "VT",
       "precision": "approximate"
     },
@@ -55322,10 +56360,28 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-12",
         "kind": "other"
+      },
+      {
+        "url": "https://web.vtchamber.com/FirstLight-3456",
+        "label": "Vermont Chamber of Commerce member directory: FirstLight",
+        "publisher": "Vermont Chamber of Commerce",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://vtdigger.org/2014/03/24/williston-fiber-optic-data-center-doubles-capacity/",
+        "label": "Williston fiber optic data center doubles capacity (Mar 24, 2014)",
+        "publisher": "VTDigger",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-11",
     "notes": "IMPORTANT CORRECTION TO SOURCE DATA: Baxtel's directory lists this facility as 'FirstLight Burlington,' but the street address (45 Krupp Dr) does not exist in Burlington -- both the US Census geocoder and OSM Nominatim resolve it unambiguously to Williston, VT (OSM building match way/620853160, 'Krupp Drive... Williston, Chittenden County'; Census independently confirms '45 KRUPP DR, WILLISTON, VT, 05495'). Recorded here under its true municipality (Williston) per this wave's geocoding-verification requirement rather than the aggregator's market-name label. Only a single third-party directory source was found for this facility's existence at all (no operator-page confirmation succeeded), and given the source's demonstrated city error, confidence is 'reported' rather than 'confirmed.' No square footage or capacity figures available; Baxtel lists it as 'Fully operational.'",
+    "jobs": {
+      "permanent": 7,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -58361,6 +59417,50 @@
     }
   },
   {
+    "id": "fort-rock-data-center-bend-or",
+    "name": "Fort Rock Data Center",
+    "operator": "Fort Rock Data Center",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.0474593,
+      "lon": -121.3285495,
+      "city": "Bend",
+      "county": "Deschutes",
+      "street": "207 SW Columbia St",
+      "postalCode": "97702",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-12",
+        "note": "Operator website describes an operating, purpose-built enterprise-grade facility in Bend.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.fortrockdc.com/about/",
+        "label": "About Fort Rock Data Center",
+        "publisher": "Fort Rock Data Center",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=207+SW+Columbia+St,+Bend,+OR&format=json",
+        "label": "OpenStreetMap: Fort Rock DC, 207 SW Columbia Street, Bend",
+        "publisher": "OpenStreetMap Nominatim",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "The operator describes a purpose-built, enterprise-grade, SOC 2 Type 1 facility in Bend's high desert with redundant power and cooling. Size and MW are not published. This site is distinct from the tracked US Signal OR01 Bend.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "fort-spunky-pacifico-energy-hood-county-tx",
     "name": "Fort Spunky",
     "operator": "Pacifico Energy",
@@ -59380,6 +60480,69 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "wind"
+    }
+  },
+  {
+    "id": "gala-solar-crook-county-or",
+    "name": "Gala Solar (Solar Star Oregon II)",
+    "operator": "Avangrid",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.1843,
+      "lon": -120.918,
+      "city": "Prineville",
+      "county": "Crook",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 56.3
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2017-10-31",
+        "note": "Commercial operation achieved.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://columbiacommunityconnection.com/sherman-gilliam-county-1/gilliam-county-puts-a-little-juice-in-apple",
+        "label": "Gilliam County puts a little juice in Apple",
+        "publisher": "Columbia Community Connection",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Solar_Star_Oregon_II",
+        "label": "Solar Star Oregon II (Gala solar farm)",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.tradeandindustrydev.com/industry/alternative-energy-fuels/news/or-sunpower-starts-construction-56-mw-gala-solar-12583",
+        "label": "OR: SunPower Starts Construction on 56-MW Gala Solar Power Plant",
+        "publisher": "Trade and Industry Development",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Outside Prineville, Crook County. Coordinates come from Global Energy Monitor.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Apple",
+      "poweredFacilityIds": [
+        "apple-prineville-or"
+      ],
+      "notes": "Avangrid's 2020 release says Gala Solar (69.9 MWdc) and Montague Wind supply renewable power to Apple's Prineville data center under PPAs. Global Energy Monitor lists 56.3 MWac, owned by Avangrid Renewables. SunPower started construction in early 2017."
     }
   },
   {
@@ -61074,9 +62237,16 @@
         "publisher": "Columbia Riverkeeper",
         "retrievedAt": "2026-09-05",
         "kind": "other"
+      },
+      {
+        "url": "https://www.waitsburgtimes.com/story/2026/01/29/news/goldendale-energy-awarded-license-for-pumped-storage-hydropower-facility/22070.html",
+        "label": "Waitsburg Times: Goldendale Energy awarded license for pumped storage hydropower facility (Jan 29, 2026)",
+        "publisher": "The Times (Waitsburg)",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-05",
+    "lastUpdated": "2026-10-12",
     "notes": "Sited on the former Columbia Gorge Aluminum smelter grounds roughly eight miles southeast of Goldendale, adjacent to John Day Dam, and immediately adjacent to STACK Infrastructure's proposed Goldendale data center campus (tracked separately). Construction is expected to take four to five years and to generate more than $10 million a year for Klickitat County. Washington Department of Ecology has split the smelter cleanup into three phases; the first covers the storage project's lower pool, with excavation possibly starting as early as January 2027. Coordinates are an approximate geocode of the described smelter site.",
     "energy": {
       "source": "hydro"
@@ -63464,6 +64634,8 @@
       "lon": -96.145,
       "city": "Omaha",
       "county": "Douglas",
+      "street": "8425 North 114th Street",
+      "postalCode": "68142",
       "state": "NE",
       "precision": "approximate"
     },
@@ -63483,10 +64655,28 @@
         "publisher": "International Data Center Authority (IDC-A)",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://dwee.nebraska.gov/news-events/public-notices/westwood-solutions-llc-0",
+        "label": "Public notice: Westwood Solutions, LLC air construction permit (FID 117197) — data processing center, 8425 North 114th Street, Omaha",
+        "publisher": "Nebraska Department of Water, Energy, and Environment",
+        "retrievedAt": "2026-10-12",
+        "kind": "permit"
+      },
+      {
+        "url": "https://patch.com/nebraska/omaha/google-seeks-stretch-farther-northwest-omaha",
+        "label": "Google seeks to stretch farther in northwest Omaha (Westwood Solutions LLC representing Google)",
+        "publisher": "Patch",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-10-12",
     "notes": "Google's THIRD, genuinely distinct Nebraska campus (not the same site as google-papillion-ne). Located north of 114th Street & State Street / along the west side of Blair High Road (NE Hwy 133) in far northwest Omaha, Douglas County -- Papillion is in Sarpy County, a separate site ~20 miles southeast. Filed under the shell entity 'Westwood Solutions, LLC'. Original phase: 270 acres, 4 buildings, 1.4M+ sq ft, ~$750M, 18-24 month construction timeline (filed/reported Jan 2023). Google separately sought to rezone an additional 187 adjacent acres (would bring the total site to ~457 acres / 2.2M+ sq ft if built) -- that expansion's approval/completion status was NOT independently confirmed this session, so landAcres is reported as the original 270-acre confirmed figure only. Google's own official Nebraska locations page (fetched this session) lists Omaha as a distinct, separate site from Papillion and Lincoln, status 'Constructed in 2022'. Coordinates are a rough estimate from the named intersection (114th & State St), NOT a parcel-level geocode -- a GIS/assessor pass could sharpen this to exact.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "NDWEE's July 2026 air construction permit notice for Westwood Solutions, LLC (Google's Omaha developer entity) lists 24 cooling towers of two cells each, alongside 72 Type 1 and 4 Type 2 emergency generators. Cooling towers reject heat by evaporation. No water withdrawal figure was published."
+    },
     "investmentUsd": 750000000,
     "landAcres": 270,
     "facilityType": "data_center"
@@ -65356,9 +66546,30 @@
         "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-09-17",
         "kind": "press"
+      },
+      {
+        "url": "https://nbc16.com/news/local/google-touts-18-billion-investment-in-oregon-data-center",
+        "label": "Google touts $1.8 billion investment in Oregon data center",
+        "publisher": "NBC16 / The Oregonian",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/avangrid-to-repower-leaning-juniper-iib-wind-project-to-extend-life-and-supply-100-mw-to-google-data-centers-in-the-dalles/",
+        "label": "Avangrid to repower Leaning Juniper IIB wind project to supply 100 MW to Google data centers in The Dalles",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://gorgeradio.com/avangrid-sings-agreement-with-google-to-power-data-centers/",
+        "label": "Avangrid Signs Agreement With Google To Power Data Centers",
+        "publisher": "Gorge Radio",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-17",
+    "lastUpdated": "2026-10-12",
     "energy": {
       "source": "hydro",
       "utility": "Northern Wasco County PUD",
@@ -68754,6 +69965,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "heartland-technology-jesup-ia",
+    "name": "Heartland Technology Data Center (HTDC)",
+    "operator": "Heartland Technology (JDC Data LLC)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.471271,
+      "lon": -92.054083,
+      "city": "Jesup",
+      "county": "Buchanan",
+      "street": "1151 12th St",
+      "postalCode": "50648",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-03",
+        "note": "PeeringDB record created 2021-03-03. The operator describes a Tier III data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/10202",
+        "label": "PeeringDB facility record 10202: Heartland Technology Data Center",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://heartlandtechnology.com/data-center/",
+        "label": "Heartland Technology: Data Center",
+        "publisher": "Heartland Technology",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "facilityType": "data_center"
+  },
+  {
     "id": "hekemian-montvale-kpmg-site-data-center-nj",
     "name": "Montvale KPMG Site Data Center (3 Chestnut Ridge Road)",
     "operator": "S. Hekemian Group (settlement party: SHG Montvale MB VI, LLC)",
@@ -71538,6 +72792,57 @@
     }
   },
   {
+    "id": "imon-713-nebraska-sioux-city-ia",
+    "name": "713 Nebraska Carrier Hotel (FiberComm)",
+    "operator": "ImOn Communications (formerly FiberComm)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.498104,
+      "lon": -96.403951,
+      "city": "Sioux City",
+      "county": "Woodbury",
+      "street": "713 Nebraska St",
+      "postalCode": "51101",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2019-10",
+        "note": "FiberComm announced completion of the $6M carrier-hotel conversion of a former office supply store.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.govtech.com/data/Sioux-City-Iowa-Turns-Vacant-Building-Into-Data-Center.html",
+        "label": "Sioux City, Iowa Turns Vacant Building Into Data Center",
+        "publisher": "GovTech (Sioux City Journal)",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://inflect.com/building/713-nebraska-street-sioux-city/fibercomm/datacenter/713-nebraska",
+        "label": "Inflect: FiberComm 713 Nebraska",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/11742",
+        "label": "PeeringDB facility record 11742: 713 Nebraska (ImOn Communications)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "investmentUsd": 6000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "impactdata-greensboro-nc",
     "name": "ImpactData Greensboro",
     "operator": "ImpactData",
@@ -72059,6 +73364,62 @@
     "generation": {
       "technology": "solar",
       "notes": "Just north of Keo between Arkansas 161 and U.S. 165. About 90% is in Lonoke County and the rest in Pulaski County. Site size is reported as about 6,000 acres (Talk Business) or 6,600 acres (Democrat-Gazette). Construction is planned for 2026 and operation for 2028. Invenergy says it is in engineering and pre-construction."
+    }
+  },
+  {
+    "id": "invenergy-prairie-hills-wind-custer-ne",
+    "name": "Prairie Hills Wind Energy Center",
+    "operator": "Invenergy",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.2230139,
+      "lon": -99.3003634,
+      "county": "Custer",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-03-11",
+        "note": "Invenergy briefed the Custer County supervisors: 46 turbines over ~46,000 leased acres south of Mason City, Road Use Agreement drafted, construction targeted later in 2025 and operation by December 2027.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://prairiehillswind.invenergy.com/about-project",
+        "label": "Prairie Hills Wind Energy Center — About the Project",
+        "publisher": "Invenergy",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://ruralradio.com/kbear/news/county-supervisors-projects-wind-energy-and-potential-tech-upgrades/",
+        "label": "County Supervisors' Projects: Wind Energy and Potential Tech Upgrades",
+        "publisher": "KBEAR / Rural Radio Network",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Proposed 200 MW wind project in Custer County, located south of Mason City and extending west toward Highway 183. Invenergy acquired it from a previous developer and began developing it in 2023. Project phase is 'Engineering and Pre-Construction'. Up to 150 peak construction jobs and $700K+ a year in nameplate capacity tax (Invenergy). Distinct from NPPD's operating Broken Bow wind farms in the same county. The Dec 2027 operation target is from March 2025 and no construction start was confirmed this session. Coordinates are Mason City, north of the project area.",
+    "energy": {
+      "source": "wind"
+    },
+    "jobs": {
+      "construction": 150,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "unitCount": 46,
+      "notes": "46 turbines planned per the March 2025 county briefing; ~46,000 acres under a 10-year development lease. Offtaker not announced."
     }
   },
   {
@@ -75338,6 +76699,66 @@
     "facilityType": "data_center"
   },
   {
+    "id": "krambu-newport-wa",
+    "name": "Krambu Eastern Washington (Newport)",
+    "operator": "Krambu",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 48.1834302,
+      "lon": -117.0423605,
+      "city": "Newport",
+      "county": "Pend Oreille",
+      "street": "240 N Union Ave",
+      "postalCode": "99156",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08",
+        "note": "Listed as operational on a statewide tracker; 2020 press described the site as about to come online.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.spokanejournal.com/articles/2019-having-survived-crypto-winter-krambu-thrives",
+        "label": "Spokane Journal of Business: Having survived crypto winter, Krambu thrives (Feb 13, 2020)",
+        "publisher": "Spokane Journal of Business",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcmap.us/states/washington/",
+        "label": "dcmap.us Washington data center map (Krambu Eastern Washington, Newport, operational, ~10 MW est.)",
+        "publisher": "dcmap.us",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=240+N+Union+Ave,+Newport,+WA&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for 240 N Union Ave, Newport, WA",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Blockchain and AI computing plus hosting/colocation. The tracker's ~10 MW is an estimate and is not recorded as capacity. Current operation is not confirmed by a 2025-26 primary source.",
+    "energy": {
+      "source": "hydro",
+      "notes": "Reported to draw inexpensive power from a nearby hydroelectric facility; utility not named."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Designed to run without conventional air conditioning, filtering intake air and exhausting server heat directly (2020 description)."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "ku-ew-brown-12-mercer-ky",
     "name": "E.W. Brown Unit 12",
     "operator": "Kentucky Utilities Company",
@@ -75578,6 +76999,62 @@
       "notes": "Mayor Justin Bibb's administration rejected the building permit on May 14, 2026; a city spokesperson cited serious concerns about hyperscale, standalone data centers in neighborhoods, and City Council was concurrently weighing a moratorium.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lakeside-industries-dallesport-data-center-wa",
+    "name": "Lakeside Industries Dallesport Data Center (proposed)",
+    "operator": "Lakeside Industries",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.6173426,
+      "lon": -121.179515,
+      "city": "Dallesport",
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-08-26",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-26",
+        "note": "Klickitat PUD confirmed a data center proposed on a 434-acre Lakeside Industries parcel in Dallesport; the land is zoned single-family residential and would need a county conditional use permit.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.columbiagorgenews.com/news/another-data-center/article_e81e8737-9db6-49c5-bd3e-594e8976cdd4.html",
+        "label": "Columbia Gorge News: KPUD confirms second Dallesport data center proposal on Lakeside Industries parcel (Aug 26, 2026)",
+        "publisher": "Columbia Gorge News",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.spokesman.com/stories/2026/oct/07/rural-klickitat-county-faces-surge-in-data-center-/",
+        "label": "Spokesman-Review: Rural Klickitat County faces surge in data center proposals (Oct 7, 2026)",
+        "publisher": "The Spokesman-Review / Washington State Standard",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Dallesport,+Washington&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode for Dallesport, WA (approximate point; no parcel coordinates published)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Seattle-based asphalt paving company; did not respond to requests for comment. Location is the Dallesport community point, not the parcel. Partner Avison Young named by the Spokesman-Review but not independently confirmed.",
+    "energy": {
+      "source": "grid",
+      "utility": "Klickitat Public Utility District",
+      "notes": "KPUD submitted a 1,260 MW line-load connection request to the Bonneville Power Administration on behalf of Lakeside Industries in March; BPA declined to share details. Power application documents describe diesel emergency standby generators."
+    },
+    "landAcres": 434,
     "facilityType": "data_center"
   },
   {
@@ -76171,6 +77648,76 @@
       "notes": "Served by multiple, geographically diverse LCUB substations powered by TVA; A/B power paths with battery backup and on-site industrial generators; 480 VAC service listed in PeeringDB"
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "leaning-juniper-iib-wind-gilliam-county-or",
+    "name": "Leaning Juniper IIB Wind Power Facility",
+    "operator": "Avangrid",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.5781,
+      "lon": -120.178,
+      "county": "Gilliam",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 111
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011",
+        "note": "Commenced commercial operation in 2011; repowering activities began May 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.oregon.gov/energy/facilities/Pages/LJB.aspx",
+        "label": "Leaning Juniper IIB Wind Power Facility — Oregon Department of Energy facility page",
+        "publisher": "Oregon Department of Energy",
+        "retrievedAt": "2026-10-12",
+        "kind": "permit"
+      },
+      {
+        "url": "https://constructionreviewonline.com/avangrid-to-repower-leaning-juniper-iib-wind-project-to-extend-life-and-supply-100-mw-to-google-data-centers-in-the-dalles/",
+        "label": "Avangrid to repower Leaning Juniper IIB wind project to supply 100 MW to Google data centers in The Dalles",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://gorgeradio.com/avangrid-sings-agreement-with-google-to-power-data-centers/",
+        "label": "Avangrid Signs Agreement With Google To Power Data Centers",
+        "publisher": "Gorge Radio",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Leaning_Juniper_II_wind_farm",
+        "label": "Leaning Juniper II wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Site boundary is 7,962 acres in Gilliam County. Coordinates are GEM's single point for the Leaning Juniper II complex, not IIB specifically.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "offtaker": "Google",
+      "poweredFacilityIds": [
+        "google-the-dalles-or"
+      ],
+      "unitCount": 74,
+      "notes": "Avangrid signed a PPA (announced July 2025) to supply Google with more than 100 MW from the repowered facility, delivered to Google's The Dalles data centers through Northern Wasco County PUD. Before repowering the facility peaks at about 111 MW. ODOE lists a peak of approximately 120 MW, and the repower is expected to raise capacity to about 119 MW. The certificate holder is Leaning Juniper 2B, LLC (Avangrid Power, LLC / Iberdrola)."
+    }
   },
   {
     "id": "leeward-huckleberry-solar-mayes-county-ok",
@@ -77033,6 +78580,49 @@
     ],
     "lastUpdated": "2026-10-08",
     "notes": "An enterprise (single-tenant) data center on Liberty Mutual's Portsmouth campus near the Pease International Tradeport. It rests on directory listings only, with no operator confirmation, hence 'reported'. One aggregator (dcmap.us) shows a 7.5 MW figure but labels it 'estimated', so it is not used. The coordinates are the OSM address point, which agrees with the Census geocode to within about 150 m.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lightboard-vermont-south-burlington-vt",
+    "name": "Lightboard ★ Vermont (530 Community Drive carrier hotel)",
+    "operator": "Lightboard",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.448637,
+      "lon": -73.146839,
+      "city": "South Burlington",
+      "county": "Chittenden",
+      "street": "530 Community Drive",
+      "state": "VT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://as.peeringdb.com/fac/14600",
+        "label": "PeeringDB: Lightboard ★ Vermont",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=VT",
+        "label": "PeeringDB facility records for Vermont",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.kadoa.com/datacenter/state/vermont",
+        "label": "Kadoa US Datacenter Tracker: Vermont",
+        "publisher": "Kadoa",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "A carrier-neutral interconnection facility that PeeringDB describes as 'Vermont's only Neutral Carrier Hotel'. It is in the South Burlington technology park. PeeringDB also gives a second address, 30 Community Drive. It is an interconnection hub rather than a compute campus. A third-party 3.0 MW figure (DC Hub) could not be verified and is omitted.",
     "facilityType": "data_center"
   },
   {
@@ -78166,6 +79756,49 @@
     ],
     "lastUpdated": "2026-09-21",
     "notes": "Carrier-neutral meet-me-room / carrier hotel that backhauls subsea cable systems landing on Long Island and offers a Manhattan-bypass route. Power and square footage are not disclosed on fetched pages (directory listings elsewhere cite ~800 kW / 18,500 sq ft, not verified here).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "long-lines-sioux-city-ia",
+    "name": "Long Lines Secure Data Center",
+    "operator": "Long Lines",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.483287,
+      "lon": -96.348107,
+      "city": "Sioux City",
+      "county": "Woodbury",
+      "street": "4647 Stone Ave",
+      "postalCode": "51106",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2008",
+        "note": "Operator lists year built as 2008. About 3,972 sq ft, built into a hillside on the Western Iowa Tech Community College campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.longlines.com/business/data-center",
+        "label": "Long Lines Secure Data Center",
+        "publisher": "Long Lines",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=IA",
+        "label": "PeeringDB facility record 3011: Long Lines Data Center",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
     "facilityType": "data_center"
   },
   {
@@ -79438,6 +81071,35 @@
     ],
     "lastUpdated": "2026-07-23",
     "notes": "OSM name was generic 'Lumen'; resolved to Phoenix 1 (811 S 16th St), the flagship legacy Level3 facility, as best match given single unnamed candidate in this city.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-pleasant-hill-ia",
+    "name": "Lumen Pleasant Hill Data Center",
+    "operator": "Lumen",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.557628,
+      "lon": -93.527125,
+      "city": "Pleasant Hill",
+      "county": "Polk",
+      "street": "4550 Carlisle Road",
+      "postalCode": "50327",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/4550-carlisle-road-pleasant-hill/lumen/datacenter/pleasant-hill",
+        "label": "Inflect: Lumen Pleasant Hill",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
     "facilityType": "data_center"
   },
   {
@@ -87756,7 +89418,7 @@
         "url": "https://www.wenatcheeworld.com/business/chelan-county-pud-commissioners-ok-energy-contract-with-microsoft-for-malaga-data-center-buildings/article_75835428-510f-4b96-b302-f1e681b64b2b.html",
         "label": "Chelan County PUD commissioners OK energy contract with Microsoft for Malaga data center buildings",
         "publisher": "The Wenatchee World",
-        "retrievedAt": "2026-09-05",
+        "retrievedAt": "2026-10-12",
         "kind": "press"
       },
       {
@@ -87781,7 +89443,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-05",
+    "lastUpdated": "2026-10-12",
     "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. 288 MW figure from secondary aggregator Cleanview only; primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; original statusHistory incorrectly dated under_construction to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway. A Building-1 permit cites ~72 peak-shift staff (a single-building figure, not a facility employment total); no confirmed total campus capital-expenditure figure is public. Go-live check 2026-08-08: NO citable operational date exists. Microsoft's own Malaga project page gives a first-phase construction window concluding in early 2026 but states plainly that \"Completion of construction does not indicate datacenter operation/availability\", and publishes no energization or service date. Secondary reporting that the first building would be \"powered in August and fully operational by late 2026\" is forward-looking and was not used to move the status. Remains under_construction. Microsoft's own Quincy/Central Washington community page states it \"operates datacenters in Quincy and is developing new datacenters in Malaga and East Wenatchee\" — positively confirming the site is not yet operational.",
     "energy": {
       "source": "hydro",
@@ -88987,6 +90649,52 @@
     "facilityType": "data_center"
   },
   {
+    "id": "midamerican-arbor-hill-solar-ia",
+    "name": "Arbor Hill Solar",
+    "operator": "MidAmerican Energy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.4669,
+      "lon": -94.26271,
+      "city": "Greenfield",
+      "county": "Adair",
+      "street": "2306 State Highway 92",
+      "postalCode": "50849",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 25
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-01",
+        "note": "EIA-derived online date January 2022.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://gridinfo.com/plant/arbor-hill-solar/64755",
+        "label": "GridInfo plant profile: Arbor Hill Solar (EIA 64755)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "energy": {
+      "source": "solar",
+      "utility": "MidAmerican Energy"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
     "id": "midamerican-holliday-creek-solar-ia",
     "name": "Holliday Creek Solar",
     "operator": "MidAmerican Energy",
@@ -89022,11 +90730,11 @@
         "url": "https://api.openstreetmap.org/api/0.6/relation/15697742.json",
         "label": "OpenStreetMap relation 15697742 - Holliday Creek Solar (100 MW, EIA 64738, in service 2022-07)",
         "publisher": "OpenStreetMap",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-11",
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-11",
     "notes": "MidAmerican's own release places the array in Webster County northeast of Fort Dodge; county-level reporting describes it as about three miles southeast of Badger on roughly 700 acres. Acreage is not asserted here because it was not stated in a source retrieved this session.",
     "energy": {
       "source": "solar"
@@ -89084,6 +90792,58 @@
     "generation": {
       "technology": "battery",
       "notes": "4 MWh of storage. Framed by the utility as a pilot for pairing storage with its roughly 2,600 wind turbines to manage intermittency and peak demand. Co-located with MidAmerican's Knoxville peaking plant, which OpenStreetMap/EIA-860 record as a combined 17.1 MW oil-and-battery site (EIA plant IDs 62569 and 7849)."
+    }
+  },
+  {
+    "id": "midamerican-mills-solar-ia",
+    "name": "Mills Solar Project",
+    "operator": "MidAmerican Energy",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.0227224,
+      "lon": -95.4990369,
+      "city": "Hastings",
+      "county": "Mills",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-06",
+        "note": "Mills County Zoning Board of Adjustment approved MidAmerican's conditional use permit.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://opinion-tribune.com/node/7238",
+        "label": "MidAmerican Energy Plans To Have Mills County Solar Project Up And Running In 2025",
+        "publisher": "Glenwood Opinion-Tribune",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kmaland.com/news/midamerican-energy-announces-energy-production-projects-to-meet-growing-demand/article_cc7120aa-f2d1-11ef-a941-b3dede76d9d9.html",
+        "label": "MidAmerican Energy announces energy production projects to meet growing demand",
+        "publisher": "KMA Land",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "energy": {
+      "source": "solar",
+      "utility": "MidAmerican Energy"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Indian Creek Township near U.S. Highway 34, between Hastings and Emerson. The coordinate is the Hastings place centroid, not the parcel."
     }
   },
   {
@@ -89304,6 +91064,68 @@
     "investmentUsd": 300000000,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "millican-solar-energy-crook-county-or",
+    "name": "Millican Solar Energy",
+    "operator": "Invenergy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.1541,
+      "lon": -120.5341,
+      "county": "Crook",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 70
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021",
+        "note": "Commissioned per Global Energy Monitor.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Millican_Solar_Energy",
+        "label": "Millican Solar Energy",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.nsenergybusiness.com/news/invenergy-cobank-us-solar-plants/",
+        "label": "Invenergy, CoBank close financing on Crook County solar plants",
+        "publisher": "NS Energy",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://pv-magazine-usa.com/?p=3959",
+        "label": "Facebook and Pacific Power plan 437 MW of solar in Utah, Oregon",
+        "publisher": "pv magazine USA",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "pv magazine noted the site may sit just over the line in Deschutes County. Pacific Power and GEM place it in Crook County. Coordinates come from Global Energy Monitor.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via PacifiCorp PPA)",
+      "poweredFacilityIds": [
+        "meta-prineville-or"
+      ],
+      "notes": "Invenergy built Millican and Prineville Solar (announced as 45 MW + 55 MW) under long-term PPAs with PacifiCorp, announced in 2018, to supply solar power to Facebook's Prineville data center. CoBank provided construction financing (financial close August 2020). GEM lists Millican at 70 MWac, 100% owned by Invenergy, commissioned 2021."
+    }
   },
   {
     "id": "milligan-1-wind-saline-ne",
@@ -89852,6 +91674,71 @@
     }
   },
   {
+    "id": "mon-power-fort-martin-solar-monongalia-county-wv",
+    "name": "Fort Martin Solar Site",
+    "operator": "Mon Power / Potomac Edison (FirstEnergy)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.7142267,
+      "lon": -79.9242096,
+      "city": "Maidsville",
+      "county": "Monongalia",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 18.9
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2023-08-23",
+        "note": "PSC approved three of five planned Mon Power/Potomac Edison solar sites (Monongalia, Marion, Berkeley).",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2024",
+        "note": "Completed in early 2024 as the companies' first solar project.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solarpowerworldonline.com/2025/06/5-75-mw-solar-project-at-former-ash-landfill-now-online-in-west-virginia/",
+        "label": "5.75-MW solar project at former ash landfill now online in West Virginia (Fort Martin 18.9 MW completed early 2024)",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.firstenergycorp.com/newsroom/news_articles/mon-power-and-potomac-edison-receive-approval-to-construct-three.html",
+        "label": "Mon Power and Potomac Edison receive approval to construct three solar energy sites in West Virginia",
+        "publisher": "FirstEnergy",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Fort+Martin+Power+Station&format=json",
+        "label": "OpenStreetMap Nominatim geocode for Fort Martin Power Station, Monongalia County, WV",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "18.9 MW utility-owned solar array at FirstEnergy's Fort Martin Power Station, the first of the companies' five-site, 50 MW West Virginia solar program. The pin is the OSM point for the power station, not the array footprint.",
+    "energy": {
+      "source": "solar",
+      "utility": "Mon Power / Potomac Edison (FirstEnergy)"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
     "id": "mon-power-maidsville-energy-center-monongalia-county-wv",
     "name": "Maidsville Energy Center",
     "operator": "Mon Power / Potomac Edison (FirstEnergy)",
@@ -89905,6 +91792,137 @@
       "technology": "natural_gas",
       "unitCount": 1,
       "notes": "Combined-cycle gas turbine plant, named \"Maidsville Energy Center,\" proposed by Mon Power and Potomac Edison (FirstEnergy) at a site adjacent to their existing coal-fired Fort Martin Power Station in Monongalia County. Filed with the WV Public Service Commission for a certificate of need/necessity; PSC comment hearings were held June-July 2026 with, per the WV MetroNews report, no speakers in support at the July hearing. As of the sources retrieved (2026-09-10) no PSC decision had been reported. Reported capacity and cost figures vary across contemporaneous coverage: the Dominion Post (2026-05-13) reported the companies were evaluating either a '1,200 MW gross / 1,050 MW net' or a '1,350 MW gross / 1,200 MW net' configuration at a total project cost of $2.476 billion; other outlets in the same period cited a flat '1,200-megawatt' headline figure and cost estimates ranging $2.4-2.84 billion. This record uses the widely repeated 1,200 MW headline figure as 'planned' without normalizing the gross/net distinction. Expected commercial operation date Dec. 31, 2031, with construction beginning as early as 2027. The companies did not name a specific data-center customer in the sources retrieved: WV MetroNews (2026-07-17) reported Mon Power 'has been in discussions with three data center developers' who would be the plant's electricity users, with contract details to be filed with the PSC 'as soon as we sign a contract with one of the vendors.' A separate, unconfirmed figure of a '1,012-megawatt data center project yet to finalize a construction contract' appeared in secondary reporting on the same PSC proceeding but was not independently verified against a primary source in this research pass, so it is recorded here as a lead, not a fact, and is deliberately excluded from this record's structured fields."
+    }
+  },
+  {
+    "id": "mon-power-marlowe-solar-berkeley-county-wv",
+    "name": "Marlowe Solar Site",
+    "operator": "Mon Power / Potomac Edison (FirstEnergy)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5884301,
+      "lon": -77.8594406,
+      "city": "Marlowe",
+      "county": "Berkeley",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 5.75
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2023-08-23",
+        "note": "PSC approved three of five planned Mon Power/Potomac Edison solar sites (Monongalia, Marion, Berkeley).",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2025",
+        "note": "Reported complete and producing power as of June 2025.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solarpowerworldonline.com/2025/06/5-75-mw-solar-project-at-former-ash-landfill-now-online-in-west-virginia/",
+        "label": "5.75-MW solar project at former ash landfill now online in West Virginia",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.firstenergycorp.com/newsroom/news_articles/mon-power-and-potomac-edison-receive-approval-to-construct-three.html",
+        "label": "Mon Power and Potomac Edison receive approval to construct three solar energy sites in West Virginia",
+        "publisher": "FirstEnergy",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Marlowe+Berkeley+County+West+Virginia&format=json",
+        "label": "OpenStreetMap Nominatim geocode for Marlowe, Berkeley County, WV",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "More than 17,000 panels on about 36 acres of company-owned land along I-81 and the Potomac River. The site is a former ash landfill of the retired R. Paul Smith Power Station. The pin is the Marlowe community centroid.",
+    "energy": {
+      "source": "solar",
+      "utility": "Mon Power / Potomac Edison (FirstEnergy)"
+    },
+    "landAcres": 36,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
+    "id": "mon-power-rivesville-solar-marion-county-wv",
+    "name": "Rivesville Solar Site",
+    "operator": "Mon Power / Potomac Edison (FirstEnergy)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5298059,
+      "lon": -80.1167417,
+      "city": "Rivesville",
+      "county": "Marion",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 5.5
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2023-08-23",
+        "note": "PSC approved three of five planned Mon Power/Potomac Edison solar sites (Monongalia, Marion, Berkeley).",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2024",
+        "note": "Came online in fall 2024 per a June 2025 report.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solarpowerworldonline.com/2025/06/5-75-mw-solar-project-at-former-ash-landfill-now-online-in-west-virginia/",
+        "label": "5.75-MW solar project at former ash landfill now online in West Virginia (Rivesville 5.5 MW came online last fall)",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.firstenergycorp.com/newsroom/news_articles/mon-power-and-potomac-edison-receive-approval-to-construct-three.html",
+        "label": "Mon Power and Potomac Edison receive approval to construct three solar energy sites in West Virginia",
+        "publisher": "FirstEnergy",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Rivesville+Marion+County+West+Virginia&format=json",
+        "label": "OpenStreetMap Nominatim geocode for Rivesville, Marion County, WV",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "5.5 MW utility-owned solar site in Marion County, part of Mon Power/Potomac Edison's 50 MW WV solar program. The source does not give the exact parcel; the pin is the Rivesville town centroid.",
+    "energy": {
+      "source": "solar",
+      "utility": "Mon Power / Potomac Edison (FirstEnergy)"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
     }
   },
   {
@@ -90274,6 +92292,69 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "montague-wind-gilliam-county-or",
+    "name": "Montague Wind Power Facility",
+    "operator": "Avangrid",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.5755,
+      "lon": -120.113,
+      "county": "Gilliam",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 200.85
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2019-10-24",
+        "note": "Commercial operation achieved.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.oregon.gov/energy/facilities/Pages/MWP.aspx",
+        "label": "Montague Wind Power Facility — Oregon Department of Energy facility page",
+        "publisher": "Oregon Department of Energy",
+        "retrievedAt": "2026-10-12",
+        "kind": "permit"
+      },
+      {
+        "url": "https://columbiacommunityconnection.com/sherman-gilliam-county-1/gilliam-county-puts-a-little-juice-in-apple",
+        "label": "Gilliam County puts a little juice in Apple",
+        "publisher": "Columbia Community Connection",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Montague_Wind_Power_Facility",
+        "label": "Montague Wind Power Facility",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "56 Vestas turbines. Coordinates come from Global Energy Monitor.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "offtaker": "Apple",
+      "poweredFacilityIds": [
+        "apple-prineville-or"
+      ],
+      "unitCount": 56,
+      "notes": "Supplies renewable power to Apple's Prineville data center under a power purchase agreement, alongside Gala Solar. The certificate holder is Montague Wind Power Facility, LLC, a subsidiary of Avangrid Power, LLC (Iberdrola). ODOE lists 201 MW within an approximately 29,607-acre site boundary."
+    }
   },
   {
     "id": "montana-opticom-four-corners-bozeman-mt",
@@ -92910,6 +94991,71 @@
     "facilityType": "data_center"
   },
   {
+    "id": "new-haven-pv-solar-mason-county-wv",
+    "name": "New Haven Solar (New Haven PV I)",
+    "operator": "New Haven PV I (Tyr Energy Development Renewables)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.9342466,
+      "lon": -82.0129177,
+      "city": "Sassafras",
+      "county": "Mason",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2023-10-27",
+        "note": "West Virginia PSC approved the 100 MW solar farm near New Haven.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wvpublic.org/psc-approves-100-megawatt-solar-farm-in-mason-county/?amp=1",
+        "label": "PSC approves 100-megawatt solar farm in Mason County",
+        "publisher": "West Virginia Public Broadcasting",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://renewableenergymagazine.com/pv_solar/west-virginia-psc-approves-major-solar-energy-20231030",
+        "label": "West Virginia PSC approves major solar energy project (New Haven PV I, 1,555 acres, 319 construction jobs)",
+        "publisher": "Renewable Energy Magazine",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Sassafras+Mason+County+West+Virginia&format=json",
+        "label": "OpenStreetMap Nominatim geocode for Sassafras, Mason County, WV",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "Sited about 3.5 miles south of New Haven near Sassafras. The pin is the Sassafras place centroid and is approximate. At approval, construction was slated for 2025 with completion in 2026; no groundbreaking was found. Acreage uses Renewable Energy Magazine's 1,555 figure (WVPB says 'more than 1,500').",
+    "energy": {
+      "source": "solar",
+      "notes": "About 226,000 panels; power to flow over an existing line to Appalachian Power and the regional PJM market."
+    },
+    "investmentUsd": 97000000,
+    "landAcres": 1555,
+    "jobs": {
+      "construction": 319,
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
     "id": "new-hook-road-data-center-bayonne-nj",
     "name": "69-71 New Hook Road Data Center (Constable Hook)",
     "operator": "Undisclosed",
@@ -94099,6 +96245,82 @@
     "aiClassification": "likely"
   },
   {
+    "id": "nicholas-county-solar-project-nicholas-county-wv",
+    "name": "Nicholas County Solar Project",
+    "operator": "Nicholas County Solar Project, LLC (Savion)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.2784261,
+      "lon": -80.770707,
+      "county": "Nicholas",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2022",
+        "note": "Certified by the West Virginia PSC in 2022, per later reporting on the adjacent Deep Lake approval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wchstv.com/news/local/wva-regulators-approves-construction-of-major-solar-plant-in-nicholas-county",
+        "label": "W.Va. regulators approve construction of solar plant in Nicholas County (references Nicholas County Solar Project certified by PSC in 2022)",
+        "publisher": "WCHS-TV",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wsaz.com/2024/08/06/solar-power-plant-approved-central-wva/",
+        "label": "Solar power plant approved in central W.Va. (Deep Lake sited adjacent to Nicholas County Solar Project, LLC)",
+        "publisher": "WSAZ",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://wvpublic.org/nicholas-county-solar-project-receives-129-million-federal-grant",
+        "label": "Nicholas County Solar Project receives $129 million federal grant",
+        "publisher": "West Virginia Public Broadcasting",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.energy.gov/nepa/articles/cx-033545-model-transition-coal-solar-west-virginia-budget-period-1-nicholas-county",
+        "label": "CX-033545: A Model for Transition: Coal to Solar in West Virginia — Budget Period 1 — Nicholas County Solar Project",
+        "publisher": "U.S. Department of Energy",
+        "retrievedAt": "2026-10-11",
+        "kind": "filing"
+      },
+      {
+        "url": "https://wvmetronews.com/2024/03/31/nicholas-county-commission-secures-funding-for-solar-array/",
+        "label": "Nicholas County Commission secures funding for solar array",
+        "publisher": "WV MetroNews",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Nicholas+County+West+Virginia&format=json",
+        "label": "OpenStreetMap Nominatim geocode for Nicholas County, WV",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "Separate PSC-certified site next to the tracked Deep Lake Energy Center, on former surface mines off Route 39 owned by Lexington Coal. Capacity is left out on purpose. WVPB and DOE describe the 'Nicholas County Solar Project' as 250 MW of PV and battery storage, but DOE's NEPA page says it is built in two adjacent areas that include Deep Lake (150 MW). The 250 MW appears to be a combined figure and is not attributed to this site. The same applies to the $129M DOE Office of Clean Energy Demonstrations award: it covers the combined project, so no subsidy is recorded on this site. Construction was targeted for spring 2026 (MetroNews, 2024); no start was confirmed. Pin is the county centroid.",
+    "energy": {
+      "source": "solar",
+      "notes": "Utility-scale PV with battery storage on reclaimed mine land; site-level MW not separately published."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
+  },
+  {
     "id": "nine-mile-data-myton-duchesne-county-ut",
     "name": "Nine Mile Data Center (Uinta Basin Data Center Project)",
     "operator": "Nine Mile Data, LLC",
@@ -94427,11 +96649,19 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-22",
         "kind": "osm"
+      },
+      {
+        "url": "https://wvhtf.org/press-release-biden-harris-administration-invests-100-million-in-a-new-high-performance-computer-system-to-advance-noaa-research-and-development/",
+        "label": "Press release: $100 million for new NOAA high-performance computer system (Rhea) at NESCC Fairmont",
+        "publisher": "West Virginia High Technology Foundation (NOAA release)",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-11",
     "notes": "Federal research-computing center in the I-79 High Technology Park, Marion County. Home of NOAA's Hera HPC system; a $100M NOAA HPC system named Rhea is planned for the site to support AI/ML weather, ocean and climate modeling. NOAA's own fact sheet (noaa.gov) returned HTTP 403 this session, so the 54,000 sq ft and $27.6M-establishment figures reported elsewhere were NOT adopted. Pin is the city centroid — the exact park parcel is not published in the cited source.",
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "noec-core-data-center-vinita-ok",
@@ -98801,9 +101031,16 @@
         "publisher": "Western Iowa Today",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://midamericanenergy.com/media/pdf/orient_energy_center_fact_sheet.pdf",
+        "label": "MidAmerican Energy: Orient Energy Center fact sheet",
+        "publisher": "MidAmerican Energy",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-21",
+    "lastUpdated": "2026-10-11",
     "notes": "Proposed 465 MW natural gas-fired combustion turbine in Adair County, south of the town of Orient, targeted to come online in 2028. Part of the same MidAmerican long-term plan that includes an 800 MW multi-site solar reliability project across roughly six Iowa sites in 2027-2028 whose locations are not finalised. Reported project cost of $600 million and a site of roughly 28 acres appear in trade and local coverage that could not be fetched this session and are therefore not recorded here. Relevant to this dataset as new dispatchable capacity added in a state whose load growth is being driven substantially by data center development.",
     "energy": {
       "source": "on_site_gas",
@@ -101917,7 +104154,7 @@
         "url": "https://www.spokesman.com/stories/2026/apr/26/ai-data-center-with-a-different-mission-being-cons/",
         "label": "AI data center with a different mission being considered in Tri-Cities",
         "publisher": "The Spokesman-Review",
-        "retrievedAt": "2026-09-05",
+        "retrievedAt": "2026-10-12",
         "kind": "press"
       },
       {
@@ -101935,7 +104172,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-12",
     "notes": "Battelle, which operates PNNL for the Department of Energy, issued a request for information for an on-premises next-generation AI compute data center to train and operationalize large language models for scientific and national government missions. Roughly 2 MW at a possible 2028 launch, with potential future expansion to about 40 MW. This would be DOE-funded and DOE-operated, not a private operator building on federal land. No construction decision has been made — this is an RFI-stage proposal only. Coordinates are an approximate geocode of the PNNL campus in Richland. Public-reception check (2026-09-10): Checked The Spokesman-Review's coverage (2026-09-10) of this DOE Genesis Mission-linked project; it covers technical specs and funding, with no resident, community-group, or elected-official reaction documented.",
     "energy": {
       "notes": "The request for information sought vendor input on on-site power options if utility distribution is limited, containerized or modular structures, power purchase agreements, solar and nuclear supply, and heat reuse for industrial processes."
@@ -102530,6 +104767,67 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "potomac-hills-energy-solar-mineral-county-wv",
+    "name": "Potomac Hills Energy Solar",
+    "operator": "Potomac Hills Energy (Energix US, LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.4803706,
+      "lon": -79.0478073,
+      "city": "Piedmont",
+      "county": "Mineral",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-04-11",
+        "note": "West Virginia PSC approved the 100 MW solar facility with planned battery storage on a 650-acre former strip mine.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://wvpublic.org/story/energy-environment/psc-approves-solar-project-in-mineral-county-amid-statewide-boom/",
+        "label": "PSC approves solar project in Mineral County amid statewide boom",
+        "publisher": "West Virginia Public Broadcasting",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cnhi.com/?p=18214",
+        "label": "PSC approves Mineral County solar project (Potomac Hills Energy, $243M)",
+        "publisher": "CNHI",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Piedmont+Mineral+County+West+Virginia&format=json",
+        "label": "OpenStreetMap Nominatim geocode for Piedmont, Mineral County, WV",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "PSC documents place the site about 3 miles west of Keyser and 1.25 miles south of Piedmont. The pin is the Piedmont town centroid and is approximate. Owner is Energix US, LLC of Arlington, VA, which applied on 2023-12-20. The storage component is reported as 200 MWh by WVPB and 200 MW by CNHI. A new substation will deliver power to FirstEnergy. No construction start was found.",
+    "energy": {
+      "source": "solar",
+      "notes": "100 MW PV plus planned battery storage (200 MWh per WVPB; 200 MW per CNHI); interconnects via a new substation to FirstEnergy."
+    },
+    "investmentUsd": 243000000,
+    "landAcres": 650,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
   },
   {
     "id": "powerconnex-i-new-albany-oh",
@@ -103576,6 +105874,74 @@
     ],
     "lastUpdated": "2026-07-17",
     "notes": "Converts the decommissioned Quindaro coal Power Station (BPU) in the Quindaro neighborhood of Kansas City, KS. $13.6M option to buy (May 2025), currently in due diligence.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "powertransitions-vermont-yankee-vernon-vt",
+    "name": "PowerTransitions Vermont Yankee Site Redevelopment (data center option)",
+    "operator": "PowerTransitions",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 42.77889,
+      "lon": -72.51306,
+      "city": "Vernon",
+      "county": "Windham",
+      "state": "VT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06",
+        "note": "PowerTransitions leased redevelopment rights to the roughly 140-acre former Vermont Yankee site from NorthStar. A data center is one of the options it has floated, along with battery storage and an SMR. No decision has been made.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ctpublic.org/2026-06-15/energy-development-company-lease-vermont-yankee-property",
+        "label": "Energy development company inks lease deal for Vermont Yankee property (Jun 15, 2026)",
+        "publisher": "Connecticut Public",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://vtdigger.org/2026/06/17/vernon-community-and-the-state-grapple-with-potential-redevelopment-of-vermont-yankee-site/",
+        "label": "Vernon community and the state grapple with potential redevelopment of Vermont Yankee site (Jun 17, 2026)",
+        "publisher": "VTDigger",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://vtdigger.org/2026/08/06/vernon-wants-input-on-the-future-of-the-vermont-yankee-site/",
+        "label": "Vernon wants input on the future of the Vermont Yankee site (Aug 6, 2026)",
+        "publisher": "VTDigger",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wcax.com/2026/06/18/talks-underway-decide-fate-vermont-yankee-plant-property/",
+        "label": "Talks underway on future of Vermont Yankee property (Jun 18, 2026)",
+        "publisher": "WCAX",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Vermont_Yankee_Nuclear_Power_Plant",
+        "label": "Vermont Yankee Nuclear Power Plant (site coordinates)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "Very preliminary. PowerTransitions, a Texas-based company backed by Partners Group, has floated battery storage, a small modular reactor and a data center for the decommissioned Vermont Yankee site. The company says it 'had not made any decision about which option to pursue'. The Selectboard chair thinks battery storage is most likely. Any project would trigger Act 250 review. No data center size, MW or investment has been disclosed. The 140 acres is the whole site, not a data center footprint. Coordinates are the former plant's.",
+    "community": {
+      "status": "contested",
+      "notes": "The Vernon Selectboard chair says a data center is the least popular option among townspeople, citing electricity use, water use and noise. The planning chair warned of a 'serious drain' on local water and power.",
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -112359,13 +114725,25 @@
         "publisher": "Alliant Energy",
         "retrievedAt": "2026-08-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.timesrepublican.com/news/todays-news/2026/09/consumer-advocate-calls-for-proof-that-alliant-gas-plant-is-cost-effective/",
+        "label": "Consumer Advocate calls for proof that Alliant gas plant is cost effective",
+        "publisher": "Times-Republican",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-21",
+    "lastUpdated": "2026-10-11",
     "notes": "Proposed in Cerro Gordo County adjacent to Alliant's Emery Generating Station, expected operational in 2031 pending regulatory approval. Requires detailed air-quality modelling with Iowa DNR confirmation that emissions meet air-quality standards. Alliant held a public information meeting on 2026-05-13, and local coverage indicates a new gas pipeline would cross Hancock and Cerro Gordo counties to serve it. Acreage, investment and job counts are not stated on the operator's page. At 1,200 MW this would be the largest single generation addition among the current Iowa gas proposals.",
     "energy": {
       "source": "on_site_gas",
       "utility": "Alliant Energy"
+    },
+    "community": {
+      "status": "contested",
+      "notes": "In September 2026 the Office of Consumer Advocate, Clean Energy Districts of Iowa, and Iowa Business Energy Coalition asked the IUC for more information and an evidentiary hearing on need and cost-effectiveness. IPL asked the IUC to waive the hearing.",
+      "sourceIndex": 1
     },
     "facilityType": "power_generation",
     "generation": {
@@ -113096,6 +115474,46 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "rowan-meriwether-forest-grove-or",
+    "name": "Rowan Meriwether Data Center Campus (Project Meriwether)",
+    "operator": "Rowan Digital Infrastructure",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5259537,
+      "lon": -123.0879889,
+      "city": "Forest Grove",
+      "county": "Washington",
+      "street": "2506 Oak St",
+      "postalCode": "97116",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-12",
+        "note": "Listed as a future facility in the planning stage.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/rowan-meriwether-or",
+        "label": "Rowan: Meriwether, OR",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Baxtel reports that preliminary plans for Project Meriwether call for 150 MW and lists the site as 'Future facility in planning stage' at 2506 Oak St, Forest Grove, about 0.78 miles from Crane's Forest Grove campus. This is a different operator from Crane PDX01/PDX02. No local permit filing was located this session. The coordinates are a point on Oak Street from OSM, not the parcel.",
+    "facilityType": "data_center"
   },
   {
     "id": "rowan-temple-tx",
@@ -114315,8 +116733,12 @@
       "lon": -120.1915785,
       "city": "East Wenatchee",
       "county": "Douglas",
+      "street": "4405 Grant Road",
       "state": "WA",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 14.4
     },
     "statusHistory": [
       {
@@ -114340,9 +116762,16 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-17",
         "kind": "osm"
+      },
+      {
+        "url": "https://baxtel.com/news/sabey-data-centers-to-add-14mw-in-washington",
+        "label": "Baxtel: Sabey Data Centers to add 14MW in Washington (Aug 22, 2018)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-17",
+    "lastUpdated": "2026-10-12",
     "notes": "Identification of OSM's 'Intergate Columbia D' with the fourth building Sabey describes as under construction is an inference from two sources that agree on campus, operator and building count; it is not stated in one document, hence confidence 'reported'. No street number is recorded because OSM carries none for this polygon. The 70 MW campus figure is not attributed to this building.",
     "energy": {
       "source": "hydro",
@@ -114807,9 +117236,16 @@
         "publisher": "Sabey Data Centers",
         "retrievedAt": "2026-09-05",
         "kind": "other"
+      },
+      {
+        "url": "https://news.constructconnect.com/sabey-data-centers-breaks-ground-on-714540-square-foot-umatilla-campus",
+        "label": "Sabey Data Centers breaks ground on 714,540-square-foot Umatilla campus",
+        "publisher": "ConstructConnect",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-05",
+    "lastUpdated": "2026-10-12",
     "notes": "Two-building, 714,540 sq ft multi-tenant campus. Groundbreaking originally Q1 2025, revised to 2024 per DCD; construction start as of July 2026 not independently confirmed. Investment figures conflicting across sources ($520M in one report, ~$950M in another); investmentUsd omitted. Coordinates are Umatilla city centroid. Planned capacity revised from 100 MW to 150 MW: the campus is described as designed to support more than 150 megawatts. Sabey's own materials give a more conservative \"120 MW+\", which is consistent rather than contradictory.",
     "energy": {
       "source": "mixed",
@@ -115673,6 +118109,51 @@
       "technology": "solar",
       "notes": "EPC was SOLV Energy. Phase two, adding another 200 MW, was reported under construction as of March 2025. Total project cost reported at about $500 million."
     }
+  },
+  {
+    "id": "sandhills-butler-county-solar-ne",
+    "name": "Butler County Solar",
+    "operator": "Sandhills Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.2142454,
+      "lon": -97.1384119,
+      "county": "Butler",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 225
+    },
+    "announcedDate": "2023-10-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-10-04",
+        "note": "FTC Solar announced a tracker supply award for Sandhills Energy's 225 MW Butler County solar project near Columbus, with deliveries expected from Q3 2024.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.stocktitan.net/news/FTCI/ftc-solar-awarded-225mw-sandhills-energy-solar-58hltjq44arq.html",
+        "label": "FTC Solar Awarded 225MW Sandhills Energy Solar Project",
+        "publisher": "FTC Solar (via Stock Titan)",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://reglobal.org/ftc-solar-obtains-tracker-contract-for-225-mw-project-in-nebraska/",
+        "label": "FTC Solar obtains tracker contract for 225 MW project in Nebraska",
+        "publisher": "REGlobal",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Sandhills Energy's president called it 'one of the largest to be built in our home state of Nebraska.' Located in Butler County near Columbus; no site parcel was published. Third-party queue trackers list a Sandhills 'Butler Solar' at 175 MW, expected December 2027, so the size and timeline are unresolved. No construction start or county permit decision was confirmed this session. Coordinates are the Butler County centroid (OSM).",
+    "facilityType": "power_generation"
   },
   {
     "id": "sandia-725e-hpc-data-center-albuquerque-nm",
@@ -118126,10 +120607,18 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-22",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.wvva.com/2023/12/22/shady-spring-residents-up-arms-over-proposed-rezoning-wooded-area-bordering-their-neighborhoods/",
+        "label": "Shady Spring residents up in arms over proposed rezoning of wooded area bordering their neighborhoods",
+        "publisher": "WVVA",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-11",
     "notes": "Rezoning of more than 700 acres of residential land in Shady Spring, sought by property owner Greenbrier Land Company so an unnamed company (under NDA) could build a multi-building data center campus. The commission tabled the request on 2024-01-09 and trade press reports it was later suspended indefinitely; that later report could not be fetched this session (HTTP 403) and is not cited. The 727-acre / eight-building / ~600-job figures circulating in secondary coverage are NOT asserted here — the source I read states only 'more than 700 acres'.",
+    "landAcres": 727,
     "community": {
       "status": "opposed",
       "notes": "Organized neighborhood opposition; residents described the tabling as a victory and said they intended to press the commission for full dismissal rather than postponement.",
@@ -118694,11 +121183,22 @@
         "publisher": "Eagle 102.3FM",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kcrg.com/2026/03/24/bitcoin-mining-company-plans-expand-cryptocurrency-operations-dubuque-county",
+        "label": "Bitcoin mining company plans to expand cryptocurrency operations to Dubuque County",
+        "publisher": "KCRG",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-08",
+    "lastUpdated": "2026-10-11",
     "notes": "Proposed crypto-mining buildout in Cascade's industrial park (east of Industrial St SE / north of Industrial Ct SE), Oak Hill neighborhood. Simple Mining purchased 15 acres; ~5 acres would host the mining facility itself. Backed by Cascade Economic Development Corporation; city would receive $40,000/yr per the proposed agreement. Still required city council approval of a building permit as of the most recent reporting I could fetch — status kept at 'proposed', not 'permitted'. Targeted construction 'late spring or early summer' [2026] with an operations goal of Dec 31, 2026. Two independently-fetched local outlets DISAGREE on scale (30 containers @150 sq ft per Telegraph Herald vs. 40 containers @160 sq ft per Eagle 102.3FM) and neither gives a company-confirmed MW figure — one outlet offered its own estimate of '10 and 40 megawatts based on industry standards,' which I'm treating as a reporter's inference, not a sourced fact, so capacityMw is omitted. Used 'reported' rather than 'confirmed' confidence given the factual inconsistency between the two outlets and the still-pending approval. ~6-8 jobs expected.",
     "landAcres": 15,
+    "jobs": {
+      "permanent": 8,
+      "sourceIndex": 2
+    },
     "facilityType": "crypto_mining"
   },
   {
@@ -120189,6 +122689,56 @@
     ],
     "lastUpdated": "2026-09-04",
     "notes": "Carrier-neutral 'carrier motel' and interconnection facility serving eastern Iowa and the Quad Cities; the operator publishes no square footage or power rating for the site. Small interconnection facility rather than a compute campus — recorded for completeness of the Iowa colocation footprint.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "south-front-networks-emery-mason-city-ia",
+    "name": "South Front Networks IA-Emery",
+    "operator": "South Front Networks",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 43.132695,
+      "lon": -93.27891,
+      "city": "Mason City",
+      "county": "Cerro Gordo",
+      "street": "16455 Lark Ave",
+      "postalCode": "50401",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2019-03",
+        "note": "PeeringDB record created 2019-03-17. Offers colocation in cabinets and cages.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/6480",
+        "label": "PeeringDB facility record 6480: SFN IA-Emery",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/16455-lark-avenue-mason-city/south-front-networks/datacenter/ia-emery",
+        "label": "Inflect: South Front Networks IA-Emery",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://southfront.io/pop",
+        "label": "South Front Networks PoP list",
+        "publisher": "South Front Networks",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
     "facilityType": "data_center"
   },
   {
@@ -123181,6 +125731,81 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "starwood-project-horizon-kearney-ne",
+    "name": "Project Horizon (Tech oNE Crossing)",
+    "operator": "Starwood Digital Ventures",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.728341,
+      "lon": -99.045806,
+      "city": "Kearney",
+      "county": "Buffalo",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 368
+    },
+    "announcedDate": "2026-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-21",
+        "note": "Kearney Planning Commission unanimously recommended a conditional use permit for Project Horizon at Tech oNE Crossing; applicant Worldwide Mission Critical, with Starwood Digital Ventures (SDV) partnering with MARA.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-08",
+        "note": "Kearney City Council unanimously approved the Project Horizon conditional use permit.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ksnblocal4.com/2026/08/21/kearney-planning-commission-recommends-approval-proposed-data-center/",
+        "label": "Kearney Planning Commission recommends approval of proposed data center",
+        "publisher": "KSNB Local4",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "http://www.centralnebraskatoday.com/2026/08/21/421081/",
+        "label": "Project Horizon data center CUP recommended by Kearney Planning Commission (368 MW, three phases)",
+        "publisher": "Central Nebraska Today",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://central-ncn.producer.immergo.tv/story/363530628/kearney-city-council-unanimously-approves-project-horizon-data-center",
+        "label": "Kearney City Council unanimously approves Project Horizon data center",
+        "publisher": "KSNB / Gray Media",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wowt.com/2026/09/08/kearney-poised-go-all-data-centers-even-many-nebraska-towns-throttle-back/",
+        "label": "Kearney poised to go all in on data centers even as many Nebraska towns throttle back",
+        "publisher": "WOWT",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Multi-phase data center campus at Tech oNE Crossing, east of Antelope Ave. and south of Tech One Blvd/Global Drive, outside Kearney city limits. 368 MW total electrical demand at full build-out. Phase 1 reuses the 100 MW of capacity at the adjacent existing crypto-mining site, which is to be decommissioned after Phase 1; Phase 3 extends onto the former mining property. That mining site is tracked separately as mara-kearney-buffalo-ne; this record is the successor AI/data-center campus, not a duplicate of it. WOWT reports ~112 acres, first phase completion by late 2027 and full capacity around 2030; the tenant is undisclosed under NDA. Permit conditions: development must begin within two years, plus annual hazardous-materials inventory. COORDINATES ARE APPROXIMATE, borrowed from the adjacent mining site on the same Tech oNE Crossing parcel complex.",
+    "energy": {
+      "source": "grid",
+      "utility": "Nebraska Public Power District",
+      "notes": "Phase 1 reuses 100 MW of existing capacity at the site's crypto-mining operation; SDV said it would pay for any infrastructure upgrades needed for the added demand."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop chilled water system with a one-time fill; projected ~3.6 million gallons/year in total (KSNB), most of it landscaping (~2.24 million gal/yr at full buildout); Central Nebraska Today puts the data center alone at ~1,200 gallons/day."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "starwood-tamarack-west-columbia-mason-wv",
     "name": "Project Tamarack",
     "operator": "Starwood Digital Ventures",
@@ -124518,6 +127143,67 @@
     "generation": {
       "technology": "solar",
       "notes": "More than 100,000 single-axis-tracking photovoltaic panels along Sunlight Road in Franklinton."
+    }
+  },
+  {
+    "id": "sunstone-solar-morrow-county-or",
+    "name": "Sunstone Solar Project",
+    "operator": "Amazon (Oregon Solar 1, LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.6059,
+      "lon": -119.563,
+      "county": "Morrow",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-11-18",
+        "note": "EFSC site certificate issued.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.oregon.gov/energy/facilities/Pages/ESP.aspx",
+        "label": "Sunstone Solar Project — Oregon Department of Energy facility page",
+        "publisher": "Oregon Department of Energy",
+        "retrievedAt": "2026-10-12",
+        "kind": "permit"
+      },
+      {
+        "url": "https://pv-magazine-usa.com/2026/01/16/amazon-acquires-1-2-gw-sunstone-solar-project-from-bankrupt-pine-gate-renewables/",
+        "label": "Amazon acquires 1.2 GW Sunstone solar project from bankrupt Pine Gate Renewables",
+        "publisher": "pv magazine USA",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Sunstone_solar_farm",
+        "label": "Sunstone solar farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Located about 15 miles northeast of Lexington, Morrow County. Up to about 9,442 acres of the roughly 10,960-acre site. Coordinates come from Global Energy Monitor.",
+    "energy": {
+      "source": "solar",
+      "notes": "Up to 1,200 MW solar PV paired with up to 7,200 MWh of battery storage."
+    },
+    "landAcres": 9442,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Amazon",
+      "notes": "Approved by the Oregon EFSC (site certificate 2024-11-18). Amazon Energy won the bankruptcy auction from Pine Gate Renewables with an $83M bid. The EFSC final order of 2026-06-26 transferred ownership from Sunstone Solar, LLC to Oregon Solar 1, LLC, a wholly owned Amazon.com subsidiary. pv magazine reports direct ownership gives Amazon control of the generation schedule for its regional data center operations. Construction must begin by 2027-11-18. Authorized facilities include up to 9.5 miles of 230 kV transmission line."
     }
   },
   {
@@ -128282,6 +130968,7 @@
       "city": "South Burlington",
       "county": "Chittenden",
       "street": "21 Gregory Drive, Suite 165",
+      "postalCode": "05403",
       "state": "VT",
       "precision": "approximate"
     },
@@ -128307,13 +130994,44 @@
         "publisher": "Vermont Business Magazine",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/business/tech-vault-small-company-in-spotlight-at-gartner",
+        "label": "Tech Vault: Small Company in Spotlight at Gartner (Dec 5, 2011)",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=VT",
+        "label": "PeeringDB facility records for Vermont (Tech Vault South Burlington)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/21-gregory-drive-south-burlington/tech-vault-inc/datacenter/tech-vault-south-burlington",
+        "label": "Inflect: Tech Vault South Burlington, 21 Gregory Drive",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-11",
     "notes": "Vermont's first commercial, LEED-certified (Silver, for both the building and data center operations), carrier-neutral colocation facility, per the operator's own site (sourceIndex 0), independently corroborated on address by the Lake Champlain Chamber's member profile (sourceIndex 1). 39,000 sq ft of data center space; a 500KW APC Symetra UPS system and an 800KW diesel generator for backup power. Compliance: SOC 2 Type 2, HIPAA, PCI DSS, NIST 800-53, CMMC. Serves state/federal government, military, legal, financial, medical, educational, manufacturing and logistics clients. In 2013 the State of Vermont awarded Tech Vault a long-term data center services agreement (sourceIndex 2, publisher's own headline; the article itself could not be fetched -- 403 Forbidden -- so contract length and scope are not independently confirmed beyond that headline). No numeric MW capacity was stated. Precision is approximate because the address includes a specific suite number (#165) within a larger building (OSM building match: way/620853192).",
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "DCK (2011): the facility uses 'water-side economization to cool the facility for much of the year', with APC by Schneider in-row cooling units and a contained rear plenum. Reported PUE is about 1.27-1.45. The source does not say whether heat is rejected evaporatively or through a closed loop."
     },
+    "subsidies": [
+      {
+        "program": "Green Mountain Power incentives",
+        "amountUsd": 100000,
+        "jurisdiction": "Green Mountain Power (utility)",
+        "sourceIndex": 3
+      }
+    ],
+    "investmentUsd": 1750000,
     "facilityType": "data_center"
   },
   {
@@ -133261,6 +135979,63 @@
     "facilityType": "data_center"
   },
   {
+    "id": "travelers-data-center-sarpy-ne",
+    "name": "Travelers Data Center (Project Oasis)",
+    "operator": "The Travelers Companies",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.1278561,
+      "lon": -96.145074,
+      "county": "Sarpy",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 4
+    },
+    "announcedDate": "2013-09",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2015-05-13",
+        "note": "Ribbon-cutting for the 183,000 sq ft Tier III 4 MW data center at the southwest corner of Highway 50 and Schram Road.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tradeandindustrydev.com/industry/back-office-call-centers-data-centers/news/ne-travelers-cuts-ribbon-new-data-center-sarpy-c",
+        "label": "NE: Travelers Cuts Ribbon to New Data Center in Sarpy County",
+        "publisher": "Trade and Industry Development",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/business/mystery-company-behind-project-oasis-is-travelers-insurance",
+        "label": "Mystery Company Behind Project Oasis is Travelers Insurance",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-12",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Travelers,+Sarpy+County,+Nebraska&format=json&limit=10&extratags=1",
+        "label": "OpenStreetMap: Travelers Insurance building, Sarpy County",
+        "publisher": "OpenStreetMap / Nominatim",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Enterprise data center for Travelers, code-named Project Oasis and announced September 2013 as a $200 million project. Travelers bought a 140-acre tract and built on a 41-acre parcel, keeping 92 acres for future development. OPPD bought a 5-acre parcel and built an on-site substation. Incentives: Nebraska DED Site and Building Development funds and Customized Job Training funds, plus shared road and sewer costs with Sarpy County. Distinct from Google's Papillion campus (northwest of Highway 50 and Schram Rd) and from Meta's Springfield campus. Coordinates are an OSM building tagged 'Travelers Insurance'.",
+    "energy": {
+      "source": "grid",
+      "utility": "Omaha Public Power District (OPPD)"
+    },
+    "investmentUsd": 200000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "treaty-oak-redfield-solar-grant-county-ar",
     "name": "Redfield Solar Project",
     "operator": "Treaty Oak Clean Energy",
@@ -134399,6 +137174,72 @@
     "facilityType": "data_center"
   },
   {
+    "id": "uniti-des-moines-ia",
+    "name": "Uniti Des Moines Data Center (formerly Windstream Wholesale)",
+    "operator": "Uniti",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.552651,
+      "lon": -93.700416,
+      "city": "Des Moines",
+      "county": "Polk",
+      "street": "3540 SW 61st St",
+      "postalCode": "50321",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/3540-southwest-61st-street-des-moines/uniti/datacenter/des-moines",
+        "label": "Inflect: Uniti Des Moines (formerly Windstream Wholesale Des Moines)",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "uniti-lincoln-1440-m-street-ne",
+    "name": "Uniti Lincoln Data Center (former Windstream, 1440 M Street)",
+    "operator": "Uniti",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.8117116,
+      "lon": -96.7002137,
+      "city": "Lincoln",
+      "county": "Lancaster",
+      "street": "1440 M Street",
+      "postalCode": "68508",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/1440-m-street-lincoln/windstream/datacenter/lincoln",
+        "label": "Uniti Lincoln — 1440 M Street, Lincoln, NE 68508",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-12",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=1440+M+Street,+Lincoln,+Nebraska&format=json&limit=3",
+        "label": "OpenStreetMap: Windstream, 1440 M Street, Lincoln",
+        "publisher": "OpenStreetMap / Nominatim",
+        "retrievedAt": "2026-10-12",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-12",
+    "notes": "Downtown Lincoln carrier/colocation facility at 1440 M Street. Inflect lists the operator as Uniti; OSM still tags the building 'Windstream'. Separately, Baxtel reported that a Windstream facility in Lincoln had a Sept 2, 2023 transformer fire that cut 911 connectivity in southeast Nebraska counties, but that report gives no address, so it is not cited here as the same building. Size and power were not disclosed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "university-of-alabama-hpc-tuscaloosa-al",
     "name": "University of Alabama High Performance Computing and Data Center",
     "operator": "University of Alabama",
@@ -134972,6 +137813,220 @@
     ],
     "lastUpdated": "2026-08-18",
     "notes": "Originally constructed in 2008 with expansions in 2011, 2015 and 2017; Tier 3 with 4,500 kW of 2N generators, 6,000 kW of UPS, 9,000 kVA of utility feeds and 1,510 tons of N+1 HVAC; nine on-net carriers. This is the former OneNeck Madison data center — oneneck.com/colocation/data-centers/madison now 301-redirects to ussignal.com, so the operator is recorded as US Signal rather than OneNeck. capacityMw.operational is taken from installed UPS capacity. Coordinates are an address geocode.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "uscg-operations-systems-center-kearneysville-wv",
+    "name": "U.S. Coast Guard Operations Systems Center",
+    "operator": "U.S. Coast Guard",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.3953774,
+      "lon": -77.9139105,
+      "city": "Kearneysville",
+      "county": "Jefferson",
+      "street": "408 Coast Guard Drive",
+      "postalCode": "25430",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2014-10-03",
+        "note": "Ribbon-cutting for the 40,000-sf Kearneysville building, described by USCG's deputy CIO as the Coast Guard's preliminary data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.shepherdstownchronicle.com/news/local-news/2014/10/03/new-coast-guard-facility-opens-in-jefferson/",
+        "label": "New Coast Guard facility opens in Jefferson",
+        "publisher": "Shepherdstown Chronicle",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.capito.senate.gov/news/in-the-news/sen-capito-us-coast-guard-commandant-visit-panhandle",
+        "label": "Sen. Capito, U.S. Coast Guard commandant visit Panhandle (Operations Systems Center houses all USCG IT systems and servers)",
+        "publisher": "Office of U.S. Sen. Shelley Moore Capito",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Coast+Guard+Drive+Kearneysville+WV&format=json",
+        "label": "OpenStreetMap Nominatim geocode — US Coast Guard Operations Systems Center, 408 Coast Guard Drive, Jefferson County, WV 25430",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "Per a 2019 senator's release, this is where all U.S. Coast Guard IT systems and computer servers are housed and maintained. The 2014 building cost about $13M and then housed 292 employees. The 2014 building was described as being in the Burr Business Park; the pin is the OSM point for the OSC on Coast Guard Drive. No power or capacity figures are published.",
+    "investmentUsd": 13000000,
+    "jobs": {
+      "permanent": 292,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "usshc-monticello-ia",
+    "name": "US Secure Hosting Center (USSHC)",
+    "operator": "US Secure Hosting Center",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.284076,
+      "lon": -91.092129,
+      "city": "Monticello",
+      "county": "Jones",
+      "street": "24253 Highway 151",
+      "postalCode": "52310",
+      "state": "IA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2008-01",
+        "note": "Underground former government communications facility, reported hosting Wikia Search in January 2008.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/16034",
+        "label": "PeeringDB facility record 16034: USSHC",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/business/wikia-search-launches-from-iowa-data-bunker",
+        "label": "Wikia Search launches from Iowa data bunker",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "uvm-vacc-south-burlington-vt",
+    "name": "Vermont Advanced Computing Center (VACC), University of Vermont",
+    "operator": "University of Vermont",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.448637,
+      "lon": -73.146839,
+      "city": "South Burlington",
+      "county": "Chittenden",
+      "state": "VT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2003",
+        "note": "VACC established in 2003 with NASA and NSF support. The IceCore AI cluster's first phase came online in fall 2025.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.uvm.edu/cems/news/icecore-advances-new-era-discovery-uvm",
+        "label": "IceCore advances a new era of discovery at UVM (Dec 10, 2025)",
+        "publisher": "University of Vermont CEMS",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.uvm.edu/vacc/cluster-specs",
+        "label": "VACC cluster specifications",
+        "publisher": "University of Vermont",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.uvm.edu/vacc/artificial-intelligence-workloads",
+        "label": "VACC: Artificial intelligence workloads (cooling and power)",
+        "publisher": "University of Vermont",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.uvm.edu/vacc/mission-and-history",
+        "label": "VACC mission and history",
+        "publisher": "University of Vermont",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://as.peeringdb.com/fac/14600",
+        "label": "PeeringDB: Lightboard Vermont, 530 Community Drive (lists VACC as a connected facility)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "UVM's on-campus research HPC data center. The university built it about 20 years ago with redundant power, cooling and networking. UVM places it 'in the sprawling South Burlington technology park'. Clusters: BlueMoon (88 CPU nodes, 12,584 cores), DataMountain, a Secure Cluster, and IceCore, an AI-focused GPU cluster with 104 NVIDIA H200 and 48 RTX Pro 6000 GPUs, funded by a $2.1M NSF grant in 2025. The exact building is not published. The coordinates are PeeringDB's point for 530 Community Drive in the same technology park, a representative point only. No MW capacity is published.",
+    "energy": {
+      "source": "grid",
+      "notes": "UVM says the VACC runs on Vermont's grid, which it calls among the least carbon-intensive in the country. No MW or kW capacity is published."
+    },
+    "water": {
+      "notes": "UVM: 'Our data center does not use evaporative cooling.' Outside air cools it for much of the year. Chillers that use a low-GWP refrigerant provide mechanical cooling when it is needed."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
+    "id": "va-capital-region-readiness-center-martinsburg-wv",
+    "name": "VA Capital Region Readiness Center (Martinsburg VAMC Data Center)",
+    "operator": "U.S. Department of Veterans Affairs",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.4160546,
+      "lon": -77.9110265,
+      "city": "Martinsburg",
+      "county": "Berkeley",
+      "street": "510 Butler Avenue",
+      "postalCode": "25405",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2010",
+        "note": "Design-build contractor lists the standalone Tier III data center on the Martinsburg VAMC campus as completed in 2010.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.hitt.com/?p=15626",
+        "label": "Capital Region Readiness Center (CRRC), VAMC Martinsburg — 66,000-sf standalone Tier III data center",
+        "publisher": "HITT Contracting",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Veterans+Affairs+Medical+Center+Martinsburg&format=json",
+        "label": "OpenStreetMap Nominatim geocode — Martinsburg Veterans Affairs Medical Center, 510 Butler Avenue, Martinsburg, WV 25405",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-11",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "66,000-sf Tier III data center on the VA Medical Center campus. Backup power is three 2.25 MW generators fed from two 20,000-gallon fuel tanks (per the builder). The only source is the design-builder's project page, and current operational status was not independently confirmed, hence 'reported'. The pin is the OSM point for the VAMC campus, not the data-center building. No IT capacity is published, so capacityMw is omitted.",
     "facilityType": "data_center"
   },
   {
@@ -136713,13 +139768,17 @@
         "url": "https://katu.com/news/local/massive-51b-data-center-proposed-for-salem-draws-praise-and-pushback-oregon-environment-local-money-water-energy-local-portland-hillsboro-companies-business-jobs",
         "label": "Massive $5.1B data center proposed for Salem draws praise and pushback — developer Verrus; project 'Oakline at Mill Creek'; $5.1 billion; 75 acres at Mill Creek Corporate Center near Turner Road SE and Deer Park Drive SE; 75 permanent jobs; ~$9M/yr to Salem's general fund and ~$1.5M to the Community Livability Levy; power and water figures not yet disclosed by the company",
         "publisher": "KATU",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-12",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-12",
+    "energy": {
+      "notes": "Design includes battery energy storage, a utility substation, and technology to reduce electricity demand during peak grid stress; no electricity-use estimates released."
+    },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling system intended to reduce water use; no water-use estimates released."
     },
     "investmentUsd": 5100000000,
     "landAcres": 75,
@@ -139737,6 +142796,72 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "wolf-summit-energy-harrison-county-wv",
+    "name": "Wolf Summit Energy",
+    "operator": "Kindle Energy / Blackstone Energy Transition Partners (Wolf Summit Energy LLC)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.287039,
+      "lon": -80.32287,
+      "city": "Clarksburg",
+      "county": "Harrison",
+      "state": "WV",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-04-22",
+        "note": "Groundbreaking attended by Gov. Morrisey for the 600 MW greenfield combined-cycle plant, fully contracted to Old Dominion Electric Cooperative.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://governor.wv.gov/article/governor-morrisey-breaks-ground-historic-wolf-summit-energy-project-declaring-new-era-west",
+        "label": "Governor Morrisey breaks ground on historic Wolf Summit Energy project (600 MW CCGT, Harrison County)",
+        "publisher": "Office of the Governor of West Virginia",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.modernpowersystems.com/news/kindle-energy-starts-construction-on-1-2bn-wolf-summit-energy-project/",
+        "label": "Kindle Energy starts construction on $1.2bn Wolf Summit Energy project",
+        "publisher": "Modern Power Systems",
+        "retrievedAt": "2026-10-11",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/ESC_Harrison_County_power_station",
+        "label": "Wolf Summit Energy power station (formerly ESC Harrison County) — Global Energy Monitor, coordinates 39.287039, -80.32287",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-11",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-11",
+    "notes": "600 MW combined-cycle gas plant near Clarksburg using GE Vernova equipment. Final investment decision November 2025; ground broken April 2026. Capacity is reported as 600 MW by the governor and Kindle, while other coverage cites 625 MW; the original 2017 ESC proposal was 579 MW. Coordinates come from Global Energy Monitor, which places the site on a former coal-mining property near Clarksburg, and are marked approximate.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural gas combined-cycle (CCGT) plant; output fully contracted to Old Dominion Electric Cooperative, which serves about 1.5 million residents in Virginia, Maryland and Delaware."
+    },
+    "investmentUsd": 1200000000,
+    "jobs": {
+      "construction": 500,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Old Dominion Electric Cooperative (ODEC)",
+      "notes": "Billed as the first combined-cycle natural gas plant built in West Virginia. Backed by funds affiliated with Blackstone Energy Transition Partners and developed with Kindle Energy."
+    }
   },
   {
     "id": "wyalusing-energy-center-bradford-pa",
