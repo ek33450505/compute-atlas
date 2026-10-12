@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { PowerLinksSection, hasPowerLinks } from "./power-links";
 import { SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { getFacilityById } from "@/lib/data";
+import { findUnpoweredDataCenter } from "@/lib/test-fixtures/unpowered-facility";
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency in jsdom
 vi.mock("next/link", () => ({
@@ -38,7 +39,7 @@ describe("hasPowerLinks", () => {
   });
 
   it("returns false for a compute facility no plant powers", async () => {
-    const facility = await getFacilityById("meta-prineville-or");
+    const facility = await findUnpoweredDataCenter();
     expect(facility).toBeDefined();
     expect(await hasPowerLinks(facility!)).toBe(false);
   });
@@ -105,7 +106,8 @@ describe("PowerLinksSection — Powers (grid-region offtaker, no campus)", () =>
 // ---------------------------------------------------------------------------
 describe("PowerLinksSection — whole-group gap", () => {
   it("renders exactly one SectionGapPrompt lead-path link when no plant powers the facility, instead of a heading", async () => {
-    const facility = await getFacilityById("meta-prineville-or");
+    const facility = await findUnpoweredDataCenter();
+    expect(facility).toBeDefined();
     render(await PowerLinksSection({ facility: facility! }));
 
     const links = screen.getAllByRole("link");
