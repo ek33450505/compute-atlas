@@ -164,6 +164,19 @@ describe("AboutPage — § The stance", () => {
     ).toHaveAttribute("href", "/opposition");
   });
 
+  it("points reusers at the on-site how-to-cite section", async () => {
+    mockNonZero();
+    const page = await AboutPage();
+    render(page);
+
+    expect(screen.getByRole("link", { name: "how to cite the data" })).toHaveAttribute(
+      "href",
+      "/data#cite-heading"
+    );
+    // The canonical string lives on /data only; no variant may creep back here.
+    expect(document.body.textContent).not.toContain("Data from Compute Atlas by Edward Kubiak");
+  });
+
   it("renders the fence paragraph (P4) stating this is not an argument against AI or data centers", async () => {
     mockNonZero();
     const page = await AboutPage();

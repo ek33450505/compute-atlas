@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -125,6 +125,22 @@ describe("DataPage", () => {
     for (const link of doiLinks) {
       expect(link).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.22284476");
     }
+  });
+
+  it("gives one canonical attribution in How to cite: site link, license link, non-partisan note", async () => {
+    const page = await DataPage();
+    render(page);
+    const section = screen.getByRole("heading", { name: "How to cite" }).closest("section");
+    expect(section).not.toBeNull();
+    const scoped = within(section as HTMLElement);
+    expect(
+      scoped.getByRole("link", { name: "https://www.compute-atlas.com (opens in new tab)" })
+    ).toHaveAttribute("href", "https://www.compute-atlas.com");
+    expect(
+      scoped.getByRole("link", { name: "https://creativecommons.org/licenses/by/4.0/ (opens in new tab)" })
+    ).toHaveAttribute("href", "https://creativecommons.org/licenses/by/4.0/");
+    expect(section!.textContent).toContain("non-partisan");
+    expect(section!.textContent).toContain("rather than the GitHub repository");
   });
 
   it("sets the canonical alternate to /data", () => {

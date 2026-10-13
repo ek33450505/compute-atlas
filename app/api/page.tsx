@@ -322,7 +322,13 @@ export default function ApiPage() {
               >
                 CC-BY-4.0
               </a>{" "}
-              with attribution to Compute Atlas required.
+              with attribution to Compute Atlas required. Credit it as{" "}
+              <code className={CODE}>
+                Data from Compute Atlas by Edward Kubiak
+                (https://www.compute-atlas.com), licensed under CC BY 4.0
+                (https://creativecommons.org/licenses/by/4.0/).
+              </code>{" "}
+              Link www.compute-atlas.com rather than the repository.
             </dd>
           </div>
           <div>

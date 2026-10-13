@@ -168,8 +168,16 @@ live from `/api/stats`.
 
 ### Citing it
 
-> Compute-infrastructure data from Compute Atlas by Edward Kubiak, licensed under
-> CC BY 4.0 — https://github.com/ek33450505/compute-atlas
+> Data from Compute Atlas by Edward Kubiak (https://www.compute-atlas.com), licensed under
+> CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+
+Link **www.compute-atlas.com**, not this repository: the site is the dataset's home, and this
+repo is its source mirror. Say if you changed anything, for example "filtered to data
+centers" or "joined to counties". Keep your own commentary distinct from the records: Compute
+Atlas is non-partisan and takes no position on any facility, so present your conclusions as
+yours. For academic work, cite the DOI:
+`Kubiak, E. (n.d.). Compute Atlas [Data set]. https://doi.org/10.5281/zenodo.22284476`.
+Full terms: [LICENSE-DATA](LICENSE-DATA).
 
 ---
 

@@ -7,6 +7,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { ExportButtons } from "@/components/explorer/export-buttons";
 import { breadcrumbJsonLdString, DATASET_DOI_URL } from "@/lib/seo";
+import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -136,8 +137,40 @@ export default async function DataPage() {
           How to cite
         </h2>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          The dataset has a permanent, citable identifier that always resolves to its
-          latest version:
+          To credit the data on a page, article, or derived dataset:
+        </p>
+        <blockquote className="max-w-2xl border-l-2 border-border pl-4 font-mono text-sm text-muted-foreground">
+          Data from Compute Atlas by Edward Kubiak (
+          <a
+            href={siteConfig.url}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label={`${siteConfig.url} (opens in new tab)`}
+            className={LINK_CLASS}
+          >
+            {siteConfig.url}
+          </a>
+          ), licensed under CC BY 4.0 (
+          <a
+            href={DATASET_LICENSE_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label={`${DATASET_LICENSE_URL} (opens in new tab)`}
+            className={LINK_CLASS}
+          >
+            {DATASET_LICENSE_URL}
+          </a>
+          ).
+        </blockquote>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          Link www.compute-atlas.com, the dataset&apos;s home, rather than the GitHub
+          repository. Say if you changed anything (for example, filtered or joined the
+          records). Compute Atlas is non-partisan and takes no position on any facility,
+          so keep your own analysis or commentary distinct from its records.
+        </p>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          For academic citation, the dataset has a permanent identifier that always
+          resolves to its latest version:
         </p>
         <blockquote className="max-w-2xl border-l-2 border-border pl-4 font-mono text-sm text-muted-foreground">
           Kubiak, E. (n.d.). Compute Atlas [Data set].{" "}

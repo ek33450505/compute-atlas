@@ -657,7 +657,14 @@ export default async function AboutPage() {
             >
               {siteConfig.repoUrl}
             </a>
-            . When using the data, attribution to Compute Atlas is requested.
+            . When reusing the data, credit Compute Atlas as described in{" "}
+            <Link
+              href="/data#cite-heading"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            >
+              how to cite the data
+            </Link>
+            .
           </li>
         </ul>
       </section>

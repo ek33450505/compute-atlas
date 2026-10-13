@@ -181,4 +181,22 @@ describe("ApiPage — How to cite", () => {
     );
     expect(persistentIdText).not.toContain("No DOI is assigned");
   });
+
+  it("states the canonical attribution naming www.compute-atlas.com, not the repo", () => {
+    mockGetDatasetEdition.mockReturnValue({
+      version: "1.30.0",
+      asOf: "2026-09-01T16:58:23.496Z",
+      recordCount: 1309,
+      schemaVersion: 1,
+    });
+
+    render(<ApiPage />);
+
+    const attributionBlock = screen.getAllByText("Attribution")[0].nextElementSibling;
+    expect(attributionBlock).not.toBeNull();
+    const text = (attributionBlock!.textContent ?? "").replace(/\s+/g, " ");
+    expect(text).toContain(
+      "Data from Compute Atlas by Edward Kubiak (https://www.compute-atlas.com), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)."
+    );
+  });
 });
