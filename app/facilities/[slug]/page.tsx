@@ -45,7 +45,7 @@ import { WatchButton } from "@/components/subscribe/watch-button";
 import { ShareButton } from "@/components/share-button";
 import { SupportCta } from "@/components/support-cta";
 
-export const revalidate = false;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   const ids = await getAllFacilityIds();

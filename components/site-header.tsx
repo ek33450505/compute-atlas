@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Code2 } from "lucide-react";
 
 import { siteConfig } from "@/lib/site";
-import { buildNavSearchIndex } from "@/lib/search-index";
 import { Wordmark } from "@/components/wordmark";
 import { PrimaryNav } from "@/components/primary-nav";
 import { MobileNav } from "@/components/mobile-nav";
@@ -49,12 +48,10 @@ export const MOBILE_NAV_GROUPS = [
   },
 ] as const;
 
-export async function SiteHeader() {
-  // Operators + states only — facilities are searched live via /api/search,
-  // keeping 1034 facility entries out of every route's RSC payload
-  // (measured 2026-08-17 against the 1034-facility dataset).
-  const searchIndex = await buildNavSearchIndex();
-
+export function SiteHeader() {
+  // The palette loads its operator/state index lazily from /api/nav-index and
+  // facilities from /api/search, so no search data rides in any route's RSC
+  // payload.
   return (
     <header className="print:hidden sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 sm:gap-4 px-3 sm:px-6">
@@ -72,7 +69,7 @@ export async function SiteHeader() {
 
         {/* Right-side controls */}
         <div className="ml-auto flex items-center gap-1">
-          <CommandPalette index={searchIndex} navLinks={NAV_LINKS} />
+          <CommandPalette navLinks={NAV_LINKS} />
           {/* GitHub icon — desktop only */}
           <a
             href={siteConfig.repoUrl}

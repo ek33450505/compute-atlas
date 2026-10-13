@@ -30,7 +30,7 @@ import { aiClassificationEnum } from "@/lib/schema";
 import { siteConfig } from "@/lib/site";
 import { DATASET_DOI_URL } from "@/lib/seo";
 
-export const revalidate = false;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   const codes = await getStates();

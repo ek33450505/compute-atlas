@@ -193,6 +193,7 @@ export const READ_CACHE = {
   stats: { sMaxage: 3600, swr: 86400 },
   schema: { sMaxage: 86400, swr: 604800 },
   search: { sMaxage: 600, swr: 3600 },
+  navIndex: { sMaxage: 86400, swr: 604800 },
   facility: { sMaxage: 3600, swr: 86400 },
 } satisfies Record<string, ReadCacheWindow>;
 

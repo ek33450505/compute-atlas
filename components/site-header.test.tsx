@@ -3,11 +3,10 @@ import { describe, it, expect } from "vitest";
 import { NAV_LINKS, MOBILE_NAV_GROUPS } from "./site-header";
 
 // ---------------------------------------------------------------------------
-// SiteHeader itself is an async Server Component (calls buildNavSearchIndex,
-// which reads the live dataset) — not rendered here. This asserts the desktop
-// nav config directly: NAV_LINKS is what SiteHeader passes to both
-// PrimaryNav and CommandPalette, so covering its shape covers both surfaces
-// without needing to render either.
+// SiteHeader itself is a Server Component in the root layout — not rendered
+// here. This asserts the desktop nav config directly: NAV_LINKS is what
+// SiteHeader passes to both PrimaryNav and CommandPalette, so covering its
+// shape covers both surfaces without needing to render either.
 // ---------------------------------------------------------------------------
 
 describe("SiteHeader — NAV_LINKS", () => {
