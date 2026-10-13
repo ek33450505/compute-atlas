@@ -1584,9 +1584,16 @@
         "publisher": "AAIM Data Centers",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/aaim-minnesota",
+        "label": "AAIM: Minnesota 1 Energy Park Data Center (Blue Earth, MN)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-13",
     "notes": "On Highway 169 in Blue Earth, MN (county seat of FARIBAULT County — note this is NOT 'Blue Earth County', which is a separate county to the east whose seat is Mankato; classic MN city/county name trap, verified via Wikipedia/Data Commons before writing this). AAIM's own site lists this as 'Minnesota 1', 15MW, in-service June 2025, described elsewhere (DCD, 2024) as an 'HPC/cryptomine' facility; AAIM's own copy says it serves 'high-performance computing, enterprise data, and crypto mining needs' — classified facilityType=data_center/aiClassification=mixed_use rather than crypto_mining because AAIM operates it as multi-tenant colocation (landlord model) rather than mining for itself, unlike Revolve Labs. 10,000 sq ft facility. AAIM's CEO (Levesque) is also CTO of crypto-mining-hardware firm Hash House Tech — noted for context, not fact-changing.",
     "energy": {
       "notes": "AAIM's launch announcement places the site on Highway 169 near the Blue Earth Light and Water substation, with fiber from Bevcomm. Its 2026-08-15 expansion announcement describes an agreement with an existing utility partner at Blue Earth adding 80 MW targeted for Q3 2027. The serving utility is not named outright in either announcement, so no utility value is asserted."
@@ -1595,6 +1602,139 @@
       "coolingType": "closed_loop"
     },
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "aaim-data-centers-hutchinson-mn",
+    "name": "AAIM Data Centers — Hutchinson (Minnesota 2 Energy Park)",
+    "operator": "B-MN Data Centers Inc. (d/b/a AAIM DataCenters)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.8870325,
+      "lon": -94.351735,
+      "city": "Hutchinson",
+      "county": "McLeod",
+      "street": "1025 5th Avenue SE",
+      "postalCode": "55350",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-08-26",
+        "note": "City Council approved final permits (CUP) for the data center",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hutchinsonmn.gov/wp-content/uploads/2026/06/Data-Center-Document-Q-A.pdf",
+        "label": "City of Hutchinson / Hutchinson Utilities Commission — Data Center Information FAQ",
+        "publisher": "City of Hutchinson",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://baxtel.com/data-center/aaim-minnesota-2-energy-park",
+        "label": "AAIM: Minnesota 2 Energy Park (Hutchinson, MN)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "7,500 sq ft building, with room on the site for expansion to about 15,000 sq ft. Jobs are described as 'minimal, less then 5', so 4 is a ceiling reading and may be lower. The city's FAQ calls it a data center. It is classified as crypto mining from Baxtel's listing and the interruptible, price-responsive load. The city gave no financial incentives.",
+    "energy": {
+      "source": "grid",
+      "utility": "Hutchinson Utilities Commission",
+      "notes": "Power Purchase Agreement approved by Hutchinson Utilities Commission on September 24, 2025 under a new Large Power Customer Tariff. The load is interruptible and ramps with market prices. Power is bought wholesale from MISO on a separate commercial pricing node. No backup generators are in the CUP site plan."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "The city/HUC FAQ describes a pure air-cooled system. Water and sewer use is minimal (bathrooms and maintenance only)."
+    },
+    "jobs": {
+      "permanent": 4,
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "coolingType": "air",
+      "powerArrangement": "grid"
+    }
+  },
+  {
+    "id": "aaim-data-centers-mountain-lake-mn",
+    "name": "AAIM Data Centers — Mountain Lake (Minnesota 3 Energy Park)",
+    "operator": "C-MN Data Centers Inc. / AAIM Data Centers",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.941966,
+      "lon": -94.9150665,
+      "city": "Mountain Lake",
+      "county": "Cottonwood",
+      "street": "2203 3rd Avenue",
+      "postalCode": "56159",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 10
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-10-07",
+        "note": "Council told Utilities Commission and P&Z will review an AI-only data center request (initial load 10 MW)",
+        "sourceIndex": 1
+      },
+      {
+        "status": "permitted",
+        "date": "2025-11-17",
+        "note": "Council approved Resolution #19-25 CUP 5-0",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cityofmountainlakemn.gov/wp-content/uploads/11-17-25-City-Council-Minutes.pdf",
+        "label": "Mountain Lake City Council Minutes, November 17, 2025 (CUP Resolution #19-25)",
+        "publisher": "City of Mountain Lake",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://cityofmountainlakemn.gov/wp-content/uploads/10-7-24-City-Council-Minutes.pdf",
+        "label": "Mountain Lake City Council Minutes, October 7, 2024",
+        "publisher": "City of Mountain Lake",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.keyc.com/2026/07/16/community-raises-concern-about-public-notice-data-center-mountain-lake/",
+        "label": "Community raises concern about public notice for data center in Mountain Lake",
+        "publisher": "KEYC",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "The city specified AI only, with no bitcoin or cryptocurrency mining. It sits next to Milk Specialties and Balzer in the industrial district. In July 2026 the city said construction would likely start in September. That start is not confirmed, so status stays permitted.",
+    "energy": {
+      "source": "grid",
+      "utility": "City of Mountain Lake municipal electric utility"
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Residents raised concerns about public notice, noise and proximity to homes and youth sports fields (July 2026). The city cites about $400,000/yr in electric-utility gross margin. In August 2026 the council confirmed the project is exempt from environmental review and took no further action.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "aalo-atomics-inl-id",
@@ -5025,12 +5165,27 @@
         "publisher": "West Valley City",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.utahbusiness.com/aligned-completes-phase-i-of-build-to-scale-salt-lake-metro-data-center/",
+        "label": "Aligned completes Phase I of build-to-scale Salt Lake metro data center",
+        "publisher": "Utah Business",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.deseret.com/environment/2026/10/10/how-rural-utah-became-the-frontline-of-americas-ai-data-center-backlash/",
+        "label": "How rural Utah became the frontline of America's AI data center backlash",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-10-13",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. West Valley City's Fund 22 (Redevelopment Agency) adopted budget itemizes every currently active RDA/CRA project area by name (5600 West Gateway, East 3500 A, North Central, Jordan River, Willow Wood, Hercules Hill A, Hercules Hill B, Decker Lake, Northwest, Granger Crossing, Southwest, South Redwood Road, Fairbourne/Market St, City Center) with no per-recipient breakout, and none is named for Beagley Road; no city or state filing names Aligned. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "SLC-04 uses Aligned's Delta³ cooling with a waterless heat rejection system (Feb 2022 release). Deseret News (Oct 2026) reports Aligned's West Valley facility consumed 80 million gallons in a single year, with no year given."
     },
     "facilityType": "data_center"
   },
@@ -7516,6 +7671,78 @@
     }
   },
   {
+    "id": "appaloosa-solar-1-iron-county-ut",
+    "name": "Appaloosa Solar 1",
+    "operator": "Greenbacker Renewable Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.84016,
+      "lon": -113.1359,
+      "city": "Cedar City",
+      "county": "Iron",
+      "street": "7956 North Lund Hwy",
+      "postalCode": "84721",
+      "state": "UT",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 200
+    },
+    "announcedDate": "2021-07-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2021-07-01",
+        "note": "Rocky Mountain Power announces the Iron County solar project for Facebook's Eagle Mountain data center",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2024-01-24",
+        "note": "Began delivering solar energy on Jan 24, 2024",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solarpowerworldonline.com/2024/02/one-of-the-first-utility-scale-solar-projects-to-opt-for-ptc-is-now-online/",
+        "label": "One of the first utility-scale solar projects to opt for PTC is now online",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "http://townlift.com/2021/07/rocky-mountain-power-announces-solar-facility-in-utah-for-facebook/",
+        "label": "Rocky Mountain Power announces solar facility in Utah for Facebook",
+        "publisher": "TownLift",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/appaloosa-solar-i/65678",
+        "label": "Appaloosa Solar I (EIA plant 65678)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "energy": {
+      "source": "solar",
+      "utility": "PacifiCorp (Rocky Mountain Power)"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "poweredFacilityIds": [
+        "meta-eagle-mountain-ut"
+      ],
+      "notes": "240 MWdc / 200 MWac. Two long-term PPAs with PacifiCorp on behalf of Meta under Schedule 34. Announced by Rocky Mountain Power to supply Facebook's Eagle Mountain data center. Developed by rPlus Energies, which is a minority owner."
+    }
+  },
+  {
     "id": "apple-maiden-nc",
     "name": "Apple Maiden Data Center (iCloud)",
     "operator": "Apple",
@@ -8867,9 +9094,16 @@
         "publisher": "Archer Datacenters",
         "retrievedAt": "2026-09-18",
         "kind": "press"
+      },
+      {
+        "url": "https://couriermn.com/news/environment/where-are-data-centers-being-proposed-in-minnesota-we-are-tracking-them/",
+        "label": "Where are data centers being proposed in Minnesota? We are tracking them.",
+        "publisher": "Courier Minnesota",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-18",
+    "lastUpdated": "2026-10-13",
     "notes": "Up to 500,000 sq ft across six one-story buildings, south of 150th Street West and east of Acorn Trail, north of the Daikin plant. Land acquired 2024; no formal application yet submitted to the city as of the source date. Project on hold pending redo of the city's environmental review after a June 2026 Minnesota Court of Appeals ruling found it non-compliant.",
     "landAcres": 87.6,
     "community": {
@@ -9544,6 +9778,66 @@
     ],
     "lastUpdated": "2026-10-04",
     "notes": "Tier 3 colocation facility. Involta rebranded as Ark Data Centers in May 2024. PeeringDB (operator-maintained) lists the facility at this address. Directories also list a second Ark/Involta Boise site on S Eagle Flight Way, but they disagree on its street number (1415 vs 1450) and on which site is 'Boise 1' and which is 'Boise 2'. Only the PeeringDB-confirmed site is proposed here. Square-footage figures differ across directories and are omitted. The pin is PeeringDB's coordinate. aiClassification omitted: general colocation.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ark-data-centers-duluth-n-6th-ave-mn",
+    "name": "Ark Data Centers Duluth (421 N 6th Ave East)",
+    "operator": "Ark Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 46.795743,
+      "lon": -92.096014,
+      "city": "Duluth",
+      "county": "St. Louis",
+      "street": "421 N 6th Ave East",
+      "postalCode": "55805",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — Minnesota (fac 12236, 421 N 6th Ave East)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Second Ark colocation facility in Duluth, listed in PeeringDB.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ark-data-centers-duluth-technology-drive-mn",
+    "name": "Ark Data Centers Duluth (3401 Technology Drive)",
+    "operator": "Ark Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 46.827451,
+      "lon": -92.130338,
+      "city": "Duluth",
+      "county": "St. Louis",
+      "street": "3401 Technology Drive",
+      "postalCode": "55811",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=MN&country=US",
+        "label": "PeeringDB facility registry — Minnesota (fac 6317, ark data centers - Duluth, MN)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Colocation facility listed in PeeringDB. Third-party directories conflict on capacity and on the site address, so capacity is omitted.",
     "facilityType": "data_center"
   },
   {
@@ -16321,6 +16615,96 @@
     "facilityType": "data_center"
   },
   {
+    "id": "beltline-meramec-valley-technology-park-pacific-mo",
+    "name": "Meramec Valley Technology Park (Beltline Energy)",
+    "operator": "Beltline Energy (BLE Landholdings, LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.4385316,
+      "lon": -90.7501765,
+      "county": "Franklin",
+      "street": "Phelan Road / Highway O, south of the Meramec River",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1200
+    },
+    "announcedDate": "2026-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "Beltline Energy presented a 500-acre, up-to-16-building, up-to-$16B campus off Highway O south of the Meramec River to the Pacific Board of Aldermen.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-15",
+        "note": "Franklin County Board of Commissioners unanimously approved rezoning for the Beltline Energy project south of Pacific along Highway O. Beltline had withdrawn only its separate City of Pacific PUD application on Aug. 7, 2026, and said it would pursue the project with Franklin County.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.firstalert4.com/2026/09/15/data-centers-approved-by-franklin-county-commissioners-tuesday-vote/",
+        "label": "Data centers approved by Franklin County Commissioners in Tuesday vote",
+        "publisher": "First Alert 4 (KMOV)",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://spectrumlocalnews.com/mo/st-louis/news/2026/09/16/franklin-county-beltline-gateway-digital-campus-data-centers",
+        "label": "Franklin County commissioners approve rezoning for Beltline and Gateway Digital Campus data centers",
+        "publisher": "Spectrum News",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.missourian.com/local_news/beltline-withdraws-rezoning-application-still-committed-to-data-center-project/article_a3317534-13ac-4ab4-82eb-c4b6c49ead00.html",
+        "label": "Beltline withdraws rezoning application, still committed to data center project",
+        "publisher": "The Missourian",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.stlmag.com/business/pacific-data-center-beltline-energy-proposal/",
+        "label": "Pacific residents push back on $16B data center pitched for their slice of Franklin County",
+        "publisher": "St. Louis Magazine",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/02/pacific-erupts-over-16-billion-data-center-invasion/",
+        "label": "Pacific erupts over $16 billion data center",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Phelan+Road,+Franklin+County,+Missouri&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode: Phelan Road, Franklin County, Missouri",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Also reported as the 'Crooked Creek' farm proposal and the 'Beltline Energy Project'. About 500 acres off Highway O south of the Meramec River, in unincorporated Franklin County outside Pacific's city limits. Up to 16 buildings and up to 1.2 GW at full build-out, with up to $16B total investment, per Beltline partner Ryan Sanders as reported by St. Louis Magazine. Jobs as presented: about 1,000 construction jobs per year over eight years and 360-500 full-time jobs (a range, so not structured). Franklin County P&Z recommended denial in April 2026. Beltline withdrew its City of Pacific PUD/annexation application on Aug. 7, 2026, after Pacific adopted a one-year moratorium, then pursued county rezoning, which the County Commission approved on Sept. 15, 2026. A Baxtel listing calls the project 'withdrawn'; it conflates the city withdrawal with the county track and is not relied on. Coordinates are the OSM point for Phelan Road (Baxtel lists 684 Phelan Rd), a road-level approximation, not a parcel centroid.",
+    "water": {
+      "notes": "Developer proposes cooling with treated effluent (gray water) from Pacific's wastewater treatment plant rather than groundwater, and would fund about $15M of plant upgrades. Community-hired experts estimated cooling needs near 1 million gallons per day."
+    },
+    "investmentUsd": 16000000000,
+    "landAcres": 500,
+    "community": {
+      "status": "contested",
+      "notes": "Heavy organized opposition (Pacific ROOT Coalition, Franklin County Rural Coalition) over wells, the Meramec River corridor, noise and a conflict-of-interest allegation (a landowner sat on county P&Z). The County Commission approved the rezoning unanimously over that opposition.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "beltline-oklahoma-city-frisco-road-ok",
     "name": "Beltline Energy Oklahoma City Campus",
     "operator": "Beltline Energy",
@@ -19378,11 +19762,18 @@
         "url": "https://sec.gov/Archives/edgar/data/1416090/000149315225014760/ex99-1.htm",
         "label": "BluSky AI Inc. Form 8-K Exhibit 99.1 — Letter of Intent for Nephi, UT Site",
         "publisher": "SEC EDGAR",
-        "retrievedAt": "2026-09-08",
+        "retrievedAt": "2026-10-13",
         "kind": "filing"
+      },
+      {
+        "url": "https://markets.financialcontent.com/clarkebroadcasting.mymotherlode/article/nnwire-2025-9-23-techmediabreaks-blusky-ai-inc-otcid-bsai-signs-loi-to-lease-nephi-utah-site-for-modular-data-center-expansion",
+        "label": "BluSky AI Inc. signs LOI to lease Nephi, Utah site for modular data center expansion",
+        "publisher": "TechMediaWire via FinancialContent",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-08",
+    "lastUpdated": "2026-10-13",
     "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy found. Nephi City's Community Reinvestment Agency fund is tied to a hotel project area rather than this site, and no CRA participation agreement naming this project was located. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. Recorded as no-evidence-found rather than a fully closed absence: the Nephi project-area budget PDF did not return readable text on retrieval.",
     "energy": {
       "notes": "4 MW at full activation. The company release notes Nephi 'recently completed a project to increase the town's energy capacity from 29 megawatts to 85 megawatts', which is the municipal utility's headroom, NOT this facility's capacity. Modular deployment using the company's SkyMod data center modules on a pad of approximately 100 x 150 feet."
@@ -22425,6 +22816,7 @@
       "city": "Eagan",
       "county": "Dakota",
       "street": "610 Opperman Dr",
+      "postalCode": "55123",
       "state": "MN",
       "precision": "approximate"
     },
@@ -22446,10 +22838,21 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-10",
         "kind": "other"
+      },
+      {
+        "url": "https://www.centradigital.com/data-centers/msp1",
+        "label": "CENTRA MSP1 data center specifications",
+        "publisher": "CENTRA Digital Interconnect",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-13",
     "notes": "Adaptive reuse of a former enterprise-owned facility — CENTRA's own release calls it \"Eagan's First Carrier-Neutral Interconnection Data Center\"; Tier III+, 4/3 redundant power, N+1 cooling, four diverse fiber entry points. CENTRA (rebranded from Deep Edge Realty in 2024) acquired the roughly 10-acre property for a reported $17M per Baxtel; expected online summer 2026. Address note: secondary listings disagree — this record uses 610 Opperman Dr, confirmed by the directly-fetched Baxtel listing; a datacentermap.com search-result title (never successfully fetched, repeated 429s) instead reads \"3640 Nasseff Way\" and was not used.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Operator lists air-cooled chillers and a liquid-cooling-enabled facility (up to 150 kW/rack), PUE 1.35 or better. Classified closed_loop under the methodology tie-breaker for chiller loops."
+    },
     "landAcres": 10,
     "facilityType": "data_center"
   },
@@ -33054,6 +33457,68 @@
     "aiClassification": "likely"
   },
   {
+    "id": "cove-mountain-solar-2-iron-county-ut",
+    "name": "Cove Mountain Solar 2",
+    "operator": "Cove Mountain Solar 2 LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.6386,
+      "lon": -113.6371,
+      "county": "Iron",
+      "state": "UT",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 122
+    },
+    "announcedDate": "2019-05-30",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2019-05-30",
+        "note": "First Solar and Rocky Mountain Power announce a 122 MW plant to support Facebook's Utah data center",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2020-10",
+        "note": "Operating since October 2020 per EIA-derived data",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/first-solar-rocky-mountain-power-to-build-122-mw-solar-facility-to-support-facebook-s-utah-data-center",
+        "label": "First Solar, Rocky Mountain Power to build 122 MW solar facility to support Facebook's Utah data center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://gridinfo.com/plant/cove-mountain-solar-2/62470",
+        "label": "Cove Mountain Solar 2 (EIA plant 62470)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "energy": {
+      "source": "solar",
+      "utility": "PacifiCorp (Rocky Mountain Power)"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "poweredFacilityIds": [
+        "meta-eagle-mountain-ut"
+      ],
+      "notes": "122 MWac (about 156 MWdc). Developed by First Solar near Enterprise. Supplies Facebook's Eagle Mountain data center under a PPA with Rocky Mountain Power."
+    }
+  },
+  {
     "id": "cpv-jugfork-solar-lee-union-ms",
     "name": "CPV Jugfork Solar",
     "operator": "Competitive Power Ventures (CPV Jugfork Solar, LLC)",
@@ -33570,9 +34035,23 @@
         "publisher": "Solar Power World",
         "retrievedAt": "2026-08-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sltrib.com/news/2026/09/09/delta-gigasite-worlds-largest-data/",
+        "label": "Delta Gigasite could be world's largest data center",
+        "publisher": "The Salt Lake Tribune",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://lehifreepress.com/2026/02/11/utahs-massive-data-centers-seek-to-build-new-power-sources/",
+        "label": "Utah's massive data centers seek to build new power sources",
+        "publisher": "Lehi Free Press",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-10-13",
     "notes": "Claims to be world's largest planned AI data center campus at 20M sq ft. 1,143 acres owned; 13,000-acre SITLA lease for solar (largest solar lease in Utah history — record previously stated 30,000 acres, corrected to 13,000 acres per March 2026 BusinessWire announcement and multiple independent sources). Initial customer BluSky AI allocated up to 50MW. Adjacent to Intermountain Power Project. 10GW is full-buildout target; first 300MW gas delivery H1 2027. Coordinates at Delta city centroid; site is southeast of Delta.",
     "energy": {
       "source": "mixed",
@@ -33658,6 +34137,68 @@
       "construction": 1000,
       "permanent": 200,
       "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "crg-project-cumulus-st-charles-mo",
+    "name": "Project Cumulus (St. Charles)",
+    "operator": "CRG Cumulus (CRG, Clayco's development arm)",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.783855,
+      "lon": -90.481677,
+      "city": "St. Charles",
+      "county": "St. Charles",
+      "street": "Off Missouri Route 370",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025",
+        "note": "CRG Cumulus applied for a conditional use permit for a 440-acre data center off Highway 370 in St. Charles for an undisclosed 'Fortune 100' end user.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-08-18",
+        "note": "Developer withdrew the conditional use permit application before the City Council vote. The City of St. Charles then adopted a one-year moratorium and, in May 2026, an outright data center development ban.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.stlpr.org/news-briefs/2025-08-18/developer-controversial-data-center-st-charles",
+        "label": "Developer of controversial St. Charles data center withdraws proposal",
+        "publisher": "St. Louis Public Radio",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.stlpr.org/government-politics-issues/2026-07-14/st-charles-county-officials-approve-half-year-ban-on-data-center-projects-alter-senior-tax-freeze",
+        "label": "St. Charles County officials approve half-year ban on data center projects",
+        "publisher": "St. Louis Public Radio",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Saint+Charles,+Saint+Charles+County,+Missouri&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: Saint Charles, Missouri",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "440-acre proposal off Highway 370 in the City of St. Charles. CRG President Christopher McKee's letter said the developer would retool the proposal, but the city moved to a moratorium and then (May 2026) an outright data center development ban, so it is recorded as cancelled. The end user was undisclosed; a later headline reported documents linking it to Google, which was not independently verified here and so is not recorded. Coordinates are the St. Charles city centroid, not the parcel.",
+    "landAcres": 440,
+    "community": {
+      "status": "opposed",
+      "notes": "Public opposition over energy and water use, water quality and lack of transparency (NDAs) led the mayor to say opposition sank the project.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -34045,6 +34586,49 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "crusoe-callaway-county-kingdom-city-mo",
+    "name": "Crusoe Callaway County Data Center (proposed)",
+    "operator": "Crusoe",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9427219,
+      "lon": -91.9417153,
+      "city": "Kingdom City",
+      "county": "Callaway",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-14",
+        "note": "Crusoe held a public open house for a proposed data center in northern Callaway County near Kingdom City. The exact site was not disclosed, construction had not started, and the county had signed no contracts.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.komu.com/news/midmissourinews/callaway-county-hosts-open-house-for-proposed-data-center/article_906df960-8402-48dc-96b4-c23d4cf1750c.html",
+        "label": "Callaway County hosts open house for proposed data center",
+        "publisher": "KOMU 8",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Kingdom+City,+Missouri&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: Kingdom City, Missouri",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Crusoe (Denver) proposed a data center in northern Callaway County near Kingdom City. The site is a private land transaction involving the Callaway County Chamber of Commerce, and Crusoe declined to disclose the exact location. Callaway County has no countywide planning and zoning. Distinct from the tracked Crusoe Warrenton campus (crusoe-warrenton-mo) in Warren County. Coordinates are the Kingdom City town point, approximate. Single source, so confidence is 'reported'.",
+    "facilityType": "data_center"
   },
   {
     "id": "crusoe-monolith-hallam-lancaster-ne",
@@ -37921,7 +38505,7 @@
         "url": "https://www.databank.com/data-centers/minneapolis/",
         "label": "DataBank — Minneapolis data centers: MSP3 Brooklyn Park, 8111 Oxbow Creek N, 82,231 IT sq ft, 9 MW critical IT load",
         "publisher": "DataBank",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-13",
         "kind": "other"
       },
       {
@@ -37932,9 +38516,10 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-13",
     "notes": "8111 Oxbow Creek N, Brooklyn Park, MN 55445. Anchored by DataBank's 'MSP3' data hall. Some third-party aggregators (datacentermap.com, datacenterjournal.com) attribute a DataBank facility at '10300 6th Ave N' to 'Plymouth' — that appears to be an older/alternate address or aggregator error for the same Brooklyn Park campus (DataBank's own current site only lists the Oxbow Creek N address for its Minneapolis-market campus); went with the address on DataBank's own official page. Coordinates approximate (Brooklyn Park city-area estimate, not parcel-geocoded this session).",
     "energy": {
+      "source": "grid",
       "utility": "Xcel Energy",
       "notes": "Receives power from two 4.5MW feeds from an Xcel Energy substation, per DataBank's own release. This is DataBank's MSP3 building on the Brooklyn Park campus (opened 2021, 82,000+ raised sq ft)."
     },
@@ -37948,6 +38533,7 @@
         "sourceIndex": 1
       }
     ],
+    "landAcres": 14,
     "facilityType": "data_center"
   },
   {
@@ -38181,7 +38767,7 @@
         "url": "https://www.databank.com/data-centers/minneapolis/",
         "label": "DataBank — Minneapolis data centers (MSP4 Downtown: 8,170 IT sq ft, 0.779 MW critical IT load)",
         "publisher": "DataBank",
-        "retrievedAt": "2026-09-18",
+        "retrievedAt": "2026-10-13",
         "kind": "other"
       },
       {
@@ -38199,7 +38785,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-18",
+    "lastUpdated": "2026-10-13",
     "notes": "DataBank publishes \"8,170 IT Square Feet\" and \"0.779MW Critical IT Load\" for MSP4. Located in the 511 Building carrier hotel — the same address as Cologix MIN1–MIN5, but a separate operator's suite, not the same facility.",
     "facilityType": "data_center"
   },
@@ -38242,11 +38828,11 @@
         "url": "https://www.databank.com/data-centers/minneapolis/",
         "label": "DataBank — Minneapolis data centers: MSP2 East Twin Cities, 3255 Neil Armstrong Blvd, Eagan, 48,860 IT sq ft, 5 MW critical IT load",
         "publisher": "DataBank",
-        "retrievedAt": "2026-09-18",
+        "retrievedAt": "2026-10-13",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-18",
+    "lastUpdated": "2026-10-13",
     "notes": "48,860 IT square feet; FedRAMP-certified multi-tenant carrier-hotel facility with 21 onsite carriers. Distinct from DataBank's Brooklyn Park campus already in this dataset (id: databank-brooklyn-park-mn) — this is DataBank's separate Eagan site. DataBank's own MSP3-qualification release states MSP2 (this facility) previously qualified for Minnesota's DEED-certified data-center sales tax exemption; no amount or certification date disclosed.",
     "energy": {
       "notes": "Operator states the facility runs on 100% renewable power; no MW figure or specific utility named on the page."
@@ -39163,7 +39749,7 @@
         "url": "https://www.databank.com/data-centers/minneapolis/",
         "label": "DataBank — Minneapolis data centers (MSP1 Edina: 26,240 IT sq ft, 1.35 MW critical IT load)",
         "publisher": "DataBank",
-        "retrievedAt": "2026-09-18",
+        "retrievedAt": "2026-10-13",
         "kind": "other"
       },
       {
@@ -39181,7 +39767,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-18",
+    "lastUpdated": "2026-10-13",
     "notes": "DataBank publishes \"26,240 IT Square Feet\" and \"1.35MW Critical IT Load\" for MSP1. Distinct from DataBank's Eagan (MSP2) and Brooklyn Park (MSP3) sites already tracked, and from its MSP4 suite in the 511 Building.",
     "facilityType": "data_center"
   },
@@ -40599,6 +41185,62 @@
       "status": "opposed",
       "notes": "Public comment at the DeSoto County Commission was nearly unanimously opposed; commissioners voted 4-0 (one recusal) on 23 June 2026 to move forward with a one-year moratorium on new data center applications, which does not apply to DCIP's pending applications.",
       "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "dcpc-mona-juab-county-ut",
+    "name": "DCPC Data Center Campus (north of Mona)",
+    "operator": "DCPC",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.8895,
+      "lon": -111.862,
+      "county": "Juab",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-11-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-11-06",
+        "note": "Juab County notice of a Planning Commission hearing (Nov 20, 2024) on DCPC's conditional use permit for a data center campus with island power",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2025-11-19",
+        "note": "The applicant reports receiving the original CUP about a year earlier. The Planning Commission approved additional CUPs for the Kay and Young Living parcels on the same conditions.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://juabcounty.gov/notice-public-hearing-notice-conditional-use-permit-made-by-dcpc/",
+        "label": "Public Hearing Notice: Conditional Use Permit made by DCPC",
+        "publisher": "Juab County",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://juabcounty.gov/wp-content/uploads/2025/11/Planning_Commission_Minutes_Nov_19_2025.pdf",
+        "label": "Juab County Planning Commission Minutes, Nov 19, 2025",
+        "publisher": "Juab County",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Large two-building data center of about 1 million sq ft, north of Mona, per the applicant (Jon Jensen). Parcels XB00-1436-1 and XB00-1436-2 are in Section 5, T11S R1E. The coordinates are approximated from the PLSS section. This record is not confirmed to be related to Data Center Power Company's Summit Ridge project in Santaquin.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "The CUP is for a 'data center campus with island power'. The applicant cited ongoing natural gas usage that would generate municipal energy tax."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The applicant says the closed-loop design consumes about 300 acre-feet per year, mostly on a few very hot days, using leased existing well water. A Central Utah Project extension is being pursued as redundant supply."
     },
     "facilityType": "data_center"
   },
@@ -48261,6 +48903,10 @@
       "state": "MN",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 2.85,
+      "operational": 1.35
+    },
     "statusHistory": [
       {
         "status": "operational",
@@ -48283,9 +48929,16 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-18",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.edgeconnex.com/wp-content/uploads/2024/09/Minneapolis-Data-Sheet.pdf",
+        "label": "EdgeConneX Minneapolis MSP01 Data Sheet",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-18",
+    "lastUpdated": "2026-10-13",
     "notes": "Capacity and square footage are deliberately unset: EdgeConneX's own Minneapolis data sheet PDF could not be parsed this session, and the circulating 32,738 sq ft / 2.5 MW figures come only from third-party directories that were not read directly.",
     "facilityType": "data_center"
   },
@@ -48652,10 +49305,13 @@
       "lon": -111.9867,
       "city": "West Valley City",
       "county": "Salt Lake",
+      "street": "2302 South President's Dr., Suite A/B",
+      "postalCode": "84120",
       "state": "UT",
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 2,
       "operational": 1
     },
     "statusHistory": [],
@@ -48673,9 +49329,16 @@
         "publisher": "West Valley City",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://edgeconnex.com/wp-content/uploads/2024/09/Salt-Lake-City-Data-Sheet.pdf",
+        "label": "EdgeConneX Salt Lake City SLC01 Data Sheet",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-10-13",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. West Valley City's Fund 22 (Redevelopment Agency) adopted budget itemizes every currently active RDA/CRA project area by name with no boundary description resolving to 2302 S President's Dr, and no line item, city filing, or state record names EdgeConneX. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -49202,6 +49865,57 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "edged-bluffdale-ut",
+    "name": "Edged Salt Lake City Data Center (Project Inabi)",
+    "operator": "Edged Energy",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.488,
+      "lon": -111.905,
+      "city": "Bluffdale",
+      "county": "Salt Lake",
+      "street": "600 W 14600 S",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023-12-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-12-06",
+        "note": "Bluffdale Planning Commission agenda: site plan application for Project Inabi Edged Data Center on 22.91 acres (File 2023-24)",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-10-13",
+        "note": "Listed as under construction, with two buildings planned and opening planned for 2027",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.utah.gov/pmn/sitemap/notice/876505.html",
+        "label": "Bluffdale City Planning Commission agenda, Dec 6, 2023 (Project Inabi Edged Data Center site plan)",
+        "publisher": "Utah Public Notice Website",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://baxtel.com/data-center/edged-energy-bluffdale-ut",
+        "label": "Edged Energy: Bluffdale, UT",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Applicant is Edged Salt Lake City, in the Regional Commercial (RC) zone at 600 West Bluffdale Boulevard (14600 South). Baxtel lists a PUE of 1.15. The construction status rests on a directory listing only.",
+    "landAcres": 22.91,
+    "facilityType": "data_center"
+  },
+  {
     "id": "edged-columbus-new-albany-oh",
     "name": "Edged Columbus",
     "operator": "Edged (an Endeavour company)",
@@ -49525,6 +50239,70 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "edged-kansas-city-mo",
+    "name": "Edged Kansas City",
+    "operator": "Edged Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.1675448,
+      "lon": -94.4651703,
+      "city": "Kansas City",
+      "county": "Clay",
+      "street": "3420 North Arlington Avenue",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 26
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-12-11",
+        "note": "Ribbon-cutting for the $143M, 26 MW facility; DED release dated Dec. 12, 2024 says the ceremony was 'yesterday'.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ded.mo.gov/press-room/edged-data-centers-opens-new-data-center-kansas-city-investing-more-143-million",
+        "label": "Edged Data Centers opens new data center in Kansas City, investing more than $143 million",
+        "publisher": "Missouri Department of Economic Development",
+        "retrievedAt": "2026-10-13",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://ingrams.com/article/edged-kansas-city-143m-data-center-opens-near-north-kc/",
+        "label": "Edged Kansas City $143M data center opens near North KC",
+        "publisher": "Ingram's",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=3420+N+Arlington+Ave,+Kansas+City,+MO+64161&format=json&limit=3&addressdetails=1",
+        "label": "OpenStreetMap Nominatim geocode: North Arlington Avenue, Kansas City, MO",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "26 MW critical capacity. Address 3420 North Arlington Avenue per Ingram's. Nominatim could not resolve the house number, so coordinates are the OSM point on North Arlington Avenue in the Hunt Midwest Business Center area (approximate). Distinct operator and parcel from the tracked Google Hunt Midwest campus nearby.",
+    "water": {
+      "notes": "Uses Edged's ThermalWorks waterless cooling. Company claims zero water use and ~95 million gallons/year saved versus conventional data centers, plus 74% lower energy overhead (company claims)."
+    },
+    "subsidies": [
+      {
+        "program": "Missouri Data Center Sales Tax Exemption Program",
+        "jurisdiction": "Missouri",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 143000000,
+    "facilityType": "data_center"
   },
   {
     "id": "edged-mesa-az",
@@ -59326,6 +60104,51 @@
     "facilityType": "data_center"
   },
   {
+    "id": "foristell-i70-annexation-data-center-site-mo",
+    "name": "Foristell I-70 Data Center Site (216-acre annexation)",
+    "operator": "Undisclosed developer",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.8150501,
+      "lon": -90.955972,
+      "city": "Foristell",
+      "county": "Warren",
+      "street": "North outer road of I-70",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-05",
+        "note": "Foristell Board of Aldermen took up annexation of ~216 acres of unincorporated Warren County (three parcels on the I-70 north outer road) as a first step toward a data center. No formal data center application had been filed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.govtech.com/products/two-data-centers-eye-land-near-st-charles-county-mo",
+        "label": "Two data centers eye land near St. Charles County, Mo. (St. Louis Post-Dispatch via TNS)",
+        "publisher": "GovTech / St. Louis Post-Dispatch",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Foristell,+Missouri&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: Foristell, Missouri",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Out-of-state firms representing two unnamed data center developers contacted Foristell in May 2025. This record is the ~216-acre annexation site: R&R Holdings 95 ac, H. M. Boegeman Realty Co. 89 ac, Longhorn Property Management 32 ac, zoned agricultural in Warren County on the north outer road of I-70. A second ~240-acre site south of I-70, east of the American Food Groups plant, already inside city limits, is NOT recorded. The city refused to sign NDAs. No developer, end user or capacity is disclosed, and the annexation vote outcome was not found in fetched sources. Coordinates are the Foristell town centroid (approximate).",
+    "landAcres": 216,
+    "facilityType": "data_center"
+  },
+  {
     "id": "fort-cherry-power-station-robinson-township-washington-pa",
     "name": "Fort Cherry Power Station",
     "operator": "Liberty Energy, Imperial Land Corporation and Range Resources - Appalachia (joint venture)",
@@ -61370,6 +62193,70 @@
     "mining": {
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "geronimo-jasper-county-powered-data-park-mo",
+    "name": "Jasper County Powered Data Park",
+    "operator": "Geronimo Power",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.1414461,
+      "lon": -94.0616037,
+      "county": "Jasper",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-20",
+        "note": "Geronimo Power presented a hyperscale data park near Sarcoxie and La Russell to residents. Its VP of external affairs said no final decisions had been made.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.koamnewsnow.com/news/top-stories/jasper-county-residents-voice-concerns-over-proposed-data-center-development/article_6faf3e40-f7dd-40d1-ad5e-215025dbd4b5.html",
+        "label": "Jasper County residents voice concerns over proposed data center development",
+        "publisher": "KOAM News Now",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://now.solar/2026/03/31/geronimo-power-presents-solar-farm-plan-to-lawrence-county-commissioners-the-joplin-globe/",
+        "label": "Geronimo Power presents solar farm plan to Lawrence County commissioners (The Joplin Globe)",
+        "publisher": "The Joplin Globe (via now.solar)",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/missouri/2266/geronimo-jasper-county-powered-data-park",
+        "label": "Geronimo Jasper County Powered Data Park (listing)",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=La+Russell,+Jasper+County,+Missouri&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: La Russell, Jasper County, Missouri",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Bloomington, MN-based Geronimo Power is evaluating eastern Jasper County, near Sarcoxie and La Russell, for a hyperscale data center plus a solar and battery park to help power it. Residents cite property along County Road 20. On ~March 30, 2026 Geronimo presented a related 640-acre solar farm in western Lawrence County to that county's commission; it is not recorded separately here. No end user is named. A 450 MW figure seen in an aggregator search summary was paywalled on the page itself, so no capacity is recorded. Coordinates are the La Russell community point (approximate); the site is described as near La Russell.",
+    "energy": {
+      "notes": "Developer plans a dedicated solar and battery storage park, including a 640-acre solar farm in western Lawrence County, to help power the data park; no MW stated."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Nearby residents organized opposition (a Facebook group and a community meeting in Sarcoxie), arguing data centers belong where infrastructure already exists. Geronimo says it wants community input.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "geronimo-nobles-county-powered-data-park-mn",
@@ -63424,9 +64311,23 @@
         "publisher": "Minnesota Public Utilities Commission",
         "retrievedAt": "2026-09-18",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.mprnews.org/story/2026/05/05/hermantown-google-data-center-vote-tabled",
+        "label": "Hermantown tables vote on key agreements for contentious Google data center",
+        "publisher": "MPR News",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://powermag.com/google-data-center-in-minnesota-would-be-powered-by-wind-energy-storage",
+        "label": "Google data center in Minnesota would be powered by wind, energy storage",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-18",
+    "lastUpdated": "2026-10-13",
     "notes": "Listed by Google among its US data centers under development. Google has not published a dedicated location page, capacity, investment figure, or timeline for this site — it appears only on Google's US locations index, so this record is intentionally thin. Coordinates are the Hermantown city centroid (approximate).",
     "energy": {
       "source": "mixed",
@@ -63438,7 +64339,12 @@
       "reportedMgd": 0.05,
       "notes": "KAXE reports a waterless/air-cooled system with a maximum of 50,000 gallons daily, used for worker sanitation and emergency fire suppression rather than cooling (50,000 gal/day = 0.05 MGD). A permitted maximum, not a measured draw."
     },
+    "investmentUsd": 2000000000,
     "landAcres": 278,
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 6
+    },
     "community": {
       "status": "contested",
       "notes": "The City Council tabled the tax abatement and land development agreements in May 2026 with no timeline to reconsider, pending completion of a revised Alternative Urban Areawide Review; residents questioned the abatement publicly (\"What tax-based projections would allow a tax abatement of $4 million a year for a single company?\"). The city submitted its updated AUAR to the Environmental Quality Board in August 2026 and a final council vote on adoption had not occurred as of mid-September 2026.",
@@ -66004,9 +66910,16 @@
         "publisher": "KTTC",
         "retrievedAt": "2026-09-18",
         "kind": "press"
+      },
+      {
+        "url": "https://www.momentumwest.org/media/userfiles/subsite_16/files/data-center/Minnesota%20Google%20Data%20Center_Info%20Sheet.pdf",
+        "label": "Xcel Energy's agreement with new Google data center a model for industry (info sheet)",
+        "publisher": "Xcel Energy",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-18",
+    "lastUpdated": "2026-10-13",
     "notes": "Google's first Minnesota campus, Pine Island (Goodhue County), powered by Xcel Energy; ~250,000 sq ft initial building for AI applications. Electric Service Agreement pending MPUC approval as of Feb 2026 → proposed. The associated 1,900 MW (1,400 MW wind + 200 MW solar + 300 MW storage) is a new clean-energy build-out, NOT the data center's IT load — DC capacity not disclosed (omitted). Faces a local legal challenge. Coordinates are the Pine Island area centroid.",
     "energy": {
       "source": "grid",
@@ -67328,6 +68241,78 @@
     "mining": {
       "hardwareType": "asic",
       "powerArrangement": "behind_meter"
+    }
+  },
+  {
+    "id": "graphite-solar-wellington-ut",
+    "name": "Graphite Solar",
+    "operator": "Greenbacker Renewable Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.54844,
+      "lon": -110.71209,
+      "city": "Wellington",
+      "county": "Carbon",
+      "street": "1197 East Main St",
+      "postalCode": "84542",
+      "state": "UT",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 80
+    },
+    "announcedDate": "2021-05-19",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2021-05-19",
+        "note": "Groundbreaking announced",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2022-07-12",
+        "note": "Commissioned July 12, 2022",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://sundt.com/greenbacker-rplus-energies-and-sundt-construction-break-ground-on-104-mwdc-80-mwac-graphite-solar-project-in-carbon-county-utah",
+        "label": "Greenbacker, rPlus Energies and Sundt break ground on 104 MWdc/80 MWac Graphite Solar project in Carbon County, Utah",
+        "publisher": "Sundt Construction",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.renewableenergyworld.com/solar/carbon-county-utah-goes-solar",
+        "label": "Carbon County, Utah goes solar",
+        "publisher": "Renewable Energy World",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://gridinfo.com/plant/graphite-solar-i/64186",
+        "label": "Graphite Solar I (EIA plant 64186)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "energy": {
+      "source": "solar",
+      "utility": "PacifiCorp (Rocky Mountain Power)"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "poweredFacilityIds": [
+        "meta-eagle-mountain-ut"
+      ],
+      "notes": "104 MWdc / 80 MWac. Long-term PPA with PacifiCorp on behalf of Meta's (Facebook's) Eagle Mountain data center under Rocky Mountain Power's Schedule 34 green energy tariff. Developed by rPlus Energies."
     }
   },
   {
@@ -71409,6 +72394,73 @@
     "facilityType": "data_center"
   },
   {
+    "id": "horseshoe-solar-grantsville-ut",
+    "name": "Horseshoe Solar",
+    "operator": "Horseshoe Solar, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.71828,
+      "lon": -112.6658,
+      "county": "Tooele",
+      "state": "UT",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 75
+    },
+    "announcedDate": "2020-09-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2020-09-10",
+        "note": "DESRI announces Facebook/PacifiCorp PPAs",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2024-05",
+        "note": "Construction was complete with COD anticipated Apr 15, 2024 (Trust Lands, Mar 2024). EIA-derived data shows operation from May 2024.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://solarbuildermag.com/news/facebook-and-pacificorp-sign-155-mwac-of-ppas-in-utah-with-d-e-shaw/",
+        "label": "Facebook and PacifiCorp sign 155 MWac worth of PPAs in Utah with D. E. Shaw",
+        "publisher": "Solar Builder",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1103169.pdf",
+        "label": "Solar Projects Update, Board of Trustees, March 21, 2024",
+        "publisher": "Utah Trust Lands Administration",
+        "retrievedAt": "2026-10-13",
+        "kind": "filing"
+      },
+      {
+        "url": "https://gridinfo.com/plant/horseshoe-solar-llc/63984",
+        "label": "Horseshoe Solar, LLC (EIA plant 63984)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "energy": {
+      "source": "solar",
+      "utility": "PacifiCorp (Rocky Mountain Power)"
+    },
+    "landAcres": 627,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "notes": "75 MWac (97.5 MWdc), outside Grantsville, entirely on Utah Trust Lands (627 acres). Facebook/Meta PPAs with Rocky Mountain Power under Schedule 34. Developed and constructed by D. E. Shaw Renewable Investments."
+    }
+  },
+  {
     "id": "host-digital-northeast-oklahoma-ok",
     "name": "Host Digital Northeast Oklahoma Data Center",
     "operator": "Host Digital Infrastructure LLC",
@@ -74352,6 +75404,49 @@
       "pueConfidence": "reported",
       "waterStress": "unknown"
     }
+  },
+  {
+    "id": "iron-mountain-kcm-1-kansas-city-mo",
+    "name": "Iron Mountain Kansas City Data Center (KCM-1)",
+    "operator": "Iron Mountain",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.0109445,
+      "lon": -94.5046094,
+      "city": "Kansas City",
+      "county": "Jackson",
+      "street": "6301 Winchester Ave Suite 817",
+      "postalCode": "64133",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.ironmountain.com/data-centers/locations/kansas-city-data-center",
+        "label": "Kansas City Data Center (KCM-1)",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=6301+Winchester+Avenue,+Kansas+City,+Missouri&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode: 6301 Winchester Avenue, Kansas City, MO",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Underground colocation facility ~110 ft below ground (the operator FAQ also says 100 ft) on a 22-acre campus. 50,000 sq ft building with 13,000 sq ft of data hall, and 3.9 MW 'total potential capacity' (not recorded as operational MW because it is stated as potential). 2N electrical, N+1 cooling. Coordinates are the address geocode of the campus entrance (approximate for an underground facility).",
+    "energy": {
+      "source": "grid",
+      "utility": "KCPL (now Evergy)",
+      "notes": "Operator lists KCPL as utility and states power is matched by 100% renewable energy (operator claim)."
+    },
+    "landAcres": 22,
+    "facilityType": "data_center"
   },
   {
     "id": "iron-mountain-mia-1-miami-fl",
@@ -86202,7 +87297,7 @@
         "url": "https://www.inforum.com/news/minnesota/minnesotas-first-hyperscale-data-center-nearing-completion-in-rosemount",
         "label": "Minnesota's first hyperscale data center nearing completion in Rosemount",
         "publisher": "InForum",
-        "retrievedAt": "2026-08-24",
+        "retrievedAt": "2026-10-13",
         "kind": "press"
       },
       {
@@ -86213,7 +87308,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-24",
+    "lastUpdated": "2026-10-13",
     "notes": "Site is 280 acres of UMore Park (former WWII smokeless powder facility, then Univ. of Minnesota agricultural research land) in Rosemount. Meta's 19th US data center. Coordinates approximate for northern UMore Park area. Additional parcels purchased Feb 2025 via Jimnist LLC for potential expansion; no current build plan on those parcels.",
     "energy": {
       "source": "grid",
@@ -95300,6 +96395,77 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "next-revolution-emerson-campus-ferguson-mo",
+    "name": "Former Emerson Campus Data Center (Next Revolution Technologies)",
+    "operator": "Next Revolution Technologies LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.744707,
+      "lon": -90.3038975,
+      "city": "Ferguson",
+      "county": "St. Louis",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2026",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-22",
+        "note": "Ferguson City Council approved 4-3 a redevelopment and tax-incentive plan for the former Emerson Electric campus. It includes a potential future expansion to a 300 MW data center, after a similar plan failed 3-3 in May 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.stlpr.org/government-politics-issues/2026-09-23/ferguson-city-council-says-yes-to-tax-breaks-for-data-center-development",
+        "label": "Ferguson City Council says yes to tax breaks for data center development",
+        "publisher": "St. Louis Public Radio",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.stlpr.org/economy-business/2026-09-10/ferguson-tax-break-plan-data-center-emerson-redevelopment",
+        "label": "Ferguson tax break plan for data center, Emerson redevelopment",
+        "publisher": "St. Louis Public Radio",
+        "retrievedAt": "2026-10-13",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Ferguson,+Saint+Louis+County,+Missouri&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Ferguson, Missouri",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "217-acre former Emerson Electric campus in Ferguson, bought in 2026 by Next Revolution Technologies LLC (run by Onder Law's James Onder). The campus already has a smaller data center; the approved plan includes renovating it and a potential future 300 MW data center (capacityMw.planned records that potential expansion). Up to $22B in industrial revenue bonds authorized. Community payments: $700K to the city, $250K environmental mitigation fund, $7.5M over 10 years to the Ferguson Neighborhood Improvement Program. Coordinates are the Ferguson municipal centroid (approximate); no street address was given in the fetched sources. Status kept at 'proposed': the council approval is a tax-incentive/redevelopment package, not a building permit.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Proposal calls for a closed-loop cooling system to conserve water. Residents said the bill language does not cap water use."
+    },
+    "subsidies": [
+      {
+        "program": "Redevelopment tax incentives: assessed value frozen at 2024 rate and 75% abatement for the first 10 years (up to $1.5B total incentives), alongside authorization of up to $22B in industrial revenue bonds",
+        "amountUsd": 1500000000,
+        "jurisdiction": "City of Ferguson",
+        "year": "2026",
+        "sourceIndex": 1
+      }
+    ],
+    "community": {
+      "status": "contested",
+      "notes": "Nearly all public commenters opposed; the St. Louis County NAACP and Ferguson-Florissant School District raised concerns. A motion to table failed and the plan passed 4-3, with conflict-of-interest questions raised over the Neighborhood Improvement Program.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "nextera-bellefonte-solar-hollywood-al",
     "name": "Bellefonte Solar Energy Center",
     "operator": "NextEra Energy Resources",
@@ -97795,7 +98961,7 @@
     "id": "novva-west-jordan-power-ut",
     "name": "Novva West Jordan On-Site Generation",
     "operator": "Novva SLC Common, LLC (Novva Data Centers)",
-    "status": "permitted",
+    "status": "under_construction",
     "confidence": "confirmed",
     "location": {
       "lat": 40.57389,
@@ -97808,7 +98974,14 @@
     "capacityMw": {
       "planned": 200
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-10-13",
+        "note": "Reporting says Novva received state approval for a 200 MW natural gas plant in December 2024 and is still finishing its construction, running diesel and gas generators in the interim.",
+        "sourceIndex": 3
+      }
+    ],
     "sources": [
       {
         "url": "https://daqpermitting.utah.gov/DocViewer?IntDocID=151396&contentType=application%2Fpdf",
@@ -97830,9 +99003,16 @@
         "publisher": "City of West Jordan",
         "retrievedAt": "2026-09-04",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://lehifreepress.com/2026/02/11/utahs-massive-data-centers-seek-to-build-new-power-sources/",
+        "label": "Utah's massive data centers seek to build new power sources",
+        "publisher": "Lehi Free Press",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-10-13",
     "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy. This is the co-located generation build-out for the same Wells Park Road campus as novva-west-jordan-ut, not a separately sited facility, and it falls outside every West Jordan CRA/RDA project area for the same structural reason — under Title 17C no participation agreement is available at this location. Neither the campus nor its generation arm was found to hold an agreement, which answers in the negative whether the two share one.",
     "energy": {
       "source": "on_site_gas",
@@ -97887,11 +99067,20 @@
         "publisher": "City of West Jordan",
         "retrievedAt": "2026-09-04",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://lehifreepress.com/2026/02/11/utahs-massive-data-centers-seek-to-build-new-power-sources/",
+        "label": "Utah's massive data centers seek to build new power sources",
+        "publisher": "Lehi Free Press",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-13",
     "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy, for a structural reason rather than a search miss. West Jordan's Redevelopment Agency lists six active project areas, all bounded well east of this campus; under Title 17C an agency may only act within a designated project area, so no participation agreement is available at this location under the current project-area map. The city's own 2025 post on the expansion discusses tax value in generic terms and names no incentive or agreement.",
     "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 200,
       "notes": "Novva's own facility page describes a centralized 200MW on-campus substation with N+1 redundancy serving the four-phase campus, plus a planned 15MW-30MW of on-site solar. The 175MW figure is the campus's stated total data center capacity at four-phase completion; the 200MW is substation capacity, not IT load."
     },
     "water": {
@@ -98019,6 +99208,51 @@
       "technology": "other",
       "unitCount": 2
     }
+  },
+  {
+    "id": "nsa-utah-data-center-bluffdale-ut",
+    "name": "NSA Utah Data Center (Bumblehive)",
+    "operator": "National Security Agency",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.429,
+      "lon": -111.9327,
+      "city": "Bluffdale",
+      "county": "Salt Lake",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 65
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2014",
+        "note": "Opened in 2014 on Camp Williams",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://clui.org/ludb/site/nsa-utah-data-center",
+        "label": "NSA Utah Data Center, Utah",
+        "publisher": "Center for Land Use Interpretation",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/energy-power-supply/nsa-data-center-plagued-by-electrical-problems",
+        "label": "NSA Data Center Plagued by Electrical Problems",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "On Camp Williams (National Guard reservation) in Bluffdale. About 1M sq ft campus with about 100,000 sq ft of data center space and a 65 MW power capacity. Reported cost figures conflict ($1.5B per NSA via DCK vs about $3B per CLUI), so investment is omitted. The coordinates are approximate.",
+    "facilityType": "data_center"
   },
   {
     "id": "nscale-monarch-mason-county-wv",
@@ -110383,9 +111617,16 @@
         "publisher": "Utah Business",
         "retrievedAt": "2026-08-08",
         "kind": "press"
+      },
+      {
+        "url": "https://lehifreepress.com/2026/02/11/utahs-massive-data-centers-seek-to-build-new-power-sources/",
+        "label": "Utah's massive data centers seek to build new power sources",
+        "publisher": "Lehi Free Press",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-10-13",
     "notes": "Groundbreaking was October 2025; the third of three initial buildings topped out (structural completion) on 2026-04-20. Not yet operational; no delivery date confirmed.",
     "energy": {
       "source": "grid",
@@ -114888,6 +116129,67 @@
     "facilityType": "data_center"
   },
   {
+    "id": "rocket-solar-corinne-ut",
+    "name": "Rocket Solar",
+    "operator": "Rocket Solar, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.63628,
+      "lon": -112.4441,
+      "city": "Corinne",
+      "county": "Box Elder",
+      "postalCode": "84307",
+      "state": "UT",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 80
+    },
+    "announcedDate": "2020-09-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2020-09-10",
+        "note": "DESRI announces Facebook/PacifiCorp PPAs for Rocket and Horseshoe Solar",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2024-02",
+        "note": "Operating since February 2024 per EIA-derived data",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://solarbuildermag.com/news/facebook-and-pacificorp-sign-155-mwac-of-ppas-in-utah-with-d-e-shaw/",
+        "label": "Facebook and PacifiCorp sign 155 MWac worth of PPAs in Utah with D. E. Shaw",
+        "publisher": "Solar Builder",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://gridinfo.com/plant/rocket-solar-llc/63983",
+        "label": "Rocket Solar, LLC (plant 63983)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "energy": {
+      "source": "solar",
+      "utility": "PacifiCorp (Rocky Mountain Power)"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta",
+      "notes": "80 MWac (104 MWdc). Facebook PPAs with Rocky Mountain Power (PacifiCorp) under Schedule 34. Owned and developed by D. E. Shaw Renewable Investments as of 2020; initially developed and permitted by Enyo Renewable Energy. Current ownership was not independently verified."
+    }
+  },
+  {
     "id": "rocking-r-solar-caddo-parish-la",
     "name": "Rocking R Solar",
     "operator": "D. E. Shaw Renewable Investments (DESRI)",
@@ -118797,6 +120099,9 @@
       "state": "MN",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 150
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -118805,9 +120110,16 @@
         "publisher": "Monticello Times / Hometown Source",
         "retrievedAt": "2026-08-24",
         "kind": "press"
+      },
+      {
+        "url": "https://couriermn.com/news/environment/where-are-data-centers-being-proposed-in-minnesota-we-are-tracking-them/",
+        "label": "Where are data centers being proposed in Minnesota? We are tracking them.",
+        "publisher": "Courier Minnesota",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-24",
+    "lastUpdated": "2026-10-13",
     "notes": "Located between the Otter Creek industrial park and 90th Street NW, adjacent to Bertram Chain of Lakes Regional Park. Roughly four buildings totaling ~1.3M sq ft (~320,000 sq ft each). Comprehensive Plan amendment approved May 2026; annexation petitions not yet filed as of the source date; investment amount not disclosed.",
     "landAcres": 106,
     "facilityType": "data_center"
@@ -119313,6 +120625,8 @@
       "lon": -111.964329,
       "city": "West Valley City",
       "county": "Salt Lake",
+      "street": "3047 W Parkway Blvd",
+      "postalCode": "84119",
       "state": "UT",
       "precision": "exact"
     },
@@ -119338,9 +120652,16 @@
         "publisher": "West Valley City",
         "retrievedAt": "2026-09-08",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/8572",
+        "label": "Senawave facility record",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-10-13",
     "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. West Valley City's Redevelopment Agency reports tax-increment activity only in aggregate by project area (Fund 22 adopted budget; ACFR FY2024-2025 Note 15, per Utah Code 17C-1-605(1)) — no per-recipient breakout in either document, and no filing names Senawave. The nearest named project area, Decker Lake, shows $0 tax increment collected in every year since FY2020-21 and does not appear in the current ACFR disclosure at all, so no RDA subsidy is currently active in that area regardless of parcel boundaries. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -120564,6 +121885,88 @@
     "notes": "Servpac's Honolulu data center at 1931 N King St in Kalihi Kai. Servpac names it the 'Puahale Data Center' and offers it as the second site in dual-site colocation with its Mililani MTP Data Center; the Mililani site is in Mililani Technology Park, about 17 km away, and is a different site. Baxtel reports Hawaiian Electric (HECO) as the utility, says the site is about 1.5 miles from the ocean, and says Servpac built its own data center in 2014 to provide cloud services. That year is a directory statement, so it is not used as a status date. No square footage, MW or investment figure was found. Coordinates are the OSM address point for 1931 North King Street; PeeringDB's pin is about 50 m away.",
     "energy": {
       "utility": "Hawaiian Electric Company (HECO)"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "setsquare-nebo-north-mona-juab-county-ut",
+    "name": "Nebo North Data Center Campus (Project Nebo)",
+    "operator": "SetSquare Capital Group (Nebo North LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.8605,
+      "lon": -111.909,
+      "city": "Mona",
+      "county": "Juab",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 750
+    },
+    "announcedDate": "2026-04-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-02",
+        "note": "Juab County posts a public hearing notice for the Nebo North LLC conditional use permit application for a data center campus",
+        "sourceIndex": 1
+      },
+      {
+        "status": "permitted",
+        "date": "2026-04-15",
+        "note": "Juab County Planning Commission approves the conditional use permit after a roughly four-minute hearing",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sltrib.com/news/2026/09/14/utahns-left-in-dark-10b-data/",
+        "label": "A Utah county OK'd a data center campus the size of 20 Costcos. Neighbors say they were left 'in the dark.'",
+        "publisher": "The Salt Lake Tribune",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://juabcounty.gov/notice-of-public-hearing-nebo-north-llc-conditional-use-permit/",
+        "label": "Notice of Public Hearing: Nebo North LLC Conditional Use Permit",
+        "publisher": "Juab County",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.deseret.com/environment/2026/09/08/mona-citizens-revolt-against-local-data-centers/",
+        "label": "Mona citizens revolt against local data centers",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.abc4.com/news/central-utah/mona-residents-against-data-center/amp/",
+        "label": "Mona residents against data center",
+        "publisher": "ABC4",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Up to 10 single-story buildings of about 300,000 sq ft each (about 3M sq ft) on about 361 acres of agricultural land off Goshen Road, near the town of Mona. The CUP covers Sections 13 and 14, T11S R1W. The coordinates are approximated from those PLSS sections and are not parcel-confirmed. SetSquare co-founder Jonathan Vanica is quoted by Deseret News.",
+    "energy": {
+      "source": "grid",
+      "utility": "Rocky Mountain Power",
+      "notes": "Developers are seeking up to 750 MW from Rocky Mountain Power's grid through a Mona transmission line. The permit application says on-site natural gas generation could also be used, and Deseret News reports that a gas-powered plant is planned."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developers describe closed-loop cooling with trucked-in water. The water source is unclear (Salt Lake Tribune)."
+    },
+    "investmentUsd": 10000000000,
+    "landAcres": 361,
+    "community": {
+      "status": "opposed",
+      "notes": "More than 100 people opposed the project at the Sept. 8, 2026 Juab County Commission meeting, and residents formed Mona Cares: Neighbors for Responsible Development.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -126835,6 +128238,57 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "summit-group-holdings-dog-valley-juab-county-ut",
+    "name": "Dog Valley Data Center (McWilliams/Sperry rezone)",
+    "operator": "Summit Group Holdings",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.609,
+      "lon": -112.0136,
+      "county": "Juab",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-11-19",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-19",
+        "note": "Juab County Planning Commission voted 3-2 to recommend approval of the industrial zone change for a data center in the south end of Dog Valley",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://juabcounty.gov/wp-content/uploads/2025/11/Planning_Commission_Minutes_Nov_19_2025.pdf",
+        "label": "Juab County Planning Commission Minutes, Nov 19, 2025",
+        "publisher": "Juab County",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.deseret.com/environment/2026/09/08/mona-citizens-revolt-against-local-data-centers/",
+        "label": "Mona citizens revolt against local data centers",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Ryan Matthews of Summit Group Holdings said the group has the McWilliams/Sperry land under contract for a multi-billion-dollar data center near power, transmission and gas lines and about 4,000 acres of permitted solar. Deseret News describes the Dog Valley project as about 8 miles outside Nephi. The coordinates are a USGS gazetteer point for Dog Valley, not the parcel. Juab County Commission final action was not found.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The developer's representative described closed-loop glycol cooling, with potable and sanitary water supplied by tanks or trucks. A neighboring rancher opposed the project over aquifer concerns."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Landowners and several residents spoke in support. A letter from High Desert Land and Livestock opposed the rezone over water.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "summit-ridge-santaquin-ut",
@@ -134173,6 +135627,80 @@
     "facilityType": "data_center"
   },
   {
+    "id": "tierpoint-st-louis-locust-mo",
+    "name": "TierPoint St. Louis - Locust",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.633535,
+      "lon": -90.2126613,
+      "city": "Saint Louis",
+      "county": "St. Louis city",
+      "street": "2300 Locust Street",
+      "postalCode": "63103",
+      "state": "MO",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/missouri/st-louis-locust/",
+        "label": "St. Louis - Locust Data Center (SLL)",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=2300+Locust+Street,+St.+Louis,+Missouri&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode: NSI Building, 2300 Locust Street",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "135,840+ sq ft total with 22,640 sq ft raised floor (phase 1) and 45,000 sq ft expansion space. Four 2.0 MW generators (8.0 MW generator capacity; no facility IT capacity stated). Marketed for high-density AI/GPU colocation. The operator page reads both 'NOW AVAILABLE' and 'currently under development', so it is treated as operational with ongoing phased build-out. One of three TierPoint St. Louis sites; Olive is tracked separately (tierpoint-st-louis-olive-mo).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tierpoint-st-louis-millpark-mo",
+    "name": "TierPoint St. Louis - Millpark",
+    "operator": "TierPoint",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.6993591,
+      "lon": -90.4114091,
+      "city": "Maryland Heights",
+      "county": "St. Louis",
+      "street": "2315 Millpark Drive, Suite 104",
+      "postalCode": "63043",
+      "state": "MO",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.tierpoint.com/data-centers/missouri/st-louis-millpark/",
+        "label": "St. Louis - Millpark Data Center (SLM)",
+        "publisher": "TierPoint",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=2315+Millpark+Drive,+Maryland+Heights,+Missouri&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode: 2315 Millpark Drive, Maryland Heights",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "23,000+ sq ft total, 14,400+ sq ft raised floor, two 2 MW backup generators (no facility IT capacity stated). Interconnected with TierPoint's St. Louis Olive and Kansas City (Lenexa) sites.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "tierpoint-st-louis-olive-mo",
     "name": "TierPoint St. Louis - Olive",
     "operator": "TierPoint",
@@ -134898,6 +136426,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "tpc-payson-ut",
+    "name": "TPC Payson Data Center Campus",
+    "operator": "Twin Palms Capital (TPC Data Centers)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.0444,
+      "lon": -111.7321,
+      "city": "Payson",
+      "county": "Utah",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "In city planning as of mid-2026, with first capacity targeted for about Nov 2027 to Q1 2028",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/tpc-payson-ut",
+        "label": "Carrier-Neutral Data Center, Payson, UT (TPC)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "About 150,000 sq ft, two-level building on about 10 acres. No street address is published, and the location is approximate (Payson). The details are developer-provided via a directory listing.",
+    "energy": {
+      "source": "grid",
+      "utility": "Rocky Mountain Power",
+      "notes": "TPC helped Payson fund a new 40 MW Rocky Mountain Power substation serving local load including this campus. The design includes an option for natural gas or hydrogen firming."
+    },
+    "water": {
+      "notes": "Described as a proprietary low-water system with an on-site water-recycling pond."
+    },
+    "landAcres": 10,
+    "facilityType": "data_center"
+  },
+  {
     "id": "tpx-communications-las-vegas-nv",
     "name": "TPx Las Vegas Data Center",
     "operator": "TPx Communications",
@@ -135149,6 +136721,87 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "tract-cannon-falls-technology-park-mn",
+    "name": "Cannon Falls Technology Park (Tract)",
+    "operator": "Tract",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.5068445,
+      "lon": -92.9062175,
+      "city": "Cannon Falls",
+      "county": "Goodhue",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08-26",
+        "note": "City annexed about 240 acres between Rochester Blvd and Hwy 52 from Randolph Township for the Tract project",
+        "sourceIndex": 2
+      },
+      {
+        "status": "permitted",
+        "date": "2025-11-05",
+        "note": "Council voted 4-2 to approve the CUP and development agreement, rezoning to general industrial",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.postbulletin.com/news/local/cannon-falls-city-council-approves-permits-for-data-center-project",
+        "label": "Cannon Falls City Council approves permits for data center project",
+        "publisher": "Post Bulletin",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://kstp.com/accountability/cannon-falls-pine-island-are-both-discussing-bringing-data-centers-to-their-towns/",
+        "label": "Cannon Falls, Pine Island are both discussing bringing data centers to their towns",
+        "publisher": "KSTP",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kttc.com/2025/08/27/cannon-falls-explores-major-data-center-project-following-land-annexation",
+        "label": "Cannon Falls explores major data center project following land annexation",
+        "publisher": "KTTC",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://couriermn.com/news/environment/where-are-data-centers-being-proposed-in-minnesota-we-are-tracking-them/",
+        "label": "Where are data centers being proposed in Minnesota? We are tracking them.",
+        "publisher": "Courier Minnesota",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "The site lies just north of Cannon Falls, between Highway 52 and Rochester Blvd, on land annexed from Randolph Township. Reported acreage is about 240 to 250+ acres. The pin is the city centroid because no parcel point was sourced. The Post Bulletin article (Nov 6, 2025) says the vote was 'Wednesday', inferred as Nov 5, 2025. Investment figures conflict ('$30 billion over 20 years' per KSTP versus 'hundreds of millions to potentially a billion' per KTTC), so investment is omitted.",
+    "energy": {
+      "source": "grid",
+      "utility": "Dakota Electric Association",
+      "notes": "Dakota Electric will serve the project. Tract would fund and build an on-site substation."
+    },
+    "water": {
+      "notes": "The developer plans to cap water use at 43 million gallons a year. The city uses about 250 million gallons a year."
+    },
+    "jobs": {
+      "construction": 1500,
+      "permanent": 250,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "The council approved the CUP and development agreement 4-2. Some residents spoke against the project.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "tract-eagle-mountain-ut",
@@ -135754,6 +137407,55 @@
       "notes": "The cities of Buckeye and Goodyear both raised significant concerns over building heights, noise and deviation from surrounding land use, and area residents circulated a petition opposing the project. The applicant lowered proposed heights from 110 to 60 feet and increased setbacks from 100 to 500 feet.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tract-rosemount-technology-park-mn",
+    "name": "Tract Rosemount Technology Park (withdrawn)",
+    "operator": "Tract",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.735,
+      "lon": -92.985,
+      "city": "Rosemount",
+      "county": "Dakota",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-04-22",
+        "note": "Planning Commission recommended reguiding about 420 acres to business park",
+        "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-06-27",
+        "note": "Application withdrawn after negative City Council feedback",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.minneapolisfed.org/article/2025/massive-data-centers-lay-roots-in-the-ninth-district",
+        "label": "Massive data centers lay roots in the Ninth District",
+        "publisher": "Federal Reserve Bank of Minneapolis",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/tract-rosemount-campus",
+        "label": "Tract: Rosemount Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "A 447-acre site in Section 28, south of Hwy 55 (Courthouse Blvd), between Emery and Fischer Avenues. An AUAR assessed a 2.3M sq ft technology-park scenario. The Minneapolis Fed cites city planning officials saying Tract pulled out. The pin is approximate, placed between the bounding roads. This is separate from Meta's Rosemount campus at UMore Park.",
+    "landAcres": 447,
     "facilityType": "data_center"
   },
   {
@@ -137381,6 +139083,48 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "university-of-utah-downtown-data-center-salt-lake-city-ut",
+    "name": "University of Utah Downtown Data Center",
+    "operator": "University of Utah (UIT)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.7466,
+      "lon": -111.8945,
+      "city": "Salt Lake City",
+      "county": "Salt Lake",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 10,
+      "operational": 1
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2012-04",
+        "note": "UIT took full occupancy in April 2012",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://it.utah.edu/node4/posts/2018/october/downtown-data-center.php",
+        "label": "Downtown Data Center",
+        "publisher": "University of Utah Information Technology",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "79,000 sq ft (including 16,000 sq ft of warehouse) in a 1938 building downtown. The site was previously scoped as a data center by MCI WorldCom. It is scalable to 10 MW, with 1 MW in use as of 2018. It hosts most CHPC production systems. The coordinates are approximate.",
+    "water": {
+      "notes": "Hot-aisle containment, dry air chillers, evaporative cooling, water misters for humidity, and direct air economization about 80% of the year. PUE is 1.2 (2018)."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "upstream-wind-energy-center-antelope-ne",
     "name": "Upstream Wind Energy Center",
     "operator": "Invenergy",
@@ -138023,6 +139767,54 @@
     ],
     "lastUpdated": "2026-10-11",
     "notes": "66,000-sf Tier III data center on the VA Medical Center campus. Backup power is three 2.25 MW generators fed from two 20,000-gallon fuel tanks (per the builder). The only source is the design-builder's project page, and current operational status was not independently confirmed, hence 'reported'. The pin is the OSM point for the VAMC campus, not the data-center building. No IT capacity is published, so capacityMw is omitted.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "valar-atomics-project-beehive-price-ut",
+    "name": "Project Beehive",
+    "operator": "Valar Atomics",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5994,
+      "lon": -110.8107,
+      "city": "Price",
+      "county": "Carbon",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09-30",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-30",
+        "note": "BLM Utah confirmed it received Valar's application for more than 9,000 acres near Price. Utah Trust Lands approved a roughly 640-acre Carbon County lease on Sept 17, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.eastidahonews.com/2026/10/nuclear-powered-ai-data-center-proposed-on-state-and-federal-land-in-central-eastern-utah/",
+        "label": "Nuclear-powered AI data center proposed on state and federal land in central eastern Utah (KSL)",
+        "publisher": "East Idaho News / KSL",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.resilience.org/stories/2026-10-06/9000-acre-nuclear-powered-data-center-proposed-on-public-lands-in-utah/",
+        "label": "9,000-acre nuclear-powered data center proposed on public lands in Utah",
+        "publisher": "Resilience.org (More Than Just Parks)",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "More than 9,000 acres of BLM land near Price, under completeness review, plus about 640 acres of state trust land in Carbon County. Non-nuclear construction is targeted as early as the end of 2026 and first reactors in 2028. The location is approximate (Price). This is separate from Valar's Ward 250 test reactor at the San Rafael Energy Lab and from its withdrawn Green River BLM application.",
+    "energy": {
+      "source": "nuclear",
+      "onSiteGenerationMw": 9600,
+      "notes": "Company documents reported by NPR describe about 456 small gas-cooled reactors totaling up to about 9.6 GW, plus nuclear fuel production and waste storage facilities."
+    },
     "facilityType": "data_center"
   },
   {
@@ -142377,6 +144169,65 @@
       "technology": "solar",
       "notes": "Project company is Wildflower Solar, LLC. EIA-860M names Deriva Energy as the current entity of record; OpenStreetMap still carries the older 'Duke Energy Renewables Services' operator tag, so the EIA value is used as the current owner."
     }
+  },
+  {
+    "id": "wildwood-ranch-joplin-mo",
+    "name": "Wildwood Ranch Industrial Complex (potential data center)",
+    "operator": "Wildwood Ranch, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.0819886,
+      "lon": -94.583417,
+      "city": "Joplin",
+      "county": "Jasper",
+      "street": "Southwest corner of Central City Rd & 20th Street",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-12-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-04",
+        "note": "Wildwood Ranch, LLC filed for voluntary annexation and R-1 to M-2 rezoning of ~600.4 acres. City Council approved both bills on Feb. 17, 2026. As of Mar. 6, 2026 no construction permit had been filed and the developer was doing an electric power feasibility study.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mo-joplin2.civicplus.com/1286/Wildwood-Ranch-Industrial-Complex",
+        "label": "Wildwood Ranch Industrial Complex",
+        "publisher": "City of Joplin",
+        "retrievedAt": "2026-10-13",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.joplinglobe.com/news/joplin-city-council-advances-data-center-annexation-zoning/article_e9c57ea7-3cbe-4a50-a7f5-ef805c69502f.html",
+        "label": "Joplin City Council advances data center annexation, zoning",
+        "publisher": "The Joplin Globe",
+        "retrievedAt": "2026-10-13",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/wildwood-ranch-joplin-mo",
+        "label": "Wildwood Ranch: Joplin, MO (listing)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-13",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Central+City+Road,+Jasper+County,+Missouri&format=json&limit=5",
+        "label": "OpenStreetMap Nominatim geocode: South Central City Road, Jasper County, Missouri",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-13",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-13",
+    "notes": "Site at the southwest corner of Central City Rd & 20th Street on Joplin's west side. Council Bills 2026-256 (annexation) and 2026-257 (rezoning) were approved on Feb. 17, 2026, under a 2009 annexation agreement. The applicant is James (Jimmer) Pinjuv, managing member of Wildwood Ranch LLC. The city has not confirmed an end user. Baxtel says local reports link the site to Abits Group, which is unverified and so not recorded as operator. Status is 'proposed', not 'permitted': rezoning is not a construction approval and no data center user is confirmed. Coordinates are the OSM point on South Central City Road near the stated corner (approximate).",
+    "landAcres": 600.4,
+    "facilityType": "data_center"
   },
   {
     "id": "williams-aquila-eagle-mountain-ut",
