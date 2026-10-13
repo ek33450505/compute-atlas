@@ -53,7 +53,7 @@ const READ_ENDPOINTS: Endpoint[] = [
     method: "GET",
     path: "/api/search",
     description:
-      "Full-text search over facility names and operators: { count, facilities, query }. Query parameter q is capped at 200 characters.",
+      "Full-text search over facility names and operators: { count, facilities, query }. Query parameter q is capped at 200 characters. Optional shape=palette returns a lean projection per facility: { id, name, operator, location: { state, city?, county?, street? } }; any other value returns full records.",
   },
   {
     method: "GET",

@@ -26,9 +26,11 @@ import { toFacilitySearchHit } from "@/lib/search";
  *
  * `?shape=palette` is an opt-in lean projection for the ⌘K palette: each
  * facility carries only the fields `facilityToSearchEntry` reads (see
- * `FacilitySearchHit`). It is projected here, after the shared cache, so both
- * shapes use one cache entry. Absent or any other value keeps the full
- * records, byte-identical to the original public contract.
+ * `FacilitySearchHit`). It is projected here, after `searchFacilitiesDb`, so
+ * both shapes share its server-side `unstable_cache` entry. The HTTP responses
+ * differ, though: the CDN and Cloudflare key on the full URL, so each shape is
+ * cached under its own URL. Absent or any other value keeps the full records,
+ * byte-identical to the original public contract.
  */
 export async function GET(request: Request): Promise<Response> {
   const gate = checkApiRateLimit(extractTrustedClientIp(request.headers));
