@@ -59,8 +59,30 @@ HOW TO ATTRIBUTE
 
 A suggested attribution string:
 
-  "AI datacenter data from Compute Atlas by Edward Kubiak, licensed under
-  CC BY 4.0 — https://github.com/ek33450505/compute-atlas"
+  "Data from Compute Atlas by Edward Kubiak (https://www.compute-atlas.com),
+  licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)."
+
+What a complete attribution includes:
+
+  - Credit: "Compute Atlas by Edward Kubiak".
+  - A link to https://www.compute-atlas.com, which is the dataset's home.
+    The GitHub repository is its source-code and bulk-file mirror, not the
+    place to credit.
+  - A link to the license: https://creativecommons.org/licenses/by/4.0/
+  - A note of any changes, for example: "filtered to data centers", "joined
+    to counties", or "combined with our own research".
+
+Keep your own analysis distinct from the data. Compute Atlas is non-partisan.
+It takes no position for or against any facility or operator, and it is not
+affiliated with any company, advocacy group, or government agency. If you
+publish commentary, ratings, or advocacy alongside the data, make it clear
+which parts are Compute Atlas records and which are yours. Do not present
+your conclusions as Compute Atlas's.
+
+For academic citation, use the dataset's permanent DOI:
+
+  Kubiak, E. (n.d.). Compute Atlas [Data set].
+  https://doi.org/10.5281/zenodo.22284476
 
 ------------------------------------------------------------------------------
 
