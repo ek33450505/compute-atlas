@@ -14,10 +14,14 @@
 # here — unfreezing v4 -> v5 is the entire point of the lane. Dependabot rewrites
 # the SHA and the trailing `# v4` comment together, so the pinned form survives.
 #
-# npm lane: capped at 2 PRs/week and split prod/dev so a dev-tooling bump never
-# rides along with a runtime one. Majors are suppressed (see the ignore block) —
-# Next 16 / React 19 / Tailwind v4 majors are read-the-changelog work, not
-# merge-the-green-check work.
+# npm lane: version updates run MONTHLY (1st of the month), capped at 2 open PRs
+# and split prod/dev so a dev-tooling bump never rides along with a runtime one.
+# Majors are suppressed (see the ignore block) — Next 16 / React 19 / Tailwind v4
+# majors are read-the-changelog work, not merge-the-green-check work.
+# Security updates are grouped into ONE PR per run (`npm-security`) instead of one
+# PR per package: each Dependabot PR is a full Vercel preview + prod build, so
+# one-per-package was the cost driver. Security PRs have their own fixed limit of
+# 10 open PRs; `open-pull-requests-limit` does not control them.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -42,8 +46,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "monthly"
       time: "07:00"
       timezone: "Etc/UTC"
     open-pull-requests-limit: 2
@@ -58,6 +61,13 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      # One PR per run for every security advisory, rather than one PR per
+      # package. Without `applies-to`, a group covers version updates only, so
+      # the two groups above do not apply to security updates.
+      npm-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
     # ⛔ The `update-types` list here is LOAD-BEARING, not decoration. A bare
     # `dependency-name: "*"` with no `update-types` silences Dependabot
     # entirely — including SECURITY updates, which are the one kind that must
