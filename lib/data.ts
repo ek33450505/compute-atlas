@@ -130,40 +130,90 @@ async function loadFacilitiesUncached(): Promise<Facility[]> {
 }
 
 /**
- * `unstable_cache` refuses to store entries over 2MB. The full facility array
- * now serializes to ~1.9MB of plain JSON, which pushes past that ceiling once
- * wrapped in `unstable_cache`'s own storage envelope (~2.05MB) — it throws
- * `Failed to set Next.js data cache ... items over 2MB can not be cached` as
- * an unhandledRejection and silently disables caching for the entry. Since
- * `loadFacilitiesForSearch` runs in the root layout on every route, that
- * error fired page-to-page.
+ * The facility set is cached as FACILITY_CACHE_SHARDS blobs, not one. The
+ * single gzip+base64 blob reached 2,097,064 bytes on 472cb36 (2026-10-13) —
+ * under the 2 MiB limit (2,097,152) on its own, but over it once wrapped in
+ * `unstable_cache`'s envelope (+~2.3KB). From then on every `set` failed
+ * (`items over 2MB can not be cached`), every prerendered page missed the
+ * cache and re-ran the full-table read + stringify + gzip, and the static
+ * generation workers ran out of heap. The blob had grown 2,073,532 -> 2,097,064
+ * in one data wave, so a bigger compressor only buys one more wave; sharding
+ * removes the ceiling. Shard by a hash of the id (not by array index) so a
+ * record's shard never depends on the other records: no record is dropped or
+ * duplicated when shards revalidate independently.
  *
- * Fix: cache a gzipped base64 blob (~400KB, years of headroom) instead of the
- * raw array, and inflate on read. `reactCache` memoizes the inflate per
- * request, so a page calling the loader multiple times only decompresses
- * once. `loadFacilitiesUncached` already sorts deterministically and has
- * `withJsonFallback`, so gzip output stays deterministic and the cache
- * remains outage-resilient (serves the last good compressed blob if Neon is
- * down). Shared by both `loadFacilities` and `loadFacilitiesForSearch` below
- * so the compression logic lives in exactly one place.
+ * Cost of that independence: shards share one revalidate timer but not one
+ * snapshot. A read inside the window (1h aggregate / 24h search) can merge
+ * shards fetched at two different moments, so per-record data is always
+ * whole, but aggregates (counts, totals) can reflect two moments in time.
+ */
+export const FACILITY_CACHE_SHARDS = 4;
+
+export function facilityShard(id: string): number {
+  let h = 2166136261; // FNV-1a
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0) % FACILITY_CACHE_SHARDS;
+}
+
+/** gzip+base64 of the records belonging to `shard`. */
+export function encodeFacilityShard(facilities: Facility[], shard: number): string {
+  const mine = facilities.filter((f) => facilityShard(f.id) === shard);
+  return gzipSync(Buffer.from(JSON.stringify(mine), "utf8")).toString("base64");
+}
+
+/** Inverse of `encodeFacilityShard` over every shard, in `loadFacilitiesUncached` order. */
+export function mergeFacilityShards(blobs: string[]): Facility[] {
+  return blobs
+    .flatMap((blob) => JSON.parse(gunzipSync(Buffer.from(blob, "base64")).toString("utf8")) as Facility[])
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+// Concurrent cold shards (one per `unstable_cache` miss) share a single
+// full-table read. Module-level and cleared on settle rather than memoized, so
+// nothing outlives the burst or goes stale across revalidations; deliberately
+// not React `cache()`, which is request-scoped and unproven inside
+// `unstable_cache` callbacks during static generation.
+let inFlightFullLoad: Promise<Facility[]> | undefined;
+function loadFacilitiesShared(): Promise<Facility[]> {
+  inFlightFullLoad ??= loadFacilitiesUncached().finally(() => {
+    inFlightFullLoad = undefined;
+  });
+  return inFlightFullLoad;
+}
+
+/**
+ * `unstable_cache` refuses to store entries over 2MB, envelope included, and
+ * outside dev only `console.warn`s and skips the write (see
+ * `incremental-cache/index.js`), so an oversized entry fails silently and
+ * every read misses. The facility array serializes to ~5.7MB of plain JSON,
+ * so it is cached as gzip+base64 shards (see `FACILITY_CACHE_SHARDS` for why
+ * and how big they may get), inflated and merged on read. `reactCache`
+ * memoizes the inflate+merge per request, so a page calling the loader
+ * multiple times only decompresses once. `loadFacilitiesUncached` already
+ * sorts deterministically and has `withJsonFallback`, so the cache stays
+ * outage-resilient (serves the last good blobs if Neon is down). Shared by
+ * both `loadFacilities` and `loadFacilitiesForSearch` below so the
+ * compression logic lives in exactly one place.
  */
 function loadFacilitiesCompressed(
   keyParts: string[],
   opts: { tags?: string[]; revalidate: number }
 ): () => Promise<Facility[]> {
-  const loadCompressedBlob = unstable_cache(
-    async () => {
-      const json = JSON.stringify(await loadFacilitiesUncached());
-      return gzipSync(Buffer.from(json, "utf8")).toString("base64");
-    },
-    keyParts,
-    opts
+  const shards = Array.from({ length: FACILITY_CACHE_SHARDS }, (_, shard) =>
+    unstable_cache(
+      async () => encodeFacilityShard(await loadFacilitiesShared(), shard),
+      // ⚠️ The `shard-N` part is load-bearing. `unstable_cache` keys on the
+      // callback's `toString()` plus these parts, and all FACILITY_CACHE_SHARDS
+      // closures have identical source — without it every shard would share
+      // one key and return the same blob.
+      [...keyParts, `shard-${shard}`],
+      opts
+    )
   );
-  return reactCache(async () => {
-    const blob = await loadCompressedBlob();
-    const json = gunzipSync(Buffer.from(blob, "base64")).toString("utf8");
-    return JSON.parse(json) as Facility[];
-  });
+  return reactCache(async () => mergeFacilityShards(await Promise.all(shards.map((load) => load()))));
 }
 
 /**
@@ -185,8 +235,8 @@ function loadFacilitiesCompressed(
  * is absent under vitest — detect that environment and degrade to the
  * uncached loader directly so the 536-test suite (which runs with no
  * DATABASE_URL, exercising the JSON fallback) stays green. The underlying
- * payload is stored gzip-compressed (see `loadFacilitiesCompressed` above)
- * to stay well under `unstable_cache`'s 2MB entry limit.
+ * payload is stored as gzip-compressed shards (see `loadFacilitiesCompressed`
+ * above), each kept well under `unstable_cache`'s 2MB entry limit.
  */
 export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
   ? loadFacilitiesUncached
@@ -212,8 +262,8 @@ export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
  * "facilities" to every publish's tag set — at which point this read turned
  * every `db:sync -- --apply` into a site-wide cache nuke. Measured 2026-08-21.
  * The 86400s timer above is the intended refresh mechanism for this reader;
- * it needs no tag to stay correct. Gzip-compressed for the same 2MB-ceiling
- * reason as `loadFacilities` above.
+ * it needs no tag to stay correct. Stored as gzip shards, each well under the
+ * 2MB per-entry ceiling (see `FACILITY_CACHE_SHARDS`).
  */
 export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VITEST
   ? loadFacilitiesUncached
