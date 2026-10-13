@@ -31,7 +31,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS, countDisclosedCapacity, formatEditionDate } from "@/lib/format";
 import { getDatasetEdition } from "@/lib/dataset-edition";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Dataset coverage and completeness",

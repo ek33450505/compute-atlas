@@ -7,7 +7,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "US data centers by status",

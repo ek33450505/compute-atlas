@@ -15,7 +15,7 @@ import { SurveyStatRow } from "@/components/survey-stat-row";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Data centers by state",

@@ -9,7 +9,7 @@ import { ExportButtons } from "@/components/explorer/export-buttons";
 import { breadcrumbJsonLdString, DATASET_DOI_URL } from "@/lib/seo";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Get the data",

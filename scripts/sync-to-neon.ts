@@ -219,8 +219,8 @@ export function planSync(
  * `"facilities"` tag when the batch is non-empty.
  *
  * `tagsForFacility` deliberately omits `"facilities"`: a single write must
- * not nuke the ~1,547-route aggregate surface, which self-heals on its own
- * 1h ISR timer. A bulk sync inverts that argument — one extra tag, once, is
+ * not nuke the ~1,547-route aggregate surface, which is refreshed by
+ * the "facilities" tag bust at the end of a review batch, or its 24h ISR timer. A bulk sync inverts that argument — one extra tag, once, is
  * far cheaper than the individual writes it stands in for, and without it
  * the homepage would keep quoting yesterday's facility count for up to an
  * hour after a publish. That justification still holds and this line should

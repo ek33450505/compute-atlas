@@ -66,9 +66,10 @@ export function isValidCacheTag(tag: string): boolean {
  * `power-generation` when either side qualifies — see below).
  *
  * `"facilities"` is deliberately NOT included: aggregate pages (home, map,
- * table, stats, ...) refresh on their own cheap `revalidate: 3600` timer
- * (see `loadFacilities` in `lib/data.ts`) — an approved ~1h freshness
- * tolerance (Ed, 2026-07-22 ISR-write-blowout fix). A caller that genuinely
+ * table, stats, ...) refresh on their own cheap `revalidate: 86400` timer
+ * (see `loadFacilities` in `lib/data.ts`) plus a single `"facilities"` bust
+ * each time a review leaves the pending queue empty (`lib/submissions.ts`) — Ed, 2026-07-22
+ * ISR-write-blowout fix, timer lengthened 2026-10-13. A caller that genuinely
  * wants aggregates refreshed now — e.g. a one-shot bulk sync, where the
  * amplification argument runs the other way — adds it once itself.
  *

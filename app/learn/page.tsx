@@ -7,7 +7,7 @@ import { PageMasthead } from "@/components/page-masthead";
 import { breadcrumbJsonLdString, itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 const CRUMBS = [{ label: "Explore", href: "/explore" }, { label: "Learn" }];
 

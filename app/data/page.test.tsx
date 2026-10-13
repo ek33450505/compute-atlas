@@ -213,12 +213,12 @@ function getRevalidate(relativePath: string): string | null {
   return match ? match[1] : null;
 }
 
-// The facility-reading aggregate pages that must self-heal within the hour —
-// each carries the "facilities" cache tag (see lib/cache-tags.ts) and must
-// agree on how often it revalidates, or one silently drifts onto the 24h
-// root-layout floor the way /data did.
+// The facility-reading aggregate pages — each carries the "facilities" cache
+// tag (see lib/cache-tags.ts) and must agree on how often it revalidates, or
+// one silently drifts onto a different timer the way /data once did. The
+// homepage is deliberately excluded: it reads tagged data (getStats/loadFacilities)
+// AND also reads untagged direct-DB data (recent activity, quarterly pipeline), so it stays on a 1h timer.
 const AGGREGATE_PAGES = [
-  "app/page.tsx",
   "app/stats/page.tsx",
   "app/table/page.tsx",
   "app/ai/page.tsx",
@@ -227,8 +227,8 @@ const AGGREGATE_PAGES = [
 ];
 
 describe("revalidate: /data must not drift from its aggregate-page siblings", () => {
-  it("app/data/page.tsx declares revalidate = 3600", () => {
-    expect(getRevalidate("app/data/page.tsx")).toBe("3600");
+  it("app/data/page.tsx declares revalidate = 86400", () => {
+    expect(getRevalidate("app/data/page.tsx")).toBe("86400");
   });
 
   it("every facility-reading aggregate page declares the same revalidate value", () => {

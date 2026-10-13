@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
@@ -207,6 +208,30 @@ export async function listSubmissionsWithWatchers(
 }
 
 /**
+ * Busts the global `"facilities"` tag ONCE each time an
+ * approval or rejection leaves the pending queue empty. A single write
+ * deliberately busts only its scoped tags (`tagsForFacility`) because per-write
+ * `"facilities"` busts were the 2026-07-22 ISR-write-blowout; aggregate, hub
+ * and listing pages sit on a 24h timer, so without this a drained queue would
+ * leave them stale until the timer or the next `db:sync`. One bust per queue drain is
+ * bounded. Best-effort: a count or bust failure must never fail a review, and
+ * logs a SQLSTATE only (DrizzleQueryError.message embeds bound params).
+ */
+async function bustAggregatesIfQueueDrained(db: ReturnType<typeof getDb>): Promise<void> {
+  try {
+    const [{ n }] = await db
+      .select({ n: sql<number>`count(*)` })
+      .from(submissionsTable)
+      .where(eq(submissionsTable.status, "pending"));
+    if (Number(n) === 0) {
+      revalidateTag("facilities", "max");
+    }
+  } catch (err) {
+    console.error(`queue-drain cache bust failed (sqlstate: ${redactedErrorCode(err)})`);
+  }
+}
+
+/**
  * Promotes a pending submission to a live facility via the write
  * primitives, then marks the submission `approved`. If the primitive rejects
  * (e.g. schema-invalid payload), the submission is left `pending` so it can
@@ -275,6 +300,8 @@ export async function approveSubmission(
     console.error(`subscriber notification failed (sqlstate: ${redactedErrorCode(err)})`);
   }
 
+  await bustAggregatesIfQueueDrained(db);
+
   return {
     ok: true,
     submission: updated,
@@ -318,6 +345,8 @@ export async function rejectSubmission(
   } catch (err) {
     console.error(`submitter notification failed (sqlstate: ${redactedErrorCode(err)})`);
   }
+
+  await bustAggregatesIfQueueDrained(db);
 
   return { ok: true, submission: updated };
 }

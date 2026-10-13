@@ -26,7 +26,7 @@ import {
   type GenerationTechnology,
 } from "@/lib/generation";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 /** Returns a label + facility-count row for the technology in the same tech + location line used elsewhere. */
 function technologyLabel(f: PowerGenerationFacility): string {

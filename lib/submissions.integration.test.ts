@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } from "vitest";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 
 vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
@@ -288,6 +289,73 @@ describe("approveSubmission (kind: enrichment_update)", () => {
 // the same charset allowlist as sanitizeAttribution() (lib/contribute.ts),
 // so the admin-token POST /api/submissions path and the discovery pipeline
 // can't bypass it by writing an unsanitized handle directly.
+describe("queue-drain \"facilities\" bust", () => {
+  const facilitiesBusts = () =>
+    vi.mocked(revalidateTag).mock.calls.filter(([tag]) => tag === "facilities");
+
+  beforeEach(() => {
+    vi.mocked(revalidateTag).mockClear();
+  });
+
+  it("busts \"facilities\" exactly once when a rejection leaves zero pending", async () => {
+    const id = await insertSubmission({ kind: "create", payload: { name: "Only One" } });
+    const result = await rejectSubmission(id, "not verifiable");
+    expect(result.ok).toBe(true);
+    expect(facilitiesBusts()).toEqual([["facilities", "max"]]);
+  });
+
+  it("busts \"facilities\" exactly once when an approval leaves zero pending", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+    const id = await insertSubmission({
+      kind: "status_update",
+      targetFacilityId: seedDoc.id,
+      payload: { status: "operational", date: "2026-07-16", sources: [makeSource("c")] },
+    });
+    const result = await approveSubmission(id);
+    expect(result.ok).toBe(true);
+    expect(facilitiesBusts()).toHaveLength(1);
+  });
+
+  it("does not bust while other submissions are still pending, then busts once on the last", async () => {
+    const a = await insertSubmission({ kind: "create", payload: { name: "A" } });
+    const b = await insertSubmission({ kind: "create", payload: { name: "B" } });
+    await rejectSubmission(a, "no");
+    expect(facilitiesBusts()).toHaveLength(0);
+    await rejectSubmission(b, "no");
+    expect(facilitiesBusts()).toHaveLength(1);
+  });
+
+  it("a failing pending count does not fail the review and busts nothing", async () => {
+    const id = await insertSubmission({ kind: "create", payload: { name: "Count Fails" } });
+    let selects = 0;
+    const flaky = new Proxy(tdb.db, {
+      get(target, prop, receiver) {
+        if (prop === "select") {
+          selects += 1;
+          // 1st select is the row lookup; the 2nd is the pending count.
+          if (selects >= 2) {
+            return () => {
+              throw new Error("boom");
+            };
+          }
+        }
+        return Reflect.get(target, prop, receiver);
+      },
+    });
+    vi.mocked(dbClient.getDb).mockReturnValueOnce(flaky as never);
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const result = await rejectSubmission(id, "no");
+
+    expect(result.ok).toBe(true);
+    expect(selects).toBeGreaterThanOrEqual(2);
+    expect(facilitiesBusts()).toHaveLength(0);
+    expect(errSpy).toHaveBeenCalledWith(expect.stringContaining("queue-drain cache bust failed"));
+    errSpy.mockRestore();
+  });
+});
+
 describe("createSubmission (provenance.attribution charset boundary)", () => {
   it("rejects an envelope whose provenance.attribution contains a disallowed character", async () => {
     const result = await createSubmission({

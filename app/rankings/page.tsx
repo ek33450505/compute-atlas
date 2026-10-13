@@ -19,7 +19,7 @@ import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { SectionHeading } from "@/components/section-heading";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 /** A state capacity ranking row enriched with display name + route slug. */
 type StateRow = StateCapacityRanking & { name: string; slug: string | undefined };
