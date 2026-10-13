@@ -195,8 +195,7 @@ function loadFacilitiesShared(): Promise<Facility[]> {
  * multiple times only decompresses once. `loadFacilitiesUncached` already
  * sorts deterministically and has `withJsonFallback`, so the cache stays
  * outage-resilient (serves the last good blobs if Neon is down). Shared by
- * both `loadFacilities` and `loadFacilitiesForSearch` below so the
- * compression logic lives in exactly one place.
+ * `loadFacilities` below.
  */
 function loadFacilitiesCompressed(
   keyParts: string[],
@@ -246,7 +245,7 @@ export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
     });
 
 /**
- * 24h-revalidate view of the facility list for the GLOBAL ⌘K search index ONLY.
+ * 24h-revalidate operator/state facets for the GLOBAL ⌘K nav index ONLY.
  * <SiteHeader> renders it in the root layout on every route, so this read's
  * revalidate becomes the site-wide ISR floor — deliberately long (86400s) so it
  * does NOT pin every page to a 1h cycle. Aggregate pages read loadFacilities
@@ -262,12 +261,31 @@ export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
  * "facilities" to every publish's tag set — at which point this read turned
  * every `db:sync -- --apply` into a site-wide cache nuke. Measured 2026-08-21.
  * The 86400s timer above is the intended refresh mechanism for this reader;
- * it needs no tag to stay correct. Stored as gzip shards, each well under the
- * 2MB per-entry ceiling (see `FACILITY_CACHE_SHARDS`).
+ * it needs no tag to stay correct.
+ *
+ * Deliberately NOT the full facility list: this runs in the root layout, i.e. once
+ * per prerendered page (~4,800 per build). Inflating and parsing the whole
+ * dataset for the two fields the nav index reads left live deep copies in a
+ * build worker's heap at the moment it ran out of memory: per the 2026-10-13
+ * Node 22 heap snapshot, ~35MB of heap per parse and ~120 live deep copies
+ * (4.2GB). The facets are ~120KB and cached as plain JSON, no compression
+ * needed.
  */
-export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VITEST
-  ? loadFacilitiesUncached
-  : loadFacilitiesCompressed(["facilities-search"], {
+export interface NavFacet {
+  operator: string;
+  state: string;
+}
+
+async function loadNavFacetsUncached(): Promise<NavFacet[]> {
+  return (await loadFacilitiesShared()).map((f) => ({
+    operator: f.operator,
+    state: f.location.state,
+  }));
+}
+
+export const loadNavFacets: () => Promise<NavFacet[]> = process.env.VITEST
+  ? loadNavFacetsUncached
+  : unstable_cache(loadNavFacetsUncached, ["facilities-nav-facets"], {
       revalidate: 86400,
     });
 
@@ -282,7 +300,7 @@ export const loadFacilitiesForSearch: () => Promise<Facility[]> = process.env.VI
 // on detail pages. Each is tag-only (no `revalidate` option on the reader
 // itself) and rewrites only when `lib/facility-write.ts` busts its specific
 // tag on write — but "tag-only" describes the READER, not the page's actual
-// worst-case staleness: `loadFacilitiesForSearch` runs in the root layout
+// worst-case staleness: `loadNavFacets` runs in the root layout
 // with an untagged 86400s timer, and a route's effective floor is the
 // minimum across its own config and every nested `unstable_cache` in its
 // render tree, so these pages still inherit that 24h ceiling even though
@@ -1812,7 +1830,7 @@ export async function getPoweredCampuses(facility: Facility): Promise<Facility[]
  * `getPowerGenerationFacilities()`/`loadFacilities()` — same reasoning as
  * `getPoweredCampuses` above: this backs the facility detail page's
  * cross-reference and must stay decoupled from the global tag — though only
- * from the tag, not from the site-wide 86400s floor `loadFacilitiesForSearch`
+ * from the tag, not from the site-wide 86400s floor `loadNavFacets`
  * imposes on every route from the root layout. Decoupling from the tag is
  * still what keeps a single-facility write from re-triggering this reader.
  */
