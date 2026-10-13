@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeAll, beforeEach, afterEach, type Mock } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CommandPalette, SEARCH_DEBOUNCE_MS } from "./command-palette";
@@ -31,9 +31,9 @@ const NAV_LINKS = [
 ] as const;
 
 /**
- * The index prop these tests pass is the NAV index — operators and states,
- * no facilities — because that is exactly what `SiteHeader` passes in
- * production (`buildNavSearchIndex`, see components/site-header.tsx). An
+ * The mocked `/api/nav-index` serves the NAV index — operators and states,
+ * no facilities — because that is exactly what the route serves in
+ * production (`buildNavSearchIndex`, see app/api/nav-index/route.ts). An
  * earlier version of this file built the FULL index instead, so every
  * facility-result assertion passed against a prop shape production no longer
  * produces, and the shipping configuration had zero component-level coverage:
@@ -124,7 +124,10 @@ function jsonResponse(body: unknown, init: { ok?: boolean; status?: number } = {
   };
 }
 
-let fetchMock: ReturnType<typeof vi.fn>;
+/** `/api/search` calls only. */
+let fetchMock: Mock;
+/** `/api/nav-index` calls only. */
+let navFetchMock: Mock;
 
 beforeEach(() => {
   pushMock.mockClear();
@@ -133,7 +136,10 @@ beforeEach(() => {
   // real request to a relative URL under jsdom — noise, and a different code
   // path from the one under test.
   fetchMock = vi.fn(async () => jsonResponse({ facilities: [] }));
-  vi.stubGlobal("fetch", fetchMock);
+  navFetchMock = vi.fn(async () => jsonResponse({ entries: navIndex }));
+  vi.stubGlobal("fetch", (input: string, init?: RequestInit) =>
+    String(input).startsWith("/api/nav-index") ? navFetchMock(input, init) : fetchMock(input, init)
+  );
 });
 
 afterEach(() => {
@@ -150,7 +156,7 @@ afterEach(() => {
  * in the debounce, not a knob to turn.
  */
 function renderPalette() {
-  return render(<CommandPalette index={navIndex} navLinks={NAV_LINKS} />);
+  return render(<CommandPalette navLinks={NAV_LINKS} />);
 }
 
 async function openPalette(user: ReturnType<typeof userEvent.setup>) {
@@ -319,6 +325,88 @@ describe("CommandPalette — local nav index", () => {
 
     await user.click(clickTarget(option));
     expect(pushMock).toHaveBeenCalledWith(knownState.href);
+  });
+});
+
+describe("CommandPalette — /api/nav-index lazy load", () => {
+  it("does not fetch the nav index until the palette is opened", async () => {
+    renderPalette();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(navFetchMock).not.toHaveBeenCalled();
+  });
+
+  it("fetches once on first open, even after closing and reopening", async () => {
+    const user = userEvent.setup();
+    renderPalette();
+    await openPalette(user);
+    await vi.waitFor(() => expect(navFetchMock).toHaveBeenCalledTimes(1));
+    expect(navFetchMock).toHaveBeenCalledWith("/api/nav-index", undefined);
+
+    await user.keyboard("{Escape}");
+    await vi.waitFor(() => expect(screen.queryByRole("combobox")).not.toBeInTheDocument());
+    await openPalette(user);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(navFetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows pages immediately and operators once the index arrives", async () => {
+    let resolveIndex!: (v: ReturnType<typeof jsonResponse>) => void;
+    navFetchMock.mockImplementation(
+      () => new Promise((resolve) => { resolveIndex = resolve; })
+    );
+    const user = userEvent.setup();
+    renderPalette();
+    await openPalette(user);
+
+    expect(screen.getByRole("option", { name: /home/i })).toBeInTheDocument();
+    await user.type(screen.getByRole("combobox"), knownOperator.label);
+    expect(
+      screen.queryByRole("option", { name: nameMatcher(knownOperator.label) })
+    ).not.toBeInTheDocument();
+
+    resolveIndex(jsonResponse({ entries: navIndex }));
+    expect(
+      await screen.findByRole("option", { name: nameMatcher(knownOperator.label) })
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    ["responds non-ok", () => jsonResponse({}, { ok: false, status: 500 })],
+    ["rejects", () => Promise.reject(new Error("network error"))],
+  ])("still shows pages when the nav index fetch %s", async (_name, respond) => {
+    navFetchMock.mockImplementation(async () => respond());
+    const user = userEvent.setup();
+    renderPalette();
+    await openPalette(user);
+    await vi.waitFor(() => expect(navFetchMock).toHaveBeenCalledTimes(1));
+
+    expect(screen.getByRole("option", { name: /home/i })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /map/i })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+});
+
+describe("CommandPalette — /api/nav-index retry after failure", () => {
+  it.each([
+    ["responds non-ok", () => jsonResponse({}, { ok: false, status: 429 })],
+    ["rejects", () => Promise.reject(new Error("network error"))],
+  ])("retries on the next open when the first fetch %s", async (_name, respond) => {
+    navFetchMock.mockImplementationOnce(async () => respond());
+    const user = userEvent.setup();
+    renderPalette();
+    await openPalette(user);
+    await vi.waitFor(() => expect(navFetchMock).toHaveBeenCalledTimes(1));
+
+    await user.keyboard("{Escape}");
+    await vi.waitFor(() => expect(screen.queryByRole("combobox")).not.toBeInTheDocument());
+    const combobox = await openPalette(user);
+    await vi.waitFor(() => expect(navFetchMock).toHaveBeenCalledTimes(2));
+
+    await user.type(combobox, knownOperator.label);
+    expect(
+      await screen.findByRole("option", { name: nameMatcher(knownOperator.label) })
+    ).toBeInTheDocument();
   });
 });
 

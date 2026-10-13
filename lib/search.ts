@@ -67,7 +67,10 @@ export function toFacilitySearchHit(f: Facility): FacilitySearchHit {
  * palette entry — used by the live /api/search merge path in
  * command-palette.tsx. Pure — depends only on stateNameFromCode. */
 export function facilityToSearchEntry(f: FacilitySearchHit): SearchEntry {
-  const stateName = stateNameFromCode(f.location.state) ?? f.location.state;
+  // The DB jsonb doc is not zod-parsed, so `state` can be null at runtime; a
+  // throw here would blank every DB result in the palette. Treat it as absent.
+  const state = typeof f.location.state === "string" ? f.location.state : undefined;
+  const stateName = state && (stateNameFromCode(state) ?? state);
   const sublabel = [f.location.city, stateName].filter(Boolean).join(", ");
   const keywords = [
     f.name,
@@ -76,7 +79,7 @@ export function facilityToSearchEntry(f: FacilitySearchHit): SearchEntry {
     f.location.county,
     f.location.street,
     stateName,
-    f.location.state,
+    state,
   ]
     .filter(Boolean)
     .join(" ")

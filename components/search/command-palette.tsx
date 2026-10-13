@@ -16,7 +16,6 @@ import {
 } from "@/lib/search";
 
 interface CommandPaletteProps {
-  index: SearchEntry[];
   navLinks: readonly { readonly label: string; readonly href: string }[];
 }
 
@@ -36,7 +35,7 @@ export const SEARCH_DEBOUNCE_MS = 200;
  * button and the modal itself, sharing open/query state. Does content search
  * (facilities/operators/states) and page navigation in one place.
  */
-export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
+export function CommandPalette({ navLinks }: CommandPaletteProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -44,6 +43,7 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
   const [isMac, setIsMac] = useState(false);
   const [prevQuery, setPrevQuery] = useState(query);
   const [dbEntries, setDbEntries] = useState<SearchEntry[]>([]);
+  const [index, setIndex] = useState<SearchEntry[]>(EMPTY_SEARCH_ENTRIES);
   const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const activeItemRef = useRef<HTMLLIElement>(null);
@@ -90,6 +90,31 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
     window.addEventListener("compute-atlas:open-search", handleOpenSearch);
     return () => window.removeEventListener("compute-atlas:open-search", handleOpenSearch);
   }, []);
+
+  // Operator + state index, fetched once on first open (not shipped in every
+  // page's RSC payload). Page entries show immediately; these join when they
+  // arrive. A failed fetch degrades silently to pages only and the NEXT open
+  // retries; after a success it is never refetched. The query-driven
+  // /api/search results are unaffected either way.
+  const navIndexRequested = useRef(false);
+  useEffect(() => {
+    if (!open || navIndexRequested.current) return;
+    navIndexRequested.current = true;
+    fetch("/api/nav-index")
+      .then((res) => {
+        if (!res.ok) {
+          navIndexRequested.current = false;
+          return null;
+        }
+        return res.json();
+      })
+      .then((data: { entries?: SearchEntry[] } | null) => {
+        if (data?.entries) setIndex(data.entries);
+      })
+      .catch(() => {
+        navIndexRequested.current = false;
+      });
+  }, [open]);
 
   // Debounced live DB full-text search. Augments the instant client-side Fuse
   // results with facilities matched by their notes/description content (which

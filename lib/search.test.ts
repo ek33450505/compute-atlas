@@ -204,6 +204,26 @@ describe("facilityToSearchEntry", () => {
     expect(entry.sublabel).toBe("Virginia");
   });
 
+  it("tolerates a null state (un-parsed jsonb) without throwing", () => {
+    const facility = makeFacility({ city: "Ashburn", state: null } as unknown as Partial<Facility["location"]>);
+    const entry = facilityToSearchEntry(facility);
+
+    expect(entry).toMatchObject({
+      label: "Acme Campus",
+      href: "/facilities/acme-campus",
+      sublabel: "Ashburn",
+    });
+    expect(entry.keywords).not.toContain("null");
+  });
+
+  it("ignores a non-string state without throwing", () => {
+    const facility = makeFacility({ city: "Ashburn", state: 42 as unknown as string });
+    const entry = facilityToSearchEntry(facility);
+
+    expect(entry.sublabel).toBe("Ashburn");
+    expect(entry.keywords).not.toContain("42");
+  });
+
   it("includes the street in keywords when present", () => {
     const facility = makeFacility({ street: "44490 Waxpool Rd" });
     const entry = facilityToSearchEntry(facility);

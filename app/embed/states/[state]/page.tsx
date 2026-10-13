@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site";
 import { FacilityMap } from "@/components/map/facility-map-dynamic";
 import { StatePanel } from "@/components/feedback/state-panel";
 
-export const revalidate = false;
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   const codes = await getStates();

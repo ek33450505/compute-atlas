@@ -282,25 +282,27 @@ export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
 
 /**
  * 24h-revalidate operator/state facets for the GLOBAL ⌘K nav index ONLY.
- * <SiteHeader> renders it in the root layout on every route, so this read's
- * revalidate becomes the site-wide ISR floor — deliberately long (86400s) so it
- * does NOT pin every page to a 1h cycle. Aggregate pages read loadFacilities
- * (1h) directly and float above this floor; detail/state pages read scoped
- * tag-only caches and floor here at 24h.
+ * Read by `GET /api/nav-index` (via `buildNavSearchIndex`), which the palette
+ * fetches lazily on first open. It is NO LONGER read in the root layout, so it
+ * sets no ISR floor on any route: the detail/state/embed pages that read
+ * scoped tag-only caches declare `export const revalidate = 86400` themselves.
  *
  * Deliberately NO cache tag here — do NOT add one back (not "facilities", not
- * "search-index", not anything). A tag on a root-layout read gets stamped onto
- * every prerendered route (~1,500 of them), so busting it hard-expires the
- * whole site in one shot. This used to carry the "facilities" tag, reasoned
- * at the time to be inert because nothing called revalidateTag("facilities").
+ * "search-index", not anything). While this ran in the root layout, a tag on it
+ * was stamped onto every prerendered route (~1,500 of them), so busting it
+ * hard-expired the whole site in one shot; the route handler no longer does
+ * that, but the endpoint's own edge cache is untagged too.
+ *
+ * This reader used to carry the "facilities" tag, reasoned at the time to be
+ * inert because nothing called revalidateTag("facilities").
  * That premise held only until `scripts/sync-to-neon.ts` started adding
  * "facilities" to every publish's tag set — at which point this read turned
  * every `db:sync -- --apply` into a site-wide cache nuke. Measured 2026-08-21.
  * The 86400s timer above is the intended refresh mechanism for this reader;
  * it needs no tag to stay correct.
  *
- * Deliberately NOT the full facility list: this runs in the root layout, i.e. once
- * per prerendered page (~4,800 per build). Inflating and parsing the whole
+ * Deliberately NOT the full facility list: this used to run in the root layout,
+ * i.e. once per prerendered page (~4,800 per build). Inflating and parsing the whole
  * dataset for the two fields the nav index reads left live deep copies in a
  * build worker's heap at the moment it ran out of memory: per the 2026-10-13
  * Node 22 heap snapshot, ~35MB of heap per parse and ~120 live deep copies
@@ -336,11 +338,10 @@ export const loadNavFacets: () => Promise<NavFacet[]> = process.env.VITEST
 // on detail pages. Each is tag-only (no `revalidate` option on the reader
 // itself) and rewrites only when `lib/facility-write.ts` busts its specific
 // tag on write — but "tag-only" describes the READER, not the page's actual
-// worst-case staleness: `loadNavFacets` runs in the root layout
-// with an untagged 86400s timer, and a route's effective floor is the
-// minimum across its own config and every nested `unstable_cache` in its
-// render tree, so these pages still inherit that 24h ceiling even though
-// none of them carry the timer themselves. Each reads the DB/JSON directly
+// worst-case staleness: the facility, state and embed-state pages declare
+// `export const revalidate = 86400` themselves (the root layout no longer
+// reads `loadNavFacets`, so nothing else supplies a floor), which is that
+// 24h ceiling. Each reads the DB/JSON directly
 // rather than routing through `loadFacilities()`, so it never re-acquires
 // the global tag. Every reader mirrors the `process.env.VITEST` bypass so
 // the test suite (no DATABASE_URL) stays green.
@@ -402,7 +403,7 @@ async function fetchFacilitiesByStateUncached(code: string): Promise<Facility[]>
  * touching that state, never by the global tag or timer. That is a claim
  * about the reader's own cache entry, not the state page's measured
  * behavior: `/states/*` was measured at `initialRevalidateSeconds: 3600`
- * (2026-08-21); with `loadFacilities` and `loadNavFacets` both at 86400 it now
+ * (2026-08-21); with `loadFacilities` at 86400 it now
  * sits on the 24h floor and, per the ground truth measured
  * 2026-08-21, does carry the bare `facilities` tag via other reads in its
  * render tree. Same filter/sort as `getFacilitiesByState`.
@@ -1871,8 +1872,8 @@ export async function getPoweredCampuses(facility: Facility): Promise<Facility[]
  * `getPowerGenerationFacilities()`/`loadFacilities()` — same reasoning as
  * `getPoweredCampuses` above: this backs the facility detail page's
  * cross-reference and must stay decoupled from the global tag — though only
- * from the tag, not from the site-wide 86400s floor `loadNavFacets`
- * imposes on every route from the root layout. Decoupling from the tag is
+ * from the tag, not from the 86400s `revalidate` the detail pages declare.
+ * Decoupling from the tag is
  * still what keeps a single-facility write from re-triggering this reader.
  */
 export async function getPoweredByGenerators(facility: Facility): Promise<PowerGenerationFacility[]> {
