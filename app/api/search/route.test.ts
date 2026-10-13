@@ -160,4 +160,46 @@ describe("GET /api/search", () => {
     expect(blocked.status).toBe(429);
     expect(blocked.headers.get("Retry-After")).toBeTruthy();
   });
+
+  describe("shape=palette", () => {
+    const FULL: Facility = {
+      id: "acme-campus",
+      name: "Acme Campus",
+      operator: "Acme Corp",
+      status: "operational",
+      confidence: "confirmed",
+      facilityType: "data_center",
+      location: { lat: 39, lon: -77, state: "VA", city: "Ashburn", postalCode: "20147" },
+    } as Facility;
+
+    it("returns only the lean keys, with count and query intact", async () => {
+      searchFacilitiesDbMock.mockResolvedValue(ok([FULL]));
+
+      const body = await (await GET(req("?q=acme&shape=palette"))).json();
+
+      expect(body.count).toBe(1);
+      expect(body.query).toBe("acme");
+      expect(Object.keys(body.facilities[0]).sort()).toEqual(["id", "location", "name", "operator"]);
+      expect(Object.keys(body.facilities[0].location).sort()).toEqual(["city", "state"]);
+    });
+
+    it.each(["", "?q=acme", "?q=acme&shape=foo", "?q=acme&shape=PALETTE"])(
+      "keeps the full public records when shape is absent or unknown (%s)",
+      async (qs) => {
+        searchFacilitiesDbMock.mockResolvedValue(ok([FULL]));
+
+        const body = await (await GET(req(qs))).json();
+
+        expect(body.facilities).toEqual([FULL]);
+      }
+    );
+
+    it("is still no-store when degraded", async () => {
+      searchFacilitiesDbMock.mockResolvedValue(DEGRADED);
+
+      const res = await GET(req("?q=acme&shape=palette"));
+
+      expect(res.headers.get("Cache-Control")).toBe("no-store");
+    });
+  });
 });

@@ -39,10 +39,34 @@ const DEFAULT_LIMITS: Record<SearchEntryType, number> = {
   state: 5,
 };
 
+/** The only Facility fields the palette reads. Derived from `Facility` so it
+ * cannot drift from the schema; `/api/search?shape=palette` serves this. */
+export type FacilitySearchHit = Pick<Facility, "id" | "name" | "operator"> & {
+  location: Pick<Facility["location"], "state"> &
+    Partial<Pick<Facility["location"], "city" | "county" | "street">>;
+};
+
+/** Projects a Facility onto a FacilitySearchHit. Always builds a NEW object
+ * (facility arrays are shared across requests) and omits absent optionals. */
+export function toFacilitySearchHit(f: Facility): FacilitySearchHit {
+  const { city, county, street, state } = f.location;
+  return {
+    id: f.id,
+    name: f.name,
+    operator: f.operator,
+    location: {
+      state,
+      ...(city != null && { city }),
+      ...(county != null && { county }),
+      ...(street != null && { street }),
+    },
+  };
+}
+
 /** Builds one facility SearchEntry. The single place a Facility becomes a
  * palette entry — used by the live /api/search merge path in
  * command-palette.tsx. Pure — depends only on stateNameFromCode. */
-export function facilityToSearchEntry(f: Facility): SearchEntry {
+export function facilityToSearchEntry(f: FacilitySearchHit): SearchEntry {
   const stateName = stateNameFromCode(f.location.state) ?? f.location.state;
   const sublabel = [f.location.city, stateName].filter(Boolean).join(", ");
   const keywords = [

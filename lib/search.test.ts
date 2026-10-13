@@ -3,6 +3,7 @@ import { getAllFacilities, getOperators } from "@/lib/data";
 import {
   searchCommands,
   facilityToSearchEntry,
+  toFacilitySearchHit,
   mergeFacilityResults,
   type SearchEntry,
   type SearchResultGroup,
@@ -208,6 +209,50 @@ describe("facilityToSearchEntry", () => {
     const entry = facilityToSearchEntry(facility);
 
     expect(entry.keywords).toContain("waxpool");
+  });
+});
+
+describe("toFacilitySearchHit", () => {
+  const full = {
+    id: "acme-campus",
+    name: "Acme Campus",
+    operator: "Acme Corp",
+    status: "operational",
+    confidence: "confirmed",
+    facilityType: "data_center",
+    location: { lat: 39, lon: -77, state: "VA", city: "Ashburn", county: "Loudoun", street: "1 Main St" },
+  } as Facility;
+
+  it("returns a new object without mutating the input", () => {
+    const before = structuredClone(full);
+    const hit = toFacilitySearchHit(full);
+
+    expect(hit).not.toBe(full);
+    expect(hit.location).not.toBe(full.location);
+    expect(full).toEqual(before);
+    expect(hit).toEqual({
+      id: "acme-campus",
+      name: "Acme Campus",
+      operator: "Acme Corp",
+      location: { state: "VA", city: "Ashburn", county: "Loudoun", street: "1 Main St" },
+    });
+  });
+
+  it("omits absent optional location fields instead of emitting undefined", () => {
+    const hit = toFacilitySearchHit({ ...full, location: { lat: 1, lon: 2, state: "VA" } } as Facility);
+
+    expect(Object.keys(hit.location)).toEqual(["state"]);
+  });
+
+  it("omits optional location fields stored as null (un-parsed jsonb)", () => {
+    const hit = toFacilitySearchHit({
+      ...full,
+      location: { lat: 1, lon: 2, state: "VA", city: null, county: null, street: null },
+    } as unknown as Facility);
+
+    expect(hit.location).not.toHaveProperty("city");
+    expect(hit.location).not.toHaveProperty("county");
+    expect(hit.location).not.toHaveProperty("street");
   });
 });
 

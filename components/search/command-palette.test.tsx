@@ -197,7 +197,7 @@ describe("CommandPalette — facilities via /api/search", () => {
     ).toBeInTheDocument();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining("/api/search?q=Zzyzx"),
+      expect.stringContaining("/api/search?q=Zzyzx&shape=palette"),
       expect.anything()
     );
 
@@ -232,7 +232,7 @@ describe("CommandPalette — facilities via /api/search", () => {
 
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
     expect(fetchMock).toHaveBeenLastCalledWith(
-      "/api/search?q=zzyzx%20campus",
+      "/api/search?q=zzyzx%20campus&shape=palette",
       expect.anything()
     );
   });

@@ -3,6 +3,7 @@ import { cacheableJson, corsPreflight, jsonResponse, READ_CACHE } from "@/lib/ap
 import { extractTrustedClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 import { checkDailyApiGate } from "@/lib/api-daily-limit";
+import { toFacilitySearchHit } from "@/lib/search";
 
 /**
  * Public full-text facility search over the DB `search_vector` (name +
@@ -22,6 +23,12 @@ import { checkDailyApiGate } from "@/lib/api-daily-limit";
  * degraded case returns `no-store` instead. Every other empty result (empty
  * query, unset DATABASE_URL, a real query with no matches) is a true answer
  * and stays cached exactly as before.
+ *
+ * `?shape=palette` is an opt-in lean projection for the ⌘K palette: each
+ * facility carries only the fields `facilityToSearchEntry` reads (see
+ * `FacilitySearchHit`). It is projected here, after the shared cache, so both
+ * shapes use one cache entry. Absent or any other value keeps the full
+ * records, byte-identical to the original public contract.
  */
 export async function GET(request: Request): Promise<Response> {
   const gate = checkApiRateLimit(extractTrustedClientIp(request.headers));
@@ -33,9 +40,10 @@ export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q") ?? "";
   const { facilities, degraded } = await searchFacilitiesDb(query);
+  const lean = searchParams.get("shape") === "palette";
   const body = {
     count: facilities.length,
-    facilities,
+    facilities: lean ? facilities.map(toFacilitySearchHit) : facilities,
     query: query.slice(0, MAX_SEARCH_QUERY_LEN),
   };
 
