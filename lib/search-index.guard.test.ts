@@ -48,7 +48,7 @@ describe("DATA_MODULE_IMPORT pattern sanity", () => {
     expect('import x from "@/lib/data";').toMatch(DATA_MODULE_IMPORT);
     expect("import x from '@/lib/data';").toMatch(DATA_MODULE_IMPORT);
     expect('import x from "@/lib/data.ts";').toMatch(DATA_MODULE_IMPORT);
-    expect('import { loadFacilitiesForSearch } from "@/lib/data";').toMatch(DATA_MODULE_IMPORT);
+    expect('import { loadNavFacets } from "@/lib/data";').toMatch(DATA_MODULE_IMPORT);
     expect('const x = await import("@/lib/data");').toMatch(DATA_MODULE_IMPORT);
     expect('import raw from "@/data/facilities.json";').toMatch(DATA_MODULE_IMPORT);
   });

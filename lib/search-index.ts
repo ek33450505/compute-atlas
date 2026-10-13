@@ -3,8 +3,8 @@
  *
  * `lib/search.ts` is imported by `components/search/command-palette.tsx`,
  * which is a `"use client"` component — so anything `lib/search.ts` imports
- * gets bundled for the browser. `loadFacilitiesForSearch` (from `@/lib/data`)
- * statically imports `data/facilities.json`, a ~2.8 MB dataset. Before this
+ * gets bundled for the browser. `loadNavFacets` (from `@/lib/data`)
+ * statically imports `data/facilities.json`, a ~6.8 MB dataset. Before this
  * split, that import chain (`command-palette.tsx` → `lib/search.ts` →
  * `@/lib/data` → `@/data/facilities.json`) dragged the entire dataset into
  * the client bundle shipped on every route via `SiteHeader` in the root
@@ -43,10 +43,10 @@
  * builder that walks every facility into `SearchEntry[]`, that is the
  * regression, not the fix.
  *
- * `loadFacilitiesForSearch` above is the reader this index is built from,
+ * `loadNavFacets` above is the reader this index is built from,
  * and it is deliberately UNTAGGED — it refreshes only on its own 86400s
  * `revalidate` timer, not on a per-facility cache-tag bust (see the comment
- * on `loadFacilitiesForSearch` in `lib/data.ts` for why: it once carried the
+ * on `loadNavFacets` in `lib/data.ts` for why: it once carried the
  * global `"facilities"` tag and that turned every bulk sync into a
  * site-wide cache nuke). Because it runs in the root layout, its 86400s
  * timer is also the effective staleness floor for every other route on the
@@ -56,7 +56,7 @@
  * onto every route's render tree, not scoped to the routes that actually
  * changed.
  */
-import { loadFacilitiesForSearch, operatorSlug } from "@/lib/data";
+import { loadNavFacets, operatorSlug } from "@/lib/data";
 import { type SearchEntry } from "@/lib/search";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 
@@ -71,7 +71,7 @@ function pluralize(n: number, singular: string, plural: string): string {
  * palette component, not data.
  */
 export async function buildNavSearchIndex(): Promise<SearchEntry[]> {
-  const facilities = await loadFacilitiesForSearch();
+  const facilities = await loadNavFacets();
   const entries: SearchEntry[] = [];
 
   // Operators — count facilities per operator in one pass, and derive the
@@ -96,7 +96,7 @@ export async function buildNavSearchIndex(): Promise<SearchEntry[]> {
   // States — derive unique codes from facilities, skip any without a slug.
   const stateCounts = new Map<string, number>();
   for (const f of facilities) {
-    const code = f.location.state;
+    const code = f.state;
     stateCounts.set(code, (stateCounts.get(code) ?? 0) + 1);
   }
   for (const [code, n] of stateCounts) {

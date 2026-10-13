@@ -58,7 +58,7 @@ export async function rejectSubmissionAction(
  * freeze a partial count for up to an hour. One bust after the batch is the
  * approved trade-off — the maintainer presses this once, not per approval.
  *
- * It cannot refresh the 24h untagged search index (`loadFacilitiesForSearch`).
+ * It cannot refresh the 24h untagged search index (`loadNavFacets`).
  * Measured on prod 2026-10-02 for the HOMEPAGE only: after a "facilities" bust
  * the first GET served the stale body and the second served fresh, with no
  * Cloudflare purge needed. Map, table and stats were not measured that way;

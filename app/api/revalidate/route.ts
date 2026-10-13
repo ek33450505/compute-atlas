@@ -11,7 +11,7 @@ import { isValidCacheTag, MAX_TAGS_PER_REQUEST } from "@/lib/cache-tags";
  * upsert step calls this route afterward with the tags it touched, e.g.
  * `{ tags: ["state:CA", "operator:some-operator-slug"] }`. `"facilities"` is
  * still a valid tag (see `tagsForChanges` in `scripts/sync-to-neon.ts`) but
- * no longer reaches the ⌘K nav index — `loadFacilitiesForSearch` is
+ * no longer reaches the ⌘K nav index — `loadNavFacets` is
  * deliberately untagged (see `lib/search-index.ts`) and refreshes only on
  * its own 86400s timer, so busting `"facilities"` alone will not update it.
  */
