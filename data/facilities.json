@@ -66452,12 +66452,12 @@
     "statusHistory": [
       {
         "status": "under_construction",
-        "date": "2005",
+        "date": "2026-10-13",
         "sourceIndex": 0
       },
       {
         "status": "operational",
-        "date": "2006",
+        "date": "2026-10-13",
         "note": "One of Google's earliest major data center campuses; expanded multiple times through 2023",
         "sourceIndex": 0
       }
@@ -66467,13 +66467,6 @@
         "url": "https://en.wikipedia.org/wiki/The_Dalles,_Oregon#Google_data_centers",
         "label": "The Dalles, Oregon — Google data centers (Wikipedia)",
         "publisher": "Wikipedia",
-        "retrievedAt": "2026-07-05",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.datacenterknowledge.com/google/google-s-enormous-the-dalles-data-center",
-        "label": "Google's enormous The Dalles data center — Data Center Knowledge",
-        "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-07-05",
         "kind": "press"
       },
@@ -66605,7 +66598,10 @@
       "sourceIndex": 6
     },
     "facilityType": "data_center",
-    "aiClassification": "mixed_use"
+    "aiClassification": "mixed_use",
+    "environmental": {
+      "waterStress": "unknown"
+    }
   },
   {
     "id": "google-the-dalles-port-river-road-or",
