@@ -765,6 +765,15 @@
     }
   },
   "adobe-or1-hillsboro-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -1674,6 +1683,15 @@
     }
   },
   "alliant-burlington-rice-ia": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 27.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -1699,6 +1717,15 @@
     }
   },
   "alliant-creston-solar-ia": {
+    "nearestWater": {
+      "name": "Middle Platte River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4671,6 +4698,15 @@
     }
   },
   "basic-mining-superior-nuckolls-ne": {
+    "nearestWater": {
+      "name": "Lost Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 24.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -8208,6 +8244,15 @@
     }
   },
   "clop-omaha-papillion-ne": {
+    "nearestWater": {
+      "name": "South Papillion Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8844,6 +8889,15 @@
     }
   },
   "cogent-seattle-federal-way-wa": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -8892,6 +8946,15 @@
     }
   },
   "coggon-solar-linn-ia": {
+    "nearestWater": {
+      "name": "Buffalo Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 15.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -9832,6 +9895,15 @@
     }
   },
   "copia-charlestown-data-center-hermiston-or": {
+    "nearestWater": {
+      "name": "Hermiston Ditch",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -10641,6 +10713,15 @@
     }
   },
   "cpv-shay-energy-center-doddridge-county-wv": {
+    "nearestWater": {
+      "name": "Douglascamp Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -10874,6 +10955,15 @@
     }
   },
   "crusoe-monolith-hallam-lancaster-ne": {
+    "nearestWater": {
+      "name": "Salt Creek Reservoir 13-A",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11776,6 +11866,15 @@
     }
   },
   "dallesport-server-farm-webster-orchards-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -15587,6 +15686,15 @@
     }
   },
   "ecg-coon-rapids-ia": {
+    "nearestWater": {
+      "name": "Middle Raccoon River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 28.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -16889,6 +16997,15 @@
     }
   },
   "energizer-data-center-hoctor-road-klickitat-wa": {
+    "nearestWater": {
+      "name": "Swale Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -16899,6 +17016,15 @@
     }
   },
   "energizer-ii-data-center-goodnoe-hills-klickitat-wa": {
+    "nearestWater": {
+      "name": "Swale Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -18615,6 +18741,15 @@
     }
   },
   "fbi-cjis-division-clarksburg-harrison-county-wv": {
+    "nearestWater": {
+      "name": "Smith Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -18793,6 +18928,15 @@
     }
   },
   "fidelity-papillion-data-center-ne": {
+    "nearestWater": {
+      "name": "Papillion Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -18833,6 +18977,15 @@
     }
   },
   "firstlight-burlington-cherry-st-vt": {
+    "nearestWater": {
+      "name": "Winooski River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 23.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -20058,6 +20211,15 @@
     }
   },
   "fort-rock-data-center-bend-or": {
+    "nearestWater": {
+      "name": "Deschutes River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.7
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -20425,6 +20587,15 @@
     }
   },
   "gala-solar-crook-county-or": {
+    "nearestWater": {
+      "name": "Crooked River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -23004,6 +23175,15 @@
     }
   },
   "heartland-technology-jesup-ia": {
+    "nearestWater": {
+      "name": "Spring Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -23895,6 +24075,15 @@
     }
   },
   "imon-713-nebraska-sioux-city-ia": {
+    "nearestWater": {
+      "name": "Perry Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -24107,6 +24296,15 @@
     }
   },
   "invenergy-prairie-hills-wind-custer-ne": {
+    "nearestWater": {
+      "name": "Mud Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.7
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -25214,6 +25412,15 @@
     }
   },
   "krambu-newport-wa": {
+    "nearestWater": {
+      "name": "Pend Oreille River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 10.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -25300,6 +25507,15 @@
     }
   },
   "lakeside-industries-dallesport-data-center-wa": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -25488,6 +25704,15 @@
     }
   },
   "leaning-juniper-iib-wind-gilliam-county-or": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 3.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -25721,6 +25946,15 @@
     }
   },
   "lightboard-vermont-south-burlington-vt": {
+    "nearestWater": {
+      "name": "Potash Brook",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 22.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -26106,6 +26340,15 @@
     }
   },
   "long-lines-sioux-city-ia": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -26669,6 +26912,15 @@
     }
   },
   "lumen-pleasant-hill-ia": {
+    "nearestWater": {
+      "name": "Des Moines River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29225,6 +29477,15 @@
     }
   },
   "midamerican-arbor-hill-solar-ia": {
+    "nearestWater": {
+      "name": "North Branch North River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29261,6 +29522,15 @@
     }
   },
   "midamerican-mills-solar-ia": {
+    "nearestWater": {
+      "name": "Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 11
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29346,6 +29616,15 @@
     }
   },
   "millican-solar-energy-crook-county-or": {
+    "nearestWater": {
+      "name": "Conant Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 1000,
+      "distanceMi": 18.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -29538,6 +29817,15 @@
     }
   },
   "mon-power-fort-martin-solar-monongalia-county-wv": {
+    "nearestWater": {
+      "name": "Monongahela River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29567,6 +29855,15 @@
     }
   },
   "mon-power-marlowe-solar-berkeley-county-wv": {
+    "nearestWater": {
+      "name": "Magruder Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29577,6 +29874,15 @@
     }
   },
   "mon-power-rivesville-solar-marion-county-wv": {
+    "nearestWater": {
+      "name": "Pharaoh Run",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29701,6 +30007,15 @@
     }
   },
   "montague-wind-gilliam-county-or": {
+    "nearestWater": {
+      "name": "China Ditch",
+      "kind": "river",
+      "distanceMi": 5.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -30586,6 +30901,15 @@
     }
   },
   "new-haven-pv-solar-mason-county-wv": {
+    "nearestWater": {
+      "name": "Tenmile Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -30961,6 +31285,15 @@
     }
   },
   "nicholas-county-solar-project-nicholas-county-wv": {
+    "nearestWater": {
+      "name": "Deer Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 34.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -33787,6 +34120,15 @@
     }
   },
   "potomac-hills-energy-solar-mineral-county-wv": {
+    "nearestWater": {
+      "name": "North Branch Potomac River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -34108,6 +34450,15 @@
     }
   },
   "powertransitions-vermont-yankee-vernon-vt": {
+    "nearestWater": {
+      "name": "Connecticut River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -37182,6 +37533,15 @@
     }
   },
   "rowan-meriwether-forest-grove-or": {
+    "nearestWater": {
+      "name": "Council Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 8.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -38156,6 +38516,15 @@
     }
   },
   "sandhills-butler-county-solar-ne": {
+    "nearestWater": {
+      "name": "North Branch Big Blue River",
+      "kind": "river",
+      "distanceMi": 2.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -39705,6 +40074,15 @@
     }
   },
   "south-front-networks-emery-mason-city-ia": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 39.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -40573,6 +40951,15 @@
     }
   },
   "starwood-project-horizon-kearney-ne": {
+    "nearestWater": {
+      "name": "Wood River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 8.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -41052,6 +41439,15 @@
     }
   },
   "sunstone-solar-morrow-county-or": {
+    "nearestWater": {
+      "name": "Butter Creek",
+      "kind": "river",
+      "distanceMi": 6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 13.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -43807,6 +44203,15 @@
     }
   },
   "travelers-data-center-sarpy-ne": {
+    "nearestWater": {
+      "name": "Springfield Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44175,12 +44580,30 @@
     }
   },
   "uniti-des-moines-ia": {
+    "nearestWater": {
+      "name": "North Raccoon River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.7
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
     }
   },
   "uniti-lincoln-1440-m-street-ne": {
+    "nearestWater": {
+      "name": "Middle Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44422,6 +44845,15 @@
     }
   },
   "uscg-operations-systems-center-kearneysville-wv": {
+    "nearestWater": {
+      "name": "Shaw Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -44432,6 +44864,15 @@
     }
   },
   "usshc-monticello-ia": {
+    "nearestWater": {
+      "name": "Farm Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44442,12 +44883,30 @@
     }
   },
   "uvm-vacc-south-burlington-vt": {
+    "nearestWater": {
+      "name": "Potash Brook",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 22.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
     }
   },
   "va-capital-region-readiness-center-martinsburg-wv": {
+    "nearestWater": {
+      "name": "Opequon Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -46147,6 +46606,15 @@
     }
   },
   "wolf-summit-energy-harrison-county-wv": {
+    "nearestWater": {
+      "name": "Murphy Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
