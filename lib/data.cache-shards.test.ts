@@ -1,9 +1,9 @@
-import { gzipSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 
 import facilitiesRaw from "@/data/facilities.json";
 import {
   FACILITY_CACHE_SHARDS,
+  createFacilityMergeMemo,
   encodeFacilityShard,
   facilityShard,
   mergeFacilityShards,
@@ -34,9 +34,8 @@ describe("facility data-cache shards", () => {
 
   it("keeps each shard's gzip+base64 payload under half the 2 MiB entry limit", () => {
     for (let shard = 0; shard < FACILITY_CACHE_SHARDS; shard++) {
-      const mine = facilities.filter((f) => facilityShard(f.id) === shard);
-      const bytes = gzipSync(Buffer.from(JSON.stringify(mine), "utf8")).toString("base64").length;
-      expect(bytes, `shard ${shard} (${mine.length} records)`).toBeLessThan(SHARD_BUDGET_BYTES);
+      const blob = encodeFacilityShard(facilities as unknown as Facility[], shard);
+      expect(blob.length, `shard ${shard}`).toBeLessThan(SHARD_BUDGET_BYTES);
     }
   });
 
@@ -49,5 +48,38 @@ describe("facility data-cache shards", () => {
     const merged = mergeFacilityShards(blobs);
     expect(merged.map((f) => f.id)).toEqual(expected.map((f) => f.id));
     expect(merged).toEqual(expected);
+  });
+
+  it("keeps the plain-JSON power_generation cache entry under half the 2 MiB entry limit", () => {
+    // `loadPowerGenerationCached` stores this list uncompressed in `unstable_cache`.
+    // ~870KB (42% of 2 MiB) on 2026-10-13; warn at 50% while there is room to gzip it.
+    // Measures facilities.json as a proxy for the DB-derived docs the cache stores.
+    const power = (facilitiesRaw as { facilityType: string }[]).filter(
+      (f) => f.facilityType === "power_generation"
+    );
+    expect(JSON.stringify(power).length).toBeLessThan(SHARD_BUDGET_BYTES);
+  });
+});
+
+describe("createFacilityMergeMemo", () => {
+  const all = facilitiesRaw as unknown as Facility[];
+  const encode = (list: Facility[]) =>
+    Array.from({ length: FACILITY_CACHE_SHARDS }, (_, s) => encodeFacilityShard(list, s));
+
+  it("reuses the parse while the blobs are unchanged, even as fresh string copies", () => {
+    const merge = createFacilityMergeMemo();
+    const first = merge(encode(all));
+    const again = merge(encode(all).map((b) => (" " + b).slice(1)));
+    expect(again).toBe(first);
+  });
+
+  it("returns new data as soon as any blob changes (no stale serve)", () => {
+    const merge = createFacilityMergeMemo();
+    const before = merge(encode(all));
+    const edited = all.map((f, i) => (i === 0 ? { ...f, name: f.name + " (edited)" } : f)) as Facility[];
+    const after = merge(encode(edited));
+    expect(after).not.toBe(before);
+    expect(after.some((f) => f.name.endsWith(" (edited)"))).toBe(true);
+    expect(before.some((f) => f.name.endsWith(" (edited)"))).toBe(false);
   });
 });
