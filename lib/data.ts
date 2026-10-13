@@ -171,6 +171,35 @@ export function mergeFacilityShards(blobs: string[]): Facility[] {
     .sort((a, b) => a.id.localeCompare(b.id));
 }
 
+/**
+ * Single-slot memo for `mergeFacilityShards`, keyed on the shard blobs' CONTENT.
+ *
+ * `reactCache` only dedupes the inflate+parse within one request while its
+ * dispatcher is live; aggregate pages call `loadFacilities()` from dozens of
+ * getters after `await`s and measured ~70 full gunzip+JSON.parse+sort passes
+ * per page (~27ms and ~35MB of heap each; 490 passes took 13.5s of a 16.5s
+ * window on one build worker, 2026-10-13). Reusing the previous result while
+ * the blobs are unchanged cuts that to one pass per revalidation.
+ *
+ * Cannot serve stale data: the key is the blob contents themselves, so any
+ * revalidation or tag bust that yields different blobs yields a new array. The
+ * array is shared across requests, so callers must not mutate it — the same
+ * contract they already had within a request, and the one the identity-keyed
+ * WeakMap indexes (`buildOperatorIndex`, `buildCountyIndex`, ...) rely on; as a
+ * bonus those now rebuild once per revalidation instead of once per page.
+ */
+export function createFacilityMergeMemo(): (blobs: string[]) => Facility[] {
+  let last: { blobs: string[]; facilities: Facility[] } | undefined;
+  return (blobs) => {
+    if (last && last.blobs.length === blobs.length && last.blobs.every((b, i) => b === blobs[i])) {
+      return last.facilities;
+    }
+    const facilities = mergeFacilityShards(blobs);
+    last = { blobs, facilities };
+    return facilities;
+  };
+}
+
 // Concurrent cold shards (one per `unstable_cache` miss) share a single
 // full-table read. Module-level and cleared on settle rather than memoized, so
 // nothing outlives the burst or goes stale across revalidations; deliberately
@@ -190,9 +219,10 @@ function loadFacilitiesShared(): Promise<Facility[]> {
  * `incremental-cache/index.js`), so an oversized entry fails silently and
  * every read misses. The facility array serializes to ~5.7MB of plain JSON,
  * so it is cached as gzip+base64 shards (see `FACILITY_CACHE_SHARDS` for why
- * and how big they may get), inflated and merged on read. `reactCache`
- * memoizes the inflate+merge per request, so a page calling the loader
- * multiple times only decompresses once. `loadFacilitiesUncached` already
+ * and how big they may get), inflated and merged on read.
+ * `createFacilityMergeMemo` reuses the merge while the blobs are unchanged;
+ * `reactCache` alone did not dedupe across getters called after an `await`.
+ * `loadFacilitiesUncached` already
  * sorts deterministically and has `withJsonFallback`, so the cache stays
  * outage-resilient (serves the last good blobs if Neon is down). Shared by
  * `loadFacilities` below.
@@ -212,7 +242,8 @@ function loadFacilitiesCompressed(
       opts
     )
   );
-  return reactCache(async () => mergeFacilityShards(await Promise.all(shards.map((load) => load()))));
+  const merge = createFacilityMergeMemo();
+  return reactCache(async () => merge(await Promise.all(shards.map((load) => load()))));
 }
 
 /**
