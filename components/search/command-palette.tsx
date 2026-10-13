@@ -9,11 +9,11 @@ import { cn, QUIET_ACTION_CLASS } from "@/lib/utils";
 import {
   searchCommands,
   facilityToSearchEntry,
+  type FacilitySearchHit,
   mergeFacilityResults,
   SEARCH_GROUP_LABELS,
   type SearchEntry,
 } from "@/lib/search";
-import type { Facility } from "@/lib/schema";
 
 interface CommandPaletteProps {
   index: SearchEntry[];
@@ -108,14 +108,14 @@ export function CommandPalette({ index, navLinks }: CommandPaletteProps) {
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmedQuery)}`, {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmedQuery)}&shape=palette`, {
           signal: controller.signal,
         });
         if (!res.ok) {
           setDbEntries([]);
           return;
         }
-        const data: { facilities?: Facility[] } = await res.json();
+        const data: { facilities?: FacilitySearchHit[] } = await res.json();
         setDbEntries((data.facilities ?? []).map(facilityToSearchEntry));
       } catch (err) {
         // Ignore aborts (superseded by a newer keystroke); on any other failure
