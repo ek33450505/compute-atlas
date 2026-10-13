@@ -18,12 +18,9 @@ import { test, expect, type Page } from "@playwright/test";
  *
  * Runs against `playwright.config.ts`'s webServer, which is
  * `npm run build && npm run start` — a real production build, not `next
- * dev`. That matters here specifically: `next.config.ts`'s CSP comment notes
- * `https://va.vercel-scripts.com` is allowed in script-src ONLY because
- * Vercel Analytics loads it in development; in production those calls
- * resolve same-origin. A dev-mode run of this spec would not be evidence
- * that transfers to prod. (Confirmed by reading playwright.config.ts, not
- * assumed — see the report for this task.)
+ * dev`. That matters here specifically: a dev-mode run of this spec would
+ * not be evidence that transfers to prod. (Confirmed by reading
+ * playwright.config.ts, not assumed — see the report for this task.)
  */
 
 const KNOWN_SLUG = "meta-prineville-or";

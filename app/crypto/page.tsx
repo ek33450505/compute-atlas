@@ -10,7 +10,7 @@ import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { SectionHeading } from "@/components/section-heading";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 const CRUMBS = [{ label: "Explore", href: "/explore" }, { label: "Crypto" }];
 

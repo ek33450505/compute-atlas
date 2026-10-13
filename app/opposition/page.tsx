@@ -23,7 +23,7 @@ import { SurveyStatRow, type SurveyStat } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
 import { SectionHeading } from "@/components/section-heading";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 /** Most-severe-first display order for the friction statuses shown on this page. */
 const FRICTION_ORDER = ["litigation", "opposed", "contested"] as const satisfies readonly CommunityReception[];

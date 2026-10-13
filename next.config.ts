@@ -50,14 +50,6 @@ import { CSP_REPORT_PATH } from "./lib/csp-report";
  *     /contribute). That asymmetry is the point — a local harness is necessary
  *     but not sufficient for this header, because the proxy adds subresources
  *     the app never declares.
- *   - https://va.vercel-scripts.com — confirmed in
- *     node_modules/@vercel/{analytics,speed-insights}/dist/index.js:
- *     both packages load their bootstrap script from here ONLY when
- *     `isDevelopment()` is true (local `npm run dev`); production resolves
- *     to the same-origin /_vercel/insights/script.js and
- *     /_vercel/speed-insights/script.js, already covered by 'self'. Left in
- *     so local dev testing (see flip criteria below) doesn't manufacture a
- *     false violation.
  *
  * `frame-ancestors` is NOT in this shared list — it is supplied per scope by
  * `buildCsp` below. See that function for why leaving it here would have
@@ -65,7 +57,7 @@ import { CSP_REPORT_PATH } from "./lib/csp-report";
  */
 const CSP_COMMON_DIRECTIVES = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com https://static.cloudflareinsights.com",
+  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://tiles.openfreemap.org https://services.arcgisonline.com",
   "connect-src 'self' https://tiles.openfreemap.org https://services.arcgisonline.com https://nominatim.openstreetmap.org",

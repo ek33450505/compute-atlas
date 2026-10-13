@@ -1,7 +1,7 @@
 import { buildUrlsetXml } from "@/lib/sitemap-xml";
 import { SITEMAP_FAMILIES, SITEMAP_FAMILY_IDS } from "@/lib/sitemap-families";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 // Unrecognised family => 404 rather than an empty-but-200 <urlset> — verified
 // against Next 16.3.3.
 export const dynamicParams = false;

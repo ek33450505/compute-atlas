@@ -248,18 +248,23 @@ function loadFacilitiesCompressed(
 
 /**
  * Cached, deterministically-ordered facility loader tagged `"facilities"`,
- * refreshed at most hourly. This is the **aggregate-only** reader now — it
+ * refreshed at most daily (and on every `"facilities"` tag bust). This is
+ * the **aggregate-only** reader now — it
  * backs the ~15 aggregate pages (home, map, table, stats, explore lenses,
  * operators/states index, sitemap, OG image) that legitimately need the
  * whole dataset. Scoped pages (facility detail, one state, one operator)
  * must use the per-scope cached readers below instead, so they don't
  * re-acquire the `"facilities"` tag or this timer.
  *
- * `revalidate: 3600` bounds staleness to ~1h — approved tolerance for
- * aggregate rollups (Ed, 2026-07-22 ISR-write-blowout fix). Combined with
- * dropping the on-write `revalidateTag("facilities")` nuke (see
- * `lib/facility-write.ts`), aggregate pages now refresh on this cheap timer
- * instead of on every write.
+ * `revalidate: 86400` is the backstop only (ISR Writes are the top Vercel
+ * cost, so the timer is long). A route's revalidate is the MIN of its own
+ * export and every nested `unstable_cache`, so this value gates every hub,
+ * listing and aggregate page. Freshness comes from tag busts instead:
+ * `db:sync --apply` busts `"facilities"`, and `approveSubmission` /
+ * `rejectSubmission` bust it once each time the pending queue is left empty
+ * (`lib/submissions.ts`). A single write still busts only its scoped tags
+ * (see `lib/facility-write.ts`) — per-write `"facilities"` busts were the
+ * 2026-07-22 ISR-write-blowout.
  *
  * `unstable_cache` requires the Next.js request-scoped cache context, which
  * is absent under vitest — detect that environment and degrade to the
@@ -272,7 +277,7 @@ export const loadFacilities: () => Promise<Facility[]> = process.env.VITEST
   ? loadFacilitiesUncached
   : loadFacilitiesCompressed(["facilities"], {
       tags: ["facilities"],
-      revalidate: 3600,
+      revalidate: 86400,
     });
 
 /**
@@ -396,8 +401,9 @@ async function fetchFacilitiesByStateUncached(code: string): Promise<Facility[]>
  * `state:${CODE}` (uppercase) — this READER is busted only by a write
  * touching that state, never by the global tag or timer. That is a claim
  * about the reader's own cache entry, not the state page's measured
- * behavior: `/states/*` sits at `initialRevalidateSeconds: 3600` (the root
- * layout's search read still floors it) and, per the ground truth measured
+ * behavior: `/states/*` was measured at `initialRevalidateSeconds: 3600`
+ * (2026-08-21); with `loadFacilities` and `loadNavFacets` both at 86400 it now
+ * sits on the 24h floor and, per the ground truth measured
  * 2026-08-21, does carry the bare `facilities` tag via other reads in its
  * render tree. Same filter/sort as `getFacilitiesByState`.
  */
@@ -1633,7 +1639,11 @@ export async function getStateSummary(code: string): Promise<StateSummary | null
 // Power-generation helpers (used by /power)
 // ============================================================
 
-/** All power_generation facilities (type-guarded so `.generation` narrows). */
+/**
+ * All power_generation facilities (type-guarded so `.generation` narrows).
+ * Reads `loadFacilities`, so a `power-generation` tag bust does NOT refresh
+ * /power; only `"facilities"` or the 24h timer does.
+ */
 export async function getPowerGenerationFacilities(): Promise<PowerGenerationFacility[]> {
   const facilities = await loadFacilities();
   return facilities.filter(
@@ -2405,7 +2415,7 @@ export async function getFacilitiesByCounty(slug: string): Promise<Facility[]> {
 // (the `lib/cache-tags.ts` allowlist stays closed to a `stakeholder:` tag;
 // `db:sync` exits 1 on any tag outside it). The index below is built
 // entirely in memory on top of the shared `loadFacilities()` read (tag
-// `"facilities"`, `revalidate: 3600`) rather than a new `unstable_cache`
+// `"facilities"`, `revalidate: 86400`) rather than a new `unstable_cache`
 // reader.
 
 interface StakeholderIndex {

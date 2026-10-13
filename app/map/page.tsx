@@ -12,7 +12,7 @@ import {
 import { Explorer } from "@/components/explorer/explorer";
 import { MapPageContent } from "@/components/map/map-page-content";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export async function generateMetadata(): Promise<Metadata> {
   const { count } = await getStats();

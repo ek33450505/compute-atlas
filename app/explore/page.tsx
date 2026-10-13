@@ -6,7 +6,7 @@ import { statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Explore US data centers",

@@ -8,7 +8,7 @@ import { statesPhrase } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 function sumOperationalMw(facilities: Facility[]): number {
   return facilities.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0);

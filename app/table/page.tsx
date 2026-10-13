@@ -6,7 +6,7 @@ import { getDatasetEdition } from "@/lib/dataset-edition";
 import { Explorer } from "@/components/explorer/explorer";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Searchable table of every tracked facility",

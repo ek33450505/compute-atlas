@@ -10,7 +10,7 @@ import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { formatStakeholderRole } from "./format-role";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Stakeholders",

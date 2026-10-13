@@ -23,7 +23,8 @@ const LINK_CLASS =
  * of app/contribute/page.tsx (Breadcrumb -> PageMasthead -> border-t sections).
  *
  * Claims discipline (audited copy, do not extend): no privacy/tracking claim
- * (Vercel Analytics + Speed Insights are mounted in app/layout.tsx), no Ko-fi/
+ * (Vercel Analytics + Speed Insights were removed 2026-10-13, but the Cloudflare
+ * proxy still injects its Web Analytics beacon in production), no Ko-fi/
  * GitHub fee percentage, no facility count, and NO DOLLAR FIGURE.
  *
  * Named cost CATEGORIES and suppliers are permitted (added 2026-09-14, Ed's

@@ -54,8 +54,8 @@ const STATIC_PAGE_LAST_MODIFIED = new Date("2026-09-03T00:00:00Z");
 /**
  * Builds the list of static route entries for the sitemap.
  *
- * Previously hardcoded `lastModified: new Date()` on every entry. Since this
- * file sets `revalidate = 3600`, that meant every static route — aggregate
+ * Previously hardcoded `lastModified: new Date()` on every entry. Since the
+ * sitemap was regenerated on a 3600s timer, every static route — aggregate
  * pages included — advertised a brand-new lastmod every hour, forever,
  * which trains crawlers to discount the lastmod signal site-wide (including
  * on facility routes where it's accurate). Aggregate/dataset-backed routes
@@ -477,7 +477,7 @@ export async function buildCountyRoutes(): Promise<MetadataRoute.Sitemap> {
  * page.tsx), so the page a crawler sees changes when the dataset changes.
  * `lastModified` therefore derives from the dataset's real max `lastUpdated`,
  * exactly like buildStatusRoutes/buildMetroRoutes — not `new Date()`, which
- * would re-stamp "now" on every hourly regeneration and churn the same way
+ * would re-stamp "now" on every regeneration and churn the same way
  * buildStaticRoutes used to. Exported separately so it can be unit-tested
  * without Next.js.
  */

@@ -4,7 +4,7 @@ import { getStats } from "@/lib/data";
 import { AtlasMark, INK, MUTED_INK, OgFrame, loadFrauncesFont } from "@/lib/og-theme";
 import { statesPhrase } from "@/lib/us-states";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 // Parchment-tuned atlas status colors (replaces old Wong palette)
 // These are the parchment-calibrated values, not the original colorblind-safe Wong hexes

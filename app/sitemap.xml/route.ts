@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { buildSitemapIndexXml, type SitemapIndexEntry } from "@/lib/sitemap-xml";
 import { SITEMAP_FAMILIES, sitemapChildUrl } from "@/lib/sitemap-families";
 
-export const revalidate = 3600; // same window app/sitemap.ts used
+export const revalidate = 86400; // same window app/sitemap.ts used
 
 // Mirrors what Next's own metadata-route serializer emitted for
 // `/sitemap.xml` (CACHE_HEADERS.REVALIDATE in

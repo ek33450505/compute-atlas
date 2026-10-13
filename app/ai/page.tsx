@@ -21,7 +21,7 @@ import { AI_CLASSIFICATION_CONFIDENCE_LABELS } from "@/lib/format";
 import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { aiClassificationEnum } from "@/lib/schema";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 type AiClassification = (typeof aiClassificationEnum.options)[number];
 

@@ -25,7 +25,7 @@ import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 interface StatCell {
   value: string;

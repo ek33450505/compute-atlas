@@ -10,7 +10,8 @@ import { isValidCacheTag, MAX_TAGS_PER_REQUEST } from "@/lib/cache-tags";
  * `unstable_cache` tags themselves — only the running app can — so a bulk
  * upsert step calls this route afterward with the tags it touched, e.g.
  * `{ tags: ["state:CA", "operator:some-operator-slug"] }`. `"facilities"` is
- * still a valid tag (see `tagsForChanges` in `scripts/sync-to-neon.ts`) but
+ * still a valid tag (see `tagsForChanges` in `scripts/sync-to-neon.ts`; aggregate and hub pages
+ * sit on a 24h timer, so bust it after a bulk write) but
  * no longer reaches the ⌘K nav index — `loadNavFacets` is
  * deliberately untagged (see `lib/search-index.ts`) and refreshes only on
  * its own 86400s timer, so busting `"facilities"` alone will not update it.

@@ -16,7 +16,7 @@ import { PercentageBar } from "@/components/percentage-bar";
 import { StatusBadge } from "@/components/status-badge";
 import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Where the dataset needs help",
@@ -189,7 +189,7 @@ export const GAP_SECTIONS = [
  * /gaps — recruits contributors by naming the dataset's incompleteness
  * concretely instead of rendering it as a silent omission or a bare em-dash.
  * Static server component; data is recomputed live from `lib/data.ts` on
- * the shared hourly `loadFacilities()` cache (see `getDatasetGaps` /
+ * the shared daily `loadFacilities()` cache (see `getDatasetGaps` /
  * `getGapExamples`) rather than the hand-run census this page was designed
  * against, so the numbers here self-correct as the dataset grows.
  *

@@ -29,10 +29,10 @@ export const metadata: Metadata = {
 
 /**
  * Matches every sibling aggregate page that reads `loadFacilities` (which is
- * itself tagged `"facilities"` on a 3600s timer): § Sources renders the live
- * facility/state counts, so /about self-heals hourly as well as on tag bust.
+ * itself tagged `"facilities"` on a 86400s timer): § Sources renders the live
+ * facility/state counts, so /about self-heals daily as well as on tag bust.
  */
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export default async function AboutPage() {
   const stats = await getStats();
