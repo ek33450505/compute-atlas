@@ -2482,6 +2482,9 @@
       "state": "OR",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 6
+    },
     "statusHistory": [
       {
         "status": "operational",
@@ -2502,11 +2505,11 @@
         "url": "https://baxtel.com/data-center/adobe-hillsboro",
         "label": "Adobe Hillsboro",
         "publisher": "Baxtel",
-        "retrievedAt": "2026-10-12",
+        "retrievedAt": "2026-10-14",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-14",
     "notes": "Adobe says it owns and operates one major data center in Hillsboro (OR1). It cites enterprise-zone tax incentives and access to low-cost, largely hydroelectric power, and says the site was designed for future photovoltaic installations. The street address and 11-acre lot come from Baxtel. Baxtel estimates about 60,000 sq ft and 6 MW; those figures are not recorded as facts. Adobe is also among the companies named in the 2026 Hillsboro Enterprise Zone applications now under legal challenge. The coordinates are a point on NE Dawson Creek Dr from OSM, not the parcel.",
     "energy": {
       "notes": "Adobe cites access to low-cost, high-percentage large hydroelectric power and the potential to transition to 100% renewable energy over the facility's life."
@@ -6573,6 +6576,51 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "amazon-floydada-floyd-county-tx",
+    "name": "Amazon Data Services Floydada Data Center",
+    "operator": "Amazon Data Services, Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.983972,
+      "lon": -101.3344603,
+      "city": "Floydada",
+      "county": "Floyd",
+      "street": "1752 County Road 241",
+      "postalCode": "79235",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-20",
+        "note": "TDLR registration for a 189,060 sq ft new data center building ($300M), start 2026-08-01, completion 2027-04-01.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tdlr.texas.gov/TABS/Search/Print/TABS2026025594",
+        "label": "TDLR TABS2026025594 - Confidential Data Center, 1752 County Road 241, Floydada",
+        "publisher": "Texas Department of Licensing and Regulation",
+        "retrievedAt": "2026-10-14",
+        "kind": "permit"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Floydada,+Floyd+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Floydada, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "investmentUsd covers this one TDLR-registered building. Trade coverage describes a multi-building 'Horizon Junction' campus on County Road 241, but those added buildings were not read on a primary page. A TDLR registration does not confirm construction has begun. Coordinates are the Floydada city point.",
+    "investmentUsd": 300000000,
+    "facilityType": "data_center"
+  },
+  {
     "id": "amazon-gilroy-ca",
     "name": "Amazon AWS Gilroy Data Center",
     "operator": "Amazon Web Services",
@@ -7072,6 +7120,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "amazon-stevensburg-culpeper-va",
+    "name": "Amazon Stevensburg Data Center Campus",
+    "operator": "Amazon Web Services",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.443348,
+      "lon": -77.8784268,
+      "city": "Stevensburg",
+      "county": "Culpeper County",
+      "street": "20420 Germanna Highway",
+      "postalCode": "22741",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2022",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2022-04",
+        "note": "Culpeper supervisors approved rezoning of 243 acres along Route 3, 4-3.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/amazon-granted-approval-for-rezoning-of-243-acres-in-culpeper-county-virginia",
+        "label": "Amazon Granted Approval For Rezoning of 243 Acres in Culpeper County, Virginia",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/amazon-stevensburg",
+        "label": "Amazon: Stevensburg Bldg-A Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Two single-story buildings of about 427,000–430,000 sq ft plus a substation. The Baxtel facility page labels Building A operational (built 2025) but also describes it as being constructed. Because of that inconsistency, status is held at the sourced rezoning (permitted). The coordinates are the OSM geocode of the listed address.",
+    "landAcres": 243,
+    "community": {
+      "status": "litigation",
+      "notes": "The Planning Commission recommended denial 5-4, and neighbors sued over the April 2022 4-3 rezoning (alleged spot zoning and substation approval). The outcome of the suit was not found.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "american-bitcoin-niagara-falls-ny",
     "name": "American Bitcoin — Niagara Falls (\"Alpha Site\")",
     "operator": "American Bitcoin (Hut 8)",
@@ -7425,6 +7524,61 @@
     "community": {
       "status": "contested",
       "notes": "Residents protested outside the Charlotte-Mecklenburg Government Center and said they received no direct communication about the project; the petitioner deferred the public hearing to allow more community engagement.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "amp-z-lufkin-southland-mill-angelina-county-tx",
+    "name": "Amp Z East Texas Data Center Campus (former Southland Paper Mill)",
+    "operator": "Amp Z (Amp Z Champion Data Center Holdings LLC)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.3386242,
+      "lon": -94.7288558,
+      "county": "Angelina",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2100
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-06",
+        "note": "A memorandum of option recorded in Angelina County gives Amp Z the right to buy ~1,041 acres of the former Southland Paper Mill from Verdant Industries.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lufkindailynews.com/news/local/ai-data-center-planned-on-1-000-acres-at-former-southland-paper-mill-site/article_ff9e97bf-361d-5649-835b-68a75818bd94.html",
+        "label": "AI data center planned on 1,000+ acres at former Southland Paper Mill site",
+        "publisher": "Lufkin Daily News",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Lufkin,+Angelina+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Lufkin, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "In unincorporated Angelina County outside Lufkin. Investment ($1.05B) and jobs come from a city of Lufkin fact sheet. The 2.1 GW is a 2029 target, not a commitment. The land is under option, not purchased. Distinct from the tracked HyperDataGrid site, which is on the former Northern Chip Mill off Ben Dunn Road. Coordinates are the Lufkin city point.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Existing 55 MW onsite substation. The plan is to scale beyond 2.1 GW by 2029 through utility service (Oncor collateral rules apply) plus onsite generation."
+    },
+    "investmentUsd": 1050000000,
+    "landAcres": 1041,
+    "jobs": {
+      "construction": 500,
+      "permanent": 30,
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -9781,6 +9935,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "ark-data-centers-canton-oh",
+    "name": "Ark Data Centers Canton",
+    "operator": "Ark Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.832529,
+      "lon": -81.431933,
+      "city": "Canton",
+      "county": "Stark",
+      "street": "4726 Hills and Dales Rd NW",
+      "postalCode": "44708",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.arkdna.com/data-centers/data-center-locations/ohio/",
+        "label": "Ark Data Centers Ohio locations: Canton, OH — 1.5 MW utility power, 5,600 sq ft conditioned space",
+        "publisher": "Ark Data Centers",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=OH&limit=200",
+        "label": "PeeringDB facility 12237 'ark data centers - Canton, OH', 4726 Hills and Dales Rd NW, Canton 44708 (also listed as SecureData 365 at the same address)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "The 1.5 MW figure is utility power, not IT load, so capacityMw is left unset. PeeringDB also carries a 'SecureData 365' record at this address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "ark-data-centers-duluth-n-6th-ave-mn",
     "name": "Ark Data Centers Duluth (421 N 6th Ave East)",
     "operator": "Ark Data Centers",
@@ -11485,6 +11676,60 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "avaio-digital-project-andromeda-oxford-township-oh",
+    "name": "Project Andromeda (Oxford Township)",
+    "operator": "AVAIO Digital",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.32861,
+      "lon": -82.68778,
+      "county": "Erie",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 250
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-14",
+        "note": "Developer and local officials held a town hall on a proposed 250 MW, 4-building (~1.2M sq ft) campus on 146 acres in southwest Erie County. It is described as a $5.5B privately funded development. The township's existing data center prohibition would have to be lifted.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.staytunedsandusky.com/p/data-center-partners-and-local-officials",
+        "label": "Stay Tuned Sandusky: 'Project Andromeda' by AVAIO Digital, 250 MW, 146 acres, ~1.2M sq ft in four buildings, $5.5B; town hall July 14, 2026",
+        "publisher": "Stay Tuned Sandusky",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://sanduskyregister.com/news/1176877/new-data-center-proposed-in-oxford-twp/",
+        "label": "Sandusky Register: 'New data center proposed in Oxford Twp.' (investment could total $5.5B)",
+        "publisher": "Sandusky Register",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/project-andromeda-avaio-digital-oxford-township-oh--0c3d04f9-babc-4f06-be74-51278884f2f0",
+        "label": "More Than Just Parks tracker: Project Andromeda (AVAIO Digital, Oxford Township, Erie County), proposed, 250 MW",
+        "publisher": "More Than Just Parks",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Coordinates are the Oxford Township centroid (Wikipedia), not the parcel. Press places the site near the EHOVE Career Center but the exact parcel was not identified. The township must lift its data center prohibition before the project can proceed.",
+    "investmentUsd": 5500000000,
+    "landAcres": 146,
+    "facilityType": "data_center"
+  },
+  {
     "id": "avaio-perseus-pittsburg-ca",
     "name": "AVAIO Digital Perseus",
     "operator": "AVAIO Digital Partners",
@@ -12877,6 +13122,7 @@
       "lon": -83.1761,
       "city": "Hilliard",
       "county": "Franklin",
+      "street": "4580-4640 Cosgray Rd",
       "state": "OH",
       "precision": "exact"
     },
@@ -12929,9 +13175,16 @@
         "publisher": "Ohio Data Centers (stopohiodatacenters.org)",
         "retrievedAt": "2026-09-09",
         "kind": "other"
+      },
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 050-011455, 4580 - 4640 Cosgray Rd, AMAZON DATA SERVICES INC, class 'data center'",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-14",
     "notes": "Separate AWS Hilliard campus on Cosgray Road, in active litigation: the City of Hilliard appealed an Ohio EPA air permit for a 228-unit Bloom Energy fuel-cell array (73MW, the largest fuel-cell array in North America), and AWS is separately seeking a permit for 158 diesel backup generators. Approved by the Ohio Power Siting Board under Ohio's HB15 behind-the-meter law, overriding local zoning. Distinct from the Scioto Darby campus. Coordinates are now parcel-exact via the Franklin County Auditor (parcel 050-011455, 4580-4640 Cosgray Rd, Amazon Data Services Inc, data-center use class, ~95 ac).",
     "energy": {
       "source": "grid",
@@ -13621,6 +13874,7 @@
       "lon": -83.134305,
       "city": "Hilliard",
       "county": "Franklin",
+      "street": "5109-5129 Hayden Run Rd",
       "state": "OH",
       "precision": "exact"
     },
@@ -13659,9 +13913,16 @@
         "label": "Fuel Cells — City of Hilliard",
         "retrievedAt": "2026-07-24",
         "kind": "permit"
+      },
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 050-011444, 5109 - 5129 Hayden Run Rd, VADATA INC, class 'data center'",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-24",
+    "lastUpdated": "2026-10-14",
     "notes": "AWS's first US East (Ohio) region data center — a ~55-acre Vadata Inc campus at 5109-5129 Hayden Run Rd, Hilliard. Broke ground 2015; first building completed ~2018; a multi-building campus that has continued expanding. Franklin County Auditor land-use class 'data center' with 768,498 sq ft of assessed building area (= built/operational); owner Vadata Inc (Amazon's data-center subsidiary). Data-center directories (DC Byte / baxtel) list several numbered Hayden Run buildings (5109/5113/5117/5121/5125) that correspond to buildings within this single county parcel, not separate sites. No site-specific IT-load MW is disclosed. Coordinates are the Franklin County Auditor parcel centroid. Distinct from the tracked AWS Cosgray Road and AWS Scioto Darby campuses (also Hilliard, Franklin County).",
     "energy": {
       "source": "grid",
@@ -14928,6 +15189,7 @@
       "lon": -83.12439,
       "city": "Hilliard",
       "county": "Franklin",
+      "street": "4120 Scioto Darby Creek Rd",
       "state": "OH",
       "precision": "exact"
     },
@@ -14973,10 +15235,29 @@
         "publisher": "Franklin County Auditor GIS / Assessor",
         "retrievedAt": "2026-07-19",
         "kind": "other"
+      },
+      {
+        "url": "https://hilliardohio.gov/fuel-cells/",
+        "label": "City of Hilliard: Scioto Darby Creek Road Fuel Cell Project — 72.9 MW, 228 Bloom SOFC units, AEP Ohio-owned, behind the meter for Amazon's Scioto Darby campus",
+        "publisher": "City of Hilliard",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 050-002806, 4120 Scioto Darby Crk, AMAZON DATA SERVICES INC, class 'data center'",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-14",
     "notes": "AWS's 3rd Hilliard campus, at 4120 Scioto Darby Rd. 152 acres across 6 parcels, up to 7 buildings plus 1 utility/security building; land bought January 2021 for $15.29M. Distinct from the tracked AWS Cosmos/Galaxy campuses and from the AWS Cosgray Road campus (also in Hilliard).",
+    "energy": {
+      "utility": "AEP Ohio (Ohio Power Company)",
+      "onSiteGenerationMw": 72.9,
+      "notes": "OPSB approved (2025-09-22) a 72.9 MW behind-the-meter solid oxide fuel cell facility (228 Bloom Energy units) at 4186 Scioto Darby Creek Rd, owned and operated by Ohio Power Company and serving Amazon only. Construction from Jan 2026, operation projected Sept 2027; intended as a bridge until AEP transmission capacity is available."
+    },
     "landAcres": 152,
     "facilityType": "data_center"
   },
@@ -16915,6 +17196,7 @@
       "lon": -77.39493747,
       "city": "Chester",
       "county": "Chesterfield",
+      "street": "1931 Old Bermuda Hundred Road",
       "state": "VA",
       "precision": "exact"
     },
@@ -16966,9 +17248,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://richmondbizsense.com/2026/08/27/chesterfield-says-it-wont-approve-any-more-data-center-projects/",
+        "label": "Chesterfield says it won't approve any more data center projects",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-14",
     "notes": "Proposed data center on ~89 acres at 1931 Old Bermuda Hundred Rd, Chester (Bermuda District), Chesterfield County. Land owned by Washington Single Family Fund3 (acquired 2023 for $462,000); the data-center developer is undisclosed. Under the pre-2026 I-2 zoning it was by-right; the 2026 ordinance made data centers conditional-use. The planning director found no vested right and the BZA unanimously upheld that denial 2026-06-03, so a CUP is now required. Recorded as proposed (not cancelled) with community=litigation.",
     "energy": {
       "utility": "Dominion Energy Virginia"
@@ -17311,6 +17600,59 @@
     "mining": {
       "powerArrangement": "curtailed_renewable"
     }
+  },
+  {
+    "id": "bilateral-energy-project-patriot-granbury-tx",
+    "name": "Project Patriot (Knox Ranch)",
+    "operator": "Bilateral Energy LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.4426759,
+      "lon": -97.7870525,
+      "city": "Granbury",
+      "county": "Hood",
+      "street": "2801 W US Hwy 377",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-14",
+        "note": "Rezoning approved. The project faces litigation and is listed as 'In Doubt'.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/bilateral-energy-project-patriot",
+        "label": "Bilateral Energy: Project Patriot",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Granbury,+Hood+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Granbury, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "An HPC/AI data center and power campus. A tracker's 1,200 MW figure is not corroborated and is omitted. Distinct from MARA's Granbury (Wolf Hollow) site, Comanche Circle and Fort Spunky. Coordinates are the Granbury city point.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Co-located natural gas plant ('Granbury OpCo 1 station') for independent generation."
+    },
+    "landAcres": 2100,
+    "community": {
+      "status": "litigation",
+      "notes": "The city approved the rezoning, but residents sued city officials alleging procedural and open-meeting violations. The listing describes the project as effectively frozen while litigation proceeds.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "binary-net-vault-lincoln-ne",
@@ -19600,6 +19942,110 @@
     "facilityType": "data_center"
   },
   {
+    "id": "blueprint-georgetown-tx",
+    "name": "Blueprint Data Centers Georgetown",
+    "operator": "Blueprint Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.6370152,
+      "lon": -97.6775634,
+      "city": "Georgetown",
+      "county": "Williamson",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 25
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08",
+        "note": "25 MW facility with committed utility power, scheduled to be energized by 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://convergedigest.com/blueprint-data-centers-plans-85mw-austin-expansion-energized-by-2026/",
+        "label": "Blueprint Data Centers plans 85MW Austin expansion, energized by 2026",
+        "publisher": "Converge Digest",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Georgetown,+Williamson+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Georgetown, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Part of Blueprint's 85 MW, two-site Austin-area plan. Later trade coverage puts the target at early 2027. Coordinates are the Georgetown city point. The abatement jurisdiction is not named in the source.",
+    "subsidies": [
+      {
+        "program": "10-year, 50% property tax abatement",
+        "year": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "blueprint-taylor-tx",
+    "name": "Blueprint Data Centers Taylor",
+    "operator": "Blueprint Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.5728854,
+      "lon": -97.4141053,
+      "city": "Taylor",
+      "county": "Williamson",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 60
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08",
+        "note": "60 MW campus about five minutes from Samsung's Taylor fab, with committed utility power, scheduled to be energized by 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://convergedigest.com/blueprint-data-centers-plans-85mw-austin-expansion-energized-by-2026/",
+        "label": "Blueprint Data Centers plans 85MW Austin expansion, energized by 2026",
+        "publisher": "Converge Digest",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Taylor,+Williamson+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Taylor, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Part of Blueprint's 85 MW, two-site plan. Coordinates are the Taylor city point. The abatement jurisdiction is not named in the source.",
+    "subsidies": [
+      {
+        "program": "10-year, 50% property tax abatement",
+        "year": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "blusky-ai-delta-millard-county-ut",
     "name": "BluSky AI Delta Data Center",
     "operator": "BluSky AI Inc.",
@@ -20866,6 +21312,63 @@
     "facilityType": "data_center"
   },
   {
+    "id": "bulldog-power-sweeny-brazoria-county-tx",
+    "name": "Bulldog Power",
+    "operator": "Nightpeak Energy (Bulldog Power LLC)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.0799726,
+      "lon": -95.749673,
+      "city": "Old Ocean",
+      "county": "Brazoria",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 620
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-11",
+        "note": "Co-located combustion turbine project for the Old Ocean Data Center. Brazoria County denied the abatements.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.bisnow.com/news/houston/data-center-development/houston-area-county-rejects-tax-abatement-for-35b-data-center-development-133616",
+        "label": "Houston-Area County Rejects Tax Break For $3.5B Data Center Project",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Old+Ocean,+Brazoria+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Old Ocean, Brazoria County, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "unitCount 2 means two 310 MW plants as Bisnow describes them, not individual turbines. Coordinates are the Old Ocean community point, not the parcel.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "investmentUsd": 500000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "poweredFacilityIds": [
+        "nightpeak-old-ocean-data-center-brazoria-county-tx"
+      ],
+      "unitCount": 2,
+      "notes": "Bisnow describes two 310 MW combustion turbine power plants ($250M each), co-located with the Old Ocean Data Center. In development since 2023, targeting operation in 2028 or earlier."
+    }
+  },
+  {
     "id": "burt-county-solar-tekamah-ne",
     "name": "Burt County Solar",
     "operator": "Sandhills Energy",
@@ -22104,6 +22607,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "centersquare-cmh1-lewis-center-oh",
+    "name": "Centersquare (Csquare) CMH1 Lewis Center",
+    "operator": "Centersquare (Csquare)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.16884,
+      "lon": -83.010799,
+      "city": "Lewis Center",
+      "county": "Delaware",
+      "street": "8180 Green Meadows Dr. North",
+      "postalCode": "43035",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://csquare.com//data-centers/columbus",
+        "label": "Csquare: Lewis Center CMH1 — 18,704 sq ft raised floor, 35.8 MW utility, 1.8 MW UPS, 3.8 MW generator, chilled-water cooling",
+        "publisher": "Csquare (Centersquare)",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=OH&limit=200",
+        "label": "PeeringDB facility 2594 'Centersquare Columbus (CMH1)', 8180 Green Meadows Dr. North, Lewis Center OH 43035",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Utility capacity (35.8 MW) is not IT load and UPS is 1.8 MW, so capacityMw is left unset. It is distinct from the tracked Expedient CMH3 at 281 E. Powell Rd, Lewis Center.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "centersquare-den1-highlands-ranch-co",
     "name": "Csquare (Centersquare) DEN1 Denver - Highlands Ranch",
     "operator": "Csquare (Centersquare)",
@@ -23180,6 +23720,70 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "cfs-arc-fusion-chesterfield-va",
+    "name": "ARC Fusion Power Plant (Commonwealth Fusion Systems)",
+    "operator": "Commonwealth Fusion Systems",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3935916,
+      "lon": -77.4063388,
+      "county": "Chesterfield County",
+      "street": "1201 Battery Brooke Parkway",
+      "postalCode": "23237",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "announcedDate": "2024-12",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-05-21",
+        "note": "CUP application filed for 94 acres in the James River Industrial Center (Dominion-owned land under option to lease).",
+        "sourceIndex": 1
+      },
+      {
+        "status": "permitted",
+        "date": "2025-10",
+        "note": "Chesterfield Board of Supervisors unanimously approved the conditional-use permit.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.grpva.com/news/chesterfield-approves-fusion-power-plant-permit/",
+        "label": "Chesterfield approves fusion power plant permit",
+        "publisher": "Greater Richmond Partnership",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://richmondbizsense.com/2025/05/27/commonwealth-fusion-files-formal-zoning-request-for-power-plant-in-chesterfield/",
+        "label": "Commonwealth Fusion files formal zoning request for power plant in Chesterfield",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Construction is planned for the late 2020s and power for the early 2030s. Chesterfield's economic development director said the plant will likely cost more than $2.5B, an estimate. About 150 full-time jobs at opening. The coordinates are the OSM geocode of Battery Brooke Parkway.",
+    "investmentUsd": 2500000000,
+    "landAcres": 94,
+    "jobs": {
+      "permanent": 150,
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "fusion",
+      "offtaker": "Google",
+      "notes": "Google agreed to buy electricity from ARC, CFS's first customer."
+    }
   },
   {
     "id": "charter-spectrum-charlotte-national-data-center-nc",
@@ -26383,6 +26987,7 @@
       "lon": -97.94,
       "city": "San Marcos",
       "county": "Hays",
+      "street": "2955 Francis Harris Lane",
       "state": "TX",
       "precision": "exact"
     },
@@ -26431,7 +27036,7 @@
         "url": "https://communityimpact.com/san-antonio/government/guadalupe-county-commissioners-vote-down-500m-tax-cut-for-proposed-data-center-in-new-braunfels/",
         "label": "Guadalupe County commissioners vote down $500M tax cut for proposed data center",
         "publisher": "Community Impact",
-        "retrievedAt": "2026-07-06",
+        "retrievedAt": "2026-10-14",
         "kind": "press"
       },
       {
@@ -26440,12 +27045,20 @@
         "publisher": "Data Center Dynamics (via Internet Archive)",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://w.media/cloudburst-breaks-ground-on-1-2-gw-ai-data-center-in-texas/",
+        "label": "CloudBurst breaks ground on 1.2 GW AI data center in Texas",
+        "publisher": "W.Media",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-10-14",
     "notes": "706-acre campus spanning Hays and Guadalupe counties; coordinates use San Marcos city area as centroid. Developed with Evolve Holdings as construction manager. 10-12 hyperscale buildings totaling ~3 million sq ft planned. Tenant not publicly confirmed. Investment total not confirmed in available sources; $14.5B figure removed as unsupported. Guadalupe County commissioners rejected a $500M abatement 3-2 on Feb 24, 2026, then approved a revised abatement on April 21, 2026; county records peg total campus investment at $14.5B (Hays County, home to 77.5 of the 220 abated acres, took no abatement action).",
     "energy": {
       "source": "on_site_gas",
+      "utility": "Energy Transfer (gas supply)",
       "notes": "10-year gas supply agreement with Energy Transfer Oasis Pipeline (up to 450,000 MMBtu/day, sufficient for approximately 1.2 GW per Energy Transfer). Developer reversed original pledge to use only renewables after signing gas contract. Three 400 MW phases planned."
     },
     "water": {
@@ -26474,6 +27087,49 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "cloudhq-clp-campus-culpeper-va",
+    "name": "CloudHQ CLP Campus (Culpeper)",
+    "operator": "CloudHQ",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.4620783,
+      "lon": -77.9776797,
+      "city": "Culpeper",
+      "county": "Culpeper County",
+      "state": "VA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026",
+        "note": "CloudHQ says it has begun coordination and development of the campus, with RFS in 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cloudhq.com/campus/clp-campus/",
+        "label": "CLP Campus — Culpeper, Virginia",
+        "publisher": "CloudHQ",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/campus/cloudhq-culpeper-clp-campus",
+        "label": "CloudHQ: Culpeper CLP Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Three data centers (CLP1–CLP3) totaling 954,190 sq ft with an onsite substation, on about 100 acres along McDevitt Drive (Baxtel). The operator page gives conflicting IT-load figures (215 MW in the header, 'up to 142 MW' in the overview), so capacity is omitted. Coordinates are from the operator page.",
+    "landAcres": 100,
+    "facilityType": "data_center"
   },
   {
     "id": "cloudhq-lc1-va",
@@ -30228,6 +30884,53 @@
     "aiClassification": "likely"
   },
   {
+    "id": "compass-mining-texas-8-odessa-tx",
+    "name": "Compass Mining Texas 8",
+    "operator": "Compass Mining",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.8457149,
+      "lon": -102.367687,
+      "city": "Odessa",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 10
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-01-28",
+        "note": "Full energization of a 10 MW site hosting ~3,000 customer bitcoin miners.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.prnewswire.com/news-releases/compass-mining-energizes-new-10-mw-bitcoin-mining-site-in-texas-302672892.html",
+        "label": "Compass Mining Energizes New 10 MW Bitcoin Mining Site in Texas",
+        "publisher": "Compass Mining via PR Newswire",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Odessa,+Ector+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Odessa, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "The site is 'just outside Odessa', so the county is not stated (Ector or Midland). Coordinates are the Odessa city point. The power arrangement is not disclosed.",
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic"
+    }
+  },
+  {
     "id": "compass-red-oak-tx",
     "name": "Red Oak Campus",
     "operator": "Compass Datacenters",
@@ -30353,6 +31056,36 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "compugen-new-albany-data-center-oh",
+    "name": "Compugen New Albany Data Center",
+    "operator": "Compugen (owner of record Compugen Real Estate Holdings Inc)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.104251,
+      "lon": -82.805143,
+      "city": "New Albany",
+      "county": "Franklin",
+      "street": "7000 Souder Rd",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 222-001940, 7000 Souder Rd, COMPUGEN REAL ESTATE HOLDINGS INC, class 'data center', 31,192 sq ft, 7.77 acres",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Identified from the county 'data center' land-use class with assessed building area. Single-sourced.",
+    "landAcres": 7.77,
+    "facilityType": "data_center"
   },
   {
     "id": "connect-data-centers-albuquerque-nm",
@@ -30985,7 +31718,7 @@
     "id": "convergent-technology-park-remington-fauquier-va",
     "name": "Convergent Technology Park",
     "operator": "Convergent VA LLC",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 38.55073067963831,
@@ -31007,6 +31740,12 @@
         "date": "2026-07-17",
         "note": "The 2019 approval WAS withdrawn (confirmed: Convergent VA partner Jeffrey Price stated the original 2019-approved application was withdrawn due to complexity of study/evaluation needed), but this is not a dead project -- it was REVIVED: a pre-application meeting was held April 2024, formal application submitted June 2024, county staff review began August 2024 (documented in a Fauquier County Dept.",
         "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-10-14",
+        "note": "In late Aug 2026 (Aug 27) Convergent VA withdrew its rezoning for the ~1.584M sq ft data center park south of Remington. It is pursuing by-right residential development (198-home subdivision) instead.",
+        "sourceIndex": 4
       }
     ],
     "sources": [
@@ -31036,9 +31775,23 @@
         "label": "Piedmont Environmental Council (PEC), \"Update on Data Center Development and Transmission Lines in Fauquier\"",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.insidenova.com/news/business/convergent-data-center-application-in-fauquier-pulled-in-favor-of-residential-development/article_00158de0-b82e-4051-b2e1-f3c5f1ab6055.html",
+        "label": "Convergent data center application in Fauquier pulled in favor of residential development",
+        "publisher": "InsideNoVa",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fauquier.com/localnews/convergent-drops-remington-area-data-center-project-to-build-homes/article_6b2cc59c-ea41-4a74-b860-f87fb24c8cf3.html",
+        "label": "Convergent drops Remington-area data center project to build homes",
+        "publisher": "Fauquier Times",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-14",
     "notes": "HONEST INTAKE per prompt guidance: status is application 'on hold, not yet accepted' by the county — real filing, real acreage/investment figures reported, but pre-acceptance. Recorded as status=proposed with the hold explicitly noted rather than dropped, since it is a genuine, citable county application (not rumor). Sourced from the Fauquier County planning-database roundup (fauquiernow.com); status is early/speculative — a per-project county docket should confirm before elevating confidence.",
     "investmentUsd": 1000000000,
     "landAcres": 140,
@@ -33812,6 +34565,73 @@
     }
   },
   {
+    "id": "crane-data-centers-pierce-township-clermont-oh",
+    "name": "Crane Data Centers Pierce Township Campus (near Beckjord)",
+    "operator": "Crane Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.992083,
+      "lon": -84.29722,
+      "city": "New Richmond (Pierce Township)",
+      "county": "Clermont",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2026-09-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-01",
+        "note": "Crane presented a 300 MW, three-building proposal on ~300 acres (three parcels) adjacent to the closed Beckjord power plant to the Pierce Township Zoning Commission. It still requires zoning commission and trustee approval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wvxu.org/local-news/2026-09-02/small-data-center-company-eyes-land-near-beckjord-power-plant-in-pierce-township",
+        "label": "WVXU: Small data center company eyes land near Beckjord power plant in Pierce Township (300 MW, ~300 acres, ~150 jobs)",
+        "publisher": "WVXU",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://local12.com/news/local/san-francisco-company-pitches-data-center-clermont-county-despite-local-moratorium-pierce-township-tech-technology-beckjord-power-plant-contaminated-soil-issues-residents-complaints-california",
+        "label": "Local 12: San Francisco company pitches 300 MW data center on ~300 acres north of Beckjord Road despite moratorium",
+        "publisher": "WKRC Local 12",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Walter_C._Beckjord_Generating_Station",
+        "label": "Walter C. Beckjord Generating Station (coordinates of adjacent landmark)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Coordinates are those of the adjacent former Beckjord station (approximate). The site is wooded hillside north of Beckjord Road and east of US 52, and the company says it will avoid the plant's coal-ash pits. Township trustees say they are not entertaining the project and extended the moratorium.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Company representative committed to a closed-loop water system (stated commitment, not a permit)."
+    },
+    "landAcres": 300,
+    "jobs": {
+      "permanent": 150,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Pierce Township's data center moratorium is in force. The zoning commission heard the pitch on Sept 1, 2026, with commissioners split. Residents raised water, noise, lighting and green-space concerns.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "crane-pdx01-forest-grove-or",
     "name": "Crane PDX01",
     "operator": "Crane Data Centers",
@@ -34740,11 +35560,11 @@
         "url": "https://ktxs.com/news/local/it-will-change-our-rural-town-tax-abatement-for-7-billion-texas-data-center-approved",
         "label": "'It will change our rural town': Tax abatement for $7 billion Texas data center approved",
         "publisher": "KTXS (Sinclair)",
-        "retrievedAt": "2026-08-26",
+        "retrievedAt": "2026-10-14",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-10-14",
     "notes": "Reported to generate more than $3m annually in payments in lieu of taxes plus more than $2m annually in charitable contributions to Nolan County. No investment figure is recorded here: the cited article headlines the project at $7 billion while other outlets have described a $70 million Crusoe data center in the same county, and the discrepancy is unresolved. Distinct from IREN's Sweetwater campus, which is a different operator on a different site in the same county. Coordinates are a city-level geocode.",
     "energy": {
       "notes": "A Nolan County commissioner states the data center will provide its own electricity and should not draw on residential supply; the generation type is not identified in the source."
@@ -34760,8 +35580,14 @@
         "sourceIndex": 0
       }
     ],
+    "investmentUsd": 7000000000,
     "jobs": {
       "construction": 2000,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Commissioners approved a 10-year abatement on April 13, 2026, with over $3M a year in PILOT and over $2M a year in charitable contributions. One resident spoke in support and another opposed it over the town's rural character.",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -35958,6 +36784,8 @@
       "lon": -84.5179229,
       "city": "Cincinnati",
       "county": "Hamilton",
+      "street": "209-229 West 7th Street",
+      "postalCode": "45202",
       "state": "OH",
       "precision": "exact"
     },
@@ -35979,9 +36807,16 @@
         "publisher": "DataCenterMap",
         "retrievedAt": "2026-08-05",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=OH&limit=200",
+        "label": "PeeringDB 'CyrusOne Cincinnati 7th St', 209-229 West 7th St, Cincinnati 45202 (coordinates match this record)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-14",
     "notes": "Cincinnati's primary carrier-hotel / switching facility (originally a Cincinnati Bell data-center carve-out), 143,778 sq ft of technical space, HPC-capable, closed-loop chilled-water cooling. Address and 14 MW confirmed on CyrusOne's own site; the building is independently tagged CyrusOne CIN2 in OpenStreetMap. Distinct from the already-tracked CyrusOne CIN3 in Mason (Warren County).",
     "water": {
       "coolingType": "closed_loop"
@@ -36000,6 +36835,8 @@
       "lon": -84.3116127,
       "city": "Mason",
       "county": "Warren",
+      "street": "4800 Parkway Dr, Suite 100",
+      "postalCode": "45040",
       "state": "OH",
       "precision": "exact"
     },
@@ -36028,13 +36865,50 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=OH&limit=200",
+        "label": "PeeringDB 'CyrusOne Mason', 4800 Parkway Dr suite 100, Mason 45040",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-14",
     "notes": "Confirmed via multiple aggregator listings (4800 Parkway Drive, Mason, OH); operator's own CIN3 URL 404s (stale slug) but facility corroborated independently.",
     "energy": {
       "utility": "Duke Energy Ohio"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cyrusone-cin4-hamilton-oh",
+    "name": "CyrusOne CIN4 (Hamilton)",
+    "operator": "CyrusOne",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.386313,
+      "lon": -84.567161,
+      "city": "Hamilton",
+      "county": "Butler",
+      "street": "103 Knightsbridge Dr",
+      "postalCode": "45011",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=OH&limit=200",
+        "label": "PeeringDB facility 1471 'CyrusOne Hamilton', 103 Knightsbridge Dr, Hamilton OH 45011",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Single-sourced (PeeringDB). Third-party listings call it CIN4 at ~83,000 sq ft, with conflicting power figures (4.7–9 MW), so no capacity is asserted. 101 Knightsbridge Dr is a different operator (CenterGrid).",
     "facilityType": "data_center"
   },
   {
@@ -36252,6 +37126,96 @@
     ],
     "lastUpdated": "2026-08-26",
     "notes": "Phase 1 (380MW) is under construction adjacent to Calpine's Freestone Energy Center at 1366 FM488, Fairfield, targeted operational Q4 2026; Calpine holds an exclusive agreement to also supply Phase 2 (an additional 380MW, planned total 760MW). Not previously tracked -- no existing Freestone County entries.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cyrusone-jack-county-tx",
+    "name": "CyrusOne Jack County Data Center",
+    "operator": "CyrusOne (C1 Jack 1 LLC)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.2187858,
+      "lon": -98.1580978,
+      "county": "Jack",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 144
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-14",
+        "note": "Phase I: two data centers, minimum 144 MW IT, over $600M in construction value; completion indicated for 2029-2030, pending the Jack County Commissioners Court review.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/jack-county-tx",
+        "label": "CyrusOne: Jack County Data Center",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Jacksboro,+Jack+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Jacksboro, Jack County, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "The site is in southeastern Jack County next to the Vistra power plant. Coordinates are the Jacksboro county-seat point, used as a representative location, not the parcel. Local press reported the county was weighing a reinvestment zone and abatement, but no final vote was found.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Initially on-site natural gas generation with Tier 4 emissions controls, permitted by TCEQ. CyrusOne expects to connect to the existing high-voltage transmission corridor in 2029 or later. The site is adjacent to the existing Vistra power plant in southeastern Jack County."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Sealed closed-loop system, filled once and then recirculated. Routine water use is about 1,100 gallons per day per building, and no local water is used for cooling."
+    },
+    "investmentUsd": 600000000,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cyrusone-lebanon-cin5-cin7-oh",
+    "name": "CyrusOne Lebanon Campus (CIN5 & CIN7)",
+    "operator": "CyrusOne",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.389053,
+      "lon": -84.220796,
+      "city": "Lebanon",
+      "county": "Warren",
+      "postalCode": "45036",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cyrusone.com/data-centers/north-america/lebanon-ohio",
+        "label": "CyrusOne: CIN5 & CIN7 Lebanon, OH — 35 MW total IT capacity, 400,000 sq ft technical space, 123-acre campus",
+        "publisher": "CyrusOne",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?state=OH&limit=200",
+        "label": "PeeringDB facility 1468 'CyrusOne Lebanon', Lebanon OH 45036 (coordinates)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "The operator page states 35 MW total IT capacity and 400,000 sq ft of technical space for the campus. It is not split between CIN5 and CIN7, and not clearly all built, so capacityMw is left unset. Street address conflicts (PeeringDB 401 Fujitec Dr vs listings citing 401 Kingsview Dr), so it is omitted. Free cooling below 45°F via plate-and-frame heat exchangers.",
+    "landAcres": 123,
     "facilityType": "data_center"
   },
   {
@@ -37206,6 +38170,71 @@
     ],
     "lastUpdated": "2026-07-23",
     "notes": "OSM label 'San Antonio I' resolved to SAT1 at 9999 Westover Hills Blvd, first-generation CyrusOne facility in the market.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cyrusone-sat14a-medina-county-tx",
+    "name": "CyrusOne SAT14A (Medina County)",
+    "operator": "CyrusOne",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 29.3565001,
+      "lon": -98.8788844,
+      "city": "Castroville",
+      "county": "Medina",
+      "street": "3397 U.S. 90 West",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-03",
+        "note": "Medina County approved an 80% M&O abatement for a $600M, 500,000 sq ft facility about 3.75 miles west of Castroville.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-07",
+        "note": "TDLR filing TABS2026025457: ~460,000 sq ft, $500M, completion projected June 1, 2027.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://devinenews.com/county-approves-80-tax-break-for-new-data-center-project/",
+        "label": "County approves 80% tax break for new data center project",
+        "publisher": "Devine News",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/07/castroville-braces-as-500-million-data-giant-rolls-in-on-u-s-90/",
+        "label": "Castroville braces as $500 million data giant rolls in on U.S. 90",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Castroville,+Medina+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Castroville, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Investment is reported as $600M by the county (2025) and $500M by the TDLR filing (2026); the later filing figure is used. Distinct from Microsoft's SAT89/SAT90 record near Castroville. Coordinates are the Castroville town point. The site is about 3.75 mi west.",
+    "subsidies": [
+      {
+        "program": "Chapter 312 abatement, 80% of county M&O taxes for 10 years (CyrusOne Reinvestment Zone 1)",
+        "jurisdiction": "Medina County, TX",
+        "year": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 500000000,
     "facilityType": "data_center"
   },
   {
@@ -38603,6 +39632,73 @@
     ],
     "lastUpdated": "2026-08-05",
     "notes": "Colocation facility in the 1255 Euclid Avenue carrier-hotel building, downtown Cleveland — 7,440 sq ft raised floor, 0.4 MW critical IT load. Distinct from the already-tracked Lumen Cleveland 1 (4000 Chester Ave). The same building also houses 365 Data Centers (CL1) and BlueBridge Networks as separate colocation tenants; recorded here as one representative record rather than three near-duplicate pins at one address.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "databank-culpeper-iad5-iad6-va",
+    "name": "DataBank Culpeper Campus (IAD5 / IAD6)",
+    "operator": "DataBank",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.4492071,
+      "lon": -77.9821013,
+      "city": "Culpeper",
+      "county": "Culpeper County",
+      "street": "14601 Germanna Highway",
+      "postalCode": "22701",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 192
+    },
+    "announcedDate": "2023-11-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-11-14",
+        "note": "DataBank announced an 85-acre Culpeper campus of up to three 2-story data centers (1.4M gross sq ft).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026",
+        "note": "Baxtel lists IAD5 as a new facility under construction, with a 2027 target.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://chooseculpeper.com/culpeper-tech-zone/databank-chooses-culpeper-county/",
+        "label": "DataBank chooses Culpeper County",
+        "publisher": "Culpeper County Economic Development",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/databank-iad5",
+        "label": "DataBank: IAD5",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.virginiabusiness.com/article/culpeper-tech-zone-attracts-data-centers/",
+        "label": "Culpeper tech zone attracts data centers",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Located in the Culpeper Technology Zone. The under_construction status rests on the Baxtel listing, and Virginia Business (Aug 2024) said the first facility was expected online around 2027–2028. The address comes from the Baxtel listing.",
+    "energy": {
+      "source": "grid",
+      "utility": "Dominion Energy",
+      "notes": "A 300 MW onsite Dominion substation would deliver 192 MW of critical IT power when fully deployed."
+    },
+    "landAcres": 85,
     "facilityType": "data_center"
   },
   {
@@ -45699,6 +46795,37 @@
     "facilityType": "data_center"
   },
   {
+    "id": "discover-new-albany-data-center-oh",
+    "name": "Discover New Albany Data Center",
+    "operator": "Discover Properties LLC (Discover Financial Services; owner of record)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.103814,
+      "lon": -82.813811,
+      "city": "New Albany",
+      "county": "Franklin",
+      "street": "7205 E New Albany Condit Rd",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 222-002056, 7205 E New Albany Condit Rd, DISCOVER PROPERTIES LLC, class 'data center', 100,116 sq ft, 18.97 acres",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Enterprise data center identified from the county's 'data center' land-use class with assessed building area (built). Named by owner of record; current corporate parent was not separately verified this session. aiClassification mixed_use reflects an enterprise IT facility, not an AI-specific build.",
+    "landAcres": 18.97,
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "diversified-longhorn-pad-a-horton-township-elk-pa",
     "name": "Longhorn Pad A Wellhead Bitcoin Mine",
     "operator": "Diversified Production LLC",
@@ -46088,15 +47215,27 @@
         "publisher": "VPM News",
         "retrievedAt": "2026-09-09",
         "kind": "press"
+      },
+      {
+        "url": "https://www.12onyourside.com/2026/09/01/cumberland-planning-commission-recommends-approval-massive-natural-gas-power-plant/",
+        "label": "Cumberland planning commission recommends approval of massive natural gas power plant",
+        "publisher": "WWBT 12 On Your Side",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-14",
     "notes": "Planned on roughly 900 acres in northern Cumberland County between the James River and Duncan Store Road. Would be the largest gas plant in Virginia at 3 GW. Distinct from the already-tracked Chesterfield Energy Reliability Center. Coordinates are an approximate geocode of northern Cumberland County along the James River, not a surveyed site point.",
     "energy": {
       "source": "on_site_gas",
       "notes": "Proposed 3,000MW combined-cycle plant designed to run continuously rather than as a peaker — the largest natural gas generator in Virginia if built, though below the Bath County Pumped Storage Station's maximum output. Sited in northern Cumberland County on about 900 acres between the James River and Duncan Store Road. As of May 2026 Dominion had not yet filed a conditional use permit application and the project remained subject to local and state review and public hearings."
     },
     "landAcres": 900,
+    "community": {
+      "status": "contested",
+      "notes": "Residents and environmental advocates (Protect Cumberland) opposed it over health, environment and property values. The Planning Commission recommended the CUP 5-1 on Aug 31, 2026, and the Board of Supervisors vote is pending.",
+      "sourceIndex": 1
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -46218,6 +47357,62 @@
       "technology": "other",
       "unitCount": 3,
       "notes": "Coal-fired steam station. The separately tracked Mt. Storm Combined Cycle Station (2.6 GW, proposed) would be built at the same location."
+    }
+  },
+  {
+    "id": "dominion-north-anna-smr-louisa-va",
+    "name": "North Anna Small Modular Reactor (proposed)",
+    "operator": "Dominion Energy Virginia",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.0593017,
+      "lon": -77.7980894,
+      "county": "Louisa County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-10-16",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-10-16",
+        "note": "Dominion–Amazon agreement to explore an SMR at the North Anna site.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-07-14",
+        "note": "ESP renewal request submitted to the NRC to preserve the new-build option.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://louisacounty.gov/CivicAlerts.asp?AID=447",
+        "label": "Louisa County statement on Dominion–Amazon SMR agreement",
+        "publisher": "Louisa County",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://world-nuclear-news.org/articles/dominion-keeps-options-open-for-north-anna",
+        "label": "Dominion keeps options open for North Anna new build",
+        "publisher": "World Nuclear News",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Exploratory only. No capacity, vendor or schedule is confirmed in fetched sources. The coordinates are the existing North Anna station (OSM).",
+    "energy": {
+      "source": "nuclear"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear_smr",
+      "offtaker": "Amazon",
+      "notes": "Oct 2024: Amazon and Dominion agreed to explore an SMR at North Anna, with no commitment to build. Jul 2026: Dominion sought a 20-year renewal of the North Anna Early Site Permit and said it may pursue a design other than the ESBWR, while stating there is no commitment to expand."
     }
   },
   {
@@ -48589,6 +49784,7 @@
       "lon": -82.72274,
       "city": "New Albany",
       "county": "Licking",
+      "street": "9850 Innovation Campus Way",
       "state": "OH",
       "precision": "exact"
     },
@@ -48632,9 +49828,16 @@
         "publisher": "614NOW",
         "retrievedAt": "2026-07-18",
         "kind": "press"
+      },
+      {
+        "url": "https://gis.lickingcounty.gov/server/rest/services/Auditor/Parcels/FeatureServer/0/query?where=UPPER(OwnerName)+LIKE+'%25CONNEX%25'&outFields=*&returnCentroid=true&outSR=4326&f=json",
+        "label": "Licking County Auditor GIS: EDGECONNEX MCN NEW ALBANY SOUTH PROPCO 2 LLC parcels incl. 9850 Innovation Campus Way (33.86 ac)",
+        "publisher": "Licking County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-14",
     "notes": "EdgeConneX's ~$1B multi-phase \"MCN New Albany\" South campus. Per the Ohio Tax Credit Authority scope-of-work filing: Phase I converts a ~525,000 sq ft existing warehouse (9850 Innovation Campus Way) into an 80 MW data center; Phase II proposes two new 72 MW facilities (144 MW) — capacityMw.planned = 224 (80 + 144, IT load). A co-located PowerConneX natural-gas energy center (reported 140–216 MW of generation across sources) is EXCLUDED from capacityMw as on-site generation, not IT load. Footprint spans the South PropCo 2 parcels (~97 ac incl. the built anchor) plus the adjacent North PropCo 1 parcel (3356 Clover Valley Rd NW, 170 ac); ~267 ac combined. \"MCN\" is EdgeConneX's internal project prefix (not publicly decoded). Distinct from EdgeConneX's separate Piper Farms parcel (~5 mi away) and from edgeconnex-ashville-oh (Pickaway County). Public-reception check (2026-09-10): IMPORTANT DISAMBIGUATION: this is EdgeConneX's New Albany/Licking County campus (Innovation Campus Way; Phase 1 120MW, Phase 2 216MW, Phase 3 430MW). It is a SEPARATE EdgeConneX project from the heavily-opposed EdgeConneX proposal in Ashville, Pickaway County, OH (denied annexation 2026-02-02 after packed council meetings and a Change.org petition) -- do not merge that record's contention into this one. For New Albany/Licking County specifically, a land-purchase article (2025, checked 2026-09-10) mentions only general Central Ohio-wide concern that data centers could raise electricity costs, immediately caveated because this project's power comes from dedicated on-site generation (PowerConneX), not the residential grid. No hearing, resident testimony, or official statement specific to this Licking County site was found.",
     "subsidies": [
       {
@@ -49926,6 +51129,7 @@
       "lon": -82.81578,
       "city": "New Albany",
       "county": "Franklin",
+      "street": "7600 W Campus Blvd",
       "state": "OH",
       "precision": "exact"
     },
@@ -49961,9 +51165,16 @@
         "publisher": "Columbus Dispatch (syndicated)",
         "retrievedAt": "2026-07-18",
         "kind": "press"
+      },
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 222-002127, 7600 W Campus Blvd, EDGED COLUMBUS LLC, class 'data center'",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-14",
     "notes": "Operational since its September 10-11, 2025 grand opening. 206,000 sq ft, two-story, 14-acre site with 24 MW of critical (IT) capacity per Edged's own release. Purpose-built for AI training and inference; supports up to 70 kW/rack air-cooled and 200 kW/rack liquid-cooled. Uses the ThermalWorks waterless cooling system (design PUE ~1.15). Adjacent parcel 222-001945 (7270 New Albany-Condit Rd, commercial vacant land) is future expansion land, not part of this operational record.",
     "water": {
       "coolingType": "closed_loop"
@@ -50302,6 +51513,51 @@
       }
     ],
     "investmentUsd": 143000000,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "edged-martindale-campus-caldwell-county-tx",
+    "name": "Edged Energy Martindale Campus",
+    "operator": "Edged Energy",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.8534,
+      "lon": -97.82453,
+      "city": "Martindale",
+      "county": "Caldwell",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-10-14",
+        "note": "Martindale 1 (869,685 sq ft) is under construction with completion slated for mid-2028. Martindale 2 is planned, and the campus is projected to exceed 2 million sq ft.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/campus/edged-energy-martindale-campus",
+        "label": "Edged Energy: Martindale Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "investmentUsd ($2.8B) is the initial phase only. The county approved a tax abatement and reinvestment zone, but the amount is not stated. Coordinates are as listed by Baxtel. MW is undisclosed (an aggregator's 462 MW figure was not corroborated).",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Initial 'clean-fuel' natural gas generation, meant to avoid grid-interconnection delays. Near the LCRA Timmerman peaker plant."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Edged's proprietary ThermalWorks waterless cooling."
+    },
+    "investmentUsd": 2800000000,
+    "landAcres": 330,
     "facilityType": "data_center"
   },
   {
@@ -51901,6 +53157,50 @@
       "offtaker": "Not contracted; developers cite rising Wisconsin demand driven largely by data centers",
       "notes": "New advanced nuclear generation at the retired Kewaunee Power Station site rather than a restart of the 1974-2013 reactor. EnergySolutions is acquiring surrounding land and running site-suitability studies."
     }
+  },
+  {
+    "id": "eneus-energy-rgv-data-center-harlingen-tx",
+    "name": "Eneus Energy RGV Data Center (Harlingen)",
+    "operator": "Eneus Energy (RGV Property Group)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 26.1907543,
+      "lon": -97.6960599,
+      "city": "Harlingen",
+      "county": "Cameron",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "In its initial planning and evaluation phase. As of February 2026 no formal proposal had been submitted to local authorities.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/eneus-energy-harlingen-rgv-campus",
+        "label": "Eneus Energy: Harlingen RGV Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Harlingen,+Cameron+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Harlingen, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Site at Gomez Rd & FM 509 near Harlingen: 16 planned data halls on 1,785 acres, served by a planned 765 kV line. Capacity is omitted because reports conflict: up to 2 GW in coverage, but up to 1 GW of interconnection in Eneus's PUCT letter. Coordinates are the Harlingen city point. A tracker listed the project as blocked by a moratorium, which was not verified.",
+    "investmentUsd": 14000000000,
+    "landAcres": 1785,
+    "facilityType": "data_center"
   },
   {
     "id": "enfinity-eg-saturn-solar-i-perry-al",
@@ -53883,6 +55183,46 @@
     "landAcres": 300,
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "equinix-culpeper-cu1-cu4-va",
+    "name": "Equinix Culpeper Campus (CU1–CU4)",
+    "operator": "Equinix",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.4551359,
+      "lon": -77.9780171,
+      "city": "Culpeper",
+      "county": "Culpeper County",
+      "street": "18155 Technology Drive",
+      "postalCode": "22701",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 62.5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2009",
+        "note": "Baxtel lists the campus as built in 2009 (Terremark), later Verizon, and acquired by Equinix in May 2017.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/equinix-culpeper-campus",
+        "label": "Equinix Culpeper Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Four buildings, CU1–CU4 (Buildings A–D), with per-building operational MW of 11.25, 11.25, 15 and 25 (Baxtel), giving 62.5 MW total. Formerly the Verizon NAP of the Capital Region. The capacity figure is from an aggregator and not verified against Equinix IBX specs, because equinix.com returned 403. The OSM geocode of 18155 Technology Drive.",
+    "facilityType": "data_center"
   },
   {
     "id": "equinix-dallas-da11-tx",
@@ -56126,6 +57466,62 @@
     ],
     "lastUpdated": "2026-09-12",
     "notes": "Single-source finding (Baxtel directory): address and 'fully operational' status stated, but no square footage, capacity, or services detail available. Listed under the legacy 'FairPoint Communications' brand; FairPoint's New England operations are widely reported to now operate under Consolidated Communications (see the separate confirmed consolidated-communications-manchester-nh record in this same wave), so the current operating name for this specific Laconia site was not independently re-confirmed here. OSM matches a house/building at this exact address (way/768007156) with no business name attached, consistent with but not independently confirming the listing.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "falmouth-tech-accokeek-center-stafford-va",
+    "name": "Accokeek Center",
+    "operator": "Falmouth Tech LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.4064243,
+      "lon": -77.4216174,
+      "county": "Stafford County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-27",
+        "note": "Planning Commission recommended approval of the rezoning and substation CUP on separate 4-3 votes. Board of Supervisors decision pending.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.potomaclocal.com/?p=252787",
+        "label": "Stafford Planning Commission recommends Accokeek Center data campus, 4-3",
+        "publisher": "Potomac Local",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox5dc.com/news/planning-commission-supports-massive-data-center-proposal-stafford-county",
+        "label": "Planning commission supports massive data center proposal for Stafford County",
+        "publisher": "FOX 5 DC",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Two two-story buildings totaling 590,000 sq ft plus a substation pad of up to 8 acres. The site is 121 acres between U.S. 1 and I-95, about 2,500 ft north of Eskimo Hill Road, near the Rappahannock Regional Jail. The $2B investment is from documents submitted to the county (FOX 5), and the 64 jobs are a staff estimate. The coordinates are the jail (OSM) as a nearby reference point.",
+    "energy": {
+      "source": "grid",
+      "notes": "Requested load of 122 MW. The transmission route across Accokeek Creek is unidentified, and there is no load letter (county staff)."
+    },
+    "investmentUsd": 2000000000,
+    "landAcres": 121,
+    "jobs": {
+      "permanent": 64,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Most of the 44 speakers opposed, citing setback waivers, the transmission route and the mixed-use land-use designation.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -63742,6 +65138,87 @@
     "facilityType": "data_center"
   },
   {
+    "id": "google-columbus-rathmell-road-oh",
+    "name": "Google Columbus Data Center (South High St / Rathmell Rd, former Hartman Farm)",
+    "operator": "Google (owner of record Magellan Enterprises LLC)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.852528,
+      "lon": -82.996809,
+      "city": "Columbus",
+      "county": "Franklin",
+      "street": "225 Rathmell Rd",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2023-05-03",
+        "note": "Google said construction was 'already well underway' at the former Hartman Farm site, 5076 S. High St.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-14",
+        "note": "Franklin County Auditor classifies parcel 510-180711 (225 Rathmell Rd, Magellan Enterprises LLC, ~480 ac) as 'data center' with 1,172,656 sq ft of assessed building area. Epoch AI's satellite-based directory lists the site as operational with multiple buildings in service.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.nbc4i.com/news/investigates/20-jobs-but-54-million-in-tax-breaks-for-google-center-in-columbus/amp/",
+        "label": "NBC4: Magellan Enterprises LLC was a Google shell; $300M, 150k sq ft data center at 5076 S High St; 20 jobs; $54.3M 15-year abatement (2021)",
+        "publisher": "NBC4 WCMH-TV",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 510-180711, 225 Rathmell Rd, MAGELLAN ENTERPRISES LLC, class 'data center', 1,172,656 sq ft, 480.4 acres",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://epoch.ai/data/ai-data-centers/directory/google-columbus",
+        "label": "Epoch AI data center directory: Google Columbus (operational; building timeline from satellite imagery)",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://finance.yahoo.com/news/google-add-two-more-data-133018916.html",
+        "label": "Columbus Dispatch via Yahoo: Google building at former Hartman Farm, 5076 S. High St. (May 3, 2023)",
+        "publisher": "Columbus Dispatch",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Google's Ohio page names Columbus as one of its three Ohio data center communities. The 2021 application ($300M, 150k sq ft, 20 jobs) describes the first building only, and the campus has since grown. Epoch's MW figures are model estimates and are deliberately not recorded as capacity. The parcel-to-S. High St link rests on matching location (south of I-270 on US 23) and the Magellan shell entity, so precision is set to approximate.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "Epoch AI identifies SPX evaporative cooling towers on site from satellite imagery."
+    },
+    "subsidies": [
+      {
+        "program": "City of Columbus 15-year property tax abatement (projected savings $54,335,376)",
+        "amountUsd": 54335376,
+        "jurisdiction": "City of Columbus",
+        "year": "2021",
+        "sourceIndex": 0
+      }
+    ],
+    "landAcres": 480,
+    "jobs": {
+      "permanent": 20,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "google-council-bluffs-ia",
     "name": "Google Council Bluffs Data Center",
     "operator": "Google",
@@ -64851,6 +66328,7 @@
       "lon": -77.71,
       "city": "Midlothian",
       "county": "Chesterfield",
+      "street": "750 Watkins Centre Parkway",
       "state": "VA",
       "precision": "exact"
     },
@@ -64927,9 +66405,16 @@
         "publisher": "VPM",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://richmondbizsense.com/2026/08/27/chesterfield-says-it-wont-approve-any-more-data-center-projects/",
+        "label": "Chesterfield says it won't approve any more data center projects",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-10-14",
     "notes": "Codename Project Loch; land acquired via shell entity Aeris Investments LLC (~$29M for ~340 acres). Site: 750 Watkins Centre Pkwy (Watkins Centre South), west of Rt 288 and south of Rt 60, near Westchester Commons. Three data-center buildings planned, each with a dedicated on-site substation. Google stated in Aug 2025 it has no near-term plans to develop Loch. Capacity MW not disclosed. Virginia law bars per-company subsidy value disclosure, so the 30-year fixed tax agreement is recorded as a program label with no dollar value. Coordinates are an approximate site centroid (address-derived, not GPS-verified).",
     "energy": {
       "source": "grid",
@@ -65127,6 +66612,64 @@
       "permanent": 30,
       "sourceIndex": 2
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-midlothian-ellis-county-tx",
+    "name": "Google Midlothian Campus",
+    "operator": "Google",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.44363,
+      "lon": -97.06345,
+      "city": "Midlothian",
+      "county": "Ellis",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "announcedDate": "2019-06-14",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2019-06-14",
+        "note": "Launch event in June 2019 with $600M invested in the site.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-14",
+        "note": "Three buildings operational (2019, 2020, 2025) and two more under construction for 2027.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dallasinnovates.com/google-expands-further-into-texas-with-a-new-600m-midlothian-data-center/",
+        "label": "Google Boosts its Texas Investments With a New $600M Midlothian Data Center",
+        "publisher": "Dallas Innovates",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/campus/google-midlothian-campus",
+        "label": "Google: Midlothian Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "On 375 acres in RailPort Business Park, bought in May 2017 through Sharka LLC. The abatement requires at least $500M invested and 40 full-time jobs by year five. Distinct from the tracked Google Red Oak campus. Coordinates are as listed by Baxtel.",
+    "subsidies": [
+      {
+        "program": "Ellis County 10-year tax abatement (100% personal property, 85% improvements)",
+        "jurisdiction": "Ellis County, TX",
+        "year": "2018",
+        "sourceIndex": 1
+      }
+    ],
+    "landAcres": 375,
     "facilityType": "data_center"
   },
   {
@@ -66229,13 +67772,21 @@
         "label": "Chesterfield Report — Chesterfield Residents Seek Clarity on Data Center Expansion Plans",
         "retrievedAt": "2026-07-26",
         "kind": "press"
+      },
+      {
+        "url": "https://richmondbizsense.com/2026/08/27/chesterfield-says-it-wont-approve-any-more-data-center-projects/",
+        "label": "Chesterfield says it won't approve any more data center projects",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-14",
     "notes": "Part of Google's 3-campus $9B Chesterfield County trio, alongside Project Skye and Project Loch. Distinct from a separately tracked Google Midlothian, VA proposed record.",
     "energy": {
       "utility": "Dominion Energy Virginia"
     },
+    "landAcres": 300,
     "community": {
       "status": "contested",
       "notes": "Residents packed a June 24, 2026 Chesterfield Board of Supervisors meeting demanding transparency on the three Google projects (Peanut, Skye, Loch; $9B combined); zero speakers voiced support and no developers attended.",
@@ -66254,6 +67805,7 @@
       "lon": -77.77600992,
       "city": "Midlothian",
       "county": "Chesterfield",
+      "street": "4201 Moseley Road",
       "state": "VA",
       "precision": "approximate"
     },
@@ -66305,9 +67857,16 @@
         "publisher": "VPM",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://richmondbizsense.com/2026/08/27/chesterfield-says-it-wont-approve-any-more-data-center-projects/",
+        "label": "Chesterfield says it won't approve any more data center projects",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-27",
+    "lastUpdated": "2026-10-14",
     "notes": "887-acre parcel spanning Genito/Moseley/Duval Rds. Part of Google's 3-campus $9B Chesterfield County trio, alongside Project Peanut and Project Loch. Distinct from the separately tracked Project Loch (750 Watkins Centre Pkwy, 221 ac).",
     "landAcres": 887.7,
     "community": {
@@ -74036,6 +75595,58 @@
     "facilityType": "data_center"
   },
   {
+    "id": "infrakey-lacy-lakeview-data-district-mclennan-county-tx",
+    "name": "Infrakey Lacy Lakeview Data District",
+    "operator": "Infrakey",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.6715215,
+      "lon": -97.1000553,
+      "city": "Elm Mott",
+      "county": "McLennan",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-14",
+        "note": "Up to $10B campus on 520 acres in the Ross area of northern McLennan County, pending annexation by Lacy Lakeview and a water/wastewater deal with Waco.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.texastribune.org/2026/05/14/waco-data-center-lacy-lakeview-infrakey-texas/",
+        "label": "Waco officials say they've been kept in the dark about Lacy Lakeview data center (Texas Tribune / Waco Bridge, May 14, 2026)",
+        "publisher": "The Texas Tribune",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Elm+Mott,+McLennan+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Elm Mott, McLennan County, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "The site is described as in the Ross area near Elm Mott. Coordinates are the Elm Mott town point, not the parcel. MW figures from aggregators conflict (925 MW vs ~1 GW, plus a 1.2 GW gas plant in the company's materials) and were not read on a primary page, so capacity is omitted.",
+    "water": {
+      "notes": "Infrakey plans to take nearly all of its cooling water from sewage flows ('sewer mining'). Phase 1 needs about 300,000 gallons per day and full buildout about 2 million gallons per day. Backup options named are Lake Whitney water (3-5 years to permit) and well water, which Infrakey says it is not pursuing."
+    },
+    "investmentUsd": 10000000000,
+    "landAcres": 520,
+    "community": {
+      "status": "contested",
+      "notes": "Ross and Elm Mott residents organized against the project. The McLennan County judge said he would oppose tax abatements, State Rep. Pat Curry was strongly critical, and on May 2, 2026 Lacy Lakeview voters elected a project opponent to the city council. No annexation, Waco agreement or state permit had been reported as approved.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "inl-c3-idahofalls-id",
     "name": "Idaho National Laboratory Collaborative Computing Center (C3)",
     "operator": "Idaho National Laboratory (U.S. Department of Energy)",
@@ -75609,6 +77220,52 @@
       "coolingType": "closed_loop"
     },
     "landAcres": 43,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "iron-mountain-taylor-williamson-county-tx",
+    "name": "Iron Mountain Williamson County Data Center Campus",
+    "operator": "Iron Mountain",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.5728854,
+      "lon": -97.4141053,
+      "county": "Williamson",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-12",
+        "note": "Presented to Hutto City Council: seven data center buildings, a substation and roads on ~500 acres off CR 404 in Taylor's ETJ. Seeking a wastewater services agreement with Hutto.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://newsletter.communityimpact.com/p/new-post-b3e4",
+        "label": "Iron Mountain data center plan presented to Hutto City Council (Community Impact, Mar 19, 2026)",
+        "publisher": "Community Impact",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Taylor,+Williamson+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Taylor, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "The site is south of Samsung Austin Semiconductor, off CR 404, on part of a tract previously approved for the Taylor Meadows residential project. MW is not stated. Coordinates are the Taylor city point.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Cooling water would recirculate in a closed loop. Expected wastewater flow is about 30,200 gallons per day."
+    },
+    "landAcres": 500,
     "facilityType": "data_center"
   },
   {
@@ -77479,6 +79136,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "karis-critical-smart-farms-new-albany-oh",
+    "name": "Karis Critical Smart Farms Data Center Campus (New Albany)",
+    "operator": "Karis Critical (owner of record Karis Critical CMH Smart LLC)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.122997,
+      "lon": -82.746475,
+      "city": "New Albany",
+      "county": "Licking",
+      "street": "4500 Beech Rd NW",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07",
+        "note": "Land rezoned and annexed into New Albany in July 2025, then acquired by Karis. Plan for eight data center buildings (~1.6M sq ft). Karis asked Ohio EPA in early 2026 to fill ~2 acres of wetlands.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://gis.lickingcounty.gov/server/rest/services/Auditor/Parcels/FeatureServer/0/query?where=UPPER(OwnerName)+LIKE+'%25KARIS%25'&outFields=*&returnCentroid=true&outSR=4326&f=json",
+        "label": "Licking County Auditor GIS: parcel 095-111954-00.000, 4500 Beech Rd NW, KARIS CRITICAL CMH SMART LLC, 113.49 tax acres",
+        "publisher": "Licking County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nearbydatacenters.org/projects/oh-new-albany-karis-smart-farms/",
+        "label": "Nearby Data Centers: Karis Critical 'Smart Farms' campus, eight buildings ~1.6M sq ft, Ohio EPA wetland fill request (Jan 2026)",
+        "publisher": "Nearby Data Centers",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Karis is a land/infrastructure developer that does not operate facilities, so the eventual operator is unknown. Third-party listings suggest an end user, but that is unconfirmed.",
+    "landAcres": 113.5,
+    "facilityType": "data_center"
+  },
+  {
     "id": "karis-dekalb-campus-il",
     "name": "KARIS DeKalb Campus (Peace and Gurler Roads)",
     "operator": "Karis Acquisitions",
@@ -77628,6 +79329,70 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "kilby-power-plant-energy-forge-one-reeves-county-tx",
+    "name": "Kilby Power Plant (Project Kilby)",
+    "operator": "Energy Forge One LLC (Chevron, with Engine No. 1)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.1343,
+      "lon": -103.4383,
+      "city": "Pecos",
+      "county": "Reeves",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 2670
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-23",
+        "note": "Chevron subsidiary Energy Forge One signed a 20-year PPA with Microsoft for ~2.67 GW. The TCEQ permit is pending and no final investment decision had been reported.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tceq.texas.gov/agency/decisions/hearings/events/public-meeting-energy-forge-one-llc-181895-psdtx1684-and-ghgpsdtx260",
+        "label": "TCEQ Public Meeting: Energy Forge One LLC, 181895, PSDTX1684, and GHGPSDTX260 (Kilby Power Plant)",
+        "publisher": "Texas Commission on Environmental Quality",
+        "retrievedAt": "2026-10-14",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.power-eng.com/gas/new-co-located-gas-plant-to-power-microsoft-data-center-in-west-texas/",
+        "label": "New co-located gas plant to power Microsoft data center in West Texas",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Kilby_power_plant",
+        "label": "Kilby power plant",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Coordinates are from Global Energy Monitor's tracker. GEM lists units in pre-construction (combined-cycle and simple-cycle groups) plus an announced 2,500 MW expansion that is not counted in capacityMw. Powers the tracked Microsoft Pecos campus.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Co-located natural gas plant, mostly GE Vernova turbines plus Solar Turbines (Caterpillar) units."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Microsoft",
+      "poweredFacilityIds": [
+        "microsoft-pecos-tx"
+      ],
+      "notes": "20-year PPA with Microsoft (announced June 2026); first power is anticipated in 2028. TCEQ air permit application 181895 / PSDTX1684 / GHGPSDTX260 was pending, with a public meeting on June 10, 2026."
+    }
   },
   {
     "id": "klondike-wyalusing-data-center-bradford-pa",
@@ -83218,6 +84983,66 @@
     "facilityType": "crypto_mining"
   },
   {
+    "id": "mara-hansford-county-wind-farm-tx",
+    "name": "MARA Hansford County Wind Farm",
+    "operator": "MARA Holdings",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.1938947,
+      "lon": -101.1921818,
+      "county": "Hansford",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 114
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-02-18",
+        "note": "MARA closed the acquisition of the operating wind farm.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ir.mara.com/news-events/press-releases/detail/1383/mara-acquires-wind-farm",
+        "label": "MARA Acquires Wind Farm",
+        "publisher": "MARA Holdings",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1507605/000149315225007090/ex99-1.htm",
+        "label": "MARA Holdings Announces Closing of Texas Wind Farm Acquisition (8-K Ex. 99.1)",
+        "publisher": "U.S. SEC / MARA Holdings",
+        "retrievedAt": "2026-10-14",
+        "kind": "filing"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Spearman,+Hansford+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Spearman, Hansford County, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Coordinates are the Spearman county-seat point, not the wind farm footprint. The wind farm name and price are not stated in MARA's releases.",
+    "energy": {
+      "source": "wind",
+      "notes": "114 MW nameplate wind with 240 MW of grid interconnection capacity. Powers a behind-the-meter bitcoin mining data center using repurposed ASICs."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "offtaker": "MARA Holdings",
+      "notes": "Acquisition announced 2024-12-03 and closed 2025-02-18. Behind-the-meter mining under MARA's Advanced ASIC Retirement Initiative."
+    }
+  },
+  {
     "id": "mara-hopedale-harrison-oh",
     "name": "MARA Hopedale Data Center",
     "operator": "MARA Holdings",
@@ -85908,6 +87733,60 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "meta-henrico-white-oak-sandston-va",
+    "name": "Meta Henrico Data Center (White Oak Technology Park)",
+    "operator": "Meta Platforms",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.4820177,
+      "lon": -77.2337105,
+      "city": "Sandston",
+      "county": "Henrico County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2017-10",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2017-10",
+        "note": "Construction began October 2017 (DPR).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2022-11",
+        "note": "RichmondBizSense describes an existing ~2.4M sq ft campus at 6200 and 7301 Technology Blvd built in phases from 2017.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.dpr.com/projects/meta-henrico-data-center",
+        "label": "DPR Construction — Meta Henrico Data Center project page",
+        "publisher": "DPR Construction",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://richmondbizsense.com/2022/11/28/facebook-parent-meta-adding-to-henrico-footprint-with-code-named-project-tropical-data-center-development/",
+        "label": "Facebook parent Meta adding to Henrico footprint with code-named 'Project Tropical' data center",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Five-building 'H' campus of about 2.4–2.5M sq ft at full build-out, investment of over $1B (DPR), at 6200 and 7301 Technology Blvd. In 2022 a Meta-tied entity (Scout Development LLC) bought 475 acres at 3951 Portugee Road to the south for two more data centers ('Project Tropical'); the status of that expansion is not covered here. Coordinates are from the OSM feature 'Meta Henrico Data Center'.",
+    "energy": {
+      "source": "grid",
+      "notes": "DPR project page: campus runs on 100% renewable energy and enabled 700 MW of solar projects across Virginia; campus power capacity not stated."
+    },
+    "investmentUsd": 1000000000,
+    "facilityType": "data_center"
   },
   {
     "id": "meta-huntsville-al",
@@ -89792,6 +91671,7 @@
       "lon": -82.46,
       "city": "Heath",
       "county": "Licking",
+      "street": "975 Thornwood Dr",
       "state": "OH",
       "precision": "exact"
     },
@@ -89844,9 +91724,16 @@
         "publisher": "Microsoft Local",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://gis.lickingcounty.gov/server/rest/services/Auditor/Parcels/FeatureServer/0/query?where=UPPER(OwnerName)+LIKE+'%25MICROSOFT%25'&outFields=*&returnCentroid=true&outSR=4326&f=json",
+        "label": "Licking County Auditor GIS: parcel 097-330018-00.000, 975 Thornwood Dr, Heath, MICROSOFT CORPORATION, 226.33 tax acres",
+        "publisher": "Licking County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-14",
     "notes": "Site at 975 Thornwood Dr SW, Heath OH 43056; 227 acres. Part of Microsoft's $1B Licking County three-campus investment alongside Hebron and New Albany. Coordinates are approximate Heath city centroid; exact Thornwood Dr parcel not pinned. The $1B is Microsoft's three-campus Licking County commitment; no Heath-specific capital-investment figure is published (do not derive by subtraction).",
     "energy": {
       "source": "grid",
@@ -89889,6 +91776,8 @@
       "lon": -82.5,
       "city": "Hebron",
       "county": "Licking",
+      "street": "323 N High St",
+      "postalCode": "43025",
       "state": "OH",
       "precision": "exact"
     },
@@ -89948,9 +91837,16 @@
         "publisher": "Microsoft Local",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://gis.lickingcounty.gov/server/rest/services/Auditor/Parcels/FeatureServer/0/query?where=UPPER(OwnerName)+LIKE+'%25MICROSOFT%25'&outFields=*&returnCentroid=true&outSR=4326&f=json",
+        "label": "Licking County Auditor GIS: parcels 078-330000-00.000 / 075-344856-00.000, 323 N High St, Hebron, MICROSOFT CORPORATION",
+        "publisher": "Licking County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-14",
     "notes": "223 acres west of Ohio 79, between North High Street and Canyon Road, Hebron OH 43025. Six-data-center campus planned. Part of Microsoft's $1B Licking County commitment; individual site investment not separately disclosed. Coordinates are approximate Hebron village area. The $1B figure is Microsoft's three-campus Licking County commitment (not disaggregated); an 'up to $3B' Hebron figure appears only in a secondary blog and is not a committed capital-expenditure figure.",
     "energy": {
       "source": "grid",
@@ -90822,6 +92718,57 @@
       "notes": "Table 7 of the approval order, 'Annual Emissions' column (the 'Annual with Commissioning Emissions' column is higher: PM10 25, PM2.5 10.5, CO 13, NOx 64, VOC 1.7, SO2 0.24, NH3 4.8). The order also caps diesel engine exhaust particulate at 0.97 tpy and NO2 at 5.3 tpy, and limits facility fuel consumption to 1,657,088 gallons. Permitted ceilings, not measured emissions. Permittee is classified as a synthetic minor source.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-new-albany-beech-road-oh",
+    "name": "Microsoft New Albany Data Center (Beech Road)",
+    "operator": "Microsoft",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.106767,
+      "lon": -82.758644,
+      "city": "New Albany",
+      "county": "Licking",
+      "street": "3287 Beech Rd NW",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2024-10",
+        "note": "Site clearing began late October 2024. Foundation work began summer 2025, and grading/soil deliveries ran through spring 2026. By July 2026 general contractor Ames's work was nearing completion, with future phases planned. Microsoft notes completion of construction does not indicate operation.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://local.microsoft.com/blog/newalbany-datacenter-construction-update/",
+        "label": "Microsoft Local: New Albany datacenter construction update (Beech Road; updates through July 2026)",
+        "publisher": "Microsoft",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://gis.lickingcounty.gov/server/rest/services/Auditor/Parcels/FeatureServer/0/query?where=UPPER(OwnerName)+LIKE+'%25MICROSOFT%25'&outFields=*&returnCentroid=true&outSR=4326&f=json",
+        "label": "Licking County Auditor GIS: parcel 095-112206-00.000, 3287 Beech Rd NW, MICROSOFT CORPORATION, 197.34 tax acres",
+        "publisher": "Licking County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://abc6onyourside.com/news/local/microsoft-buys-over-nearly-300-acres-in-pataskala",
+        "label": "ABC6: Microsoft land purchases incl. 184 acres at 3287 Beech Rd NW for $56,984,510",
+        "publisher": "ABC6 / WSYX",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "This is the third of Microsoft's original Licking County campuses (alongside the tracked Heath and Hebron sites). Building size and capacity are not published in the sources read.",
+    "landAcres": 197,
     "facilityType": "data_center"
   },
   {
@@ -92046,6 +93993,62 @@
     "facilityType": "data_center"
   },
   {
+    "id": "middletown-data-center-frederick-va",
+    "name": "Middletown Data Center",
+    "operator": "Middletown Data Center LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.0202984,
+      "lon": -78.2907443,
+      "city": "Middletown",
+      "county": "Frederick County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 10
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-09-25",
+        "note": "Described as a 43,000 sq ft facility in operation for over a decade. It applied for a CUP to expand onto a neighboring property and was not included in the grandfathering resolution.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.middletowndatacenter.com/technical-specs",
+        "label": "Middletown Data Center — Technical Specifications",
+        "publisher": "Middletown Data Center",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.nvdaily.com/nvdaily/data-centers-stripped-as-allowable-use-in-frederick-county/article_79da8f36-a547-5430-bf96-e07bcc68a7ef.html",
+        "label": "Data centers stripped as allowable use in Frederick County",
+        "publisher": "Northern Virginia Daily",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.mslaw.com/news/board-of-zoning-appeals-oks-variance-for-additional-generator-at-existing-data-center",
+        "label": "Board of Zoning Appeals OKs variance for additional generator at existing data center",
+        "publisher": "Miles & Stockbridge (via The Winchester Star)",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Operator specs: 14 MW total power, 10 MW critical IT, 43,416 sq ft of data center space. A Sept 2025 BZA variance allowed a supplemental backup generator. The coordinates are the OSM geocode of 8209 Valley Pike, the address listed by directories and not confirmed on a fetched primary page.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "11 chillers in a closed-loop, non-evaporative system with 30% glycol and no make-up water (operator specs)."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "midwest-power-investors-rochelle-il",
     "name": "Steward Drive Data Center (Rochelle)",
     "operator": "Midwest Power Investors LLC (LFF Industrial)",
@@ -92462,6 +94465,46 @@
       "hardwareType": "asic",
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "minnieville-mid-county-industrial-park-prince-william-va",
+    "name": "Mid-County Industrial Park Data Center Campus",
+    "operator": "Minnieville Capital Acquisitions",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.6320976,
+      "lon": -77.4218513,
+      "county": "Prince William County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-06-04",
+        "note": "Board of County Supervisors approved 5-3: about 40 acres rezoned from agricultural to industrial plus ~20 acres in Colchester Industrial Park.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.insidenova.com/headlines/prince-william-supervisors-approve-contentious-mid-county-industrial-park-data-center-project/article_041857e0-98ca-5344-9397-67329e70a394.html",
+        "label": "Prince William supervisors approve contentious Mid-County Industrial Park data center project",
+        "publisher": "InsideNoVa",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Three data center buildings and an electric substation, about 250 feet northwest of the Dumfries Road (Route 234) and Minnieville Road intersection, with buildings nearest Route 234 capped at 75 feet. Press has linked a Minnieville-tied buyer to an Amazon P.O. box, but end-user identity is not confirmed. The coordinates are an approximate point on Dumfries Road at Independent Hill, not the parcel.",
+    "landAcres": 64,
+    "community": {
+      "status": "contested",
+      "notes": "The Planning Commission unanimously recommended denial. The site borders the Potomac Reserve community, and the board approved 5-3.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "mission-college-data-center-santa-clara-ca",
@@ -95833,9 +97876,16 @@
         "publisher": "WOUB Public Media",
         "retrievedAt": "2026-09-01",
         "kind": "press"
+      },
+      {
+        "url": "https://portscampus.com/",
+        "label": "PORTS Technology Campus (official site): SoftBank Group / SB Energy, 10 GW data center incl. 9.2 GW gas generation, first 800 MW phase construction 2026",
+        "publisher": "PORTS Technology Campus / SB Energy",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-10-14",
     "notes": "Officially \"PORTS-Pike Technology Campus\"; formerly tracked under the pre-announcement Ohio entity New Day Data Centers LLC, a name that appears nowhere in the SEC S-1 or SB Energy’s own announcements. Developer/operator is SB Energy (SoftBank-controlled); the DOE lease was signed 2026-02-26 by its subsidiary Pike County Portsmouth DC LLC. CAPACITY - three distinct figures that must not be conflated: 8.0 GW-IT of contracted compute (8,024 MW-IT; NVIDIA guarantees the initial 4.25 GW-IT with an option on the remaining 3.78 GW-IT), 10 GW of gross power load (the capacityMw.planned value here), and 9.2 GW of new gas generation. OFFTAKE: on 2026-08-17 SB Energy subsidiaries signed 17 twenty-year triple-net leases with OpenAI, with rent commencement conditioned on interconnection and generation being available; NVIDIA provided a residual-value guaranty capped at $105B and separately bought $1.5B of non-voting stock. LAND: landAcres is intentionally omitted - the DOE lease covers 189 acres (Batch 1) on which \"one data center building is expected to be constructed\", while the S-1 places the buildings \"across several thousand acres of private property\"; the widely-cited 3,700/3,777 acres is the whole federal reservation, which also hosts the separately tracked Oklo Aurora project, Centrus and the DUF6 plant. INVESTMENT: investmentUsd intentionally omitted - $10B (DOE, March) and $30-40B (project site) describe the same ~800 MW first phase and cannot both be right, the $67.2B total appears only as one trade outlet’s unattributed rollup, and the S-1 states no total capex. SUBSIDIES: none awarded - the Ohio Tax Credit Authority minutes record no award, no JobsOhio award was found, and Ohio paused new data-centre tax exemptions in May 2026; a county PILOT is under negotiation because the leased federal land yields no property tax. STATUS: early civil works began after the 2026-03-20 groundbreaking, though the S-1 lists construction as not started, with first capacity in 2028 and full buildout 2032. Distinct from oklo-aurora-pike-county-oh on the same broader site - do not merge or double-count.",
     "energy": {
       "source": "mixed",
@@ -97481,6 +99531,65 @@
     "generation": {
       "technology": "solar"
     }
+  },
+  {
+    "id": "nightpeak-old-ocean-data-center-brazoria-county-tx",
+    "name": "Old Ocean Data Center",
+    "operator": "Nightpeak Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.0799726,
+      "lon": -95.749673,
+      "city": "Old Ocean",
+      "county": "Brazoria",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 620
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-11",
+        "note": "Two 310 MW hyperscale data centers ($1.5B each) on 158 acres near Sweeny. Nightpeak's site cites an ability to energize from 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.bisnow.com/news/houston/data-center-development/houston-area-county-rejects-tax-abatement-for-35b-data-center-development-133616",
+        "label": "Houston-Area County Rejects Tax Break For $3.5B Data Center Project",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Old+Ocean,+Brazoria+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Old Ocean, Brazoria County, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "investmentUsd is the two data centers only ($1.5B each). The $3.5B headline also includes two $250M power plants. The 158-acre site is shared with the Bulldog Power plants. Coordinates are the Old Ocean community point near Sweeny, not the parcel.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Co-located with Bulldog Power, a Nightpeak combustion turbine project described as two 310 MW plants. Bulldog has been in development since 2023 and targets operation in 2028 or earlier."
+    },
+    "investmentUsd": 3000000000,
+    "jobs": {
+      "permanent": 30,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Brazoria County commissioners unanimously denied four 10-year, 100% abatements, citing noise, water and power use. The county judge said the project will probably proceed anyway.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "nine-mile-data-myton-duchesne-county-ut",
@@ -100570,6 +102679,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "oasis-dahlgren-west-king-george-va",
+    "name": "Dahlgren West Data Center Campus",
+    "operator": "Oasis Digital Properties",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.3385746,
+      "lon": -77.0782376,
+      "city": "Dahlgren",
+      "county": "King George County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-04-15",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-04-15",
+        "note": "Potomac Development Group proposed a ~500-acre, ~9M sq ft campus off U.S. 301.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "permitted",
+        "date": "2025-08",
+        "note": "King George Board of Supervisors unanimously approved Oasis's 485-acre, 10-building plan.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://northernvirginiamag.com/news/2025/08/21/nova-based-data-center-company-building-new-campus-near-fredericksburg/",
+        "label": "NoVA-based data center company building new campus near Fredericksburg",
+        "publisher": "Northern Virginia Magazine",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.bisnow.com/news/national/data-center/second-massive-data-center-campus-planned-in-king-george-county-virginia-123780",
+        "label": "Developer Proposes 9M SF Data Center Campus In Virginia",
+        "publisher": "Bisnow",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "10 buildings totaling about 6.8M sq ft on the north side of James Madison Parkway. The developer projects 1,500 construction jobs and 50–60 permanent jobs per building. The site has access to 230 kV transmission. The coordinates are an approximate point on James Madison Parkway near Walnut Hill, not the parcel.",
+    "landAcres": 485,
+    "jobs": {
+      "construction": 1500,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "ocosa-321-south-boston-tulsa-ok",
     "name": "OCOSA Communications Tulsa Data Center (321 S Boston)",
     "operator": "OCOSA Communications",
@@ -103178,6 +105341,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "pacifico-glass-mountains-brewster-county-tx",
+    "name": "Pacifico Energy Glass Mountains Ranch Campus",
+    "operator": "Pacifico Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.3602181,
+      "lon": -103.6628596,
+      "county": "Brewster",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-15",
+        "note": "Pacifico met Brewster County officials about a GW Ranch-style project on an ~8,400-acre ranch in the Glass Mountains NW of Alpine. It is at the feasibility stage (wetland, geophysical and topographic surveys), with 1-2 years of planning before construction.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.tpr.org/news/2026-09-18/developer-behind-amazons-pecos-county-data-center-approaches-brewster-county-officials",
+        "label": "Developer behind Amazon's Pecos County data center approaches Brewster County officials",
+        "publisher": "Texas Public Radio",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Alpine,+Brewster+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Alpine, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Company representatives gave a $5B-$60B investment range, too wide to record. No Amazon link is reported for this site. Coordinates are the Alpine city point; the ranch is northwest of Alpine.",
+    "landAcres": 8400,
+    "facilityType": "data_center"
+  },
+  {
     "id": "panama-energy-center-lancaster-ne",
     "name": "Panama Energy Center",
     "operator": "NextEra Energy Resources",
@@ -104594,6 +106799,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "peterson-culpeper-technology-campus-va",
+    "name": "Culpeper Technology Campus",
+    "operator": "Peterson Companies",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.4615949,
+      "lon": -77.9824214,
+      "city": "Culpeper",
+      "county": "Culpeper County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2023-05",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2023",
+        "note": "Culpeper County rezoned 34.4 acres on Route 799 (McDevitt Drive) and Route 699 (East Chandler Street), joining 115 acres the Town had already rezoned.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.petersoncos.com/blog/peterson-companies-announces-2-million-sq-ft-data-center-campus-in-virginias-culpeper-county/",
+        "label": "Peterson Companies announces 2 million sq ft data center campus in Virginia's Culpeper County",
+        "publisher": "Peterson Companies",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.virginiabusiness.com/article/culpeper-tech-zone-attracts-data-centers/",
+        "label": "Culpeper tech zone attracts data centers",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/peterson-culpeper-technology-campus",
+        "label": "Peterson: Culpeper Technology Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Up to nine buildings with more than 2M sq ft of data centers. Baxtel lists Building 1 (14517 McDevitt Dr) as under construction, with power by Q1 2027, but that is unconfirmed by a primary source, so status is held at permitted. Virginia Business (Aug 2024) said no construction timeline was given. The coordinates are the OSM geocode of McDevitt Drive.",
+    "landAcres": 150,
+    "facilityType": "data_center"
+  },
+  {
     "id": "peterson-project-sisson-stafford-va",
     "name": "Project Sisson",
     "operator": "Peterson Companies",
@@ -105886,9 +108142,16 @@
         "publisher": "Poolside AI",
         "retrievedAt": "2026-09-08",
         "kind": "press"
+      },
+      {
+        "url": "https://www.elpasoinc.com/townnews/hydrography/giant-data-center-coming-to-west-texas-ranch/article_4290e637-b820-4b20-acb9-035ca14319a5.html",
+        "label": "Giant data center coming to West Texas ranch (WSJ, via El Paso Inc., Oct 2025)",
+        "publisher": "El Paso Inc. / The Wall Street Journal",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-14",
     "notes": "2 GW AI training campus on a 568-acre parcel of the Mitchell family's Longfellow Ranch in Pecos County, near Fort Stockton. Coordinate anchored on Fort Stockton (nearest named town in coverage); exact parcel not publicly disclosed. CoreWeave was original anchor tenant (15-year, 250 MW lease, 40,000 Nvidia GB300 GPUs) but terminated the lease in late March 2026 after Poolside's Series C funding round failed to close; site reported idle as of mid-2026. Not a community finding, but material and worth flagging for maintainer review: CoreWeave (the announced anchor tenant) mutually terminated its agreement for Project Horizon around April 2026 after Poolside failed to stand up its first GPU cluster on schedule, and Poolside's associated ~$2B Nvidia-led funding round also fell through. As of late July 2026 Poolside was seeking a replacement partner (reportedly including Google) for up to 400MW, with no anchor tenant signed as of that reporting. The record's status ('proposed') isn't necessarily wrong, but the originally announced 2GW/CoreWeave deal that justified the record no longer stands as described. The dispatching brief for this run scoped only 'community' fields -- flagging this rather than silently omitting it, since fields.community does not fit this fact.",
     "energy": {
       "source": "on_site_gas",
@@ -105999,6 +108262,59 @@
     "aiClassification": "likely"
   },
   {
+    "id": "potomac-creek-campus-stafford-va",
+    "name": "Potomac Creek Campus Data Center",
+    "operator": "Undisclosed",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.3800153,
+      "lon": -77.4044535,
+      "county": "Stafford County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-27",
+        "note": "Planning Commission recommended denial of key approvals (5-0).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-07-09",
+        "note": "Board of Supervisors paused the project pending archaeological and genealogical research.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.potomaclocal.com/2026/06/01/stafford-panel-rejects-data-center-over-cemetery/",
+        "label": "Stafford panel rejects data center over cemetery",
+        "publisher": "Potomac Local",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://wjla.com/news/local/stafford-county-pauses-data-center-construction-amid-concerns-about-slave-gravesite-virginia-dominion-energy-property-value-tax-rates",
+        "label": "Stafford County pauses data center construction amid concerns about slave gravesite",
+        "publisher": "WJLA 7News",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "99 acres south of Eskimo Hill Road near the approved Stafford Technology Campus. The applicant is not named in fetched sources. The coordinates are an approximate point on Eskimo Hill Road.",
+    "landAcres": 99,
+    "community": {
+      "status": "contested",
+      "notes": "There is a historic cemetery on site (Seddon family burials and unmarked graves believed to be of enslaved people). The Planning Commission voted 5-0 to recommend denial.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "potomac-hills-energy-solar-mineral-county-wv",
     "name": "Potomac Hills Energy Solar",
     "operator": "Potomac Hills Energy (Energix US, LLC)",
@@ -106084,10 +108400,21 @@
         "publisher": "Farm and Dairy",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/reports/behind-the-meter-data-centers/full-report/edgeconnex-new-albany",
+        "label": "Cleanview: PowerConneX I (PCX1) 120 MW, INNIO Jenbacher engines and Mainspring linear generators, off-grid",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-10-14",
     "notes": "On-site natural-gas generation (120 MW) built by EdgeConneX's PowerConneX arm to power a nearby New Albany data center. Farm and Dairy names PowerConneX I (120 MW) among the New Albany-area gas plants; the co-located customer is EdgeConneX's own New Albany (MCN) campus. Coordinates approximate. Operates under power arm PowerConneX.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "INNIO Jenbacher gas engines and Mainspring linear generators; off-grid. 18 engines installed as of mid-May 2026; commercial operations expected during 2026."
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -106120,10 +108447,21 @@
         "publisher": "Farm and Dairy",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/reports/behind-the-meter-data-centers/full-report/edgeconnex-new-albany",
+        "label": "Cleanview: PowerConneX II (PCX2) 216 MW, OPSB approved 2025-11-20, 15 Wärtsilä 18V50SG engines + BESS, off-grid",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-10-14",
     "notes": "A second EdgeConneX PowerConneX on-site gas plant (216 MW) for a nearby New Albany data center (EdgeConneX's co-located MCN campus). Coordinates approximate. (Farm and Dairy also names a pre-application PowerConneX III at 430 MW, not included here.). Operates under power arm PowerConneX.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "15 Wärtsilä 18V50SG gas engines plus a battery energy storage system; off-grid. OPSB approved 2025-11-20; commercial operations expected Oct 2026–Mar 2027."
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -107463,6 +109801,51 @@
     ],
     "lastUpdated": "2026-09-21",
     "notes": "Four-story ~109,520–111,000 sq ft building (HKS Inc. design) replacing a single-story industrial building; six 3,000 kW diesel generators plus one 500 kW house generator per SF YIMBY. Separate parcel from Prime's Martin Avenue campus. City projected $21.1M to the general fund over 15 years.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "prime-austin-campus-lockhart-caldwell-county-tx",
+    "name": "Prime Data Centers Austin Campus (AUS01, formerly Project Snow)",
+    "operator": "Prime Data Centers",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.8832105,
+      "lon": -97.6736292,
+      "city": "Lockhart",
+      "county": "Caldwell",
+      "street": "1395 Bob White Road",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-06",
+        "note": "Phase 1 (two ~380,000 sq ft buildings) registered with TDLR in May 2026, with construction scheduled from June 2026 and completion around September 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/prime-austin-campus",
+        "label": "Prime: Austin Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Lockhart,+Caldwell+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Lockhart, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "investmentUsd ($400M) is Phase 1 only, down from a provisional $1.3B. The 8-building, 2M sq ft master plan has later buildings planned for 2028-2029. County incentives were secured in March 2024. Under-construction status comes from a directory listing and the TDLR schedule. Coordinates are the Lockhart city point.",
+    "investmentUsd": 400000000,
+    "landAcres": 206,
     "facilityType": "data_center"
   },
   {
@@ -108830,6 +111213,55 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "project-lightning-wildwood-commerce-park-carroll-va",
+    "name": "Project Lightning (Wildwood Commerce Park)",
+    "operator": "Undisclosed (Blue Ridge Crossroads Economic Development Authority site)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.7631399,
+      "lon": -80.8440807,
+      "city": "Hillsville",
+      "county": "Carroll County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09-29",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-29",
+        "note": "Grayson County administrator confirmed a data center planned for Wildwood Commerce Park, previously 'Project Lightning'. The project is not final.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wdbj7.com/2026/09/30/grayson-county-confirms-11-billion-data-center-planned-wildwood-commerce-park/",
+        "label": "Grayson County confirms $11 billion data center planned for Wildwood Commerce Park",
+        "publisher": "WDBJ7",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wdbj7.com/2026/10/07/data-center-project-divides-three-southwest-virginia-localities/",
+        "label": "Data center project divides three Southwest Virginia localities",
+        "publisher": "WDBJ7",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Investment is 'north of $11 billion' per the Grayson County Administrator. The end user is undisclosed. Wildwood is a joint Carroll–Grayson–Galax park off I-77 (Coulson Church Rd). The coordinates are an approximate point on Coulson Church Road, not the parcel.",
+    "investmentUsd": 11000000000,
+    "community": {
+      "status": "contested",
+      "notes": "On Oct 5, 2026 Carroll County voted 6-0 to reject the amended BRCEDA agreement and began exploring leaving the authority. Grayson County and Galax support it.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "project-oak-walt-sanders-road-coweta-ga",
@@ -110550,6 +112982,115 @@
     "facilityType": "data_center"
   },
   {
+    "id": "province-group-perry-village-lake-oh",
+    "name": "Province Group Perry Village Data Center Campus",
+    "operator": "Province Group",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.76361,
+      "lon": -81.14306,
+      "city": "Perry",
+      "county": "Lake",
+      "postalCode": "44081",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-14",
+        "note": "California-based Province Group has a purchase agreement for 230 acres (about one-sixth of the village). Village leaders cite 875 jobs and $372M annual economic output. The project has been in the works since 2024.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.cleveland19.com/2026/04/14/perry-village-residents-demand-answers-proposed-data-center/",
+        "label": "Cleveland 19: Perry Village residents demand answers on proposed data center (Province Group, 230 acres under purchase agreement)",
+        "publisher": "Cleveland 19 News",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Coordinates are the Perry village centroid (approximate). No MW figure or approval has been published.",
+    "landAcres": 230,
+    "community": {
+      "status": "contested",
+      "notes": "Residents packed meetings demanding answers on light, noise and water supply. The land is next to the public library and about a mile from schools.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "province-group-powhatan-technology-park-va",
+    "name": "Powhatan Technology Park",
+    "operator": "Province Group (Newport Equities / LC West LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.5154292,
+      "lon": -77.73203,
+      "county": "Powhatan County",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-05-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-05-07",
+        "note": "Province Group affiliate LC West LLC sought to rezone 120 acres at the Powhatan–Chesterfield line, including 1318 Page Road.",
+        "sourceIndex": 2
+      },
+      {
+        "status": "permitted",
+        "date": "2024-10",
+        "note": "Supervisors voted 3-2 to approve the rezoning and CUP against the Planning Commission's recommendation.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2025-11-14",
+        "note": "An adjacent ~60-acre parcel was rezoned unanimously, forming a 180-acre campus.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://virginiabusiness.com/powhatan-green-lights-2-7b-data-center-campus/",
+        "label": "Powhatan green-lights $2.7B data center campus",
+        "publisher": "Virginia Business",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://irei.com/news/virginias-powhatan-county-greenlights-180-acre-data-center-development",
+        "label": "Virginia's Powhatan County greenlights 180-acre data center development",
+        "publisher": "IREI",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://richmondbizsense.com/2024/05/07/data-center-project-proposed-for-120-acre-site-in-powhatan-county/",
+        "label": "Data center project proposed for 120-acre site in Powhatan County",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "The original 119.9-acre approval covered three detached data centers of about 1.525M sq ft. The county estimated $2.7B, the developer $3B, with 165 direct jobs (Mangum study). The 60-acre addition makes a 180-acre campus. These investment and job figures refer to the original phase, so they are not set as campus fields. The coordinates are the OSM geocode of 1318 Page Road, one of the three parcels.",
+    "energy": {
+      "source": "grid",
+      "utility": "Dominion Energy",
+      "notes": "A Dominion substation is required. Virginia Business reported about 300 MW at full capacity for the original 119.9-acre approval."
+    },
+    "landAcres": 180,
+    "facilityType": "data_center"
+  },
+  {
     "id": "provnet-chf1-chelmsford-ma",
     "name": "Prov.net CHF1 (Boston North)",
     "operator": "Prov.net",
@@ -111806,6 +114347,55 @@
     "aiClassification": "likely"
   },
   {
+    "id": "qts-fort-worth-ftw1-tx",
+    "name": "QTS Fort Worth 1 (FTW1)",
+    "operator": "QTS Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.981432,
+      "lon": -97.262693,
+      "city": "Fort Worth",
+      "county": "Tarrant",
+      "street": "14100 Park Vista Boulevard",
+      "postalCode": "76177",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200,
+      "operational": 70
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-14",
+        "note": "Two buildings (DC1 at 14100, DC2 at 14052 Park Vista Blvd) with 70+ MW of critical capacity and 200 MW of planned gross potential.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://q.com/data-centers/fort-worth/",
+        "label": "QTS Fort Worth Data Center Campus",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=14100+Park+Vista+Boulevard,+Fort+Worth,+TX&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: 14100 Park Vista Blvd, Fort Worth",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "52-acre campus plus 12 adjacent acres reserved for expansion. capacityMw.planned is QTS's 200 MW gross campus potential. Distinct from the tracked QTS Irving 1 record.",
+    "landAcres": 52,
+    "facilityType": "data_center"
+  },
+  {
     "id": "qts-hillsboro-1-or",
     "name": "QTS Hillsboro 1",
     "operator": "QTS Data Centers",
@@ -112433,6 +115023,7 @@
       "lon": -82.77165,
       "city": "New Albany",
       "county": "Franklin",
+      "street": "5760-5780 Babbitt Rd",
       "state": "OH",
       "precision": "exact"
     },
@@ -112466,9 +115057,16 @@
         "publisher": "Columbus/Central Ohio Building & Construction Trades Council",
         "retrievedAt": "2026-07-18",
         "kind": "press"
+      },
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 222-005361, 5760 - 5780 Babbitt Rd, QTS NEW ALBANY III LLC, class 'data center'",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-10-14",
     "notes": "Third QTS campus in the New Albany International Business Park, on Babbitt Rd (Franklin County) — 3 buildings, ~1.1M sq ft on 78 acres, announced December 2023 alongside the Miller Rd (IV) site as part of QTS's ~$4.4B New Albany expansion (aggregate across III + IV; no reliable per-site investment split disclosed, so investmentUsd omitted). Franklin County auditor use-class is \"data center\" (an assessed data-center structure exists); construction status is not independently confirmed operational by press, so recorded conservatively as under_construction. Distinct from QTS New Albany I & II (Beech Rd SW). No site-specific IT-load MW disclosed. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "subsidies": [
       {
@@ -116824,6 +119422,7 @@
       "lon": -97.3428,
       "city": "Temple",
       "county": "Bell",
+      "street": "Bob White Road",
       "state": "TX",
       "precision": "exact"
     },
@@ -116881,9 +119480,30 @@
         "publisher": "KWTX",
         "retrievedAt": "2026-09-08",
         "kind": "press"
+      },
+      {
+        "url": "https://rowan.com/news/rowan-powers-texas-growth-as-construction-begins-on-300-mw-temple-data-center/",
+        "label": "Rowan Powers Texas Growth as Construction Begins on 300 MW Temple Data Center",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "http://rowan.com/portfolio/temple/",
+        "label": "Rowan portfolio: Temple, Texas (300 MW, minimum $700M investment, 700 acres)",
+        "publisher": "Rowan Digital Infrastructure",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kwtx.com/2025/10/07/new-700-million-data-center-temple-will-be-near-robinson-family-farm/",
+        "label": "New $700 million data center in Temple will be near Robinson Family Farm",
+        "publisher": "KWTX",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-08",
+    "lastUpdated": "2026-10-14",
     "notes": "300 MW campus in Temple, Bell County; $3B financing secured, operations targeted 2027. Distinct from Rowan's separately-tracked Frederick, MD campus. Coordinates are the Temple area centroid. The '$3B' figure is green debt financing (May 2026), not campus capex; the abatement cites a ~$700M minimum investment floor -> investmentUsd omitted. ~600 construction / ~40 permanent jobs projected (abatement requires >=48 permanent) -> jobs honest-zero.",
     "energy": {
       "source": "grid",
@@ -116904,6 +119524,11 @@
     ],
     "investmentUsd": 700000000,
     "landAcres": 700,
+    "jobs": {
+      "construction": 600,
+      "permanent": 40,
+      "sourceIndex": 6
+    },
     "community": {
       "status": "mixed",
       "notes": "Temple City Council approved unanimously and Bell County supported; organized resident opposition (town halls, council testimony) raised concerns over an undisclosed additional Rowan campus, water/grid/noise, and the abatement. Rowan held a March 2026 open house and community partnerships. The named tenant is undisclosed ('top global technology company'); opposition speculates Meta, unconfirmed.",
@@ -118441,6 +121066,61 @@
     "notes": "Intergate.West campus (12101-12301 Tukwila International Blvd) -- part of Sabey's flagship Seattle multi-tenant campus.",
     "energy": {
       "utility": "Seattle City Light"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "sabey-sdc-austin-round-rock-tx",
+    "name": "Sabey SDC Austin (Round Rock)",
+    "operator": "Sabey Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 30.5085915,
+      "lon": -97.6788056,
+      "city": "Round Rock",
+      "county": "Williamson",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 84
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-10-17",
+        "note": "Building A (430,000 sq ft) completed. Tenants include TACC's Horizon supercomputer.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://sabeydatacenters.com/news/sabey-data-centers-completes-construction-at-austin-texas-data-center-site",
+        "label": "Sabey Data Centers Completes Construction at Austin, Texas Data Center Site",
+        "publisher": "Sabey Data Centers",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://insidethedatacenter.com/articles/texas-data-centers/",
+        "label": "Every Data Center in Texas: Operating, Under Construction, and Proposed",
+        "publisher": "Inside the Datacenter",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Round+Rock,+Williamson+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Round Rock, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Up to 84 MW of critical capacity across two buildings at full build-out. Distinct from the tracked Switch 'The Rock' record in Round Rock. Coordinates are the Round Rock city point.",
+    "water": {
+      "notes": "Designed for liquid cooling and high-density computing (up to 200 kW per cabinet). The heat-rejection method is not stated."
     },
     "facilityType": "data_center"
   },
@@ -122959,6 +125639,70 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "skybox-prologis-hutto-powercampus-tx",
+    "name": "Skybox PowerCampus Austin (Hutto)",
+    "operator": "Skybox Datacenters (with Prologis)",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.5427638,
+      "lon": -97.5468898,
+      "city": "Hutto",
+      "county": "Williamson",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "announcedDate": "2023-05-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-05-05",
+        "note": "Hutto City Council approved the development agreement for a 600 MW, 6-8 building campus.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-09-22",
+        "note": "A secondary tracker lists 2 buildings live of 600 MW at build-out. Status sources conflict, so this is recorded conservatively as under construction.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterfrontier.com/hyperscale/article/33004603/skybox-prologis-plan-massive-600-megawatt-data-center-campus-in-austin",
+        "label": "Skybox, Prologis Plan Massive 600-Megawatt Data Center Campus in Austin",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://insidethedatacenter.com/articles/texas-data-centers/",
+        "label": "Every Data Center in Texas: Operating, Under Construction, and Proposed",
+        "publisher": "Inside the Datacenter",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Hutto,+Williamson+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Hutto, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Acreage reported variously as 150 (Prologis VP, used here), 160, 220 and 224 acres. Datacentermap lists DC1 (72 MW) as under construction, while Baxtel and Inside the Datacenter list buildings as live. Coordinates are the Hutto city point.",
+    "energy": {
+      "source": "grid",
+      "notes": "Adjacent to a 345 kV transmission corridor, with two private 300 MW dedicated substations."
+    },
+    "landAcres": 150,
+    "facilityType": "data_center"
+  },
+  {
     "id": "skybox-santa-clara-1200-memorex-drive-ca",
     "name": "Skybox Santa Clara (1200 Memorex Drive)",
     "operator": "Skybox Datacenters",
@@ -123836,10 +126580,57 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "soluna-project-kati-2-willacy-county-tx",
+    "name": "Soluna Project Kati 2",
+    "operator": "Soluna Holdings (JV with Metrobloks)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 26.4814565,
+      "lon": -97.783051,
+      "county": "Willacy",
+      "state": "TX",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 350
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-03",
+        "note": "Definitive JV with Metrobloks signed. Phase I is 100+ MW of critical IT and Phase II about 250 MW. In design development, with a GC engaged and a tenant LOI signed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solunacomputing.com/?p=16169",
+        "label": "Soluna Presents Q2 2026 Highlights & Business Update",
+        "publisher": "Soluna Holdings",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Raymondville,+Willacy+County,+Texas&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode: Raymondville, Willacy County, TX",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-14",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Adjacent to Project Kati 1 (tracked as soluna-project-kati-willacy-tx) and planned for AI/HPC hosting. Full build is expected to exceed 350 MW. Tax abatement talks have begun. Coordinates are the Raymondville county-seat point.",
+    "energy": {
+      "notes": "Engineering is underway to expand the Las Majadas substation by 100 MW. A gas pipeline access agreement has been executed."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "soluna-project-kati-willacy-tx",
     "name": "Soluna Project Kati",
     "operator": "Soluna Holdings",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 26.4804,
@@ -123850,7 +126641,8 @@
       "precision": "exact"
     },
     "capacityMw": {
-      "planned": 166
+      "planned": 166,
+      "operational": 69
     },
     "poweredBy": "ERCOT grid",
     "announcedDate": "2025-09",
@@ -123860,6 +126652,12 @@
         "date": "2025-09",
         "note": "Soluna broke ground on Project Kati (its largest site) in the Rio Grande Valley, Willacy County; 166 MW in two phases, Phase 1 live early 2026",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-14",
+        "note": "The Q2 2026 business update says K1A (48 MW, Galaxy Digital) operated through summer, and K1B Phases 1 and 2 (12 MW and 9 MW) are energized and operating. The final 14 MW is under construction.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -123876,9 +126674,23 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.solunacomputing.com/?p=16169",
+        "label": "Soluna Presents Q2 2026 Highlights & Business Update",
+        "publisher": "Soluna Holdings",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.solunacomputing.com/?p=16169",
+        "label": "Soluna Presents Q2 2026 Highlights & Business Update",
+        "publisher": "Soluna Holdings",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-10-14",
     "notes": "Rio Grande Valley, Willacy County; 166 MW clean computing in two phases (scaling toward 300+ MW — in notes), ERCOT-approved, Phase 1 live early 2026. Coordinates are anchored to Raymondville (county seat); the exact parcel is unspecified.",
     "energy": {
       "source": "grid",
@@ -124832,10 +127644,36 @@
         "publisher": "Virginia Business",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/berry-hill-100b-data-center-performance-agreement-unanimously-approved-by-officials/",
+        "label": "Berry Hill $100B data center performance agreement unanimously approved by officials",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/southside-virginia-advances-historic-100b-berry-hill-data-center-campus-despite-resident-pushback/",
+        "label": "Southside Virginia advances historic $100B Berry Hill data center campus despite resident pushback",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://cardinalnews.org/2026/05/19/a-data-center-project-in-pittsylvania-was-approved-monday-with-higher-investment-and-jobs-than-previously-announced/",
+        "label": "A data center project in Pittsylvania was approved Monday with higher investment and jobs than previously announced",
+        "publisher": "Cardinal News",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-10-14",
     "notes": "Performance agreement caps investment at up to $73.5B over 30 years (2,050 jobs); parallel reporting cites a ~$100B project scope. ~2,990 acres of the Southern Virginia Megasite; land deal ~$737.8M. investmentUsd reflects the conservative $73B figure from the March 2026 draft performance agreement (2,050 jobs, 30-year span, not yet signed); a May 2026 'final document' revised it upward to $100B / 2,500 jobs.",
+    "energy": {
+      "source": "grid",
+      "utility": "Appalachian Power",
+      "notes": "Initial power allocation of ~299 MW is required by end of 2028. STACK funds APCo transmission and generation upgrades and holds contingency rights tied to APCo confirming delivery."
+    },
     "water": {
       "reportedMgd": 7,
       "notes": "Performance agreement references 7 million gallons per day of water capacity allocated from the Dan River for the megasite buildout."
@@ -124851,7 +127689,8 @@
       "notes": "The Pittsylvania County Board of Supervisors passed a resolution supporting the project, and Regional Industrial Facility Authority chair Vic Ingram publicly championed it, calling the investment historic. Erin Hall, a resident living four miles from the megasite, spoke against the project during public comment, questioning water and power safeguards and saying county meetings had been kept 'hush-hush.'",
       "sourceIndex": 3
     },
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
   },
   {
     "id": "stack-bossier-parish-la",
@@ -125255,6 +128094,7 @@
       "lon": -82.8,
       "city": "New Albany",
       "county": "Franklin",
+      "street": "7300 Souder Rd",
       "state": "OH",
       "precision": "approximate"
     },
@@ -125269,9 +128109,16 @@
         "publisher": "STACK Infrastructure",
         "retrievedAt": "2026-08-05",
         "kind": "other"
+      },
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 222-004355, 7300 Souder Rd, SI NAL01A ABS LLC, class 'data center', 115,500 sq ft",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-05",
+    "lastUpdated": "2026-10-14",
     "notes": "STACK's New Albany wholesale data center (NAL01), 40 acres, 60 MW, operational — an established site missing from the tracked New Albany operator list. Confirmed on STACK's own New Albany location page (which does not state a street address, so no street is recorded). Coordinates approximate (New Albany). County recorded as Franklin (New Albany's core incorporated county), but note the New Albany cluster straddles the Franklin/Licking line and STACK's page does not state the county.",
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -131562,6 +134409,7 @@
       "lon": -78.3589,
       "city": "Strasburg",
       "county": "Shenandoah",
+      "street": "Borden Mowery Drive",
       "state": "VA",
       "precision": "approximate"
     },
@@ -131589,11 +134437,11 @@
         "url": "https://www.nvdaily.com/nvdaily/strasburg-data-center-proposal-prompts-questions-on-water-use-hydrogen-oversight/article_de441640-97e6-528b-a0e8-74085176ceb3.html",
         "label": "Strasburg data center proposal prompts questions on water use, hydrogen, oversight",
         "publisher": "The Northern Virginia Daily",
-        "retrievedAt": "2026-09-09",
+        "retrievedAt": "2026-10-14",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-14",
     "notes": "87-acre site on Borden Mowery Drive near Interstate 81 Exit 296 and the Mercury Paper plant in Strasburg's industrial park; roughly 2 million sq ft planned. Takanock develops the land and intends to sell to an as-yet-unnamed operator. Construction reported as potentially starting in late 2027 and concluding around 2030.",
     "energy": {
       "source": "on_site_gas",
@@ -134452,6 +137300,54 @@
     "facilityType": "data_center"
   },
   {
+    "id": "thor-equities-urbana-technology-hub-oh",
+    "name": "Urbana Technology Hub",
+    "operator": "Thor Equities",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.12,
+      "lon": -83.74722,
+      "city": "Urbana",
+      "county": "Champaign",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "Thor submitted a site plan for a 460,000 sq ft data center near OH-55 and US-68 (near the Rittal plant) after Urbana annexed and rezoned the property to M-1 in April 2025. The plan was rejected and the project is now in federal litigation.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wyso.org/environment-news/2026-06-23/urbana-backed-down-from-rules-paving-way-for-big-data-centers-now-a-developer-is-suing",
+        "label": "WYSO: Urbana backed down from rules paving way for big data centers. Now a developer is suing (Thor Equities, 460,000 sq ft)",
+        "publisher": "WYSO",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Thor says it has spent over $19M on preliminary work and projects $3M/yr in city tax revenue. The end user is undisclosed. Coordinates are the Urbana city centroid (approximate). The site is near the OH-55 / US-68 intersection.",
+    "subsidies": [
+      {
+        "program": "Community Reinvestment Area tax abatement agreement",
+        "jurisdiction": "City of Urbana",
+        "year": "2025",
+        "sourceIndex": 0
+      }
+    ],
+    "community": {
+      "status": "litigation",
+      "notes": "Urbana's zoning appeals board rejected the Feb 2026 site plan. Council then passed a 12-month moratorium (Mar 2026) and repealed the data-center-enabling ordinance (June 16, 2026). Thor sued the city, council and zoning board in federal court on June 19, 2026.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "thornberry-data-center-campus-caroline-va",
     "name": "Thornberry Data Center Campus",
     "operator": "Thornberry, LLC",
@@ -135967,6 +138863,37 @@
     "facilityType": "data_center"
   },
   {
+    "id": "tjx-new-albany-data-center-oh",
+    "name": "TJX New Albany Data Center",
+    "operator": "TJX Companies Inc (owner of record)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.103953,
+      "lon": -82.810601,
+      "city": "New Albany",
+      "county": "Franklin",
+      "street": "6595 New Albany Rd East",
+      "state": "OH",
+      "precision": "exact"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0/query?where=CLASSDSCRP='data+center'&outFields=PARCELID,SITEADDRESS,OWNERNME1,BLDGAREA,ACRES&returnCentroid=true&outSR=4326&f=json",
+        "label": "Franklin County Auditor GIS: parcel 222-004441, 6595 New Albany Rd East, TJX COMPANIES INC, class 'data center', 84,930 sq ft, 11.99 acres",
+        "publisher": "Franklin County Auditor",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Enterprise data center identified from the county 'data center' land-use class with assessed building area. Single-sourced. mixed_use: enterprise IT, not AI-specific.",
+    "landAcres": 11.99,
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "tondu-stronach-township-manistee-mi",
     "name": "Stronach Township Data Center (Stronach Road)",
     "operator": "Tondu Corporation",
@@ -136565,6 +139492,62 @@
     "community": {
       "status": "supported",
       "notes": "Altoona Mayor Dean O'Connor described Tract as 'a great partner throughout this process.' The city supported the project through annexation, rezoning and a comprehensive development agreement, and Tract reserved 80 acres for future city growth.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "tract-branders-bridge-chesterfield-va",
+    "name": "Tract Branders Bridge Road Data Center Park (withdrawn)",
+    "operator": "Tract",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.2936256,
+      "lon": -77.4542454,
+      "county": "Chesterfield County",
+      "street": "16100 Branders Bridge Road",
+      "postalCode": "23831",
+      "state": "VA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-02-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-02-03",
+        "note": "Tract sought to rezone 744 acres for up to 11 data centers (~2M sq ft).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2025-07-01",
+        "note": "Tract withdrew the zoning application after the denial recommendation and said it intends to resubmit.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://richmondbizsense.com/2025/07/02/after-thumbs-down-from-commission-developer-withdraws-plans-to-refile-700-acre-chesterfield-data-center-proposal/",
+        "label": "After thumbs down from commission, developer withdraws, plans to refile 700-acre Chesterfield data center proposal",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.baxtel.com/data-center/tract-colonial-heights-va",
+        "label": "Tract: Colonial Heights, VA",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Tract said it would refile, but no refiling was found. Chesterfield stated in Aug 2026 that it will not approve new data center zoning requests. Baxtel lists the project as cancelled before construction.",
+    "landAcres": 744,
+    "community": {
+      "status": "opposed",
+      "notes": "The Planning Commission unanimously recommended denial, citing substandard roads and traffic. The county transportation department did not recommend approval.",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -143446,11 +146429,34 @@
         "publisher": "WWBT NBC12",
         "retrievedAt": "2026-08-27",
         "kind": "press"
+      },
+      {
+        "url": "https://richmondbizsense.com/2026/05/14/latest-iron-horse-data-center-proposal-teed-up-for-hanover-planning-commission-review/",
+        "label": "Latest Iron Horse data center proposal teed up for Hanover Planning Commission review",
+        "publisher": "Richmond BizSense",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.12onyourside.com/2026/08/21/iron-horse-data-center-proposal-gets-planning-commissions-backing-despite-public-opposition/",
+        "label": "Iron Horse data center proposal gets planning commission's backing despite public opposition",
+        "publisher": "WWBT 12 On Your Side",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-14",
     "notes": "Zoning sought for data center facilities on 78 acres (rezoning from mixed use to limited industrial, plus a height waiver to 75 feet) within an overall 180-acre campus straddling the Hanover–Ashland line; the Ashland portion was approved by town council in 2024. LLCs tied to WestDulles own the campus properties. landAcres records the overall 180-acre campus, not the 78-acre rezoning request. Coordinates are an approximate geocode of the cited street address.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Applicant announced at the Aug 20, 2026 Planning Commission meeting a switch to closed-loop cooling to reduce daily water use. No volume was given."
+    },
     "landAcres": 180,
+    "community": {
+      "status": "contested",
+      "notes": "Most speakers opposed it over water, electricity and traffic. The Planning Commission recommended approval 5-2 on Aug 20, 2026, and the Board of Supervisors decision is pending.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -144269,6 +147275,65 @@
       "notes": "The noise exception is the community-facing issue: Williams asked to exceed Eagle Mountain's 65 dB nighttime limit, which the city says 'is consistent with industrial noise limits in neighboring communities.' A public hearing was held 24 February 2026."
     },
     "facilityType": "power_generation"
+  },
+  {
+    "id": "williams-neo-power-generation-jersey-township-oh",
+    "name": "Neo Power Generation Facility",
+    "operator": "Will-Power OH, LLC (The Williams Companies)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.08556,
+      "lon": -82.71639,
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-06",
+        "note": "OPSB local public hearing held Oct 6, 2026 in New Albany. Evidentiary hearing set for Oct 21 at PUCO.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.knoxpages.com/?p=443284",
+        "label": "Knox Pages: OPSB hearing on Will-Power OH's Neo project, 500 MW gas + 260 MW BESS, Jersey Township, Licking County, case 26-627-EL-BGN",
+        "publisher": "Knox Pages",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://newprojectmedia.com/origination-williams-to-apply-for-500-mw-gas-260-mw-bess-project-in-ohio/",
+        "label": "New Project Media: Williams to apply for 500 MW gas, 260 MW BESS Neo project in Ohio (construction 1Q27, COD 2Q28)",
+        "publisher": "New Project Media",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      },
+      {
+        "url": "https://saveohioparks.org/2026/10/06/save-ohio-parks-opposes-neo-power-generation-facility-at-the-ohio-power-siting-board/",
+        "label": "Save Ohio Parks: opposes NEO Power Generation Facility at OPSB (27 turbines + 4 RICE; case 26-0627-EL-BGN)",
+        "publisher": "Save Ohio Parks",
+        "retrievedAt": "2026-10-14",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Coordinates are the Jersey Township centroid; the exact plant parcel was not identified. It is distinct from the tracked Socrates North/South/Younger plants (same applicant, different OPSB cases).",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "500 MW simple-cycle natural gas (27 simple-cycle turbines plus 4 reciprocating engines per opponents' summary of the filing) paired with a 260 MW battery energy storage system, behind the meter."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "OPSB case 26-0627-EL-BGN. Hybrid 500 MW gas + 260 MW BESS providing behind-the-meter power to an adjacent data center. Opponents (Save Ohio Parks) say it would serve Meta's Prometheus campus, but this is not confirmed by the applicant in the sources read. Construction targeted 1Q27, COD 2Q28."
+    }
   },
   {
     "id": "willow-lakes-west-midway-fort-pierce-fl",
@@ -145855,6 +148920,54 @@
     "lastUpdated": "2026-09-10",
     "notes": "Proposed 1,517-acre campus in unincorporated Pinal County, southeast of Porter and Barnes roads, about two miles east of Highway 347, between Barnes and Lelaan roads and east of Porter Road. 956 acres require redesignation from Moderate Low-Density Residential to Employment; the balance is already Employment. Proposed land-use split reported as 50% data center, 25% energy generation, 25% manufacturing/warehousing/general industrial. Reported job ranges (3,000-6,500 peak construction; 1,350-2,800 permanent) are stated as ranges in the sources and are therefore not recorded as figures here. Coordinates are the Porter Road / Barnes Road intersection derived from OpenStreetMap road alignments; the campus lies southeast of that point, so the pin is approximate.",
     "landAcres": 1517,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "zuharis-project-astralus-yellow-creek-columbiana-oh",
+    "name": "Project Astralus (Yellow Creek Township)",
+    "operator": "Zuharis",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.61889,
+      "lon": -80.69611,
+      "county": "Columbiana",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-28",
+        "note": "Public information meeting on a data center plus on-site power plant on ~510 acres near SR 7. Owner projects a 500 MW shell by summer 2027 and an additional 500 MW starting fall 2027, with $3.5–4.5B private investment. Entitlements are planned for 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.reviewonline.com/news/local-news/2026/05/public-information-meeting-held-for-data-center-in-yellow-creek-township/",
+        "label": "Review Online: Public information meeting held for data center in Yellow Creek Township (Zuharis, Project Astralus, ~510 acres, off-grid power plant)",
+        "publisher": "The Review (East Liverpool)",
+        "retrievedAt": "2026-10-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-14",
+    "notes": "Owner Tony Sharma's figures (500 MW + 500 MW phases, $3.5–4.5B investment, 2,000–5,000 permanent IT jobs) are company claims at a public meeting and are not independently verified, so they are kept here rather than in structured fields. Coordinates are the Yellow Creek Township centroid. The site is near 16 School Road and the SR 7 corridor near the Jefferson County line.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Owner says the campus will generate its own power and not connect to the grid. Projected natural gas severance/royalty revenue implies gas-fired generation."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Own Ohio River intake developed with Buckeye Water District; owner claims water recycled in a closed loop with no discharge."
+    },
+    "landAcres": 510,
+    "community": {
+      "status": "mixed",
+      "notes": "About 100 attended the May 2026 public meeting at Highlandtown VFD. Many residents were opposed; union representatives spoke in favor.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   }
 ]
