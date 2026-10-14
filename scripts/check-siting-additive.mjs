@@ -55,9 +55,13 @@
  * therefore only make this guard stricter, never more permissive.
  *
  * Usage: node scripts/check-siting-additive.mjs
- *   Exits 1 (and prints the offending ids/fields) if the working-tree
- *   data/siting-context.json would lose data relative to the baseline ref.
- *   Exits 0 if additive (including the case where the ref has no baseline yet).
+ *   Exit 0: additive (including the case where the ref has no baseline yet).
+ *   Exit 1: DATA LOSS — the working-tree data/siting-context.json would lose
+ *           data relative to the baseline ref (offending ids/fields printed).
+ *   Exit 2: the guard could not evaluate (git failure, unparseable baseline or
+ *           working-tree file). This is NOT a verdict.
+ *   Callers must treat ONLY exit 1 as a data-loss verdict; any other non-zero
+ *   (2, or a signal such as 134/137) means the guard did not complete.
  *   Env: SITING_BASELINE_REF overrides the preferred ref (default origin/main).
  *        SITING_BASELINE_NO_FETCH=1 skips the refresh fetch (offline/tests).
  */
@@ -176,6 +180,20 @@ export function isAdditive(diff) {
 // CLI
 // ---------------------------------------------------------------------------
 
+/** True only when `git ls-tree` succeeds and lists nothing for relPath at ref. */
+function pathConfirmedAbsent(repoRoot, relPath, ref) {
+  try {
+    const out = execFileSync("git", ["ls-tree", "--name-only", ref, "--", relPath], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      stdio: "pipe",
+    });
+    return String(out).trim() === "";
+  } catch {
+    return false;
+  }
+}
+
 /**
  * @param {string} ref git ref to read the baseline blob from (e.g. "origin/main")
  * @returns {Record<string, unknown> | null} null means "no baseline to compare against"
@@ -189,13 +207,14 @@ export function readBaselineFromGit(repoRoot, relPath, ref = FALLBACK_BASELINE_R
       maxBuffer: GIT_SHOW_MAX_BUFFER,
     });
   } catch (err) {
-    // Exit 128 is git's "that path is not in <ref>" — the genuine first-run
-    // case (a brand-new file, or a ref that predates it), and the ONLY reason
-    // this guard is allowed to stand down. Callers must verify the ref itself
-    // EXISTS first (see resolveBaselineRef), otherwise a missing ref would
-    // arrive here as 128 and be misread as "no baseline yet", silently
-    // disabling the guard on a green run.
-    if (err && err.status === 128) {
+    // Exit 128 is git's code for ANY fatal error: "path not in <ref>" but also
+    // a corrupt or missing object, not-a-repo, a bad ref. Only the first is the
+    // genuine first-run case that may stand this guard down, so absence is
+    // confirmed POSITIVELY: `git ls-tree` must succeed AND list nothing for the
+    // path. Anything else (ls-tree fails, or the path IS listed so `git show`
+    // failed for another reason) rethrows the original error, which the
+    // entrypoint maps to exit 2 instead of a green "skipping".
+    if (err && err.status === 128 && pathConfirmedAbsent(repoRoot, relPath, ref)) {
       return null;
     }
     // Anything else — git missing from PATH, permission denied, a corrupt
@@ -299,6 +318,12 @@ export function resolveBaselineRef(repoRoot, options = {}) {
   if (refExists(repoRoot, preferred, exec)) {
     return { ref: preferred, fellBack: false, fetched };
   }
+  if (!refExists(repoRoot, fallback, exec)) {
+    throw new Error(
+      `neither baseline ref resolves: preferred "${preferred}" and fallback "${fallback}" ` +
+        `(not a git repo, or an empty one?)`,
+    );
+  }
   return { ref: fallback, fellBack: true, fetched };
 }
 
@@ -335,7 +360,7 @@ function main() {
   if (oldObj === null) {
     console.log(
       `[check-siting-additive] No baseline found at ${baselineRef}:${SITING_CONTEXT_REL_PATH} ` +
-        `(first run, or git could not read it) — skipping the additive check.`,
+        `(path absent at that ref — first run) — skipping the additive check.`,
     );
     process.exit(0);
     return;
@@ -346,9 +371,10 @@ function main() {
     newObj = readWorkingTree(REPO_ROOT, SITING_CONTEXT_REL_PATH);
   } catch (err) {
     console.error(
-      `[check-siting-additive] Failed to read/parse working-tree ${SITING_CONTEXT_REL_PATH}: ${err.message}`,
+      `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
+        `failed to read/parse working-tree ${SITING_CONTEXT_REL_PATH}: ${err.message}`,
     );
-    process.exit(1);
+    process.exit(2);
     return;
   }
 
@@ -361,17 +387,19 @@ function main() {
     facilities = readWorkingTree(REPO_ROOT, FACILITIES_REL_PATH);
   } catch (err) {
     console.error(
-      `[check-siting-additive] Failed to read/parse working-tree ${FACILITIES_REL_PATH}: ${err.message}`,
+      `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
+        `failed to read/parse working-tree ${FACILITIES_REL_PATH}: ${err.message}`,
     );
-    process.exit(1);
+    process.exit(2);
     return;
   }
   if (!Array.isArray(facilities) || facilities.length === 0) {
     console.error(
-      `[check-siting-additive] ${FACILITIES_REL_PATH} is not a non-empty array — refusing to run ` +
+      `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
+        `${FACILITIES_REL_PATH} is not a non-empty array — refusing to run ` +
         `(an empty/malformed facility list would reclassify every removed id as an allowed prune).`,
     );
-    process.exit(1);
+    process.exit(2);
     return;
   }
   const liveIds = new Set(facilities.map((facility) => facility.id));
@@ -436,5 +464,15 @@ function isEntrypoint() {
 }
 const isMain = isEntrypoint();
 if (isMain) {
-  main();
+  // An uncaught throw would exit 1, indistinguishable from the DATA LOSS
+  // verdict. Any crash (e.g. git ENOBUFS, unparseable baseline blob) is exit 2.
+  try {
+    main();
+  } catch (err) {
+    console.error(
+      `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
+        `${err?.code ?? ""} ${err?.message ?? err}`,
+    );
+    process.exit(2);
+  }
 }

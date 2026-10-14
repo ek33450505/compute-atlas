@@ -343,11 +343,20 @@ jobs:
       #
       # continue-on-error so the failure is HANDLED (discard + hold the PR open)
       # rather than aborting the job and leaving no PR at all.
+      #
+      # Exit contract: 0 = additive, 1 = data loss (the ONLY verdict), 2 = the guard
+      # could not evaluate, and signals (134/137) mean it was killed. Only rc 1 is a
+      # verdict; the failure branches below key on it and say "did not complete" otherwise.
       - name: Verify siting-context changes are additive
         id: additive
         if: steps.check-drift.outputs.drift == 'true' && steps.mappath.outputs.path != 'none'
         continue-on-error: true
-        run: node scripts/check-siting-additive.mjs
+        run: |
+          set +e
+          node scripts/check-siting-additive.mjs
+          rc=$?
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit "$rc"
 
       # Update the NHD debt ledger (data/nhd-backfill-debt.json) if a map-data
       # build succeeded and was verified as additive. The ledger tracks which
@@ -383,12 +392,15 @@ jobs:
         env:
           MAPPATH: ${{ steps.mappath.outputs.path }}
           ADDITIVE_OUTCOME: ${{ steps.additive.outcome }}
+          ADDITIVE_RC: ${{ steps.additive.outputs.rc }}
           DEBT_OUTCOME: ${{ steps.debt.outcome }}
         run: |
           if [ "$MAPPATH" = "none" ]; then
             echo "::error::Both build:mapdata (full) and build:mapdata --skip-nhd failed — discarding artifacts. The PR will contain facility data only; data/siting-context.json will be STALE for any new facility until the next successful run or a manual build."
-          elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+          elif [ "$ADDITIVE_OUTCOME" = "failure" ] && [ "$ADDITIVE_RC" = "1" ]; then
             echo "::error::build:mapdata output was NOT additive — it dropped or nulled siting-context fields that exist at HEAD (the step above names them). Discarding the regenerated artifacts rather than publishing data loss; data/siting-context.json will be STALE for any new facility until a clean rerun."
+          elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+            echo "::error::The siting-context additive guard did not complete (exit ${ADDITIVE_RC:-unknown}) — this is NOT a data-loss verdict. Discarding the regenerated artifacts anyway (fail-closed). Read the \"Verify siting-context changes are additive\" step log for the error; a deterministic fault (like the 2026-10-14 ENOBUFS) recurs on every rerun, so fix the guard or environment before rerunning."
           elif [ "$DEBT_OUTCOME" = "failure" ]; then
             echo "::error::NHD debt ledger update failed — discarding artifacts to avoid committing an incomplete debt record. The PR will contain facility data only."
           fi
@@ -418,6 +430,7 @@ jobs:
         env:
           MAPPATH: ${{ steps.mappath.outputs.path }}
           ADDITIVE_OUTCOME: ${{ steps.additive.outcome }}
+          ADDITIVE_RC: ${{ steps.additive.outputs.rc }}
           DEBT_OUTCOME: ${{ steps.debt.outcome }}
           DEBT_COUNT: ${{ steps.debt.outputs.count }}
         run: |
@@ -427,8 +440,10 @@ jobs:
             echo "note<<MAPNOTE_EOF"
             if [ "$MAPPATH" = "none" ]; then
               echo '⛔ **Both build:mapdata (full) and build:mapdata --skip-nhd failed** — map artifacts were discarded and are NOT in this PR. Any new facility here will render without its "Siting context" panel until a successful run or a manual `npm run build:mapdata`.'
-            elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+            elif [ "$ADDITIVE_OUTCOME" = "failure" ] && [ "$ADDITIVE_RC" = "1" ]; then
               echo '⛔ **build:mapdata output was NOT additive** — it dropped or nulled `data/siting-context.json` fields that exist on `main`, so the regenerated artifacts were discarded and are NOT in this PR. This usually means a transient USGS NHD / HIFLD / WRI outage during the rebuild. Auto-merge is disabled for this PR: read the "Verify siting-context changes are additive" step for the exact ids, then rerun the workflow once the upstream service is healthy.'
+            elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+              echo "⛔ **The siting-context additive guard did not complete (exit ${ADDITIVE_RC:-unknown})** — a guard or environment fault, NOT evidence of data loss. The regenerated map artifacts were discarded (fail-closed) and are NOT in this PR. Auto-merge is disabled for this PR: read the Verify siting-context changes are additive step log for the error. A deterministic fault (like the 2026-10-14 ENOBUFS) recurs on every rerun, so fix it before rerunning."
             elif [ "$DEBT_OUTCOME" = "failure" ]; then
               echo '⛔ **NHD debt ledger update failed** — the regenerated map artifacts were discarded and are NOT in this PR to avoid committing an incomplete debt record. Auto-merge is disabled: rerun the workflow once the ledger operation succeeds.'
             elif [ "$MAPPATH" = "full" ]; then
