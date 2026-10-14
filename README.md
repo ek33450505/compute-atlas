@@ -45,7 +45,12 @@ these sites.
 
 **The map** — every tracked facility, filterable by status, operator, type, and capacity.
 
-[![The Compute Atlas map, showing tracked facilities across the United States](docs/media/map.png)](https://www.compute-atlas.com/map)
+[![Dot-density map of facility locations across the United States, with state outlines and Alaska and Hawaii insets, coloured by status](docs/media/map.svg)](https://www.compute-atlas.com/map)
+
+The plate above is generated from the dataset and coloured by status; co-located facilities
+of the same status are drawn as one dot. Guam, the Northern Mariana Islands, Puerto Rico,
+the US Virgin Islands and American Samoa are not drawn. It is not a screenshot of the
+interactive map.
 
 **A record** — every fact carries a source, and every source carries a retrieval date.
 `sourceIndex` points a specific claim at the specific document that backs it.
@@ -64,9 +69,12 @@ these sites.
     { "status": "under_construction", "date": "2024-06", "sourceIndex": 0,
       "note": "Construction began; completed in approximately 122 days" },
     { "status": "operational", "date": "2024-09", "sourceIndex": 1,
-      "note": "Phase 1 online with ~100,000 NVIDIA H100 GPUs" }
+      "note": "Phase 1 online with ~100,000 NVIDIA H100 GPUs; later expanded with H200s" }
   ],
-  "sources": [
+  "sources": [                       // first two of six
+    { "url": "https://…", "publisher": "Wikipedia", "kind": "press",
+      "label": "Colossus (supercomputer) — Wikipedia",
+      "retrievedAt": "2026-08-16" },
     { "url": "https://…", "publisher": "Reuters", "kind": "press",
       "label": "Musk says xAI has built world's most powerful AI training cluster",
       "retrievedAt": "2026-07-05" }
@@ -77,16 +85,17 @@ these sites.
 **The API** — public, CORS-open, no authentication.
 
 ```console
-$ curl -s 'https://www.compute-atlas.com/api/stats'   # real response, 2026-09-14
-{"count":1758,"states":55,"includesDc":true,
- "stateCodes":["AK","AL","AR","AZ",…,"DC","GU","PR","VI",…,"WY"],
- "operationalMw":32961.7,"plannedMw":409665.9,
- "underConstructionMw":122347.2,
- "edition":{"version":"1.33.0","asOf":"2026-09-14T17:30:28.912Z",
-            "schemaVersion":1}}
+$ curl -s 'https://www.compute-atlas.com/api/stats'
+{"count":…,"states":…,"includesDc":…,"stateCodes":[…],
+ "operationalMw":…,"plannedMw":…,"underConstructionMw":…,
+ "activeCount":…,"operationalMwReportingCount":…,"plannedMwReportingCount":…,
+ "underConstructionCount":…,"underConstructionMwReportingCount":…,
+ "edition":{"version":…,"asOf":…,"schemaVersion":…}}
 ```
 
-The figures above are a point-in-time snapshot; the live endpoint is the authority.
+The shape is shown without values; the live endpoint is the authority. Each MW total sums only
+the records that disclose that capacity, so read it with its `*ReportingCount`, not as a
+national total.
 
 **Air permits** — where a permit exists, its permitted ceilings are recorded verbatim from
 the document, never derived, and always labelled as a regulatory ceiling rather than
@@ -124,9 +133,10 @@ you can send.
 
 ## How the data is built
 
-Compiled by hand from primary sources — county planning portals, SEC filings, state
-air-quality permits, ISO/RTO interconnection queues, utility filings, and subsidy
-disclosures — with a deliberate bias against fabrication. Every facility cites at least one
+Records draw on county planning portals, SEC filings, state air-quality permits, ISO/RTO
+interconnection queues, utility filings, subsidy disclosures, and press reporting. Candidates
+from the discovery pipeline are staged as `pending`, and every record is reviewed by a maintainer
+before it goes live, with a deliberate bias against fabrication. Every facility cites at least one
 public source with a URL, a label, a source `kind`, and a retrieval date.
 
 For the discovery channels, the sourcing and verification standard, and how to read a
@@ -199,7 +209,7 @@ validates every record on every pull request, so a malformed record fails CI.
 | `capacityMw` | `planned?` and/or `operational?` in megawatts |
 | `statusHistory` | Ordered status transitions with dates and source references |
 | `sources` | At least one source with `url`, `label`, `kind`, `retrievedAt` |
-| `lastUpdated` | ISO date (`YYYY`, `YYYY-MM`, or `YYYY-MM-DD`) |
+| `lastUpdated` | ISO-style date, in practice `YYYY-MM-DD` (or `YYYY-MM` for month precision); the schema requires only a string of at least four characters |
 
 Plus type-specific blocks (`mining`, `generation`, `environmental`) and civic fields
 (`energy`, `water`, `emissions`, `subsidies`, `jobs`, `community`).
@@ -230,7 +240,7 @@ Participation is governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 npm install
 npm run dev        # dev server at http://localhost:3000
 npm test           # unit + integration (Vitest)
-npm run test:e2e   # a11y + e2e (Playwright — requires npm run build first)
+npm run test:e2e   # a11y + e2e (Playwright — builds and starts the app itself)
 npm run build      # production build
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
