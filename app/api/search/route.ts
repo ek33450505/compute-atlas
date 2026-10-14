@@ -3,7 +3,7 @@ import { cacheableJson, corsPreflight, jsonResponse, READ_CACHE } from "@/lib/ap
 import { extractTrustedClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 import { checkDailyApiGate } from "@/lib/api-daily-limit";
-import { toFacilitySearchHit } from "@/lib/search";
+import { PALETTE_MAX_RESULTS, PALETTE_MIN_QUERY_LEN, toFacilitySearchHit } from "@/lib/search";
 
 /**
  * Public full-text facility search over the DB `search_vector` (name +
@@ -31,6 +31,12 @@ import { toFacilitySearchHit } from "@/lib/search";
  * differ, though: the CDN and Cloudflare key on the full URL, so each shape is
  * cached under its own URL. Absent or any other value keeps the full records,
  * byte-identical to the original public contract.
+ *
+ * The palette shape is also bounded, because a one-letter prefix matches
+ * hundreds of facilities and the palette renders only a handful: a trimmed
+ * query under `PALETTE_MIN_QUERY_LEN` returns an empty result without touching
+ * the DB, and longer ones are capped to `PALETTE_MAX_RESULTS` (passed down as a limit so only that many records are resolved; `count` is the
+ * returned length). The default shape is never capped.
  */
 export async function GET(request: Request): Promise<Response> {
   const gate = checkApiRateLimit(extractTrustedClientIp(request.headers));
@@ -41,12 +47,20 @@ export async function GET(request: Request): Promise<Response> {
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q") ?? "";
-  const { facilities, degraded } = await searchFacilitiesDb(query);
   const lean = searchParams.get("shape") === "palette";
+  const queryEcho = query.slice(0, MAX_SEARCH_QUERY_LEN);
+
+  if (lean && query.trim().length < PALETTE_MIN_QUERY_LEN) {
+    return cacheableJson({ count: 0, facilities: [], query: queryEcho }, READ_CACHE.search);
+  }
+
+  const { facilities, degraded } = lean
+    ? await searchFacilitiesDb(query, { limit: PALETTE_MAX_RESULTS })
+    : await searchFacilitiesDb(query);
   const body = {
     count: facilities.length,
     facilities: lean ? facilities.map(toFacilitySearchHit) : facilities,
-    query: query.slice(0, MAX_SEARCH_QUERY_LEN),
+    query: queryEcho,
   };
 
   if (degraded) {

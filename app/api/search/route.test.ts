@@ -161,6 +161,34 @@ describe("GET /api/search", () => {
     expect(blocked.headers.get("Retry-After")).toBeTruthy();
   });
 
+  function thirty(): Facility[] {
+    return Array.from({ length: 30 }, (_, i) => ({
+      id: `f${i}`,
+      name: `F ${i}`,
+      operator: "Op",
+      location: { state: "VA" },
+    })) as unknown as Facility[];
+  }
+
+  it("never caps the default shape — public contract returns every match", async () => {
+    searchFacilitiesDbMock.mockResolvedValue(ok(thirty()));
+
+    const body = await (await GET(req("?q=acme"))).json();
+
+    expect(body.facilities).toHaveLength(30);
+    expect(body.count).toBe(30);
+    expect(searchFacilitiesDbMock).toHaveBeenCalledWith("acme");
+  });
+
+  it("does not short-circuit a 1-character query on the default shape", async () => {
+    searchFacilitiesDbMock.mockResolvedValue(ok(thirty()));
+
+    const body = await (await GET(req("?q=m"))).json();
+
+    expect(searchFacilitiesDbMock).toHaveBeenCalledTimes(1);
+    expect(body.count).toBe(30);
+  });
+
   describe("shape=palette", () => {
     const FULL: Facility = {
       id: "acme-campus",
@@ -193,6 +221,42 @@ describe("GET /api/search", () => {
         expect(body.facilities).toEqual([FULL]);
       }
     );
+
+    it("returns an empty result without querying for a 1-character query", async () => {
+      const res = await GET(req("?q=m&shape=palette"));
+      const body = await res.json();
+
+      expect(body).toEqual({ count: 0, facilities: [], query: "m" });
+      expect(searchFacilitiesDbMock).not.toHaveBeenCalled();
+      expect(res.headers.get("Cache-Control")).toContain("s-maxage");
+    });
+
+    it("treats a query that is 1 character after trimming as too short", async () => {
+      await GET(req("?q=%20m%20&shape=palette"));
+      expect(searchFacilitiesDbMock).not.toHaveBeenCalled();
+    });
+
+    it("still searches at the 2-character minimum", async () => {
+      searchFacilitiesDbMock.mockResolvedValue(ok([FULL]));
+      const body = await (await GET(req("?q=ac&shape=palette"))).json();
+      expect(searchFacilitiesDbMock).toHaveBeenCalledTimes(1);
+      expect(body.count).toBe(1);
+    });
+
+    it("caps results at 25 and reports the returned length as count", async () => {
+      // The mock honours `limit` like the real search layer does.
+      searchFacilitiesDbMock.mockImplementation(async (_q: string, opts?: { limit?: number }) =>
+        ok(thirty().slice(0, opts?.limit))
+      );
+
+      const body = await (await GET(req("?q=acme&shape=palette"))).json();
+
+      expect(body.facilities).toHaveLength(25);
+      expect(body.count).toBe(25);
+      expect(body.facilities[0].id).toBe("f0");
+      expect(body.facilities[24].id).toBe("f24");
+      expect(searchFacilitiesDbMock).toHaveBeenCalledWith("acme", { limit: 25 });
+    });
 
     it("is still no-store when degraded", async () => {
       searchFacilitiesDbMock.mockResolvedValue(DEGRADED);
