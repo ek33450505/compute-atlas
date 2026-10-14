@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { BLOCKED_AI_CRAWLERS, BLOCKED_SEO_CRAWLERS } from "@/app/robots";
+import {
+  BLOCKED_AI_AGENTS,
+  BLOCKED_AI_CRAWLERS,
+  BLOCKED_BULK_EXTRACTORS,
+  BLOCKED_SEO_CRAWLERS,
+} from "@/app/robots";
 
 /**
  * ⚠️ READ THIS FIRST: THIS TEST CANNOT SEE CLOUDFLARE.
@@ -17,15 +22,16 @@ import { BLOCKED_AI_CRAWLERS, BLOCKED_SEO_CRAWLERS } from "@/app/robots";
  *   2. It records the WAF expectation AS CHECKED-IN DATA, so updating it is a
  *      deliberate, reviewable edit with a date attached rather than a memory.
  *
- * WHY THAT IS WORTH HAVING ANYWAY. `app/robots.ts` and the WAF rule were two
- * independent lists with nothing reconciling them, and they drifted badly: the
- * repo blocked 12 tokens while the WAF blocked 18 (now 14), and the WAF was
- * INVERTED — it 403'd user-directed retrieval agents (which this project wants:
- * see the "TRAINING crawlers blocked, RETRIEVAL allowed" position, and
- * Google-Extended's deliberate exemption in app/robots.ts) while allowing an
- * indexing crawler through. Neither list was wrong on its own terms; nothing
- * ever compared them. That is the gap this closes, and it closes it only on the
- * side a test can read.
+ * WHY THAT IS WORTH HAVING ANYWAY. `app/robots.ts` and the WAF rules are two
+ * independent lists with nothing else reconciling them, and they have drifted
+ * badly: on 2026-09-27 the repo blocked 12 tokens while the WAF blocked 14, and
+ * the WAF was INVERTED relative to the stated posture (it 403'd user-directed
+ * retrieval agents while letting an indexing crawler through). Neither list was
+ * wrong on its own terms; nothing ever compared them. Policy since 2026-10-14
+ * (Ed): allow classic search engines (Googlebot, Bingbot, Applebot,
+ * DuckDuckBot) and archives; block AI training crawlers, AI agents / AI-search
+ * indexers and bulk dataset extractors, on BOTH sides. This test closes the
+ * gap only on the side it can read.
  *
  * ⛔ Do NOT "improve" this into something that fetches Cloudflare. An assertion
  * that silently skips when a token is absent is worse than this file: it reads
@@ -37,47 +43,71 @@ import { BLOCKED_AI_CRAWLERS, BLOCKED_SEO_CRAWLERS } from "@/app/robots";
  */
 
 /**
- * The Cloudflare WAF rule this file is reconciled against.
+ * The Cloudflare rules this file is reconciled against. Read by API by the
+ * dispatching session on 2026-10-14 (zone ruleset 2db189b07c9e4522bd6fc9b1fd5a4769,
+ * v259); this file cannot re-read them.
  *
- *   Zone ruleset: 2db189b07c9e4522bd6fc9b1fd5a4769
- *   Rule:         0cfdbaf2d09342f2ad93a0025bf9ff57
- *   Last reported by a human with zone access: 2026-09-27 — 14 UAs blocked.
+ *   - Rule 0cfdbaf2d09342f2ad93a0025bf9ff57: the AI Crawl Control rule, 23 UAs.
+ *     Cloudflare regenerates it from its own dashboard crawler toggles, and a
+ *     dashboard save does not keep manual additions. The four SEO crawlers it
+ *     carried on 2026-09-27 were found missing on 2026-10-14; a dashboard save
+ *     is the likely cause, but the actual drop date is unknown.
+ *   - Custom rule "Block bulk dataset extractors": 10 UAs (the 6 extractors plus
+ *     the four SEO crawlers re-added there, since WAF matching is `contains` and
+ *     case-sensitive, Moz's crawler is entered as "DotBot" while this ledger
+ *     keeps robots.txt's "dotbot").
+ *
+ * The two rules do not overlap, so the ledger below holds 23 + 10 entries.
  */
-const WAF_RULE_UA_COUNT_AS_REPORTED = 14;
+const WAF_RULE_UA_COUNT_AS_REPORTED = 23 + 10;
 
 /**
- * The subset of that rule's UAs this repo can state. ⚠️ IT IS INCOMPLETE ON
- * PURPOSE, AND THE GAP IS THE HONEST PART.
+ * The UAs the edge is recorded as blocking, transcribed from the rules above.
+ * "Anchor Browser" is WAF-only: a browser-automation product with no robots.txt
+ * token. A WAF-only entry has no robots.txt counterpart by definition, so it
+ * never reddens the reconciliation below.
  *
- * These nine are the tokens `app/robots.ts` blocks that were reported as also
- * enforced at the edge. The live rule carries
- * `WAF_RULE_UA_COUNT_AS_REPORTED` (14), so FIVE entries are not transcribed
- * here — they were not available when this file was written, and inventing
- * plausible crawler names to make the count line up would have produced a
- * transcript that reads authoritative and is fiction. An incomplete list that
- * says so is worth more than a complete-looking one that cannot be trusted.
- *
- * 📌 OWED: whoever next opens the Cloudflare rule should paste the remaining
- * five names in and bump the date. The reconciliation below is unaffected by
- * the gap — a WAF-only entry has no robots.txt counterpart by definition, which
- * is exactly the category those five fall into — so this is a completeness
- * debt, not a correctness one.
- *
- * HOW TO MAINTAIN THIS. Change the WAF rule and this list in the same PR, and
+ * HOW TO MAINTAIN THIS. Change the WAF rules and this list in the same PR, and
  * move the date. Change `app/robots.ts` and this test tells you whether the WAF
  * needs the same change. The date is the load-bearing field: it says when a
  * human last looked, and nothing in this repo can keep it true.
  */
 export const EXPECTED_WAF_BLOCKED_UAS = [
+  // AI Crawl Control rule, 23 UAs (2026-10-14).
   "Amazonbot",
+  "Anchor Browser",
+  "Arquivo-web-crawler",
   "Bytespider",
   "CCBot",
+  "ChatGPT-User",
+  "Claude-User",
+  "ClaudeBot",
+  "CloudflareBrowserRenderingCrawler",
+  "DuckAssistBot",
+  "FacebookBot",
+  "GPTBot",
+  "Manus-User",
+  "meta-externalagent",
+  "meta-externalfetcher",
+  "MistralAI-User",
+  "Novellum",
+  "OAI-SearchBot",
+  "Perplexity-User",
+  "PetalBot",
+  "ProRataInc",
+  "TikTokSpider",
+  "Timpibot",
+  // Custom rule "Block bulk dataset extractors", 10 UAs (2026-10-14).
   "DataForSeoBot",
   "dotbot",
-  "GPTBot",
-  "meta-externalagent",
   "QlyzeBot",
   "SERankingBacklinksBot",
+  "ExaSearchBot",
+  "Amzn-SearchBot",
+  "Reflectionbot",
+  "ShapBot",
+  "Shap-User",
+  "KorzyData",
 ] as const;
 
 /**
@@ -88,10 +118,12 @@ export const EXPECTED_WAF_BLOCKED_UAS = [
  *
  * A robots-only block is a REQUEST, not enforcement — it works on a crawler
  * that reads robots.txt and does nothing to one that ignores it. That is the
- * deliberate choice for all three below.
+ * deliberate choice for the entry below.
  *
- * ⚠️ The three entries' ROBOTS-ONLY STATUS was reported by a human with zone
- * access (2026-09-27); the REASONS are this change's own reasoning about why
+ * ⚠️ The entry's ROBOTS-ONLY STATUS was reported by a human with zone
+ * access (2026-09-27, re-confirmed absent from the 2026-10-14 rules; ClaudeBot
+ * and CloudflareBrowserRenderingCrawler, robots-only then, are now WAF-enforced
+ * and moved to the ledger above); the REASON are this change's own reasoning about why
  * that is the right call, not a quotation of a prior decision. Treat them as
  * revisable — if a reason is wrong, fix the reason rather than deleting the
  * entry, which would only redden the test.
@@ -99,14 +131,15 @@ export const EXPECTED_WAF_BLOCKED_UAS = [
 const ROBOTS_ONLY_BY_DESIGN: Record<string, string> = {
   "Applebot-Extended":
     "Training opt-out only. Apple honours it via robots.txt and blocking Applebot-Extended at the edge risks catching Applebot itself (same UA prefix), which would cost Siri/Spotlight surfacing.",
-  ClaudeBot:
-    "Training crawler, declines by robots.txt. Left unenforced at the edge so a UA-matching mistake cannot also 403 Claude's user-directed retrieval fetches, which this project wants to allow.",
-  CloudflareBrowserRenderingCrawler:
-    "Cloudflare's own renderer. A WAF rule on Cloudflare's own fetcher is a foot-gun (it also backs features we may use); robots.txt is the right register for it.",
 };
 
 describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — cannot read the edge)", () => {
-  const robotsBlocked = [...BLOCKED_AI_CRAWLERS, ...BLOCKED_SEO_CRAWLERS];
+  const robotsBlocked = [
+    ...BLOCKED_AI_CRAWLERS,
+    ...BLOCKED_AI_AGENTS,
+    ...BLOCKED_BULK_EXTRACTORS,
+    ...BLOCKED_SEO_CRAWLERS,
+  ];
 
   /**
    * The assertion that does the work. Every token `robots.txt` blocks must be
@@ -128,10 +161,24 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
   });
 
   /**
+   * Exact-set check: the ledger must be precisely every robots.txt token minus
+   * the robots-only exemptions, plus the one known edge-only entry. Catches a
+   * stray or misspelled ledger entry that the one-way checks above let through.
+   * Tokens are compared as the ledger stores them (robots.txt casing, so
+   * "dotbot" even though the WAF string is "DotBot").
+   */
+  it("records exactly the robots.txt tokens not exempted, plus the edge-only entries", () => {
+    const expected = new Set<string>([
+      ...robotsBlocked.filter((ua) => !(ua in ROBOTS_ONLY_BY_DESIGN)),
+      "Anchor Browser",
+    ]);
+    expect([...EXPECTED_WAF_BLOCKED_UAS].sort()).toEqual([...expected].sort());
+  });
+
+  /**
    * The reverse direction, and it is NOT symmetric with the check above. A WAF
    * entry with no robots.txt counterpart is legitimate — the edge can enforce
-   * against crawlers we never bothered to name in robots.txt (the five listed
-   * as such above). What is NOT legitimate is a robots-only ANNOTATION for a
+   * against crawlers we never bothered to name in robots.txt (e.g. "Anchor Browser"). What is NOT legitimate is a robots-only ANNOTATION for a
    * token the WAF also blocks: that annotation would be a false statement about
    * the edge, and a reader would trust it.
    */
@@ -159,12 +206,10 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
   });
 
   /**
-   * Keeps the transcript honest about being a transcript. The live rule was
-   * reported at 14 UAs; this file can name 9. A list that GREW past the
-   * reported count means the count note is stale and must be re-verified before
-   * the extra entries can be trusted — so this fails upward, not downward, and
-   * deliberately does NOT demand the gap be closed (that would make the only
-   * green path "invent five names", the mistake this file's header warns about).
+   * Keeps the transcript honest about being a transcript. The live rules were
+   * reported at 33 UAs (23 + 10). A list that GREW past the reported count means
+   * the count note is stale and must be re-verified before the extra entries
+   * can be trusted — so this fails upward, not downward.
    */
   it("never records more WAF blocks than the rule was reported to carry", () => {
     expect(EXPECTED_WAF_BLOCKED_UAS.length).toBeLessThanOrEqual(WAF_RULE_UA_COUNT_AS_REPORTED);
@@ -184,7 +229,14 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
    * goes out of its way to preserve, and no robots.txt test would notice.
    */
   it("never records a WAF block for a crawler robots.txt deliberately exempts", () => {
-    const deliberatelyAllowed = ["Google-Extended", "Googlebot", "AhrefsBot", "SemrushBot"];
+    const deliberatelyAllowed = [
+      "Google-Extended",
+      "Googlebot",
+      "AhrefsBot",
+      "SemrushBot",
+      "PerplexityBot",
+      "Claude-SearchBot",
+    ];
     const wafSet = new Set<string>(EXPECTED_WAF_BLOCKED_UAS);
 
     expect(deliberatelyAllowed.filter((ua) => wafSet.has(ua))).toEqual([]);

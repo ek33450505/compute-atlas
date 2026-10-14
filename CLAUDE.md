@@ -435,20 +435,23 @@ tool, not part of the deployed app.
   against anyone who tries. `proxy.ts` enforces a Cloudflare-injected shared-secret header to close
   this; it is deliberately **fail-open while `EDGE_SHARED_SECRET` is unset**, and `/api/cron/*` is
   exempt because Vercel Cron may reach the deployment without traversing Cloudflare.
-- **`app/robots.ts` is the source of truth for blocked crawlers; the Cloudflare WAF rule is a second
-  copy.** Counts, each labelled with its side and dated because they drift independently (measured
-  2026-09-27): **`app/robots.ts` = 8 `BLOCKED_AI_CRAWLERS` + 4 `BLOCKED_SEO_CRAWLERS` = 12 tokens**;
-  the **Cloudflare WAF rule = 18 UAs, now 14** after this audit removed four. The two sides have never
-  been equal and nothing reconciles them — re-measure both before citing either. The WAF side is
-  out-of-repo, so only a live API read can confirm it.
-  The drift was not just numeric: the WAF was *inverted*: it 403'd `Perplexity-User` /
-  `Manus-User` / `MistralAI-User` — the vendors' markers for a **human-initiated** fetch — while
-  letting `PerplexityBot` (the indexing crawler) through, and blocked `Baiduspider`, a **search**
-  engine, on a site whose binding constraint is crawl budget. Corrected 2026-09-27 (those four removed
-  from the WAF rule, taking it 18 → 14; `app/robots.ts` was not changed). **The posture is: block
-  TRAINING, allow RETRIEVAL and SEARCH.** A UA blocked at
-  the edge but not disallowed in `robots.txt` is worse than useless — a compliant crawler reads
-  `Allow: /`, gets a 403, and retries.
+- **`app/robots.ts` is the source of truth for blocked crawlers; the Cloudflare rules are a second
+  copy.** Posture (Ed, 2026-10-14; supersedes 2026-09-27's "allow RETRIEVAL"): **allow classic SEARCH
+  engines (Googlebot, Bingbot, Applebot, DuckDuckBot) and archives (archive.org_bot); block AI
+  training crawlers, AI retrieval / user-initiated agents, AI search indexers and bulk dataset
+  extractors** — people should use the data via search, not plunder the dataset. Counts, each labelled
+  with its side (measured 2026-10-14): **`app/robots.ts` = 15 `BLOCKED_AI_CRAWLERS` + 8
+  `BLOCKED_AI_AGENTS` + 6 `BLOCKED_BULK_EXTRACTORS` + 4 `BLOCKED_SEO_CRAWLERS` = 33 tokens**;
+  **Cloudflare = a 23-UA AI Crawl Control rule + a 10-UA "Block bulk dataset extractors" custom rule** (6 extractors + the 4 SEO crawlers)
+  (Applebot allowed; `Anchor Browser` is on the Cloudflare side only, being a browser product with no
+  robots token). The AI Crawl Control rule is READABLE via the rulesets API, but its per-crawler toggles are
+  dashboard-only and every toggle save regenerates the rule, overwriting manual edits. The four SEO
+  crawlers were FOUND missing from it on 2026-10-14 (the rule as read at 16:26Z already lacked them);
+  the actual drop date is unknown (some dashboard save after 2026-09-27). They now live in the custom bulk rule. `PerplexityBot` and `Claude-SearchBot` are not blocked on
+  either side. The sides have never been reconciled by tooling — re-measure both before citing either;
+  the Cloudflare side is out-of-repo, so only a live read confirms it. A UA blocked at the edge but not
+  disallowed in `robots.txt` is worse than useless — a compliant crawler reads `Allow: /`, gets a 403,
+  and retries. Open: the `Content-Signal` value (`use=reference`) still says retrieval is allowed.
 - **Every caught DB error logs a SQLSTATE only, via `redactedErrorCode` from `lib/db-error.ts`.**
   Drizzle's `DrizzleQueryError.message` is `Failed query: … params: …`, so logging the error
   **object** puts bound parameters (an IP hash, a subscriber email, a raw bearer token) into Vercel
