@@ -101,8 +101,9 @@ export async function withJsonFallback<T>(
 /**
  * Resilient full-table Neon read (retry + JSON fallback via
  * `withJsonFallback`), shared by every reader below that needs the whole
- * facility set from the DB branch (`loadFacilitiesUncached`,
- * `fetchFacilitiesByStateUncached`, `loadPowerGenerationUncached`). Callers
+ * facility set from the DB branch (`loadFacilitiesUncached`). The state,
+ * power-generation and nav-facet readers filter/project in SQL instead (see
+ * their comments). Callers
  * still gate on `readsUseDatabase()` themselves and call `loadFromJson()`
  * directly (no retry) when it's false — this only wraps the DB branch.
  */
@@ -314,11 +315,38 @@ export interface NavFacet {
   state: string;
 }
 
+/**
+ * Projects only the `operator` and `state` columns in SQL (~55 KB) instead of
+ * pulling the full 5.9 MB doc set. Those columns are derived from the doc by
+ * `docToRow` (lib/db/serialize.ts) and matched the doc fields with 0
+ * mismatches on prod (measured 2026-10-14). The order is load-bearing:
+ * `buildNavSearchIndex` emits states in first-seen order. The DB branch sorts
+ * in JS (`localeCompare` on id), not with SQL `ORDER BY`, because Postgres
+ * ordering follows the DB collation; a collation change would silently
+ * reorder the palette's states. A JS sort on both branches makes them
+ * identical by construction.
+ */
 async function loadNavFacetsUncached(): Promise<NavFacet[]> {
-  return (await loadFacilitiesShared()).map((f) => ({
-    operator: f.operator,
-    state: f.location.state,
-  }));
+  const fromJson = (): NavFacet[] =>
+    [...loadFromJson()]
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .map((f) => ({ operator: f.operator, state: f.location.state }));
+  if (!readsUseDatabase()) return fromJson();
+  return withJsonFallback(
+    async () =>
+      (
+        await getDb()
+          .select({
+            id: facilitiesTable.id,
+            operator: facilitiesTable.operator,
+            state: facilitiesTable.state,
+          })
+          .from(facilitiesTable)
+      )
+        .sort((a, b) => a.id.localeCompare(b.id))
+        .map((r) => ({ operator: r.operator, state: r.state })),
+    fromJson
+  );
 }
 
 export const loadNavFacets: () => Promise<NavFacet[]> = process.env.VITEST
@@ -382,14 +410,27 @@ export const getFacilityByIdCached = (id: string): Promise<Facility | undefined>
 
 /**
  * Uncached direct-filtered fetch backing `getFacilitiesByStateCached`. The DB
- * branch retries transient Neon read failures before degrading to the JSON
- * snapshot (see `withJsonFallback`/`selectAllFacilitiesResilient`).
+ * branch filters on the indexed `state` column in SQL (a state slice averages
+ * ~107 KB vs 5.9 MB for the full set) and retries transient Neon read failures
+ * before degrading to the filtered JSON snapshot (see `withJsonFallback`).
+ * The `state` column is derived from `doc.location.state` by `docToRow`
+ * (lib/db/serialize.ts); parity measured 0-mismatch on prod 2026-10-14.
  */
 async function fetchFacilitiesByStateUncached(code: string): Promise<Facility[]> {
   const upper = code.toUpperCase();
-  const list = readsUseDatabase() ? await selectAllFacilitiesResilient() : loadFromJson();
-  return list
-    .filter((f) => f.location.state === upper)
+  const list = readsUseDatabase()
+    ? await withJsonFallback(
+        async () =>
+          (
+            await getDb()
+              .select({ doc: facilitiesTable.doc })
+              .from(facilitiesTable)
+              .where(eq(facilitiesTable.state, upper))
+          ).map(rowToFacility),
+        () => loadFromJson().filter((f) => f.location.state === upper)
+      )
+    : loadFromJson().filter((f) => f.location.state === upper);
+  return [...list]
     .sort(
       (a, b) =>
         (getFacilityMaxMw(b) ?? -1) - (getFacilityMaxMw(a) ?? -1) ||
@@ -439,13 +480,27 @@ export const getStateSummaryCached = (code: string): Promise<StateSummary | null
 };
 
 /**
- * Uncached full power_generation-facility load backing
- * `loadPowerGenerationCached`. The DB branch retries transient Neon read
- * failures before degrading to the JSON snapshot (see
- * `withJsonFallback`/`selectAllFacilitiesResilient`).
+ * Uncached power_generation-facility load backing
+ * `loadPowerGenerationCached`. The DB branch filters on the indexed
+ * `facility_type` column in SQL (~0.90 MB vs 5.9 MB) and retries transient
+ * Neon read failures before degrading to the JSON snapshot (see
+ * `withJsonFallback`). The column is derived from `doc.facilityType` by
+ * `docToRow`; parity measured 0-mismatch on prod 2026-10-14. The type-guard
+ * filter below stays to narrow the TS type.
  */
 async function loadPowerGenerationUncached(): Promise<PowerGenerationFacility[]> {
-  const list = readsUseDatabase() ? await selectAllFacilitiesResilient() : loadFromJson();
+  const list = readsUseDatabase()
+    ? await withJsonFallback(
+        async () =>
+          (
+            await getDb()
+              .select({ doc: facilitiesTable.doc })
+              .from(facilitiesTable)
+              .where(eq(facilitiesTable.facilityType, "power_generation"))
+          ).map(rowToFacility),
+        loadFromJson
+      )
+    : loadFromJson();
   return list.filter(
     (f): f is PowerGenerationFacility => f.facilityType === "power_generation"
   );
