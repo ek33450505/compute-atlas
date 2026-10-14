@@ -670,6 +670,28 @@ NHD_OVERLAY_STEP="Discard overlay artifacts before PR"
 	}
 }
 
+@test "build:mapdata outputs are all tracked in the index (git checkout -- aborts on an untracked path)" {
+	# Membership tests pass whether or not a listed output is committed. An
+	# untracked path makes `git checkout -- <path>` fail with "pathspec did not
+	# match", which aborts the revert step that names it.
+	local outputs untracked="" path
+	outputs="$(mapdata_outputs)"
+	[ -n "$outputs" ]
+	# Anti-vacuity: a reworded header marker or a truncated list yields a short
+	# (or empty) list that every check below would pass.
+	# 12 = entries in the "outputs below are committed:" list in scripts/build-map-data.mjs.
+	# Bump it when adding an output. This is a floor: removing an entry fails the test on purpose.
+	[ "$(grep -c . <<<"$outputs")" -ge 12 ]
+	while IFS= read -r path; do
+		[ -n "$path" ] || continue
+		git -C "$REPO_ROOT" ls-files --error-unmatch -- "$path" >/dev/null 2>&1 || untracked="$untracked $path"
+	done <<<"$outputs"
+	[ -z "$untracked" ] || {
+		echo "build:mapdata writes these, but they are not tracked in git:$untracked"
+		return 1
+	}
+}
+
 # ---------------------------------------------------------------------------
 # nhd-backfill.yml — what an unattended run may put in its auto-merged PR
 #
