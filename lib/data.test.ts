@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { gzipSync, gunzipSync } from "node:zlib";
 import facilitiesRaw from "@/data/facilities.json";
 import { canonicalCountyName } from "@/lib/counties";
-import { findUnpoweredDataCenter } from "@/lib/test-fixtures/unpowered-facility";
+import { findUnlinkedPowerPlant, findUnpoweredDataCenter } from "@/lib/test-fixtures/unpowered-facility";
 import {
   getAllFacilities,
   getFacilityById,
@@ -2137,25 +2137,50 @@ describe("getDefeatedProjects", () => {
   });
 });
 
+// Live data grows (a second plant can power the same campus), so these assert the
+// known edge is present plus relationship invariants, never an exact list.
+async function expectCampusesOf(generatorId: string, knownCampusId: string) {
+  const generator = await getFacilityById(generatorId);
+  expect(generator).toBeDefined();
+  expect(generator!.facilityType).toBe("power_generation");
+  const declared =
+    generator!.facilityType === "power_generation"
+      ? (generator!.generation?.poweredFacilityIds ?? [])
+      : [];
+  const ids = (await getPoweredCampuses(generator!)).map((f) => f.id);
+  expect(ids.length).toBeGreaterThan(0);
+  expect(ids).toContain(knownCampusId);
+  expect(new Set(ids).size).toBe(ids.length);
+  for (const id of ids) expect(declared).toContain(id);
+}
+
+async function expectGeneratorsOf(campusId: string, knownGeneratorId: string) {
+  const campus = await getFacilityById(campusId);
+  expect(campus).toBeDefined();
+  const generators = await getPoweredByGenerators(campus!);
+  const ids = generators.map((f) => f.id);
+  expect(ids.length).toBeGreaterThan(0);
+  expect(ids).toContain(knownGeneratorId);
+  expect(new Set(ids).size).toBe(ids.length);
+  for (const g of generators) {
+    expect(g.facilityType).toBe("power_generation");
+    expect(g.generation?.poweredFacilityIds ?? []).toContain(campusId);
+  }
+}
+
 describe("getPoweredCampuses", () => {
   it("resolves the Oklo Aurora -> Meta Prometheus link", async () => {
-    const oklo = await getFacilityById("oklo-aurora-pike-county-oh");
-    expect(oklo).toBeDefined();
-    const campuses = await getPoweredCampuses(oklo!);
-    expect(campuses.map((f) => f.id)).toEqual(["meta-prometheus-new-albany-oh"]);
+    await expectCampusesOf("oklo-aurora-pike-county-oh", "meta-prometheus-new-albany-oh");
   });
 
   it("resolves the Susquehanna -> AWS Cumulus link", async () => {
-    const susquehanna = await getFacilityById("talen-susquehanna-aws-pa");
-    expect(susquehanna).toBeDefined();
-    const campuses = await getPoweredCampuses(susquehanna!);
-    expect(campuses.map((f) => f.id)).toEqual(["aws-cumulus-salem-township-pa"]);
+    await expectCampusesOf("talen-susquehanna-aws-pa", "aws-cumulus-salem-township-pa");
   });
 
   it("returns [] for a power_generation facility with no poweredFacilityIds", async () => {
-    const crane = await getFacilityById("crane-clean-energy-center-tmi-pa");
-    expect(crane).toBeDefined();
-    expect(await getPoweredCampuses(crane!)).toEqual([]);
+    const plant = await findUnlinkedPowerPlant();
+    expect(plant).toBeDefined();
+    expect(await getPoweredCampuses(plant!)).toEqual([]);
   });
 
   it("returns [] for a non-power_generation facility (wrong branch)", async () => {
@@ -2167,17 +2192,11 @@ describe("getPoweredCampuses", () => {
 
 describe("getPoweredByGenerators", () => {
   it("resolves Meta Prometheus <- Oklo Aurora", async () => {
-    const meta = await getFacilityById("meta-prometheus-new-albany-oh");
-    expect(meta).toBeDefined();
-    const generators = await getPoweredByGenerators(meta!);
-    expect(generators.map((f) => f.id)).toEqual(["oklo-aurora-pike-county-oh"]);
+    await expectGeneratorsOf("meta-prometheus-new-albany-oh", "oklo-aurora-pike-county-oh");
   });
 
   it("resolves AWS Cumulus <- Susquehanna", async () => {
-    const aws = await getFacilityById("aws-cumulus-salem-township-pa");
-    expect(aws).toBeDefined();
-    const generators = await getPoweredByGenerators(aws!);
-    expect(generators.map((f) => f.id)).toEqual(["talen-susquehanna-aws-pa"]);
+    await expectGeneratorsOf("aws-cumulus-salem-township-pa", "talen-susquehanna-aws-pa");
   });
 
   it("returns [] for a facility no plant powers", async () => {
