@@ -222,11 +222,20 @@ jobs:
       # WHAT A PASSING CHECK LOOKS LIKE WHILE THE BUG IS PRESENT: it does not
       # pass. Probed by planting a violation 2026-09-05 — the script exited 1
       # naming the dropped fields with their old values.
+      #
+      # Exit contract: 0 = additive, 1 = data loss (the ONLY verdict), 2 = the guard
+      # could not evaluate, and signals (134/137) mean it was killed. Only rc 1 is a
+      # verdict; the failure branches below key on it and say "did not complete" otherwise.
       - name: Verify siting-context changes are additive
         id: additive
         if: steps.backfill.outcome == 'success'
         continue-on-error: true
-        run: node scripts/check-siting-additive.mjs
+        run: |
+          set +e
+          node scripts/check-siting-additive.mjs
+          rc=$?
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit "$rc"
 
       # UPDATE DEBT LEDGER — recompute and rewrite data/nhd-backfill-debt.json
       # only if the count changed. Prints "NHD debt: N (ledger was M)", exit 0
@@ -262,11 +271,14 @@ jobs:
         env:
           BACKFILL_OUTCOME: ${{ steps.backfill.outcome }}
           ADDITIVE_OUTCOME: ${{ steps.additive.outcome }}
+          ADDITIVE_RC: ${{ steps.additive.outputs.rc }}
         run: |
           if [ "$BACKFILL_OUTCOME" = "failure" ]; then
             echo "::error::build:mapdata -- --backfill-nhd FAILED — discarding partial artifacts. NHD debt remains unpaid; check NHD service health and rerun."
-          elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+          elif [ "$ADDITIVE_OUTCOME" = "failure" ] && [ "$ADDITIVE_RC" = "1" ]; then
             echo "::error::build:mapdata SUCCEEDED but its output was NOT additive — it dropped or nulled siting-context fields (see the step above). Discarding artifacts; NHD debt remains unpaid."
+          elif [ "$ADDITIVE_OUTCOME" = "failure" ]; then
+            echo "::error::build:mapdata SUCCEEDED but the siting-context additive guard did not complete (exit ${ADDITIVE_RC:-unknown}) — NOT a data-loss verdict. Discarding artifacts (fail-closed); NHD debt remains unpaid. Read the Verify siting-context changes are additive step log; a deterministic fault recurs on every rerun."
           else
             echo "::error::NHD debt ledger update FAILED — discarding artifacts to keep data/nhd-backfill-debt.json consistent with the generated files."
           fi
