@@ -16,7 +16,30 @@ interface FixtureRow {
   doc: { id: string; name: string };
 }
 
-let fixtureRows: FixtureRow[] = [];
+/** Ids the search query returns, in the DB's rank order. */
+let rankedIds: string[] = [];
+
+/** Rows the by-id fallback query returns (facilities newer than the cache). */
+let byIdRows: FixtureRow[] = [];
+
+/** What the mocked `loadFacilities()` resolves to (the cached snapshot). */
+let cachedFacilities: { id: string; name: string }[] = [];
+let loadFacilitiesError: Error | null = null;
+const loadFacilitiesMock = vi.fn(async () => {
+  if (loadFacilitiesError) throw loadFacilitiesError;
+  return cachedFacilities;
+});
+
+vi.mock("@/lib/data", () => ({
+  loadFacilities: () => loadFacilitiesMock(),
+}));
+
+// Set when the by-id fallback query should reject.
+let byIdError: Error | null = null;
+/** Projection + bound ids of the by-id fallback query, when it ran. */
+let capturedByIdSelectArg: unknown;
+let capturedByIdWhere: unknown;
+let selectCalls = 0;
 
 // When set, the mock query rejects instead of resolving — stands in for a live
 // Neon failure (unreachable / over quota) so the degrade path can be exercised.
@@ -54,20 +77,31 @@ function flattenSqlChunks(clause: unknown): string {
 }
 
 // A minimal drizzle-query-builder stand-in, same shape as the mock in
-// lib/data.getRecentActivity.db.test.ts: `.select().from().where().orderBy()`
-// resolves to the fixture rows.
+// lib/data.getRecentActivity.db.test.ts. The search query is
+// `.select().from().where().orderBy()` (resolves to id rows); the by-id
+// fallback is `.select().from().where()` awaited directly, so `.where()`
+// returns a thenable that also carries `.orderBy()`.
 function makeMockDb() {
   return {
     select: (arg: unknown) => {
-      capturedSelectArg = arg;
+      selectCalls++;
+      const isIdOnly = Object.keys(arg as object).join() === "id";
+      if (!isIdOnly) capturedByIdSelectArg = arg;
+      else capturedSelectArg = arg;
       return {
         from: () => ({
           where: (whereClause: unknown) => {
+            if (!isIdOnly) {
+              capturedByIdWhere = whereClause;
+              return byIdError ? Promise.reject(byIdError) : Promise.resolve(byIdRows);
+            }
             capturedWhereSql = flattenSqlChunks(whereClause);
             return {
               orderBy: (orderByClause: unknown) => {
                 capturedOrderBySql = flattenSqlChunks(orderByClause);
-                return queryError ? Promise.reject(queryError) : Promise.resolve(fixtureRows);
+                return queryError
+                  ? Promise.reject(queryError)
+                  : Promise.resolve(rankedIds.map((id) => ({ id })));
               },
             };
           },
@@ -169,9 +203,17 @@ describe("searchFacilitiesDb", () => {
     capturedOrderBySql = undefined;
     capturedSelectArg = undefined;
     queryError = null;
-    fixtureRows = [
-      { id: "facility-a", doc: { id: "facility-a", name: "Facility A" } },
-      { id: "facility-b", doc: { id: "facility-b", name: "Facility B" } },
+    byIdError = null;
+    loadFacilitiesError = null;
+    capturedByIdSelectArg = undefined;
+    capturedByIdWhere = undefined;
+    selectCalls = 0;
+    loadFacilitiesMock.mockClear();
+    rankedIds = ["facility-a", "facility-b"];
+    byIdRows = [];
+    cachedFacilities = [
+      { id: "facility-a", name: "Facility A" },
+      { id: "facility-b", name: "Facility B" },
     ];
   });
 
@@ -258,26 +300,98 @@ describe("searchFacilitiesDb", () => {
     ]);
   });
 
-  it("parses each returned row's doc column back to a Facility via rowToFacility", async () => {
+  it("resolves ids to records from the cached facility set, with no second query", async () => {
     const result = await searchFacilitiesDb("hyperscale campus");
     expect(result.degraded).toBe(false);
     expect(result.facilities).toEqual([
       { id: "facility-a", name: "Facility A" },
       { id: "facility-b", name: "Facility B" },
     ]);
+    expect(selectCalls).toBe(1);
+    expect(capturedByIdSelectArg).toBeUndefined();
   });
 
-  it("selects only the doc column — never SELECT *", async () => {
-    // The one assertion in this file that inspects the actual `.select(...)`
-    // argument: every other test here would keep passing even if this
-    // regressed back to a full-row select, since the fixture rows already
-    // carry only `doc`. See lib/data.select-projection.test.ts for the
-    // sibling guards on the three lib/data.ts read paths.
+  it("selects only the id column — never the doc, never SELECT *", async () => {
+    // The egress guard: selecting `doc` here is what pulled ~5 MB for a
+    // one-letter query and overflowed unstable_cache's 2 MB entry limit.
     await searchFacilitiesDb("hyperscale");
     expect(capturedSelectArg).toBeTypeOf("object");
     const projection = capturedSelectArg as Record<string, { name?: unknown }>;
-    expect(Object.keys(projection)).toEqual(["doc"]);
-    expect(projection.doc?.name).toBe("doc");
+    expect(Object.keys(projection)).toEqual(["id"]);
+    expect(projection.id?.name).toBe("id");
+  });
+
+  it("preserves the DB rank order, not the cached snapshot's order", async () => {
+    rankedIds = ["facility-b", "facility-a"];
+    const result = await searchFacilitiesDb("hyperscale");
+    expect(result.facilities.map((f) => f.id)).toEqual(["facility-b", "facility-a"]);
+  });
+
+  it("fetches ids missing from the cache in one by-id query and keeps rank order", async () => {
+    rankedIds = ["facility-new", "facility-a", "facility-newer"];
+    byIdRows = [
+      { id: "facility-newer", doc: { id: "facility-newer", name: "Newer" } },
+      { id: "facility-new", doc: { id: "facility-new", name: "New" } },
+    ];
+    const result = await searchFacilitiesDb("hyperscale");
+
+    expect(result.facilities.map((f) => f.id)).toEqual(["facility-new", "facility-a", "facility-newer"]);
+    expect(selectCalls).toBe(2);
+    expect(Object.keys(capturedByIdSelectArg as object)).toEqual(["id", "doc"]);
+    // Only the missing ids are bound — facility-a came from the cache.
+    const bound = JSON.stringify((capturedByIdWhere as { queryChunks: unknown[] }).queryChunks, (k, v) =>
+      k === "table" || k === "columns" ? undefined : v
+    );
+    expect(bound).toContain("facility-new");
+    expect(bound).toContain("facility-newer");
+    expect(bound).not.toContain("facility-a\"");
+  });
+
+  it("resolves only the first `limit` ids, fetching just those from the DB", async () => {
+    rankedIds = ["facility-new1", "facility-new2"];
+    byIdRows = [{ id: "facility-new1", doc: { id: "facility-new1", name: "New 1" } }];
+    const result = await searchFacilitiesDb("hyperscale", { limit: 1 });
+
+    expect(result.facilities.map((f) => f.id)).toEqual(["facility-new1"]);
+    const bound = JSON.stringify((capturedByIdWhere as { queryChunks: unknown[] }).queryChunks, (k, v) =>
+      k === "table" || k === "columns" ? undefined : v
+    );
+    expect(bound).toContain("facility-new1");
+    expect(bound).not.toContain("facility-new2");
+  });
+
+  it("omits an id found in neither the cache nor the by-id fetch", async () => {
+    rankedIds = ["facility-a", "facility-ghost", "facility-b"];
+    byIdRows = [];
+    const result = await searchFacilitiesDb("hyperscale");
+    expect(result.facilities.map((f) => f.id)).toEqual(["facility-a", "facility-b"]);
+    expect(result.degraded).toBe(false);
+  });
+
+  it("does not load the facility set when the search matches nothing", async () => {
+    rankedIds = [];
+    const result = await searchFacilitiesDb("zzzz");
+    expect(result).toEqual({ facilities: [], degraded: false });
+    expect(loadFacilitiesMock).not.toHaveBeenCalled();
+  });
+
+  it("degrades with a redacted sqlstate when loadFacilities rejects", async () => {
+    loadFacilitiesError = Object.assign(new Error("boom"), { code: "57P01" });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = await searchFacilitiesDb("hyperscale");
+    expect(result).toEqual({ facilities: [], degraded: true });
+    expect(warn.mock.calls.flat().map(String).join(" ")).toContain("sqlstate: 57P01");
+    warn.mockRestore();
+  });
+
+  it("degrades when the by-id fetch rejects", async () => {
+    rankedIds = ["facility-new"];
+    byIdError = Object.assign(new Error("by-id failed"), { code: "53300" });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = await searchFacilitiesDb("hyperscale");
+    expect(result).toEqual({ facilities: [], degraded: true });
+    expect(warn.mock.calls.flat().map(String).join(" ")).toContain("sqlstate: 53300");
+    warn.mockRestore();
   });
 
   it("builds a WHERE clause referencing to_tsquery and search_vector", async () => {

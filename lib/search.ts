@@ -46,6 +46,12 @@ export type FacilitySearchHit = Pick<Facility, "id" | "name" | "operator"> & {
     Partial<Pick<Facility["location"], "city" | "county" | "street">>;
 };
 
+/** `/api/search?shape=palette` answers nothing for a trimmed query shorter than this. */
+export const PALETTE_MIN_QUERY_LEN = 2;
+
+/** `/api/search?shape=palette` returns at most this many hits (the palette shows 7). */
+export const PALETTE_MAX_RESULTS = 25;
+
 /** Projects a Facility onto a FacilitySearchHit. Always builds a NEW object
  * (facility arrays are shared across requests) and omits absent optionals. */
 export function toFacilitySearchHit(f: Facility): FacilitySearchHit {

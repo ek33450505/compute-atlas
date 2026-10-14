@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { inArray, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 import type { Facility } from "@/lib/schema";
@@ -6,6 +6,7 @@ import { getDb, hasDatabaseUrl } from "@/lib/db/client";
 import { facilitiesTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 import { redactedErrorCode } from "@/lib/db-error";
+import { loadFacilities } from "@/lib/data";
 
 /** Hard cap on search query length, applied before the query reaches Postgres or a cache key. */
 export const MAX_SEARCH_QUERY_LEN = 200;
@@ -56,32 +57,70 @@ export function buildTsQuery(normalized: string): string | null {
  * `SiteHeader` passes only operator + state entries to the client (see
  * lib/search-index.ts), and facilities come from `/api/search` → here.
  *
- * Results parse the `doc` jsonb column back to `Facility` via the same
- * `rowToFacility` used by every other DB read path in lib/data.ts — no
- * independent re-validation against the Facility Zod schema, consistent
- * with the rest of the DB read paths. `normalized` is expected already
- * trimmed/lowercased/length-capped by `searchFacilitiesDb` below.
+ * Returns matching facility IDS only, in rank order. The full `doc` jsonb used
+ * to be selected here with no LIMIT: a one-letter query pulled ~5 MB from Neon
+ * on every request, and that result exceeded `unstable_cache`'s 2 MB entry
+ * limit, so the cache write was silently skipped and each repeat re-read Neon.
+ * Ids are tiny, so the cached entry always fits; `searchFacilitiesDb` resolves
+ * them to records from the already-cached facility set. `search_vector` is
+ * still valid to filter/ORDER BY although it isn't projected. `normalized` is
+ * expected already trimmed/lowercased/length-capped by `searchFacilitiesDb`.
  */
-async function searchFacilitiesDbUncached(normalized: string): Promise<Facility[]> {
+async function searchFacilitiesDbUncached(normalized: string): Promise<string[]> {
   const tsQuery = buildTsQuery(normalized);
   if (!tsQuery) {
     return [];
   }
 
   const db = getDb();
-  // `.select({ doc: ... })` projects out only the jsonb doc — `search_vector`
-  // itself (the ~24% of a full row's bytes discarded by rowToFacility below)
-  // is still valid to filter/ORDER BY here even though it's not projected:
-  // Postgres can WHERE/ORDER BY a column that isn't in the SELECT list.
   const rows = await db
-    .select({ doc: facilitiesTable.doc })
+    .select({ id: facilitiesTable.id })
     .from(facilitiesTable)
     .where(sql`${facilitiesTable.searchVector} @@ to_tsquery('english', ${tsQuery})`)
     .orderBy(
       sql`ts_rank(${facilitiesTable.searchVector}, to_tsquery('english', ${tsQuery})) DESC`
     );
 
-  return rows.map(rowToFacility);
+  return rows.map((row) => row.id);
+}
+
+/**
+ * Resolves ranked ids to `Facility` records, preserving rank order. Records
+ * come from `loadFacilities()` (24h Data Cache, tag "facilities") via a
+ * read-only Map; the shared array is never mutated. Ids absent from it (a
+ * facility newer than the cached snapshot) are fetched in ONE by-id query and
+ * parsed with `rowToFacility`. An id found nowhere is omitted.
+ *
+ * Trade-off: a doc updated in place by a single approval is served from the
+ * Data Cache until a "facilities" tag bust (db:sync, approval-queue drain) or
+ * its 24h timer; the old full-doc path was at most 600s stale.
+ *
+ * Outage behaviour, accepted deliberately: during a Neon outage
+ * `loadFacilities()` falls back to the JSON snapshot (withJsonFallback) rather
+ * than throwing, so if the id list is still warm in `unstable_cache` the route
+ * returns snapshot docs as a normal, CDN-cacheable result, not `degraded: true`.
+ * It is the same fallback every page uses, and real results beat an empty
+ * list. If the id query itself fails, the search still degrades as before.
+ */
+async function resolveFacilities(ids: string[]): Promise<Facility[]> {
+  if (ids.length === 0) return [];
+
+  const byId = new Map<string, Facility>();
+  for (const f of await loadFacilities()) byId.set(f.id, f);
+
+  const missing = ids.filter((id) => !byId.has(id));
+  if (missing.length > 0) {
+    const rows = await getDb()
+      .select({ id: facilitiesTable.id, doc: facilitiesTable.doc })
+      .from(facilitiesTable)
+      .where(inArray(facilitiesTable.id, missing));
+    for (const row of rows) byId.set(row.id, rowToFacility(row));
+  }
+
+  return ids.flatMap((id) => {
+    const f = byId.get(id);
+    return f ? [f] : [];
+  });
 }
 
 /**
@@ -132,7 +171,10 @@ export interface FacilitySearchResult {
   degraded: boolean;
 }
 
-export async function searchFacilitiesDb(query: string): Promise<FacilitySearchResult> {
+export async function searchFacilitiesDb(
+  query: string,
+  opts?: { limit?: number }
+): Promise<FacilitySearchResult> {
   const trimmed = query.trim();
   if (!trimmed || !hasDatabaseUrl()) {
     return { facilities: [], degraded: false };
@@ -152,12 +194,17 @@ export async function searchFacilitiesDb(query: string): Promise<FacilitySearchR
   }
 
   try {
-    const facilities = await (process.env.VITEST
+    const ids = await (process.env.VITEST
       ? searchFacilitiesDbUncached(normalized)
-      : unstable_cache(searchFacilitiesDbUncached, ["api-search", normalized], {
+      : unstable_cache(searchFacilitiesDbUncached, ["api-search-ids", normalized], {
           revalidate: 600,
           tags: ["facilities"],
         })(normalized));
+    // Sliced AFTER the cache so one id-list entry serves every caller; only
+    // the first `limit` ids are resolved to records.
+    const facilities = await resolveFacilities(
+      opts?.limit === undefined ? ids : ids.slice(0, opts.limit)
+    );
     return { facilities, degraded: false };
   } catch (err) {
     // Visible to an operator in the logs (matching `getRecentActivity`), but
