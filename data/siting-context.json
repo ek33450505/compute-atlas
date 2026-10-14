@@ -499,12 +499,30 @@
     }
   },
   "aaim-data-centers-hutchinson-mn": {
+    "nearestWater": {
+      "name": "South Fork Crow River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
     }
   },
   "aaim-data-centers-mountain-lake-mn": {
+    "nearestWater": {
+      "name": "Mountain Lake",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -2416,6 +2434,15 @@
     }
   },
   "appaloosa-solar-1-iron-county-ut": {
+    "nearestWater": {
+      "name": "Johnson Creek",
+      "kind": "river",
+      "distanceMi": 3.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -3015,12 +3042,30 @@
     }
   },
   "ark-data-centers-duluth-n-6th-ave-mn": {
+    "nearestWater": {
+      "name": "Lake Superior",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
     }
   },
   "ark-data-centers-duluth-technology-drive-mn": {
+    "nearestWater": {
+      "name": "Chester Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -5017,6 +5062,15 @@
     }
   },
   "beltline-meramec-valley-technology-park-pacific-mo": {
+    "nearestWater": {
+      "name": "Winch Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -10742,6 +10796,15 @@
     }
   },
   "cove-mountain-solar-2-iron-county-ut": {
+    "nearestWater": {
+      "name": "Meadow Valley Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -10900,6 +10963,15 @@
     }
   },
   "crg-project-cumulus-st-charles-mo": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11023,6 +11095,15 @@
     }
   },
   "crusoe-callaway-county-kingdom-city-mo": {
+    "nearestWater": {
+      "name": "McKinney Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -13338,6 +13419,15 @@
     }
   },
   "dcpc-mona-juab-county-ut": {
+    "nearestWater": {
+      "name": "Mona Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -16516,6 +16606,15 @@
     }
   },
   "edged-bluffdale-ut": {
+    "nearestWater": {
+      "name": "Jordan River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -16628,6 +16727,15 @@
     }
   },
   "edged-kansas-city-mo": {
+    "nearestWater": {
+      "name": "Shoal Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -20273,6 +20381,15 @@
     }
   },
   "foristell-i70-annexation-data-center-site-mo": {
+    "nearestWater": {
+      "name": "Cloverleaf Farm Lake",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -20965,6 +21082,15 @@
     }
   },
   "geronimo-jasper-county-powered-data-park-mo": {
+    "nearestWater": {
+      "name": "Spring River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 11.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -22477,6 +22603,15 @@
     }
   },
   "graphite-solar-wellington-ut": {
+    "nearestWater": {
+      "name": "Coal Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 14.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -23761,6 +23896,15 @@
     }
   },
   "horseshoe-solar-grantsville-ut": {
+    "nearestWater": {
+      "name": "Delle Springs",
+      "kind": "river",
+      "distanceMi": 3.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 275,
+      "distanceMi": 26.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -24748,6 +24892,15 @@
     }
   },
   "iron-mountain-kcm-1-kansas-city-mo": {
+    "nearestWater": {
+      "name": "Blue River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -31153,6 +31306,15 @@
     }
   },
   "next-revolution-emerson-campus-ferguson-mo": {
+    "nearestWater": {
+      "name": "Maline Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -32011,6 +32173,15 @@
     }
   },
   "nsa-utah-data-center-bluffdale-ut": {
+    "nearestWater": {
+      "name": "Jordan River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -37497,6 +37668,15 @@
     }
   },
   "rocket-solar-corinne-ut": {
+    "nearestWater": {
+      "name": "Blue Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 13.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -39466,6 +39646,15 @@
     }
   },
   "setsquare-nebo-north-mona-juab-county-ut": {
+    "nearestWater": {
+      "name": "Mona Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -41483,6 +41672,15 @@
     }
   },
   "summit-group-holdings-dog-valley-juab-county-ut": {
+    "nearestWater": {
+      "name": "West Creek",
+      "kind": "river",
+      "distanceMi": 4.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -43833,6 +44031,15 @@
     }
   },
   "tierpoint-st-louis-locust-mo": {
+    "nearestWater": {
+      "name": "Compton Hill Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -43843,6 +44050,15 @@
     }
   },
   "tierpoint-st-louis-millpark-mo": {
+    "nearestWater": {
+      "name": "Deer Creek",
+      "kind": "river",
+      "distanceMi": 2.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44076,6 +44292,15 @@
     }
   },
   "tpc-payson-ut": {
+    "nearestWater": {
+      "name": "Peteetneet Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -44162,6 +44387,15 @@
     }
   },
   "tract-cannon-falls-technology-park-mn": {
+    "nearestWater": {
+      "name": "Little Cannon River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44343,6 +44577,15 @@
     }
   },
   "tract-rosemount-technology-park-mn": {
+    "nearestWater": {
+      "name": "Pool 2",
+      "kind": "lake",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44882,6 +45125,15 @@
     }
   },
   "university-of-utah-downtown-data-center-salt-lake-city-ut": {
+    "nearestWater": {
+      "name": "Jordan River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -45157,6 +45409,15 @@
     }
   },
   "valar-atomics-project-beehive-price-ut": {
+    "nearestWater": {
+      "name": "Price River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -46704,6 +46965,15 @@
     }
   },
   "wildwood-ranch-joplin-mo": {
+    "nearestWater": {
+      "name": "Short Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
