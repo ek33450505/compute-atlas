@@ -103,6 +103,35 @@ export function HeroPlate({ className }: HeroPlateProps) {
       className={cn("h-full w-full", className)}
     >
       {/*
+       * Faint Census linework (state borders + coast/national border), drawn
+       * FIRST so it sits beneath every mark. Decorative: aria-hidden, and the
+       * plate's accessible name above is unchanged. `non-scaling-stroke` keeps
+       * the lines hairline at any display width; the opacities keep them a
+       * backdrop for the dots, not competition. Same plate coordinates as the
+       * marks, so the two align by construction.
+       */}
+      <g
+        data-plate-outlines=""
+        aria-hidden="true"
+        fill="none"
+        stroke="var(--foreground)"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      >
+        <path
+          d={HERO_PLATE.outlines.borders}
+          strokeOpacity={0.2}
+          strokeWidth={0.75}
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
+          d={HERO_PLATE.outlines.nation}
+          strokeOpacity={0.4}
+          strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
+        />
+      </g>
+      {/*
        * Painted in STATUS_ORDER, so later statuses overdraw earlier ones
        * wherever two different statuses land on the same mark (122 such
        * cross-status overplots in the current snapshot). Deterministic rather

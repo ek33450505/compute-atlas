@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { HeroPlate } from "./hero-plate";
 import { HERO_PLATE } from "./hero-plate-paths";
+import { OUTLINE_BYTE_BUDGET } from "../../scripts/build-hero-plate.mjs";
 import { STATUS_ORDER, STATUS_META } from "@/lib/status";
 import { isTerritoryCode, stateNameFromCode } from "@/lib/us-states";
 
@@ -30,7 +31,7 @@ describe("HeroPlate", () => {
     // all still there.
     it("renders one path per status, each drawable: fill none, round linecap, non-zero stroke width", () => {
       const { container } = renderPlate();
-      const paths = Array.from(container.querySelectorAll("path"));
+      const paths = Array.from(container.querySelectorAll("svg > path"));
 
       expect(paths).toHaveLength(STATUS_ORDER.length);
 
@@ -45,7 +46,7 @@ describe("HeroPlate", () => {
 
     it("draws each status path with that status's own data and theme colour token", () => {
       const { container } = renderPlate();
-      const paths = Array.from(container.querySelectorAll("path"));
+      const paths = Array.from(container.querySelectorAll("svg > path"));
 
       STATUS_ORDER.forEach((status, i) => {
         expect(paths[i].getAttribute("d")).toBe(HERO_PLATE.paths[status]);
@@ -64,6 +65,32 @@ describe("HeroPlate", () => {
       expect(Object.keys(HERO_PLATE.paths).sort()).toEqual(
         [...STATUS_ORDER].sort()
       );
+    });
+  });
+
+  describe("outlines", () => {
+    it("draws non-empty state-border and nation paths beneath the marks, decorative and hairline", () => {
+      const { svg } = renderPlate();
+      const group = svg.querySelector("g[data-plate-outlines]");
+      expect(group).not.toBeNull();
+      expect(group).toHaveAttribute("aria-hidden", "true");
+      expect(group).toHaveAttribute("fill", "none");
+      const [borders, nation] = Array.from(group!.querySelectorAll("path"));
+      expect(borders.getAttribute("d")).toBe(HERO_PLATE.outlines.borders);
+      expect(nation.getAttribute("d")).toBe(HERO_PLATE.outlines.nation);
+      expect(HERO_PLATE.outlines.borders.length).toBeGreaterThan(0);
+      expect(HERO_PLATE.outlines.nation.length).toBeGreaterThan(0);
+      for (const p of [borders, nation]) {
+        expect(p.getAttribute("vector-effect")).toBe("non-scaling-stroke");
+        expect(Number(p.getAttribute("stroke-opacity"))).toBeLessThan(0.5);
+      }
+      // Painted first, so beneath every mark.
+      expect(svg.firstElementChild).toBe(group);
+    });
+
+    it("stays inside the byte budget the homepage HTML can afford", () => {
+      const bytes = HERO_PLATE.outlines.nation.length + HERO_PLATE.outlines.borders.length;
+      expect(bytes).toBeLessThan(OUTLINE_BYTE_BUDGET);
     });
   });
 

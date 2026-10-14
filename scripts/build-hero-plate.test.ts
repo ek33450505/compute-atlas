@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 
 import facilitiesRaw from "@/data/facilities.json";
@@ -9,6 +12,11 @@ import {
   buildPlateData,
   renderModule,
   assertUsableAsOf,
+  buildReadmeSvg,
+  buildOutlines,
+  OUTLINE_BYTE_BUDGET,
+  README_PLATE_HEIGHT,
+  STATUS_STYLE,
   OMITTED_JURISDICTIONS,
   STATUS_ORDER,
   WIDTH,
@@ -22,7 +30,12 @@ interface PlateFacility {
   location: { lat: number; lon: number; state: string };
 }
 
+const HERO_HERE = dirname(fileURLToPath(import.meta.url));
+const HERE = dirname(fileURLToPath(import.meta.url));
 const facilities = facilitiesRaw as unknown as PlateFacility[];
+const usTopology = JSON.parse(
+  readFileSync(resolve(HERE, "../node_modules/us-atlas/states-10m.json"), "utf8"),
+);
 
 /**
  * Anchors verified against d3-geo's albersUsa at the reference framing
@@ -363,6 +376,15 @@ describe("hero-plate-paths.ts — the committed artifact is current", () => {
     expect(HERO_PLATE.paths).toEqual(data.paths);
   });
 
+  it("docs/media/map.svg is the SVG the generator produces from the current data", () => {
+    // Same failure mode as the HERO_PLATE tests above: a wave that skips
+    // `npm run build:heroplate` leaves a README map that disagrees with the
+    // dataset it claims to draw.
+    const committed = readFileSync(resolve(HERO_HERE, "../docs/media/map.svg"), "utf8");
+    const asOf = (metaRaw as { asOf: string }).asOf;
+    expect(buildReadmeSvg({ ...data, outlines: HERO_PLATE.outlines }, asOf, WIDTH, HEIGHT)).toBe(committed);
+  });
+
   it("matches the generator's counts and reconciliation", () => {
     expect({
       counts: { ...HERO_PLATE.counts },
@@ -468,5 +490,205 @@ describe("assertUsableAsOf — a corrupt meta file must not emit a broken module
 
   it("names the offending value in the error, so the fix is obvious", () => {
     expect(() => assertUsableAsOf("2026-09-15")).toThrow(/"2026-09-15"/);
+  });
+});
+
+describe("buildReadmeSvg — standalone README map", () => {
+  const asOf = "2026-10-13T18:16:14.189Z";
+  const data = { ...buildPlateData(facilities, WIDTH, HEIGHT), outlines: HERO_PLATE.outlines };
+  const svg = buildReadmeSvg(data, asOf, WIDTH, HEIGHT);
+
+  it("is a well-formed SVG with role=img, a title and a desc", () => {
+    expect(svg.startsWith("<svg ")).toBe(true);
+    expect(svg.trimEnd().endsWith("</svg>")).toBe(true);
+    expect(svg).toMatch(/<svg[^>]* role="img"/);
+    expect(svg).toMatch(/<title>[^<]+<\/title>/);
+    expect(svg).toMatch(/<desc>[^<]+<\/desc>/);
+    const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
+    expect(doc.getElementsByTagName("parsererror")).toHaveLength(0);
+    expect(doc.documentElement.nodeName).toBe("svg");
+  });
+
+  it("draws one path per status, with its colour, round caps and a stroke width", () => {
+    // The last STATUS_ORDER.length paths are the marks; outlines come first.
+    const pathTags = (svg.match(/<path [^>]*>/g) ?? []).slice(-STATUS_ORDER.length);
+    expect(pathTags).toHaveLength(STATUS_ORDER.length);
+    STATUS_ORDER.forEach((status: string, i: number) => {
+      const tag = pathTags[i];
+      expect(tag).toContain(`d="${data.paths[status]}"`);
+      expect(tag).toContain(`stroke="${STATUS_STYLE[status as keyof typeof STATUS_STYLE].color}"`);
+      expect(tag).toContain('stroke-linecap="round"');
+      expect(tag).toMatch(/stroke-width="[1-9]\d*"/);
+      expect(tag).toContain('fill="none"');
+    });
+  });
+
+  it("keeps STATUS_STYLE colours in step with app/globals.css tokens", () => {
+    const css = readFileSync(resolve(HERE, "../app/globals.css"), "utf8");
+    for (const status of STATUS_ORDER) {
+      const token = `--status-${status.replace(/_/g, "-")}`;
+      const m = css.match(new RegExp(`${token}:\\s*(#[0-9A-Fa-f]{6})`));
+      expect({ status, hex: m?.[1].toUpperCase() }).toEqual({
+        status,
+        hex: STATUS_STYLE[status as keyof typeof STATUS_STYLE].color.toUpperCase(),
+      });
+    }
+  });
+
+  it("throws on a malformed or injecting asOf instead of interpolating it", () => {
+    for (const bad of ['2026-10-13"><script>', "2026-10-13", "", undefined, '</text><script>x</script>T00:00:00Z']) {
+      expect(() => buildReadmeSvg(data, bad as unknown as string)).toThrow(/no usable `asOf`/);
+    }
+  });
+
+  it("draws the outlines beneath the marks, and crops no mark or outline", () => {
+    const first = svg.indexOf(`d="${data.outlines.borders}"`);
+    expect(first).toBeGreaterThan(-1);
+    expect(first).toBeLessThan(svg.indexOf(`d="${data.paths.operational}"`));
+    const ys = [...data.paths.operational.matchAll(/M\d+ (\d+)h/g)].map((m) => Number(m[1]));
+    expect(Math.max(...ys)).toBeLessThan(README_PLATE_HEIGHT - 7);
+    for (const pts of [outlinePoints(HERO_PLATE.outlines.nation), outlinePoints(HERO_PLATE.outlines.borders)]) {
+      expect(Math.max(...pts.map((p) => p[1]))).toBeLessThan(README_PLATE_HEIGHT);
+    }
+  });
+
+  it("legend names every status", () => {
+    for (const status of STATUS_ORDER) {
+      expect(svg).toContain(`>${STATUS_STYLE[status as keyof typeof STATUS_STYLE].label}</text>`);
+    }
+  });
+
+  it("has nothing GitHub would strip or that needs the network", () => {
+    expect(svg).not.toMatch(/<script|foreignObject|var\(--|@import|<image|href=/i);
+  });
+
+  it("is deterministic", () => {
+    expect(buildReadmeSvg(data, asOf, WIDTH, HEIGHT)).toBe(svg);
+  });
+
+  it("states the dataset date, and only that date", () => {
+    expect(svg).toContain("2026-10-13");
+    expect(svg.match(/\d{4}-\d{2}-\d{2}/g)).toEqual(["2026-10-13", "2026-10-13"]);
+    expect(buildReadmeSvg(data, "2026-01-02T00:00:00.000Z")).toContain("2026-01-02");
+  });
+
+  it("prints no marks-count as a facility count", () => {
+    const text = (svg.match(/<text[^>]*>([^<]*)<\/text>/g) ?? []).join(" ");
+    for (const n of [data.plotted, data.total, data.total - data.omitted, ...Object.values(data.counts) as number[]]) {
+      expect(text).not.toMatch(new RegExp(`(^|\\D)${n}(\\D|$)`));
+    }
+    expect(text).not.toMatch(/facilit/i);
+  });
+
+  it("stays small", () => {
+    expect(Buffer.byteLength(svg)).toBeLessThan(60_000);
+  });
+});
+
+/** Decode `M x y l dx dy ...` path data (as emitted by buildOutlines) to absolute points. */
+function outlinePoints(d: string): Array<[number, number]> {
+  const pts: Array<[number, number]> = [];
+  for (const seg of d.split("M").filter(Boolean)) {
+    const [start, rel] = seg.split("l");
+    const [sx, sy] = start.trim().split(/\s+/).map(Number);
+    let x = sx;
+    let y = sy;
+    pts.push([x, y]);
+    const nums = (rel.match(/-?\d+/g) ?? []).map(Number);
+    for (let i = 0; i < nums.length; i += 2) {
+      x += nums[i];
+      y += nums[i + 1];
+      pts.push([x, y]);
+    }
+  }
+  return pts;
+}
+
+describe("buildOutlines — faint state linework", () => {
+  const outlines = buildOutlines(usTopology, WIDTH, HEIGHT);
+  const project = makeAlbersUsa(WIDTH, HEIGHT);
+  const nationPts = outlinePoints(outlines.nation);
+  const bbox = (pts: Array<[number, number]>) => ({
+    x0: Math.min(...pts.map((p) => p[0])),
+    x1: Math.max(...pts.map((p) => p[0])),
+    y0: Math.min(...pts.map((p) => p[1])),
+    y1: Math.max(...pts.map((p) => p[1])),
+  });
+
+  it("emits non-empty nation and border paths of the documented shape", () => {
+    expect(outlines.nation.length).toBeGreaterThan(1000);
+    expect(outlines.borders.length).toBeGreaterThan(1000);
+    for (const d of [outlines.nation, outlines.borders]) {
+      expect(/^(?:M\d+ \d+l(?:-?\d+(?: |(?=-))?)+)+$/.test(d)).toBe(true);
+    }
+  });
+
+  it("keeps every point inside the viewBox", () => {
+    for (const d of [outlines.nation, outlines.borders]) {
+      for (const [x, y] of outlinePoints(d)) {
+        expect(x).toBeGreaterThanOrEqual(0);
+        expect(x).toBeLessThanOrEqual(WIDTH);
+        expect(y).toBeGreaterThanOrEqual(0);
+        expect(y).toBeLessThanOrEqual(HEIGHT);
+      }
+    }
+  });
+
+  it("is deterministic and matches the committed artifact", () => {
+    expect(buildOutlines(usTopology, WIDTH, HEIGHT)).toEqual(outlines);
+    expect(HERO_PLATE.outlines).toEqual(outlines);
+  });
+
+  it("stays within the homepage HTML byte budget", () => {
+    expect(outlines.nation.length + outlines.borders.length).toBeLessThan(OUTLINE_BYTE_BUDGET);
+  });
+
+  it("aligns with the dots: CONUS cities fall inside the nation outline's bbox", () => {
+    // The CONUS nation outline spans the mainland only; AK/HI are separate insets.
+    const conus = bbox(nationPts.filter(([x, y]) => !(x < 430 && y > 580) && !(x < 720 && y > 780)));
+    for (const [, lon, lat] of ANCHORS) {
+      const [x, y] = project(lon, lat, "XX") as [number, number];
+      expect(x).toBeGreaterThan(conus.x0);
+      expect(x).toBeLessThan(conus.x1);
+      expect(y).toBeGreaterThan(conus.y0);
+      expect(y).toBeLessThan(conus.y1);
+    }
+  });
+
+  it("traces the CONUS coast where the dots are projected (Key West, Quoddy Head)", () => {
+    // Vertex proximity, not a bbox: a 15-unit x-shift was mutation-checked to
+    // fail this while the bbox test above still passed.
+    for (const [lon, lat] of [[-81.78, 24.55], [-66.95, 44.82]]) {
+      const [x, y] = project(lon, lat, "XX") as [number, number];
+      expect(nationPts.some(([px, py]) => Math.hypot(px - x, py - y) < 3)).toBe(true);
+    }
+  });
+
+  it("projects the Aleutians (Attu, ~172.9E) into the AK inset instead of off-plate", () => {
+    // Positive longitudes are shifted by -360 for AK so the conic does not wrap.
+    const [x, y] = project(172.9 - 360, 52.9, "AK") as [number, number];
+    expect(x).toBeGreaterThan(0);
+    expect(x).toBeLessThan(150); // west of the mainland-Alaska reserve, still on the plate
+    expect(y).toBeGreaterThan(660);
+    expect(y).toBeLessThan(HEIGHT);
+    expect(nationPts.some(([px, py]) => Math.hypot(px - x, py - y) < 8)).toBe(true);
+  });
+
+  it("puts the Alaska inset's outline where Alaska facilities are projected", () => {
+    // Point Barrow, the northernmost point of the US: a coastline extreme that
+    // simplification keeps. A vertex within 5 units proves the outline went
+    // through the AK inset projection exactly as the dots do (a 15-unit shift
+    // was mutation-checked to fail this).
+    const [ax, ay] = project(-156.4789, 71.2906, "AK") as [number, number];
+    const near = nationPts.some(([x, y]) => Math.hypot(x - ax, y - ay) < 5);
+    expect(near).toBe(true);
+    // ...and nothing from the AK outline leaks into the CONUS interior at the same lat/lon.
+    const [cx, cy] = project(-149.9003, 61.2181, "XX") as [number, number];
+    expect(nationPts.some(([x, y]) => Math.hypot(x - cx, y - cy) < 3)).toBe(false);
+  });
+
+  it("puts the Hawaii outline at the Hawaii inset (Ka Lae, the southernmost point)", () => {
+    const [hx, hy] = project(-155.6816, 18.9111, "HI") as [number, number];
+    expect(nationPts.some(([x, y]) => Math.hypot(x - hx, y - hy) < 5)).toBe(true);
   });
 });

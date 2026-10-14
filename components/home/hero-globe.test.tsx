@@ -361,7 +361,7 @@ describe("HeroGlobe dynamic wrapper", () => {
     stubFetch(okPoints);
     const { container } = renderWrapper();
     expectPlateOnGraticule(container);
-    expect(container.querySelectorAll("svg[role='img'] path").length).toBe(
+    expect(container.querySelectorAll("svg[role='img'] > path").length).toBe(
       STATUS_ORDER.length
     );
     expect(screen.queryByTestId("mock-map")).not.toBeInTheDocument();
@@ -494,7 +494,10 @@ describe("HeroGlobeLoadingFrame", () => {
 
     const plate = container.querySelector('svg[role="img"]');
     expect(plate).toBeInTheDocument();
-    expect(plate?.querySelectorAll("path")).toHaveLength(STATUS_ORDER.length);
+    // Direct children only: the decorative outlines <g> holds two more paths.
+    expect(
+      Array.from(plate?.children ?? []).filter((el) => el.tagName === "path"),
+    ).toHaveLength(STATUS_ORDER.length);
 
     // Height discriminator: this frame matches the globe it is standing in for
     // (60vh), not the wrapper's own shorter mobile placeholder (40vh), so the
