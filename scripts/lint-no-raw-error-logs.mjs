@@ -53,12 +53,9 @@
  *     Next sanitizes server errors in production. If they ever moved to a
  *     `catch`, this gate would start flagging them, which is the right
  *     behaviour: that would be a new decision, not the same one.
- *   - The ~15 `main().catch((err) => { console.error(err); process.exit(1) })`
- *     fatal handlers under `scripts/**` are out of scope because the scan roots
- *     are `lib/` and `app/` only. Those are maintainer tooling run by the data
- *     owner against their own terminal. If `scripts/` is ever added to the
- *     roots, expect ~15 findings that are all acceptable and need a real
- *     suppression mechanism first.
+ *   - The `main().catch` fatal handlers under `scripts/**` now route through
+ *     `formatFatalError` (`lib/db-error.ts`), which redacts DB errors. `scripts/`
+ *     is still not a scan root: widening it needs a suppression mechanism first.
  *   - Test files (`*.test.ts` / `*.test.tsx`).
  *
  * DESTRUCTURING IS FOLLOWED, in the body. `catch (err) { const { message } =

@@ -24,6 +24,7 @@ import type { Facility } from "../../lib/schema";
 import type { SourceCheckResult, SourceHealthReport } from "./check-sources";
 import { loadFacilities } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
+import { formatFatalError } from "../../lib/db-error";
 
 /**
  * Latest statusHistory date, or lastUpdated if statusHistory is empty/absent.
@@ -194,7 +195,7 @@ async function main(): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

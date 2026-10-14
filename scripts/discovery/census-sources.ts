@@ -57,6 +57,7 @@ import path from "node:path";
 import { runWithConcurrency } from "./net-guard";
 import type { VerifyClaim, VerificationResult } from "./verify-source";
 import { isEntrypoint } from "../is-entrypoint";
+import { formatFatalError } from "../../lib/db-error";
 
 // --- types -----------------------------------------------------------------
 
@@ -1075,7 +1076,7 @@ async function main(): Promise<void> {
 const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

@@ -22,6 +22,7 @@ import { facilitiesTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { rowToFacility } from "../lib/db/serialize";
 import { isEntrypoint } from "./is-entrypoint";
+import { formatFatalError } from "../lib/db-error";
 
 /** Bumped only when the Zod `facilitySchema` shape changes in a breaking way — mirrors the API's `X-API-Version`. */
 const SCHEMA_VERSION = 1;
@@ -121,7 +122,7 @@ async function main() {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

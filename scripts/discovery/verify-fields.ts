@@ -250,6 +250,7 @@ import { findWaybackSnapshotUrl } from "./wayback";
 import { loadFacilities } from "./load-facilities";
 import { isNonDocumentSource } from "./non-document-source";
 import { isEntrypoint } from "../is-entrypoint";
+import { formatFatalError } from "../../lib/db-error";
 
 // Note on reuse: `buildUserPrompt` and `fieldJsonSchema` (also exported by
 // extract-fields.ts) are NOT imported here directly — this tool never calls
@@ -1298,7 +1299,7 @@ async function main(): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

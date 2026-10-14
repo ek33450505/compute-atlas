@@ -33,6 +33,7 @@ import { getDb } from "../lib/db/client";
 import { apiAccessGrantsTable, subscriptionsTable } from "../lib/db/schema";
 import { hashToken, isHashedToken } from "../lib/token-hash";
 import { isEntrypoint } from "./is-entrypoint";
+import { formatFatalError } from "../lib/db-error";
 
 export interface BackfillColumnOutcome {
   table: string;
@@ -193,7 +194,7 @@ async function main() {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

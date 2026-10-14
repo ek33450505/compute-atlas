@@ -75,6 +75,7 @@ import { tagsForFacility, isValidCacheTag, MAX_TAGS_PER_REQUEST } from "../lib/c
 import { notifySubscribersOfChanges } from "../lib/notify";
 import { redactedErrorCode } from "../lib/db-error";
 import { isEntrypoint } from "./is-entrypoint";
+import { formatFatalError } from "../lib/db-error";
 
 /**
  * `facility_history.source` for rows this tool writes — a new value alongside
@@ -785,7 +786,7 @@ async function main(): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

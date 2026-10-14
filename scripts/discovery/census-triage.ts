@@ -36,6 +36,7 @@ import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { runWithConcurrency } from "./net-guard";
 import { distinctiveEntityTokens } from "./verify-source";
 import { isEntrypoint } from "../is-entrypoint";
+import { formatFatalError } from "../../lib/db-error";
 
 // --- the token rule --------------------------------------------------------
 
@@ -654,7 +655,7 @@ async function main(): Promise<void> {
 const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }
