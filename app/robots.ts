@@ -26,15 +26,68 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 // own code via MetadataRoute.Robots' `other` field (added in Next 16.3.0).
 // Keys keep their casing and values pass through verbatim, and the entry is
 // scoped to the User-Agent block it sits on -- so it rides the "*" rule.
+//
+// POLICY (Ed, 2026-10-14; supersedes the 2026-09-27 posture "block TRAINING,
+// allow RETRIEVAL and SEARCH"): allow classic SEARCH engines (Googlebot,
+// Bingbot, Applebot, DuckDuckBot) and archives (archive.org_bot); block AI
+// training crawlers, AI retrieval / user-initiated agents, AI search indexers
+// and bulk dataset extractors. The motive is that people should use the data
+// through search rather than plunder the dataset wholesale. Cloudflare enforces
+// the same set at the edge (out of repo), with two known deltas: Applebot-Extended
+// is robots-only, and "Anchor Browser" is edge-only; this file is the source of truth and
+// must mirror it, because a UA blocked at the edge but allowed here makes a
+// compliant crawler read `Allow: /`, get a 403, and retry.
+//
+// Tokens below that were derived from a User-Agent string rather than
+// confirmed against vendor docs (unverified): Arquivo-web-crawler, Novellum,
+// ProRataInc, Reflectionbot, ShapBot, Shap-User, KorzyData, ExaSearchBot,
+// Amzn-SearchBot, Manus-User, MistralAI-User, DuckAssistBot, TikTokSpider.
+//
+// "Anchor Browser" is on the Cloudflare rule but deliberately not listed: it is
+// a browser-automation product, not a robots.txt product token.
 export const BLOCKED_AI_CRAWLERS = [
   "Amazonbot",
   "Applebot-Extended",
+  "Arquivo-web-crawler",
   "Bytespider",
   "CCBot",
   "ClaudeBot",
   "CloudflareBrowserRenderingCrawler",
+  "FacebookBot",
   "GPTBot",
   "meta-externalagent",
+  "Novellum",
+  "PetalBot",
+  "ProRataInc",
+  "TikTokSpider",
+  "Timpibot",
+] as const;
+
+// Retrieval / user-initiated fetchers and AI-search agents. Blocked since
+// 2026-10-14 (see POLICY above): a person asking an assistant to fetch the
+// site is still a way of taking the data without going through search.
+export const BLOCKED_AI_AGENTS = [
+  "ChatGPT-User",
+  "Claude-User",
+  "DuckAssistBot",
+  "Manus-User",
+  "meta-externalfetcher",
+  "MistralAI-User",
+  "OAI-SearchBot",
+  "Perplexity-User",
+] as const;
+
+// Bulk dataset extractors -- crawlers that exist to lift whole datasets or
+// sites into someone else's index. This is the AI-extractor subset of the
+// Cloudflare custom rule "Block bulk dataset extractors"; that rule's four SEO
+// UAs live in BLOCKED_SEO_CRAWLERS.
+export const BLOCKED_BULK_EXTRACTORS = [
+  "ExaSearchBot",
+  "Amzn-SearchBot",
+  "Reflectionbot",
+  "ShapBot",
+  "Shap-User",
+  "KorzyData",
 ] as const;
 
 // SEO-backlink resale crawlers -- a different category from
@@ -100,6 +153,10 @@ export default function robots(): MetadataRoute.Robots {
       // directive but not our User-Agent blocks, and it matches the CC BY 4.0
       // data licence's reuse-with-attribution terms.
       //
+      // OPEN POLICY QUESTION for Ed (not resolved here): use=reference means
+      // retrieval/citation is allowed, which conflicts with the 2026-10-14
+      // posture that blocks retrieval agents. The value is left unchanged.
+      //
       // OPEN QUESTION for the maintainer: it does not sit perfectly with the
       // Google-Extended exemption above. Content-Signal has no per-agent
       // form, so on the "*" rule it also tells Google-Extended ai-train=no --
@@ -132,6 +189,14 @@ export default function robots(): MetadataRoute.Robots {
       },
     },
     ...BLOCKED_AI_CRAWLERS.map((userAgent) => ({
+      userAgent,
+      disallow: "/",
+    })),
+    ...BLOCKED_AI_AGENTS.map((userAgent) => ({
+      userAgent,
+      disallow: "/",
+    })),
+    ...BLOCKED_BULK_EXTRACTORS.map((userAgent) => ({
       userAgent,
       disallow: "/",
     })),
