@@ -116,6 +116,7 @@ import { verifySource, type VerifyClaim } from "./verify-source";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
 import { isEntrypoint } from "../is-entrypoint";
+import { formatFatalError } from "../../lib/db-error";
 
 // ============================================================================
 // Extraction shape — grounded, never coordinates
@@ -670,7 +671,7 @@ async function main(): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

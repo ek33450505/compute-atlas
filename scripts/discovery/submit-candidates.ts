@@ -43,6 +43,7 @@ import { fetchPageText } from "./fetch-page-text";
 import { callOllama } from "./ollama-client";
 import { loadFacilities } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
+import { formatFatalError } from "../../lib/db-error";
 
 // --- environment -------------------------------------------------------------
 
@@ -1453,7 +1454,7 @@ export async function main(): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

@@ -28,6 +28,7 @@ import { getDb } from "../lib/db/client";
 import { redactedErrorCode } from "../lib/db-error";
 import { computeDocDiff } from "../lib/doc-diff";
 import { isEntrypoint } from "./is-entrypoint";
+import { formatFatalError } from "../lib/db-error";
 
 export interface BackfillResult {
   /** Facilities that had no history row and got a backfilled `create` row (0 for --dry-run). */
@@ -132,7 +133,7 @@ async function main() {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

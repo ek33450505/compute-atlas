@@ -32,6 +32,7 @@ import { docToRow } from "../lib/db/serialize";
 import { computeDocDiff } from "../lib/doc-diff";
 import { insertFacilityHistoryRow } from "../lib/facility-history";
 import { isEntrypoint } from "./is-entrypoint";
+import { formatFatalError } from "../lib/db-error";
 
 export interface SeedResult {
   /** Ids present in the JSON but absent from the DB — always inserted. */
@@ -183,7 +184,7 @@ async function main() {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }

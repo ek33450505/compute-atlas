@@ -42,6 +42,7 @@ import {
   subscriptionsTable,
 } from "../lib/db/schema";
 import { isEntrypoint } from "./is-entrypoint";
+import { formatFatalError } from "../lib/db-error";
 
 // --- retention windows -------------------------------------------------
 // Single source of truth (scripts/discovery/run.sh's nightly lane points
@@ -373,7 +374,7 @@ async function main() {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error(err);
+    console.error(formatFatalError(err));
     process.exit(1);
   });
 }
