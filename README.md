@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://www.compute-atlas.com"><img src="docs/media/banner.png" alt="Compute Atlas — every data center, crypto mine, and power plant built to feed them, mapped, sourced, and open" /></a>
+  <a href="https://www.compute-atlas.com"><img src="docs/media/banner.png" alt="Compute Atlas — data centers, crypto mines, and the power plants built to feed them, mapped, sourced, and open" /></a>
 </p>
 
 <p align="center">
@@ -45,7 +45,7 @@ these sites.
 
 **The map** — every tracked facility, filterable by status, operator, type, and capacity.
 
-[![Dot-density map of facility locations across the United States, with state outlines and Alaska and Hawaii insets, coloured by status](docs/media/map.svg)](https://www.compute-atlas.com/map)
+<a href="https://www.compute-atlas.com/map"><img src="docs/media/map.svg" width="85%" alt="Dot-density map of facility locations across the United States, with state outlines and Alaska and Hawaii insets, coloured by status" /></a>
 
 The plate above is generated from the dataset and coloured by status; co-located facilities
 of the same status are drawn as one dot. Guam, the Northern Mariana Islands, Puerto Rico,
