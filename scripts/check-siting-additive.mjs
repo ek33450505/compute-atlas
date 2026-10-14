@@ -74,6 +74,10 @@ const FACILITIES_REL_PATH = "data/facilities.json";
 const PRINT_LIMIT = 25;
 export const PREFERRED_BASELINE_REF = "origin/main";
 export const FALLBACK_BASELINE_REF = "HEAD";
+// Node's execFileSync defaults to a 1 MiB (1,048,576 byte) stdout buffer.
+// data/siting-context.json crossed that on 2026-10-14 (1,053,246 bytes) and
+// `git show` died with ENOBUFS, which the workflow read as "non-additive".
+export const GIT_SHOW_MAX_BUFFER = 256 * 1024 * 1024;
 
 // ---------------------------------------------------------------------------
 // Pure diff
@@ -182,6 +186,7 @@ export function readBaselineFromGit(repoRoot, relPath, ref = FALLBACK_BASELINE_R
     raw = execFileSync("git", ["show", `${ref}:${relPath}`], {
       cwd: repoRoot,
       encoding: "utf8",
+      maxBuffer: GIT_SHOW_MAX_BUFFER,
     });
   } catch (err) {
     // Exit 128 is git's "that path is not in <ref>" — the genuine first-run
