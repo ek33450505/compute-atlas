@@ -252,13 +252,34 @@ describe("diffSitingContext — pruned (orphan) vs removed (real loss)", () => {
 // ---------------------------------------------------------------------------
 
 describe("readBaselineFromGit", () => {
-  it("returns null when git exits 128 (path not found at HEAD — the legitimate first-run case)", () => {
+  it("returns null when git exits 128 AND ls-tree confirms the path is absent (first run)", () => {
     const err = Object.assign(new Error("fatal: path not in HEAD"), { status: 128 });
-    mockedExecFileSync.mockImplementation(() => {
+    mockedExecFileSync.mockImplementation((_bin, args) => {
+      if (args?.[0] === "ls-tree") return "";
       throw err;
     });
 
     expect(readBaselineFromGit("/repo", "data/siting-context.json")).toBeNull();
+  });
+
+  it("throws the original error when git exits 128 but ls-tree lists the path (exists, show failed)", () => {
+    const err = Object.assign(new Error("fatal: bad object"), { status: 128 });
+    mockedExecFileSync.mockImplementation((_bin, args) => {
+      if (args?.[0] === "ls-tree") return "data/siting-context.json\n";
+      throw err;
+    });
+
+    expect(() => readBaselineFromGit("/repo", "data/siting-context.json")).toThrow(err);
+  });
+
+  it("throws the original error when git exits 128 and ls-tree itself fails", () => {
+    const err = Object.assign(new Error("fatal: show failed"), { status: 128 });
+    mockedExecFileSync.mockImplementation((_bin, args) => {
+      if (args?.[0] === "ls-tree") throw new Error("fatal: ls-tree failed");
+      throw err;
+    });
+
+    expect(() => readBaselineFromGit("/repo", "data/siting-context.json")).toThrow(err);
   });
 
   it("throws when git is missing from PATH (ENOENT, no status) instead of returning null", () => {
@@ -440,8 +461,10 @@ describe("resolveBaselineRef", () => {
   });
 
   it("falls back to HEAD when origin/main does not resolve", () => {
-    // fetch fails AND rev-parse fails — e.g. a clone with no origin remote.
-    const exec = vi.fn(() => {
+    // fetch fails and origin/main does not resolve — e.g. a clone with no origin
+    // remote — but HEAD does.
+    const exec = vi.fn((_bin: string, args: string[]) => {
+      if (args[0] === "rev-parse" && args[3] === "HEAD^{commit}") return "";
       throw Object.assign(new Error("no such remote"), { status: 128 });
     });
 
@@ -450,6 +473,14 @@ describe("resolveBaselineRef", () => {
       fellBack: true,
       fetched: false,
     });
+  });
+
+  it("throws when neither the preferred ref nor the HEAD fallback resolves", () => {
+    const exec = vi.fn(() => {
+      throw Object.assign(new Error("fatal: not a git repository"), { status: 128 });
+    });
+
+    expect(() => resolveBaselineRef("/repo", { exec: asExec(exec) })).toThrow(/neither baseline ref resolves/);
   });
 
   it("still uses origin/main when the fetch fails but the ref exists locally", () => {
