@@ -282,6 +282,7 @@ jobs:
             public/data/hero-points.json \
             public/data/pipeline-history.json \
             components/home/hero-plate-paths.ts \
+            docs/media/map.svg \
             data/nhd-backfill-debt.json
           exit 1
 
@@ -299,9 +300,10 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # DISCARD OVERLAY ARTIFACTS — this PR auto-merges unattended; only
-      # siting-context is guarded (additive check). Overlays refresh on data
-      # waves (neon-sync.yml) and should not come through here. Revert them to
+      # DISCARD GENERATED ARTIFACTS — this PR auto-merges unattended; only
+      # siting-context is guarded (additive check). The generated artifacts
+      # (overlays, hero plate, README map) refresh on data waves (neon-sync.yml)
+      # and should not come through here. Revert them to
       # prevent a flaky external API (HIFLD, USDM, Aqueduct, aquifers) from
       # auto-merging a degraded layer (e.g. empty drought.geojson on a 200
       # response with features: []). Overlays are rebuilt fresh on the next
@@ -319,7 +321,8 @@ jobs:
             public/data/map-layers.json \
             public/data/hero-points.json \
             public/data/pipeline-history.json \
-            components/home/hero-plate-paths.ts
+            components/home/hero-plate-paths.ts \
+            docs/media/map.svg
 
       # CREATE PR — only if siting-context actually changed. The branch is
       # deleted after merge, so re-running a successful backfill on the same day

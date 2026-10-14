@@ -38,6 +38,8 @@
  *                                             build-hero-points.mjs; local, no network)
  *   components/home/hero-plate-paths.ts     (homepage hero static Albers USA dot plate —
  *                                             see build-hero-plate.mjs; local, no network)
+ *   docs/media/map.svg                      (README map, emitted by the same
+ *                                             build-hero-plate.mjs run)
  *   public/data/pipeline-history.json       (per-quarter status composition — see
  *                                             build-pipeline-history.mjs; local, no network)
  *   data/siting-context.json                (per-facility nearest-water/-transmission +

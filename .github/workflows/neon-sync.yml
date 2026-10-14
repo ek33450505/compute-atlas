@@ -250,7 +250,7 @@ jobs:
       # Aqueduct or USGS aquifer outage fails this step too, and the Discard step
       # then holds the PR for a human. STRUCTURALLY additive (merges
       # {...existing[id], ...envContext[id]}), seeds an entry for every facility id,
-      # and regenerates hero-points.json, hero-plate-paths.ts and
+      # and regenerates hero-points.json, hero-plate-paths.ts, map.svg and
       # pipeline-history.json. New CONUS facilities lack nearestWater/
       # nearestTransmission (NHD debt), recorded in data/nhd-backfill-debt.json for
       # the nightly nhd-backfill.yml to pay off. This step reverts the artifacts
@@ -272,7 +272,8 @@ jobs:
             public/data/map-layers.json \
             public/data/hero-points.json \
             public/data/pipeline-history.json \
-            components/home/hero-plate-paths.ts
+            components/home/hero-plate-paths.ts \
+            docs/media/map.svg
           npm run build:mapdata -- --skip-nhd
 
       # Resolve which map-data build path succeeded (full, fallback, or neither).
@@ -403,7 +404,8 @@ jobs:
             public/data/map-layers.json \
             public/data/hero-points.json \
             public/data/pipeline-history.json \
-            components/home/hero-plate-paths.ts
+            components/home/hero-plate-paths.ts \
+            docs/media/map.svg
 
       # Heredoc form of $GITHUB_OUTPUT, not `key=value`: the note contains
       # backticks, quotes and emoji, and key=value is single-line-only — a stray
@@ -478,6 +480,7 @@ jobs:
             public/data/hero-points.json
             public/data/pipeline-history.json
             components/home/hero-plate-paths.ts
+            docs/media/map.svg
 
       # Native GitHub auto-merge: merges once the PR's required checks report
       # success. Does NOT bypass branch protection — if the PAT isn't set (so
