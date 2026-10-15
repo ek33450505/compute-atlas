@@ -104,8 +104,8 @@ function tickIndices(n: number): number[] {
  *
  * Accessibility: the plot is a picture of numbers, so it carries `role="img"`
  * with a summary name and every element inside it is `aria-hidden`. The exact
- * figures live in a real `<table>` that is `sr-only` — unlike `StackedBand`,
- * whose table doubles as the visible legend, because a 27-row table is not a
+ * figures live in a real `<table>` inside an `sr-only` wrapper <div> —
+ * unlike `StackedBand`, whose table doubles as the visible legend, because a 27-row table is not a
  * legend. The visible legend is therefore a separate short list, which does
  * mean each band label appears twice in the DOM (legend + table column
  * header); tests should scope to one or use `getAllByText`. Color is never
@@ -315,52 +315,57 @@ export function StackArea({
         ))}
       </ul>
 
-      <table className="sr-only">
-        {/* `sr-only` sits on the caption AS WELL AS the table, deliberately: a
-            `<caption>` box is rendered outside the table's border box, so the
-            table's own `position:absolute; clip:rect(0,0,0,0)` does not
-            reliably clip it and the caption text can paint as a stray visible
-            line above the plot. Hiding it per-element is what
-            stacked-band.tsx does (there the table itself is visible). Keep
-            both — the table's class is load-bearing for the legend-to-caption
-            margin below, so this is not a duplicate to tidy away. */}
-        <caption className="sr-only">{tableCaption}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{xHeading}</th>
-            {rows.map((row, k) => (
-              <th key={k} scope="col">
-                {row.label}
-              </th>
-            ))}
-            <th scope="col">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {xLabels.map((label, i) => (
-            <tr key={i}>
-              <th scope="row">
-                {provisional === i && provisionalNote
-                  ? `${label} (${provisionalNote})`
-                  : label}
-              </th>
+      {/* `sr-only` sits on a wrapping <div>, NOT the <table>: a table treats
+          `width` as a minimum and sizes to its content, so an absolutely
+          positioned `sr-only` table stuck out past the right edge and widened
+          the layout viewport on phones (measured 2026-10-15: scrollWidth 761
+          at a 390px viewport; the page zoomed and panned sideways). A block box honours `width:1px` + `overflow:hidden`; the
+          table inside stays fully exposed to assistive tech. The caption keeps
+          its own `sr-only` too, deliberately: a `<caption>` box is rendered
+          outside the table's border box, so clipping on an ancestor does not
+          reliably hide it. Keep both classes. The wrapper's `sr-only` also keeps the
+          table out of flow, which is what makes the margin below the whole
+          gap. */}
+      <div className="sr-only">
+        <table>
+          <caption className="sr-only">{tableCaption}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{xHeading}</th>
               {rows.map((row, k) => (
-                <td key={k}>{row.values[i].toLocaleString("en-US")}</td>
+                <th key={k} scope="col">
+                  {row.label}
+                </th>
               ))}
-              <td>{totals[i].toLocaleString("en-US")}</td>
+              <th scope="col">Total</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {xLabels.map((label, i) => (
+              <tr key={i}>
+                <th scope="row">
+                  {provisional === i && provisionalNote
+                    ? `${label} (${provisionalNote})`
+                    : label}
+                </th>
+                {rows.map((row, k) => (
+                  <td key={k}>{row.values[i].toLocaleString("en-US")}</td>
+                ))}
+                <td>{totals[i].toLocaleString("en-US")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* mt-8, deliberately not the mt-2 stacked-band.tsx uses for its caption:
           there the caption follows a VISIBLE table, so a tight step reads as
           "attached to the thing above". Here the only element between caption
-          and legend is an sr-only table with zero visual height, so the margin
-          is the whole gap, and both mt-3 and then mt-5 were reported as reading
-          too tight under a wrapping text-sm legend row. The step to 32px is a
-          typographic judgement, not a measured value. Do not harmonise the two
-          values. `mx-auto` centres the BOX on the container and `text-center`
+          and legend is an sr-only table wrapper with zero visual height, so the
+          margin is the whole gap, and both mt-3 and then mt-5 were reported as
+          reading too tight under a wrapping text-sm legend row. The step to
+          32px is a typographic judgement, not a measured value. Do not
+          harmonise the two values. `mx-auto` centres the BOX on the container and `text-center`
           centres the text inside that box; `max-w-2xl` on its own leaves the
           box left-aligned in a wider parent, which reads as hanging off the
           chart rather than sitting beneath it. ⚠️ Container-centred is not

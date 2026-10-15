@@ -6,7 +6,6 @@ import { describe, it, expect } from "vitest";
 // signal to re-verify that `other` still emits what we think it does.
 import { resolveRobots } from "next/dist/build/webpack/loaders/metadata/resolve-route-data";
 import robots, {
-  BLOCKED_AI_AGENTS,
   BLOCKED_AI_CRAWLERS,
   BLOCKED_BULK_EXTRACTORS,
   BLOCKED_SEO_CRAWLERS,
@@ -14,7 +13,7 @@ import robots, {
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 import { SITEMAP_FAMILY_IDS, SITEMAP_INDEX_URL, sitemapChildUrl } from "@/lib/sitemap-families";
 
-const CONTENT_SIGNAL = "search=yes,ai-train=no,use=reference";
+const CONTENT_SIGNAL = "search=yes,ai-input=yes,ai-train=no";
 
 describe("robots", () => {
   it("allows / and disallows /admin/ and /api/", () => {
@@ -111,7 +110,6 @@ describe("robots", () => {
     expect([...BLOCKED_AI_CRAWLERS]).toEqual([
       "Amazonbot",
       "Applebot-Extended",
-      "Arquivo-web-crawler",
       "Bytespider",
       "CCBot",
       "ClaudeBot",
@@ -127,31 +125,59 @@ describe("robots", () => {
     ]);
   });
 
-  it("pins BLOCKED_AI_AGENTS and BLOCKED_BULK_EXTRACTORS against hardcoded lists (2026-10-14 posture)", () => {
-    expect([...BLOCKED_AI_AGENTS]).toEqual([
-      "ChatGPT-User",
-      "Claude-User",
-      "DuckAssistBot",
-      "Manus-User",
-      "meta-externalfetcher",
-      "MistralAI-User",
-      "OAI-SearchBot",
-      "Perplexity-User",
-    ]);
-    expect([...BLOCKED_BULK_EXTRACTORS]).toEqual([
-      "ExaSearchBot",
-      "Amzn-SearchBot",
-      "Reflectionbot",
-      "ShapBot",
-      "Shap-User",
-      "KorzyData",
-    ]);
+  it("pins BLOCKED_BULK_EXTRACTORS against a hardcoded list (2026-10-15 posture)", () => {
+    expect([...BLOCKED_BULK_EXTRACTORS]).toEqual(["Reflectionbot", "ShapBot", "Shap-User", "KorzyData"]);
   });
 
-  it("disallows / for every entry of all three AI lists, with no allow", () => {
+  it("does NOT disallow any AI assistant, AI search crawler, search engine or Google-Extended (2026-10-15 posture)", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];
-    for (const agent of [...BLOCKED_AI_CRAWLERS, ...BLOCKED_AI_AGENTS, ...BLOCKED_BULK_EXTRACTORS]) {
+    const blocked = ruleList
+      .filter((r) => r.disallow === "/")
+      .flatMap((r) => [r.userAgent].flat())
+      .map((ua) => String(ua).toLowerCase());
+    for (const allowed of [
+      "ChatGPT-User",
+      "Claude-User",
+      "Perplexity-User",
+      "OAI-SearchBot",
+      "PerplexityBot",
+      "Claude-SearchBot",
+      "ExaSearchBot",
+      "Amzn-SearchBot",
+      "DuckAssistBot",
+      "Googlebot",
+      "Google-Extended",
+      "Bingbot",
+    ]) {
+      expect(blocked, `${allowed} must not be disallowed`).not.toContain(allowed.toLowerCase());
+    }
+  });
+
+  it("does NOT disallow web archives (Arquivo-web-crawler is arquivo.pt, Portugal's national web archive; archive.org_bot)", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    const blocked = ruleList
+      .filter((r) => r.disallow === "/")
+      .flatMap((r) => [r.userAgent].flat())
+      .map((ua) => String(ua).toLowerCase());
+    expect(blocked).not.toContain("arquivo-web-crawler");
+    expect(blocked).not.toContain("archive.org_bot");
+  });
+
+  it("still disallows the training crawlers and SEO-resale crawlers", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    const blocked = ruleList.filter((r) => r.disallow === "/").map((r) => r.userAgent);
+    for (const agent of ["GPTBot", "ClaudeBot", "CCBot", "Bytespider", ...BLOCKED_SEO_CRAWLERS]) {
+      expect(blocked, `${agent} must stay disallowed`).toContain(agent);
+    }
+  });
+
+  it("disallows / for every entry of both AI lists, with no allow", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    for (const agent of [...BLOCKED_AI_CRAWLERS, ...BLOCKED_BULK_EXTRACTORS]) {
       const rule = ruleList.find((r) => r.userAgent === agent);
       expect(rule, `${agent} must have a rule`).toBeDefined();
       expect(rule?.disallow).toBe("/");
@@ -173,7 +199,6 @@ describe("robots", () => {
   it("has no duplicate user-agent across all blocked lists (case-insensitive)", () => {
     const all = [
       ...BLOCKED_AI_CRAWLERS,
-      ...BLOCKED_AI_AGENTS,
       ...BLOCKED_BULK_EXTRACTORS,
       ...BLOCKED_SEO_CRAWLERS,
     ].map((ua) => ua.toLowerCase());
@@ -293,7 +318,7 @@ describe("robots", () => {
     }
   });
 
-  it("pins the exact set and order of every blocked-crawler rule (AI + agents + bulk + SEO), '*' rule unchanged", () => {
+  it("pins the exact set and order of every blocked-crawler rule (AI + bulk + SEO), '*' rule unchanged", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];
     const wildcard = ruleList[0];
@@ -304,12 +329,11 @@ describe("robots", () => {
 
     // Exact set AND order of every non-"*" rule -- catches a stray added or
     // dropped crawler rule that the per-entry check below wouldn't. AI
-    // crawlers, AI agents, bulk extractors, then SEO-resale crawlers, matching the order
+    // crawlers, bulk extractors, then SEO-resale crawlers, matching the order
     // robots() builds the rules array in.
     const blockedAgents = ruleList.slice(1).map((rule) => rule.userAgent);
     expect(blockedAgents).toEqual([
       ...BLOCKED_AI_CRAWLERS,
-      ...BLOCKED_AI_AGENTS,
       ...BLOCKED_BULK_EXTRACTORS,
       ...BLOCKED_SEO_CRAWLERS,
     ]);

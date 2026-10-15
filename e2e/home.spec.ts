@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, devices } from "@playwright/test";
 
 // ---------------------------------------------------------------------------
 // Landing page (/) — editorial home
@@ -206,4 +206,44 @@ test("clicking a facility name on /table navigates to its detail page", async ({
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     facilityName!
   );
+});
+
+// Regression for F-3: on phones the cartouche is taller than the hero box, and
+// its opaque scrim used to cover the whole absolutely-positioned dot plate, so
+// the only map phones get was invisible. The plate must be in flow, below the
+// text, and actually hit-testable at its centre.
+test.describe("hero plate on a phone", () => {
+  // Viewport only: a full device descriptor carries defaultBrowserType, which
+  // Playwright refuses inside a describe group.
+  test.use({ viewport: devices["iPhone 13"].viewport, isMobile: true });
+
+  test("/ hero dot plate is visible and not covered", async ({ page }) => {
+    await page.goto("/");
+    const plate = page.locator(".hero-plate-vt");
+    await expect(plate).toBeVisible();
+    await plate.scrollIntoViewIfNeeded();
+
+    const covered = await plate.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      const hit = document.elementFromPoint(
+        box.x + box.width / 2,
+        box.y + box.height / 2
+      );
+      return { height: box.height, inside: hit !== null && el.contains(hit) };
+    });
+    expect(covered.height).toBeGreaterThan(200);
+    expect(covered.inside).toBe(true);
+  });
+
+  // F-4: an `sr-only` <table> sizes to its content (CSS 2.1 auto layout), so
+  // the StackArea data table widened the layout viewport (scrollWidth 761 at
+  // 390px, measured 2026-10-15). Relies on this describe's phone viewport.
+  test("/ does not scroll sideways", async ({ page }) => {
+    await page.goto("/");
+    const widths = await page.evaluate(() => ({
+      scroll: document.documentElement.scrollWidth,
+      client: document.documentElement.clientWidth,
+    }));
+    expect(widths.scroll).toBeLessThanOrEqual(widths.client);
+  });
 });

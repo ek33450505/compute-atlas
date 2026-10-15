@@ -258,10 +258,14 @@ describe("StackArea", () => {
     // Drop `sr-only` and the table takes real height, the gap stops being this
     // margin, and the visual defect returns — while the mt-8 assertion above
     // stays green throughout. This is the only assertion that catches that.
-    expect(screen.getByRole("table")).toHaveClass("sr-only");
+    // It sits on the wrapper <div>, never the <table>: a table sizes to its
+    // content, so an `sr-only` table overflowed the viewport on phones.
+    const table = screen.getByRole("table");
+    expect(table).not.toHaveClass("sr-only");
+    expect(table.parentElement).toHaveClass("sr-only");
 
-    // And the caption carries `sr-only` itself, on top of the table's. A
-    // `<caption>` renders outside the table's border box, so the table's clip
+    // And the caption carries `sr-only` itself, on top of the wrapper's. A
+    // `<caption>` renders outside the table's border box, so the wrapper's clip
     // rect does not reliably hide it and the text escaped as a stray visible
     // line on prod. jsdom computes no layout, so this assertion CANNOT observe
     // that: it only turns the removal of the class red.

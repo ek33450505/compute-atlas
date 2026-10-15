@@ -27,28 +27,27 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 // Keys keep their casing and values pass through verbatim, and the entry is
 // scoped to the User-Agent block it sits on -- so it rides the "*" rule.
 //
-// POLICY (Ed, 2026-10-14; supersedes the 2026-09-27 posture "block TRAINING,
-// allow RETRIEVAL and SEARCH"): allow classic SEARCH engines (Googlebot,
-// Bingbot, Applebot, DuckDuckBot) and archives (archive.org_bot); block AI
-// training crawlers, AI retrieval / user-initiated agents, AI search indexers
-// and bulk dataset extractors. The motive is that people should use the data
-// through search rather than plunder the dataset wholesale. Cloudflare enforces
-// the same set at the edge (out of repo), with two known deltas: Applebot-Extended
-// is robots-only, and "Anchor Browser" is edge-only; this file is the source of truth and
-// must mirror it, because a UA blocked at the edge but allowed here makes a
-// compliant crawler read `Allow: /`, get a 403, and retry.
+// POLICY (Ed, 2026-10-15; supersedes the 2026-10-14 posture that also blocked
+// AI retrieval agents): allow classic SEARCH engines (Googlebot, Bingbot,
+// Applebot, DuckDuckBot), archives (archive.org_bot), AI assistants fetching on a
+// person's behalf (ChatGPT-User, Claude-User, Perplexity-User), AI search
+// crawlers and indexers (OAI-SearchBot, PerplexityBot, Claude-SearchBot,
+// ExaSearchBot, Amzn-SearchBot) and AI search assist (DuckAssistBot). Block AI
+// TRAINING crawlers, bulk dataset extractors and SEO-resale crawlers. Cloudflare
+// enforces the same set at the edge (out of repo), with known deltas:
+// Applebot-Extended is robots-only, and "Anchor Browser" is edge-only. This file is the source of truth and must mirror the
+// edge, because a UA blocked at the edge but allowed here (or the reverse) makes
+// a compliant crawler read one thing and get another.
 //
 // Tokens below that were derived from a User-Agent string rather than
-// confirmed against vendor docs (unverified): Arquivo-web-crawler, Novellum,
-// ProRataInc, Reflectionbot, ShapBot, Shap-User, KorzyData, ExaSearchBot,
-// Amzn-SearchBot, Manus-User, MistralAI-User, DuckAssistBot, TikTokSpider.
+// confirmed against vendor docs (unverified): Novellum,
+// ProRataInc, Reflectionbot, ShapBot, Shap-User, KorzyData, TikTokSpider.
 //
 // "Anchor Browser" is on the Cloudflare rule but deliberately not listed: it is
 // a browser-automation product, not a robots.txt product token.
 export const BLOCKED_AI_CRAWLERS = [
   "Amazonbot",
   "Applebot-Extended",
-  "Arquivo-web-crawler",
   "Bytespider",
   "CCBot",
   "ClaudeBot",
@@ -63,27 +62,11 @@ export const BLOCKED_AI_CRAWLERS = [
   "Timpibot",
 ] as const;
 
-// Retrieval / user-initiated fetchers and AI-search agents. Blocked since
-// 2026-10-14 (see POLICY above): a person asking an assistant to fetch the
-// site is still a way of taking the data without going through search.
-export const BLOCKED_AI_AGENTS = [
-  "ChatGPT-User",
-  "Claude-User",
-  "DuckAssistBot",
-  "Manus-User",
-  "meta-externalfetcher",
-  "MistralAI-User",
-  "OAI-SearchBot",
-  "Perplexity-User",
-] as const;
-
 // Bulk dataset extractors -- crawlers that exist to lift whole datasets or
 // sites into someone else's index. This is the AI-extractor subset of the
 // Cloudflare custom rule "Block bulk dataset extractors"; that rule's four SEO
 // UAs live in BLOCKED_SEO_CRAWLERS.
 export const BLOCKED_BULK_EXTRACTORS = [
-  "ExaSearchBot",
-  "Amzn-SearchBot",
   "Reflectionbot",
   "ShapBot",
   "Shap-User",
@@ -148,26 +131,22 @@ export default function robots(): MetadataRoute.Robots {
       // NOT the public doc page at the bare "/api" path (app/api/page.tsx),
       // which stays crawlable and is listed in the sitemap.
       disallow: ["/admin/", "/api/"],
-      // Content-Signal (contentsignals.org): search indexing yes, training
-      // no, retrieval/citation allowed. It speaks to crawlers that read the
-      // directive but not our User-Agent blocks, and it matches the CC BY 4.0
-      // data licence's reuse-with-attribution terms.
+      // Content-Signal (contentsignals.org): search indexing yes, AI input
+      // (grounding / retrieval / citation) yes, training no. This is the
+      // 2026-10-15 decision (Ed) and matches the User-Agent blocks below, which
+      // allow AI assistants and AI search while blocking training crawlers. It
+      // speaks to crawlers that read the directive but not our User-Agent
+      // blocks, and it matches the CC BY 4.0 data licence's reuse-with-
+      // attribution terms.
       //
-      // OPEN POLICY QUESTION for Ed (not resolved here): use=reference means
-      // retrieval/citation is allowed, which conflicts with the 2026-10-14
-      // posture that blocks retrieval agents. The value is left unchanged.
-      //
-      // OPEN QUESTION for the maintainer: it does not sit perfectly with the
-      // Google-Extended exemption above. Content-Signal has no per-agent
-      // form, so on the "*" rule it also tells Google-Extended ai-train=no --
-      // stricter than the exemption this file goes out of its way to
-      // preserve. It ships anyway for two reasons: prod already served this
-      // exact line via Cloudflare, so emitting it restores the prior position
-      // rather than inventing a stricter one; and Content-Signal states a
-      // PREFERENCE, whereas the User-Agent blocks below are the enforceable
-      // statement, which still exempts Google-Extended. Resolving the tension
-      // (varying the signal per agent, or dropping ai-train=no) is a policy
-      // call and is deliberately NOT made here.
+      // It does not sit perfectly with the Google-Extended exemption above.
+      // Content-Signal has no per-agent form, so on the "*" rule it also tells
+      // Google-Extended ai-train=no -- stricter than the exemption this file goes
+      // out of its way to preserve. It ships anyway because Content-Signal
+      // states a PREFERENCE, whereas the User-Agent blocks below are the
+      // enforceable statement, which still exempts Google-Extended. Resolving
+      // the tension (varying the signal per agent, or dropping ai-train=no) is
+      // a policy call and is deliberately NOT made here.
       //
       // The "# Bulk data" / "# Licence" entries below are comments, not
       // directives -- confirmed against Next's own serializer
@@ -183,16 +162,12 @@ export default function robots(): MetadataRoute.Robots {
       // /table, so it never found the one-request alternative to the 997 it
       // made.
       other: {
-        "Content-Signal": "search=yes,ai-train=no,use=reference",
+        "Content-Signal": "search=yes,ai-input=yes,ai-train=no",
         "# Bulk data": `The dataset is one file, not one page per facility -- see ${siteConfig.url}/data, or fetch it directly at ${RAW_FACILITIES_URL}`,
         "# Licence": `Data is CC-BY-4.0, attribution required -- ${DATASET_LICENSE_URL}. Code is MIT.`,
       },
     },
     ...BLOCKED_AI_CRAWLERS.map((userAgent) => ({
-      userAgent,
-      disallow: "/",
-    })),
-    ...BLOCKED_AI_AGENTS.map((userAgent) => ({
       userAgent,
       disallow: "/",
     })),
