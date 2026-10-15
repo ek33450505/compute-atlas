@@ -103,7 +103,7 @@ See `.env.example`.
 | `VERIFY_SOURCES_ENABLED` | Kill switch for the discovery pipeline's mechanical source-verification gate (local Ollama). **Polarity is the opposite of the two switches above:** the gate is ON by default and only the exact string `"false"` disables it, so a typo leaves verification enabled |
 | `API_ADMIN_TOKEN_SALT` | PBKDF2 salt for the admin-UI password login (`app/admin/login/actions.ts`). Required — login fails closed, rejecting every attempt, if unset |
 | `CONTRIBUTE_IP_SALT` | Salt for hashing submitter IPs for public-contribution rate limiting. **Required in production** — `hashIp()` throws on Vercel production rather than hash with the repo-public default; dev, tests and previews fall back to it. Since 2026-09-27 it has a second consumer: `lib/subscribe-consent.ts` derives the subscribe-consent cookie's HMAC key from it, under its own key domain. Rotating it invalidates every stored IP hash **and** every outstanding consent cookie |
-| `EDGE_SHARED_SECRET` | Shared secret proving a request actually traversed Cloudflare: a Transform Rule injects it as `x-edge-shared-secret` and `proxy.ts` compares digests. **Fails open while unset**, deliberately. Checked only when `VERCEL_ENV === "production"`; `/api/cron/*` is exempt unconditionally. There is no safe two-step rotation once armed — see below |
+| `EDGE_SHARED_SECRET` | Shared secret proving a request actually traversed Cloudflare: a Transform Rule injects it as `x-edge-shared-secret` and `proxy.ts` compares digests. **Fails closed on production since 2026-10-15**: unset or empty 403s every matched path (`/admin`, `/api` except `/api/cron/*`, `/map`, `/data`, `/table`). Checked only when `VERCEL_ENV === "production"`; `/api/cron/*` is exempt unconditionally. There is no safe two-step rotation — see §9 below |
 
 ✅ **The monthly state digest is LIVE as of 2026-09-14** (Ed's decision). Both switches that
 held it off are flipped: `vercel.json` carries
@@ -265,50 +265,57 @@ longer only about IP hashes.
 **8. `INDEXNOW_KEY`.** Public by design. If changed, write the new `public/<key>.txt` and delete the
 old one in the same commit — `indexnow.test.ts` asserts the file matches the constant.
 
-**9. `EDGE_SHARED_SECRET` — ⚠️ THERE IS NO SAFE TWO-STEP ORDER once the gate is armed.**
+**9. `EDGE_SHARED_SECRET` — ⚠️ the gate is ARMED and FAIL-CLOSED; rotation always costs a 403 window unless Option B is built first.**
 An earlier version of this section said rotation was "safe in either order because the check is
-fail-open when unset." That is only true *before* the gate is armed — i.e. before there is anything to
-rotate — and it would have prescribed exactly the outage it warned about. Corrected 2026-09-27 after
-review caught it.
+fail-open when unset." That was only true before the gate was armed, and it would have prescribed
+exactly the outage it warned about (corrected 2026-09-27). Since 2026-10-15 it is no longer true in
+a second way: the code is fail-closed.
 
-**Two independent states, and conflating them is what makes this section confusing.**
-- **ARMED** = `EDGE_SHARED_SECRET` holds a value *and* a deploy has read it. This is what turns
-  enforcement on: `isEdgeOriginAllowed` refuses any request without a matching header. Unsetting the
-  variable and redeploying disarms it — **but only while the code is still fail-OPEN**. Once
-  activation step 4 has been done, the same unset 403s every matched path instead; that is the whole
-  of the next bullet, and Option A's ⛔ below depends on it.
-- **FAIL-CLOSED** = the code change in `proxy.ts` activation step 4 (`if (!expected) return true;`
-  → `return false;`). This governs only the *absent-variable* case. It does not arm anything, and
-  it does not make an armed gate any stricter.
+**State today (2026-10-15).**
+- **ARMED** (since 2026-09-27): the variable holds a value and a deploy has read it, so
+  `isEdgeOriginAllowed` refuses any request without a matching header.
+- **FAIL-CLOSED** (since 2026-10-15, activation step 4): `if (!expected) return false;`. Unsetting or
+  emptying the variable on production does not disarm anything; it 403s every matched path.
+- **Matched paths** (activation step 5, same day): `/admin`, `/api` (except `/api/cron/*`), `/map`,
+  `/data`, `/table`. A 403 on `/map` is a user-visible outage, not a quiet API failure.
 
-They move independently, and the rotation options below depend on which one you are in.
-
-`isEdgeOriginAllowed` compares the presented header against **one** value. So once armed:
+`isEdgeOriginAllowed` compares the presented header against **one** value. So:
 - Change the Cloudflare rule first ⇒ presented(new) ≠ expected(old) ⇒ **403**.
-- Change Vercel first ⇒ presented(old) ≠ expected(new) ⇒ **403**.
+- Change Vercel first ⇒ the running deployment still holds the old value (env is read at deploy
+  time), so nothing changes until the redeploy, then presented(old) ≠ expected(new) ⇒ **403**.
 
-Either way every `/admin` and `/api` request 403s until the second half lands (site-wide once the
-matcher is widened in activation step 5). Use one of these instead:
+**Option A — three phases with an unset step. ⛔ SUPERSEDED 2026-10-15; do not use.** Its first step
+(unset the variable, redeploy) relied on the code failing open. It is now an outage on the
+matched paths for as long as the variable stays unset. Kept for history only.
 
-**Option A — three phases, no code change (recommended). ⛔ Valid ONLY while the code is still
-fail-OPEN.** Its first step is a deliberate disarm, and unsetting the variable disarms the gate only
-while `if (!expected) return true;` is still in `proxy.ts`. If activation step 4 has been done
-(`return false;`), the same unset is a site-wide 403 — precisely the outage this option exists to
-avoid. Read `isEdgeOriginAllowed` before starting; if it is fail-closed, either revert that one line
-and redeploy first, or use Option B.
-1. **Unset** `EDGE_SHARED_SECRET` in Vercel → `npx vercel redeploy --target production <url>`. The
-   gate is now disarmed and failing open; traffic is unaffected and unprotected.
-2. Change the Cloudflare Transform Rule to the new value. Verify with a real GET.
-3. **Set** the new `EDGE_SHARED_SECRET` → redeploy. This re-arms it. Verify a browser request works
-   **and** that `curl --resolve 'www.compute-atlas.com:443:76.76.21.21'
-   https://www.compute-atlas.com/api/stats` is refused.
-⚠️ Steps 1–2 are a genuine window with no origin protection. Keep it short; it is not a secret leak,
-only a period where the bypass is open again.
+**Option C — short 403 window, no code change (current procedure).** Do it at a low-traffic hour.
+1. Replace `EDGE_SHARED_SECRET` in Vercel (production scope) via `vercel env update EDGE_SHARED_SECRET
+   production`, pasting the new value at the prompt (stdin; never `--value`, the command line or shell
+   history). Inert until a redeploy. Use `update`, not `rm` + `add`: between those two the variable is
+   absent, so any deploy in that gap 403s the matched paths.
+2. `npx vercel redeploy --target production <url>` and wait for READY.
+3. IMMEDIATELY change the Cloudflare Transform Rule (`x-edge-shared-secret`) to the new value.
 
-**Option B — accept an overlap, needs a code change.** Have `EDGE_SHARED_SECRET` parse a
-comma-separated list and accept any member (still `timingSafeEqual` per candidate, constant work per
-request). Then: add the new value alongside the old → redeploy → change the Cloudflare rule → remove
-the old value → redeploy. No unprotected window. Do this if rotation is ever expected to be routine.
+The 403 window on the matched paths runs from the moment the new deployment takes the production
+alias until the Cloudflare change lands: seconds if step 3 follows at once, not the whole build.
+
+Side effects to know:
+- An instant rollback or promote of an older deployment re-arms the OLD secret and 403s the matched
+  paths until Cloudflare matches it again.
+- Any production deploy or env change that drops the variable is now an outage on those paths, not a
+  quiet disarm.
+
+Verify with real GETs. Through the normal hostname, `/map` and `/api/stats` must be 200. Each of
+these must 403 via `curl --resolve 'www.compute-atlas.com:443:76.76.21.21' https://www.compute-atlas.com<path>`:
+`/map`, `/map.rsc` (the 5.8 MB RSC payload), `/%6Dap` (percent-encoded `/map`, which the origin
+decodes), `/api/stats`. A 403 from this gate looks like any other 403; do not infer success from the
+absence of errors.
+
+**Option B — accept an overlap, needs a code change; now the only zero-downtime path.** Have
+`EDGE_SHARED_SECRET` parse a comma-separated list and accept any member (still `timingSafeEqual` per
+candidate, constant work per request). Then: add the new value alongside the old → redeploy → change
+the Cloudflare rule → remove the old value → redeploy. No window. Build this first if rotation is ever
+expected to be routine.
 
 Either way: **verify with a real GET, not by absence of errors** — a 403 from this gate looks identical
 to any other 403, and Cloudflare could cache it (`proxy.ts` sets `no-store` on that response for

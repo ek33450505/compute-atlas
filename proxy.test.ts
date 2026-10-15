@@ -129,8 +129,9 @@ function restore(key: keyof typeof ORIGINAL_ENV) {
 
 beforeEach(() => {
   process.env.API_ADMIN_TOKEN = TOKEN;
-  // Default posture for the admin-gate tests: no edge secret configured, so
-  // the edge check fails open and cannot mask a cookie-gate assertion.
+  // Default posture for the admin-gate tests: VERCEL_ENV unset (as under
+  // `next dev`), so the edge check does not enforce and cannot mask a
+  // cookie-gate assertion.
   delete process.env.EDGE_SHARED_SECRET;
   delete process.env.VERCEL_ENV;
 });
@@ -265,11 +266,23 @@ describe("proxy — edge shared-secret gate", () => {
     expectPassThrough(proxy(makeRequest("/api/facilities", { edgeHeader: EDGE_SECRET })));
   });
 
-  // The bandwidth-heavy pages (/map, /table, /data) are deliberately NOT in
-  // the matcher yet — step 5 of the activation sequence in proxy.ts — so there
-  // is nothing to assert about them here: `proxy()` is never called for them.
-  // Their absence is pinned in the "matcher scope" block below instead, which
-  // is the only place a unit test can see the matcher at all.
+  // The bandwidth-heavy pages are in the matcher (activation step 5 in
+  // proxy.ts, 2026-10-15), so the check applies to them like any /api path.
+  it("blocks /map, /table and /data with no edge header", () => {
+    for (const pathname of ["/map", "/table", "/data"]) {
+      expect(proxy(makeRequest(pathname)).status).toBe(403);
+    }
+  });
+
+  it("allows /map, /table and /data carrying the correct edge header", () => {
+    for (const pathname of ["/map", "/table", "/data"]) {
+      expectPassThrough(proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET })));
+    }
+  });
+
+  it("blocks /map with a wrong edge header value", () => {
+    expect(proxy(makeRequest("/map", { edgeHeader: "wrong-secret" })).status).toBe(403);
+  });
 
   it("blocks /admin before the cookie gate runs, even with a valid session", () => {
     const response = proxy(
@@ -341,19 +354,29 @@ describe("proxy — edge shared-secret gate", () => {
 });
 
 describe("proxy — edge gate rollout posture", () => {
-  it("FAILS OPEN when EDGE_SHARED_SECRET is unset, even in production", () => {
+  it("FAILS CLOSED when EDGE_SHARED_SECRET is unset in production", () => {
     process.env.VERCEL_ENV = "production";
     delete process.env.EDGE_SHARED_SECRET;
 
-    expectPassThrough(proxy(makeRequest("/api/facilities")));
-    expectPassThrough(proxy(makeRequest("/api/search")));
+    for (const pathname of ["/api/facilities", "/api/search", "/map"]) {
+      expect(proxy(makeRequest(pathname)).status).toBe(403);
+    }
   });
 
-  it("FAILS OPEN when EDGE_SHARED_SECRET is set but empty", () => {
+  it("FAILS CLOSED when EDGE_SHARED_SECRET is set but empty in production", () => {
     process.env.VERCEL_ENV = "production";
     process.env.EDGE_SHARED_SECRET = "";
 
-    expectPassThrough(proxy(makeRequest("/api/facilities")));
+    for (const pathname of ["/api/facilities", "/api/search", "/map"]) {
+      expect(proxy(makeRequest(pathname)).status).toBe(403);
+    }
+  });
+
+  it("still passes /api/cron/* through in production with the secret unset (exemption runs first)", () => {
+    process.env.VERCEL_ENV = "production";
+    delete process.env.EDGE_SHARED_SECRET;
+
+    expectPassThrough(proxy(makeRequest("/api/cron/state-digest")));
   });
 
   it("does not enforce on preview deployments, which never traverse Cloudflare", () => {
@@ -370,33 +393,29 @@ describe("proxy — edge gate rollout posture", () => {
     expectPassThrough(proxy(makeRequest("/api/facilities")));
   });
 
-  it("does not widen the matcher ahead of enforcement (activation step 5)", () => {
-    // Matching the bandwidth-heavy pages costs a proxy invocation on the
-    // site's busiest routes (proxy is step 3 of Next's execution order, ahead
-    // of the filesystem/dynamic route steps, so it runs before any cache
-    // lookup). While the check fails open that buys no protection, so the
-    // widening is deferred to ACTIVATION step 5 — a different numbering from
-    // Next's execution order above — which falls after enforcement begins at
-    // activation step 3, the redeploy, rather than being shipped with it.
+  it("matches the bandwidth-heavy pages (activation step 5)", () => {
+    // Measured 2026-10-15 on a preview: with these entries matched, /map, /data
+    // and /table ran the proxy (`serverless-middleware`) and still served
+    // `x-vercel-cache: HIT` after the first PRERENDER.
     for (const pathname of ["/map", "/table", "/data"]) {
-      expect(isMatched(config.matcher, pathname)).toBe(false);
+      expect(isMatched(config.matcher, pathname)).toBe(true);
     }
   });
 
-  it("leaves the admin cookie gate working while the edge gate is failing open", () => {
+  it("blocks /admin in production with the secret unset, even with a valid session cookie", () => {
     process.env.VERCEL_ENV = "production";
     delete process.env.EDGE_SHARED_SECRET;
 
-    expect(proxy(makeRequest("/admin/submissions")).status).toBe(307);
-    expectPassThrough(
-      proxy(makeRequest("/admin/submissions", { cookie: createSessionValue(TOKEN) })),
-    );
+    expect(proxy(makeRequest("/admin/submissions")).status).toBe(403);
+    expect(
+      proxy(makeRequest("/admin/submissions", { cookie: createSessionValue(TOKEN) })).status,
+    ).toBe(403);
   });
 });
 
 describe("proxy — matcher scope, compiled by the installed Next", () => {
-  it("is exactly the admin and API prefixes", () => {
-    expect(config.matcher).toEqual(["/admin/:path*", "/api/:path*"]);
+  it("is exactly the admin and API prefixes plus the three heavy pages", () => {
+    expect(config.matcher).toEqual(["/admin/:path*", "/api/:path*", "/map", "/data", "/table"]);
   });
 
   it("covers every admin route, including the ones rendering contributor PII", () => {
@@ -437,13 +456,32 @@ describe("proxy — matcher scope, compiled by the installed Next", () => {
     }
   });
 
+  it("matches the heavy pages exactly, with an optional trailing slash and no look-alikes", () => {
+    // Measured against the installed compiler, not assumed.
+    for (const pathname of ["/map", "/map/", "/table/", "/data/"]) {
+      expect(isMatched(config.matcher, pathname)).toBe(true);
+    }
+    for (const pathname of ["/map/x", "/maps", "/Map", "/data/siting-context.json"]) {
+      expect(isMatched(config.matcher, pathname)).toBe(false);
+    }
+  });
+
+  it("matches the .rsc payload variants of the heavy pages", () => {
+    // Measured: Next compiles a literal `/map` to
+    // `^(?:/_next/data/[^/]+)?/map(\.json|\.rsc|\.segments/.+\.segment\.rsc)?[/#?]?$`,
+    // so the 5.8 MB RSC payload cannot be fetched around the gate.
+    for (const pathname of ["/map.rsc", "/data.rsc", "/table.rsc", "/map.json"]) {
+      expect(isMatched(config.matcher, pathname)).toBe(true);
+    }
+    expect(isMatched(config.matcher, "/map.html")).toBe(false);
+  });
+
   it("compiles a literal source to an EXACT match, contradicting the bundled docs", () => {
     // Next's bundled `proxy.md` says sources are "anchored to the start of the
     // path: `/about` matches `/about` and `/about/team`". Against the real
     // compiler a literal is exact. This is the precondition activation step 5
-    // relies on: adding `/data` must not also put the proxy in front of every
-    // `public/data/*.geojson` tile request. Not the live config — this pins the
-    // semantics of the entry that will be added.
+    // relies on: the `/data` entry must not also put the proxy in front of every
+    // `public/data/*.geojson` tile request. Pins the semantics of the live entry.
     expect(isMatched(["/data"], "/data")).toBe(true);
     expect(isMatched(["/data"], "/data/facilities.geojson")).toBe(false);
     expect(isMatched(["/data"], "/data/siting-context.json")).toBe(false);
