@@ -28,6 +28,12 @@
  * indistinguishable from a genuinely-new facility (see its docblock above
  * `exitCodeForSummary`) — the fix is to make the fallback observable at the
  * source rather than inferring it downstream from a skip-rate.
+ *
+ * The API read is retried (3 attempts, 2 s then 8 s apart, 60 s timeout each)
+ * on thrown errors, unparseable or facility-less 2xx bodies, 5xx and 429; other
+ * 4xx fall back immediately. On 2026-10-14 a single transient `fetch failed`
+ * made submit-candidates.ts discard a 23-minute run's 39 candidates, and a
+ * hung connection would otherwise have hung the nightly run forever.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -43,20 +49,58 @@ export type LoadFacilitiesResult = {
   apiError?: string;
 };
 
+export const MAX_ATTEMPTS = 3;
+/** Delays slept between attempts 1->2 and 2->3. */
+export const RETRY_DELAYS_MS = [2_000, 8_000] as const;
+export const ATTEMPT_TIMEOUT_MS = 60_000;
+
+export type LoadFacilitiesDeps = {
+  sleep?: (ms: number) => Promise<void>;
+};
+
+const realSleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+type Attempt =
+  | { ok: true; facilities: Facility[] }
+  | { ok: false; error: string; retryable: boolean };
+
+async function attemptOnce(url: string, fetchImpl: typeof fetch): Promise<Attempt> {
+  try {
+    const res = await fetchImpl(url, { signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS) });
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: `API responded ${res.status} ${res.statusText}`.trim(),
+        retryable: res.status >= 500 || res.status === 429,
+      };
+    }
+    const body = (await res.json()) as { facilities?: unknown };
+    if (!Array.isArray(body?.facilities)) {
+      return { ok: false, error: "API body has no facilities array", retryable: true };
+    }
+    return { ok: true, facilities: body.facilities as Facility[] };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err), retryable: true };
+  }
+}
+
 export async function loadFacilities(
   baseUrl: string,
-  fetchImpl: typeof fetch = fetch
+  fetchImpl: typeof fetch = fetch,
+  deps: LoadFacilitiesDeps = {}
 ): Promise<LoadFacilitiesResult> {
-  let apiError: string;
-  try {
-    const res = await fetchImpl(`${baseUrl}/api/facilities`);
-    if (res.ok) {
-      const body = (await res.json()) as { facilities: Facility[] };
-      return { facilities: body.facilities, source: "api" };
+  const sleep = deps.sleep ?? realSleep;
+  let apiError = "";
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const result = await attemptOnce(`${baseUrl}/api/facilities`, fetchImpl);
+    if (result.ok) return { facilities: result.facilities, source: "api" };
+    if (!result.retryable) {
+      apiError = result.error;
+      break;
     }
-    apiError = `API responded ${res.status} ${res.statusText}`.trim();
-  } catch (err) {
-    apiError = err instanceof Error ? err.message : String(err);
+    apiError = `${attempt} attempts; last: ${result.error}`;
+    if (attempt < MAX_ATTEMPTS) await sleep(RETRY_DELAYS_MS[attempt - 1]);
   }
 
   const jsonPath = path.join(process.cwd(), "data", "facilities.json");

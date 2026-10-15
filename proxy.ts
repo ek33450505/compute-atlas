@@ -230,7 +230,8 @@ export function proxy(request: NextRequest) {
  *     says proxy "should run before the CDN cache so it remains the source of
  *     truth for auth" — so a matched route pays an invocation on every
  *     request, including one that would otherwise have been a pure cache hit.
- *     This project is at its Vercel Hobby limits.
+ *     The project is on Vercel Pro, and that cost is measured as small:
+ *     Function Invocations were $0.06 for 2026-10-01..14 (`vercel usage`).
  *   - ⛔ UNVERIFIED: whether Vercel still serves the ISR-cached BODY after
  *     this returns `next()`, or re-renders the page. Next's guide allows for a
  *     deployment that puts proxy behind the CDN and tells you to bypass
