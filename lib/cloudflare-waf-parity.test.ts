@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  BLOCKED_AI_AGENTS,
   BLOCKED_AI_CRAWLERS,
   BLOCKED_BULK_EXTRACTORS,
   BLOCKED_SEO_CRAWLERS,
@@ -27,10 +26,10 @@ import {
  * badly: on 2026-09-27 the repo blocked 12 tokens while the WAF blocked 14, and
  * the WAF was INVERTED relative to the stated posture (it 403'd user-directed
  * retrieval agents while letting an indexing crawler through). Neither list was
- * wrong on its own terms; nothing ever compared them. Policy since 2026-10-14
+ * wrong on its own terms; nothing ever compared them. Policy since 2026-10-15
  * (Ed): allow classic search engines (Googlebot, Bingbot, Applebot,
- * DuckDuckBot) and archives; block AI training crawlers, AI agents / AI-search
- * indexers and bulk dataset extractors, on BOTH sides. This test closes the
+ * DuckDuckBot), archives, AI assistants and AI search; block AI training
+ * crawlers, bulk dataset extractors and SEO-resale crawlers, on BOTH sides. This test closes the
  * gap only on the side it can read.
  *
  * ⛔ Do NOT "improve" this into something that fetches Cloudflare. An assertion
@@ -43,23 +42,26 @@ import {
  */
 
 /**
- * The Cloudflare rules this file is reconciled against. Read by API by the
- * dispatching session on 2026-10-14 (zone ruleset 2db189b07c9e4522bd6fc9b1fd5a4769,
- * v259); this file cannot re-read them.
+ * The Cloudflare rules this file is reconciled against (zone ruleset
+ * 2db189b07c9e4522bd6fc9b1fd5a4769); this file cannot re-read them.
  *
- *   - Rule 0cfdbaf2d09342f2ad93a0025bf9ff57: the AI Crawl Control rule, 23 UAs.
- *     Cloudflare regenerates it from its own dashboard crawler toggles, and a
- *     dashboard save does not keep manual additions. The four SEO crawlers it
- *     carried on 2026-09-27 were found missing on 2026-10-14; a dashboard save
- *     is the likely cause, but the actual drop date is unknown.
- *   - Custom rule "Block bulk dataset extractors": 10 UAs (the 6 extractors plus
- *     the four SEO crawlers re-added there, since WAF matching is `contains` and
- *     case-sensitive, Moz's crawler is entered as "DotBot" while this ledger
- *     keeps robots.txt's "dotbot").
+ *   - Rule 0cfdbaf2d09342f2ad93a0025bf9ff57: the AI Crawl Control rule, 14 UAs
+ *     (13 training crawlers plus "Anchor Browser"). MEASURED: read via the
+ *     Cloudflare API 2026-10-15 13:27Z (last_updated 2026-10-15T13:26:48Z). Cloudflare regenerates it
+ *     from its own dashboard crawler toggles, and a dashboard save does not
+ *     keep manual additions. The four SEO crawlers it carried on 2026-09-27
+ *     were found missing on 2026-10-14; a dashboard save is the likely cause,
+ *     but the actual drop date is unknown.
+ *   - Custom rule "Block bulk dataset extractors": 8 UAs. MEASURED: read via
+ *     the Cloudflare API 2026-10-15 13:58Z (last_updated 2026-10-15T13:57:34Z).
+ *     It held 10 until the maintainer removed ExaSearchBot and Amzn-SearchBot
+ *     that day. It is the 4 extractors plus the 4 SEO crawlers.
+ *     WAF matching is `contains` and case-sensitive, so Moz's crawler is entered
+ *     as "DotBot" while this ledger keeps robots.txt's "dotbot".
  *
- * The two rules do not overlap, so the ledger below holds 23 + 10 entries.
+ * The two rules do not overlap, so the ledger below holds 14 + 8 entries.
  */
-const WAF_RULE_UA_COUNT_AS_REPORTED = 23 + 10;
+const WAF_RULE_UA_COUNT_AS_REPORTED = 14 + 8;
 
 /**
  * The UAs the edge is recorded as blocking, transcribed from the rules above.
@@ -73,37 +75,27 @@ const WAF_RULE_UA_COUNT_AS_REPORTED = 23 + 10;
  * human last looked, and nothing in this repo can keep it true.
  */
 export const EXPECTED_WAF_BLOCKED_UAS = [
-  // AI Crawl Control rule, 23 UAs (2026-10-14).
+  // AI Crawl Control rule, 14 UAs (measured via the API, 2026-10-15 13:27Z).
   "Amazonbot",
   "Anchor Browser",
-  "Arquivo-web-crawler",
   "Bytespider",
   "CCBot",
-  "ChatGPT-User",
-  "Claude-User",
   "ClaudeBot",
   "CloudflareBrowserRenderingCrawler",
-  "DuckAssistBot",
   "FacebookBot",
   "GPTBot",
-  "Manus-User",
   "meta-externalagent",
-  "meta-externalfetcher",
-  "MistralAI-User",
   "Novellum",
-  "OAI-SearchBot",
-  "Perplexity-User",
   "PetalBot",
   "ProRataInc",
   "TikTokSpider",
   "Timpibot",
-  // Custom rule "Block bulk dataset extractors", 10 UAs (2026-10-14).
+  // Custom rule "Block bulk dataset extractors", 8 UAs (measured via the API,
+  // 2026-10-15 13:58Z).
   "DataForSeoBot",
   "dotbot",
   "QlyzeBot",
   "SERankingBacklinksBot",
-  "ExaSearchBot",
-  "Amzn-SearchBot",
   "Reflectionbot",
   "ShapBot",
   "Shap-User",
@@ -118,7 +110,7 @@ export const EXPECTED_WAF_BLOCKED_UAS = [
  *
  * A robots-only block is a REQUEST, not enforcement — it works on a crawler
  * that reads robots.txt and does nothing to one that ignores it. That is the
- * deliberate choice for the entry below.
+ * deliberate choice for the entries below.
  *
  * ⚠️ The entry's ROBOTS-ONLY STATUS was reported by a human with zone
  * access (2026-09-27, re-confirmed absent from the 2026-10-14 rules; ClaudeBot
@@ -136,7 +128,6 @@ const ROBOTS_ONLY_BY_DESIGN: Record<string, string> = {
 describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — cannot read the edge)", () => {
   const robotsBlocked = [
     ...BLOCKED_AI_CRAWLERS,
-    ...BLOCKED_AI_AGENTS,
     ...BLOCKED_BULK_EXTRACTORS,
     ...BLOCKED_SEO_CRAWLERS,
   ];
@@ -207,7 +198,7 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
 
   /**
    * Keeps the transcript honest about being a transcript. The live rules were
-   * reported at 33 UAs (23 + 10). A list that GREW past the reported count means
+   * reported at 22 UAs (14 + 8). A list that GREW past the reported count means
    * the count note is stale and must be re-verified before the extra entries
    * can be trusted — so this fails upward, not downward.
    */
@@ -221,8 +212,9 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
   });
 
   /**
-   * The inversion that was actually found at the edge: a rule that 403'd
-   * user-directed retrieval agents while letting an indexing crawler through.
+   * HISTORICAL: on 2026-09-27 the edge was found INVERTED, with a rule that
+   * 403'd user-directed retrieval agents while letting an indexing crawler
+   * through.
    * `Google-Extended` is exempt from `app/robots.ts` on purpose (the dataset
    * wants to be cited in AI Overviews), so it must not appear on the WAF ledger
    * either — a WAF block would silently override the exemption this project
@@ -232,10 +224,19 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
     const deliberatelyAllowed = [
       "Google-Extended",
       "Googlebot",
+      "Arquivo-web-crawler",
+      "archive.org_bot",
       "AhrefsBot",
       "SemrushBot",
       "PerplexityBot",
       "Claude-SearchBot",
+      "Claude-User",
+      "ChatGPT-User",
+      "Perplexity-User",
+      "OAI-SearchBot",
+      "ExaSearchBot",
+      "Amzn-SearchBot",
+      "DuckAssistBot",
     ];
     const wafSet = new Set<string>(EXPECTED_WAF_BLOCKED_UAS);
 

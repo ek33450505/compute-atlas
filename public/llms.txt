@@ -72,16 +72,16 @@ always resolves to its latest archived version:
 
 https://www.compute-atlas.com/robots.txt carries:
 
-    Content-Signal: search=yes,ai-train=no,use=reference
+    Content-Signal: search=yes,ai-input=yes,ai-train=no
 
 Read that as: search indexing is welcome; training on this content is not
-permitted; retrieval, quotation, and citation with attribution are.
+permitted; use as AI input (retrieval, quotation, and citation with
+attribution) is welcome.
 
 Content-Signal is a statement of preference and cannot be varied per crawler.
 The per-crawler User-Agent rules in the same robots.txt are the enforceable
-statement, and the two are not identical at the edges — some named agents are
-treated differently there from what the blanket signal implies. Where they
-differ, read the User-Agent rules as authoritative.
+statement; where they differ from the blanket signal, read the User-Agent rules
+as authoritative.
 
 ## Reading the data honestly
 
