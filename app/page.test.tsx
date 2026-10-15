@@ -996,7 +996,10 @@ describe("HomePage modern-platform hooks", () => {
 
     const plateRegion = heroBox!.firstElementChild;
     expect(plateRegion).toHaveClass("hero-plate-vt");
-    expect(plateRegion).toHaveClass("absolute", "inset-0");
+    // Out of flow only from sm up; below sm it is in flow after the cartouche,
+    // or the cartouche's scrim covers it on phones (F-3).
+    expect(plateRegion).toHaveClass("sm:absolute", "sm:inset-0", "order-2", "sm:order-none");
+    expect(plateRegion).not.toHaveClass("absolute");
   });
 
   it("gives the scrim its contrast/transparency hook without touching the gradient", async () => {

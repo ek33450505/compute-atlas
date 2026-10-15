@@ -206,19 +206,17 @@ export default async function HomePage() {
         type="speculationrules"
         dangerouslySetInnerHTML={{ __html: HOME_SPECULATION_RULES }}
       />
-      {/* min-height is responsive: on phones the globe is replaced by a
-          shorter static plate (h-[40vh], see hero-globe-dynamic.tsx), so
-          reserving a full 60vh here would hand that saving straight back as
-          dead space above the fold. Below sm the box floors just under the
-          plate and otherwise sizes to the real content — overline, H1,
-          subhead, search, CTAs. sm+ is unchanged.
+      {/* min-height is sm+ only: below sm the box has no floor and sizes to
+          its in-flow content — cartouche, then the static plate
+          (h-[40vh], see hero-globe-dynamic.tsx), then the key. sm+ keeps the
+          60vh floor, with the plate as an overlay behind the cartouche.
 
           `flex flex-col` is load-bearing and belongs to <PlateKey> below: it
           is what lets that card's `sm:mt-auto` absorb whatever slack this box
           has and settle on its bottom edge without leaving flow. Don't strip
           it, and don't give the cartouche column `flex-1` — see the comment
           at the <PlateKey> call site for the overlap that caused. */}
-      <div className="relative mb-10 flex min-h-[46vh] flex-col overflow-hidden sm:min-h-[60vh]">
+      <div className="relative mb-10 flex flex-col overflow-hidden sm:min-h-[60vh]">
         {/*
          * Living globe hero — every tracked facility plotted on a
          * globe-projection basemap, drawn in west→east on load. Purely
@@ -245,15 +243,24 @@ export default async function HomePage() {
          * point set was moved to a CDN artifact to avoid, and paid by the same
          * phones. Keep the import on this side of the boundary.
          */}
-        {/* `hero-plate-vt` carries `view-transition-name: hero-plate` (see
+        {/* Below sm the plate is IN FLOW, after the cartouche (`order-2`; the
+            cartouche is `order-1` and the key `order-3`), and sm+ restores the
+            overlay (`sm:absolute sm:inset-0 sm:order-none`, i.e. DOM order).
+            It cannot be an overlay on phones: the cartouche is taller than the
+            hero box there, so its opaque scrim covered the whole plate (F-3,
+            measured on prod 2026-10-15). In flow it takes the frame's own
+            height (h-[40vh] below sm, hero-globe-dynamic.tsx). Rendered once,
+            never duplicated per breakpoint.
+
+            `hero-plate-vt` carries `view-transition-name: hero-plate` (see
             globals.css). It is on THIS wrapper rather than the hero box or
-            the cartouche because this element is out of flow, decorative and
+            the cartouche because this element is out of flow on sm+, decorative and
             has no absolutely-positioned descendants that escape it, so
             whatever containment a UA applies to a named element cannot reach
             the scrim's `-z-10`-inside-`z-10` stacking documented below. Read
             that rule's comment before moving the class: it also records that
             this fires on document navigation only, not on a <Link> click. */}
-        <div className="hero-plate-vt absolute inset-0">
+        <div className="hero-plate-vt relative order-2 sm:absolute sm:inset-0 sm:order-none">
           <HeroGlobe heightClass="h-full" plate={<HeroPlate />} />
         </div>
 
@@ -267,7 +274,7 @@ export default async function HomePage() {
          * paints behind the globe instead, leaving the cartouche unbacked
          * over live map tiles. Pinned by app/page.test.tsx.
          */}
-        <div className="relative z-10 space-y-4 pt-8 pb-10">
+        <div className="relative z-10 order-1 space-y-4 pt-8 pb-10 sm:order-none">
           {/*
            * Cartouche — the bare text (overline, H1, subhead, provenance
            * rule) and, as an absolutely-positioned child of THIS wrapper, the
@@ -535,11 +542,11 @@ export default async function HomePage() {
               the auto margin, over the globe. A real cartographic corner key
               (Ed, live browser, 2026-09-15 — the earlier full-width in-flow
               card read as hero furniture).
-            • below sm: full width, directly under the column, with no auto
-              margin. Deliberate, and also moot: a 5-row key is ~180-220px
-              tall and at 390x844 the hero box already sizes to its content
-              past `min-h-[46vh]`, so there is no slack for `mt-auto` to
-              absorb even if it applied. The column's `pb-10` is the gap.
+            • below sm: full width, LAST in the stack (`order-3`: cartouche,
+              then the in-flow plate, then this key), with no auto margin.
+              Deliberate, and also moot: the hero box has no min-height below
+              sm and sizes to its content, so there is no slack for
+              `mt-auto` to absorb even if it applied.
               `hidden sm:block` is not an option either: phones are where the
               plate is the ONLY map (hero-globe-dynamic.tsx gates MapLibre to
               sm+).
@@ -558,15 +565,17 @@ export default async function HomePage() {
             column's.
 
             The hero box becoming a flex container changes nothing for its
-            other two children. The globe wrapper is `absolute inset-0` and so
-            out of flow entirely (an abspos child is not a flex item). The
+            other two children. On sm+ the globe wrapper is `absolute inset-0` and so
+            out of flow entirely (an abspos child is not a flex item); below
+            sm it is an ordinary flex item, ordered between the two. The
             cartouche column stretches to full width exactly as it did as a
             block, and must keep `flex-grow: 0` — no `flex-1`, no `grow`. The
             slack belongs to THIS card; handing it to the column puts the
             overlap back.
 
-            z-20 clears both the globe wrapper (`absolute inset-0`, no
-            z-index) and the cartouche column (`z-10`); a `relative` flex item
+            z-20 clears both the globe wrapper (`sm:absolute sm:inset-0`, in
+            flow below sm; no z-index) and the cartouche column (`z-10`); a
+            `relative` flex item
             with a z-index participates in the same stacking context it did
             before, so the paint order is unchanged. The card now holds no
             focusable content at all — its map link was removed as a duplicate
@@ -614,7 +623,7 @@ export default async function HomePage() {
             dataset total is stated once, above, from the database. */}
         <PlateKey
           plotted={HERO_PLATE.total - HERO_PLATE.omitted}
-          className="relative z-20 sm:mt-auto sm:mb-4 sm:w-fit sm:max-w-xs sm:shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_30%,transparent)]"
+          className="relative z-20 order-3 sm:order-none sm:mt-auto sm:mb-4 sm:w-fit sm:max-w-xs sm:shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_30%,transparent)]"
         />
       </div>
 
