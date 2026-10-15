@@ -53,20 +53,27 @@ function isCronPath(pathname: string): boolean {
  * Whether the request carries proof that it arrived through our Cloudflare
  * zone rather than straight at the Vercel origin.
  *
- * ⚠️ FAILS **OPEN** ON PURPOSE when `EDGE_SHARED_SECRET` is unset or empty.
- * This is the opposite of every other gate in this repo (`requireAdmin`,
- * `verifySessionCookie` and the cron bearer all fail CLOSED) — do not
- * "fix" it without reading this paragraph:
+ * ⚠️ FAILS **CLOSED** when `EDGE_SHARED_SECRET` is unset or empty, on
+ * production, since 2026-10-15 — like every other gate in this repo
+ * (`requireAdmin`, `verifySessionCookie` and the cron bearer). It failed OPEN
+ * during the rollout, and that was deliberate:
  *
  *   The header is injected by a Cloudflare Transform Rule that is applied
  *   OUT OF BAND from this deploy, and a new Vercel env var is invisible to
  *   already-built deployments until a redeploy. A fail-closed default would
- *   therefore 403 the entire site the moment this merges — before the rule
- *   exists and before the variable is readable. Fail-open makes the rollout
- *   a no-op until both halves are in place, and the check starts enforcing
- *   the moment the variable appears.
+ *   have 403'd the entire site the moment the check merged — before the rule
+ *   existed and before the variable was readable. Fail-open made the rollout
+ *   a no-op until both halves were in place.
  *
- * ACTIVATION SEQUENCE — five steps, in this order. The REDEPLOY (step 3) is
+ * Operational consequence: unsetting `EDGE_SHARED_SECRET` on production (or a
+ * deploy that drops it) now 403s every matched path — `/admin`, `/api` except
+ * `/api/cron/*`, `/map`, `/data`, `/table` — instead of disarming the gate.
+ * Rotation therefore cannot start by unsetting it; see `docs/maintainers.md`
+ * §9.
+ *
+ * ACTIVATION SEQUENCE — COMPLETE. Steps 1-3 were done 2026-09-27 (gate armed
+ * on prod; a direct-to-origin request gets 403, one via Cloudflare gets 200);
+ * steps 4-5 on 2026-10-15. Kept for the reasoning. The REDEPLOY (step 3) is
  * what ARMS the gate: the check below refuses a header-less request as soon
  * as `expected` is truthy, and a new Vercel env var is invisible to an
  * already-built deployment until a redeploy reads it. So steps 1-2 change no
@@ -77,32 +84,33 @@ function isCronPath(pathname: string): boolean {
  *      the value of `EDGE_SECRET_HEADER` above — with the secret you are
  *      about to set, on all incoming requests. A mismatch between the rule's
  *      header name and this file 403s EVERY matched path the moment step 3
- *      lands — `/admin` and `/api` today, the whole site once step 5 widens
- *      the matcher — so copy the string, don't retype it.
+ *      lands — `/admin`, `/api` except `/api/cron/*`, `/map`, `/data` and
+ *      `/table` — so copy the string, don't retype it.
  *   2. Set `EDGE_SHARED_SECRET` in the Vercel project, production scope, to
  *      that same value. Still inert — the running deployment cannot see it.
  *   3. Redeploy. This is the enforcing step. Verify with `curl --resolve
  *      www.compute-atlas.com:443:76.76.21.21 …`, which reaches Vercel without
  *      traversing Cloudflare and must now return 403, while a normal request
  *      to the same URL still returns 200.
- *   4. Close the remaining hole: replace the `if (!expected) return true;`
- *      below with `return false;`. This does NOT start enforcement — step 3
- *      did — it only covers the case where the variable goes ABSENT (an
- *      unset, a deploy that drops it), which today silently reopens the
- *      bypass. ⚠️ After this edit, unsetting the variable 403s every matched
- *      path — `/admin` and `/api` today, the whole site after step 5 — rather
- *      than disarming the gate, which changes how rotation has to be done;
- *      see `docs/maintainers.md`.
- *   5. Only then widen the matcher to the bandwidth-heavy pages — see the
- *      `config` block at the bottom of this file for why that step is last.
+ *   4. (done 2026-10-15) Close the remaining hole: the `if (!expected)`
+ *      branch below went from `return true;` to `return false;`. This did NOT
+ *      start enforcement — step 3 did — it covers the case where the variable
+ *      goes ABSENT (an unset, a deploy that drops it), which used to silently
+ *      reopen the bypass. ⚠️ Unsetting the variable now 403s every matched
+ *      path rather than disarming the gate, which changes how rotation has to
+ *      be done; see `docs/maintainers.md`.
+ *   5. (done 2026-10-15) Widen the matcher to the bandwidth-heavy pages — see
+ *      the `config` block at the bottom of this file for why that step was
+ *      last and what was measured first.
  *
  * Why the enforcement matters: `www.compute-atlas.com` is Cloudflare-proxied,
  * but the proxied record's content is Vercel's anycast IP and Vercel routes by
  * SNI/Host — so a client that resolves the hostname to that IP itself reaches
  * the origin directly, skipping the WAF's UA blocks, the 100 GET/10s rate
  * limit, the country block, the managed DDoS ruleset and the edge cache. The
- * three heaviest pages are ~1.47 MB each and the project sits near the 100 GB
- * Vercel bandwidth cap, so this is a bandwidth and rate-limiting control.
+ * three heaviest pages are ~1.47 MB each and every bypassed byte is served
+ * (and billed) by Vercel instead of Cloudflare's cache, so this is a bandwidth
+ * and rate-limiting control.
  * Authorization is unaffected — it has always been enforced origin-side.
  *
  * Two unconditional exemptions:
@@ -136,7 +144,8 @@ function isEdgeOriginAllowed(request: NextRequest, pathname: string): boolean {
 
   const expected = process.env.EDGE_SHARED_SECRET;
   if (!expected) {
-    return true; // ⚠️ fail-open — see the doc comment above before changing
+    // Fail CLOSED: an unset or empty secret must not disarm the gate.
+    return false;
   }
 
   const presented = request.headers.get(EDGE_SECRET_HEADER);
@@ -219,26 +228,28 @@ export function proxy(request: NextRequest) {
  *    limiters are per-route and much more permissive. `/api/cron/*` matches
  *    here and is exempted in the function body, mirroring `/admin/login`.
  *
- * ⚠️ `/map`, `/table`, `/data` are NOT matched yet, and that is the whole of
- * step 5 of the activation sequence above. They are the three measured
- * bandwidth hogs (~1.47 MB each, shipping the facility corpus inline;
- * together 58% of all egress), so they are exactly what this check is
- * ultimately for — but matching them BEFORE the check enforces buys nothing
- * and costs per-request function invocations on the site's busiest routes:
- *   - Proxy is step 3 of Next's documented execution order, ahead of
- *     filesystem routes (5) and dynamic routes (7), and its CDN-caching guide
- *     says proxy "should run before the CDN cache so it remains the source of
- *     truth for auth" — so a matched route pays an invocation on every
- *     request, including one that would otherwise have been a pure cache hit.
- *     The project is on Vercel Pro, and that cost is measured as small:
- *     Function Invocations were $0.06 for 2026-10-01..14 (`vercel usage`).
- *   - ⛔ UNVERIFIED: whether Vercel still serves the ISR-cached BODY after
- *     this returns `next()`, or re-renders the page. Next's guide allows for a
- *     deployment that puts proxy behind the CDN and tells you to bypass
- *     caching for those routes, which would be the bad direction. Measure a
- *     `cache` HIT on `/map` on a preview before doing step 5.
- * While the check fails open those invocations would buy no protection at
- * all, which is why this is ordered last rather than shipped together.
+ *  - `/map`, `/table`, `/data` — exact-match literals (step 5 of the
+ *    activation sequence above, 2026-10-15). They are the three measured
+ *    bandwidth hogs (~1.47 MB each, shipping the facility corpus inline;
+ *    together 58% of all egress), so they are exactly what this check is
+ *    for. They were left out until the check enforced, because:
+ *      - Proxy is step 3 of Next's documented execution order, ahead of
+ *        filesystem routes (5) and dynamic routes (7), and its CDN-caching
+ *        guide says proxy "should run before the CDN cache so it remains the
+ *        source of truth for auth" — so a matched route pays an invocation on
+ *        every request, including one that would otherwise have been a pure
+ *        cache hit. On `/admin` and `/api` only, that cost is measured as
+ *        small: Function Invocations were $0.06 for 2026-10-01..14
+ *        (`vercel usage`). The cost on these three pages is NOT yet measured;
+ *        re-measure after ship.
+ *      - Whether Vercel still serves the ISR-cached BODY once proxy returns
+ *        `next()` was unverified. MEASURED 2026-10-15 on a PREVIEW deployment
+ *        with this widened matcher: `/map`, `/data` and `/table` were logged
+ *        as `serverless-middleware` (the proxy ran) and still served
+ *        `x-vercel-cache: HIT` after the first `PRERENDER`; unmatched
+ *        `/about` was logged as `static`. A preview takes the non-production
+ *        early return, so this proves the matcher and the cache behaviour,
+ *        not the production header compare.
  *
  * Also deliberately NOT matched:
  *  - `/_next/static`, `/_next/image` and the `public/` asset prefixes
@@ -248,7 +259,7 @@ export function proxy(request: NextRequest) {
  *    without traversing Cloudflare.
  *  - the remaining ~3,000 HTML routes (`/facilities/*`, `/explore/*`, the
  *    hubs). They are ~40 KB each, not 1.47 MB — same invocation-cost
- *    argument, weaker bandwidth payoff. After step 5, not with it.
+ *    argument, weaker bandwidth payoff. Not part of step 5.
  *
  * ⚠️ Matcher semantics here were MEASURED, not read, and the bundled docs are
  * wrong about them. `node_modules/next/dist/docs/…/proxy.md` says sources are
@@ -256,7 +267,7 @@ export function proxy(request: NextRequest) {
  * `/about/team`"; compiling candidate arrays with the installed Next's
  * `getMiddlewareMatchers` shows a literal entry matches that path EXACTLY —
  * `/data` hits `/data` and NOT `/data/facilities.geojson`. That matters for
- * step 5: adding `/data` will not swallow the `public/` geojson assets, which
+ * step 5: adding `/data` (done) will not swallow the `public/` geojson assets, which
  * would otherwise be an easy way to put the proxy in front of every tile
  * request. Also measured: `/admin/:path*` hits bare `/admin` as well as
  * `/admin/login` (hence the `pathname === "/admin"` arm in `isAdminPath`), and
@@ -268,5 +279,5 @@ export function proxy(request: NextRequest) {
  * ignores computed ones), so this list cannot be derived from a constant.
  */
 export const config = {
-  matcher: ["/admin/:path*", "/api/:path*"],
+  matcher: ["/admin/:path*", "/api/:path*", "/map", "/data", "/table"],
 };
