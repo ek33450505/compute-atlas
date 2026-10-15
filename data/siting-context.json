@@ -6185,6 +6185,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "bluebridge-networks-mayfield-heights-oh": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "bluegrassnet-louisville-jefferson-ky": {
     "nearestWater": {
       "name": "South Fork Beargrass Creek",
@@ -7553,6 +7563,12 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "ceranet-morrison-road-columbus-oh": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "cerebras-oklahoma-city-ok": {
@@ -11185,6 +11201,16 @@
       "rock": "Sandstone"
     }
   },
+  "corscale-midwest-digital-gateway-canton-oh": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "cove-mountain-solar-2-iron-county-ut": {
     "nearestWater": {
       "name": "Meadow Valley Creek",
@@ -12514,6 +12540,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "damac-digital-canton-orchard-view-oh": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "darkhorse-cathedra-rockwood-tn": {
     "nearestWater": {
       "name": "Black Creek",
@@ -12627,6 +12663,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "dartpoints-cmh01-dublin-oh": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "dartpoints-columbia-sc": {
     "nearestWater": {
       "name": "Congaree River",
@@ -12648,6 +12694,12 @@
     "aquifer": {
       "name": "Southeastern Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "dartpoints-cvg01-cincinnati-oh": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "dartpoints-greenville-sc": {
@@ -16926,6 +16978,16 @@
     "aquifer": {
       "name": "Ordovician Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "edgeconnex-new-albany-north-campus-oh": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "edgeconnex-por01-por02-hillsboro-campus-or": {
@@ -23811,6 +23873,12 @@
       "voltageKv": 345,
       "distanceMi": 5.8
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "h5-data-centers-cincinnati-ii-dalton-oh": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -34769,6 +34837,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "panattoni-project-shelby-canton-oh": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "panther-creek-hpc-ai-campus-nesquehoning-pa": {
     "nearestWater": {
       "name": "Nesquehoning Creek",
@@ -35770,6 +35848,16 @@
       "voltageKv": 345,
       "distanceMi": 0.8
     },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "powerconnex-new-albany-3-energy-center-oh": {
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"

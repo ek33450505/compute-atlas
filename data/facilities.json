@@ -20369,6 +20369,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "bluebridge-networks-mayfield-heights-oh",
+    "name": "BlueBridge Networks Mayfield Heights Data Center",
+    "operator": "BlueBridge Networks",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.501526911909,
+      "lon": -81.470892518387,
+      "city": "Mayfield Heights",
+      "county": "Cuyahoga",
+      "street": "5915 Landerbrook Dr",
+      "postalCode": "44124",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://bluebridgenetworks.com/contact/",
+        "label": "BlueBridge Networks — Contact (data center locations: Cleveland, Mayfield Heights, Columbus)",
+        "publisher": "BlueBridge Networks",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://bluebridgenetworks.com/cleveland-data-center-services/",
+        "label": "BlueBridge Networks — Data Center Services (colocation facilities in Cleveland, Mayfield Heights and Columbus)",
+        "publisher": "BlueBridge Networks",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/8722",
+        "label": "PeeringDB — BlueBridge Networks | Mayfield Heights Data Center (5915 Landerbrook Drive)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "Colocation facility. The operator's own contact and data-center-services pages list Mayfield Heights as one of three BlueBridge data center locations (with Cleveland and Columbus); the street address comes from PeeringDB facility 8722 (last updated 2026-07-22), not from the operator site. PeeringDB lists ZIP 44125 while the Census geocoder matched ZIP 44124; the Census match is used. No size or power capacity from a primary source, so omitted. Coordinates: US Census geocoder match for '5915 LANDERBROOK DR, MAYFIELD HEIGHTS, OH, 44124' (address-range interpolation); PeeringDB gives 41.505827,-81.467108, ~0.5 km away. Precision approximate. Distinct from BlueBridge's downtown site at 1255 Euclid Ave, which is already covered by our DataBank Cleveland (CLE1) record.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "bluegrassnet-louisville-jefferson-ky",
     "name": "BluegrassNet Louisville Data Center",
     "operator": "Intermart, Inc. (BluegrassNet)",
@@ -24274,6 +24318,50 @@
     ],
     "lastUpdated": "2026-09-14",
     "notes": "Self-contained, purpose-built single-storey facility of 22,000 sq ft with a hardened perimeter, 18-inch raised floor, A+B power distribution, N+1 UPS, and diverse utility feeds from two separate substations. Backup generator capacity is listed as 2.0 MW; that is standby generation, not an IT-load figure, so capacityMw is left unset. Coordinates are a street-address geocode.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ceranet-morrison-road-columbus-oh",
+    "name": "CeraNet Data Center (Morrison Road)",
+    "operator": "CeraNet, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.995882740484,
+      "lon": -82.855483773389,
+      "city": "Columbus",
+      "county": "Franklin",
+      "street": "826 Morrison Rd",
+      "postalCode": "43230",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cera.net/about/",
+        "label": "CeraNet — About (primary facility just outside I-270 near the airport; 826 Morrison Road)",
+        "publisher": "CeraNet, Inc.",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cera.net/contact/",
+        "label": "CeraNet — Contact (826 Morrison Road, Columbus, Ohio 43230)",
+        "publisher": "CeraNet, Inc.",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.cera.net/ohio-colocation-data-centers/",
+        "label": "CeraNet — Service Locations & Colo Space (Gahanna near the airport, Dublin, Westerville)",
+        "publisher": "CeraNet, Inc.",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "CeraNet's primary colocation/hosting facility; the operator describes it as 'located just outside of Columbus, Ohio's I-270 outer belt with quick access to Port Columbus' and lists 826 Morrison Road as its company address. Operator in business since 1996; colocation space from single servers up to multi-rack enclosures 'up to 15,000 sq ft' (operator spec page, not a building-size figure, so not recorded as a field). No power capacity is published. The operator also says it has data center services in Dublin and Westerville, but gives no addresses for them and does not say it operates those sites itself, so they are NOT included in this record and were not emitted. Coordinates: US Census geocoder match for '826 MORRISON RD, COLUMBUS, OH, 43230' (address-range interpolation, not a rooftop match), hence precision approximate.",
     "facilityType": "data_center"
   },
   {
@@ -34956,6 +35044,53 @@
     "aiClassification": "likely"
   },
   {
+    "id": "corscale-midwest-digital-gateway-canton-oh",
+    "name": "Midwest Digital Gateway (Central Avenue SE, Canton)",
+    "operator": "Corscale",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.798546,
+      "lon": -81.374951,
+      "city": "Canton",
+      "county": "Stark",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 312
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-24",
+        "note": "Corscale proposing a 312 MW hyperscale campus on ~162 acres near Millerton St SE and Central Ave SE; still must pass Canton planning, zoning and development review.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://constructionreviewonline.com/2-9-billion-canton-data-center-plan-puts-jobs-power-and-community-concerns-in-spotlight/",
+        "label": "$2.9 Billion Canton Data Center Plan Puts Jobs, Power and Community Concerns in Spotlight (Corscale 'Midwest Digital Gateway', ~162 acres near Millerton St SE & Central Ave SE, 312 MW planned; proposed; Sept 24, 2026)",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      },
+      {
+        "url": "https://spectrumnews1.com/oh/columbus/news/2026/07/28/zoning--canton--data-centers--regulations--stark-county-",
+        "label": "Canton data-center zoning regulations; resident says the proposed center 'will be taken up at 161 acres' (Jul 28, 2026; project not named)",
+        "publisher": "Spectrum News 1",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "Single trade-press source for the project specifics (developer, name, 312 MW, ~162 acres, $2.9B, AWS described only as 'likely customer' with no lease confirmed) -> reported. That article also says ~163.5 acres were annexed into Canton from Canton Township; Spectrum's Jul 2026 zoning story quotes a resident on a proposed 161-acre center but does not name the project, so it corroborates scale only. Coordinates are the Nominatim centroid of the City of Canton (no street address published; the site is in SE Canton near Millerton St SE / Central Ave SE, so the pin is several km off) -> approximate. UNRESOLVED, read before approving: (1) aggregator listings attribute 'Midwest Digital Gateway' to DAMAC Digital; the Stark County Auditor record I fetched (parcel 10020089) shows DAMAC DIGITAL SOLUTION OHIO LLC bought an 8-parcel package from AIDC CANTON 2 LLC on 2025-12-31 for $36.5M, but that parcel is on TRUMP AVE SE, not Central Ave SE, so DAMAC's holding looks like a separate site (Spectrum mentions a data center 'being built on Trump Ave'), not this record; (2) Panattoni's 'Project Shelby' (324 MW, former Ford forge site south of Georgetown Rd NE, Aug 2026) is a different NE-Canton site and is not this record. Developer/owner of the Central Ave parcel should be confirmed against Stark County Auditor transfers (buyer reportedly 'MDG-Canton Purchaser LLC') before publishing.",
+    "investmentUsd": 2900000000,
+    "landAcres": 162,
+    "facilityType": "data_center"
+  },
+  {
     "id": "cove-mountain-solar-2-iron-county-ut",
     "name": "Cove Mountain Solar 2",
     "operator": "Cove Mountain Solar 2 LLC",
@@ -39301,6 +39436,78 @@
     "facilityType": "data_center"
   },
   {
+    "id": "damac-digital-canton-orchard-view-oh",
+    "name": "DAMAC Digital Canton Orchard View Data Center",
+    "operator": "DAMAC Digital",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.776093,
+      "lon": -81.32096,
+      "city": "Canton",
+      "county": "Stark",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 225
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-10",
+        "note": "DAMAC Digital announced a community forum on its planned Canton data center (two buildings and a substation on 80+ acres NE of Trump Ave SE & Orchard View Dr SE); a residential demolition permit had been issued earlier in 2026.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "proposed",
+        "date": "2026-10-09",
+        "note": "Listed as proposed, 225 MW, air-cooled (closed loop), among four proposed Canton data centers.",
+        "sourceIndex": 4
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://orchardviewdata.com/",
+        "label": "Canton Orchard View: DAMAC Digital's proposed digital infrastructure development in Canton (two buildings, interior data halls, on-site substation, closed-loop cooling)",
+        "publisher": "DAMAC Digital (project site)",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.aol.com/articles/dubai-based-damac-digital-plans-153758000.html",
+        "label": "Dubai-based DAMAC Digital plans community forum on data center in southeast Canton (over 80 acres NE of Trump Ave SE & Orchard View Dr SE; demolition permit earlier in 2026; Jul 10, 2026)",
+        "publisher": "The Canton Repository (via AOL)",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.whbc.com/canton-developer-explain-data-center-plan/",
+        "label": "Canton, Developer Explain Data Center Plan (NE corner of Trump Ave SE and Orchardview; Jul 15, 2026)",
+        "publisher": "News-Talk 1480 WHBC",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.citizensforethics.org/reports-investigations/crew-investigations/data-centers-are-spiking-ohio-utility-prices-one-developer-is-trumps-business-partner/",
+        "label": "Data centers are spiking Ohio utility prices (DAMAC Digital Solution Ohio bought the land from AIDC Canton 2 for $36.5M, Dec 2025; Mar 12, 2026)",
+        "publisher": "Citizens for Responsibility and Ethics in Washington (CREW)",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/canton-spare-enough-water-4-095837393.html",
+        "label": "Can Canton spare enough water for 4 proposed data centers? (DAMAC Digital: 225 MW, air-cooled, proposed; Oct 9, 2026)",
+        "publisher": "The Canton Repository (via Yahoo News)",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "Land: DAMAC Digital Solution Ohio LLC bought the site from AIDC Canton 2 LLC (linked to Active Infrastructure) for $36.5M in Dec 2025 (CREW; CREW places it in Canton Township; the land was later annexed into Canton per the batch-1 Stark County Auditor lookup, parcel 10020089 on Trump Ave SE — not re-fetched by me). Site 'over 80 acres' per the Repository. 225 MW is a single-source figure (Repository, Oct 9 2026); no MW on DAMAC's own page; DAMAC's ~2,000 MW national target is entity-wide and not used. Investment (reported elsewhere as >$1B) and the construction/opening timeline were not read on a fetched page and are omitted. Status kept 'proposed' per the newest source (Oct 9) even though a Jul 28 Repository piece says plans are submitted and dirt is being moved. Coordinates: the OSM intersection node of Trump Ave SE and Orchard View Dr SE (Overpass, node 200032979); the site lies NE of that corner, so the pin is approximate (likely within ~0.5 km). Distinct from corscale-midwest-digital-gateway-canton-oh (Millerton St / Central Ave SE, 312 MW): the Oct 9 Repository lists the two as separate projects with different developers, sites and MW; aggregator listings that label a DAMAC site 'Midwest Digital Gateway' conflict with this and were not used.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "darkhorse-cathedra-rockwood-tn",
     "name": "DarkHorse Technologies (Cathedra Bitcoin) Rockwood Data Center",
     "operator": "DarkHorse Technologies Inc. (formerly Sphere 3D Corp.; site from Cathedra Bitcoin)",
@@ -39620,6 +39827,60 @@
     "facilityType": "data_center"
   },
   {
+    "id": "dartpoints-cmh01-dublin-oh",
+    "name": "DartPoints CMH01 (Dublin)",
+    "operator": "DartPoints",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.093442,
+      "lon": -83.129797,
+      "city": "Dublin",
+      "county": "Franklin",
+      "street": "565 Metro Pl S, Suite 300",
+      "postalCode": "43017",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.345
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020-10-28",
+        "note": "DartPoints acquired the operating Metro Data Centers facility in Dublin, OH (renamed CMH01).",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dartpoints.com/locations/cmh01-dublin-oh/",
+        "label": "DartPoints CMH01 – Dublin, OH location page (40,000 sq ft facility, 5,900 sq ft data hall, 345 kW critical IT load, 0.75 MW utility power)",
+        "publisher": "DartPoints",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/9390",
+        "label": "PeeringDB facility 9390 – DartPoints Dublin, OH - CMH1, 565 Metro Pl S Ste 300, Dublin OH 43017",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://dartpoints.com/press/dartpoints-acquires-metro-data-centers/",
+        "label": "DartPoints acquires Metro Data Centers (Dublin, OH), Oct 28, 2020",
+        "publisher": "DartPoints",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "Edge colocation facility formerly Metro Data Centers (MDC), acquired by DartPoints Oct 2020. Operator page: 40,000 sq ft facility with a 5,900 sq ft data hall, 345 kW critical IT load (used as capacityMw.operational) and 0.75 MW utility power; PeeringDB notes 6,000 sq ft raised floor; the 2020 press release says 'over 22,000 SF of high tier infrastructure' (figures differ by what each measures). The operator page lists no street address (it erroneously shows a Shreveport address under the Dublin heading); the address 565 Metro Pl S Ste 300 is from PeeringDB. Coordinates: US Census geocoder match for 565 Metro Pl S, Dublin OH 43017 (TIGER address-range interpolation, not a rooftop match) -> approximate. Distinct from Expedient CMH2 (5700 Innovation Dr, Dublin).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "dartpoints-columbia-sc",
     "name": "DartPoints Columbia Data Center (CAE01)",
     "operator": "DartPoints",
@@ -39664,6 +39925,52 @@
     ],
     "lastUpdated": "2026-09-22",
     "notes": "Colocation facility in the SCRA Innovation Center: 15,000 sq ft raised floor, 8,200 sq ft data hall, 10 on-site network providers. Operator states 2 MW utility power with 110 kW critical IT load; capacityMw.operational records the 2 MW utility figure. Coordinates and address are from the OSM node carrying the operator's own site reference (CAE01).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "dartpoints-cvg01-cincinnati-oh",
+    "name": "DartPoints Cincinnati",
+    "operator": "DartPoints",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.098011,
+      "lon": -84.517282,
+      "city": "Cincinnati",
+      "county": "Hamilton",
+      "street": "302 W 3rd St, Suite 400",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.18
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://dartpoints.com/locations/cvg01-cincinniati-oh/",
+        "label": "DartPoints CVG01 – Cincinnati, OH location page: critical IT load 180 kW, 13,200 sq ft data hall",
+        "publisher": "DartPoints",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/3663",
+        "label": "PeeringDB facility 3663: DartPoints Cincinnati, OH - CVG1, 302 W 3rd St Ste 400",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/dartpoints-cincinnati-oh",
+        "label": "Baxtel: DartPoints: Cincinnati, OH (CVG01), 302 West 3rd Street, previously operated by Immedion",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "Operator short code CVG01 (PeeringDB: CVG1). Downtown Cincinnati colocation suite; operator states 180 kW critical IT load, 310 tons cooling, 13,200 sq ft data hall (PeeringDB: 14,715 sq ft / 13,408 sq ft data center). Formerly Immedion's, acquired by DartPoints in 2021 per Baxtel. The operator page does not print the street address; it comes from PeeringDB and Baxtel. Coordinates: US Census geocoder match for 302 W 3rd St (address-range interpolation, so approximate).",
     "facilityType": "data_center"
   },
   {
@@ -51102,8 +51409,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-14",
-    "notes": "EdgeConneX's ~$1B multi-phase \"MCN New Albany\" South campus. Per the Ohio Tax Credit Authority scope-of-work filing: Phase I converts a ~525,000 sq ft existing warehouse (9850 Innovation Campus Way) into an 80 MW data center; Phase II proposes two new 72 MW facilities (144 MW) — capacityMw.planned = 224 (80 + 144, IT load). A co-located PowerConneX natural-gas energy center (reported 140–216 MW of generation across sources) is EXCLUDED from capacityMw as on-site generation, not IT load. Footprint spans the South PropCo 2 parcels (~97 ac incl. the built anchor) plus the adjacent North PropCo 1 parcel (3356 Clover Valley Rd NW, 170 ac); ~267 ac combined. \"MCN\" is EdgeConneX's internal project prefix (not publicly decoded). Distinct from EdgeConneX's separate Piper Farms parcel (~5 mi away) and from edgeconnex-ashville-oh (Pickaway County). Public-reception check (2026-09-10): IMPORTANT DISAMBIGUATION: this is EdgeConneX's New Albany/Licking County campus (Innovation Campus Way; Phase 1 120MW, Phase 2 216MW, Phase 3 430MW). It is a SEPARATE EdgeConneX project from the heavily-opposed EdgeConneX proposal in Ashville, Pickaway County, OH (denied annexation 2026-02-02 after packed council meetings and a Change.org petition) -- do not merge that record's contention into this one. For New Albany/Licking County specifically, a land-purchase article (2025, checked 2026-09-10) mentions only general Central Ohio-wide concern that data centers could raise electricity costs, immediately caveated because this project's power comes from dedicated on-site generation (PowerConneX), not the residential grid. No hearing, resident testimony, or official statement specific to this Licking County site was found.",
+    "lastUpdated": "2026-10-15",
+    "notes": "EdgeConneX's ~$1B multi-phase \"MCN New Albany\" South campus. Per the Ohio Tax Credit Authority scope-of-work filing: Phase I converts a ~525,000 sq ft existing warehouse (9850 Innovation Campus Way) into an 80 MW data center; Phase II proposes two new 72 MW facilities (144 MW) — capacityMw.planned = 224 (80 + 144, IT load). A co-located PowerConneX natural-gas energy center (reported 140–216 MW of generation across sources) is EXCLUDED from capacityMw as on-site generation, not IT load. Footprint is the four EdgeConneX MCN New Albany South PropCo 2 LLC parcels (97.53 ac per the Licking County Auditor, incl. the 33.86 ac built anchor at 9850 Innovation Campus Way). The adjacent North PropCo 1 parcel (3356 Clover Valley Rd NW, 170.29 ac) is tracked separately as edgeconnex-new-albany-north-campus-oh. \"MCN\" is EdgeConneX's internal project prefix (not publicly decoded). Distinct from EdgeConneX's separate Piper Farms parcel (~5 mi away) and from edgeconnex-ashville-oh (Pickaway County). Public-reception check (2026-09-10): IMPORTANT DISAMBIGUATION: this is EdgeConneX's New Albany/Licking County campus (Innovation Campus Way; PowerConneX I (120 MW) and II (216 MW) serve this campus; PowerConneX New Albany 3 (430 MW) serves the North Campus). It is a SEPARATE EdgeConneX project from the heavily-opposed EdgeConneX proposal in Ashville, Pickaway County, OH (denied annexation 2026-02-02 after packed council meetings and a Change.org petition) -- do not merge that record's contention into this one. For New Albany/Licking County specifically, a land-purchase article (2025, checked 2026-09-10) mentions only general Central Ohio-wide concern that data centers could raise electricity costs, immediately caveated because this project's power comes from dedicated on-site generation (PowerConneX), not the residential grid. No hearing, resident testimony, or official statement specific to this Licking County site was found.",
     "subsidies": [
       {
         "program": "Ohio Tax Credit Authority — 50% data-center sales/use-tax exemption (10-year)",
@@ -51113,7 +51420,7 @@
       }
     ],
     "investmentUsd": 1000000000,
-    "landAcres": 267,
+    "landAcres": 97.5,
     "facilityType": "data_center"
   },
   {
@@ -51457,6 +51764,64 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "edgeconnex-new-albany-north-campus-oh",
+    "name": "New Albany North Campus",
+    "operator": "EdgeConneX",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.102784,
+      "lon": -82.715975,
+      "city": "New Albany",
+      "county": "Licking",
+      "street": "3356 Clover Valley Rd NW",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-24",
+        "note": "PowerConneX filed the OPSB application (case 26-361-EL-BGN) for the 430 MW New Albany 3 Energy Center, which will serve as primary power for a data center on the same site; OPSB public hearing set for 2026-10-22.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.edgeconnex.com/albany-north-campus-new-energy-center/",
+        "label": "New Albany North Campus Energy Center (PowerConneX New Albany 3 Energy Center project page)",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-15",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.thereportingproject.org/public-hearing-on-another-gas-fired-power-plant-for-a-data-center-set-for-oct-22-in-new-albany/",
+        "label": "Public hearing on another gas-fired power plant for a data center set for Oct. 22 in New Albany",
+        "publisher": "The Reporting Project (Denison University)",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      },
+      {
+        "url": "https://gis.lickingcounty.gov/server/rest/services/Auditor/Parcels/FeatureServer/0/query?where=Parcel%3D%27095-111720-00.000%27&outFields=Parcel,OwnerName,SiteAddress,TaxAcres,LegalDescription,Class&returnCentroid=true&returnGeometry=false&outSR=4326&f=json",
+        "label": "Licking County Auditor parcel 095-111720-00.000: EDGECONNEX MCN NEW ALBANY NORTH PROPCO 1 LLC, 3356 Clover Valley Rd NW, 170.29 ac, Industrial, TIF",
+        "publisher": "Licking County Auditor",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/albany-looks-annex-rezone-106-100430497.html",
+        "label": "New Albany looks to annex, rezone 106 acres for business park expansion (Columbus Dispatch)",
+        "publisher": "The Columbus Dispatch (via Yahoo News)",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "EdgeConneX's second New Albany campus, on the 170.29-acre parcel owned by EdgeConneX MCN New Albany North PropCo 1 LLC (3356 Clover Valley Rd NW; bought for ~$62M in March 2025 per the Columbus Dispatch), north of Rt. 161 between Mink Street and Clover Valley Road, in the Johnstown-Monroe school district. Per OPSB filings as reported by The Reporting Project: about 1.3 million sq ft of data center space in four data halls, plus a substation and energy center; 5.86 acres of isolated wetland and 65 acres of trees would be removed. The co-located PowerConneX New Albany 3 Energy Center (up to ~430 MW of gas generation on ~30 acres; Reporting Project says 450 MW) is on-site generation, not IT load, so it is excluded from capacityMw. No data-center IT MW figure was found, so capacityMw is omitted. The operator page targets commercial operation of the energy center as early as Q4 2027. Coordinates are the Licking County Auditor parcel centroid (approximate; the parcel is 170 ac). The Census geocoder matched the street address by road-segment interpolation at 40.103464, -82.723486, about 0.6 km west on the road frontage; the parcel centroid was used instead. The 'North Campus' name comes from the EdgeConneX project page URL and title. Distinct from edgeconnex-mcn-new-albany-licking-county-oh (South campus: 9850 Innovation Campus Way, 80 MW Phase I warehouse conversion plus 2x72 MW Phase II, held by the South PropCo 2 / South Opco entities).",
+    "landAcres": 170.29,
+    "facilityType": "data_center"
   },
   {
     "id": "edgeconnex-por01-por02-hillsboro-campus-or",
@@ -72886,6 +73251,66 @@
     "water": {
       "coolingType": "closed_loop"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "h5-data-centers-cincinnati-ii-dalton-oh",
+    "name": "H5 Data Centers Cincinnati II",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.106022,
+      "lon": -84.536429,
+      "city": "Cincinnati",
+      "county": "Hamilton",
+      "street": "925 Dalton Avenue",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-12-14",
+        "note": "H5 Data Centers announced acquisition of the operating 925 Dalton Avenue facility, previously T5@Cincinnati",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/cincinnati-II-data-center.html",
+        "label": "H5 Data Centers Cincinnati II page: 925 Dalton Avenue, Cincinnati, OH 45203; 107,000+ sq ft; Tier III design",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "http://web.archive.org/web/20251117173022/https://www.datacenterdynamics.com/en/news/h5-data-centers-acquires-data-center-in-cincinnati-ohio/",
+        "label": "DCD: H5 Data Centers acquires 925 Dalton Avenue (formerly T5@Cincinnati); operates at 2MW, expandable to 6MW",
+        "publisher": "DatacenterDynamics",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      },
+      {
+        "url": "https://lightwaveonline.com/data-center/article/14222325/h5-data-centers-buys-cincinnatis-925-dalton-avenue-data-center",
+        "label": "Lightwave: H5 Data Centers buys Cincinnati's 925 Dalton Avenue data center (Dec 14, 2021)",
+        "publisher": "Lightwave",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/11523",
+        "label": "PeeringDB facility 11523: H5 Data Centers Cincinnati II, 925 Dalton Ave",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "Former T5 Data Centers site T5@Cincinnati, originally developed by PNC Bank (built ~1980 per DCD); acquired by H5 Data Centers Dec 2021. Building owned by Legacy Investing LLC per DCD. 107,000 sq ft; 2 MW operational figure is as reported in Dec 2021 (DCD: 'operates at 2MW with potential for expansion up to 6MW'; the 6 MW is expansion potential, not a plan). T5's own location page for Cincinnati now redirects to its generic locations list. Coordinates: US Census geocoder match for 925 Dalton Ave (address-range interpolation, so approximate). Distinct from tracked H5 Data Centers Cincinnati I at 360 Gest St.",
     "facilityType": "data_center"
   },
   {
@@ -107883,6 +108308,71 @@
     "facilityType": "data_center"
   },
   {
+    "id": "panattoni-project-shelby-canton-oh",
+    "name": "Project Shelby",
+    "operator": "Panattoni Development Co.",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.799759,
+      "lon": -81.335551,
+      "city": "Canton",
+      "county": "Stark",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 320
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-13",
+        "note": "Panattoni announced a community open house for Project Shelby on the nearly 91-acre former Ford property south of Georgetown Rd NE; site plans submitted to the Building Department; end user unnamed.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "proposed",
+        "date": "2026-10-09",
+        "note": "Listed as proposed, 320 MW, water-cooled, ~400,000 gal/day peak water demand.",
+        "sourceIndex": 3
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://marketing.panattoni.com/project-shelby",
+        "label": "Project Shelby (City of Canton; ~30-month construction; completing engineering, environmental review and permitting)",
+        "publisher": "Panattoni Development Co. (project site)",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/developers-host-open-house-proposed-155320743.html",
+        "label": "Developers to host open house for proposed data center on former Ford property in Canton (Panattoni 'Project Shelby', nearly 91-acre site south of Georgetown Rd NE; site plans submitted; Aug 13, 2026)",
+        "publisher": "The Canton Repository (via Yahoo News)",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.whbc.com/open-house-for-another-proposed-canton-data-center/",
+        "label": "Open House for Another Proposed Canton Data Center (Project Shelby, industrial land off 8th St NE between Marietta and Trump Aves; Aug 14, 2026)",
+        "publisher": "News-Talk 1480 WHBC",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/canton-spare-enough-water-4-095837393.html",
+        "label": "Can Canton spare enough water for 4 proposed data centers? (Panattoni Project Shelby: 320 MW, water-cooled, ~400,000 gal/day peak, proposed; Oct 9, 2026)",
+        "publisher": "The Canton Repository (via Yahoo News)",
+        "retrievedAt": "2026-10-15",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "Operator is the developer (Panattoni); the end user is unnamed ('a major American technology company that provides digital services such as cloud computing'). Do NOT infer Amazon: WHBC only says Panattoni is 'most often associated with Amazon'. The lead's ~324 MW was not found in any fetched source; the Repository (Oct 9 2026) gives 320 MW, single-source. Property is 'nearly 91 acres' owned by A&J Urban Development (Repository Aug 13) — landAcres omitted because the figure is approximate and ownership/lease to Panattoni is not stated. Panattoni's page says it is 'completing engineering, environmental review, and permitting', ~30-month build. Coordinates: OSM intersection node of Marietta Ave NE and Georgetown St NE (Overpass node 199939548; sources say 'Georgetown Road NE'); the site is SE of that corner, between Marietta and Trump Aves off 8th St NE, so approximate (likely within ~0.5 km). Not a duplicate of amazon-perry-township-stark-oh (Panattoni's other Stark project, Faircrest St SW, Perry Township, 240 MW) — the Repository lists both separately — nor of corscale-midwest-digital-gateway-canton-oh (SE Canton). Site is the former Ford property in northeast Canton.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "panther-creek-hpc-ai-campus-nesquehoning-pa",
     "name": "Panther Creek HPC/AI Data Center Campus",
     "operator": "Bitfarms Ltd.",
@@ -110982,6 +111472,74 @@
       "technology": "natural_gas",
       "offtaker": "EdgeConneX",
       "notes": "Second on-site generation phase for a nearby New Albany data center (EdgeConneX's co-located MCN New Albany campus, edgeconnex-mcn-new-albany-licking-county-oh)."
+    }
+  },
+  {
+    "id": "powerconnex-new-albany-3-energy-center-oh",
+    "name": "PowerConneX New Albany 3 Energy Center",
+    "operator": "EdgeConneX",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.102,
+      "lon": -82.716,
+      "city": "New Albany",
+      "county": "Licking",
+      "state": "OH",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 430
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-09",
+        "note": "PowerConneX, Inc. notices first public information meeting (Apr 30, 2026) for a proposed up-to-430 MW gas plant; OPSB Case No. 26-361-EL-BGN (pre-application).",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-07-24",
+        "note": "Application filed with the Ohio Power Siting Board per the project website; no OPSB certificate found as of 2026-10-15.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.edgeconnex.com/wp-content/uploads/2026/05/PCX-New-Albany-3-Energy-Center-Notice-5-12-26.pdf",
+        "label": "Notice of Public Informational Meeting for Proposed Major Utility Facility: PowerConneX New Albany 3 Energy Center (OPSB Case No. 26-361-EL-BGN)",
+        "publisher": "PowerConneX, Inc. / EdgeConneX",
+        "retrievedAt": "2026-10-15",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.edgeconnex.com/albany-north-campus-new-energy-center/",
+        "label": "New Albany North Campus Energy Center: PowerConneX New Albany 3 Energy Center project page (application filed with OPSB July 24, 2026)",
+        "publisher": "EdgeConneX",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      },
+      {
+        "url": "https://newalbanyohio.org/natural-gas-power",
+        "label": "City of New Albany: Proposed Project, PowerConneX New Albany 3 Energy Center (third public information meeting Oct 22, 2026)",
+        "publisher": "City of New Albany",
+        "retrievedAt": "2026-10-15",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-15",
+    "notes": "Third PowerConneX gas plant in New Albany, distinct from PowerConneX I (120 MW, Case 25-90-EL-BLN) and II (216 MW). Up to ~430 MW on ~30 acres, intended as primary power for data centers on the same site (EdgeConneX's New Albany North Campus, in the Johnstown-Monroe school district per the project page); commercial operations as early as Q4 2027 (operator notice). City page places it in the Licking County portion of the New Albany International Business Park and lists a third public information meeting on Oct 22, 2026. Coordinates: no street address is published; point estimated from the operator notice's site map (project area bounded by Clover Valley Rd on the west, Harrison Rd NW to the north, Jug St to the south, a diagonal state route to the east), positioned against OpenStreetMap road geometry via Nominatim -- uncertainty up to ~1 km. Jersey Township centroid (Nominatim, 40.0848,-82.7154) is the fallback if map-derived placement is not acceptable. Co-located data center (North Campus) is not tracked as a separate record; poweredFacilityIds omitted.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural gas-powered equipment serving as primary electricity source for the on-site data center."
+    },
+    "landAcres": 30,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "EdgeConneX",
+      "notes": "OPSB Case No. 26-361-EL-BGN; developer entity PowerConneX, Inc. (EdgeConneX's power arm). Serves EdgeConneX's New Albany North Campus data center on the same site."
     }
   },
   {
