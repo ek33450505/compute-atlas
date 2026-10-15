@@ -234,4 +234,16 @@ test.describe("hero plate on a phone", () => {
     expect(covered.height).toBeGreaterThan(200);
     expect(covered.inside).toBe(true);
   });
+
+  // F-4: an `sr-only` <table> sizes to its content (CSS 2.1 auto layout), so
+  // the StackArea data table widened the layout viewport (scrollWidth 761 at
+  // 390px, measured 2026-10-15). Relies on this describe's phone viewport.
+  test("/ does not scroll sideways", async ({ page }) => {
+    await page.goto("/");
+    const widths = await page.evaluate(() => ({
+      scroll: document.documentElement.scrollWidth,
+      client: document.documentElement.clientWidth,
+    }));
+    expect(widths.scroll).toBeLessThanOrEqual(widths.client);
+  });
 });
