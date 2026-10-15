@@ -59,6 +59,17 @@ function readRealFacilitiesFile(): unknown {
   return JSON.parse(readFileSync(path.join(process.cwd(), "data", "facilities.json"), "utf-8"));
 }
 
+const noSleep = async () => {};
+
+function sleepRecorder() {
+  const delays: number[] = [];
+  return { delays, sleep: async (ms: number) => void delays.push(ms) };
+}
+
+const okResponse = () =>
+  ({ ok: true, status: 200, json: async () => ({ facilities: [API_FACILITY] }) }) as Response;
+const statusResponse = (status: number) => ({ ok: false, status, statusText: "" }) as Response;
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });
@@ -74,7 +85,7 @@ describe("loadFacilities", () => {
 
     expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
     expect(result.apiError).toBeUndefined();
-    expect(fetchImpl).toHaveBeenCalledWith("http://localhost:3000/api/facilities");
+    expect(fetchImpl).toHaveBeenCalledWith("http://localhost:3000/api/facilities", expect.anything());
   });
 
   it("falls back to reading data/facilities.json when fetch rejects (network error), and reports the thrown message", async () => {
@@ -82,10 +93,10 @@ describe("loadFacilities", () => {
       throw new Error("network down");
     });
 
-    const result = await loadFacilities("http://localhost:3000", fetchImpl);
+    const result = await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
 
     expect(result.source).toBe("file");
-    expect(result.apiError).toBe("network down");
+    expect(result.apiError).toBe("3 attempts; last: network down");
     expect(Array.isArray(result.facilities)).toBe(true);
     expect(result.facilities.length).toBeGreaterThan(0);
     expect(result.facilities).toEqual(readRealFacilitiesFile());
@@ -98,7 +109,7 @@ describe("loadFacilities", () => {
       async () => ({ ok: false, status: 503, statusText: "Service Unavailable" }) as Response
     );
 
-    const result = await loadFacilities("http://localhost:3000", fetchImpl);
+    const result = await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
 
     expect(result.source).toBe("file");
     expect(result.apiError).toContain("503");
@@ -118,6 +129,102 @@ describe("loadFacilities", () => {
     const result = await loadFacilities("http://localhost:3000");
 
     expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
-    expect(globalFetch).toHaveBeenCalledWith("http://localhost:3000/api/facilities");
+    expect(globalFetch).toHaveBeenCalledWith("http://localhost:3000/api/facilities", expect.anything());
+  });
+
+  describe("bounded retry", () => {
+    it("retries a thrown error once and then returns the API result", async () => {
+      const rec = sleepRecorder();
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockRejectedValueOnce(new TypeError("fetch failed"))
+        .mockResolvedValueOnce(okResponse());
+
+      const result = await loadFacilities("http://x", fetchImpl, { sleep: rec.sleep });
+
+      expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
+      expect(rec.delays).toEqual([2_000]);
+    });
+
+    it("gives up after 3 attempts on an HTML 200 body and reports the attempt count", async () => {
+      const rec = sleepRecorder();
+      const fetchImpl = vi.fn<typeof fetch>(
+        async () =>
+          ({
+            ok: true,
+            status: 200,
+            json: async () => JSON.parse("<!DOCTYPE html><html></html>"),
+          }) as Response
+      );
+
+      const result = await loadFacilities("http://x", fetchImpl, { sleep: rec.sleep });
+
+      expect(result.source).toBe("file");
+      expect(fetchImpl).toHaveBeenCalledTimes(3);
+      expect(result.apiError).toContain("3 attempts");
+      expect(result.apiError).not.toContain("\n");
+      expect(rec.delays).toEqual([2_000, 8_000]);
+    });
+
+    it("retries a 503 and then succeeds", async () => {
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockResolvedValueOnce(statusResponse(503))
+        .mockResolvedValueOnce(okResponse());
+
+      const result = await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+
+      expect(result.source).toBe("api");
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not retry a 403; falls back after exactly one call", async () => {
+      const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(403));
+
+      const result = await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+
+      expect(result.source).toBe("file");
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(result.apiError).toContain("403");
+    });
+
+    it("retries a 429 and then succeeds", async () => {
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockResolvedValueOnce(statusResponse(429))
+        .mockResolvedValueOnce(okResponse());
+
+      const result = await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+
+      expect(result.source).toBe("api");
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
+    });
+
+    it("treats a 200 body without a facilities array as retryable", async () => {
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({}) } as Response)
+        .mockResolvedValueOnce(okResponse());
+
+      const result = await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+
+      expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
+    });
+
+    it("passes an AbortSignal to every fetch", async () => {
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockRejectedValueOnce(new Error("boom"))
+        .mockResolvedValueOnce(okResponse());
+
+      await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+
+      for (const call of fetchImpl.mock.calls) {
+        expect(call[1]?.signal).toBeInstanceOf(AbortSignal);
+      }
+      expect(fetchImpl).toHaveBeenCalledTimes(2);
+    });
   });
 });
