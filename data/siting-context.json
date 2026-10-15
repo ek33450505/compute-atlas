@@ -2088,6 +2088,15 @@
     }
   },
   "amazon-floydada-floyd-county-tx": {
+    "nearestWater": {
+      "name": "Bois d'Arc Lake",
+      "kind": "lake",
+      "distanceMi": 4.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -2239,6 +2248,15 @@
     }
   },
   "amazon-stevensburg-culpeper-va": {
+    "nearestWater": {
+      "name": "Mountain Run",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -2378,6 +2396,15 @@
     }
   },
   "amp-z-lufkin-southland-mill-angelina-county-tx": {
+    "nearestWater": {
+      "name": "Jones Lake",
+      "kind": "lake",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -3080,6 +3107,15 @@
     }
   },
   "ark-data-centers-canton-oh": {
+    "nearestWater": {
+      "name": "Spring Valley Lake",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -3652,6 +3688,15 @@
     }
   },
   "avaio-digital-project-andromeda-oxford-township-oh": {
+    "nearestWater": {
+      "name": "Plum Brook",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -5336,6 +5381,15 @@
     }
   },
   "bilateral-energy-project-patriot-granbury-tx": {
+    "nearestWater": {
+      "name": "Lambert Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6079,6 +6133,15 @@
     }
   },
   "blueprint-georgetown-tx": {
+    "nearestWater": {
+      "name": "South Fork San Gabriel River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -6089,6 +6152,15 @@
     }
   },
   "blueprint-taylor-tx": {
+    "nearestWater": {
+      "name": "City Lake",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -6525,6 +6597,15 @@
     }
   },
   "bulldog-power-sweeny-brazoria-county-tx": {
+    "nearestWater": {
+      "name": "Flag Pond",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 13.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6962,6 +7043,15 @@
     }
   },
   "centersquare-cmh1-lewis-center-oh": {
+    "nearestWater": {
+      "name": "Deep Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -7375,6 +7465,15 @@
     }
   },
   "cfs-arc-fusion-chesterfield-va": {
+    "nearestWater": {
+      "name": "Proctors Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -8528,6 +8627,15 @@
     }
   },
   "cloudhq-clp-campus-culpeper-va": {
+    "nearestWater": {
+      "name": "Mountain Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 10.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -9832,6 +9940,15 @@
     }
   },
   "compass-mining-texas-8-odessa-tx": {
+    "nearestWater": {
+      "name": "Averitt Number 2 Lake",
+      "kind": "lake",
+      "distanceMi": 3.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -9880,6 +9997,15 @@
     }
   },
   "compugen-new-albany-data-center-oh": {
+    "nearestWater": {
+      "name": "Rocky Fork Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11020,6 +11146,15 @@
     }
   },
   "crane-data-centers-pierce-township-clermont-oh": {
+    "nearestWater": {
+      "name": "Ohio River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11735,6 +11870,15 @@
     }
   },
   "cyrusone-cin4-hamilton-oh": {
+    "nearestWater": {
+      "name": "Great Miami River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11813,12 +11957,30 @@
     }
   },
   "cyrusone-jack-county-tx": {
+    "nearestWater": {
+      "name": "Lost Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
     }
   },
   "cyrusone-lebanon-cin5-cin7-oh": {
+    "nearestWater": {
+      "name": "Dry Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -12140,6 +12302,15 @@
     }
   },
   "cyrusone-sat14a-medina-county-tx": {
+    "nearestWater": {
+      "name": "Medina River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -12660,6 +12831,15 @@
     }
   },
   "databank-culpeper-iad5-iad6-va": {
+    "nearestWater": {
+      "name": "Meadowbrook Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15348,6 +15528,15 @@
     }
   },
   "discover-new-albany-data-center-oh": {
+    "nearestWater": {
+      "name": "Rocky Fork Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15524,6 +15713,15 @@
     }
   },
   "dominion-north-anna-smr-louisa-va": {
+    "nearestWater": {
+      "name": "Sedges Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -16950,6 +17148,15 @@
     }
   },
   "edged-martindale-campus-caldwell-county-tx": {
+    "nearestWater": {
+      "name": "Morrison Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -17537,6 +17744,15 @@
     }
   },
   "eneus-energy-rgv-data-center-harlingen-tx": {
+    "nearestWater": {
+      "name": "Lake Harlingen",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -18235,6 +18451,15 @@
     }
   },
   "equinix-culpeper-cu1-cu4-va": {
+    "nearestWater": {
+      "name": "Mountain Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -19183,6 +19408,15 @@
     }
   },
   "falmouth-tech-accokeek-center-stafford-va": {
+    "nearestWater": {
+      "name": "Accokeek Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -21832,6 +22066,15 @@
     }
   },
   "google-columbus-rathmell-road-oh": {
+    "nearestWater": {
+      "name": "Scioto River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -22153,6 +22396,15 @@
     }
   },
   "google-midlothian-ellis-county-tx": {
+    "nearestWater": {
+      "name": "Soap Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -24691,6 +24943,15 @@
     }
   },
   "infrakey-lacy-lakeview-data-district-mclennan-county-tx": {
+    "nearestWater": {
+      "name": "White Rock Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -25230,6 +25491,15 @@
     }
   },
   "iron-mountain-taylor-williamson-county-tx": {
+    "nearestWater": {
+      "name": "City Lake",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -25877,6 +26147,15 @@
     }
   },
   "karis-critical-smart-farms-new-albany-oh": {
+    "nearestWater": {
+      "name": "Duncan Run",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -25940,6 +26219,15 @@
     }
   },
   "kilby-power-plant-energy-forge-one-reeves-county-tx": {
+    "nearestWater": {
+      "name": "Toyah Creek",
+      "kind": "river",
+      "distanceMi": 6.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 66.5
+    },
     "waterStress": {
       "cat": -1,
       "label": "Arid and Low Water Use"
@@ -27914,6 +28202,15 @@
     }
   },
   "mara-hansford-county-wind-farm-tx": {
+    "nearestWater": {
+      "name": "Horse Creek",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 17.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -28673,6 +28970,15 @@
     }
   },
   "meta-henrico-white-oak-sandston-va": {
+    "nearestWater": {
+      "name": "Canal Swamp",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -29819,6 +30125,15 @@
     }
   },
   "microsoft-new-albany-beech-road-oh": {
+    "nearestWater": {
+      "name": "Blacklick Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -30215,6 +30530,15 @@
     }
   },
   "middletown-data-center-frederick-va": {
+    "nearestWater": {
+      "name": "Catlett Run",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -30365,6 +30689,15 @@
     }
   },
   "minnieville-mid-county-industrial-park-prince-william-va": {
+    "nearestWater": {
+      "name": "Quantico Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -31976,6 +32309,15 @@
     }
   },
   "nightpeak-old-ocean-data-center-brazoria-county-tx": {
+    "nearestWater": {
+      "name": "Flag Pond",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 13.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -33021,6 +33363,15 @@
     }
   },
   "oasis-dahlgren-west-king-george-va": {
+    "nearestWater": {
+      "name": "Williams Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -33916,6 +34267,15 @@
     }
   },
   "pacifico-glass-mountains-brewster-county-tx": {
+    "nearestWater": {
+      "name": "Alpine Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 91.9
+    },
     "waterStress": {
       "cat": -1,
       "label": "Arid and Low Water Use"
@@ -34385,6 +34745,15 @@
     }
   },
   "peterson-culpeper-technology-campus-va": {
+    "nearestWater": {
+      "name": "Mountain Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -34855,6 +35224,15 @@
     }
   },
   "potomac-creek-campus-stafford-va": {
+    "nearestWater": {
+      "name": "Accokeek Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -35328,6 +35706,15 @@
     }
   },
   "prime-austin-campus-lockhart-caldwell-county-tx": {
+    "nearestWater": {
+      "name": "Plum Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -35738,6 +36125,15 @@
     }
   },
   "project-lightning-wildwood-commerce-park-carroll-va": {
+    "nearestWater": {
+      "name": "Daniel Branch",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -36283,12 +36679,30 @@
     }
   },
   "province-group-perry-village-lake-oh": {
+    "nearestWater": {
+      "name": "Red Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
     }
   },
   "province-group-powhatan-technology-park-va": {
+    "nearestWater": {
+      "name": "Bernards Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -36699,6 +37113,15 @@
     }
   },
   "qts-fort-worth-ftw1-tx": {
+    "nearestWater": {
+      "name": "Henrietta Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -38956,6 +39379,15 @@
     }
   },
   "sabey-sdc-austin-round-rock-tx": {
+    "nearestWater": {
+      "name": "Lake Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -40491,6 +40923,15 @@
     }
   },
   "skybox-prologis-hutto-powercampus-tx": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -40820,6 +41261,15 @@
     }
   },
   "soluna-project-kati-2-willacy-county-tx": {
+    "nearestWater": {
+      "name": "Harbin Reservoir",
+      "kind": "lake",
+      "distanceMi": 7.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -44003,6 +44453,15 @@
     }
   },
   "thor-equities-urbana-technology-hub-oh": {
+    "nearestWater": {
+      "name": "Dugan Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 17.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -44661,6 +45120,15 @@
     }
   },
   "tjx-new-albany-data-center-oh": {
+    "nearestWater": {
+      "name": "Rocky Fork Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -44853,6 +45321,15 @@
     }
   },
   "tract-branders-bridge-chesterfield-va": {
+    "nearestWater": {
+      "name": "Swift Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -47521,6 +47998,15 @@
     }
   },
   "williams-neo-power-generation-jersey-township-oh": {
+    "nearestWater": {
+      "name": "South Fork Licking River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -48061,6 +48547,15 @@
     }
   },
   "zuharis-project-astralus-yellow-creek-columbiana-oh": {
+    "nearestWater": {
+      "name": "Little Yellow Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
