@@ -951,6 +951,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "afs-milwaukee-midtown-center-computing-facility-wi": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "agincourt-valparaiso-porter-county-in": {
     "nearestWater": {
       "name": "Flint Lake",
@@ -3424,6 +3438,12 @@
       "rock": "Sandstone"
     }
   },
+  "athlon-bt-el-reno-ok": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "atlantic-power-nest-cogen-kenilworth-nj": {
     "nearestWater": {
       "name": "West Branch Elizabeth River",
@@ -5581,6 +5601,16 @@
       "rock": "Sandstone"
     }
   },
+  "bitari-hosted-mining-site-marion-in": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "bitdeer-clarington-oh": {
     "nearestWater": {
       "name": "Gardner Run",
@@ -6238,6 +6268,12 @@
       "label": "Low (<10%)"
     }
   },
+  "blue-power-clay-county-power-plant-carbon-in": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "bluebird-quad-cities-bettendorf-ia": {
     "nearestWater": {
       "name": "Mississippi River",
@@ -6365,6 +6401,12 @@
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "blusky-ai-mulhall-ok": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "blusky-ai-nephi-ut": {
@@ -7764,6 +7806,12 @@
       "rock": "Sandstone"
     }
   },
+  "chickasaw-nation-winstar-data-center-thackerville-ok": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "chirisa-volo-data-center-il": {
     "nearestWater": {
       "name": "Squaw Creek",
@@ -7785,6 +7833,12 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "choctaw-nation-data-center-durant-ok": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "cielo-clarksville-tn": {
@@ -8778,6 +8832,12 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "clenera-solstice-solar-leflore-county-ok": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "clenera-wapello-solar-ia": {
     "nearestWater": {
       "name": "Otter Creek",
@@ -9053,6 +9113,16 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "cloverleaf-greenleaf-town-of-wrightstown-wi": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
     }
   },
   "cloverleaf-ironwood-dundee-township-mi": {
@@ -15217,6 +15287,16 @@
       "label": "Low (<10%)"
     }
   },
+  "digital-realty-kokomo-howard-county-in": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "digital-realty-lax12-ca": {
     "nearestWater": {
       "name": "Dominguez Channel",
@@ -18895,6 +18975,16 @@
     }
   },
   "epicio-st-croix-vi": {},
+  "eqt-mt-comfort-technology-park-hancock-county-in": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "equinix-ashburn-va": {
     "nearestWater": {
       "name": "Beaverdam Run",
@@ -22806,6 +22896,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "google-franklin-township-indianapolis-in": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "google-haskell-county-tx": {
     "nearestWater": {
       "name": "Rice Springs Branch",
@@ -25828,6 +25928,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "invenergy-foundry-ridge-energy-center-darien-wi": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "invenergy-prairie-hills-wind-custer-ne": {
     "nearestWater": {
       "name": "Mud Creek",
@@ -25845,6 +25955,20 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "invenergy-red-oak-ridge-energy-center-paris-wi": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "invitium-energy-carroll-township-perry-county-pa": {
@@ -27255,21 +27379,6 @@
       "label": "Low (<10%)"
     }
   },
-  "lancium-crusoe-abilene-tx": {
-    "nearestWater": {
-      "name": "Truitt Davis Lake",
-      "kind": "lake",
-      "distanceMi": 0.8
-    },
-    "nearestTransmission": {
-      "voltageKv": 345,
-      "distanceMi": 1.5
-    },
-    "waterStress": {
-      "cat": 3,
-      "label": "High (40-80%)"
-    }
-  },
   "lancium-fort-stockton-tx": {
     "nearestWater": {
       "name": "Comanche Creek",
@@ -27885,6 +27994,12 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "lm-funding-calumet-ok": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "ln-compute-cuthbert-ga": {
@@ -34536,6 +34651,12 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "onenet-osu-tulsa-ok": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "openai-project-camellia-effingham-ga": {
     "nearestWater": {
       "name": "Rincon Branch",
@@ -35461,6 +35582,12 @@
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "paycom-headquarters-oklahoma-city-ok": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "pcc-dekalb-ellenwood-data-center-ga": {
@@ -37116,6 +37243,12 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "project-astro-broken-arrow-ok": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "project-boulder-colleton-county-sc": {
     "nearestWater": {
       "name": "Hickory Hill Lake",
@@ -37306,6 +37439,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "project-riverjump-marion-grant-county-in": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "project-ruby-upatoi-muscogee-ga": {
     "nearestWater": {
       "name": "Cox Creek",
@@ -37422,6 +37565,12 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "project-zora-warrick-county-in": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "prologis-326-charcot-avenue-san-jose-ca": {
@@ -37739,6 +37888,12 @@
       "rock": "Sandstone"
     }
   },
+  "provident-burns-harbor-porter-county-in": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "provident-chesterton-porter-county-in": {
     "nearestWater": {
       "name": "Pratt Lake",
@@ -37873,6 +38028,12 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "pso-northeastern-5-6-oologah-ok": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "ptolemy-data-systems-sheridan-wy": {
@@ -38550,6 +38711,12 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "qts-project-jeremiah-wheeler-porter-county-in": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "qts-richmond-1-dc1-ric1-white-oak-technology-park-va": {
@@ -40040,6 +40207,16 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "rwe-crooked-creek-solar-mccurtain-county-ok": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Edwards-trinity Aquifer System",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "rwe-maryland-blue-crab-solar-storage-dorchester-md": {
@@ -44033,6 +44210,16 @@
       "voltageKv": 230,
       "distanceMi": 0.4
     },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "surge-henry-county-technology-park-knightstown-in": {
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -48932,6 +49119,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "we-energies-fox-north-energy-center-wrightstown-wi": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "we-energies-oak-creek-natural-gas-wi": {
     "nearestWater": {
       "name": "Lake Michigan",
@@ -49981,6 +50178,21 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "lancium-crusoe-abilene-tx": {
+    "nearestWater": {
+      "name": "Truitt Davis Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   }
 }
