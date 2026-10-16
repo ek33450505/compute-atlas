@@ -2834,6 +2834,66 @@
     }
   },
   {
+    "id": "afs-milwaukee-midtown-center-computing-facility-wi",
+    "name": "Midtown Center Computing Facility (Former Walmart, 5825 W. Hope Ave.)",
+    "operator": "AFS Milwaukee LLC",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.0928763,
+      "lon": -87.9850587,
+      "city": "Milwaukee",
+      "county": "Milwaukee",
+      "street": "5825 W. Hope Ave.",
+      "postalCode": "53216",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 10
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-29",
+        "note": "The Milwaukee City Plan Commission heard the redevelopment proposal, including a 19,000 sq ft computing facility, and held it without a decision.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-07-06",
+        "note": "Ald. Mark Chambers announced the computing research facility was removed from the redevelopment proposal after resident opposition.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://biztimes.com/plan-commission-holds-redevelopment-proposal-for-former-midtown-center-walmart-store-following-tense-public-hearing/",
+        "label": "Plan Commission holds redevelopment proposal for former Midtown Center Walmart store following tense public hearing",
+        "publisher": "BizTimes Milwaukee",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://biztimes.com/data-computing-facility-removed-from-midtown-center-redevelopment-proposal/",
+        "label": "Data computing facility removed from Midtown Center redevelopment proposal",
+        "publisher": "BizTimes Milwaukee",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=5825+W+Hope+Ave,+Milwaukee,+WI&format=json",
+        "label": "OpenStreetMap/Nominatim geocode of 5825 West Hope Avenue, Midtown Center, Milwaukee 53216",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "A small high-performance computing facility proposed for 19,000 sq ft of the 108,000 sq ft former Walmart at Midtown Center, with a stated maximum utility capacity of 10 MW. It was dropped in July 2026. The site redevelopment continues as self-storage, affordable housing and a library branch.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "agincourt-valparaiso-porter-county-in",
     "name": "Agincourt Valparaiso Data Center Campus",
     "operator": "Agincourt Investments, LLC",
@@ -3872,9 +3932,23 @@
         "publisher": "KSWO",
         "retrievedAt": "2026-09-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/data-centers-in-oklahoma/grady-county-oklahoma-data-center",
+        "label": "What to know about the proposed Grady County, Oklahoma data center",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/09/grady-county-data-center-hits-water-wall-before-ground-even-breaks/",
+        "label": "Grady County data center hits water wall before ground even breaks",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-16",
     "notes": "An affiliate of Aligned Data Centers bought roughly 800 acres of rural land near Amber, northwest of Chickasha in Grady County, for more than $17 million. That $17M is the LAND purchase price only — it is not a project investment figure and is deliberately not recorded as investmentUsd. No capacity, building count or timeline has been made public. Coordinates are the town of Amber, not a parcel. This is a separate Grady County site from the tracked Chickasha Airport Industrial Park project.",
     "water": {
       "coolingType": "closed_loop",
@@ -6968,8 +7042,7 @@
       "precision": "exact"
     },
     "capacityMw": {
-      "planned": 2200,
-      "operational": 590
+      "planned": 2200
     },
     "poweredBy": "grid (Indiana Michigan Power) + natural gas",
     "announcedDate": "2024-04-25",
@@ -7042,9 +7115,24 @@
         "publisher": "WSBT",
         "retrievedAt": "2026-08-05",
         "kind": "press"
+      },
+      {
+        "url": "https://convergedigest.com/aws-activates-project-rainier-data-center-campus/",
+        "label": "AWS Activates Project Rainier Data Center Campus",
+        "publisher": "Converge Digest",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://epoch.ai/data/ai-data-centers/directory/anthropic-amazon-new-carlisle",
+        "label": "Anthropic-Amazon New Carlisle | AI data centers",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-10-16",
+    "notes": "No operational capacity is recorded because neither Amazon nor the utility has stated one. Measured AI estimated the first nine buildings at \"an estimated 590 MW of IT capacity\" (June 2026), and Epoch AI estimates 910 MW of IT power from satellite imagery (updated July 2026); both are outside estimates. The planned 2,200 MW is the full-site electricity draw reported at the October 2025 opening (\"30 buildings drawing up to 2.2 gigawatts (GW) of electricity\", Converge Digest), a grid-draw figure, not IT load; Measured AI later gives 32 buildings and 2.25 GW of grid draw at full build-out.",
     "energy": {
       "source": "grid",
       "utility": "Indiana Michigan Power (AEP)",
@@ -7605,7 +7693,7 @@
         "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
         "label": "Where are data centers being built across Oklahoma?",
         "publisher": "News 9 (KWTV)",
-        "retrievedAt": "2026-09-02",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       },
       {
@@ -7616,7 +7704,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-10-16",
     "notes": "Edge data center on an 83.5-acre site at 1309 NE 122nd Street, Oklahoma City. Coordinates are an approximate geocode of the street address.",
     "landAcres": 83.5,
     "facilityType": "data_center"
@@ -10879,6 +10967,55 @@
       "hardwareType": "asic",
       "powerArrangement": "behind_meter"
     }
+  },
+  {
+    "id": "athlon-bt-el-reno-ok",
+    "name": "Athlon BT El Reno Bitcoin Mining Site",
+    "operator": "Athlon Blockchain LLC (Athlon BT)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.4934752,
+      "lon": -97.9814988,
+      "city": "El Reno",
+      "county": "Canadian",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-08-31",
+        "note": "El Reno says the company kept building and operating despite a June 2023 stop-work order, without a Certificate of Occupancy. City staff condemned the property after a roughly 3-million-gallon water leak.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://okcfox.com/news/local/el-reno-says-bitcoin-mining-facility-may-have-operated-unlawfully-before-water-leak",
+        "label": "El Reno says Bitcoin mining facility may have operated unlawfully before water leak",
+        "publisher": "KOKH Fox 25",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newsweek.com/data-center-leaks-3-million-gallons-oklahoma-faces-severe-drought-12390471",
+        "label": "Data center leaks 3 million gallons as Oklahoma faces severe drought",
+        "publisher": "Newsweek",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=W+Jensen+Rd,+El+Reno,+Oklahoma&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim record for West Jensen Road, El Reno, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "STATUS CAVEAT: the status enum has no 'suspended' or 'condemned' value. 'operational' reflects officials' belief that the site was operating. It does NOT mean it is running now: the city condemned the property in late August 2026, and operations may not restart until the fire and life-safety violations are cured. A maintainer may prefer a different status. The site is on private property in the 800 block of W. Jensen Rd., rezoned Moderate Industrial in 2019. The city issued a stop-work order in June 2023. Newsweek, citing Canadian County property records via KOCO, names Athlon BT as owner and describes it as a developer of containerized mobile data centers for AI and Bitcoin mining. No MW figure has been published. The coordinates are an OSM road-level point for W. Jensen Rd., not the parcel.",
+    "facilityType": "crypto_mining"
   },
   {
     "id": "atlantic-power-nest-cogen-kenilworth-nj",
@@ -16972,12 +17109,21 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-16",
     "notes": "Unincorporated Tulsa County near Owasso (Whirlpool Dr & E 76th St N, adjacent to Cherokee Industrial Park). Formerly known as 'Project Clydesbank.' 4 phases; electric service via PSO. End-tenant ('major data center operator' per a Quartz Mountain Properties LLC affiliate) unnamed. Coordinates are approximate. End-user unnamed.",
     "energy": {
-      "utility": "Public Service Company of Oklahoma (PSO)"
+      "source": "grid",
+      "utility": "Public Service Company of Oklahoma (PSO)",
+      "notes": "News 9: the 506-acre campus plan includes 'a new PSO substation' and '1.5 miles of water lines.'"
     },
     "investmentUsd": 1000000000,
     "landAcres": 506,
@@ -17025,12 +17171,46 @@
         "publisher": "Construction Review Online",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/claremore-project-mustang-data-center-approved",
+        "label": "Claremore Project Mustang data center approved",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-16",
     "notes": "Within Claremore Industrial Park. Distinct from Beale Infrastructure's tracked Owasso, OK site (Project Clydesdale, a different location).",
+    "energy": {
+      "source": "grid",
+      "utility": "Grand River Dam Authority (GRDA)",
+      "notes": "News 9: 'with power supplied by Grand River Dam Authority'. The developer says it will cover 100% of power-infrastructure costs tied to the project."
+    },
     "water": {
-      "coolingType": "air"
+      "coolingType": "air",
+      "reportedMgd": 0.02,
+      "notes": "Developer-stated: 'the proposed facilities would be air-cooled and use about 20,000 gallons of water per day.'"
+    },
+    "subsidies": [
+      {
+        "program": "Tax incentive district and development plan: the agreement lets Beale seek a 25-year ad valorem tax exemption for each phase",
+        "jurisdiction": "City of Claremore / Rogers County, OK",
+        "year": "2026",
+        "sourceIndex": 2
+      }
+    ],
+    "community": {
+      "status": "mixed",
+      "notes": "The Claremore City Council approved the plans on 2026-05-18 after nearly two hours of public comment. Several residents spoke against it, citing property values and health.",
+      "sourceIndex": 2
     },
     "facilityType": "data_center"
   },
@@ -18226,6 +18406,44 @@
       "hardwareType": "asic",
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "bitari-hosted-mining-site-marion-in",
+    "name": "Marion, Indiana Bitcoin Mining Site (Bitari hosting)",
+    "operator": "Undisclosed (facility owner hosting Bitari Inc.)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.558,
+      "lon": -85.659,
+      "city": "Marion",
+      "county": "Grant",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 20
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026",
+        "note": "Bitari Inc. disclosed a one-year Bitcoin Mining Hosting and Facility Usage Agreement with the owner of an approximately 20MW mining site in Marion, Indiana, expiring March 31, 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0002091680/000118518526004746/bitaris1a3101326.htm",
+        "label": "Bitari Inc. Form S-1/A",
+        "publisher": "U.S. SEC (EDGAR)",
+        "retrievedAt": "2026-10-16",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "The filing names neither the site owner nor a street address; coordinates are the Marion city center. 20 MW is the filing's approximate site size.",
+    "facilityType": "crypto_mining"
   },
   {
     "id": "bitdeer-clarington-oh",
@@ -20327,6 +20545,68 @@
     "facilityType": "data_center"
   },
   {
+    "id": "blue-power-clay-county-power-plant-carbon-in",
+    "name": "Blue Power Clay County Combined-Cycle Power Plant",
+    "operator": "Blue Power LLC",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.59,
+      "lon": -87.1,
+      "city": "Carbon",
+      "county": "Clay",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-01",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-09",
+        "note": "IDEM approved the air permit (application submitted January 2025). As of July 2026 the company's representative said only site work had been done.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.suncommercial.com/brazil_times/article_abe2c0df-9ebd-5179-b29b-357da31886b8.html",
+        "label": "Permit documents show data center may be planned for Clay, not Parke",
+        "publisher": "The Brazil Times",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wthitv.com/2026/06/19/clay-county-caught-off-guard-by-private-power-plant-construction/",
+        "label": "Clay County caught off guard by private power plant construction",
+        "publisher": "WTHI-TV",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.suncommercial.com/brazil_times/brazil_times/article_61de4c52-53b4-5a79-8e86-0ac0c4996e28.html",
+        "label": "'Mini' power plant, data center planned, confirms O'Malley rep",
+        "publisher": "The Brazil Times",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wthitv.com/2026/07/09/clay-county-officials-respond-community-concerns-over-idem-permit-data-center-development/",
+        "label": "Clay County officials respond to community concerns over IDEM permit, data center development",
+        "publisher": "WTHI-TV",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Blue Power LLC was formerly Claybridge Energy LLC. The site is four adjoining plats totaling 27.62 acres off E. CR 1350 North, south of Carbon. Generating capacity has not been reported. Sources conflict on progress: WTHI (June 2026) says construction is underway, while the company's representative (July 2026) says only site work has been done, so the status is held at permitted. Coordinates are approximate.",
+    "landAcres": 27.62,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "The IDEM air permit (021-48643-00020) describes a combined cycle / cogeneration plant whose purpose is to 'provide dedicated power needed for a new data center to be located nearby'. Approved units include three dual-fuel (natural gas/hydrogen) turbines, diesel emergency generators, a boiler and an evaporative cooling tower. The data center has not been sized or named."
+    }
+  },
+  {
     "id": "bluebird-quad-cities-bettendorf-ia",
     "name": "Bluebird Quad Cities Data Center",
     "operator": "Bluebird Network",
@@ -20676,6 +20956,57 @@
       "onSiteGenerationMw": 9.3
     },
     "landAcres": 51.6,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "blusky-ai-mulhall-ok",
+    "name": "BluSky AI Mulhall Modular Data Center",
+    "operator": "BluSky AI Inc.",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0647221,
+      "lon": -97.405431,
+      "city": "Mulhall",
+      "county": "Logan",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-11-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-11-05",
+        "note": "BluSky AI announced a non-binding letter of intent to lease about five acres in Mulhall for a modular AI data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://markets.financialcontent.com/pennwell.pennenergy/article/nnwire-2025-11-5-investornewsbreaks-blusky-ai-inc-otcid-bsai-executes-loi-to-lease-five-acre-site-in-mulhall-oklahoma-for-modular-ai-data-center-expansion",
+        "label": "BluSky AI Inc. executes LOI to lease five-acre site in Mulhall, Oklahoma for modular AI data center expansion",
+        "publisher": "InvestorWire / FinancialContent",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/blusky-ai-mulhall-oklahoma",
+        "label": "BluSky AI: Mulhall, Oklahoma",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Mulhall,+Logan+County,+Oklahoma&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Mulhall, Logan County, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "The source is a NON-BINDING letter of intent: a 10-year lease with two optional five-year extensions, $4,000/month base rent, and performance-linked payments that rise with installed module capacity (the release gives the top rate at 11 MW of active modules). No capacity is recorded because the sources give pricing tiers, not a built or committed MW figure. Baxtel calls it under construction with a 2027 plan year but cites no source, so this record keeps it as proposed. The coordinates are the town of Mulhall, not a parcel. The same operator's other LOI sites are tracked separately.",
+    "landAcres": 5,
     "facilityType": "data_center"
   },
   {
@@ -21866,10 +22197,30 @@
         "publisher": "News On 6",
         "retrievedAt": "2026-08-19",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/10mw-data-center-proposed-for-ex-cannabis-siite-outside-tulsa-oklahoma",
+        "label": "10MW data center proposed for ex-cannabis site outside Tulsa, Oklahoma",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-10-16",
     "notes": "Reported at 8-10 MW; the planned figure recorded here is the upper end of that reported range. Coordinates are a Pawhuska town-centroid approximation, not a parcel-confirmed point.",
+    "landAcres": 18,
+    "community": {
+      "status": "contested",
+      "notes": "The Pawhuska Public Works Authority voted 3-2 for a data center moratorium through Dec. 31, 2026, leaving the 8-10 MW carpet-mill conversion in limbo.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -24432,9 +24783,16 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-07-07",
         "kind": "other"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-07",
+    "lastUpdated": "2026-10-16",
     "notes": "Colocation tenancy: Cerebras Systems is the AI infrastructure operator; Scale Datacenters is the facility host/colo provider (acquired the 82,000 sq ft building from Expand Energy, formerly Chesapeake Energy, originally built ~2013). Facility address: 512 NW 62nd St (corner of NW 61st/62nd St and N Lee Ave), Oklahoma City. Ribbon cutting September 22, 2025. Houses 300+ CS-3 Wafer Scale Engine systems delivering 44+ exaflops of AI compute. Facility features Tier III-quality infrastructure, tornado and seismic shielding, triple-redundant power stations. Cerebras matches all kWh consumption with renewable energy (REC-based, not on-site generation). OG&E reported as grid utility — consistent with OKC service territory but not explicitly named in Cerebras primary sources. Investment amount not disclosed. Jobs: Cerebras blog references 'hundreds of good-paying jobs' in engineering, IT, and operations plus local college workforce partnerships — no firm headcount confirmed. Coordinates are approximate (dispatch seed); actual facility is at 512 NW 62nd St.",
     "energy": {
       "source": "grid",
@@ -24625,6 +24983,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "chickasaw-nation-winstar-data-center-thackerville-ok",
+    "name": "Chickasaw Nation WinStar Hardened Data Center",
+    "operator": "Chickasaw Nation Department of Commerce",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.7955237,
+      "lon": -97.1438728,
+      "city": "Thackerville",
+      "county": "Love",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-16",
+        "note": "Completion year not stated. The builder's page describes a completed facility that houses the Nation's critical servers and serves external businesses.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://manhattanconstructiongroup.com/manhattan-construction-company/Projects/winstar-hardened-data-center/",
+        "label": "WinStar Hardened Data Center (project page)",
+        "publisher": "Manhattan Construction Company",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Thackerville,+Love+County,+Oklahoma&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Thackerville, Love County, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "A 16,000 sq ft EF4 tornado-rated data center commissioned by the Chickasaw Nation Department of Commerce. It has 50 IT cabinets, a 1,750 kW backup generator and a 2,500 kVA transformer, houses the Nation's critical servers and is open to external businesses. Search-result summaries say it is interconnected with two other Chickasaw-owned data centers; that was not read on a fetched page, so it is not asserted here. The coordinates are the town of Thackerville, not the building.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "chirisa-volo-data-center-il",
     "name": "Volo Data Center",
     "operator": "Chirisa Technology Parks",
@@ -24697,6 +25097,52 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "choctaw-nation-data-center-durant-ok",
+    "name": "Choctaw Nation Data Center & Emergency Operations Center",
+    "operator": "Choctaw Nation of Oklahoma",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.9740644,
+      "lon": -96.3991907,
+      "city": "Durant",
+      "county": "Bryan",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-16",
+        "note": "Completion year not stated. Recorded as an existing facility per the architect's project page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://fsb-ae.com/project/choctaw-nation-data-center/",
+        "label": "Choctaw Nation Data Center (project page)",
+        "publisher": "FSB Architecture & Engineering",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Choctaw+Nation+Headquarters,+Durant,+Oklahoma&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim record for Choctaw Nation of Oklahoma Headquarters, Durant",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "A 14,500 sq ft dual-purpose tribal data center and Emergency Operations Center on the perimeter of the Choctaw Nation headquarters campus in Durant. It supports all buildings on the campus. It is hardened to withstand 250 mph winds, and backup generators sustain IT and emergency operations for 48 hours. No capacity has been published. The coordinates are OSM's HQ campus point, not the building footprint.",
+    "water": {
+      "coolingType": "air",
+      "notes": "The architect's project page says the data center white space is cooled by air-cooled CRAC units. The co-located Emergency Operations Center uses a ground-source heat pump."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "cielo-clarksville-tn",
@@ -27492,6 +27938,67 @@
     }
   },
   {
+    "id": "clenera-solstice-solar-leflore-county-ok",
+    "name": "Solstice Solar",
+    "operator": "Clēnera Holdings (Enlight Renewable Energy)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.0568053,
+      "lon": -94.6199966,
+      "city": "Poteau",
+      "county": "LeFlore",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "announcedDate": "2026-05-26",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-26",
+        "note": "Enlight and Google signed a 15-year PPA. Construction is expected in 2028, with COD in 2029.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://constructionreviewonline.com/google-signs-200-mw-power-deal-for-solstice-solar-project-in-oklahoma/",
+        "label": "Google signs 200 MW power deal for Solstice solar project in Oklahoma",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://renewablewatch.in/2026/05/29/enlight-signs-200-mw-solar-ppa-with-google-in-oklahoma/",
+        "label": "Enlight signs 200 MW solar PPA with Google in Oklahoma",
+        "publisher": "Renewable Watch",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Poteau,+Oklahoma&format=json&limit=1",
+        "label": "OpenStreetMap Nominatim geocode for Poteau, LeFlore County, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "COORDINATE CAVEAT: the sources give only LeFlore County, so the pin is the county seat (Poteau), a county-level anchor, NOT the site. capacityMw.planned is the 200 MWac contracted figure; the array is 250 MWdc. A third-party tracker lists SPP queue GEN-2023-064 (200 MW, RS Kerr-Stigler 161 kV POI) as a likely match. That was not fetched and is not relied on.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "notes": "250 MWdc project. Google signed a 15-year physical PPA for 200 MWac delivered into SPP for its regional data center operations. Construction is expected to begin in 2028, with commercial operation in 2029. A future phase could add up to 800 MWh of battery storage. The system impact study is complete, and full interconnection approval was expected in 2026."
+    }
+  },
+  {
     "id": "clenera-wapello-solar-ia",
     "name": "Wapello Solar",
     "operator": "Clēnera",
@@ -27701,9 +28208,16 @@
         "publisher": "News 9 (KWTV)",
         "retrievedAt": "2026-09-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-16",
     "notes": "200 MW IT load across a planned multi-building campus reported near 2000 S Council Rd. Coordinates are an Oklahoma City centroid approximation. Oklahoma City's 2026 data-center moratorium is reported to have affected the timeline.",
     "energy": {
       "source": "grid",
@@ -28426,6 +28940,55 @@
       "status": "mixed",
       "notes": "Cloverleaf held a public informational meeting with Frenchtown Township; broader community reception not independently confirmed this session."
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cloverleaf-greenleaf-town-of-wrightstown-wi",
+    "name": "Cloverleaf Greenleaf Data Center Site Inquiry (Village of Greenleaf / Town of Wrightstown)",
+    "operator": "Cloverleaf Infrastructure (via Bear Creek DevCo LLC)",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.31333,
+      "lon": -88.09611,
+      "city": "Greenleaf",
+      "county": "Brown",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "Bear Creek DevCo LLC, a Delaware entity sharing Cloverleaf's principal address, made land purchase offers to Greenleaf-area landowners. Cloverleaf confirmed it was behind them.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-01-13",
+        "note": "Cloverleaf said it would not pursue data centers in the Village of Greenleaf or the Town of Wrightstown after talking with local leadership.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/news/developer-abandons-data-center-rural-brown-county",
+        "label": "Developer abandons data center in rural Brown County",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Greenleaf,_Wisconsin",
+        "label": "Greenleaf, Wisconsin (village coordinates)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "This land-assembly effort was abandoned in January 2026 after resident opposition centred on private wells and water. It is a separate jurisdiction from the later Village of Wrightstown inquiry, which is already tracked as cloverleaf-wrightstown-village-wi. No parcel, acreage or MW was disclosed. Coordinates are the village centroid.",
     "facilityType": "data_center"
   },
   {
@@ -36159,7 +36722,7 @@
       {
         "status": "permitted",
         "date": "2024-08",
-        "note": "TCEQ issued Standard Permit Registration 177263 for on-site electric generating units at the 'Longhorn Data Center' site, Taylor County; a Jan 2025 modification set 10 simple-cycle turbines (5x Solar Titan 350 + 5x GE LM2500 = 360.5 MW) 'for onsite use only for data centers and computing,' with no ERCOT export.",
+        "note": "TCEQ issued Standard Permit Registration 177263 for on-site electric generating units at the 'Longhorn Data Center' site, Taylor County; a Jan 2025 modification set 10 simple-cycle turbines (5x Solar Titan 350 + 5x GE LM2500 = 360.5 MW), which TCEQ's technical review says are to 'generate power for onsite use only for data centers and computing.'",
         "sourceIndex": 0
       },
       {
@@ -36232,13 +36795,27 @@
         "publisher": "Abilene Reporter-News (via Yahoo News)",
         "retrievedAt": "2026-10-16",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businessinsider.com/stargate-data-center-powered-by-natural-gas-2025-1",
+        "label": "Stargate Data Center Gets Power Boost With Natural Gas Plant in Texas",
+        "publisher": "Business Insider",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.businessinsider.com/texas-stargate-data-center-build-cost-2025-1",
+        "label": "Here's the Cost, Construction Timeline of Abilene Stargate Data Center",
+        "publisher": "Business Insider",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-10-16",
-    "notes": "On-site behind-the-meter natural-gas generation for the co-located Crusoe / Lancium Clean Campus (tracked as stargate-abilene-tx). 10 turbines totaling 360.5 MW are permit-confirmed (TCEQ Reg. 177263) and reported built as of mid-2026. Same-site companion to the data-center record. A separate major TCEQ application (182126) covers more generation for \"Longhorn Data Center Buildings 9 and 10\"; see the emissions notes. Coordinates are the site location filed with TCEQ for this registration (Core Data Form: 32.50792, -99.77722).",
+    "notes": "On-site natural-gas generation for the co-located Crusoe / Lancium Clean Campus (tracked as stargate-abilene-tx). 10 turbines totaling 360.5 MW are permit-confirmed (TCEQ Reg. 177263) and reported built as of mid-2026. Same-site companion to the data-center record. A separate major TCEQ application (182126) covers more generation for \"Longhorn Data Center Buildings 9 and 10\"; see the emissions notes. Coordinates are the site location filed with TCEQ for this registration (Core Data Form: 32.50792, -99.77722).",
     "energy": {
       "source": "on_site_gas",
-      "notes": "Behind-the-meter, primary-plus-backup on-site generation dedicated to the campus; explicitly not exporting to ERCOT."
+      "notes": "On-site gas-turbine generation for the campus. TCEQ's technical review states the equipment is to 'generate power for onsite use only for data centers and computing.' Crusoe's permit application says the turbines are 'not capable of selling electricity to a utility power distribution system,' and its process flow diagram labels them 'Primary & Backup Power' alongside 'Grid Power' to the data center buildings."
     },
     "emissions": {
       "unitsCovered": "ten (10) natural gas-fired simple cycle combustion turbines: five Solar Titan 350 (TURBINE-1 through TURBINE-5) and five GE LM2500 (TURBINE-6 through TURBINE-10)",
@@ -36257,7 +36834,7 @@
         "stargate-abilene-tx"
       ],
       "unitCount": 10,
-      "notes": "TCEQ Standard Permit Technical Review (Registration 177263, approved 2025-01-22) confirms 10 simple-cycle turbines — 5x Solar Titan 350 (~38 MW) + 5x GE LM2500 (~34.1 MW) = 360.5 MW — behind-the-meter for on-site compute, no grid export. A separate major TCEQ application (State Permit 182126, submitted Nov 2025, draft permit noticed Aug 2026, not yet issued) covers more generation for \"Longhorn Data Center Buildings 9 and 10\" (see the emissions notes); press counts of its added turbines differ; the ~1.2 GW figure often cited for the campus describes IT/interconnect capacity, not generation nameplate. Gas-plant buildout cost reported at ~$500M, distinct from the ~$1.1B data-center project figure. Crusoe and GE Vernova separately announced a 29-unit aeroderivative gas-turbine deal."
+      "notes": "TCEQ's Standard Permit Technical Review (Registration 177263, signed 2025-01-22) covers 10 simple-cycle turbines — 5x Solar Titan 350 (38 MW) + 5x GE LM2500 (34.1 MW) = 360.5 MW — to 'generate power for onsite use only for data centers and computing.' A separate major TCEQ application (State Permit 182126, submitted Nov 2025, draft permit noticed Aug 2026, not yet issued) covers more generation for \"Longhorn Data Center Buildings 9 and 10\" (see the emissions notes); press counts of its added turbines differ; the ~1.2 GW figure often cited for the campus describes IT/interconnect capacity, not generation nameplate. Business Insider reported in January 2025, citing a city document it viewed, that developing the gas plant was expected to cost about half a billion dollars; it separately reported an estimated $1.1 billion, from Texas Department of Licensing and Regulation filings, for what appeared to be two data-center buildings. Crusoe and GE Vernova separately announced a 29-unit aeroderivative gas-turbine deal."
     }
   },
   {
@@ -46453,6 +47030,69 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "digital-realty-kokomo-howard-county-in",
+    "name": "Digital Realty Kokomo Data Center Campus (Industrial Park North)",
+    "operator": "Digital Realty",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.54,
+      "lon": -86.13,
+      "city": "Kokomo",
+      "county": "Howard",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1500
+    },
+    "announcedDate": "2026-10-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-02",
+        "note": "City of Kokomo announced Digital Realty's proposal for a three-building, ~3 million sq ft campus on ~476 acres; no rezoning needed; economic development agreement still requires Common Council approval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wishtv.com/news/local-news/digital-realty-proposes-1-3-billion-data-center-project-in-kokomo/",
+        "label": "Digital Realty proposes $1.3 billion data center project in Kokomo",
+        "publisher": "WISH-TV",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wishtv.com/news/i-team/data-center-developer-discusses-multi-billion-dollar-project-planned-in-kokomo/",
+        "label": "Data center developer discusses multi-billion dollar project planned in Kokomo",
+        "publisher": "WISH-TV",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.inkfreenews.com/2026/10/05/kokomo-mayor-backs-proposed-data-center/",
+        "label": "Kokomo Mayor Backs Proposed Data Center",
+        "publisher": "InkFreeNews",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Three-building campus of about 3 million sq ft on ~476 acres at Industrial Park North, near U.S. 31 and County Road 400 North. Projected $1.3B-$1.7B taxable value; the city says no tax abatement. Completion projected 2033. The 1,500 MW figure is the developer's stated power requirement at full build-out. Coordinates are approximate.",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy",
+      "notes": "Developer representative said the campus is expected to require about 1.5 GW of power at full build-out (WISH-TV, Oct 14, 2026). Duke Energy named as the electric provider."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Described as a closed-loop, air-cooled chiller system that recirculates water. Digital Realty to fund any needed water infrastructure upgrades; Indiana American Water says current capacity is sufficient."
+    },
+    "landAcres": 476,
+    "facilityType": "data_center"
+  },
+  {
     "id": "digital-realty-lax12-ca",
     "name": "Digital Realty LAX12",
     "operator": "Digital Realty",
@@ -56610,6 +57250,54 @@
     "facilityType": "data_center"
   },
   {
+    "id": "eqt-mt-comfort-technology-park-hancock-county-in",
+    "name": "Mt. Comfort Technology Park",
+    "operator": "EQT Real Estate",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.862,
+      "lon": -85.868,
+      "city": "Mount Comfort",
+      "county": "Hancock",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-08-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-14",
+        "note": "EQT Real Estate filed a letter of intent with Hancock County commissioners for a ~130-acre campus of about 4 million leasable sq ft, phased 2027-2030.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.greenfieldreporter.com/2026/08/14/developer-files-letter-of-intent-for-130-acre-multi-billion-dollar-data-center-campus/",
+        "label": "Developer files letter of intent for 130-acre, multi-billion-dollar data center campus",
+        "publisher": "The Daily Reporter (Greenfield)",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Site is northwest of County Roads 500 North and 500 West, north of Walmart's IND3 distribution center and Indianapolis Regional Airport. Currently zoned Industrial Business Park; EQT intended to seek Industrial General rezoning. EdgeConneX is EQT's data center builder affiliate. The letter states 100-150 permanent jobs and a PILOT framework ($22.2M upfront, $22M/yr at full buildout). Coordinates are approximate.",
+    "energy": {
+      "notes": "EQT says it would fund all electrical infrastructure from new and dedicated generation; Wabash Valley Power Association completed a study finding full deliverability of power at buildout."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Letter of intent says a closed-loop system; annual water use 'comparable to a commercial office space'."
+    },
+    "landAcres": 130,
+    "jobs": {
+      "construction": 1500,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "equinix-ashburn-va",
     "name": "Equinix Ashburn Campus (DC1–DC15)",
     "operator": "Equinix",
@@ -63171,7 +63859,7 @@
         "url": "https://www.okmulgeefluidstack.io/",
         "label": "Okmulgee Data Center — official project site",
         "publisher": "Fluidstack",
-        "retrievedAt": "2026-08-19",
+        "retrievedAt": "2026-10-16",
         "kind": "other"
       },
       {
@@ -63187,9 +63875,16 @@
         "publisher": "Oklahoma Energy Today",
         "retrievedAt": "2026-08-19",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kjrh.com/news/local-news/data-center-developer-seeks-to-change-impressions-at-sole-okmulgee-public-info-event",
+        "label": "Data center developer seeks to change impressions at sole Okmulgee public info event",
+        "publisher": "KJRH",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-10-16",
     "notes": "First tenant is reported to be Jane Street. Fluidstack states it is not seeking local property-tax incentives and has committed to a voluntary 60 dB noise limit at property lines; Fluidstack and Jane Street jointly committed $7 million for local education. Capacity has not been publicly disclosed. Coordinates are an Okmulgee town-centroid approximation.",
     "energy": {
       "source": "grid",
@@ -63200,6 +63895,7 @@
       "coolingType": "closed_loop",
       "notes": "Developer states the cooling system is filled once — described as about an Olympic swimming pool's worth of water — and then recirculated for years."
     },
+    "landAcres": 200,
     "community": {
       "status": "contested",
       "notes": "Residents voiced distrust over transparency and raised water, property-value, public-health and electricity concerns at a July 2026 open house; the county commission established a citizen advisory planning committee on data centers.",
@@ -64770,8 +65466,8 @@
         "sourceIndex": 0
       },
       {
-        "status": "under_construction",
-        "date": "2026-07",
+        "status": "operational",
+        "date": "2026-07-06",
         "note": "Phase I complete: 133MW critical IT load (200MW gross power) delivered to CoreWeave under 15-year leases (two 5-year extension options); rent commencement Q2 2026. Phase II (260MW critical IT load) in development, deliveries expected H1 2027. CoreWeave's total commitment across all phases now 526MW critical IT load. Total approved campus capacity 1.63GW, potential to scale to 3.6GW. Campus now spans 2,200+ acres (expanded from the original 160-acre site).",
         "sourceIndex": 5
       }
@@ -64848,7 +65544,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-27",
+    "lastUpdated": "2026-10-16",
     "notes": "Built by Argo Blockchain as a ~180 MW Bitcoin-mining facility in 2022; sold to Galaxy Digital in Dec 2022 amid the crypto-market downturn. Galaxy converted the site to AI/HPC hosting for CoreWeave under a 15-year lease signed March 28, 2025. CoreWeave is the anchor tenant using the campus for large-scale AI model training. Phase I (133 MW critical IT load / 200 MW gross) is complete and operational; further phases toward the 1.63 GW approved total remain under construction. Location is near Afton, Dickens County (West Texas). Original site was 160 acres; campus has since expanded to 2,200+ acres across multiple phases. Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -67481,6 +68177,57 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "google-franklin-township-indianapolis-in",
+    "name": "Google Franklin Township Data Center (rezoning withdrawn)",
+    "operator": "Google",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.72,
+      "lon": -85.97,
+      "city": "Indianapolis",
+      "county": "Marion",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025-09-22",
+        "note": "Google withdrew its rezoning petition (Proposal No. 306) at the City-County Council hearing.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mirrorindy.org/google-withdraws-southside-data-center-proposal-franklin-township/",
+        "label": "Google withdraws southside data center proposal in Franklin Township",
+        "publisher": "Mirror Indy",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wrtv.com/news/local-news/google-withdraws-rezoning-petition-for-proposed-data-center-in-franklin-township",
+        "label": "Google withdraws rezoning petition for proposed data center in Franklin Township",
+        "publisher": "WRTV",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/google-withdraws-data-center-zoning-003002417.html",
+        "label": "Is Franklin Township data center dead? Google withdraws petition just before Council hearing",
+        "publisher": "Yahoo News (IndyStar)",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "About 467 acres of farmland on Indianapolis's southeast side, bordered by South Post Road, East Troy Avenue, Davis Road and Vandergriff Road, just off I-74. Reported investment was at least $1 billion in Marion County. Coordinates are approximate.",
+    "investmentUsd": 1000000000,
+    "landAcres": 467,
+    "facilityType": "data_center"
+  },
+  {
     "id": "google-haskell-county-tx",
     "name": "Google Haskell County Data Center Campus",
     "operator": "Google",
@@ -68843,9 +69590,16 @@
         "publisher": "Port Muskogee",
         "retrievedAt": "2026-09-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-16",
     "notes": "Two separate campuses near Summit and Council Hill in Muskogee County. Combined into one record; site-by-site capacity and investment breakdown not publicly available. Coordinates corrected to approximate Council Hill location (35.57°N, 95.65°W); original coordinates (35.65, −95.37) fell near Muskogee city / Summit area rather than Council Hill. Summit campus is located near Muskogee city (~17 miles east). Exact parcels not disclosed. Part of Google's $9B Oklahoma investment announced August 2025.",
     "energy": {
       "source": "grid",
@@ -70645,9 +71399,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.kgou.org/indigenous-news/2026-06-25/as-data-centers-eye-oklahoma-tribes-weigh-the-costs",
+        "label": "As data centers eye Oklahoma, tribes weigh the costs",
+        "publisher": "KGOU",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-10-16",
     "notes": "Google is identified as the interested purchaser/end-user by Tulsa Flyer, Fox23, DCD and Public Radio Tulsa, but there is no standalone Google announcement for this site (developer White Rose Partners is titleholder) - hence confidence 'reported'. County: physical property is in Osage County (per the official project site and Osage News); the annexing City of Sand Springs is primarily Tulsa County, and the annexation lawsuit moved from Osage to Tulsa County court. Capacity: trackers allege 500+ MW but no primary source confirms it - omitted. Google's $9B Oklahoma commitment (Aug 2025) is a statewide figure, not project-specific. Up to 3 data-center buildings + one office building; construction targeted 2027, completion 2029 (developer). Jobs (~1,000 peak construction, ~50+ FTE/building) are developer projections. A ~$100M/25yr PILOT was cited by the city manager but no executed agreement is confirmed. Coordinates estimated from the site description (near HWY 97 / Rock School Rd), not geocoder-verified.",
     "energy": {
       "source": "grid",
@@ -70659,6 +71420,10 @@
       "notes": "Developer states initial phases use non-evaporative air cooling; water for domestic use only; future phases may evolve (projectspringok.com)."
     },
     "landAcres": 827,
+    "jobs": {
+      "permanent": 1000,
+      "sourceIndex": 8
+    },
     "community": {
       "status": "contested",
       "notes": "Protect Sand Springs Alliance filed an annexation-challenge lawsuit (Jan 2026); Land Legacy filed a conservation-easement enforcement suit (Mar 2026) covering 270 of the 827 acres; a recall petition targets the City Council and mayor; Osage Nation raised mineral-estate sovereignty and consultation concerns."
@@ -70742,7 +71507,7 @@
         "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
         "label": "Where are data centers being built across Oklahoma? (News 9 project tracker) — Google Stillwater construction underway",
         "publisher": "News 9 (KWTV Oklahoma City)",
-        "retrievedAt": "2026-07-21",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       },
       {
@@ -70753,7 +71518,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-16",
     "notes": "Campus at intersection of Perkins Road and Richmond Road, north of Stillwater. Coordinates are approximate (city centroid shifted north). Up to 6 data center buildings, each 300,000 sq ft. Phase I targeted for 2027. City Council acceptance of final plat required before recording with Payne County Clerk. Job figures are projections (~30 permanent per phase; construction cited as 'thousands') - not recorded as confirmed counts. Oklahoma's Sec. 1357 data-center sales-tax exemption applies by statute but no Stillwater-specific award amount is published.",
     "energy": {
       "source": "grid",
@@ -71822,7 +72587,7 @@
     "id": "grda-grand-river-energy-center-unit-4-ok",
     "name": "Grand River Energy Center Unit 4",
     "operator": "Grand River Dam Authority",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 36.1906497,
@@ -71841,6 +72606,12 @@
         "date": "2026-09-09",
         "note": "Unit dedicated September 9, 2026; GRDA gave an in-service date of September 16, 2026 — two days after this record was compiled, so the unit is not yet recorded as operational.",
         "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-16",
+        "note": "KJRH reports the $525M, 426 MW Unit 4 is 'officially open' for GRDA customers and calls it a 'now-operating facility' after the Sept. 9 dedication. The record's stated in-service date (2026-09-16) has passed.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -71857,9 +72628,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-14",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.kjrh.com/news/local-news/525m-power-plant-opens-at-grda-complex",
+        "label": "$525M power plant opens at GRDA complex",
+        "publisher": "KJRH",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-16",
     "notes": "Coordinates are OSM's point for the Grand River Energy Center, marked approximate — OSM's address line associates the site with Pryor Creek while the dedication coverage locates it at Chouteau; the city recorded here follows the news source. Status is 'under_construction' rather than 'operational' only because the stated in-service date (2026-09-16) falls after this record's compile date; it should be flipped once in service.",
     "energy": {
       "source": "on_site_gas",
@@ -74550,7 +75328,7 @@
         "url": "https://www.wthitv.com/2026/08/06/fluidstack-hosts-open-house-sullivan-county-data-center-campus/",
         "label": "FluidStack hosts open house for Sullivan County data center campus",
         "publisher": "WTHI-TV",
-        "retrievedAt": "2026-09-01",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       },
       {
@@ -74566,9 +75344,16 @@
         "publisher": "Infor Capital",
         "retrievedAt": "2026-09-01",
         "kind": "other"
+      },
+      {
+        "url": "https://sullivanfluidstack.io",
+        "label": "Fluidstack Sullivan County campus",
+        "publisher": "Fluidstack",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-10-16",
     "notes": "One site under two names: Potentia Inc. is the site developer of the 1,000-acre Heartland Industrial Park on US 41 near the Merom Generating Station, and Fluidstack is the anchor tenant/operator building the campus (both sources describe the same 15-acre fire-station donation and the same $50M community payment). The 2.1 GW figure is the full-park planned capacity; a separately financed first phase is reported at roughly 430 MW of critical IT load. The $65 billion figure is the announced site investment, driven by tenant and partner spending rather than Potentia alone.",
     "energy": {
       "source": "grid",
@@ -78234,6 +79019,79 @@
     }
   },
   {
+    "id": "invenergy-foundry-ridge-energy-center-darien-wi",
+    "name": "Foundry Ridge Energy Center",
+    "operator": "Invenergy (Foundry Ridge Energy Center, LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.619263,
+      "lon": -88.765404,
+      "city": "Darien",
+      "county": "Walworth",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 324
+    },
+    "announcedDate": "2025-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-08",
+        "note": "Foundry Ridge Energy Center, LLC (managed by Invenergy) applied to the PSC for a CPCN under docket 9835-CE-100. A draft EIS followed in March 2026.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-10-15",
+        "note": "The PSC provisionally approved the project at its October 15, 2026 meeting. The written decision and state air permits were still pending.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://psc.wi.gov/Pages/CommissionActions/CasePages/FoundryRidgeEnergyCenter.aspx",
+        "label": "PSC of Wisconsin case page: Foundry Ridge Energy Center Project (docket 9835-CE-100)",
+        "publisher": "Public Service Commission of Wisconsin",
+        "retrievedAt": "2026-10-16",
+        "kind": "permit"
+      },
+      {
+        "url": "http://www.gazettextra.com/news/public-service-commission-oks-foundry-ridge-gas-plant-project/article_b73e60c2-30ed-49ae-ae4b-4376644419a4.html",
+        "label": "Public Service Commission OKs Foundry Ridge gas plant project",
+        "publisher": "The Gazette (Janesville)",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/regulators-approve-gas-plants-power-221350311.html",
+        "label": "Regulators approve gas plants to power data centers, despite opposition",
+        "publisher": "Milwaukee Journal Sentinel (via Yahoo News)",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Foundry_Ridge_Energy_Center",
+        "label": "Foundry Ridge Energy Center (approximate coordinates, unit table)",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "A merchant gas peaker in the Town of Darien. The proposed site is the Darien Solar site at North Road and Creek Road, with about 16 acres of permanent footprint. The alternative site is about two miles east on Creek Road. The PSC did not review its cost or need because it is a wholesale merchant plant. We Energies has filed to buy it and Red Oak Ridge for a combined ~$2.3 billion. The Journal Sentinel reports the two plants will help power the Mount Pleasant and Port Washington data center campuses, with Foundry Ridge expected in service in late 2028. Coordinates are GEM's approximate point.",
+    "landAcres": 16,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Data center load in We Energies' southeastern Wisconsin territory (Microsoft Mount Pleasant, Vantage/OpenAI/Oracle Port Washington)",
+      "unitCount": 3,
+      "notes": "Three 108 MW natural gas-fired single-cycle combustion turbines with air-cooled generators and a 138 kV gen-tie to the North Creek Substation. We Energies-Gas Operations would build the pipeline lateral."
+    }
+  },
+  {
     "id": "invenergy-prairie-hills-wind-custer-ne",
     "name": "Prairie Hills Wind Energy Center",
     "operator": "Invenergy",
@@ -78287,6 +79145,89 @@
       "technology": "wind",
       "unitCount": 46,
       "notes": "46 turbines planned per the March 2025 county briefing; ~46,000 acres under a 10-year development lease. Offtaker not announced."
+    }
+  },
+  {
+    "id": "invenergy-red-oak-ridge-energy-center-paris-wi",
+    "name": "Red Oak Ridge Energy Center",
+    "operator": "Invenergy (Red Oak Ridge Energy Center LLC)",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.639634,
+      "lon": -87.976051,
+      "city": "Paris",
+      "county": "Kenosha",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1186
+    },
+    "announcedDate": "2025-12",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12",
+        "note": "Red Oak Ridge Energy Center LLC, a wholly owned Invenergy subsidiary, filed its application with the Public Service Commission of Wisconsin (docket 9837-CE-100) in December 2025. A draft EIS followed in April 2026.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-10-15",
+        "note": "The Public Service Commission unanimously approved the plant on October 15, 2026. In-service is expected between late 2029 and early 2030.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://psc.wi.gov/Pages/CommissionActions/CasePages/RedOakRidge.aspx",
+        "label": "PSC of Wisconsin case page: Red Oak Ridge Energy Center Project (docket 9837-CE-100)",
+        "publisher": "Public Service Commission of Wisconsin",
+        "retrievedAt": "2026-10-16",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/regulators-approve-gas-plants-power-221350311.html",
+        "label": "Regulators approve gas plants to power data centers, despite opposition",
+        "publisher": "Milwaukee Journal Sentinel (via Yahoo News)",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wpr.org/news/we-energies-add-3gw-electric-grid-data-center-demand",
+        "label": "We Energies hopes to add almost 3GW to the electric grid to help meet data center demand",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.utilitydive.com/news/wisconsin-gas-plant-proposals-test-state-review-process/825885/",
+        "label": "Wisconsin gas plant proposals test state review process",
+        "publisher": "Utility Dive",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Red_Oak_Ridge_Energy_Center",
+        "label": "Red Oak Ridge Energy Center (approximate coordinates, unit table)",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "A merchant simple-cycle gas peaker that Invenergy is developing in the Town of Paris. The PSC did not review its cost or need because the applicant is an independent power producer. We Energies has applied to buy this plant and Foundry Ridge for a combined ~$2.3 billion. The Journal Sentinel reports the two plants will help power the Mount Pleasant and Port Washington data center campuses. The proposed site is east of 120th Ave and I-94, between Route 142 and 12th Street (CTH E), with about 40 acres of permanent footprint. Coordinates are GEM's approximate point. Sources give capacity as 1,186 MW (PSC) or ~1.1 GW / 1,210 MW (5 x 242 MW) elsewhere; 1,186 MW is the PSC application figure.",
+    "water": {
+      "notes": "Per the PSC case page, the proposed site would take water from the Village of Somers Water Utility, and the alternative site would use a new high-capacity well."
+    },
+    "landAcres": 40,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Data center load in We Energies' southeastern Wisconsin territory (Microsoft Mount Pleasant, Vantage/OpenAI/Oracle Port Washington)",
+      "unitCount": 5,
+      "notes": "Five 242 MW natural gas-fired simple-cycle combustion turbines with 345 kV tie-lines. Interconnection is at a new switchyard on the Pleasant Prairie–Arcadian and Arcadian–Zion 345 kV lines. GEM lists the turbines as GE Vernova 7F.05."
     }
   },
   {
@@ -79980,9 +80921,16 @@
         "publisher": "News On 6",
         "retrievedAt": "2026-08-19",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-10-16",
     "notes": "Single fetched source. Coordinates are a Tulsa centroid approximation; street address is as published.",
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
@@ -82468,25 +83416,27 @@
         "url": "https://lambda.ai/blog/new-lambda-data-center-in-oklahoma",
         "label": "New Lambda data center in Oklahoma",
         "publisher": "Lambda",
-        "retrievedAt": "2026-10-09",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       },
       {
         "url": "https://okcfox.com/news/local/ai-cloud-company-plans-data-center-in-mayes-county",
         "label": "AI cloud company plans data center in Mayes County",
         "publisher": "KOKH FOX 25",
-        "retrievedAt": "2026-10-09",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-09",
+    "lastUpdated": "2026-10-16",
     "notes": "Lambda announced plans on 2026-09-27 for a data center in the south section of MidAmerica Industrial Park, Mayes County, within the Chouteau-Mazie Public School District tax boundary. Capacity, GPU count, acreage, street address, timeline and total cost are not stated in the sources. The park was selected through a 'reverse RFP' by MidAmerica Industrial Park; Grand River Dam Authority (GRDA) is the power provider and Lambda is to fund the upfront infrastructure needed to serve the project; Cloverleaf Infrastructure was selected by GRDA and MidAmerica to ready the site. Lambda says it will pay 100% of the facility's energy costs and plans to act as a flexible grid customer. Company-stated figures: up to 1,000 construction jobs, up to 100 permanent positions, about $500M in tax revenue over ten years at current rates. Separate from Google's existing Pryor campus (google-pryor-ok), also in Mayes County. Coordinates are the Chouteau city point (OSM Nominatim), not the site; the sources give no parcel or address.",
     "energy": {
+      "source": "grid",
       "utility": "Grand River Dam Authority (GRDA)",
       "notes": "Lambda states it will pay 100% of the facility's energy costs and fund upfront infrastructure to serve the project, and plans to be a flexible grid customer able to shift or reduce certain loads during peak demand."
     },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "Lambda says it will use closed-loop cooling technology to recycle water and reduce water use."
     },
     "jobs": {
       "construction": 1000,
@@ -84504,6 +85454,63 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "wind"
+    }
+  },
+  {
+    "id": "lm-funding-calumet-ok",
+    "name": "LM Funding (Power & Compute) Calumet Bitcoin Mining Site",
+    "operator": "LM Funding America, Inc. (Power & Compute)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.6008883,
+      "lon": -98.1188072,
+      "city": "Calumet",
+      "county": "Canadian",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 15
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-12",
+        "note": "LM Funding acquired the 15 MW Oklahoma site in December 2024. The FY2025 10-K reports about 4,480 installed Antminers and 503 PH of operational hashrate as of 2025-12-31.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1640384/000119312526133333/lmfa-20251231.htm",
+        "label": "LM Funding America, Inc. Form 10-K for fiscal year 2025",
+        "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
+        "retrievedAt": "2026-10-16",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.investing.com/news/company-news/lm-funding-expands-with-73m-oklahoma-mining-site-buy-93CH-3723574",
+        "label": "LM Funding expands with $7.3M Oklahoma mining site buy",
+        "publisher": "Investing.com",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Calumet,+Canadian+County,+Oklahoma&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Calumet, Canadian County, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "The 10-K describes '15 MW hosting site located in Calumet, Oklahoma' that the company owns and uses for its own miners. It was bought from Tech Infrastructure JV I LLC, majority-owned by Arthur Inc., for $7.3M total consideration. That is a purchase price, not a project investment, so it is not recorded as investmentUsd. The November 2024 coverage describes the site as air-cooled GIGA containers. Hashrate is 503 PH/s, recorded as 503,000 TH/s, as of 2025-12-31. The coordinates are the town of Calumet, not the parcel. The company has rebranded as Power & Compute.",
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hashRateThPerS": 503000,
+      "hardwareType": "asic",
+      "coolingType": "air"
     }
   },
   {
@@ -94057,7 +95064,7 @@
         "url": "https://www.wvpe.org/wvpe-news/2026-02-19/microsoft-data-center-concerns-spark-crowded-granger-meeting",
         "label": "Microsoft data center concerns spark crowded Granger meeting",
         "publisher": "WVPE",
-        "retrievedAt": "2026-07-06",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       },
       {
@@ -94066,9 +95073,23 @@
         "publisher": "WVPE (NPR member station)",
         "retrievedAt": "2026-07-18",
         "kind": "press"
+      },
+      {
+        "url": "https://www.wndu.com/2026/05/19/microsoft-holds-open-house-granger-data-center-project/",
+        "label": "Microsoft holds open house for Granger data center project",
+        "publisher": "WNDU",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.953mnc.com/2026/03/19/microsoft-data-center-project-moves-forward-in-granger/",
+        "label": "Microsoft data center project moves forward in Granger",
+        "publisher": "95.3 MNC",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-05-30",
+    "lastUpdated": "2026-10-16",
     "notes": "Former St. Joe Farm, near Bittersweet Road and Currant Road, Granger IN (St. Joseph County). 939 acres; 5-6 buildings planned; ~1 GW power load estimated by county officials. Microsoft not seeking local tax incentives. Status downgraded from 'under_construction' to 'permitted': WSBT source (cited in original record for the construction claim) explicitly states 'no construction has begun' and no formal site plan submitted; WNDU March 2026 MOU covers pre-development evaluation only. Confidence downgraded to 'reported' pending construction confirmation. Coordinates are approximate Granger unincorporated community area.",
     "energy": {
       "source": "grid",
@@ -101506,7 +102527,7 @@
         "url": "https://www.nexteraenergyresources.com/high-spring-solar/project-overview.html",
         "label": "NextEra Energy Resources — High Spring Solar project overview",
         "publisher": "NextEra Energy Resources",
-        "retrievedAt": "2026-08-19",
+        "retrievedAt": "2026-10-16",
         "kind": "other"
       },
       {
@@ -101517,10 +102538,11 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-10-16",
     "notes": "Coordinates are a Muskogee County centroid approximation; the 4,505-acre footprint is developer-stated and no parcel boundary was published.",
     "energy": {
-      "source": "solar"
+      "source": "solar",
+      "notes": "PV solar. Scheduled to begin operations by December 2027, subject to local and state approvals."
     },
     "landAcres": 4505,
     "jobs": {
@@ -106066,6 +107088,49 @@
     }
   },
   {
+    "id": "onenet-osu-tulsa-ok",
+    "name": "OneNet OSU-Tulsa Data Center",
+    "operator": "OneNet (Oklahoma State Regents for Higher Education)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.163393,
+      "lon": -95.987612,
+      "city": "Tulsa",
+      "county": "Tulsa",
+      "street": "700 N. Greenwood Ave",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-16",
+        "note": "Listed as an active interconnection facility (PeeringDB) and as fully operational (Baxtel).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/1668",
+        "label": "OneNet OSU Tulsa (facility record)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/onenet-osc",
+        "label": "OneNet OSC data center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "OneNet is the digital communications network of the Oklahoma State Regents for Higher Education. This is its facility on the OSU-Tulsa campus at 700 N. Greenwood. The coordinates are PeeringDB's facility point. No capacity has been published.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "openai-project-camellia-effingham-ga",
     "name": "Project Camellia (OpenAI Effingham County Campus)",
     "operator": "OpenAI",
@@ -106510,12 +107575,17 @@
         "url": "https://www.wpr.org/economy/second-data-center-project-proposed-in-beaver-dam",
         "label": "Second data center project proposed in Beaver Dam (90,000 sq ft, 13-acre site at Highway 151 and Hemlock Road, under 20 MW, 5,929 gallons/day estimated water use, 15 full-time jobs)",
         "publisher": "Wisconsin Public Radio",
-        "retrievedAt": "2026-09-13",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-16",
     "notes": "A 90,000-square-foot single-story regional edge data center — a separate, much smaller project from Meta's ~700,000-square-foot Beaver Dam campus already tracked. Council deliberations raised water use, utility rates and tax-fairness concerns. Coordinates are a municipality-level locator; the site is at Highway 151 and Hemlock Road.",
+    "energy": {
+      "source": "grid",
+      "utility": "Alliant Energy",
+      "notes": "Alliant Energy sent the developer a letter listing what is needed for electric service, with an engineering review to follow a formal application. The developer projects under 20 MW at full build-out."
+    },
     "water": {
       "reportedMgd": 0.0059,
       "notes": "Estimated daily water usage of 5,929 gallons for the 90,000 sq ft facility — about 0.0059 million gallons per day. This is the project's own estimate as presented to the Beaver Dam City Council, not a measured figure, and the source does not identify a cooling method."
@@ -106523,6 +107593,11 @@
     "landAcres": 14,
     "jobs": {
       "permanent": 15,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "contested",
+      "notes": "At the February 2026 council presentation about a dozen speakers opposed the plan, citing secrecy around Meta's nearby project, water and energy use, and property values. The council later approved the development agreement and land sale.",
       "sourceIndex": 1
     },
     "facilityType": "data_center"
@@ -108835,6 +109910,50 @@
     }
   },
   {
+    "id": "paycom-headquarters-oklahoma-city-ok",
+    "name": "Paycom Headquarters Data Centers (Oklahoma City)",
+    "operator": "Paycom Software, Inc.",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.6117012,
+      "lon": -97.6485485,
+      "city": "Oklahoma City",
+      "county": "Oklahoma",
+      "street": "7501 W. Memorial Road",
+      "postalCode": "73142",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023",
+        "note": "The FY2023 10-K reports 'two fully redundant data centers at our corporate headquarters in Oklahoma City', owned and managed by Paycom.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1590955/000095017024015863/payc-20231231.htm",
+        "label": "Paycom Software, Inc. Form 10-K for fiscal year 2023",
+        "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
+        "retrievedAt": "2026-10-16",
+        "kind": "filing"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=7501+W+Memorial+Rd,+Oklahoma+City,+OK&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim record for Paycom, 7501 W Memorial Road, Oklahoma City",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Enterprise (single-tenant) data centers. The 10-K says Paycom houses two fully redundant data centers at its Oklahoma City headquarters and a third at its Grapevine, TX facility, all owned and managed by Paycom, which is the only tenant. The HQ campus is about 500,000 sq ft on over 150 acres; that describes the whole campus, not the data centers, so it is not recorded as landAcres. No capacity has been published. The coordinates are OSM's Paycom point for the HQ address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "pcc-dekalb-ellenwood-data-center-ga",
     "name": "Project Preserve (Ellenwood Data Center)",
     "operator": "PCC-DeKalb LLC",
@@ -108888,8 +110007,12 @@
       "lon": -89.82,
       "city": "Wisconsin Rapids",
       "county": "Wood",
+      "street": "950 Fourth Avenue North",
       "state": "WI",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "planned": 150
     },
     "statusHistory": [],
     "sources": [
@@ -108897,13 +110020,33 @@
         "url": "https://wausaupilotandreview.com/2026/05/17/who-is-the-developer-of-the-proposed-wisconsin-rapids-data-center/",
         "label": "Who is the developer of the proposed Wisconsin Rapids data center?",
         "publisher": "Wausau Pilot & Review",
-        "retrievedAt": "2026-07-09",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://whsm.com/news/2026/10/15/wisconsin-rapids-data-center-faces-key-council-decision-october-20",
+        "label": "Wisconsin Rapids Data Center Faces Key Council Decision October 20",
+        "publisher": "WHSM",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-09",
+    "lastUpdated": "2026-10-16",
     "notes": "950 Fourth Ave N, former paper mill site. Developer reportedly affiliated with PNK Group USA. Conditional use permit application filed with the city April 30, 2026. Scale/investment not yet disclosed. Coordinates are approximate.",
+    "energy": {
+      "utility": "Consolidated Water Power Company",
+      "notes": "Wausau Pilot & Review reports power would come from Consolidated Water Power Company with American Transmission Company. WHSM reports an estimated 150 MW electricity demand, and city staff flagged that utility approvals were missing from the application."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The developer (PNK Group USA) claims closed-loop cooling, and Wausau Pilot & Review reports water use of about 10,000 gallons per day. Opponents question whether enough information supports the closed-loop and noise claims. These are developer claims, not measured figures."
+    },
     "landAcres": 209,
+    "community": {
+      "status": "contested",
+      "notes": "On September 16, 2026 the Plan Commission voted 7-0 to recommend denying the CUP, and the Common Council decides on October 20, 2026. A 12-month moratorium on new data centers took effect October 9, 2026 but does not automatically cover this earlier-filed application. Residents and South Wood County Neighbors for Responsible Development cite utility bills, noise, water use and infrastructure capacity. The developer offers a $5.7M community benefit plan that is not yet binding.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -109833,9 +110976,16 @@
         "publisher": "News On 6 (KOTV)",
         "retrievedAt": "2026-09-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-10-16",
     "notes": "Downtown Tulsa data center in the Philcade Building at 501 South Boston Avenue, operated by the building owner. Single-sourced. Coordinates are an approximate geocode of the street address.",
     "facilityType": "data_center"
   },
@@ -110841,9 +111991,23 @@
         "publisher": "The Construction Broadsheet",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.portmuskogee.com/core-scientific-announces-expansion-in-muskogee-with-acquisition-of-polaris/",
+        "label": "Core Scientific announces expansion in Muskogee with acquisition of Polaris",
+        "publisher": "Port Muskogee",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001839341/000183934126000014/core-20260630.htm",
+        "label": "Core Scientific, Inc. Form 10-Q for the quarter ended June 30, 2026",
+        "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
+        "retrievedAt": "2026-10-16",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-16",
     "notes": "Bitcoin mining data center (\"Project Bifrost\") on a 42-acre site at Port Muskogee's John T. Griffin Industrial Park, south of Tulsa; ~$100M initial investment (Feb 2024 announcement), since doubled. Operational with ~40,000 miners across shipping containers at ~200MW drawn from OG&E, expanding toward 400MW / 400,000-home-equivalent load. OSHA cited the facility for 6 safety violations (~$68K initial penalty, late 2024: coolant on floors, work around energized circuits without PPE, untrained staff); Oklahoma DEQ found stormwater/sediment violations affecting Sam Creek. Polaris sued the City of Muskogee in 2025 over annexation and a proposed 3% utility franchise fee. Core Scientific has a PENDING (not yet closed) agreement to acquire Polaris Technologies, expected to close Q3 2026 as part of a much larger planned 1.5GW AI campus at the same industrial park — operator of record here remains Polaris Technologies pending that close.",
     "energy": {
       "source": "grid",
@@ -110855,6 +112019,7 @@
       "notes": "Reported to use millions of gallons of municipal water per day."
     },
     "investmentUsd": 100000000,
+    "landAcres": 40,
     "jobs": {
       "permanent": 20,
       "sourceIndex": 6
@@ -113790,6 +114955,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "project-astro-broken-arrow-ok",
+    "name": "Project Astro (Broken Arrow) — withdrawn",
+    "operator": "Undisclosed developer",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.0751796,
+      "lon": -95.7439392,
+      "city": "Broken Arrow",
+      "county": "Wagoner",
+      "street": "8521 S 209th E Ave",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-06",
+        "note": "The anonymous developer's letter of intent to buy the 51-acre site expired, and the proposal was withdrawn. Broken Arrow then enacted a six-month moratorium on new data center proposals.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/project-astro-broken-arrow",
+        "label": "Project Astro (Broken Arrow)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://servercountry.org/data/states/oklahoma/",
+        "label": "Oklahoma Data Center Projects (Broken Arrow East Data Center Prospect, canceled)",
+        "publisher": "ServerCountry",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=8521+S+209th+E+Ave,+Broken+Arrow,+Oklahoma&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim record for South 209th East Avenue, Broken Arrow",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Codenamed proposal for a vacant agricultural tract between the Creek Turnpike and SH-51. No formal application or pre-development meeting was ever filed. The developer was never named, and no MW figure was published. The coordinates are an OSM road-level point on S 209th E Ave, not the parcel. News9's list mentions an 'east Broken Arrow' proposal whose land-purchase LOI expired, which appears to be the same site.",
+    "landAcres": 51,
+    "facilityType": "data_center"
+  },
+  {
     "id": "project-boulder-colleton-county-sc",
     "name": "Project Boulder",
     "operator": "Eagle Rock Partners",
@@ -114594,6 +115810,41 @@
     }
   },
   {
+    "id": "project-riverjump-marion-grant-county-in",
+    "name": "Project Riverjump",
+    "operator": "Undisclosed",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.56,
+      "lon": -85.7,
+      "city": "Marion",
+      "county": "Grant",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-09-02",
+        "note": "The City of Marion is no longer moving forward with Project Riverjump, a hyperscale data center planned for the city's west side, after public outcry.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.chronicle-tribune.com/opinion/mack-up-your-mind-we-should-care-about-more-than-just-data-centers/article_e9bf2826-5f8f-5daf-8590-13f3c4712310.html",
+        "label": "Mack: Up your mind, we should care about more than just data centers",
+        "publisher": "Chronicle-Tribune (Marion)",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Hyperscale data center proposed for west Marion. The developer was never named. The mayor announced in late August 2026 that he would not endorse it. Coordinates are approximate (west side of Marion).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "project-ruby-upatoi-muscogee-ga",
     "name": "Project Ruby (Upatoi Data Center Campus)",
     "operator": "Undisclosed end user (site pursued by Choose Columbus / Development Authority of Columbus)",
@@ -114926,6 +116177,41 @@
       "permanent": 570,
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "project-zora-warrick-county-in",
+    "name": "Project Zora",
+    "operator": "Undisclosed",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.17,
+      "lon": -87.32,
+      "county": "Warrick",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07-31",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-31",
+        "note": "Warrick County disclosed a preliminary inquiry. The developer controls ~1,200 acres of reclaimed mine land in northern Warrick County, with a concept of developing ~300 acres. No permit applications are expected before January 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.14news.com/2026/07/31/warrick-county-commissioners-schedule-special-meeting-data-center-zoning/",
+        "label": "Warrick County Commissioners schedule special meeting on data center zoning",
+        "publisher": "WFIE 14 News",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Developer and end user are not named; the developer said it expects to identify the end user by the end of 2026. Commissioners reportedly said the site is 'south of Lynnville' but did not know its exact location, so the coordinates are a rough approximation. No vote, NDA or approval has occurred.",
     "facilityType": "data_center"
   },
   {
@@ -115334,12 +116620,32 @@
         "publisher": "City of Shelbyville, Indiana",
         "retrievedAt": "2026-09-01",
         "kind": "permit"
+      },
+      {
+        "url": "https://fox59.com/news/shelbyville-city-council-advances-data-center-plan/amp/",
+        "label": "Shelbyville city council advances data center plan",
+        "publisher": "FOX59",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-10-16",
     "notes": "Roughly 429 acres near State Road 44 annexed into Shelbyville for a multi-phase development of up to eleven data center buildings, at an estimated $2 billion investment. No tenant has been identified.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Prologis says the campus will use a closed-loop cooling system, with water use comparable to a typical office building."
+    },
     "investmentUsd": 2000000000,
     "landAcres": 429,
+    "jobs": {
+      "permanent": 450,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "contested",
+      "notes": "A petition sought to halt the project and gallery members jeered during the council discussion. The council advanced an economic development agreement and fiscal plan anyway.",
+      "sourceIndex": 1
+    },
     "facilityType": "data_center"
   },
   {
@@ -116002,6 +117308,47 @@
     "facilityType": "data_center"
   },
   {
+    "id": "provident-burns-harbor-porter-county-in",
+    "name": "Provident Burns Harbor Data Center Campus (Worthington Steel property)",
+    "operator": "Provident Realty Advisors",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.61,
+      "lon": -87.12,
+      "city": "Burns Harbor",
+      "county": "Porter",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-07-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-07-08",
+        "note": "Preliminary hearing before the Burns Harbor Advisory Plan Commission on Provident's petition to rezone ~102 acres on the west side of Babcock Road to a new Special District 8 (technology).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.in.gov/towns/burns-harbor/files/plan-commission/Meetings-and-Agendas/_07082024-901.pdf",
+        "label": "Burns Harbor Advisory Plan Commission minutes, July 8, 2024",
+        "publisher": "Town of Burns Harbor",
+        "retrievedAt": "2026-10-16",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "About 102 acres owned by Worthington Steel on the west side of Babcock Road. Initially five buildings at ~30 employees per building. Separate from Provident's withdrawn Chesterton proposal. Current status is uncertain: no 2026 action was found, and secondary trackers describe it as stalled or revised. Coordinates are approximate.",
+    "energy": {
+      "utility": "NIPSCO",
+      "notes": "Petitioner's attorney told the plan commission the site was chosen for nearby high-tension lines and that agreements were in place with NIPSCO."
+    },
+    "landAcres": 102,
+    "facilityType": "data_center"
+  },
+  {
     "id": "provident-chesterton-porter-county-in",
     "name": "Provident Chesterton Data Center Campus (former Brassie Golf Club)",
     "operator": "Provident Realty Advisors",
@@ -116413,6 +117760,75 @@
     "facilityType": "data_center"
   },
   {
+    "id": "pso-northeastern-5-6-oologah-ok",
+    "name": "PSO Northeastern Units 5 & 6 (NE 5&6)",
+    "operator": "Public Service Company of Oklahoma (AEP)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.4317,
+      "lon": -95.7008,
+      "city": "Oologah",
+      "county": "Rogers",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 450
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-06-26",
+        "note": "The OCC approved the package in May 2026, conditioned on Rogers County zoning. On 2026-06-26 a Rogers County judge found PSO qualifies for a land-use exception, overturning the Board of Adjustment's November denial.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kgou.org/energy/2026-05-13/pso-to-invest-1-2-billion-in-new-energy-projects-to-meet-growing-demand",
+        "label": "PSO to invest $1.2 billion in new energy projects to meet growing demand",
+        "publisher": "KGOU",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newson6.com/tulsa-oklahoma-news/rogers-county-judge-approves-pso-expansion-at-oologah-power-plant",
+        "label": "Rogers County judge approves PSO expansion at Oologah power plant",
+        "publisher": "News On 6",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/06/rogers-county-judge-gives-green-light-to-hotly-debated-oologah-power-plant-overhaul/",
+        "label": "Rogers County judge gives green light to hotly debated Oologah power plant overhaul",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://gridinfo.com/plant/northeastern/2963",
+        "label": "Northeastern power plant (Oologah, OK)",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "SCOPE CAVEAT, same as the tracked GRDA Unit 4: this is utility system generation, not a plant dedicated to one campus. It is recorded because the OCC order ties the costs primarily to large-load customers and the approval imposed large-load (data center) operating conditions. No offtaker is set because no compute customer is named. A maintainer may judge it out of scope. The MW, turbine, cost and COD figures are second-hand: Hoodline attributes them to Oklahoma Energy Today, whose article was not fetched. The coordinates are GridInfo's point for the existing Northeastern station.",
+    "energy": {
+      "source": "on_site_gas",
+      "utility": "Public Service Company of Oklahoma (PSO)"
+    },
+    "investmentUsd": 539800000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2,
+      "notes": "Two GE combustion turbines at PSO's existing Northeastern station, with a target COD of 2028-12-15 (per Oklahoma Energy Today, as relayed by Hoodline). Part of a $1.2B package the OCC approved in May 2026, alongside battery storage and PPAs, with costs 'paid primarily by the large-load customers'."
+    }
+  },
+  {
     "id": "ptolemy-data-systems-sheridan-wy",
     "name": "Ptolemy Data Systems Sheridan Data Center",
     "operator": "Ptolemy Data Systems",
@@ -116502,7 +117918,7 @@
     "id": "qlevr-charlestown-clark-county-in",
     "name": "QLEVR Charlestown Data Center",
     "operator": "QLEVR LLC",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 38.4517,
@@ -116522,6 +117938,12 @@
         "date": "2026-06",
         "note": "Proposal filed for Shadow Lake Industrial Park; public hearing set for June 9 with Advisory Plan Commission review pending.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-10-16",
+        "note": "Charlestown Advisory Plan Commission voted 4-3 on July 20, 2026 that the development plan meets light-industrial zoning, with conditions (berm, blasting surveys, environmental study).",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -116531,9 +117953,23 @@
         "publisher": "News and Tribune",
         "retrievedAt": "2026-09-01",
         "kind": "press"
+      },
+      {
+        "url": "https://www.lpm.org/news/2026-07-21/charlestown-board-advances-data-center-proposal-with-stipulations",
+        "label": "Charlestown board advances data center proposal with stipulations",
+        "publisher": "Louisville Public Media",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lpm.org/news/2026-07-21/charlestown-board-advances-data-center-proposal-with-stipulations",
+        "label": "Charlestown board advances data center proposal with stipulations",
+        "publisher": "Louisville Public Media",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-01",
+    "lastUpdated": "2026-10-16",
     "notes": "A 55,000 sq ft, 3 MW facility on 12 acres in Shadow Lake Industrial Park, with a stated 14-16 month construction period. The developer did not request tax abatements and says it will pay for any required utility upgrades.",
     "water": {
       "coolingType": "closed_loop",
@@ -118492,6 +119928,41 @@
       "notes": "QTS states its closed-loop cooling 'only requires a one-time water fill to support data center operations' and 'eliminates ongoing water demand for the purpose of cooling'. No consumption volume is published."
     },
     "landAcres": 38,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "qts-project-jeremiah-wheeler-porter-county-in",
+    "name": "QTS Project Jeremiah (Jeremiah A and B), Wheeler",
+    "operator": "QTS Data Centers",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.53,
+      "lon": -87.19,
+      "city": "Wheeler",
+      "county": "Porter",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025-09",
+        "note": "QTS rescinded its PUD application for both Union Township parcels by phone, per Porter County Commission President Jim Biggs.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://solwd.net/qts-withdraws-proposal-for-two-union-township-data-centers/",
+        "label": "QTS withdraws proposal for two Union Township data centers",
+        "publisher": "Post-Tribune (via solwd.net)",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Jeremiah A: 351.85 acres at the NE corner of CR W 450 N and CR N 750 W. Jeremiah B: 434.46 acres at the SE corner of W 450 N and N 650 W, north of Union Township Middle and High Schools. Nearly 800 acres combined, Union Township, Porter County. Coordinates approximate the combined campus.",
     "facilityType": "data_center"
   },
   {
@@ -123089,6 +124560,78 @@
     "lastUpdated": "2026-10-09",
     "notes": "A 249,640 sq ft data center built in 2008 for a global bank and upgraded several times since. In March 2026 it was fully leased to a confidential tenant, with Cresa representing Russo. Baxtel lists the street as '600 Central Blvd' while NJBIZ uses 600 Commerce Blvd, and the NJBIZ address is used here. No MW figure is published. This is a different building from 365 Data Centers Carlstadt at 410 Commerce Blvd. Coordinates are an OSM street-level point on Commerce Boulevard, not the parcel.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "rwe-crooked-creek-solar-mccurtain-county-ok",
+    "name": "Crooked Creek Solar",
+    "operator": "RWE Americas",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.0298629,
+      "lon": -94.7389659,
+      "city": "Broken Bow",
+      "county": "McCurtain",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 155
+    },
+    "announcedDate": "2026-08-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-03",
+        "note": "RWE and Google announced a 15-year PPA. Construction is planned to start later in 2026, with COD expected in 2028.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.rwe.com/en/press/rwe-americas/2026-08-03-rwe-and-google-sign-ppa-for-oklahoma-solar-project/",
+        "label": "RWE and Google sign PPA for Oklahoma solar project",
+        "publisher": "RWE",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kgou.org/energy/2026-08-04/new-southeast-oklahoma-solar-plant-will-power-google-operations-in-region",
+        "label": "New southeast Oklahoma solar plant will power Google operations in region",
+        "publisher": "KGOU",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://mccurtaingazettenews.com/?p=7384",
+        "label": "Crooked Creek Solar Project coverage",
+        "publisher": "McCurtain Gazette",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Broken+Bow,+McCurtain+County,+Oklahoma&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode for Broken Bow, Oklahoma",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-16",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "The McCurtain Gazette locates the project 'southeast of Broken Bow near the site of the old Craig Plant'. The pin is the town of Broken Bow, an approximate anchor, NOT the array footprint. RWE estimates $24.3M of local economic activity and $1.4M of state and local tax revenue during construction, plus about $25M for county programs over the operating life. The Gazette's rule-of-thumb acreage (5 to 8 acres/MW) is not a site figure and is not recorded. Google is named as offtaker, but no specific Google campus is named, so poweredFacilityIds is not set.",
+    "energy": {
+      "source": "solar"
+    },
+    "jobs": {
+      "construction": 250,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Google",
+      "notes": "15-year PPA for the project's total 155 MWac output to serve Google operations in the Southwest Power Pool. RWE plans to begin onsite construction later in 2026, with commercial operation expected in 2028."
+    }
   },
   {
     "id": "rwe-maryland-blue-crab-solar-storage-dorchester-md",
@@ -132771,14 +134314,21 @@
         "publisher": "Epoch AI",
         "retrievedAt": "2026-10-16",
         "kind": "other"
+      },
+      {
+        "url": "https://www.businessinsider.com/oracle-seeks-bigger-tax-break-texas-property-value-protest-2025-7",
+        "label": "Oracle Seeks Bigger Tax Breaks in Texas With Property Value Protest",
+        "publisher": "Business Insider",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-10-16",
-    "notes": "Also known as the Lancium Clean Campus. Lancium announced the site in December 2021 as a Clean Compute Campus that would host Bitcoin mining and other energy-intensive applications; Crusoe has since built an eight-building AI campus on it. Oracle gives the campus as 1,100 acres; the 2021 announcement gave about 800. Epoch AI describes the AI chips as owned by Oracle and used by OpenAI. Taylor Central Appraisal District's 2026 roll (Texas appraises property as of 1 January) lists Lancium entities as owners of the land, buildings and campus substations; Crusoe-managed entities as owners of each building's \"MEP\" accounts; and Oracle America as owner of computer equipment for \"BUILDING 1 & 2\" only, valued at $3.43 billion. Crusoe gives the eight buildings \"a total power capacity of 1.2 gigawatts\"; Oracle describes its 618 MW for six buildings as \"75% of total capacity\", without saying what kind of capacity; Epoch AI projects 843 MW of IT power for the campus by Q4 2026. The operational capacity shown is Oracle's figure for capacity \"delivered to the customer\" as of 2026-09-10. Oracle did not say whether it is IT load, and \"delivered\" is Oracle's word, not an observation of running hardware. Crusoe expected the second phase to finish in mid-2026 (March 2025) and later \"by the end of 2026\" (March 2026). A separate 900 MW Crusoe campus for Microsoft (two buildings and an onsite power plant, the first building expected to be energized in mid-2027) is being built on adjacent land and is not part of this record; Epoch AI reported in April 2026 that OpenAI had reversed plans to expand this site. Construction-workforce figures conflict widely across sources and are not repeated here. Coordinates are the approximate centre of the eight data halls outlined on Epoch AI's satellite map of the campus (retrieved 2026-10-16).",
+    "notes": "Also known as the Lancium Clean Campus. Lancium announced the site in December 2021 as a Clean Compute Campus that would host Bitcoin mining and other energy-intensive applications; Crusoe has since built an eight-building AI campus on it. Oracle gives the campus as 1,100 acres; the 2021 announcement gave about 800. Epoch AI describes the AI chips as owned by Oracle and used by OpenAI. Taylor Central Appraisal District's 2026 roll (Texas appraises property as of 1 January) lists Lancium entities as owners of the land, buildings and campus substations; Crusoe-managed entities as owners of each building's \"MEP\" accounts; and Oracle America as owner of computer equipment for \"BUILDING 1 & 2\" only, valued at $3.43 billion. Business Insider reported in July 2025 that Crusoe \"has committed to spending up to $3.5 billion to build the data center site in exchange for its property tax abatement\"; that is a commitment under the abatement agreements, not a reported project cost, so no investment figure is recorded here. Crusoe gives the eight buildings \"a total power capacity of 1.2 gigawatts\"; Oracle describes its 618 MW for six buildings as \"75% of total capacity\", without saying what kind of capacity; Epoch AI projects 843 MW of IT power for the campus by Q4 2026. The operational capacity shown is Oracle's figure for capacity \"delivered to the customer\" as of 2026-09-10. Oracle did not say whether it is IT load, and \"delivered\" is Oracle's word, not an observation of running hardware. Crusoe expected the second phase to finish in mid-2026 (March 2025) and later \"by the end of 2026\" (March 2026). A separate 900 MW Crusoe campus for Microsoft (two buildings and an onsite power plant, the first building expected to be energized in mid-2027) is being built on adjacent land and is not part of this record; Epoch AI reported in April 2026 that OpenAI had reversed plans to expand this site. Construction-workforce figures conflict widely across sources and are not repeated here. Coordinates are the approximate centre of the eight data halls outlined on Epoch AI's satellite map of the campus (retrieved 2026-10-16).",
     "energy": {
       "source": "mixed",
       "utility": "AEP Texas",
-      "notes": "Epoch AI lists American Electric Power as the campus's energy company. Crusoe's March 2025 announcement describes a 1.2 GW grid interconnection for the campus. Ten on-site gas turbines with a combined site rating of 360.5 MW are registered behind the meter under TCEQ Standard Permit 177263 and are tracked separately as crusoe-abilene-onsite-generation-tx."
+      "notes": "Epoch AI lists American Electric Power as the campus's energy company. Crusoe's March 2025 announcement describes a 1.2 GW grid interconnection for the campus. Ten on-site gas turbines with a combined site rating of 360.5 MW are registered under TCEQ Standard Permit 177263 (TCEQ's technical review says they are to \"generate power for onsite use only for data centers and computing\") and are tracked separately as crusoe-abilene-onsite-generation-tx."
     },
     "water": {
       "coolingType": "closed_loop",
@@ -132798,7 +134348,6 @@
         "sourceIndex": 3
       }
     ],
-    "investmentUsd": 3500000000,
     "landAcres": 1100,
     "community": {
       "status": "mixed",
@@ -132822,10 +134371,6 @@
       "state": "OH",
       "precision": "exact"
     },
-    "capacityMw": {
-      "planned": 1500
-    },
-    "poweredBy": "on-site natural gas generators",
     "announcedDate": "2025-09-23",
     "statusHistory": [
       {
@@ -132839,6 +134384,12 @@
         "date": "2025",
         "note": "Ground broken; using former Lordstown Motors / GM assembly plant; modular prefab data center approach",
         "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-07-30",
+        "note": "Epoch AI satellite imagery: \"Active construction visible on and around the datacenter, with the roofing mostly in place.\" Epoch AI reports no buildings operational yet.",
+        "sourceIndex": 8
       }
     ],
     "sources": [
@@ -132890,14 +134441,28 @@
         "publisher": "Signal Ohio",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://group.softbank/en/news/press/20250924",
+        "label": "OpenAI, Oracle, and SoftBank expand Stargate with five new AI data center sites",
+        "publisher": "SoftBank Group",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://epoch.ai/data/ai-data-centers/directory/openai-stargate-lordstown",
+        "label": "OpenAI Stargate Lordstown | AI data centers",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-05",
-    "notes": "Planned 1,500 MW is a long-term campus ceiling, not a near-term operational figure: a SoftBank spokesperson said the initial SoftBank/OpenAI data center uses \"a small part\" of the 6.2M-sq-ft site, which also hosts a Foxconn/SoftBank hub manufacturing modular data-center equipment. Crescent Dune LLC (a SoftBank affiliate) acquired the site from Foxconn for $375M (Sept 2025, Trumbull County Auditor). SoftBank's \"up to $3 billion\" is a ceiling covering both manufacturing and the data center — no data-center-only investment figure is confirmed.",
+    "lastUpdated": "2026-10-16",
+    "notes": "No capacity is recorded for this site alone: the September 2025 announcement said Lordstown and Milam County together \"can scale to 1.5 gigawatts over the next 18 months,\" and gave no Lordstown-only figure. A SoftBank spokesperson said the initial SoftBank/OpenAI data center uses \"a small part\" of the 6.2M-sq-ft site, which also hosts a Foxconn/SoftBank hub manufacturing modular data-center equipment. Crescent Dune LLC (a SoftBank affiliate) acquired the site from Foxconn for $375M (Sept 2025, Trumbull County Auditor). SoftBank's \"up to $3 billion\" is a ceiling covering both manufacturing and the data center — no data-center-only investment figure is confirmed.",
     "energy": {
       "source": "grid",
       "utility": "FirstEnergy (Ohio Edison)",
-      "notes": "Lordstown sits in FirstEnergy/Ohio Edison territory (eastern PJM); sources cite \"affordable electricity from FirstEnergy and American Electric Power\" and FirstEnergy's high-voltage transmission. FirstEnergy completed a $30M grid upgrade (2019–2022) anticipating large industrial load. DISCREPANCY: the existing poweredBy field says \"on-site natural gas generators\" (the adjacent independently-owned Lordstown Energy Center is a separate gas plant); on-site generation for the data center is not confirmed in site-specific filings. The 1,500 MW figure is a long-term campus ceiling — the initial data center uses \"a small part\" of the footprint."
+      "notes": "Lordstown sits in FirstEnergy/Ohio Edison territory (eastern PJM); sources cite \"affordable electricity from FirstEnergy and American Electric Power\" and FirstEnergy's high-voltage transmission. FirstEnergy completed a $30M grid upgrade (2019–2022) anticipating large industrial load. On-site generation for the data center is not confirmed in site-specific filings; the adjacent, independently owned Lordstown Energy Center is a separate gas plant."
     },
     "water": {
       "coolingType": "closed_loop",
@@ -132945,9 +134510,15 @@
       },
       {
         "status": "under_construction",
-        "date": "2025",
-        "note": "Steel framing and roofing visible in satellite imagery; first building delivery targeted October 2025",
-        "sourceIndex": 0
+        "date": "2026-01",
+        "note": "Epoch AI satellite imagery shows building foundation construction beginning on 2026-01-04, and steel framing and roofing underway for Building 1 by 2026-03-23.",
+        "sourceIndex": 5
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-06-24",
+        "note": "Epoch AI's directory entry (updated 2026-06-24) describes the site as \"an AI data center under construction.\"",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -132985,9 +134556,16 @@
         "publisher": "The Real Deal",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://epoch.ai/data/ai-data-centers/directory/openai-stargate-milam",
+        "label": "OpenAI Stargate Milam | AI data centers",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-16",
     "energy": {
       "source": "solar",
       "utility": "ERCOT",
@@ -133372,8 +134950,8 @@
         "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-14",
-    "notes": "Status re-check, NO change: independently confirmed 'under_construction' - the Michigan Data Center Tracker (baldorilaw.com/resources/michigan-data-center-tracker, retrieved 2026-09-09) lists 'The Barn' campus in Saline Township as 'Under construction · 2026-04', matching the record. subsidies left empty: no site-specific incentive award was found in any fetched source; Michigan's 2024 statutory data center sales/use tax exemptions may apply but no fetched page ties an award to this site, and the MPSC conditions are ratepayer protections, not subsidies.",
+    "lastUpdated": "2026-10-16",
+    "notes": "The Michigan Data Center Tracker (baldorilaw.com, retrieved 2026-09-09) lists 'The Barn' campus in Saline Township as 'Under construction · 2026-04'. No site-specific incentive award has been found: Michigan's 2024 data-center sales and use tax exemptions may apply, but no source ties an award to this site, and the MPSC conditions are ratepayer protections, not subsidies.",
     "energy": {
       "source": "grid",
       "utility": "DTE Energy",
@@ -135258,6 +136836,56 @@
       "notes": "Neighbors including the owners of Tuttle Orchards raised concerns ahead of the 2025-05-08 public meeting on rezoning 775 acres of agricultural land in Buck Creek Township. In withdrawing, Surge Development said residents sought 'additional specificity and clear direction' on the 'potential impacts and benefits of development in this area,' adding that 'meaningful public participation must remain at the core of this process.'",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "surge-henry-county-technology-park-knightstown-in",
+    "name": "Henry County Technology Park",
+    "operator": "Surge Development LLC",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.822,
+      "lon": -85.533,
+      "city": "Knightstown",
+      "county": "Henry",
+      "state": "IN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-10-15",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-15",
+        "note": "Surge Development and GM Development present a 585-acre technology park near SR 109 and I-70.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "permitted",
+        "date": "2026-01-28",
+        "note": "Henry County Commissioners approved the PUD 2-1, the last county-level vote needed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://indianapublicradio.org/news/2026/01/henry-county-data-center-approved-at-last-commissioners-vote/",
+        "label": "Henry County data center approved by last commissioners vote",
+        "publisher": "Indiana Public Radio",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.insideindianabusiness.com/articles/developer-behind-withdrawn-hancock-county-data-center-now-eyeing-henry-county-tech-park",
+        "label": "Developer behind withdrawn Hancock County data center now eyeing Henry County tech park",
+        "publisher": "Inside INdiana Business",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "Northwest corner of the I-70 / State Road 109 interchange near Knightstown. Phase one is described as an 800,000 sq ft data center with an electrical generation station. No tenant was named. Developers committed to drilling no on-site wells. Coordinates are approximate.",
+    "landAcres": 585,
     "facilityType": "data_center"
   },
   {
@@ -145183,9 +146811,16 @@
         "publisher": "News On 6 (KOTV)",
         "retrievedAt": "2026-09-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
+        "label": "Where are data centers being built across Oklahoma?",
+        "publisher": "News 9",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-10-16",
     "notes": "Downtown Tulsa carrier/colocation exchange at 509 South Boston Avenue. Single-sourced. Coordinates are an approximate geocode of the street address.",
     "facilityType": "data_center"
   },
@@ -147512,15 +149147,27 @@
     "statusHistory": [
       {
         "status": "proposed",
-        "date": "2025",
-        "note": "Part of Stargate expansion; $25B mega-campus on 1,200 acres at Hwy 604 / Hwy 351 intersection; ~125 miles W of Fort Worth",
+        "date": "2025-08",
+        "note": "Vantage announces Frontier: $25B mega-campus on 1,200 acres at Hwy 604 / Hwy 351 intersection; ~125 miles W of Fort Worth",
         "sourceIndex": 0
       },
       {
+        "status": "proposed",
+        "date": "2025-09-23",
+        "note": "OpenAI, Oracle and SoftBank name Shackelford County, Texas, as a new Stargate site; the announcement does not name Vantage.",
+        "sourceIndex": 5
+      },
+      {
         "status": "under_construction",
-        "date": "2025",
-        "note": "Ground broken; first building delivery targeted H2 2026; 10 buildings planned totaling 3.7M sq ft",
-        "sourceIndex": 1
+        "date": "2025-12",
+        "note": "Vantage broke ground on Frontier, \"a major expansion tied to Oracle and OpenAI's Stargate initiative\"; the first facility is scheduled to enter service in the second half of 2026 (a target, not a delivery), with 10 buildings totalling 3.7M sq ft.",
+        "sourceIndex": 6
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-04-13",
+        "note": "Cleanview's reading of satellite imagery: vertical construction underway on five buildings, with foundations laid for two more.",
+        "sourceIndex": 7
       }
     ],
     "sources": [
@@ -147558,9 +149205,30 @@
         "publisher": "The Albany News",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://group.softbank/en/news/press/20250924",
+        "label": "OpenAI, Oracle, and SoftBank expand Stargate with five new AI data center sites",
+        "publisher": "SoftBank Group",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://w.media/vantage-data-centers-breaks-ground-on-data-center-campus-in-texas/",
+        "label": "Vantage Data Centers breaks ground on data center campus in Texas",
+        "publisher": "W.Media",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/reports/behind-the-meter-data-centers/full-report/stargate-frontier",
+        "label": "Stargate Frontier",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-05",
+    "lastUpdated": "2026-10-16",
     "energy": {
       "source": "on_site_gas",
       "onSiteGenerationMw": 700,
@@ -150089,6 +151757,63 @@
     }
   },
   {
+    "id": "we-energies-fox-north-energy-center-wrightstown-wi",
+    "name": "Fox North Energy Center",
+    "operator": "We Energies (WEC Energy Group)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.3206,
+      "lon": -88.2092,
+      "city": "Wrightstown",
+      "county": "Outagamie",
+      "state": "WI",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 750
+    },
+    "announcedDate": "2026-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10",
+        "note": "In early October 2026 We Energies filed an engineering plan with the PSC for a 750 MW gas plant at the existing Fox Energy Center site. Construction would start in 2029, with service in late 2032, pending approval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wpr.org/news/we-energies-plans-new-750mw-natural-gas-plant-in-fox-valley",
+        "label": "We Energies plans new 750MW natural gas plant in Fox Valley",
+        "publisher": "Wisconsin Public Radio",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://dailyreporter.com/2026/10/07/we-energies-fox-valley-natural-gas-plant/",
+        "label": "We Energies plans Fox Valley natural gas plant amid data center wave",
+        "publisher": "The Daily Reporter",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Fox_Energy_Center",
+        "label": "Fox Energy Center (existing 618.8 MW plant; coordinates of the host site)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-16",
+    "notes": "A proposed plant at the existing Fox Energy Center site, owned by Wisconsin Public Service Corp. The existing 618.8 MW plant has run since 2005. Clean Wisconsin describes the new plant as a continuously running combined-cycle unit. The filing had no cost estimate. We Energies has not said whether it will serve a data center. Press frames it as part of the utility's data-center-driven gas buildout. Coordinates are those of the existing Fox Energy Center host site, not a surveyed footprint for the new units.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "750 MW natural gas plant, described by Clean Wisconsin as combined-cycle. No customer or offtaker has been disclosed."
+    }
+  },
+  {
     "id": "we-energies-oak-creek-natural-gas-wi",
     "name": "We Energies Oak Creek Natural Gas Generating Units",
     "operator": "We Energies (WEC Energy Group)",
@@ -151672,11 +153397,11 @@
         "url": "https://www.news9.com/oklahoma-city-news/where-are-data-centers-are-being-built-oklahoma-list",
         "label": "Where are data centers being built across Oklahoma? — Windstream Wholesale",
         "publisher": "News 9 (KWTV)",
-        "retrievedAt": "2026-09-02",
+        "retrievedAt": "2026-10-16",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-10-16",
     "notes": "Downtown Oklahoma City carrier/wholesale facility at 825 North Broadway Avenue. Coordinates are an approximate geocode of the street address.",
     "facilityType": "data_center"
   },
@@ -152143,11 +153868,11 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
-    "notes": "Rebuilt from primary documents to resolve last wave's hold: the sole prior source was gem.wiki (an aggregator), unacceptable sourcing for this site. This record is justified as a SEPARATE power_generation record (not a duplicate of the live xai-colossus-memphis-tn data_center record's energy field) following this dataset's own established convention for behind-the-meter, single-offtaker generation plants co-located with the data center they power -- see e.g. crusoe-abilene-onsite-generation-tx / stargate-abilene-tx, or voltagrid-covington-power-plant-ga / serverfarm-covington-hazelbrand-ga, where the host record keeps a brief energy summary and the power_generation record carries the permit-level detail. A companion refresh finding recommends the live xai-colossus-memphis-tn record's energy.notes be corrected to reflect the appeal's dismissal (no longer 'stays' the permit) and that its two Wikipedia citations be supplemented with primary/official replacements.",
+    "lastUpdated": "2026-10-16",
+    "notes": "Behind-the-meter gas turbines at the Paul R Lowry Road site serving xAI's Colossus data center (tracked as xai-colossus-memphis-tn). Like other co-located, single-offtaker plants in this dataset (for example crusoe-abilene-onsite-generation-tx), the plant is a separate power_generation record that carries the permit-level detail, while the data-center record keeps a brief energy summary.",
     "community": {
       "status": "contested",
-      "notes": "The NAACP and Young, Gifted & Green appealed SCHD's July 2, 2025 permit decision and its accompanying 'Nonroad Engine Decision' (which exempted temporary turbines from permitting) to the Memphis and Shelby County Air Pollution Control Board; the appeal argued CTC was an existing major stationary source of air pollution (already operating at least 22 unpermitted turbines when the permit issued) that had been wrongly classified as a new greenfield facility. The Board dismissed the appeal as moot on 2025-12-15 (6-1 vote), after which one SELC attorney said the fight 'could be a federal case, could even go up to the Supreme Court.' A federal Clean Air Act suit was subsequently filed 2026-04-14 in the U.S. District Court for the Northern District of Mississippi (NAACP v. X.AI Corp. and MZX Tech LLC, No. 3:26-cv-00074) -- but its claims and requested relief target xAI's separate 'Colossus Gas Plant' at 2875 Stanton Road South, Southaven, Mississippi (owned by MZX Tech LLC, a different xAI subsidiary), not this Memphis facility or CTC Property LLC, which is not a named defendant. That complaint cites this Paul R Lowry Road facility's history only as background evidence of a company-wide pattern (paragraphs 192-202), quoting an xAI-side executive as saying the company would be 'copying and pasting' its Colossus 1 turbine approach elsewhere. Because the county-level appeal against THIS facility is resolved (dismissed) and no live litigation names CTC Property LLC or this permit, status is set to 'contested' rather than 'litigation.'",
+      "notes": "The NAACP and Young, Gifted & Green appealed SCHD's July 2, 2025 permit decision and its accompanying 'Nonroad Engine Decision' (which exempted temporary turbines from permitting) to the Memphis and Shelby County Air Pollution Control Board; the appeal argued CTC was an existing major stationary source of air pollution (already operating at least 22 unpermitted turbines when the permit issued) that had been wrongly classified as a new greenfield facility. The Board dismissed the appeal as moot on 2025-12-15 (6-1 vote), after which one SELC attorney said the fight 'could be a federal case, could even go up to the Supreme Court.' A federal Clean Air Act suit was subsequently filed 2026-04-14 in the U.S. District Court for the Northern District of Mississippi (NAACP v. X.AI Corp. and MZX Tech LLC, No. 3:26-cv-00074) -- but its claims and requested relief target xAI's separate 'Colossus Gas Plant' at 2875 Stanton Road South, Southaven, Mississippi (owned by MZX Tech LLC, a different xAI subsidiary), not this Memphis facility or CTC Property LLC, which is not a named defendant. That complaint cites this Paul R Lowry Road facility's history only as background evidence of a company-wide pattern (paragraphs 192-202), quoting an xAI-side executive as saying the company would be 'copying and pasting' its Colossus 1 turbine approach elsewhere. The county-level appeal against this facility is resolved (dismissed), and no live litigation names CTC Property LLC or this permit.",
       "sourceIndex": 1
     },
     "facilityType": "power_generation",
@@ -152158,7 +153883,7 @@
         "xai-colossus-memphis-tn"
       ],
       "unitCount": 15,
-      "notes": "Shelby County Health Department (SCHD) issued Air Permit No. 01156-01PC to CTC Property LLC, a wholly owned xAI subsidiary leasing the Paul R Lowry Road parcel since March 22, 2024, on July 2, 2025 -- covering 15 gas turbines CTC 'intends to operate on a permanent basis' (quote from the NAACP/Young, Gifted & Green appeal brief). At peak (per satellite-imagery analysis in the same appeal brief, March 2025) the site hosted 35 turbines of mixed models (Solar SMT-130, SMT-60, GE Vernova 2500, Solaris GE LM2500+G4, Solar/Caterpillar XQ5200) totaling approximately 421.4 MW combined nameplate; the federal complaint filed 2026-04-14 independently corroborates 35 turbines / 421.4 MW as of March 31, 2025. No primary source fetched this run states the MW total specifically covered by the 15 permanently-permitted turbines (as opposed to the peak/historical 35-turbine, 421 MW figure) -- omitted rather than estimated by subtracting turbine models, which the underlying tables do not cleanly support without guessing which models were decommissioned. Per this repo's standing rule, PTE (potential-to-emit) tonnages calculated in the appeal brief's own emissions tables are the appellants' litigation exhibit, not a permit-imposed ceiling, and are not recorded here."
+      "notes": "Shelby County Health Department (SCHD) issued Air Permit No. 01156-01PC to CTC Property LLC, a wholly owned xAI subsidiary leasing the Paul R Lowry Road parcel since March 22, 2024, on July 2, 2025 -- covering 15 gas turbines CTC 'intends to operate on a permanent basis' (quote from the NAACP/Young, Gifted & Green appeal brief). At peak (per satellite-imagery analysis in the same appeal brief, March 2025) the site hosted 35 turbines of mixed models (Solar SMT-130, SMT-60, GE Vernova 2500, Solaris GE LM2500+G4, Solar/Caterpillar XQ5200) totaling approximately 421.4 MW combined nameplate; the federal complaint filed 2026-04-14 independently corroborates 35 turbines / 421.4 MW as of March 31, 2025. No primary source states the MW total covered by the 15 permanently permitted turbines, as distinct from the 35-turbine, ~421.4 MW peak, so none is recorded; it cannot be derived from the turbine models without guessing which units were removed. Potential-to-emit tonnages in the appeal brief's emissions tables are the appellants' litigation exhibit, not a permit-imposed ceiling, and are not recorded here."
     }
   },
   {
@@ -152188,9 +153913,9 @@
       },
       {
         "status": "operational",
-        "date": "2026-01",
-        "note": "First major GPU cluster, about 110,000 Nvidia GB200-class processors and roughly 210 MW, came online after a build of about 91 days.",
-        "sourceIndex": 1
+        "date": "2025-10",
+        "note": "Epoch AI matches its 2025-10-19 satellite imagery to the first cluster described in SpaceX's S-1 filing (p. 76): \"approximately 110,000 GB200 processors, approximately 210 megawatts of compute power.\"",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -152207,10 +153932,17 @@
         "publisher": "Wikipedia",
         "retrievedAt": "2026-09-21",
         "kind": "other"
+      },
+      {
+        "url": "https://epoch.ai/data/ai-data-centers/directory/colossus-2",
+        "label": "Colossus 2 | AI data centers",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
-    "notes": "Second, physically separate xAI Memphis site, distinct from the Colossus campus at 3231 Paul R Lowry Road in Boxtown. DCD (2025-03-10) reports xAI affiliate CTC Properties bought three parcels at 5400 Tulane Road in Whitehaven for $80m: an existing 1 million sq ft warehouse plus two adjacent sites totalling 100 acres. The $80m figure is the land purchase price recorded in property records, not total project investment. ADDRESS DISCREPANCY: DCD gives 5400 Tulane Road; Wikipedia gives 5420 Tulane Road. 5400 is recorded because it is the figure in the earlier, better-attributed source, and the coordinates are a geocode of that address, not a confirmed parcel boundary. Status moved to operational on Wikipedia's account that the first major cluster came online around January 2026; Wikipedia is a weak source and this is the reason confidence stays at 'confirmed' only for the site's existence, not for its capacity. No capacityMw is recorded: Memphis Light Gas and Water was asked for a system-impact study for up to 260MW and xAI's Brent Mayo said the site could host up to 350,000 GPUs, but both are stated intentions, and the widely quoted 1 GW / 2 GW figures were not confirmed in any source fetched for this record. POWER IS LARGELY OUT OF STATE: the behind-the-meter gas-turbine plant reported to serve this site sits at Stanton Road in Southaven, MISSISSIPPI, so it is not a Tennessee facility and is deliberately not recorded here. PIN CORRECTED 2026-09-13: the previous coordinate (34.999654,-90.04295) was a bare OSM address POINT for 5400 Tulane Road (place=house, ~11m x 9m, no building geometry), sitting 759 m from the warehouse it was meant to mark. The pin is now the centroid of OSM building way 1386926534, explicitly tagged name=\"xAI Macrohard Colossus 2\", operator=xAI, telecom=data_center, addr:housenumber=5420 (way version 3, last edited 2025-12-31). Its footprint measures 511 m x 176 m = 969,472 sq ft, matching the 1 million sq ft warehouse this record describes to within 3%, and Nominatim resolves \"5420 Tulane Road\" directly to it. This also RESOLVES the address discrepancy above rather than choosing a side: 5400 is the property-record address for the three-parcel, 100-acre assemblage (kept in location.street, per the cited DCD source), while 5420 is the warehouse building itself. precision remains \"approximate\": the pin is a crowd-sourced OSM footprint corroborated by Wikipedia, NOT a parcel-confirmed point -- Shelby County assessor records returned 403 and could not be checked. Upgrading to \"exact\" needs that parcel record.",
+    "lastUpdated": "2026-10-16",
+    "notes": "Second, physically separate xAI Memphis site, distinct from the Colossus campus at 3231 Paul R Lowry Road in Boxtown. DCD (2025-03-10) reports xAI affiliate CTC Properties bought three parcels at 5400 Tulane Road in Whitehaven for $80m: an existing 1 million sq ft warehouse plus two adjacent sites totalling 100 acres. The $80m figure is the land purchase price recorded in property records, not total project investment. 5400 Tulane Road (DCD) is the property-record address for the three-parcel, 100-acre assemblage; 5420 Tulane Road (Wikipedia) is the warehouse building itself. The operational capacity (210 MW) is SpaceX's S-1 figure for the first cluster, \"approximately 210 megawatts of compute power\", as quoted by Epoch AI; the filing does not define the term, and Epoch AI reads it as GPU-server (IT) power, not total facility draw. Larger figures are stated intentions, not recorded capacity: Memphis Light Gas and Water was asked for a system-impact study for up to 260 MW, xAI's Brent Mayo said the site could host up to 350,000 GPUs, and the widely quoted 1 GW and 2 GW figures are unconfirmed. The gas-turbine power plant reported to serve this site is on Stanton Road in Southaven, Mississippi, and is tracked separately as xai-colossus-2-power-station-southaven-ms. The pin is the centroid of the OpenStreetMap building tagged \"xAI Macrohard Colossus 2\" (operator xAI, 5420 Tulane Road). It is a crowd-sourced footprint, not a parcel-confirmed point, so its precision is approximate.",
     "investmentUsd": 80000000,
     "landAcres": 100,
     "facilityType": "data_center",
@@ -152451,8 +154183,8 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
-    "notes": "Subsidies checked 2026-09-09: confirmed absence. Unlike the usual Memphis path, xAI did not obtain a PILOT or any formally granted incentive for the Memphis site, so the subsidies field is deliberately left empty rather than unknown. The site is instead expected to pay more than $30 million in combined Memphis and Shelby County property taxes. CORRECTION: energy.notes currently states 'an SELC/NAACP appeal stays that permit' -- this is stale. The Memphis and Shelby County Air Pollution Control Board voted 6-1 on 2025-12-15 to dismiss the NAACP/Young, Gifted & Green appeal of Air Permit No. 01156-01PC as moot, ending the appeal-triggered stay. Recommend energy.notes be updated to reflect that the appeal was dismissed (not that it currently stays anything), and that community.notes (currently 'an SELC/NAACP appeal to the Shelby County Air Pollution Control Board stays it') be updated the same way. Separately, a 2026-04-14 federal Clean Air Act suit (NAACP v. X.AI Corp. and MZX Tech LLC, No. 3:26-cv-00074, N.D. Miss.) is ongoing, but its claims target xAI's Southaven, MS 'Colossus Gas Plant' (MZX Tech LLC, 2875 Stanton Road South) -- a different facility -- not this Memphis site or CTC Property LLC, which is not a named defendant; it cites this site's turbine history only as background evidence of a pattern. Full primary-source detail (including that the permit covers 15 turbines permanently, not 35) is now captured in the companion new-facility record xai-colossus-1-turbines-memphis-tn. CORRECTION (sourcing quality, not fact): sources[0] and sources[5] both cite en.wikipedia.org/wiki/Colossus_(supercomputer), an aggregator-tier source, for this site of all sites. sources[0] is the sourceIndex behind statusHistory[0] ('Construction began; completed in approximately 122 days', dated 2024-06). Primary/official and named-quote replacements found and fetched this run: (1) NVIDIA's own newsroom press release (2024-10-28, official/primary) states Colossus was 'built by xAI and NVIDIA in just 122 days, instead of the typical timeframe' and comprises '100,000 NVIDIA Hopper GPUs in Memphis, Tennessee'; (2) Fortune (2025-03-14) quotes Super Micro CEO Charles Liang on the record: 'It took Elon and Super Micro only 122 days to finish,' adding it would usually take a year or longer. Per instructions, I have NOT attempted to delete or reorder the existing Wikipedia citations myself -- these two sources are offered as additions for the maintainer to use when manually reordering/replacing sources[0] and sources[5].",
+    "lastUpdated": "2026-10-16",
+    "notes": "xAI did not obtain a PILOT or any other formally granted incentive for the Memphis site, unlike the usual Memphis path, so the subsidies field is deliberately empty rather than unknown; the site is instead expected to pay more than $30 million in combined Memphis and Shelby County property taxes. A federal Clean Air Act suit filed 2026-04-14 (NAACP v. X.AI Corp. and MZX Tech LLC, No. 3:26-cv-00074, N.D. Miss.) targets xAI's separate 'Colossus Gas Plant' in Southaven, Mississippi (MZX Tech LLC, 2875 Stanton Road South), not this site or CTC Property LLC; it cites this site's turbine history only as background. Permit-level detail for this site's turbines, including that the permit covers 15 turbines on a permanent basis, is in the companion record xai-colossus-1-turbines-memphis-tn.",
     "energy": {
       "source": "mixed",
       "utility": "Memphis Light Gas & Water (MLGW) / TVA",
@@ -152467,7 +154199,7 @@
     "investmentUsd": 12000000000,
     "community": {
       "status": "litigation",
-      "notes": "The NAACP (with SELC and Earthjustice) sued xAI over roughly 35 unpermitted methane gas turbines; the county permitted only 15, and the NAACP/SELC appeal to the Shelby County Air Pollution Control Board stays it. The permit drew 1,700+ public comments, most opposed, and South Memphis (Boxtown) residents already face elevated asthma and cancer rates. xAI did not pursue a Shelby County EDGE PILOT tax abatement; no public subsidy is on record.",
+      "notes": "The NAACP (with SELC and Earthjustice) sued xAI over roughly 35 unpermitted methane gas turbines; the county permitted only 15, and the Memphis and Shelby County Air Pollution Control Board dismissed the NAACP/Young, Gifted & Green appeal of that permit as moot on 2025-12-15 (6-1). The permit drew 1,700+ public comments, most opposed, and South Memphis (Boxtown) residents already face elevated asthma and cancer rates. xAI did not pursue a Shelby County EDGE PILOT tax abatement; no public subsidy is on record.",
       "sourceIndex": 4
     },
     "stakeholders": [
@@ -152487,7 +154219,7 @@
     "id": "xai-macrohardrr-southaven-ms",
     "name": "MACROHARDRR (xAI Southaven Data Center III)",
     "operator": "xAI",
-    "status": "operational",
+    "status": "proposed",
     "confidence": "confirmed",
     "location": {
       "lat": 34.991886,
@@ -152499,7 +154231,14 @@
       "precision": "approximate"
     },
     "announcedDate": "2026-01-08",
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01",
+        "note": "The Governor's office announced the Southaven data center and said xAI \"expects to begin data center operations in Southaven in February 2026.\"",
+        "sourceIndex": 0
+      }
+    ],
     "sources": [
       {
         "url": "https://governorreeves.ms.gov/tech-leader-xai-investing-more-than-20-billion-in-southaven/",
@@ -152523,9 +154262,8 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
-    "notes": "xAI's third Southaven/DeSoto County site, distinct from the existing dataset records for 'Colossus' (xai-southaven-ms, the data center at the former Electrolux plant) and 'Colossus 2' (xai-colossus-2-power-station-southaven-ms, the power station). MACROHARDRR retrofits an 810,000 sq ft former warehouse at 2400 Stateline Road West. Elon Musk announced the building purchase via X on 2025-12-30; Gov. Tate Reeves' office announced the '>$20 billion' investment and 'hundreds of permanent jobs throughout DeSoto County' on 2026-01-08, citing Mississippi's Data Center Incentive Program (sales/use tax exemptions on computing equipment and software) plus City of Southaven and DeSoto County fee-in-lieu agreements. xAI separately purchased two adjacent parcels (47 and 58 acres) near its power plant at 2875 Stanton Road; that acreage is not clearly attributable to this building's own site, so landAcres is omitted here rather than guessed. Musk's public claim that MACROHARDRR takes combined xAI Memphis-area training compute to '~2GW' describes the whole multi-site cluster, not this building's own capacity, so capacityMw is also omitted. Operational status is per Baxtel (aggregator, retrieved 2026-09-13); not yet independently corroborated by an xAI or Mississippi state press release stating a completion date, though a February 2026 operational target was reported at announcement.",
-    "investmentUsd": 20000000000,
+    "lastUpdated": "2026-10-16",
+    "notes": "xAI's third Southaven/DeSoto County site, distinct from xAI's power station at 2875 Stanton Road (xai-colossus-2-power-station-southaven-ms). MACROHARDRR retrofits an 810,000 sq ft former warehouse at 2400 Stateline Road West. Elon Musk announced the building purchase via X on 2025-12-30; Gov. Tate Reeves' office announced the '>$20 billion' investment and 'hundreds of permanent jobs throughout DeSoto County' on 2026-01-08, citing Mississippi's Data Center Incentive Program (sales/use tax exemptions on computing equipment and software) plus City of Southaven and DeSoto County fee-in-lieu agreements. xAI separately purchased two adjacent parcels (47 and 58 acres) near its power plant at 2875 Stanton Road; that acreage is not clearly attributable to this building's own site, so landAcres is omitted here rather than guessed. Musk's public claim that MACROHARDRR takes combined xAI Memphis-area training compute to '~2GW' describes the whole multi-site cluster, not this building's own capacity, so capacityMw is also omitted. The Governor's office gave February 2026 as the expected start of operations; no xAI or state source reports construction under way or the building operating, so it is recorded as proposed (Baxtel, an aggregator, listed it as operational in September 2026).",
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -152569,7 +154307,7 @@
     "id": "xai-southaven-ms",
     "name": "xAI Southaven",
     "operator": "xAI",
-    "status": "operational",
+    "status": "proposed",
     "confidence": "confirmed",
     "location": {
       "lat": 34.993,
@@ -152579,10 +154317,6 @@
       "state": "MS",
       "precision": "exact"
     },
-    "capacityMw": {
-      "planned": 2000
-    },
-    "poweredBy": "xAI (self-generated, behind-the-meter)",
     "announcedDate": "2026-01",
     "statusHistory": [
       {
@@ -152592,14 +154326,10 @@
         "sourceIndex": 0
       },
       {
-        "status": "under_construction",
+        "status": "proposed",
         "date": "2026-01",
-        "note": "Retrofit of former GXO Logistics warehouse (810,000 sq ft) at 2400 Stateline Road"
-      },
-      {
-        "status": "operational",
-        "date": "2026-02",
-        "note": "Expected fully operational February 2026; xAI's third Mid-South facility alongside Colossus One and Two in Memphis"
+        "note": "The City of Southaven reported that xAI bought the former GXO building (810,000 sq ft) at 2400 Stateline Road, which \"will become the home of their 3rd data center in the metropolitan area.\"",
+        "sourceIndex": 5
       }
     ],
     "sources": [
@@ -152644,16 +154374,14 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
-    "notes": "Address: 2400 Stateline Road, Southaven, MS 38671 (near Tennessee border); coordinates are approximate for that address. The $20B investment figure covers total xAI Mississippi commitments including adjacent power plant site, not only this building. Facility is distinct from the already-tracked Colossus supercomputer clusters in Memphis, TN. Combined with Memphis facilities, xAI aims for nearly 2 GW total compute capacity. Fix: jobs.sourceIndex corrected from 0 to 1; the specific 145-person figure is reported by Mississippi Free Press (source 1), not the governor's press release (source 0) which states only 'hundreds of permanent jobs.'",
+    "lastUpdated": "2026-10-16",
+    "notes": "Address: 2400 Stateline Road, Southaven, MS 38671 (near the Tennessee border); coordinates are approximate for that address. The Governor's office said in January 2026 that xAI \"expects to begin data center operations in Southaven in February 2026\"; no source reports construction under way or the building operating. The $20B investment figure covers total xAI Mississippi commitments, including the power plant site at 2875 Stanton Road, not only this building. The Governor's office says the Southaven data center \"will increase the company's computing power to nearly 2 gigawatts\": that is xAI's combined Colossus training compute, not a capacity for this building, and no source gives one. The 145 permanent-jobs figure is reported by Mississippi Free Press; the Governor's release says only \"hundreds of permanent jobs.\"",
     "energy": {
-      "source": "on_site_gas",
-      "onSiteGenerationMw": 495,
-      "notes": "Private behind-the-meter gas-turbine plant at a former Duke Energy site powering Colossus 2. MS DEQ permitted 41 turbines (~1.2 GW ceiling, Mar 2026); ~495 MW tied to 27 disclosed turbines, up to 59 reportedly run pre-permit. Subject to NAACP/SELC/Earthjustice litigation over unpermitted operation."
+      "notes": "xAI's gas-turbine power plant at 2875 Stanton Road, less than a quarter mile away, is tracked separately as xai-colossus-2-power-station-southaven-ms. The Governor's office places this building \"in proximity to xAI's newly acquired power plant site in Southaven\"; no source states how the building itself is powered."
     },
     "water": {
       "coolingType": "unknown",
-      "notes": "The City of Southaven addresses water supply but not the heat-rejection method: xAI is described as a metered municipal customer under \"strict capacity management\" with its own recycling solutions planned. No source fetched this run identifies evaporative, closed-loop or dry cooling, so coolingType stays unknown rather than being inferred from the liquid-cooled GB300 racks (rack-level cooling is heat CAPTURE, not heat rejection)."
+      "notes": "The City of Southaven addresses water supply but not the heat-rejection method: xAI is described as a metered municipal customer under \"strict capacity management\" with its own recycling solutions planned. No source identifies evaporative, closed-loop or dry cooling, so coolingType stays unknown rather than being inferred from the liquid-cooled GB300 racks (rack-level cooling is heat CAPTURE, not heat rejection)."
     },
     "subsidies": [
       {
@@ -152663,7 +154391,6 @@
         "sourceIndex": 0
       }
     ],
-    "investmentUsd": 20000000000,
     "jobs": {
       "permanent": 145,
       "sourceIndex": 1
