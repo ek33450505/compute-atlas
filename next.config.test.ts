@@ -69,6 +69,19 @@ describe("retired-facility redirects", () => {
     );
     expect(redirect?.destination).toBe("/facilities/galaxy-helios-dickens-county-tx");
   });
+
+  /**
+   * Retired 2026-10-16: lancium-crusoe-abilene-tx duplicated
+   * stargate-abilene-tx (same Crusoe / Lancium Clean Campus, Abilene, TX);
+   * the stargate slug was indexed at the 2026-09-26 inspection and was kept
+   * as the survivor.
+   */
+  it("redirects the duplicate lancium-crusoe-abilene-tx slug to its survivor", async () => {
+    const redirect = (await facilityRedirects()).find(
+      (r) => r.source === "/facilities/lancium-crusoe-abilene-tx"
+    );
+    expect(redirect?.destination).toBe("/facilities/stargate-abilene-tx");
+  });
 });
 
 /**
