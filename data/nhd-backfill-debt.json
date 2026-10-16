@@ -1,5 +1,5 @@
 {
-  "ceiling": 74,
-  "asOf": "2026-10-15",
-  "note": "OH gap-list wave 2026-10-15: full build:mapdata aborted at the NHD pre-flight (USGS degraded, ~18:45 EDT); fell back to --skip-nhd per CLAUDE.md. 10 new OH records lack nearestWater/nearestTransmission until nhd-backfill runs."
+  "ceiling": 0,
+  "asOf": "2026-10-16",
+  "note": "nhd-backfill run 38878151692"
 }
