@@ -263,6 +263,15 @@
     }
   },
   "365-data-centers-philadelphia-university-city-pa": {
+    "nearestWater": {
+      "name": "Schuylkill River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -1939,6 +1948,15 @@
     }
   },
   "alpha-compute-alpha-energy-01-tioga-county-pa": {
+    "nearestWater": {
+      "name": "Charleston Creek",
+      "kind": "river",
+      "distanceMi": 2.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -2287,6 +2305,15 @@
     }
   },
   "ameren-big-hollow-energy-center-jefferson-county-mo": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -2297,12 +2324,30 @@
     }
   },
   "ameren-reform-solar-callaway-county-mo": {
+    "nearestWater": {
+      "name": "Mud Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
     }
   },
   "ameren-west-alton-energy-center-mo": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -3023,6 +3068,15 @@
     }
   },
   "arevon-citadel-solar-storey-county-nv": {
+    "nearestWater": {
+      "name": "Long Valley Creek",
+      "kind": "river",
+      "distanceMi": 3.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -3413,6 +3467,15 @@
     }
   },
   "atlas-avemore-technology-data-park-villa-rica-ga": {
+    "nearestWater": {
+      "name": "Town Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -4215,6 +4278,15 @@
     }
   },
   "aws-covington-alcovy-road-newton-ga": {
+    "nearestWater": {
+      "name": "Dried Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -6186,6 +6258,15 @@
     }
   },
   "bluebridge-networks-mayfield-heights-oh": {
+    "nearestWater": {
+      "name": "Euclid Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6405,6 +6486,15 @@
     }
   },
   "bolingbroke-technology-center-monroe-ga": {
+    "nearestWater": {
+      "name": "Williamson Lake",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -6647,6 +6737,15 @@
     }
   },
   "btc-digital-vienna-dooly-ga": {
+    "nearestWater": {
+      "name": "Pennahatchee Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 13.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6932,6 +7031,15 @@
     }
   },
   "canoochee-river-metter-airport-campus-candler-ga": {
+    "nearestWater": {
+      "name": "Paradise Lake",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -7566,6 +7674,15 @@
     }
   },
   "ceranet-morrison-road-columbus-oh": {
+    "nearestWater": {
+      "name": "Big Walnut Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -8749,6 +8866,15 @@
     }
   },
   "cloudcenters-lisle-711-ogden-il": {
+    "nearestWater": {
+      "name": "Saint Joseph Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -11202,6 +11328,15 @@
     }
   },
   "corscale-midwest-digital-gateway-canton-oh": {
+    "nearestWater": {
+      "name": "West Branch Nimishillen Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -12057,6 +12192,15 @@
     }
   },
   "cyrusone-douglasville-ga": {
+    "nearestWater": {
+      "name": "Slater Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -12541,6 +12685,15 @@
     }
   },
   "damac-digital-canton-orchard-view-oh": {
+    "nearestWater": {
+      "name": "Sherrick Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -12585,6 +12738,15 @@
     }
   },
   "dartpoints-asheville-avl01-nc": {
+    "nearestWater": {
+      "name": "French Broad River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -12664,6 +12826,15 @@
     }
   },
   "dartpoints-cmh01-dublin-oh": {
+    "nearestWater": {
+      "name": "South Fork Indian Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -12697,6 +12868,15 @@
     }
   },
   "dartpoints-cvg01-cincinnati-oh": {
+    "nearestWater": {
+      "name": "Ohio River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -12917,6 +13097,15 @@
     }
   },
   "data-journey-claremont-catawba-county-nc": {
+    "nearestWater": {
+      "name": "Mull Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -14345,6 +14534,15 @@
     }
   },
   "dickson-city-development-bell-mountain-lackawanna-pa": {
+    "nearestWater": {
+      "name": "Hull Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -14427,6 +14625,15 @@
     }
   },
   "digipower-x-hildebran-burke-county-nc": {
+    "nearestWater": {
+      "name": "Henry Fork",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -14844,6 +15051,15 @@
     }
   },
   "digital-realty-fort-gillem-forest-park-ga": {
+    "nearestWater": {
+      "name": "Jester Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -16019,6 +16235,15 @@
     }
   },
   "dta-alliance-blue-shamrock-lower-towamensing-carbon-pa": {
+    "nearestWater": {
+      "name": "Lehigh River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -16310,6 +16535,15 @@
     }
   },
   "duos-edge-ai-columbus-campus-ga": {
+    "nearestWater": {
+      "name": "Chattahoochee River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -16662,6 +16896,15 @@
     }
   },
   "edgeconnex-chi01-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -16981,6 +17224,15 @@
     }
   },
   "edgeconnex-new-albany-north-campus-oh": {
+    "nearestWater": {
+      "name": "Duncan Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -17986,6 +18238,15 @@
     }
   },
   "energy-storage-solutions-tarboro-edgecombe-county-nc": {
+    "nearestWater": {
+      "name": "Hendricks Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -18707,6 +18968,15 @@
     }
   },
   "equinix-ch3-elk-grove-village-il": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -18907,6 +19177,15 @@
     }
   },
   "equinix-hampton-xscale-campus-henry-ga": {
+    "nearestWater": {
+      "name": "Clear Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -19688,6 +19967,15 @@
     }
   },
   "fae-clark-old-elberton-road-athens-ga": {
+    "nearestWater": {
+      "name": "Trail Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -21605,6 +21893,15 @@
     }
   },
   "gabal-300-west-adams-chicago-il": {
+    "nearestWater": {
+      "name": "Chicago Sanitary and Ship Canal",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -23879,6 +24176,15 @@
     }
   },
   "h5-data-centers-cincinnati-ii-dalton-oh": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -24098,6 +24404,15 @@
     }
   },
   "hampton-technology-park-henry-ga": {
+    "nearestWater": {
+      "name": "Miriatoto Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -24253,6 +24568,15 @@
     }
   },
   "hb2k-kings-mountain-cleveland-county-nc": {
+    "nearestWater": {
+      "name": "McGill Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -25292,12 +25616,30 @@
     }
   },
   "independence-blue-valley-power-plant-rebuild-mo": {
+    "nearestWater": {
+      "name": "Little Blue River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
     }
   },
   "industrial-vi-75-south-data-center-campus-spalding-ga": {
+    "nearestWater": {
+      "name": "Grape Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -25642,6 +25984,15 @@
     }
   },
   "iron-city-no-2-data-center-beccaria-township-clearfield-pa": {
+    "nearestWater": {
+      "name": "Cofinan Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 8.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -26252,6 +26603,15 @@
     }
   },
   "jg-petrucci-1024-n-bradford-street-allentown-pa": {
+    "nearestWater": {
+      "name": "Little Lehigh Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -26600,6 +26960,15 @@
     }
   },
   "keel-scrubgrass-ai-campus-venango-pa": {
+    "nearestWater": {
+      "name": "Scrubgrass Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -27288,6 +27657,15 @@
     }
   },
   "lightedge-kansas-city-subtropolis-mo": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -27696,6 +28074,15 @@
     }
   },
   "lower-mount-bethel-tech-center-northampton-pa": {
+    "nearestWater": {
+      "name": "Little Martins Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -28236,6 +28623,15 @@
     }
   },
   "lumen-reno-1-gardner-street-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -30717,6 +31113,15 @@
     }
   },
   "microsoft-plano-il": {
+    "nearestWater": {
+      "name": "Big Rock Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -31014,6 +31419,15 @@
     }
   },
   "miles-brothers-glassworks-data-campus-clarion-pa": {
+    "nearestWater": {
+      "name": "Clarion River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -32096,6 +32510,15 @@
     }
   },
   "netrality-1102-grand-kansas-city-mo": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -32539,6 +32962,15 @@
     }
   },
   "nextera-east-riverside-energy-center-fayette-pa": {
+    "nearestWater": {
+      "name": "Kelley Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 7.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -32838,6 +33270,15 @@
     }
   },
   "nixon-technology-center-augusta-ga": {
+    "nearestWater": {
+      "name": "Butler Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -33548,6 +33989,15 @@
     }
   },
   "ntt-chicago-ch3-itasca-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -33562,6 +34012,15 @@
     }
   },
   "ntt-chicago-ch4-itasca-il": {
+    "nearestWater": {
+      "name": "Salt Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -34838,6 +35297,15 @@
     }
   },
   "panattoni-project-shelby-canton-oh": {
+    "nearestWater": {
+      "name": "East Branch Nimishillen Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -34996,6 +35464,15 @@
     }
   },
   "pcc-dekalb-ellenwood-data-center-ga": {
+    "nearestWater": {
+      "name": "Big Cotton Indian Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -35321,6 +35798,15 @@
     }
   },
   "pgob-coventry-mall-data-center-north-coventry-chester-pa": {
+    "nearestWater": {
+      "name": "Schuylkill River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -35738,6 +36224,15 @@
     }
   },
   "popca-newton-township-data-center-lackawanna-pa": {
+    "nearestWater": {
+      "name": "Gardner Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -35858,6 +36353,15 @@
     }
   },
   "powerconnex-new-albany-3-energy-center-oh": {
+    "nearestWater": {
+      "name": "Duncan Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -36312,6 +36816,15 @@
     }
   },
   "prime-data-centers-starpointe-gas-plant-hanover-township-washington-pa": {
+    "nearestWater": {
+      "name": "Ward Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36322,6 +36835,15 @@
     }
   },
   "prime-data-centers-starpointe-hanover-township-washington-pa": {
+    "nearestWater": {
+      "name": "Ward Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -38214,6 +38736,15 @@
     }
   },
   "quantm-group-2401-w-emaus-avenue-allentown-pa": {
+    "nearestWater": {
+      "name": "South Mountain Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -38740,6 +39271,15 @@
     }
   },
   "red-wolf-project-splice-cordele-ga": {
+    "nearestWater": {
+      "name": "Gully Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 12.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -40101,6 +40641,15 @@
     }
   },
   "sailfish-investors-social-circle-parkway-walton-ga": {
+    "nearestWater": {
+      "name": "Means Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -40591,6 +41140,15 @@
     }
   },
   "savion-plano-skies-data-center-il": {
+    "nearestWater": {
+      "name": "Big Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -40695,6 +41253,15 @@
     }
   },
   "scranton-materials-ransom-township-data-center-lackawanna-pa": {
+    "nearestWater": {
+      "name": "Keyser Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -42256,6 +42823,15 @@
     }
   },
   "stack-atl02-lithia-springs-ga": {
+    "nearestWater": {
+      "name": "Sweetwater Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -43528,6 +44104,15 @@
     }
   },
   "switch-armory-campus-enterprise-nv": {
+    "nearestWater": {
+      "name": "Duck Creek",
+      "kind": "river",
+      "distanceMi": 2.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -43618,6 +44203,15 @@
     }
   },
   "switch-evo-ai-factories-las-vegas-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -43789,6 +44383,15 @@
     }
   },
   "switch-las-vegas-16-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -43803,6 +44406,15 @@
     }
   },
   "switch-las-vegas-4-nv": {
+    "nearestWater": {
+      "name": "Flamingo Wash",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -43863,6 +44475,15 @@
     }
   },
   "switch-las-vegas-8-nv": {
+    "nearestWater": {
+      "name": "Tropicana Wash",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -43960,12 +44581,30 @@
     }
   },
   "switch-tahoe-reno-4-the-citadel-campus-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 3.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
     }
   },
   "switch-tahoe-reno-5-the-citadel-campus-nv": {
+    "nearestWater": {
+      "name": "Truckee River",
+      "kind": "river",
+      "distanceMi": 3.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -44048,6 +44687,15 @@
     }
   },
   "t-rex-roberta-crawford-ga": {
+    "nearestWater": {
+      "name": "Culpepper Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -45606,6 +46254,15 @@
     }
   },
   "tierpoint-philadelphia-phi-league-island-pa": {
+    "nearestWater": {
+      "name": "Delaware River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -48660,6 +49317,15 @@
     }
   },
   "whitefiber-nc2-nc3-yadkinville-nc": {
+    "nearestWater": {
+      "name": "Haw Branch",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 8.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
