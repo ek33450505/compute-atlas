@@ -256,6 +256,21 @@ const RETIRED_FACILITY_REDIRECTS = [
     destination: "/facilities/galaxy-helios-dickens-county-tx",
     permanent: true,
   },
+  {
+    // Retired 2026-10-16 as a duplicate of the same site. This record and
+    // stargate-abilene-tx both described the Crusoe-built OpenAI / Oracle
+    // campus on Lancium's Clean Campus in Abilene, TX (Crusoe's March 2025
+    // release names "the Lancium Clean Campus in Abilene" as the site), so
+    // the campus was counted twice. stargate-abilene-tx is the successor:
+    // Google had it indexed at the 2026-09-26 inspection
+    // (data/index-census.json). Before retirement, this record's Lancium-era
+    // history (the December 2021 Clean Compute Campus announcement) and its
+    // five sources were merged into the survivor, and
+    // crusoe-abilene-onsite-generation-tx's poweredFacilityIds was repointed.
+    source: "/facilities/lancium-crusoe-abilene-tx",
+    destination: "/facilities/stargate-abilene-tx",
+    permanent: true,
+  },
 ];
 
 /**

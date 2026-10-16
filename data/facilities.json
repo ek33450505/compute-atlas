@@ -36144,8 +36144,8 @@
     "status": "operational",
     "confidence": "confirmed",
     "location": {
-      "lat": 32.502213,
-      "lon": -99.788717,
+      "lat": 32.50792,
+      "lon": -99.77722,
       "city": "Abilene",
       "county": "Taylor",
       "state": "TX",
@@ -36165,7 +36165,7 @@
       {
         "status": "operational",
         "date": "2026-07",
-        "note": "The 10 turbines (360.5 MW) reported operational. A separate major TCEQ air permit (public-comment stage) seeks 41 additional turbines (~1.4 GW) plus 18 diesel backup generators; GE Vernova separately confirmed booking 29 LM2500 units (~1 GW) for Crusoe.",
+        "note": "Floodlight / Texas Tribune report the 10 turbines as already built, and that the developers \"sought to more than quadruple the number of gas powered turbines located on the campus\" through a separate major TCEQ application (see the emissions notes).",
         "sourceIndex": 1
       }
     ],
@@ -36204,10 +36204,38 @@
         "publisher": "Texas Commission on Environmental Quality",
         "retrievedAt": "2026-09-01",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.tceq.texas.gov/downloads/permitting/air/bilingual/pending-permit-notices/182126-nori-english.pdf",
+        "label": "Notice of Receipt of Application and Intent to Obtain Air Permit, Permit 182126 (Longhorn Data Center Buildings 9 and 10)",
+        "publisher": "Texas Commission on Environmental Quality",
+        "retrievedAt": "2026-10-16",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.tceq.texas.gov/downloads/permitting/air/bilingual/pending-permit-notices/182126-napd-english.pdf",
+        "label": "Notice of Application and Preliminary Decision, Permits 182126, PSDTX1688 and GHGPSDTX263",
+        "publisher": "Texas Commission on Environmental Quality",
+        "retrievedAt": "2026-10-16",
+        "kind": "permit"
+      },
+      {
+        "url": "https://epoch.ai/data/data_centers/data_centers.csv",
+        "label": "Frontier data centers dataset (CSV): Crusoe Abilene Expansion",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/abilene-residents-win-more-time-170135556.html",
+        "label": "Abilene residents win more time to fight power plant expansion",
+        "publisher": "Abilene Reporter-News (via Yahoo News)",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-01",
-    "notes": "On-site behind-the-meter natural-gas generation for the co-located Crusoe / Lancium Clean Campus ('Stargate Site 1', tracked separately as lancium-crusoe-abilene-tx). 10 turbines totaling 360.5 MW are permit-confirmed (TCEQ Reg. 177263) and reported operational as of mid-2026, with a large expansion proposed. Same-site companion to the data-center record; supersedes the older 'on-site gas not confirmed' note on that record.",
+    "lastUpdated": "2026-10-16",
+    "notes": "On-site behind-the-meter natural-gas generation for the co-located Crusoe / Lancium Clean Campus (tracked as stargate-abilene-tx). 10 turbines totaling 360.5 MW are permit-confirmed (TCEQ Reg. 177263) and reported built as of mid-2026. Same-site companion to the data-center record. A separate major TCEQ application (182126) covers more generation for \"Longhorn Data Center Buildings 9 and 10\"; see the emissions notes. Coordinates are the site location filed with TCEQ for this registration (Core Data Form: 32.50792, -99.77722).",
     "energy": {
       "source": "on_site_gas",
       "notes": "Behind-the-meter, primary-plus-backup on-site generation dedicated to the campus; explicitly not exporting to ERCOT."
@@ -36218,7 +36246,7 @@
       "permitType": "state_construction",
       "issuingAgency": "Texas Commission on Environmental Quality",
       "issuedDate": "2025-01-22",
-      "notes": "NO per-pollutant annual tonnage is recorded here, deliberately. This is a TCEQ Electric Generating Unit Standard Permit registration — a rule-based authorisation that does not state per-pollutant tons-per-year ceilings the way a PSD or plan-approval permit does. The only annual tonnages in the file are the applicant's own calculated potential-to-emit (Table 1(a) of the modification application, built from manufacturer rates and AP-42 emission factors), and potential-to-emit is not a permitted ceiling; this project does not publish one as the other. The enforceable limit the standard permit does impose is a RATE: 0.14 lb NOx/MWh for units operating more than 300 hours per year, against which the application estimates a controlled rate of 0.09 lb/MWh. Registration history: originally registered 2024-08-30 for six Titan 350 plus six GE LM2500; the modification approved 2025-01-22 reduced each model from six to five, giving the ten turbines above (Titan 350 site-rated 38 MW each, GE LM2500 34.1 MW each). Registered as Abilene DC 1, LLC dba Crusoe Energy Systems (Regulated Entity RN112029079, Customer CN606295137). A separate major TCEQ permit application filed July 2026 seeking roughly 41 additional turbines is NOT covered by this registration and none of its figures are recorded here.",
+      "notes": "NO per-pollutant annual tonnage is recorded here, deliberately. This is a TCEQ Electric Generating Unit Standard Permit registration — a rule-based authorisation that does not state per-pollutant tons-per-year ceilings the way a PSD or plan-approval permit does. The only annual tonnages in the file are the applicant's own calculated potential-to-emit (Table 1(a) of the modification application, built from manufacturer rates and AP-42 emission factors), and potential-to-emit is not a permitted ceiling; this project does not publish one as the other. The enforceable limit the standard permit does impose is a RATE: 0.14 lb NOx/MWh for units operating more than 300 hours per year, against which the application estimates a controlled rate of 0.09 lb/MWh. Registration history: originally registered 2024-08-30 for six Titan 350 plus six GE LM2500; the modification approved 2025-01-22 reduced each model from six to five, giving the ten turbines above (Titan 350 site-rated 38 MW each, GE LM2500 34.1 MW each). Registered as Abilene DC 1, LLC dba Crusoe Energy Systems (Regulated Entity RN112029079, Customer CN606295137). A separate major TCEQ application (State Permit 182126 with PSDTX1688 and GHGPSDTX263, TCEQ project 400428; submitted 2025-11-07; draft permit noticed 2026-08-05) covers additional generation for \"Longhorn Data Center Buildings 9 and 10\", under a different TCEQ regulated entity (RN112029061). Epoch AI's dataset cites this application as the \"Air Permit Application for the buildings\" of the adjacent Crusoe campus for Microsoft; press reports describe the application as greatly enlarging the campus's turbine count (from 10 to 49 by Oil & Gas Watch's count, as reported by the Abilene Reporter-News). This record does not resolve which buildings the new turbines would serve. The application is NOT covered by this registration and none of its figures are recorded here.",
       "sourceIndex": 0
     },
     "facilityType": "power_generation",
@@ -36226,10 +36254,10 @@
       "technology": "natural_gas",
       "offtaker": "Oracle",
       "poweredFacilityIds": [
-        "lancium-crusoe-abilene-tx"
+        "stargate-abilene-tx"
       ],
       "unitCount": 10,
-      "notes": "TCEQ Standard Permit Technical Review (Registration 177263, approved 2025-01-22) confirms 10 simple-cycle turbines — 5x Solar Titan 350 (~38 MW) + 5x GE LM2500 (~34.1 MW) = 360.5 MW — behind-the-meter for on-site compute, no grid export. A proposed expansion (major TCEQ permit filed Jul 2026, not yet approved) would add 41 turbines (~1.4 GW) plus 18 diesel gensets; the ~1.2 GW figure often cited for the campus describes IT/interconnect capacity, not generation nameplate. Gas-plant buildout cost reported at ~$500M, distinct from the ~$1.1B data-center project figure."
+      "notes": "TCEQ Standard Permit Technical Review (Registration 177263, approved 2025-01-22) confirms 10 simple-cycle turbines — 5x Solar Titan 350 (~38 MW) + 5x GE LM2500 (~34.1 MW) = 360.5 MW — behind-the-meter for on-site compute, no grid export. A separate major TCEQ application (State Permit 182126, submitted Nov 2025, draft permit noticed Aug 2026, not yet issued) covers more generation for \"Longhorn Data Center Buildings 9 and 10\" (see the emissions notes); press counts of its added turbines differ; the ~1.2 GW figure often cited for the campus describes IT/interconnect capacity, not generation nameplate. Gas-plant buildout cost reported at ~$500M, distinct from the ~$1.1B data-center project figure. Crusoe and GE Vernova separately announced a 29-unit aeroderivative gas-turbine deal."
     }
   },
   {
@@ -82467,101 +82495,6 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
-  },
-  {
-    "id": "lancium-crusoe-abilene-tx",
-    "name": "Lancium Clean Campus (Crusoe / Stargate Site 1)",
-    "operator": "Crusoe",
-    "status": "operational",
-    "confidence": "reported",
-    "location": {
-      "lat": 32.502213,
-      "lon": -99.788717,
-      "city": "Abilene",
-      "county": "Taylor",
-      "state": "TX",
-      "precision": "approximate"
-    },
-    "capacityMw": {
-      "planned": 1200,
-      "operational": 200
-    },
-    "poweredBy": "ERCOT grid; Crusoe has separately contracted 4.5 GW of natural gas supply for its broader multi-site AI buildout",
-    "announcedDate": "2021-12",
-    "statusHistory": [
-      {
-        "status": "proposed",
-        "date": "2021-12",
-        "note": "Lancium announces \"Project Artemis\": a Bitcoin-mining/grid-demand-response campus with Taylor County and the City of Abilene, projected at up to $2.4B over 20 years, scaling 200 MW to 1 GW.",
-        "sourceIndex": 0
-      },
-      {
-        "status": "under_construction",
-        "date": "2024",
-        "note": "Crusoe Energy begins building AI/HPC data-center buildings on the Lancium campus, pivoting the site from its original crypto-mining plan toward multi-tenant AI hosting (publicly branded \"Stargate Site 1\").",
-        "sourceIndex": 1
-      },
-      {
-        "status": "operational",
-        "date": "2025-06",
-        "note": "First 2 of 8 planned buildings (~200+ MW) operational, hosting Oracle Cloud Infrastructure GPU capacity for OpenAI's Stargate project.",
-        "sourceIndex": 2
-      }
-    ],
-    "sources": [
-      {
-        "url": "https://www.prnewswire.com/news-releases/taylor-county-and-city-of-abilene-announce-historic-partnership-with-lancium-for-development-of-a-2-4-billion-data-center-campus-301449354.html",
-        "label": "Taylor County and City of Abilene Announce Historic Partnership With Lancium",
-        "publisher": "PR Newswire",
-        "retrievedAt": "2026-07-10",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.datacenterdynamics.com/en/news/crusoe-begins-construction-on-second-phase-of-abilene-texas-data-center-campus-will-add-six-buildings/",
-        "label": "Crusoe Begins Construction on Second Phase of Abilene, Texas Data Center Campus",
-        "publisher": "Data Center Dynamics",
-        "retrievedAt": "2026-07-10",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.datacenterfrontier.com/hyperscale/article/55276169/crusoe-adds-45-gw-natural-gas-to-fuel-ai-expands-abilene-data-center-to-12-gw",
-        "label": "Crusoe Adds 4.5 GW of Natural Gas to Fuel AI, Expands Abilene Data Center to 1.2 GW",
-        "publisher": "Data Center Frontier",
-        "retrievedAt": "2026-09-21",
-        "kind": "press"
-      },
-      {
-        "url": "https://ktxs.com/news/local/lancium-crusoe-executives-brief-abilene-leaders-on-major-northside-investment",
-        "label": "Lancium, Crusoe Executives Brief Abilene Leaders on Major Northside Investment",
-        "publisher": "KTXS (Sinclair)",
-        "retrievedAt": "2026-07-10",
-        "kind": "press"
-      },
-      {
-        "url": "https://bitcoinmagazine.com/business/city-of-abilene-taylor-county-to-build-billion-data-center-host-bitcoin-mining",
-        "label": "City of Abilene, Taylor County to Build Billion-Dollar Data Center to Host Bitcoin Mining",
-        "publisher": "Bitcoin Magazine",
-        "retrievedAt": "2026-07-10",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-09-21",
-    "notes": "Originally proposed Dec 2021 as Lancium's \"Project Artemis\" — a Bitcoin-mining and grid-demand-response campus using stranded/curtailed West Texas wind and solar power, with Lancium throttling load during ERCOT peak demand. Crusoe Energy has since built and operates AI/HPC data-center buildings on the site (publicly branded \"Stargate Site 1\"), with Oracle Cloud Infrastructure as the tenant hosting NVIDIA GPU clusters for OpenAI's Stargate project — Oracle sits contractually between Crusoe and OpenAI; no confirmed direct OpenAI-Crusoe lease. Lancium retains land/electrical-infrastructure ownership; Crusoe leases and operates part of an approximately 800-1,000-acre campus. First 2 of 8 planned buildings (~200+ MW) were operational by mid-2025; remaining 6 are under construction, with a full 1.2 GW build-out targeted for completion in 2026-2027 (dates vary by source). Construction-workforce and total AI-era investment figures conflict significantly across sources (reported range: 2,000-9,000 workers; an unverified ~$11.6B raise) and are not repeated here as fact. Coordinates are approximate (geocoded from a listed street address, not parcel-confirmed — the ~800-1,000-acre campus could place any specific building up to ~1-2 miles from this point). Also known as the Lancium Clean Campus.",
-    "energy": {
-      "source": "grid",
-      "notes": "Originally designed as an ERCOT-integrated demand-response/curtailable load site. On-site behind-the-meter natural-gas generation for this campus IS now confirmed via TCEQ Standard Permit Reg. 177263 — 10 turbines totaling 360.5 MW, 'for onsite use only for data centers and computing,' with a large expansion proposed — tracked separately as the power_generation record crusoe-abilene-onsite-generation-tx."
-    },
-    "water": {
-      "coolingType": "closed_loop"
-    },
-    "landAcres": 1000,
-    "community": {
-      "status": "supported",
-      "notes": "City leadership has been enthusiastic about jobs and tax-base growth, framing the project locally as the city's largest single investment since Dyess Air Force Base; some nearby residents have raised construction-traffic concerns. No organized opposition campaign found.",
-      "sourceIndex": 3
-    },
-    "facilityType": "data_center",
-    "aiClassification": "mixed_use"
   },
   {
     "id": "lancium-fort-stockton-tx",
@@ -132622,37 +132555,73 @@
     "status": "operational",
     "confidence": "reported",
     "location": {
-      "lat": 32.4487,
-      "lon": -99.7331,
+      "lat": 32.5001,
+      "lon": -99.784,
       "city": "Abilene",
       "county": "Taylor",
       "state": "TX",
-      "precision": "exact"
+      "precision": "approximate"
     },
     "capacityMw": {
       "planned": 1200,
-      "operational": 300
+      "operational": 618
     },
-    "poweredBy": "grid (AEP Texas)",
+    "poweredBy": "grid (AEP Texas) and on-site gas turbines",
     "announcedDate": "2025-01-21",
     "statusHistory": [
       {
         "status": "proposed",
+        "date": "2021-12-21",
+        "note": "Lancium, Taylor County and the City of Abilene announce Lancium's Clean Compute Campus on about 800 acres: $2.4 billion of planned investment over 20 years, beginning at 200 MW with expansion capacity to over 1 GW, hosting Bitcoin mining and other energy-intensive applications.",
+        "sourceIndex": 8
+      },
+      {
+        "status": "under_construction",
+        "date": "2024-06",
+        "note": "Construction of Crusoe's multi-building AI campus begins.",
+        "sourceIndex": 18
+      },
+      {
+        "status": "under_construction",
         "date": "2025-01-21",
-        "note": "Announced as flagship Stargate campus at White House event; $500B national AI infrastructure commitment",
+        "note": "Announced as the flagship Stargate campus at a White House event; $500B national AI infrastructure commitment.",
         "sourceIndex": 0
       },
       {
         "status": "under_construction",
-        "date": "2025-02",
-        "note": "Ground broken; Crusoe providing infrastructure; ~4 of 8 buildings reported operational by late 2025",
-        "sourceIndex": 1
+        "date": "2025-03-18",
+        "note": "Crusoe begins the second phase: six more buildings, bringing the campus to eight buildings and \"a total power capacity of 1.2 gigawatts\", then expected to be completed in mid-2026.",
+        "sourceIndex": 13
       },
       {
         "status": "operational",
-        "date": "2026-09-08",
-        "note": "Buildings 1-4 of the 8-building campus are confirmed operational (509k H100-equivalents, 421 MW IT power) and running OpenAI training/inference on Oracle Cloud Infrastructure as of 2026-07-28; buildings 5-8 are structurally complete but not yet confirmed operational.",
+        "date": "2025-09-30",
+        "note": "Crusoe announces the campus is live: Oracle \"began delivering the first NVIDIA GB200 racks in June 2025\", the campus \"has already begun running early training and inference workloads\", and the first two buildings were energized within a year of construction starting.",
+        "sourceIndex": 18
+      },
+      {
+        "status": "operational",
+        "date": "2026-05-23",
+        "note": "Epoch AI: \"Buildings 3 and 4 are estimated to be operational.\" The date is Epoch's estimate, allowing \"another month\" after a 22 April Oracle post that 200 MW was operational.",
         "sourceIndex": 7
+      },
+      {
+        "status": "operational",
+        "date": "2026-06-10",
+        "note": "Oracle, Q4 fiscal 2026 earnings call: \"Abilene, Texas today has delivered 42% of the total capacity. An additional 35% of capacity will be delivered in the next 90 days, with the remainder delivering in the subsequent quarter.\"",
+        "sourceIndex": 15
+      },
+      {
+        "status": "operational",
+        "date": "2026-07-28",
+        "note": "Epoch AI's latest satellite observation: buildings 5-8 are \"structurally complete and roofed but not yet confirmed operational\". Epoch's estimate for the campus stands at 509k H100-equivalents on 421 MW of IT power.",
+        "sourceIndex": 7
+      },
+      {
+        "status": "operational",
+        "date": "2026-09-10",
+        "note": "Oracle, Q1 fiscal 2027 earnings call: \"Six of the eight campus buildings, representing 618 megawatts and 75% of total capacity, have now been delivered to the customer.\" Oracle did not say whether the 618 MW is IT load.",
+        "sourceIndex": 16
       }
     ],
     "sources": [
@@ -132709,15 +132678,107 @@
         "url": "https://epoch.ai/data/ai-data-centers/directory/openai-stargate-abilene",
         "label": "OpenAI Stargate Abilene | AI Data Centers",
         "publisher": "Epoch AI",
-        "retrievedAt": "2026-09-08",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.prnewswire.com/news-releases/taylor-county-and-city-of-abilene-announce-historic-partnership-with-lancium-for-development-of-a-2-4-billion-data-center-campus-301449354.html",
+        "label": "Taylor County and City of Abilene Announce Historic Partnership With Lancium",
+        "publisher": "PR Newswire",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/crusoe-begins-construction-on-second-phase-of-abilene-texas-data-center-campus-will-add-six-buildings/",
+        "label": "Crusoe Begins Construction on Second Phase of Abilene, Texas Data Center Campus",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterfrontier.com/hyperscale/article/55276169/crusoe-adds-45-gw-natural-gas-to-fuel-ai-expands-abilene-data-center-to-12-gw",
+        "label": "Crusoe Adds 4.5 GW of Natural Gas to Fuel AI, Expands Abilene Data Center to 1.2 GW",
+        "publisher": "Data Center Frontier",
+        "retrievedAt": "2026-09-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://ktxs.com/news/local/lancium-crusoe-executives-brief-abilene-leaders-on-major-northside-investment",
+        "label": "Lancium, Crusoe Executives Brief Abilene Leaders on Major Northside Investment",
+        "publisher": "KTXS (Sinclair)",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://bitcoinmagazine.com/business/city-of-abilene-taylor-county-to-build-billion-data-center-host-bitcoin-mining",
+        "label": "City of Abilene, Taylor County to Build Billion-Dollar Data Center to Host Bitcoin Mining",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-07-10",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.crusoe.ai/resources/newsroom/crusoe-expands-ai-data-center-campus-in-abilene-to-1-2-gigawatts",
+        "label": "Crusoe expands AI data center campus in Abilene to 1.2 gigawatts",
+        "publisher": "Crusoe",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.crusoe.ai/resources/newsroom/crusoe-announces-new-900-mw-ai-factory-campus-in-abilene-texas-to-support-microsoft-ai-infrastructure",
+        "label": "Crusoe announces new 900 MW AI factory campus in Abilene, Texas to support Microsoft AI infrastructure",
+        "publisher": "Crusoe",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://stockanalysis.com/stocks/orcl/transcripts/592465-q4-2026/",
+        "label": "Oracle Q4 fiscal 2026 earnings call, third-party transcript (June 10, 2026)",
+        "publisher": "StockAnalysis",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://stockanalysis.com/stocks/orcl/transcripts/689425-q1-2027/",
+        "label": "Oracle Q1 fiscal 2027 earnings call, third-party transcript (September 10, 2026)",
+        "publisher": "StockAnalysis",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://taylor-cad.org/wp-content/uploads/2026/08/TaylorCAD_2026_Certified_Adjusted_Appraisal_Roll_17Aug26.zip",
+        "label": "Taylor CAD 2026 Certified Adjusted Appraisal Roll (as of August 17, 2026)",
+        "publisher": "Taylor Central Appraisal District",
+        "retrievedAt": "2026-10-16",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.crusoe.ai/resources/newsroom/crusoe-announces-flagship-abilene-data-center-is-live",
+        "label": "Crusoe announces flagship Abilene data center is live",
+        "publisher": "Crusoe",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.oracle.com/data-centers/abilene/",
+        "label": "Abilene, Texas data center",
+        "publisher": "Oracle",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
+      },
+      {
+        "url": "https://epoch.ai/data/data_centers/data_centers.csv",
+        "label": "Frontier data centers dataset (CSV): OpenAI Stargate Abilene",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-10-16",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-16",
+    "notes": "Also known as the Lancium Clean Campus. Lancium announced the site in December 2021 as a Clean Compute Campus that would host Bitcoin mining and other energy-intensive applications; Crusoe has since built an eight-building AI campus on it. Oracle gives the campus as 1,100 acres; the 2021 announcement gave about 800. Epoch AI describes the AI chips as owned by Oracle and used by OpenAI. Taylor Central Appraisal District's 2026 roll (Texas appraises property as of 1 January) lists Lancium entities as owners of the land, buildings and campus substations; Crusoe-managed entities as owners of each building's \"MEP\" accounts; and Oracle America as owner of computer equipment for \"BUILDING 1 & 2\" only, valued at $3.43 billion. Crusoe gives the eight buildings \"a total power capacity of 1.2 gigawatts\"; Oracle describes its 618 MW for six buildings as \"75% of total capacity\", without saying what kind of capacity; Epoch AI projects 843 MW of IT power for the campus by Q4 2026. The operational capacity shown is Oracle's figure for capacity \"delivered to the customer\" as of 2026-09-10. Oracle did not say whether it is IT load, and \"delivered\" is Oracle's word, not an observation of running hardware. Crusoe expected the second phase to finish in mid-2026 (March 2025) and later \"by the end of 2026\" (March 2026). A separate 900 MW Crusoe campus for Microsoft (two buildings and an onsite power plant, the first building expected to be energized in mid-2027) is being built on adjacent land and is not part of this record; Epoch AI reported in April 2026 that OpenAI had reversed plans to expand this site. Construction-workforce figures conflict widely across sources and are not repeated here. Coordinates are the approximate centre of the eight data halls outlined on Epoch AI's satellite map of the campus (retrieved 2026-10-16).",
     "energy": {
       "source": "mixed",
       "utility": "AEP Texas",
-      "notes": "Epoch AI: power currently supplied by a mix of on-site natural gas and grid power within AEP's service territory; operator has cited plans for on-site and regional green generation."
+      "notes": "Epoch AI lists American Electric Power as the campus's energy company. Crusoe's March 2025 announcement describes a 1.2 GW grid interconnection for the campus. Ten on-site gas turbines with a combined site rating of 360.5 MW are registered behind the meter under TCEQ Standard Permit 177263 and are tracked separately as crusoe-abilene-onsite-generation-tx."
     },
     "water": {
       "coolingType": "closed_loop",
@@ -132738,7 +132799,7 @@
       }
     ],
     "investmentUsd": 3500000000,
-    "landAcres": 800,
+    "landAcres": 1100,
     "community": {
       "status": "mixed",
       "notes": "Abilene City Council unanimously approved the abatement; Taylor County sought additional citizen input before finalizing. Residents raised concerns about energy reliability and possible groundwater contamination, and an opposition group (saveabilene.com) formed, alongside broad local economic support. The abatement contractually requires 357 permanent jobs at a minimum $57,600 salary.",
@@ -152083,7 +152144,7 @@
       }
     ],
     "lastUpdated": "2026-09-21",
-    "notes": "Rebuilt from primary documents to resolve last wave's hold: the sole prior source was gem.wiki (an aggregator), unacceptable sourcing for this site. This record is justified as a SEPARATE power_generation record (not a duplicate of the live xai-colossus-memphis-tn data_center record's energy field) following this dataset's own established convention for behind-the-meter, single-offtaker generation plants co-located with the data center they power -- see e.g. crusoe-abilene-onsite-generation-tx / lancium-crusoe-abilene-tx, or voltagrid-covington-power-plant-ga / serverfarm-covington-hazelbrand-ga, where the host record keeps a brief energy summary and the power_generation record carries the permit-level detail. A companion refresh finding recommends the live xai-colossus-memphis-tn record's energy.notes be corrected to reflect the appeal's dismissal (no longer 'stays' the permit) and that its two Wikipedia citations be supplemented with primary/official replacements.",
+    "notes": "Rebuilt from primary documents to resolve last wave's hold: the sole prior source was gem.wiki (an aggregator), unacceptable sourcing for this site. This record is justified as a SEPARATE power_generation record (not a duplicate of the live xai-colossus-memphis-tn data_center record's energy field) following this dataset's own established convention for behind-the-meter, single-offtaker generation plants co-located with the data center they power -- see e.g. crusoe-abilene-onsite-generation-tx / stargate-abilene-tx, or voltagrid-covington-power-plant-ga / serverfarm-covington-hazelbrand-ga, where the host record keeps a brief energy summary and the power_generation record carries the permit-level detail. A companion refresh finding recommends the live xai-colossus-memphis-tn record's energy.notes be corrected to reflect the appeal's dismissal (no longer 'stays' the permit) and that its two Wikipedia citations be supplemented with primary/official replacements.",
     "community": {
       "status": "contested",
       "notes": "The NAACP and Young, Gifted & Green appealed SCHD's July 2, 2025 permit decision and its accompanying 'Nonroad Engine Decision' (which exempted temporary turbines from permitting) to the Memphis and Shelby County Air Pollution Control Board; the appeal argued CTC was an existing major stationary source of air pollution (already operating at least 22 unpermitted turbines when the permit issued) that had been wrongly classified as a new greenfield facility. The Board dismissed the appeal as moot on 2025-12-15 (6-1 vote), after which one SELC attorney said the fight 'could be a federal case, could even go up to the Supreme Court.' A federal Clean Air Act suit was subsequently filed 2026-04-14 in the U.S. District Court for the Northern District of Mississippi (NAACP v. X.AI Corp. and MZX Tech LLC, No. 3:26-cv-00074) -- but its claims and requested relief target xAI's separate 'Colossus Gas Plant' at 2875 Stanton Road South, Southaven, Mississippi (owned by MZX Tech LLC, a different xAI subsidiary), not this Memphis facility or CTC Property LLC, which is not a named defendant. That complaint cites this Paul R Lowry Road facility's history only as background evidence of a company-wide pattern (paragraphs 192-202), quoting an xAI-side executive as saying the company would be 'copying and pasting' its Colossus 1 turbine approach elsewhere. Because the county-level appeal against THIS facility is resolved (dismissed) and no live litigation names CTC Property LLC or this permit, status is set to 'contested' rather than 'litigation.'",
