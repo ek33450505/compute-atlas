@@ -79086,7 +79086,7 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
-      "offtaker": "Data center load in We Energies' southeastern Wisconsin territory (Microsoft Mount Pleasant, Vantage/OpenAI/Oracle Port Washington); We Energies acquisition pending",
+      "offtaker": "Data center load in We Energies' southeastern Wisconsin territory (Microsoft Mount Pleasant, Vantage/OpenAI/Oracle Port Washington)",
       "unitCount": 3,
       "notes": "Three 108 MW natural gas-fired single-cycle combustion turbines with air-cooled generators and a 138 kV gen-tie to the North Creek Substation. We Energies-Gas Operations would build the pipeline lateral."
     }
@@ -79225,7 +79225,7 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
-      "offtaker": "Data center load in We Energies' southeastern Wisconsin territory (Microsoft Mount Pleasant, Vantage/OpenAI/Oracle Port Washington); We Energies acquisition pending",
+      "offtaker": "Data center load in We Energies' southeastern Wisconsin territory (Microsoft Mount Pleasant, Vantage/OpenAI/Oracle Port Washington)",
       "unitCount": 5,
       "notes": "Five 242 MW natural gas-fired simple-cycle combustion turbines with 345 kV tie-lines. Interconnection is at a new switchyard on the Pleasant Prairie–Arcadian and Arcadian–Zion 345 kV lines. GEM lists the turbines as GE Vernova 7F.05."
     }
