@@ -1,5 +1,10 @@
 # SEO soak: sitemap index split — pre-registration (2026-09)
 
+> **Status (2026-10-17): closed without a read.** The 2026-10-13 read below was never taken. The
+> maintainer called this soak off on 2026-10-13 to finish the hosting-cost and backlog work first, and a
+> new stability soak (2026-10-15 → 2026-10-29) replaced it. The rest of this file is unchanged, as the
+> record of what was registered.
+
 Pre-registered BEFORE the change ships to production, per the
 `seo-index-census` skill's rule that a before/after measurement needs a
 soak window committed in advance — writing this after the fact would not
