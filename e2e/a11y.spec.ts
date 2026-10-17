@@ -76,6 +76,35 @@ const AXE_TAGS = [
  * not a response to a measurement. Keeping it costs nothing: a timeout value
  * is only consulted when it is exceeded. Do not read this entry as evidence
  * that `/counties` is currently expensive — re-measure before citing it.
+ *
+ * Correction, 2026-10-17 (2,678 facilities, 55,293 DOM nodes on `/table`):
+ * the 90s budget ran out in CI, and most of the scan was not the rules.
+ * Measured locally (M-series) with axe's `performanceTimer`: the default scan
+ * took 38.2s, of which the rules themselves (axe's `audit_start_to_end`) took
+ * 17.3s. Two settings remove most of the rest, and neither does much alone:
+ *   - By default `@axe-core/playwright` runs `axe.runPartial` in the page,
+ *     then opens a blank page and hands it the partial results for
+ *     `axe.finishRun`. `setLegacyMode(true)` runs plain `axe.run` in the page
+ *     instead. On its own: 32.3s.
+ *   - `resultTypes: ["violations"]` caps the passes, incomplete and
+ *     inapplicable nodes that reach the report at one each. On its own
+ *     (default mode): 37.4s.
+ *   Together: 18.4s. The speedup comes from the two settings combined; this
+ *   measures the scan alone. In CI the whole test, page load included,
+ *   exceeded the 90s budget, so read the new CI figure from a CI log.
+ * Rule and tag coverage is unchanged: the same WCAG tags run on every node
+ * (asserted below via `toolOptions.runOnly`), and `violations` still lists
+ * every failing node. Mutation-probed the same day by planting a missing alt, an
+ * empty link and low-contrast text in the LAST of the 2,678 rows: both modes
+ * reported the same three violations (image-alt, link-name, color-contrast).
+ * The price of legacy mode: axe cannot reach into a cross-origin frame and
+ * reports it as an INCOMPLETE `frame-tested` result, which this spec does
+ * not read, so frame coverage is reduced in legacy mode. Neither route has
+ * a frame of any kind today (0 on `/table` and 0 on `/counties`, measured),
+ * and the test asserts zero frames on these routes so that adding one fails
+ * loudly instead of going unscanned. `test.slow()` stays as headroom.
+ * The page's own DOM weight is still a real user-facing cost; this removes
+ * harness overhead, not page weight.
  */
 const DATASET_SIZED_ROUTES = new Set<string>(["/table", "/counties"]);
 
@@ -98,9 +127,25 @@ for (const route of ROUTES) {
     // `prefers-reduced-motion: no-preference`, so forcing "reduce" here tests
     // the accessible path real reduced-motion users get — do not remove it to
     // "clean up" the config; that reintroduces the false failure.
-    const results = await new AxeBuilder({ page })
-      .withTags([...AXE_TAGS])
-      .analyze();
+    const builder = new AxeBuilder({ page });
+    // Legacy mode + violations-only results on the dataset-sized routes; see
+    // the 2026-10-17 correction on DATASET_SIZED_ROUTES. `.options()` REPLACES
+    // the builder's option object, which is where `.withTags()` stores
+    // `runOnly`, so it has to run BEFORE `.withTags()`.
+    if (DATASET_SIZED_ROUTES.has(route)) {
+      // Legacy mode cannot scan a cross-origin frame and reports it only as
+      // INCOMPLETE, which this spec does not read; fail instead of skipping it.
+      await expect(page.locator("iframe, frame")).toHaveCount(0);
+      builder.setLegacyMode(true).options({ resultTypes: ["violations"] });
+    }
+    const results = await builder.withTags([...AXE_TAGS]).analyze();
+
+    // Guards that ordering: had `.options()` run after `.withTags()`, axe would
+    // silently scan with every rule instead of these tags and still pass.
+    expect(results.toolOptions.runOnly).toEqual({
+      type: "tag",
+      values: [...AXE_TAGS],
+    });
 
     // Separate by impact tier
     const seriousOrCritical = results.violations.filter(
