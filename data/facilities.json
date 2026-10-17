@@ -2806,7 +2806,7 @@
         "url": "https://www.aes.com/sustainability-impact/people-communities/louisiana",
         "label": "AES' Clean Energy Solar Projects in Louisiana",
         "publisher": "AES",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -2817,12 +2817,13 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "AES places the project in Morehouse Parish; the EIA-derived plant record attributes it to Richland Parish near the parish line. The county field records AES's own attribution and the coordinate is marked approximate because of that disagreement.",
     "energy": {
       "source": "solar",
       "notes": "AES states the project generates about 470,000 MWh annually."
     },
+    "landAcres": 1400,
     "jobs": {
       "construction": 325,
       "permanent": 5,
@@ -8801,11 +8802,18 @@
         "url": "https://www.kalb.com/2026/07/30/cleco-looks-fast-track-new-generator-data-center/",
         "label": "Cleco looks to fast-track new generator for data center",
         "publisher": "KALB",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kalb.com/2026/05/26/live-2-gov-landry-announces-new-multi-billion-dollar-ai-data-center-rapides-parish/",
+        "label": "Gov. Landry announces new multi-billion-dollar Applied Digital AI data center in Rapides Parish",
+        "publisher": "KALB",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Anchor tenant is an undisclosed investment-grade U.S. hyperscaler under a $7.5B, 15-year lease. Two initial facilities totaling 300 MW across 300 acres (of 672-acre secured site). Initial operations targeted mid-2027. Applied Digital HQ in Dallas, TX.",
     "energy": {
       "source": "grid",
@@ -11966,7 +11974,7 @@
         "url": "https://www.kob.com/news/top-news/raton-residents-push-back-on-proposed-data-center-plans/",
         "label": "Raton residents push back on proposed data center plans",
         "publisher": "KOB 4",
-        "retrievedAt": "2026-09-03",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -11977,7 +11985,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-03",
+    "lastUpdated": "2026-10-17",
     "notes": "Three-phase proposal: Phase 1 would convert a former Kmart on the south side of Raton into a data center drawing up to 5 MW, with later phases at a nearby power station and the city airport over roughly five years, totalling up to 50 MW. Nothing is approved — the feasibility study period ran to early August 2026 and the City Commission must still authorize any development. Atterix was incorporated in Colorado in December 2025.",
     "jobs": {
       "construction": 0,
@@ -15650,9 +15658,23 @@
         "publisher": "KTBS",
         "retrievedAt": "2026-09-15",
         "kind": "press"
+      },
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/amazon-grows-northwest-louisiana-planned-investment-to-18-billion-with-new-shreveport-campus",
+        "label": "Amazon Grows Northwest Louisiana Planned Investment to $18 Billion With New Shreveport Campus",
+        "publisher": "Louisiana Economic Development",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://rebusinessonline.com/amazon-to-invest-6b-to-build-new-data-center-campus-in-shreveport-louisiana/",
+        "label": "Amazon to Invest $6B to Build New Data Center Campus in Shreveport, Louisiana",
+        "publisher": "REBusinessOnline",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Third and separately announced Amazon campus in northwest Louisiana, sited at the Resilient Technology Park in west Shreveport. Distinct from the two campuses already under construction in rural Caddo and Bossier parishes. 499 indirect jobs also cited.",
     "energy": {
       "source": "grid",
@@ -15663,6 +15685,13 @@
       "coolingType": "unknown",
       "notes": "Amazon states it will fund all water and wastewater improvements required by the projects, investing up to $400 million in public water infrastructure across its three northwest Louisiana campuses."
     },
+    "subsidies": [
+      {
+        "program": "Louisiana Data Center Sales and Use Tax Exemption",
+        "jurisdiction": "Louisiana",
+        "sourceIndex": 2
+      }
+    ],
     "investmentUsd": 6000000000,
     "jobs": {
       "construction": 2250,
@@ -16482,6 +16511,42 @@
     "facilityType": "data_center"
   },
   {
+    "id": "azimuth-moss-bluff-data-center-calcasieu-parish-la",
+    "name": "Moss Bluff Data Center Site (Coffey Road)",
+    "operator": "Azimuth Renewables",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 30.3398227,
+      "lon": -93.2473893,
+      "city": "Moss Bluff",
+      "county": "Calcasieu",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-10",
+        "note": "Azimuth Renewables' president confirmed the company is evaluating a data center on about 1,200 acres along Coffey Road, which it holds under an option signed in April. The project is at an early stage: no operator, no rezoning request, and no commitment to build.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.theadvocate.com/lake_charles/moss-bluff-data-center-project-azimuth/article_d9fc7b69-c5ba-40a6-9cf9-facb2f6e3542.html",
+        "label": "Data center planned for north of Lake Charles, developer confirms",
+        "publisher": "The Advocate",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Azimuth (David Bunge) holds an option on about 1,200 acres owned by Kenny Nichols, with 3 years to buy plus an optional 1-year extension. The data center is expected to occupy only a fraction of the roughly 1,168-acre site. The land is zoned agricultural and no rezoning or variance has been filed. Size, cost, power, AI use and any customer are undisclosed. The developer says it is not linked to the adjacent Persimmon Energy Center solar project. Coordinates are an OSM geocode of Coffey Road.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "barrio-energy-tyler-smith-county-tx",
     "name": "Barrio Energy Tyler Data Center (West Erwin Street)",
     "operator": "Barrio Energy / Barrio Resources LLC (with Vulcan Core)",
@@ -16598,7 +16663,7 @@
         "url": "https://recurrentenergy.com/project/bayou-galion-solar/",
         "label": "Bayou Galion - Recurrent Energy",
         "publisher": "Recurrent Energy",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -16616,10 +16681,11 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Capacity figures differ by source and are not reconciled here: Recurrent Energy publishes 127 MW, the EIA-derived record lists 98.1 MW installed, and Entergy's portfolio lists a 100 MW capacity-credit purchase agreement. The operator's own figure is recorded.",
     "energy": {
-      "source": "solar"
+      "source": "solar",
+      "notes": "The developer lists 127 MWp (DC); no AC rating was published."
     },
     "facilityType": "power_generation",
     "generation": {
@@ -19325,6 +19391,71 @@
       "notes": "Announced 2022-08-08 at Montana's 'On the Rise' Economic Summit as a partnership among the Confederated Salish and Kootenai Tribes, investor Kevin O'Leary, and Bitzero CEO Akbar Shamji, with support from Gov. Greg Gianforte's office. A later headline surfaced in this run's search results ('Polson data center still in preliminary discussion,' Valley Journal) suggesting no progress beyond discussion, but the page could not be fetched to verify (repeated connection resets) — flagging, not confirming. No construction start, permit filing, or cancellation notice was found as of this check (2026-09-10); status should be treated as stale/unconfirmed rather than actively advancing."
     },
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "black-hills-cheyenne-prairie-expansion-cheyenne-wy",
+    "name": "Cheyenne Prairie Generating Station Expansion (Google supply)",
+    "operator": "Black Hills Corporation",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.12361,
+      "lon": -104.72,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "street": "6711 HR Ranch Road",
+      "postalCode": "82007",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 564
+    },
+    "announcedDate": "2026-10-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-06",
+        "note": "Black Hills announced definitive agreements to serve Google's planned Cheyenne data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://finviz.com/news/399523/black-hills-corp-executes-definitive-agreements-to-serve-googles-planned-data-center-in-cheyenne-wyoming",
+        "label": "Black Hills Corp. executes definitive agreements to serve Google's planned data center in Cheyenne, Wyoming",
+        "publisher": "Black Hills Corp. (press release via Finviz)",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/?p=137020",
+        "label": "Black Hills to build 564 MW of new gas, manage 2.1 GW microgrid for Google data center in Wyoming",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/cheyenne-prairie-generating-station/57703",
+        "label": "Cheyenne Prairie Generating Station (EIA 57703) plant profile",
+        "publisher": "GridInfo",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "An expansion at the existing CPGS (EIA plant 57703, 140 MW nameplate today). The coordinates and address are those of the existing station. The release does not name the Google campus being served, so poweredFacilityIds is left unset.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "564 MW nameplate of new natural gas generation at the existing Cheyenne Prairie Generating Station site, owned by a non-regulated Black Hills affiliate. It is part of a roughly 2.7 GW resource mix for Google's planned Cheyenne data center that also includes about 2.1 GW of third-party resources (turbines and fuel cells) on a privately managed microgrid."
+    },
+    "investmentUsd": 1800000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Google",
+      "notes": "Agreements were effective Sept 30, 2026 and run through 2048. Gas construction is planned for 2027-2029, with energy service starting late 2027 and peak load in 2030. Google advanced $399M for long-lead equipment. An air quality permit has been secured, and siting and transmission approvals are still being pursued."
+    }
   },
   {
     "id": "black-hills-lange-ii-rapid-city-sd",
@@ -22986,7 +23117,7 @@
         "url": "https://www.entergy.com/news/capital-region-solar-facility-serving-entergy-louisiana-customers",
         "label": "Capital Region Solar Facility Serving Entergy Louisiana Customers",
         "publisher": "Entergy",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -23011,7 +23142,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "One site under two names: Entergy calls the PPA resource Capital Region Solar, while EIA and the developer record the plant as LA3 West Baton Rouge Solar Facility. The EIA record lists Sol Systems as the plant owner.",
     "energy": {
       "source": "solar",
@@ -23019,6 +23150,10 @@
       "notes": "20-year power purchase agreement with Entergy Louisiana, effective October 9, 2020."
     },
     "landAcres": 560,
+    "jobs": {
+      "construction": 350,
+      "sourceIndex": 0
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "solar",
@@ -27918,9 +28053,16 @@
         "publisher": "KALB",
         "retrievedAt": "2026-08-20",
         "kind": "press"
+      },
+      {
+        "url": "https://www.businessreport.com/?p=275089",
+        "label": "Cleco's $3.6B data center deal could reshape central Louisiana's energy landscape",
+        "publisher": "Baton Rouge Business Report",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-03",
+    "lastUpdated": "2026-10-17",
     "notes": "Location is approximate (Rapides Parish, near Boyce) — no exact site/parcel name was disclosed in available sources; coverage describes the turbine as being sited on Cleco's existing Rapides Parish generation campus.",
     "energy": {
       "source": "on_site_gas",
@@ -54582,9 +54724,16 @@
         "publisher": "U.S. Energy Information Administration (PowerPlants_US_EIA ArcGIS feature layer)",
         "retrievedAt": "2026-09-15",
         "kind": "other"
+      },
+      {
+        "url": "https://www.entergy.com/news/entergy-louisiana-receives-approval-purchase-475-mw-solar-power-add-green-tariff-option",
+        "label": "Entergy Louisiana receives approval to purchase 475 MW of solar power, add green tariff option",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "The EIA-derived record names the plant owner as Horus Louisiana 1, LLC and lists 142.8 MW installed (DC); Entergy's portfolio and local reporting state 125 MW under the PPA. The parish receives a guaranteed annual payment of $395,000 for 40 years.",
     "energy": {
       "source": "solar",
@@ -55073,7 +55222,7 @@
         "url": "https://www.enbridge.com/stories/2026/may/enbridge-meta-expand-partnership-cowboy-project-solar-plus-battery-storage",
         "label": "Enbridge and Meta expand partnership with Cowboy Project",
         "publisher": "Enbridge Inc.",
-        "retrievedAt": "2026-09-02",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -55089,9 +55238,16 @@
         "publisher": "Utility Dive",
         "retrievedAt": "2026-09-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.industrialinfo.com/iirenergy/industry-news/article/wyoming-meta-platforms-to-support-data-center-with-power-from-enbridge-solar-bess-facility--358073",
+        "label": "Wyoming: Meta Platforms to Support Data Center with Power from Enbridge Solar-BESS Facility",
+        "publisher": "Industrial Info Resources",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-10-17",
     "notes": "Located in Laramie County near Cheyenne; Enbridge publishes the county but not a parcel or address, so coordinates are an approximate point for Cheyenne. Expected in service by the end of 2027. Enbridge's project page labels the project under construction while also saying it is still obtaining necessary approvals; the status here follows the operator's own label and should be re-checked.",
     "energy": {
       "source": "solar",
@@ -55107,6 +55263,66 @@
         "meta-cheyenne-wy"
       ],
       "notes": "First phase of the Enbridge-Meta Cowboy Project. Meta has contracted 100% of the facility's output under a long-term power purchase agreement. Enbridge's own project page describes the wider Cowboy Solar development in two phases (400 MW solar with 200 MW/1,600 MWh storage, and 365 MW solar with 133 MW storage); the 365 MW recorded here is the Meta-contracted phase as stated in the May 2026 announcement."
+    }
+  },
+  {
+    "id": "encino-solar-energy-center-sandoval-county-nm",
+    "name": "Encino Solar Energy Center",
+    "operator": "Exus New Mexico",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.3565,
+      "lon": -106.8573,
+      "county": "Sandoval",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 55
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020-07",
+        "note": "Commercial operation in July 2020 per EIA-based plant data.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pv-magazine-usa.com/2018/09/07/new-mexico-approves-100-mw-ac-of-solar-for-facebook-data-centers/",
+        "label": "New Mexico prepares to approve 100 MW-AC of solar for Facebook data centers",
+        "publisher": "pv magazine USA",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://cleanview.co/power-projects/operating/solar-farms/texas/63860/encino-solar-energy-center",
+        "label": "Encino Solar Energy Center",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/63860-encino-solar-energy-center",
+        "label": "Encino Solar Energy Center (EIA plant 63860)",
+        "publisher": "Infrasure",
+        "retrievedAt": "2026-10-17",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "energy": {
+      "source": "solar",
+      "utility": "Public Service Company of New Mexico (PNM)",
+      "notes": "55 MW nameplate (66.7 MWdc) single-axis tracking PV. Contracted under a 25-year PPA to supply Facebook's (Meta's) Los Lunas data center through PNM's Green Energy Rider."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via PNM)",
+      "notes": "Located northwest of Rio Rancho. Ownership data conflict: EIA lists Exus New Mexico, while GEM lists PNM. Coordinates are from EIA plant data via Infrasure."
     }
   },
   {
@@ -59093,11 +59309,11 @@
         "url": "https://www.abqjournal.com/business/bernalillo-county-approves-12-billion-in-tax-incentives-for-solar-storage-project/3110868",
         "label": "Bernalillo County approves $1.2B incentives for West Side solar project",
         "publisher": "Albuquerque Journal",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Sited in the area known as Estrella, west of Atrisco Vista Boulevard and north of Interstate 40 on Albuquerque's West Side. The $1.2 billion is the private investment figure and also the face amount of the industrial revenue bonds — it is one number serving both roles in the county's structure, not two separate sums. Coordinate is an approximate anchor near the Atrisco Vista / I-40 area, not a parcel boundary.",
     "energy": {
       "source": "solar",
@@ -59893,6 +60109,96 @@
     "lastUpdated": "2026-07-23",
     "notes": "810 Parish St, Pittsburgh, PA 15220 (Green Tree neighborhood). Site code PIT1, 1.8MW critical IT load, 26,000 sq ft. 'Pittsburgh South' is the OSM/aggregator alias (confirmed same address on datacentermap.com) -- this is Expedient's official PIT1/Green Tree facility, distinct from PIT2/North Shore which is not among the candidates.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "exus-tag-solar-storage-sandoval-county-nm",
+    "name": "TAG Solar + Storage",
+    "operator": "Exus Renewables North America",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.2613,
+      "lon": -106.8613,
+      "city": "Rio Rancho",
+      "county": "Sandoval",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 140
+    },
+    "announcedDate": "2023",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2023-10-25",
+        "note": "Sandoval County Commission unanimously approved $275 million in industrial revenue bonds for the NMRD IV project (the plant also called NMRD Data Center III / TAG) to supply Meta's Los Lunas data center.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "operational",
+        "date": "2025-08",
+        "note": "Exus announced completion of the 190 MW solar-plus-storage facility.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pv-magazine-usa.com/2025/01/21/exus-secures-312-million-for-solar-plus-storage-project-in-new-mexico/",
+        "label": "Exus secures $312 million for solar-plus-storage project in New Mexico",
+        "publisher": "pv magazine USA",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/articles/exus-renewables-completes-190mw-solar-030600161.html",
+        "label": "Exus Renewables completes 190MW solar project in Rio Rancho",
+        "publisher": "Albuquerque Journal (via Yahoo News)",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/67710-tag",
+        "label": "TAG (EIA plant 67710)",
+        "publisher": "Infrasure",
+        "retrievedAt": "2026-10-17",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.rrobserver.com/news/sandoval-county-commission-approves-275-million-bond-to-build-solar-power-plant/195545",
+        "label": "Sandoval County Commission approves $275 million bond to build solar power plant",
+        "publisher": "Rio Rancho Observer",
+        "retrievedAt": "2026-10-17",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Also referred to as NMRD Data Center III. The PNM-funded IRB was issued under the NMRD IV name. Distinct from Clēnera's Quail Ranch project, also near Rio Rancho.",
+    "energy": {
+      "source": "solar",
+      "utility": "Public Service Company of New Mexico (PNM)",
+      "notes": "140 MW solar paired with 50 MW / 200 MWh Tesla Megapack storage (EIA lists about 58 MW of batteries, 197.8 MW nameplate total). PNM buys the output in partnership with Meta, and Meta owns the RECs."
+    },
+    "subsidies": [
+      {
+        "program": "Industrial Revenue Bonds (NMRD IV project)",
+        "amountUsd": 275000000,
+        "jurisdiction": "Sandoval County, NM",
+        "year": "2023",
+        "sourceIndex": 3
+      }
+    ],
+    "investmentUsd": 312000000,
+    "jobs": {
+      "construction": 250,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via PNM)",
+      "notes": "Supplies Meta's Los Lunas data center. The $312M figure is the project financing (Crédit Agricole CIB, ING, plus Exus equity). Acreage is reported as 1,000 (Albuquerque Journal) or 1,100 (pv magazine), so it is omitted. Coordinates are from EIA plant data via Infrasure."
+    }
   },
   {
     "id": "fae-clark-old-elberton-road-athens-ga",
@@ -64292,6 +64598,65 @@
     "aiClassification": "likely"
   },
   {
+    "id": "fortalis-vidalia-data-center-concordia-parish-la",
+    "name": "Vidalia Data Center (former Fruit of the Loom building)",
+    "operator": "Fortalis Vidalia, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.5654441,
+      "lon": -91.4259495,
+      "city": "Vidalia",
+      "county": "Concordia",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "announcedDate": "2026-09-22",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-22",
+        "note": "After a public hearing, the Vidalia Board of Aldermen approved an occupational license for data center operations plus water/sewer and electrical service agreements. It also approved an option on about 208 acres of town industrial-park land. The building purchase was still pending.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://listenupyall.com/2026/09/22/vidalia-approves-occupational-license-for-proposed-data-center/",
+        "label": "Vidalia Approves Occupational License for Proposed Data Center",
+        "publisher": "Listen Up Y'all",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.knoe.com/2026/09/23/vidalia-approves-new-data-center-former-fruit-loom-site/",
+        "label": "Vidalia approves new data center at former Fruit of the Loom site",
+        "publisher": "KNOE",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Fortalis plans to buy the roughly 900,000 sq ft former Fruit of the Loom building and use about one-third of it for data center operations. The initial phase needs about 50 MW from Vidalia's municipal electric system (about 104 MW available against about 22 MW used). The company indicated about 65–70 permanent jobs, which the mayor said are not yet in a written agreement. Coordinates are the town centroid from an OSM geocode; the building's exact point was not sourced.",
+    "energy": {
+      "source": "grid",
+      "utility": "Town of Vidalia municipal electric system"
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The service agreement allows a maximum of 50,000 gallons/day, with expected normal use of about 15,000–20,000 gal/day. KNOE reports cooling water would come from the municipal sewer system when needed."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Residents raised concerns about power, water, noise, rates and transparency. The aldermen approved the license and agreements, and the mayor says rates will not rise.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "fortistar-north-tonawanda-generating-ny",
     "name": "Fortistar North Tonawanda Cogeneration Facility",
     "operator": "Fortistar North Tonawanda LLC",
@@ -64532,7 +64897,7 @@
         "url": "https://www.prnewswire.com/news-releases/desri-and-tierra-adentro-growth-capital-announce-start-of-construction-on-foxtail-flats-and-four-mile-mesa-solar-and-storage-projects-in-san-juan-county-nm-302781926.html",
         "label": "DESRI and Tierra Adentro Growth Capital announce start of construction on Foxtail Flats and Four Mile Mesa solar and storage projects in San Juan County, NM",
         "publisher": "PR Newswire / DESRI",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -64543,7 +64908,7 @@
         "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "New Mexico State Investment Council committed $100M to TAG Capital (Sept 2024) across the developer's broader portfolio, not specific to this single site — that entity-level figure is not recorded as this facility's investmentUsd.",
     "energy": {
       "source": "solar",
@@ -64688,6 +65053,8 @@
       "lon": -108.35,
       "city": "Farmington",
       "county": "San Juan",
+      "street": "6800 N County Rd",
+      "postalCode": "87421",
       "state": "NM",
       "precision": "approximate"
     },
@@ -64716,9 +65083,16 @@
         "publisher": "Foxtail Flats Solar (DESRI)",
         "retrievedAt": "2026-09-15",
         "kind": "other"
+      },
+      {
+        "url": "https://www.losalamosnm.gov/Initiatives/Foxtail-Flats-Solar-Power-and-Battery-Storage",
+        "label": "Foxtail Flats: Solar Power and Battery Storage",
+        "publisher": "Los Alamos County",
+        "retrievedAt": "2026-10-17",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Sibling project to the already-tracked Four Mile Mesa Solar + Battery Storage, announced in the same release but a separate site with a different size and a different offtaker (Los Alamos County vs PNM). No jobs figure is recorded: the ~600 peak construction number is stated for the two projects combined and cannot be attributed to this site alone. landAcres is omitted because the source says the footprint 'exceeds' 5,000 acres rather than stating a figure. Coordinate is an approximate anchor derived from 'about 10 miles northwest of Farmington'.",
     "energy": {
       "source": "solar",
@@ -68881,6 +69255,72 @@
       "utility": "South Central Power Company"
     },
     "landAcres": 120,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "google-lea-county-hobbs-nm",
+    "name": "Google Lea County Data Center",
+    "operator": "Google",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.7,
+      "lon": -103.25,
+      "city": "Hobbs",
+      "county": "Lea",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-14",
+        "note": "Google announced it is exploring a potential data center in Lea County; it is in the very early stages and many details remain outstanding.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/global-network/lea-county-new-mexico/",
+        "label": "We're exploring a potential data center in Lea County, New Mexico",
+        "publisher": "Google",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://leacountydatacenter.com/",
+        "label": "Lea County Data Center project website",
+        "publisher": "Google",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.neoteo.com/en/googles-lea-county-data-center-plan-remains-exploratory-amid-water-and-land-scrutiny",
+        "label": "Google's Lea County data center plan remains exploratory amid water and land scrutiny",
+        "publisher": "Neoteo",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/google-explores-data-center-development-in-new-mexico",
+        "label": "Google explores data center development in New Mexico",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "The site is roughly five miles outside the western edge of Hobbs, on county-owned land under an option-to-purchase agreement with Excelsior Hobbs Power LLC, Google's partner. A sale needs State Board of Finance review. Google has disclosed no capacity, investment, acreage or timeline. Coordinates are an approximate point about five miles west of Hobbs, not a parcel location. This is a different site from New Era Energy & Digital's Lea County campus near Caprock.",
+    "energy": {
+      "source": "mixed",
+      "utility": "Southwestern Public Service Company (SPS)",
+      "notes": "Google's project site says the power plan is still being finalized. It is likely to be mostly clean energy (solar, wind, batteries) with some gas-fired firming, designed with SPS. Google says it will pay for 100% of the energy it uses and the infrastructure it requires."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The project site describes a closed-loop, air-cooled design with no evaporative cooling, with ongoing use limited to domestic needs. It gives construction water use of just over 900,000 gal/day on average, peaking near 1 million gal/day for about four months, plus a 9.5 to 9.7 million gallon initial fill."
+    },
     "facilityType": "data_center"
   },
   {
@@ -77573,14 +78013,32 @@
         "publisher": "Hut 8",
         "retrievedAt": "2026-09-15",
         "kind": "press"
+      },
+      {
+        "url": "https://canada.hut8.com/resources/press-releases/hut-8-signs-15-year-245-mw-ai-data-center-lease-at-river-bend-campus-with-total-contract-value-of-usd7-0-billion",
+        "label": "Hut 8 Signs 15-Year, 245 MW AI Data Center Lease at River Bend Campus",
+        "publisher": "Hut 8",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://technical.ly/entrepreneurship/hut-8-water-upgrades-west-feliciana/",
+        "label": "Hut 8 water upgrades in West Feliciana",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "River Bend campus on 611 acres in West Feliciana Parish. Fluidstack (backed by Google) is primary tenant; Anthropic also signed a long-term lease. Phase I: two 450,000 sq ft facilities. Phase II (additional facilities) targeted by end of 2026. Coordinates approximate St. Francisville area.",
     "energy": {
       "source": "grid",
       "utility": "Entergy Louisiana",
       "notes": "330 MW from Entergy Louisiana for 245 MW of critical IT load. Proximity to River Bend Nuclear Generating Station (St. Francisville) enables accelerated grid interconnection timeline. Power mix includes nuclear baseload."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling per the press release. Hut 8 is funding about $16M of water infrastructure (a new well and about 8 miles of water main) to be transferred to West Feliciana Parish."
     },
     "subsidies": [
       {
@@ -79792,7 +80250,7 @@
         "url": "https://www.entergy.com/news/new-iris-solar-facility-online-serving-customers",
         "label": "New Iris Solar facility online and serving customers",
         "publisher": "Entergy",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -79810,7 +80268,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Distinct from the separately tracked Entergy-owned Bogalusa West Solar Station, which is also in Washington Parish but ~35 km east near Bogalusa, and from Sunlight Road Solar ~2 km west.",
     "energy": {
       "source": "solar",
@@ -83539,6 +83997,46 @@
     }
   },
   {
+    "id": "lanl-strategic-computing-complex-los-alamos-nm",
+    "name": "Los Alamos National Laboratory Strategic Computing Complex (Nicholas C. Metropolis Center)",
+    "operator": "Los Alamos National Laboratory (U.S. Department of Energy / NNSA)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.8755,
+      "lon": -106.319,
+      "city": "Los Alamos",
+      "county": "Los Alamos",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.bpce.com/project/los-alamos-national-laboratory",
+        "label": "Los Alamos National Laboratory Strategic Computing Complex",
+        "publisher": "Bridgers & Paxton Consulting Engineers",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.sdxcentral.com/news/los-alamos-national-laboratory-unveils-new-venado-supercomputer-reportedly-capable-of-10-exaflops-of-peak-ai-performance/",
+        "label": "Los Alamos National Laboratory unveils new Venado supercomputer reportedly capable of 10 exaflops of peak AI performance",
+        "publisher": "SDxCentral",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "A 307,749 sq ft secured supercomputing facility (Nicholas C. Metropolis Center) built around 1999-2001 for $131 million. Computer-floor power was expanded to 24 MW, with the ability to add 10 MW more, per the MEP engineer. It has housed Q, Roadrunner, Trinity, Crossroads and Venado. Venado (2,560 liquid-cooled Nvidia Grace Hopper superchips) was announced at 10 exaflops of peak AI performance, a figure LANL has not confirmed, which supports the mixed_use classification. Coordinates are an approximate point at LANL Technical Area 3, not a confirmed building pin.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "The engineer of record lists 100% evaporative cooling and a shift to warm-water direct cooling. The cooling plant uses treated water from LANL's sanitary effluent reclamation facility as makeup water."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
+  },
+  {
     "id": "lavue-massaponax-tech-campus-spotsylvania-va",
     "name": "Massaponax Tech Campus",
     "operator": "Lavue Lane Owner LLC",
@@ -86467,6 +86965,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumen-baton-rouge-2-la",
+    "name": "Lumen Baton Rouge 2 (445 North Boulevard)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.4473276,
+      "lon": -91.186149,
+      "city": "Baton Rouge",
+      "county": "East Baton Rouge",
+      "street": "445 North Boulevard",
+      "postalCode": "70802",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-17",
+        "note": "Listed as a fully operational facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-baton-rouge-2",
+        "label": "Lumen Baton Rouge 2",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=445+North+Boulevard,+Baton+Rouge,+LA&format=json",
+        "label": "OSM Nominatim geocode of 445 North Boulevard, Baton Rouge",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Carrier facility. Baxtel gives the address as 445 North Boulevard. A separate Inflect listing for 'Lumen Baton Rouge' gives 9826 Burbank Drive, which may be a different Lumen site, so a reviewer should confirm the address. Coordinates are an OSM geocode of the Baxtel address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumen-boston-cambridge-ma",
     "name": "Lumen Boston (300 Bent Street)",
     "operator": "Lumen Technologies",
@@ -86898,6 +87440,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumen-metairie-1-la",
+    "name": "Lumen Metairie 1 (3220 Lausat Street)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.9722948,
+      "lon": -90.1578452,
+      "city": "Metairie",
+      "county": "Jefferson",
+      "street": "3220 Lausat Street",
+      "postalCode": "70001",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-17",
+        "note": "Listed as a fully operational facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-metairie-1",
+        "label": "Lumen Metairie 1",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=3220+Lausat+Street,+Metairie,+LA&format=json",
+        "label": "OSM Nominatim geocode of 3220 Lausat Street, Metairie",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Carrier/colocation site. Baxtel gives no capacity or size. Coordinates are an OSM address geocode.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumen-minneapolis-3-mn",
     "name": "Lumen Minneapolis 3",
     "operator": "Lumen Technologies",
@@ -87101,6 +87687,50 @@
     ],
     "lastUpdated": "2026-09-15",
     "notes": "Carrier facility in the Entergy Tower at 639 Loyola Avenue, roughly 0.2 km from the tracked Cogent 650 Poydras site and 0.5 km from Fogo New Orleans - a different building and a different operator. Neither power nor floor area is published; no capacity is asserted here. Lumen also lists New Orleans 2, Metairie 1 and Baton Rouge 2 sites that I could not address-resolve this session.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-new-orleans-2-la",
+    "name": "Lumen New Orleans 2 (1250 Poydras)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 29.9512765,
+      "lon": -90.076594,
+      "city": "New Orleans",
+      "county": "Orleans",
+      "street": "1250 Poydras Street, Suite 500",
+      "postalCode": "70113",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-17",
+        "note": "Listed as a fully operational facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-new-orleans-2",
+        "label": "Lumen New Orleans 2",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=1250+Poydras+Street,+New+Orleans,+LA&format=json",
+        "label": "OSM Nominatim geocode of 1250 Poydras Street, New Orleans",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-17",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Carrier/colocation suite in an office building. Baxtel gives no capacity or size. Coordinates are an OSM address geocode.",
     "facilityType": "data_center"
   },
   {
@@ -87765,9 +88395,16 @@
         "publisher": "Wyoming Business Council / Wyoming Legislature",
         "retrievedAt": "2026-09-02",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://cdn.prod.website-files.com/678a60a2cfea0646ec3afd2c/69a707dc5d0a7f4963d52db8_Cheyenne%20Datacenter%201pager%20FINAL.pdf",
+        "label": "Lunavi's AI Launchpad: Cheyenne, Wyoming datacenter one-pager",
+        "publisher": "Lunavi",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-10-17",
     "notes": "Colocation facility at 340 Progress Circle, Cheyenne. 5 MW available with stated ability to expand to 8 MW; critical IT load 4 MW; average PUE 1.17, low 1.05. Formerly Green House Data. Ownership caveat: Fifteenfortyseven Critical Systems Realty markets a Cheyenne facility (CHWY1) with a matching 42,000 sq ft building and ~5 MW on-site, so the same building may be owned by 1547 and operated/marketed by Lunavi; only one record is held here to avoid a duplicate, with Lunavi named as operator on the strength of its own current first-party listing. No subsidy is recorded: the Wyoming Business Council materials describe Lunavi as a driver of the exemption's co-location amendments, not as a certified recipient. Coordinates approximate the street address.",
     "water": {
       "coolingType": "evaporative",
@@ -87781,6 +88418,7 @@
       }
     ],
     "facilityType": "data_center",
+    "aiClassification": "mixed_use",
     "environmental": {
       "pue": 1.17,
       "pueConfidence": "reported",
@@ -90424,9 +91062,23 @@
         "publisher": "Wyoming Business Council / Wyoming Legislature",
         "retrievedAt": "2026-08-19",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.industrialinfo.com/iirenergy/industry-news/article/wyoming-meta-platforms-to-support-data-center-with-power-from-enbridge-solar-bess-facility--358073",
+        "label": "Wyoming: Meta Platforms to Support Data Center with Power from Enbridge Solar-BESS Facility",
+        "publisher": "Industrial Info Resources",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.enbridge.com/stories/2026/may/enbridge-meta-expand-partnership-cowboy-project-solar-plus-battery-storage",
+        "label": "Enbridge, Meta expand partnership with Cowboy Project solar-plus-battery storage",
+        "publisher": "Enbridge",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-19",
+    "lastUpdated": "2026-10-17",
     "notes": "715,000 sq ft campus at High Plains Business Park, Meta's 25th global data center. Originally Project Cosmo. Optimized for AI workloads with new H-departed design. Expected operational 2027. Coordinates approximate for High Plains Business Park in SE Cheyenne. Energy.notes corrected: removed on-site nuclear claim (Meta-TerraPower PPA is portfolio-wide grid delivery, not an on-site Cheyenne plant) and removed unverified $1.2B solar claim. jobs.sourceIndex corrected from 0 to 1 (Cheyenne LEADS is the source for the 1,000 construction jobs figure).",
     "energy": {
       "source": "grid",
@@ -91380,9 +92032,16 @@
         "publisher": "Meta",
         "retrievedAt": "2026-09-03",
         "kind": "press"
+      },
+      {
+        "url": "https://www.opportunitylouisiana.gov/news/meta-commits-more-than-50-billion-for-north-louisiana-project-becoming-one-of-the-largest-data-centers-in-history",
+        "label": "Meta Commits More Than $50 Billion for North Louisiana Project",
+        "publisher": "Louisiana Economic Development",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "A second, larger Meta data center development at the same Richland Parish complex is in progress under the internal name 'Project Evest' (Evest LLC, a Meta subsidiary and Laidley affiliate), the subject of a new, not-yet-docketed LPSC certification application (Direct Testimony of Laura K. Beauchamp on behalf of Entergy Louisiana, filed March 2026, public-redacted version). The testimony states Evest 'seeks to develop adjacent to Laidley's data center in Richland Parish, Louisiana, that was the subject of the proceedings in LPSC Docket No. U-37425' (i.e., the already-tracked Hyperion project). To serve Evest, Entergy is seeking certification of seven new 754 MW 1x1 CCCT generators (four near the Richland Parish site, three sited near the existing Big Cajun site in Pointe Coupee Parish) plus battery storage co-located at the Bogalusa West Solar and Cypress Harvest Solar facilities -- on top of the three CCCTs (Franklin Farms 1&2, Waterford 5) already approved for Hyperion itself. Investigative coverage (The Lens, 2026-04-14) puts the combined Hyperion+Evest generation build at 10 new gas plants, 7,000+ MW, and $16B+ in new fossil-fuel infrastructure serving this one customer, and reports the underlying Entergy-Meta commercial agreements are not fully public. This is DISTINCT NEW information not yet reflected in the existing record's notes/community fields (which per the roster are already populated) -- flagging for maintainer review rather than as a field-merge, since 'community' on this record is locked (already has a value) and it is not yet certain whether Evest will ship as a second facility record or as an update to this one once its own docket number and site-specific coordinates are public.",
     "energy": {
       "source": "mixed",
@@ -93832,7 +94491,7 @@
         "url": "https://cowboystatedaily.com/2026/04/14/microsoft-to-triple-its-cheyenne-data-center-footprint-with-3-200-acre-land-buy/",
         "label": "Microsoft to Triple Its Cheyenne Data Center Footprint With 3,200-Acre Land Buy",
         "publisher": "Cowboy State Daily",
-        "retrievedAt": "2026-07-06",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -93857,7 +94516,7 @@
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-17",
     "notes": "Described by Microsoft as a 'multi-gigawatt multi-decade ecosystem.' The 400 MW initial-target figure that appeared in the prior record was NOT found in either cited source and has been removed pending a citable source (neither the Microsoft newsroom announcement nor Cowboy State Daily mentions a specific MW figure). Separate from existing Cheyenne campus (since 2012) and the HR Ranch Road construction underway 2025-2026. Coordinates approximate for Bison Business Park / SE Cheyenne area.",
     "energy": {
       "source": "grid",
@@ -93865,7 +94524,8 @@
       "notes": "Large Power Contract Service (LPCS) tariff; Microsoft funds all grid infrastructure upgrades without raising residential rates. Hydrogen fuel cell pilot (Caterpillar) tested 48-hour backup power. Commitment to carbon-free energy matching fossil fuel consumption."
     },
     "water": {
-      "coolingType": "evaporative"
+      "coolingType": "evaporative",
+      "notes": "Microsoft says it is moving toward closed-loop cooling to limit water withdrawal and consumption. The design for the expansion is not final."
     },
     "subsidies": [
       {
@@ -99482,9 +100142,16 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-09-03",
         "kind": "other"
+      },
+      {
+        "url": "https://www.solarpowerworldonline.com/2026/07/meta-signs-ppa-for-172-mw-of-louisiana-solar/",
+        "label": "Meta signs PPA for 172 MW of Louisiana solar",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-03",
+    "lastUpdated": "2026-10-17",
     "notes": "$400,000 community benefit contribution made to the Acadia Parish Industrial Development Board in 2025; project includes a Land Management and Biodiversity Plan for coastal habitat restoration.",
     "energy": {
       "source": "solar"
@@ -102735,6 +103402,59 @@
       "technology": "solar",
       "offtaker": "Google",
       "notes": "One of two long-term PPAs Google announced alongside its Oklahoma data-center buildout, together adding 600 MW of new clean energy to the Oklahoma grid (the other is High Spring Solar in Muskogee County). Developer projects roughly $25 million in tax revenue and hundreds of construction jobs."
+    }
+  },
+  {
+    "id": "nextera-sky-ranch-solar-valencia-county-nm",
+    "name": "Sky Ranch Solar Energy Center",
+    "operator": "NextEra Energy Resources",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.7655,
+      "lon": -106.7998,
+      "county": "Valencia",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 190
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024",
+        "note": "EIA-based plant data lists the hybrid plant as operating since 2024.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kob.com/new-mexico/new-solar-farm-in-los-lunas-now-complete/",
+        "label": "New solar farm in Los Lunas now complete",
+        "publisher": "KOB 4",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/66814-sky-ranch-solar",
+        "label": "Sky Ranch Solar (EIA plant 66814)",
+        "publisher": "Infrasure",
+        "retrievedAt": "2026-10-17",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "energy": {
+      "source": "solar",
+      "utility": "Public Service Company of New Mexico (PNM)",
+      "notes": "190 MW solar plus 50 MW (~200 MWh, 4-hour) battery storage, 240 MW hybrid nameplate per EIA data. Built under a PNM/Meta/NextEra partnership to supply Meta's Los Lunas data center."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via PNM)",
+      "notes": "KOB describes the farm as over 1,000 acres near Los Lunas. EIA lists the operator as Sky Ranch Solar and Storage, a NextEra affiliate. Coordinates are from EIA plant data via Infrasure."
     }
   },
   {
@@ -108780,6 +109500,36 @@
     }
   },
   {
+    "id": "oso-grande-albuquerque-nm",
+    "name": "Oso Grande Albuquerque Data Center",
+    "operator": "Oso Grande Technologies, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 35.0897,
+      "lon": -106.6517,
+      "city": "Albuquerque",
+      "county": "Bernalillo",
+      "street": "725 6th Street NW",
+      "postalCode": "87102",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.osogrande.com/colocation/",
+        "label": "New Mexico Colocation",
+        "publisher": "Oso Grande Technologies",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Downtown Albuquerque colocation facility. The operator describes redundant UPS, generator power with 40+ hours of fuel, N+1 cooling, raised flooring and SOC 2 compliance. No capacity is disclosed. Coordinates are an approximate geocode of the street address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "otava-ann-arbor-mi",
     "name": "Otava Ann Arbor Data Center",
     "operator": "Otava",
@@ -109060,7 +109810,7 @@
         "url": "https://lightsourcebp.com/project/oxbow-solar/",
         "label": "Oxbow Solar project in Louisiana",
         "publisher": "Lightsource bp",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -109078,7 +109828,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Largest operating solar farm in Louisiana, on roughly 1,800 acres near Ventress and False River. Coordinate is the EIA-derived plant point (plant code 65030).",
     "energy": {
       "source": "solar",
@@ -113824,7 +114574,7 @@
         "url": "https://lightsourcebp.com/us/news/prairie-ronde-solar-goes-online/",
         "label": "Prairie Ronde Solar goes online",
         "publisher": "Lightsource bp",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -113835,7 +114585,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "The EIA-derived record lists the plant as operating with 135 MW installed; Lightsource bp publishes the project as 180 MWdc. Coordinate is the EIA plant point, reported to two decimal places only, so it is marked approximate.",
     "energy": {
       "source": "solar",
@@ -116922,11 +117672,11 @@
         "url": "https://cowboystatedaily.com/2026/09/02/prometheus-data-center-developers-outline-natrona-county-project-to-commissioners/",
         "label": "Natrona County Residents Pack Meeting To Hear Plans For Huge Data Center",
         "publisher": "Cowboy State Daily",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-17",
     "notes": "1.5GW campus proposed on the Falls Ranch property spanning the Natrona/Converse county line near I-25, roughly 10 miles east of Casper. Site plan still in flux as of July 2026, with developers weighing an alternate parcel south of I-25; targeted operational by 2028.",
     "energy": {
       "source": "mixed",
@@ -122332,13 +123082,21 @@
         "publisher": "Wyoming Business Council / Wyoming Legislature",
         "retrievedAt": "2026-09-14",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.related.com/press-releases/2025-10-07/related-digital-breaks-ground-302-mw-data-center-campus-cheyenne-wyoming",
+        "label": "Related Digital breaks ground on 302 MW data center campus in Cheyenne, Wyoming",
+        "publisher": "Related Companies",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-17",
     "notes": "115-acre campus in the Cheyenne Business Parkway; up to 302 MW of critical IT capacity across the full campus. CoreWeave is the anchor tenant under a long-term lease for 88 MW of critical IT capacity — the 88 MW is the leased slice, not the campus total. Phase I projected to generate over $250 million in tax revenue to Wyoming and Cheyenne in its first 15 years. Coordinates approximate the Cheyenne Business Parkway, not a parcel-confirmed point.",
     "energy": {
       "source": "grid",
-      "utility": "Black Hills Energy"
+      "utility": "Black Hills Energy",
+      "notes": "Black Hills Energy serves the initial phase under its large-power tariff. Phase I is 88 MW of critical IT capacity leased to CoreWeave."
     },
     "water": {
       "coolingType": "air",
@@ -123527,7 +124285,7 @@
     "id": "rocking-r-solar-caddo-parish-la",
     "name": "Rocking R Solar",
     "operator": "D. E. Shaw Renewable Investments (DESRI)",
-    "status": "under_construction",
+    "status": "operational",
     "confidence": "reported",
     "location": {
       "lat": 32.8876386,
@@ -123546,6 +124304,12 @@
         "date": "2025-04-08",
         "note": "KSLA reported the project in the final stages of construction with commercial operation expected in the late spring-summer 2025 window.",
         "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-17",
+        "note": "EIA-860M data lists Rocking R Solar, LLC (72.5 MW, Caddo Parish) as operational, with its first unit online on 2025-08-01.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -123569,9 +124333,16 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/65941-rocking-r-solar-llc",
+        "label": "Rocking R Solar, LLC plant profile: Operating since 2025",
+        "publisher": "InfraSure",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Status is the last state I could source: as of April 2025 the plant was in the final stages of construction with commercial operation expected mid-2025, and it does not appear in the February 2025 vintage EIA operating-plant layer. It may since have entered service. The coordinate is the OpenStreetMap point for the village of Hosston; reporting places the site just north of Gilliam near the Louisiana 2 exit off I-49, so the pin is a nearest-settlement approximation and is not parcel-confirmed.",
     "energy": {
       "source": "solar",
@@ -123795,16 +124566,31 @@
         "publisher": "The Newswire / Desert Mountain Energy Corp.",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.greenstocknews.com/news/otcmkts/dmehf/desert-mountain-energy-signs-long-term-lease-agreement-with-roswell-information-park-developer",
+        "label": "Desert Mountain Energy signs long-term lease agreement with Roswell Information Park developer",
+        "publisher": "Green Stock News (Desert Mountain Energy release)",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://pgjonline.com/news/2025/july/desert-mountain-energy-signs-gas-offtake-deal-in-new-mexico",
+        "label": "Desert Mountain Energy signs gas offtake deal in New Mexico",
+        "publisher": "Pipeline & Gas Journal",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-17",
     "notes": "Distinct from the Zenith Volts Roswell/Chaves County project already tracked: different developer (Sustany LLC / Roswell Information Park LLC vs Zenith Volts Corp.), different site size (~154 acres vs a 300-acre initial site inside an 8,400-acre approval), and a different power model (off-grid gas from DME's West Pecos field vs on-site solar plus gas plus BESS). Capacity figures circulating in secondary coverage (100-200 MW at start-up scaling toward 4 GW) were NOT read on a primary page in this session and are deliberately omitted. Coordinate is the Roswell locality anchor; the releases say only 'near Roswell'.",
     "energy": {
       "source": "on_site_gas",
       "notes": "Planned as an off-grid campus with a dedicated natural gas supply: the park has agreed to purchase 100% of the natural gas produced from Desert Mountain Energy's West Pecos Gas Field and to manage additional third-party gas flows. Desert Mountain Energy has also been invited to develop carbon-capture solutions tied to the campus's power generation. No MW figure is disclosed in the cited releases."
     },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "The property carries limited water rights. The developer is exploring treated produced water from other energy-sector operators."
     },
     "landAcres": 154,
     "facilityType": "data_center"
@@ -130424,6 +131210,70 @@
     }
   },
   {
+    "id": "site-layer-1-playas-grant-county-nm",
+    "name": "Site Layer 1 Data Center (Playas)",
+    "operator": "Site Layer 1 LLC (Granite Renewables)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.96,
+      "lon": -108.48,
+      "county": "Grant",
+      "state": "NM",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-08-27",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-27",
+        "note": "A legal notice in the Silver City Daily Press announced plans to seek an NMED air quality permit for a data center powered by a natural gas-fired generation facility.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.abqjournal.com/news/in-silver-city-rapid-community-response-to-local-data-center-proposal/3115188",
+        "label": "In Silver City, rapid community response to local data center proposal",
+        "publisher": "Albuquerque Journal",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://searchlightnm.org/grant-county-residents-raise-alarm-over-secretive-proposed-data-center/",
+        "label": "Grant County residents raise alarm over secretive proposed data center",
+        "publisher": "Searchlight New Mexico",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.abqjournal.com/news/details-scarce-on-grant-county-data-center-proposal/3138673",
+        "label": "Details scarce on Grant County data center proposal",
+        "publisher": "Albuquerque Journal",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Private ranchland (Hurt Cattle Co.) about 4.5 miles northeast of Playas and nearly 12 miles from Hachita, along N.M. 9, in southern Grant County. Coordinates are an approximate point derived from that description. The data center's size and end use are undefined, and the developer said it does not yet know the facility's end purpose. Linked to similarly named Site Layer 2 (Logan County, CO) and Site Layer 4 (Platte County, WY).",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 300.8,
+      "notes": "The public notice describes 32 natural gas engines at 9.4 MW each (300.8 MW total). At the Oct. 8, 2026 county commission meeting the developer instead presented a 715 MW solar plus 715 MW battery storage project, with possible future expansion to natural gas and a data center. Interconnection and large-load requests were pending or expected."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The developer plans a closed-loop cooling system using under 25 acre-feet of water a year but has no broader water plan. No water rights application had been filed as of early September 2026."
+    },
+    "landAcres": 8000,
+    "community": {
+      "status": "contested",
+      "notes": "Residents said they were blindsided by the classified notice and organized opposition. The NMED secretary criticized the developer's community engagement as insufficient. A Grant County commissioner proposed a one-year data center moratorium, due for consideration in October 2026.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "site-layer-4-goshen-hole-platte-county-wy",
     "name": "Site Layer 4 Goshen Hole Data Center Campus",
     "operator": "Site Layer 4, LLC",
@@ -130450,18 +131300,18 @@
         "url": "https://cowboystatedaily.com/2026/07/13/ranchlands-near-wheatland-eyed-for-26-billion-transformational-data-center/",
         "label": "Ranchlands Near Wheatland Eyed For $26 Billion 'Transformational' Data Center",
         "publisher": "Cowboy State Daily",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
         "url": "https://cowboystatedaily.com/2026/09/02/platte-county-commissioners-push-back-then-ok-industrial-zoning-for-data-center/",
         "label": "Platte County Commissioners Push Back, Then OK Industrial Zoning For Data Center",
         "publisher": "Cowboy State Daily",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-17",
     "notes": "Site is on the Lazy V Six Ranch in Goshen Hole, northeast of Wheatland near the Platte-Goshen county line and roughly 13 miles east of Interstate 25. Permanent jobs were reported as a 250-300 range; the low end is recorded here. No megawatt figure has been published. Coordinates are a geocode from that published description and are not a parcel-confirmed point.",
     "energy": {
       "notes": "Developer describes a self-generating campus with co-located utility-scale generation and says it would not draw on municipal water or the Wheatland Irrigation District. Fuel type for the co-located generation was not specified in the county proceedings as reported."
@@ -130714,6 +131564,69 @@
       "source": "grid",
       "utility": "Silicon Valley Power",
       "notes": "Corgan: N+2 generator backup with 30 generators and 60 rooftop chillers."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "skybox-viawest-cox-ranch-cheyenne-wy",
+    "name": "Cox Ranch Data Center",
+    "operator": "Skybox Datacenters / ViaWest Group",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.145,
+      "lon": -104.92,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-28",
+        "note": "Cheyenne City Council annexed the roughly 1,260-acre Cox Ranch and rezoned it from agricultural to business park on third reading (8-2). The end user has not been disclosed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cowboystatedaily.com/2026/09/29/cheyenne-approves-another-annexation-for-data-center-during-contentious-meeting/",
+        "label": "Data Center Critics Angry As Cheyenne Council OKs Another Data Center Annexation",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wyomingnews.com/news/local_news/cox-ranch-data-center-developers-outline-project-commitments-at-council-work-session/article_2436cc57-2c13-452d-a089-df88ea6915e3.html",
+        "label": "Cox Ranch data center developers outline project commitments at council work session",
+        "publisher": "Wyoming Tribune Eagle",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://cheyenneleads.org/wp-content/uploads/2026/08/LC-Data-Centers_8.4.2026.pdf",
+        "label": "Cheyenne LEADS Data Center Locations map (updated Aug 4, 2026): Planned S. ViaWest/SkyBox - Happy Jack",
+        "publisher": "Cheyenne LEADS",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "West of Roundtop Road near Happy Jack Road and the North Range Business Park. The concept plan shows two to three data center buildings, with construction expected to take 5-7 years. The coordinates are approximate, placed from the described location and the Cheyenne LEADS map pin.",
+    "energy": {
+      "utility": "Black Hills Energy",
+      "notes": "The developers say they will pay the full cost of extending electrical, water and sewer infrastructure, and that Black Hills Energy has made this legally binding."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop rather than evaporative cooling. Each facility is expected to use 600,000 gallons a year or less, mainly for fire suppression. Water and sewer service would come from the Cheyenne Board of Public Utilities."
+    },
+    "landAcres": 1260,
+    "community": {
+      "status": "contested",
+      "notes": "The council approved annexation 8-2 after a six-hour meeting. Residents objected on transparency, traffic, wildlife and a mausoleum on the property. Councilmen Wolfe and Moody voted no.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -131907,6 +132820,61 @@
     ],
     "lastUpdated": "2026-10-11",
     "facilityType": "data_center"
+  },
+  {
+    "id": "southern-power-south-cheyenne-solar-laramie-county-wy",
+    "name": "South Cheyenne Solar Facility",
+    "operator": "Southern Power",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.01,
+      "lon": -104.82,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 150
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-04-29",
+        "note": "Southern Power announced the facility is operational.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.southerncompany.com/newsroom/clean-energy/southern-power%E2%80%99s-south-cheyenne-solar-facility-in-wyoming-is-now-operational.html",
+        "label": "Southern Power's South Cheyenne Solar Facility in Wyoming is now operational",
+        "publisher": "Southern Company",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://electrifynews.com/news/solar/new-southern-power-solar-energy-facility-in-wyoming-is-operational/",
+        "label": "New Southern Power Solar Energy Facility in Wyoming Is Operational",
+        "publisher": "Electrify News",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "About nine miles south of Cheyenne on 1,391 acres of private and state-leased land, of which the array uses 950. The coordinates are approximate, placed from the 'nine miles south of Cheyenne' description; no authoritative plant coordinates were found. Local press links the output to Meta's Cheyenne data center, but the company's own release does not name the customer, so offtaker is left unset.",
+    "energy": {
+      "source": "solar",
+      "utility": "Cheyenne Light, Fuel and Power (Black Hills Energy)",
+      "notes": "Output is sold under a 20-year PPA with Cheyenne Light, Fuel and Power and used exclusively to supply renewable energy to a data center customer, which the company does not name."
+    },
+    "landAcres": 950,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Hanwha Qcells bifacial PV modules on single-axis trackers. Developed and built (EPC) by Qcells USA and acquired by Southern Power in Sept 2023. EIA plant 67147, first unit online April 2024."
+    }
   },
   {
     "id": "sovereign-gazelle-somerville-al",
@@ -134072,14 +135040,33 @@
         "publisher": "Energy-Storage.news",
         "retrievedAt": "2026-09-15",
         "kind": "filing"
+      },
+      {
+        "url": "https://digital-release.krqe.com/?p=2599684",
+        "label": "Belen city council votes yes to new permit for solar panel farm",
+        "publisher": "KRQE News 13",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/69497-star-light-energy-center",
+        "label": "Star Light Energy Center (EIA plant 69497)",
+        "publisher": "Infrasure",
+        "retrievedAt": "2026-10-17",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Status is deliberately conservative: the cited source dates from July 2025 and records only that PNM was seeking approval. A maintainer should refresh against the NMPRC docket before publishing, since the December 2026 target COD implies the project has likely advanced. Coordinate is a Los Lunas locality approximation, set apart from the Sky Ranch anchor so the two Valencia County sites do not share a pin.",
     "energy": {
       "source": "solar",
       "utility": "Public Service Company of New Mexico (PNM)",
       "notes": "100 MW of solar with a 100 MW / 400 MWh battery system under a 20-year agreement with PNM, priced at $35.87/MWh for solar and $19.32/MWh for storage, targeting a December 1, 2026 commercial operation date."
+    },
+    "landAcres": 395,
+    "jobs": {
+      "construction": 250,
+      "sourceIndex": 1
     },
     "facilityType": "power_generation",
     "generation": {
@@ -134321,10 +135308,24 @@
         "publisher": "Business Insider",
         "retrievedAt": "2026-10-16",
         "kind": "press"
+      },
+      {
+        "url": "https://www.crusoe.ai/resources/newsroom/crusoe-blue-owl-capital-and-primary-digital-infrastructure-enter-joint-venture",
+        "label": "Crusoe, Blue Owl Capital, and Primary Digital Infrastructure enter second phase of $15 billion joint venture to fund AI data center in Abilene, Texas",
+        "publisher": "Crusoe",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.itiger.com/news/2537792946",
+        "label": "Newmark Facilitates $7.1 Billion Financing for Texas AI Data Center",
+        "publisher": "MT Newswires",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-10-16",
-    "notes": "Also known as the Lancium Clean Campus. Lancium announced the site in December 2021 as a Clean Compute Campus that would host Bitcoin mining and other energy-intensive applications; Crusoe has since built an eight-building AI campus on it. Oracle gives the campus as 1,100 acres; the 2021 announcement gave about 800. Epoch AI describes the AI chips as owned by Oracle and used by OpenAI. Taylor Central Appraisal District's 2026 roll (Texas appraises property as of 1 January) lists Lancium entities as owners of the land, buildings and campus substations; Crusoe-managed entities as owners of each building's \"MEP\" accounts; and Oracle America as owner of computer equipment for \"BUILDING 1 & 2\" only, valued at $3.43 billion. Business Insider reported in July 2025 that Crusoe \"has committed to spending up to $3.5 billion to build the data center site in exchange for its property tax abatement\"; that is a commitment under the abatement agreements, not a reported project cost, so no investment figure is recorded here. Crusoe gives the eight buildings \"a total power capacity of 1.2 gigawatts\"; Oracle describes its 618 MW for six buildings as \"75% of total capacity\", without saying what kind of capacity; Epoch AI projects 843 MW of IT power for the campus by Q4 2026. The operational capacity shown is Oracle's figure for capacity \"delivered to the customer\" as of 2026-09-10. Oracle did not say whether it is IT load, and \"delivered\" is Oracle's word, not an observation of running hardware. Crusoe expected the second phase to finish in mid-2026 (March 2025) and later \"by the end of 2026\" (March 2026). A separate 900 MW Crusoe campus for Microsoft (two buildings and an onsite power plant, the first building expected to be energized in mid-2027) is being built on adjacent land and is not part of this record; Epoch AI reported in April 2026 that OpenAI had reversed plans to expand this site. Construction-workforce figures conflict widely across sources and are not repeated here. Coordinates are the approximate centre of the eight data halls outlined on Epoch AI's satellite map of the campus (retrieved 2026-10-16).",
+    "notes": "Also known as the Lancium Clean Campus. Lancium announced the site in December 2021 as a Clean Compute Campus that would host Bitcoin mining and other energy-intensive applications; Crusoe has since built an eight-building AI campus on it. Oracle gives the campus as 1,100 acres; the 2021 announcement gave about 800. Epoch AI describes the AI chips as owned by Oracle and used by OpenAI. Taylor Central Appraisal District's 2026 roll (Texas appraises property as of 1 January) lists Lancium entities as owners of the land, buildings and campus substations; Crusoe-managed entities as owners of each building's \"MEP\" accounts; and Oracle America as owner of computer equipment for \"BUILDING 1 & 2\" only, valued at $3.43 billion. Business Insider reported in July 2025 that Crusoe \"has committed to spending up to $3.5 billion to build the data center site in exchange for its property tax abatement\"; that is a commitment under the abatement agreements, not a reported project cost, so no investment figure is recorded here. Crusoe, Blue Owl Capital and Primary Digital Infrastructure describe the campus as funded by a \"$15 billion joint-venture\" (May 2025); the release does not split the figure into debt and equity or state a total project cost. Newmark said it arranged a $7.1 billion construction loan, led by JP Morgan, for the second phase. Crusoe gives the eight buildings \"a total power capacity of 1.2 gigawatts\"; Oracle describes its 618 MW for six buildings as \"75% of total capacity\", without saying what kind of capacity; Epoch AI projects 843 MW of IT power for the campus by Q4 2026. The operational capacity shown is Oracle's figure for capacity \"delivered to the customer\" as of 2026-09-10. Oracle did not say whether it is IT load, and \"delivered\" is Oracle's word, not an observation of running hardware. Crusoe expected the second phase to finish in mid-2026 (March 2025) and later \"by the end of 2026\" (March 2026). A separate 900 MW Crusoe campus for Microsoft (two buildings and an onsite power plant, the first building expected to be energized in mid-2027) is being built on adjacent land and is not part of this record; Epoch AI reported in April 2026 that OpenAI had reversed plans to expand this site. Construction-workforce figures conflict widely across sources and are not repeated here. Coordinates are the approximate centre of the eight data halls outlined on Epoch AI's satellite map of the campus (retrieved 2026-10-16).",
     "energy": {
       "source": "mixed",
       "utility": "AEP Texas",
@@ -134699,7 +135700,8 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-16",
+    "notes": "The planned 902 MW is the campus's IT capacity, per Data Center Knowledge (December 2025).",
     "energy": {
       "source": "mixed",
       "utility": "We Energies (WEC Energy Group)",
@@ -134746,9 +135748,6 @@
       "county": "Dona Ana",
       "state": "NM",
       "precision": "exact"
-    },
-    "capacityMw": {
-      "planned": 1000
     },
     "poweredBy": "on-site natural gas microgrid",
     "announcedDate": "2025-09-23",
@@ -134822,14 +135821,29 @@
         "publisher": "Santa Fe New Mexican",
         "retrievedAt": "2026-09-03",
         "kind": "press"
+      },
+      {
+        "url": "https://www.abqjournal.com/business/project-jupiter-permit-applications-forecast-massive-carbon-fuel-use/2932903",
+        "label": "Project Jupiter permit applications forecast massive carbon fuel use",
+        "publisher": "Albuquerque Journal",
+        "retrievedAt": "2026-10-16",
+        "kind": "press"
+      },
+      {
+        "url": "https://epoch.ai/publications/openai-stargate-where-the-us-sites-stand",
+        "label": "OpenAI Stargate: where the US sites stand",
+        "publisher": "Epoch AI",
+        "retrievedAt": "2026-10-16",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-03",
+    "lastUpdated": "2026-10-16",
+    "notes": "No planned data-center capacity is recorded. A 1,000 MW figure for the site describes generation, not data-center capacity: when the county approved the bonds, developers said the microgrid \"would produce 700 to 900 megawatts of power in its first phase, ranging up to one gigawatt\" (Albuquerque Journal, December 2025). Epoch AI models the campus at 2.2 GW of planned capacity.",
     "energy": {
       "source": "on_site_gas",
       "utility": "El Paso Electric",
       "onSiteGenerationMw": 2450,
-      "notes": "Two simple-cycle natural gas microgrids (700-900 MW range per permit filings), independent of the El Paso Electric grid; NM Environment Dept weighing air-quality permits. Developer commits to 100% carbon-free energy by 2045 via solar and battery storage."
+      "notes": "Developers dropped the earlier plan for natural-gas turbine microgrids and now propose Bloom Energy natural-gas fuel cells that \"would generate up to 2.45 gigawatts to power the data center, replacing previously planned gas turbines and diesel generators\"; they withdrew their initial permit application to the New Mexico Environment Department and filed a new one detailing the fuel cells (Santa Fe New Mexican). The developer has committed to 100% carbon-free energy by 2045 via solar and battery storage."
     },
     "water": {
       "coolingType": "closed_loop",
@@ -136615,9 +137629,16 @@
         "publisher": "U.S. Energy Information Administration (PowerPlants_US_EIA ArcGIS feature layer)",
         "retrievedAt": "2026-09-15",
         "kind": "other"
+      },
+      {
+        "url": "https://www.entergy.com/news/entergy-louisiana-receives-approval-purchase-475-mw-solar-power-add-green-tariff-option",
+        "label": "Entergy Louisiana receives approval to purchase 475 MW of solar power, add green tariff option",
+        "publisher": "Entergy",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Entergy Louisiana's fourth solar resource. Sits about 2 km west of DESRI's separate Iris Solar plant, which sells to Entergy New Orleans.",
     "energy": {
       "source": "solar",
@@ -136722,12 +137743,20 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-09-15",
         "kind": "other"
+      },
+      {
+        "url": "https://cleantechnica.com/2026/06/12/largest-wind-farm-in-the-united-states-slated-to-begin-commercial-operations/",
+        "label": "Largest Wind Farm in the United States Slated to Begin Commercial Operations",
+        "publisher": "CleanTechnica",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "The largest wind farm in the United States and by far the largest generation asset in New Mexico. The footprint spans three counties (San Miguel, Lincoln, Torrance), so the coordinate is a single representative point in the Lincoln County portion rather than a site boundary; precision is 'approximate' for that reason. Power is exported to Arizona and California, so this is not a dedicated data-center supply — no offtaker is asserted.",
     "energy": {
-      "source": "wind"
+      "source": "wind",
+      "notes": "3,650 MW net summer capacity from 916 turbines across San Miguel, Lincoln and Torrance counties. Power is exported over Pattern's 550-mile SunZia HVDC line to south-central Arizona."
     },
     "facilityType": "power_generation",
     "generation": {
@@ -140481,7 +141510,7 @@
         "url": "https://www.gem.wiki/BFC_Power_and_Cheyenne_Power_Hub",
         "label": "BFC Power and Cheyenne Power Hub",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-08-07",
+        "retrievedAt": "2026-10-17",
         "kind": "other"
       },
       {
@@ -140497,9 +141526,16 @@
         "publisher": "WyoFile",
         "retrievedAt": "2026-09-02",
         "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/gas/wyoming-data-center-power-projects-highlight-new-entrants-partnerships-in-power-generation-market/",
+        "label": "Wyoming data center power projects highlight new entrants, partnerships in power generation market",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-17",
     "notes": "Dedicated natural-gas power hub built by Tallgrass to supply the Crusoe/Google 'Project Tembo' campus (tracked separately as tallgrass-project-jade-cheyenne-wy). Laramie County approved the Switchgrass Industrial Park site plan in January 2026; over $7 billion in planned investment.",
     "energy": {
       "source": "on_site_gas",
@@ -140578,7 +141614,7 @@
         "url": "https://cowboystatedaily.com/2026/07/08/google-revealed-as-owner-of-wyomings-largest-data-center-now-project-tembo/",
         "label": "Say Hello To Google, The Mystery Owner Behind Wyoming's Largest Data Center Project",
         "publisher": "Cowboy State Daily",
-        "retrievedAt": "2026-09-02",
+        "retrievedAt": "2026-10-17",
         "kind": "press"
       },
       {
@@ -140601,9 +141637,23 @@
         "publisher": "WyoFile",
         "retrievedAt": "2026-09-02",
         "kind": "press"
+      },
+      {
+        "url": "https://finviz.com/news/399523/black-hills-corp-executes-definitive-agreements-to-serve-googles-planned-data-center-in-cheyenne-wyoming",
+        "label": "Black Hills Corp. executes definitive agreements to serve Google's planned data center in Cheyenne, Wyoming",
+        "publisher": "Black Hills Corp. (press release via Finviz)",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://cowboystatedaily.com/2026/10/08/mind-boggling-fremont-county-coming-to-grips-with-66b-data-center-project/",
+        "label": "'Mind-Boggling': With No Zoning, Fremont County In The Dark On $66B Data Center Plan (cites Project Tembo at $17B)",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-02",
+    "lastUpdated": "2026-10-17",
     "notes": "Switchgrass Industrial Park, Hwy 85 south of Cheyenne, Laramie County - geographically distinct from Meta (Project Cosmo) and Microsoft's Cheyenne campuses. 716-acre campus. Originally announced at 1.8GW as 'Project Jade' with an undisclosed hyperscale client (Crusoe Energy as builder); Crusoe exited June 2026. On 2026-07-08, Google was publicly revealed as owner/operator via subsidiary Jupiter Star Holdings, and the project was renamed 'Project Tembo'; capacity confirmed at 2.7GW with an ultimate ceiling of up to 10GW. The Cheyenne Power Hub on-site natural-gas plant supplies power (Tallgrass Energy; Black Hills Energy co-invested). ~$50B total project figure remains a projection. Completion targeted 2031.",
     "energy": {
       "source": "on_site_gas",
@@ -140614,6 +141664,7 @@
       "coolingType": "closed_loop",
       "notes": "Closed-loop cooling systems recirculating treated water; plans include deep wells beneath the Lance Formation to reach industrial water below the Ogallala Aquifer. Wastewater treatment is to occur on site with evaporative lagoon storage, which is disposal rather than the heat-rejection method."
     },
+    "investmentUsd": 17000000000,
     "landAcres": 716,
     "jobs": {
       "construction": 5000,
@@ -146414,6 +147465,58 @@
     "facilityType": "data_center"
   },
   {
+    "id": "trammell-crow-orchard-hills-cheyenne-wy",
+    "name": "Orchard Hills Data Center",
+    "operator": "Trammell Crow Company",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.098,
+      "lon": -104.815,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-08",
+        "note": "The Planning Commission recommended denial. The items went to City Council, with the final vote scheduled for Oct 12, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wyomingnews.com/news/local_news/planning-commission-recommends-denial-of-proposed-orchard-hills-data-center-rezoning/article_690699d2-5a9c-42ce-8b56-b72d59897486.html",
+        "label": "Planning commission recommends denial of proposed Orchard Hills data center rezoning",
+        "publisher": "Wyoming Tribune Eagle",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://cowboystatedaily.com/2026/09/29/cheyenne-approves-another-annexation-for-data-center-during-contentious-meeting/",
+        "label": "Cheyenne council coverage noting the 162-acre Orchard Hills item with final votes Oct 12",
+        "publisher": "Cowboy State Daily",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "Two data center buildings are planned on 162 acres west of South Greeley Highway and south of West College Drive, adjacent to the Apple Street / York Avenue intersection. The coordinates are approximate, placed from that described location. The outcome of the Oct 12 council vote was not found.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The company plans a closed-loop cooling system and about 20 acres of open space as a wildlife buffer."
+    },
+    "landAcres": 162,
+    "community": {
+      "status": "opposed",
+      "notes": "On Sept 8, 2026 the Cheyenne Planning Commission unanimously denied the land-use map amendment and the rezoning from Agricultural to Light Industrial. Nearby residents raised concerns about low-frequency noise near schools and about losing residential land.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "travelers-data-center-sarpy-ne",
     "name": "Travelers Data Center (Project Oasis)",
     "operator": "The Travelers Companies",
@@ -146469,6 +147572,140 @@
     },
     "investmentUsd": 200000000,
     "facilityType": "data_center"
+  },
+  {
+    "id": "treaty-oak-beekman-solar-morehouse-parish-la",
+    "name": "Beekman Solar",
+    "operator": "Treaty Oak Clean Energy",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 32.9894,
+      "lon": -91.9429,
+      "county": "Morehouse",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 185
+    },
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10",
+        "note": "Treaty Oak Clean Energy signed a long-term PPA with Meta for the 185 MWac Beekman Solar project in Morehouse Parish, with commercial operation expected in Q3 2027.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-01",
+        "note": "Treaty Oak closed about $410 million of non-recourse senior secured credit facilities in November 2025 and has started construction. Commercial operation is scheduled for the first half of 2027.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solarpowerworldonline.com/2025/10/meta-signs-power-agreement-on-385-mw-of-solar-for-louisiana-ai-data-center/",
+        "label": "Meta signs power agreement on 385 MW of solar for Louisiana AI data center",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://renewablewatch.in/2026/01/13/treaty-oak-begins-construction-on-two-solar-projects-in-louisiana/",
+        "label": "Treaty Oak begins construction on two solar projects in Louisiana",
+        "publisher": "Renewable Watch",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/69589-beekman-solar",
+        "label": "Beekman Solar plant profile (coordinates, status)",
+        "publisher": "InfraSure",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "185 MWac under the Meta PPA. EIA-860M lists 206.8 MW nameplate and 185 MW summer/winter, with a proposed operating date of 2027-02-01. Meta buys the project's environmental attributes and the energy goes to the local MISO grid; no source ties it to a single named campus. Coordinates are InfraSure's plant point, marked approximate. The $410M figure is credit facilities, not total project investment, so investmentUsd is left out.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (long-term PPA; environmental attributes)",
+      "unitCount": 1,
+      "notes": "Plant operator per EIA: Beekman PV I, LLC."
+    }
+  },
+  {
+    "id": "treaty-oak-hollis-creek-solar-sabine-parish-la",
+    "name": "Hollis Creek Solar",
+    "operator": "Treaty Oak Clean Energy",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 31.6616,
+      "lon": -93.4736,
+      "county": "Sabine",
+      "state": "LA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 200
+    },
+    "announcedDate": "2025-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10",
+        "note": "Treaty Oak signed a long-term PPA with Meta for the 200 MWac Hollis Creek Solar project in Sabine Parish, targeting operation in Q3 2027.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-01",
+        "note": "Financing of about $399 million closed in December 2025 and construction is underway. Commercial operation is scheduled for the first half of 2027.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.solarpowerworldonline.com/2025/10/meta-signs-power-agreement-on-385-mw-of-solar-for-louisiana-ai-data-center/",
+        "label": "Meta signs power agreement on 385 MW of solar for Louisiana AI data center",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://renewablewatch.in/2026/01/13/treaty-oak-begins-construction-on-two-solar-projects-in-louisiana/",
+        "label": "Treaty Oak begins construction on two solar projects in Louisiana",
+        "publisher": "Renewable Watch",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.infrasure.ai/plant/69590-hollis-creek-solar",
+        "label": "Hollis Creek Solar plant profile (coordinates, status)",
+        "publisher": "InfraSure",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "200 MWac under the Meta PPA. EIA-860M lists 220 MW nameplate and 200 MW summer/winter, with a proposed operating date of 2027-05-01. InfraSure names Belmont Substation (69 kV) as the nearest substation. Coordinates are InfraSure's plant point, marked approximate. The $399M figure is credit facilities, not total investment.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (long-term PPA; environmental attributes)",
+      "unitCount": 1,
+      "notes": "Plant operator per EIA: Hollis Creek PV I, LLC."
+    }
   },
   {
     "id": "treaty-oak-redfield-solar-grant-county-ar",
@@ -150080,6 +151317,73 @@
     "facilityType": "data_center"
   },
   {
+    "id": "vantage-wyoming-campus-laramie-county-wy",
+    "name": "Vantage Wyoming Campus (Project Latigo)",
+    "operator": "Vantage Data Centers",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41,
+      "lon": -104.89,
+      "city": "Cheyenne",
+      "county": "Laramie",
+      "state": "WY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 480
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-01",
+        "note": "Open house held. Vantage says permitting for the 480 MW project begins in late 2026 and runs into 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wyomingnews.com/rawlinstimes/vantage-hosts-open-house-for-proposed-data-center-in-southern-wyoming/article_f52c4a39-b229-4776-b6da-2032bfecee66.html",
+        "label": "Vantage hosts open house for proposed data center in southern Wyoming",
+        "publisher": "Wyoming Tribune Eagle / Rawlins Times",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://cheyenneleads.org/wp-content/uploads/2026/08/LC-Data-Centers_8.4.2026.pdf",
+        "label": "Cheyenne LEADS Data Center Locations map (updated Aug 4, 2026): Planned P. Project Latigo/Vantage",
+        "publisher": "Cheyenne LEADS",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      },
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/vantage-data-center-project-latigo-wy--bd62fca2-2e13-4e14-bba9-c2ba9645d2fb",
+        "label": "Vantage Data Center (Project Latigo) tracker listing",
+        "publisher": "More Than Just Parks / Public Lands Intelligence",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-17",
+    "notes": "About 12 miles south of Cheyenne along Terry Ranch Road. Starts at 480 MW with potential to scale to about 1 GW, in three to five buildings. Reported investment is $4.8B-$9.6B (a range, so it is not entered as a field). The coordinates are approximate, placed from the described Terry Ranch Road / I-25 location and the Cheyenne LEADS map pin. No parcel point was found.",
+    "energy": {
+      "utility": "Black Hills Energy",
+      "notes": "The campus needs a natural gas power plant. Vantage says it will pay to build the plant and to connect it to Black Hills Energy, so residential and small-business customers do not carry those costs."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Uses a closed-loop refrigerant cooling system that recirculates water. The tubes are filled once and cleaned every 8-12 years, with outside air providing extra cooling."
+    },
+    "landAcres": 1800,
+    "community": {
+      "status": "mixed",
+      "notes": "At the July 2026 open house a nearby resident raised concerns about noise and water use. City Councilman Larry Wolfe raised concerns about the cumulative impact of many Laramie County projects and about short notice of the event.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "vaultas-alexandria-mn",
     "name": "Vaultas Alexandria (ALX1)",
     "operator": "Vaultas",
@@ -153437,9 +154741,16 @@
         "publisher": "Energy-Storage.news",
         "retrievedAt": "2026-09-15",
         "kind": "filing"
+      },
+      {
+        "url": "https://cleanview.co/power-projects/planned/solar-farms/kansas/69524_WLS/windy-lane-energy-center",
+        "label": "Windy Lane Energy Center",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-17",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-17",
     "notes": "Coordinate is the Fort Sumner locality anchor for De Baca County; the cited source names only the county, so this is a county-level approximation and not a parcel-confirmed point. Status is pinned to what the July 2025 source supports and should be refreshed against the NMPRC docket.",
     "energy": {
       "source": "solar",
@@ -154789,9 +156100,23 @@
         "publisher": "Yahoo News",
         "retrievedAt": "2026-09-15",
         "kind": "press"
+      },
+      {
+        "url": "https://www.abqjournal.com/business/chaves-county-approves-data-center-project-amid-rising-demand-for-computing-infrastructure/2896546",
+        "label": "Chaves County approves data center project amid rising demand for computing infrastructure",
+        "publisher": "Albuquerque Journal",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.newswire.ca/news-releases/zenith-volts-corp-secures-county-approval-for-scalable-data-center-20-miles-south-of-roswell-nm-targeting-operation-by-november-2027-822035978.html",
+        "label": "Zenith Volts Corp. secures county approval for scalable data center 20 miles south of Roswell, NM",
+        "publisher": "Newswire.ca",
+        "retrievedAt": "2026-10-17",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-17",
     "notes": "Approximately 20 miles south of Roswell. Chaves County Commission approved; 300-acre initial footprint within an 8,500-acre approved site. On-site solar, gas, geothermal, and battery storage. Targets November 2027 operational; approximately 140 FTE jobs.",
     "energy": {
       "source": "mixed",

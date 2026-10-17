@@ -5034,6 +5034,20 @@
       "rock": "Carbonate-rock"
     }
   },
+  "azimuth-moss-bluff-data-center-calcasieu-parish-la": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "barrio-energy-tyler-smith-county-tx": {
     "nearestWater": {
       "name": "Willow Creek",
@@ -5882,6 +5896,20 @@
     },
     "aquifer": {
       "name": "Northern Rocky Mountains Intermontane Basins Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "black-hills-cheyenne-prairie-expansion-cheyenne-wy": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -18289,6 +18317,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "encino-solar-energy-center-sandoval-county-nm": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "encore-technologies-blu1-blue-ash-oh": {
     "nearestWater": {
       "name": "Sharon Lake",
@@ -20155,6 +20193,16 @@
       "rock": "Sandstone"
     }
   },
+  "exus-tag-solar-storage-sandoval-county-nm": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "fae-clark-old-elberton-road-athens-ga": {
     "nearestWater": {
       "name": "Trail Creek",
@@ -21758,6 +21806,20 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "fortalis-vidalia-data-center-concordia-parish-la": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "fortistar-north-tonawanda-generating-ny": {
     "nearestWater": {
       "name": "Tonawanda Creek",
@@ -23141,6 +23203,20 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "google-lea-county-hobbs-nm": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "google-lenoir-nc": {
@@ -27543,6 +27619,12 @@
       "label": "Low (<10%)"
     }
   },
+  "lanl-strategic-computing-complex-los-alamos-nm": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "lavue-massaponax-tech-campus-spotsylvania-va": {
     "nearestWater": {
       "name": "Ni River",
@@ -28494,6 +28576,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "lumen-baton-rouge-2-la": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "lumen-boston-cambridge-ma": {
     "nearestWater": {
       "name": "Charles River",
@@ -28682,6 +28778,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "lumen-metairie-1-la": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "lumen-minneapolis-3-mn": {
     "nearestWater": {
       "name": "Mississippi River",
@@ -28768,6 +28878,20 @@
       "voltageKv": 230,
       "distanceMi": 0.5
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "lumen-new-orleans-2-la": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -33340,6 +33464,16 @@
       "label": "Low (<10%)"
     }
   },
+  "nextera-sky-ranch-solar-valencia-county-nm": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "nextera-stuttgart-solar-arkansas-county-ar": {
     "nearestWater": {
       "name": "Bennett Reservoir",
@@ -35357,6 +35491,16 @@
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "oso-grande-albuquerque-nm": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Rio Grande Aquifer System",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -42447,6 +42591,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "site-layer-1-playas-grant-county-nm": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "site-layer-4-goshen-hole-platte-county-wy": {
     "nearestWater": {
       "name": "Deer Creek",
@@ -42543,6 +42697,20 @@
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "skybox-viawest-cox-ranch-cheyenne-wy": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -42977,6 +43145,20 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "southern-power-south-cheyenne-solar-laramie-county-wy": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "sovereign-gazelle-somerville-al": {
@@ -47477,6 +47659,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "trammell-crow-orchard-hills-cheyenne-wy": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "travelers-data-center-sarpy-ne": {
     "nearestWater": {
       "name": "Springfield Creek",
@@ -47490,6 +47686,34 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "treaty-oak-beekman-solar-morehouse-parish-la": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "treaty-oak-hollis-creek-solar-sabine-parish-la": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "treaty-oak-redfield-solar-grant-county-ar": {
@@ -48733,6 +48957,20 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "vantage-wyoming-campus-laramie-county-wy": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "vaultas-alexandria-mn": {
