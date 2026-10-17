@@ -952,6 +952,15 @@
     }
   },
   "afs-milwaukee-midtown-center-computing-facility-wi": {
+    "nearestWater": {
+      "name": "Lincoln Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -3439,6 +3448,15 @@
     }
   },
   "athlon-bt-el-reno-ok": {
+    "nearestWater": {
+      "name": "Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -5602,6 +5620,15 @@
     }
   },
   "bitari-hosted-mining-site-marion-in": {
+    "nearestWater": {
+      "name": "Mississinewa River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 13.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -6269,6 +6296,15 @@
     }
   },
   "blue-power-clay-county-power-plant-carbon-in": {
+    "nearestWater": {
+      "name": "Orchard Run",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6404,6 +6440,15 @@
     }
   },
   "blusky-ai-mulhall-ok": {
+    "nearestWater": {
+      "name": "East Beaver Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -7807,6 +7852,15 @@
     }
   },
   "chickasaw-nation-winstar-data-center-thackerville-ok": {
+    "nearestWater": {
+      "name": "Wolf Hollow Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 17
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -7836,6 +7890,15 @@
     }
   },
   "choctaw-nation-data-center-durant-ok": {
+    "nearestWater": {
+      "name": "Mineral Bayou",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8833,6 +8896,15 @@
     }
   },
   "clenera-solstice-solar-leflore-county-ok": {
+    "nearestWater": {
+      "name": "McMurtrey Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 16.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -9116,6 +9188,15 @@
     }
   },
   "cloverleaf-greenleaf-town-of-wrightstown-wi": {
+    "nearestWater": {
+      "name": "East River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -15288,6 +15369,15 @@
     }
   },
   "digital-realty-kokomo-howard-county-in": {
+    "nearestWater": {
+      "name": "South Fork Deer Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -18976,6 +19066,15 @@
   },
   "epicio-st-croix-vi": {},
   "eqt-mt-comfort-technology-park-hancock-county-in": {
+    "nearestWater": {
+      "name": "Buck Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -22897,6 +22996,15 @@
     }
   },
   "google-franklin-township-indianapolis-in": {
+    "nearestWater": {
+      "name": "Buck Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -25929,6 +26037,15 @@
     }
   },
   "invenergy-foundry-ridge-energy-center-darien-wi": {
+    "nearestWater": {
+      "name": "Turtle Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -25958,6 +26075,15 @@
     }
   },
   "invenergy-red-oak-ridge-energy-center-paris-wi": {
+    "nearestWater": {
+      "name": "Root River",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -27997,6 +28123,15 @@
     }
   },
   "lm-funding-calumet-ok": {
+    "nearestWater": {
+      "name": "Sixmile Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -34652,6 +34787,15 @@
     }
   },
   "onenet-osu-tulsa-ok": {
+    "nearestWater": {
+      "name": "Dirty Butter Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -35585,6 +35729,15 @@
     }
   },
   "paycom-headquarters-oklahoma-city-ok": {
+    "nearestWater": {
+      "name": "Walnut Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -37244,6 +37397,15 @@
     }
   },
   "project-astro-broken-arrow-ok": {
+    "nearestWater": {
+      "name": "Adams Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -37440,6 +37602,15 @@
     }
   },
   "project-riverjump-marion-grant-county-in": {
+    "nearestWater": {
+      "name": "Boots Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 765,
+      "distanceMi": 11.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -37568,6 +37739,15 @@
     }
   },
   "project-zora-warrick-county-in": {
+    "nearestWater": {
+      "name": "Big Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -37889,6 +38069,15 @@
     }
   },
   "provident-burns-harbor-porter-county-in": {
+    "nearestWater": {
+      "name": "East Arm Little Calumet River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -38031,6 +38220,15 @@
     }
   },
   "pso-northeastern-5-6-oologah-ok": {
+    "nearestWater": {
+      "name": "Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -38714,6 +38912,15 @@
     }
   },
   "qts-project-jeremiah-wheeler-porter-county-in": {
+    "nearestWater": {
+      "name": "Willow Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -40210,6 +40417,15 @@
     }
   },
   "rwe-crooked-creek-solar-mccurtain-county-ok": {
+    "nearestWater": {
+      "name": "Yashau Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44220,6 +44436,15 @@
     }
   },
   "surge-henry-county-technology-park-knightstown-in": {
+    "nearestWater": {
+      "name": "Montgomery Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -49120,6 +49345,15 @@
     }
   },
   "we-energies-fox-north-energy-center-wrightstown-wi": {
+    "nearestWater": {
+      "name": "Fox River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -50178,21 +50412,6 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
-    }
-  },
-  "lancium-crusoe-abilene-tx": {
-    "nearestWater": {
-      "name": "Truitt Davis Lake",
-      "kind": "lake",
-      "distanceMi": 0.8
-    },
-    "nearestTransmission": {
-      "voltageKv": 345,
-      "distanceMi": 1.5
-    },
-    "waterStress": {
-      "cat": 3,
-      "label": "High (40-80%)"
     }
   }
 }
