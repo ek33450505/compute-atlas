@@ -5035,6 +5035,15 @@
     }
   },
   "azimuth-moss-bluff-data-center-calcasieu-parish-la": {
+    "nearestWater": {
+      "name": "Little Indian Bayou",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -5900,6 +5909,15 @@
     }
   },
   "black-hills-cheyenne-prairie-expansion-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Wyoming Hereford Ranch Reservoir Number One",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -18318,6 +18336,15 @@
     }
   },
   "encino-solar-energy-center-sandoval-county-nm": {
+    "nearestWater": {
+      "name": "Arroyo de las Calabacillas",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -20194,6 +20221,15 @@
     }
   },
   "exus-tag-solar-storage-sandoval-county-nm": {
+    "nearestWater": {
+      "name": "Arroyo Benavidez",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -21807,6 +21843,15 @@
     }
   },
   "fortalis-vidalia-data-center-concordia-parish-la": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 32.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -23206,6 +23251,15 @@
     }
   },
   "google-lea-county-hobbs-nm": {
+    "nearestWater": {
+      "name": "Red Lake",
+      "kind": "lake",
+      "distanceMi": 10.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -27620,6 +27674,15 @@
     }
   },
   "lanl-strategic-computing-complex-los-alamos-nm": {
+    "nearestWater": {
+      "name": "Cañada de Buey",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -28577,6 +28640,15 @@
     }
   },
   "lumen-baton-rouge-2-la": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -28779,6 +28851,15 @@
     }
   },
   "lumen-metairie-1-la": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -28892,6 +28973,15 @@
     }
   },
   "lumen-new-orleans-2-la": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -33465,6 +33555,15 @@
     }
   },
   "nextera-sky-ranch-solar-valencia-county-nm": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 3.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -35495,6 +35594,15 @@
     }
   },
   "oso-grande-albuquerque-nm": {
+    "nearestWater": {
+      "name": "Rio Grande",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -42592,6 +42700,15 @@
     }
   },
   "site-layer-1-playas-grant-county-nm": {
+    "nearestWater": {
+      "name": "Vista Tank",
+      "kind": "lake",
+      "distanceMi": 3.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 24.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -42701,6 +42818,15 @@
     }
   },
   "skybox-viawest-cox-ranch-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Diamond Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -43148,6 +43274,15 @@
     }
   },
   "southern-power-south-cheyenne-solar-laramie-county-wy": {
+    "nearestWater": {
+      "name": "Owl Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -47660,6 +47795,15 @@
     }
   },
   "trammell-crow-orchard-hills-cheyenne-wy": {
+    "nearestWater": {
+      "name": "Clear Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -47689,6 +47833,15 @@
     }
   },
   "treaty-oak-beekman-solar-morehouse-parish-la": {
+    "nearestWater": {
+      "name": "Holly Branch",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 16.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -47703,6 +47856,15 @@
     }
   },
   "treaty-oak-hollis-creek-solar-sabine-parish-la": {
+    "nearestWater": {
+      "name": "Harpoon Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -48960,6 +49122,15 @@
     }
   },
   "vantage-wyoming-campus-laramie-county-wy": {
+    "nearestWater": {
+      "name": "Polaris Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
