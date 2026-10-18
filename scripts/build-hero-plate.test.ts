@@ -171,7 +171,17 @@ describe("makeAlbersUsa — AK and HI insets", () => {
   // lands well inside Alaska's drawable span (x 67-404), so it renders on the
   // landmass. The box stays an oracle: at 43px wide it still fails the
   // mutation-checked 60px translate shift.
-  const AK_MARKS = { x0: 239, y0: 686, x1: 282, y1: 815 };
+  // x1 widened 282 -> 378 and y1 815 -> 846 on 2026-10-18 for the first two
+  // facilities in the Alaska PANHANDLE: greensparc-petersburg-ak (56.8125,
+  // -132.9556) projects to (358.5, 828.9) and greensparc-wrangell-ak (56.4708,
+  // -132.3767) to (363.0, 831.4); every other AK mark sits between x=247 and
+  // x=280. Widened per the note above, after confirming
+  // scripts/build-hero-plate.mjs has no diff against origin/main. Both land
+  // inside Alaska's drawable span (x 67-404), so they render on the landmass.
+  // The box still leaves at most 15px of slack beyond the mark cloud (x 247-363,
+  // y 701-831) on every side, so a 60px shift of the AK translate in any
+  // direction still pushes a mark out and fails this test.
+  const AK_MARKS = { x0: 239, y0: 686, x1: 378, y1: 846 };
   const HI_MARKS = { x0: 552, y0: 817, x1: 650, y1: 891 };
 
   /**
