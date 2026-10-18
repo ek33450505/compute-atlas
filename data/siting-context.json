@@ -882,6 +882,12 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "aecc-fitzhugh-generating-station-expansion-ozark-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "aecc-woodruff-county-solar-ar": {
     "nearestWater": {
       "name": "Horseshoe Lake",
@@ -3740,6 +3746,16 @@
       "rock": "Sandstone"
     }
   },
+  "att-hoover-data-center-al": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "att-redwood-city-ca": {
     "nearestWater": {
       "name": "Smith Slough",
@@ -3825,6 +3841,20 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "avaio-digital-leo-behind-the-meter-generation-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "avaio-digital-leo-little-rock-ar": {
@@ -5120,6 +5150,16 @@
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "bcbs-alabama-pope-technology-center-birmingham-al": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "beacon-calvert-al": {
@@ -8371,6 +8411,20 @@
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "clean-cloud-energy-sheridan-data-center-grant-county-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "cleanarc-ruther-glen-va": {
@@ -24359,6 +24413,18 @@
       "label": "Low (<10%)"
     }
   },
+  "greensparc-petersburg-ak": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "greensparc-wrangell-ak": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "gta-gu1-gu2-piti-gu": {},
   "gta-gu3-alupang-tamuning-gu": {},
   "guild-ventures-kenwood-commons-albany-ny": {
@@ -31901,6 +31967,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "mill-creek-data-center-auburn-al": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Southeastern Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "millcompute-bates-mill-lewiston-me": {
     "nearestWater": {
       "name": "Androscoggin River",
@@ -35849,6 +35925,20 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "paradox-data-union-county-campus-el-dorado-ar": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "parkway-gravel-st-georges-de": {
@@ -42988,6 +43078,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "sollensys-little-rock-data-center-ar": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "solon-township-data-center-kent-mi": {
     "nearestWater": {
       "name": "Frost Creek",
@@ -44224,6 +44324,16 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "stax-capital-franklin-bluffs-ak": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 0,
+      "label": "Low (<0 cm/y)"
     }
   },
   "steele-flats-energy-storage-jefferson-ne": {
@@ -48166,6 +48276,12 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "uaf-butrovich-data-center-fairbanks-ak": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "uh-cancer-center-medai-core-honolulu-hi": {},
   "uh-information-technology-center-honolulu-hi": {
     "aquifer": {
@@ -48526,6 +48642,32 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "us-space-command-c2f-redstone-arsenal-al": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "usaf-eielson-ai-data-center-eul-ak": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "usaf-jber-ai-data-center-eul-anchorage-ak": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 0,
+      "label": "Low (<0 cm/y)"
     }
   },
   "uscg-operations-systems-center-kearneysville-wv": {

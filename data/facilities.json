@@ -2652,6 +2652,64 @@
     "facilityType": "data_center"
   },
   {
+    "id": "aecc-fitzhugh-generating-station-expansion-ozark-ar",
+    "name": "Thomas B. Fitzhugh Generating Station Expansion",
+    "operator": "Arkansas Electric Cooperative Corporation",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 35.4888029,
+      "lon": -93.831516,
+      "city": "Ozark",
+      "county": "Franklin",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2024-09",
+        "note": "Construction began late September 2024",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.aecc.com/faqs_category/new-generation-projects/",
+        "label": "New Generation Projects FAQ",
+        "publisher": "Arkansas Electric Cooperative Corporation",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://talkbusiness.net/2024/10/electric-cooperatives-begin-93-million-project-to-expand-gas-plant/",
+        "label": "Electric cooperatives begin $93 million project to expand gas plant",
+        "publisher": "Talk Business & Politics",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "Coordinates are the Ozark town centroid. The station is described only as 'near Ozark'. The jobs figure is 2 added permanent positions on top of 24 existing staff.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "investmentUsd": 93000000,
+    "jobs": {
+      "permanent": 2,
+      "sourceIndex": 1
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 2,
+      "notes": "Two new gas units (fuel-oil capable) add 100 MW, taking the station from 170 MW to 270 MW. Commercial operation was targeted for Q4 2025 but is not yet confirmed."
+    }
+  },
+  {
     "id": "aecc-woodruff-county-solar-ar",
     "name": "Woodruff County Solar (Bailey Solar)",
     "operator": "Arkansas Electric Cooperative Corporation",
@@ -3382,9 +3440,16 @@
         "publisher": "WSFA",
         "retrievedAt": "2026-09-28",
         "kind": "press"
+      },
+      {
+        "url": "https://www.pscpublicaccess.alabama.gov/pscpublicaccess/ViewFile.aspx?Id=9685a6c0-f0ac-4c46-b174-30aae3928355",
+        "label": "Alabama PSC Legal Division Agenda, August 4, 2026 Commission Meeting (Docket 32382, Case No. 2026-1)",
+        "publisher": "Alabama Public Service Commission",
+        "retrievedAt": "2026-10-18",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "The project spans Macon and Bullock counties; the county field records Macon only because the schema carries a single county string. Alabama Power has not disclosed an exact address, so the coordinate is a representative point on the Macon-Bullock county line and is marked approximate. Alabama Power submitted project information to Commission Staff and the Attorney General on July 2, 2026. Alabama Daily News reports a target commercial operation date of June 30, 2029, roughly 485,000 MWh of first-year production, a 35-year expected solar life and 20-year battery life, and about $110 million in state and local tax impact over two decades ($56 million Bullock, $27 million Macon). Environmental permits and other federal and state reviews remain outstanding before construction can begin.",
     "energy": {
       "source": "solar",
@@ -8896,11 +8961,26 @@
         "publisher": "Birmingham Free Press",
         "retrievedAt": "2026-09-28",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/applied-digital-picks-brookwood-alabama-for-3-2bn-210mw-delta-forge-2-campus",
+        "label": "Applied Digital picks Brookwood, Alabama for $3.2bn, 210MW Delta Forge 2 campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://spectrumlocalnews.com/al/alabama/news/2026/10/02/brookwood-hosts-data-center-town-hall",
+        "label": "Brookwood leaders host new hall for proposed data center",
+        "publisher": "Spectrum News",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "The site is about 160 acres within a 1,300-acre tract north of the 17,000 block of Brookwood Parkway. The tenant is an unnamed U.S. hyperscaler. This is separate from the tracked Youngwoo & Associates 'Project Brookwood', which lies west of the Applied Digital tract. Lat/lon is the Brookwood town centroid (OSM Nominatim), not the parcel.",
     "water": {
+      "coolingType": "closed_loop",
       "notes": "The operator says the campus uses its proprietary 'waterless cooling'. The cooling method is not otherwise specified."
     },
     "subsidies": [
@@ -11906,6 +11986,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "att-hoover-data-center-al",
+    "name": "AT&T Hoover Data Center",
+    "operator": "AT&T",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.3749483,
+      "lon": -86.7962283,
+      "city": "Hoover",
+      "county": "Jefferson",
+      "street": "1876 Data Drive",
+      "postalCode": "35244",
+      "state": "AL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2019",
+        "note": "Exterior and interior upgrade project listed as completed in 2019; the facility supports AT&T telecommunications across the Southeast",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.datacenterknowledge.com/data-center-construction/-60m-in-alabama-data-center-development",
+        "label": "$60M in Alabama Data Center Development (June 2, 2008)",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.metalconstruction.org/index.php/case-studies/att-data-center",
+        "label": "AT&T Data Center in Hoover, AL case study",
+        "publisher": "Metal Construction Association",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "An existing AT&T data center that received a $40M, roughly 20-month upgrade announced in 2008. The case study lists 1876 Data Drive, Hoover and a 2019 completion. The coordinates are a street-level geocode of Data Drive from OSM Nominatim. Capacity is not disclosed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "att-redwood-city-ca",
     "name": "AT&T Redwood City Data Center",
     "operator": "AT&T",
@@ -12145,6 +12269,61 @@
     "facilityType": "data_center"
   },
   {
+    "id": "avaio-digital-leo-behind-the-meter-generation-ar",
+    "name": "AVAIO Digital Leo Campus Behind-the-Meter Generation",
+    "operator": "AVAIO Digital Partners",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.623375,
+      "lon": -92.246825,
+      "city": "Little Rock",
+      "county": "Pulaski",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02",
+        "note": "Behind-the-meter gas generation described in the campus plans",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.avaiodigital.com/developments/little-rock-arkansas",
+        "label": "Little Rock, Arkansas Campus (Project Leo)",
+        "publisher": "AVAIO Digital",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://talkbusiness.net/2026/02/hyperscale-data-centers-come-to-arkansas/",
+        "label": "Hyperscale data centers come to Arkansas",
+        "publisher": "Talk Business & Politics",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "Coordinates are the campus point from AVAIO's site. The generation plant's own location within the campus is not disclosed.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "poweredFacilityIds": [
+        "avaio-digital-leo-little-rock-ar"
+      ],
+      "notes": "Talk Business reports more than 500 MW of behind-the-meter gas generation plus a 75 MW on-site solar array. AVAIO's campus page lists 'Total Baseload BTM' as 500 MW."
+    }
+  },
+  {
     "id": "avaio-digital-leo-little-rock-ar",
     "name": "AVAIO Digital Leo Campus",
     "operator": "AVAIO Digital Partners",
@@ -12210,7 +12389,7 @@
         "url": "https://www.avaiodigital.com/developments/little-rock-arkansas",
         "label": "Little Rock, Arkansas Campus — AVAIO Digital development page",
         "publisher": "AVAIO Digital Partners",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       },
       {
@@ -12219,9 +12398,16 @@
         "publisher": "Engineering News-Record",
         "retrievedAt": "2026-09-29",
         "kind": "press"
+      },
+      {
+        "url": "https://arktimes.com/arkansas-blog/2026/07/14/avaio-finally-faced-the-wrightsville-community-over-its-6-billion-data-center-pizza-couldnt-quell-the-anger",
+        "label": "AVAIO finally faced the Wrightsville community over its $6 billion data center",
+        "publisher": "Arkansas Times",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-18",
     "notes": "Location: off Interstate 530 near 145th Street, Pulaski County; coordinates are approximate for the I-530 corridor south of Little Rock. Named after the Leo constellation. Initial $6B investment may grow to $21B through full build-out. First phase completion targeted June 2027. Campus sits near long-haul fiber routes connecting Dallas, Atlanta, and Memphis. Q1 2026 construction start was planned as of announcement; current construction status unconfirmed as of research date. Fix: energy.source corrected from 'on_site_gas' to 'mixed'; onSiteGenerationMw removed — the 150 MW figure is the Entergy Arkansas grid supply contract, not on-site generation; on-site gas capacity is unquantified in sources. Arkansas's data-center sales-and-use tax exemption (Act 819 of 2023, expanded by Act 548 of 2025) likely applies given the investment scale, but no AVAIO-specific incentive award has been published.",
     "energy": {
       "source": "mixed",
@@ -12231,8 +12417,16 @@
     },
     "water": {
       "coolingType": "unknown",
+      "reportedMgd": 0.008,
       "notes": "AVAIO's project manager testified to the Pulaski County Quorum Court that the campus would demand about 200,000 gallons of water per day on average during warmer months, dropping to near zero in winter; the specific cooling technology was not disclosed."
     },
+    "subsidies": [
+      {
+        "program": "State of Arkansas sales and use tax incentives for qualifying data center tenant capital expenditures",
+        "jurisdiction": "Arkansas",
+        "sourceIndex": 5
+      }
+    ],
     "investmentUsd": 6000000000,
     "landAcres": 760,
     "jobs": {
@@ -16694,6 +16888,50 @@
     }
   },
   {
+    "id": "bcbs-alabama-pope-technology-center-birmingham-al",
+    "name": "G. Phillip Pope Technology Center (Blue Cross and Blue Shield of Alabama Data Center)",
+    "operator": "Blue Cross and Blue Shield of Alabama",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.4084384,
+      "lon": -86.9094153,
+      "city": "Birmingham",
+      "county": "Jefferson",
+      "state": "AL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2010",
+        "note": "Occupancy planned for 2010 per the 2008 announcement; Uptime Institute lists Tier III Design Documents and Constructed Facility awards for the facility",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacenterknowledge.com/business/another-data-center-for-birmingham-alabama",
+        "label": "Another Data Center for Birmingham, Alabama (June 16, 2008)",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://uptimeinstitute.com/uptime-institute-awards/datacenter/g-phillip-pope-technology-center/261",
+        "label": "Uptime Institute Awards: G. Phillip Pope Technology Center",
+        "publisher": "Uptime Institute",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "A 55,000 sq ft enterprise data center on 25 acres in Jefferson Metropolitan Park Lakeshore (Oxmoor Valley). The $55M investment and 25 acres are 2008 planned figures. The coordinates are the OSM locality point for Jefferson Metropolitan Park Lakeshore, not the building footprint. Capacity is not disclosed.",
+    "investmentUsd": 55000000,
+    "landAcres": 25,
+    "facilityType": "data_center"
+  },
+  {
     "id": "beacon-calvert-al",
     "name": "Calvert Infrastructure Hub",
     "operator": "Beacon Data Centers",
@@ -16713,7 +16951,7 @@
         "url": "https://beacondatacenters.com/campuses/calvert/",
         "label": "Calvert - Beacon Data Centers (developer's campus page)",
         "publisher": "Beacon Data Centers",
-        "retrievedAt": "2026-09-09",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       },
       {
@@ -16738,7 +16976,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "Developer's campus page states verbatim: \"A 95 acre development out of a 650 acre lot\" with \"less than 15% of the site planned for development\"; \"$6 billion\"; two data center buildings plus supporting infrastructure; \"2027 First Building Completed\"; currently in a \"planning, engineering, and community engagement phase\"; \"up to 1,000 construction workers at peak construction\" and \"250 staff for operations\" at an \"average salary of $115,000\". landAcres records the 650-acre site; the built footprint is 95 acres. NO CAPACITY RECORDED: the campus page states no MW figure. Secondary coverage attributes 6 GW to Beacon's WHOLE portfolio of six-plus campuses across Alberta, New Brunswick, Tom Green County TX, Kern County CA and Calvert — that is a portfolio figure, not this site's capacity, and is deliberately not recorded. COUNTY AMBIGUITY: Beacon's own page places the hub in Mobile County and that is what is recorded, but Calvert is an unincorporated community straddling Mobile and Washington counties, and the OSM village node used for the coordinate sits on the Washington County side. Verify the county against the parcel before publishing. SUBSIDY: no incentive or abatement is mentioned on the developer's page; Mobile County and Alabama Commerce records were NOT checked in this run, so this is an unchecked gap, not an audited negative. Coordinates are the Calvert community centroid, not the 650-acre parcel.",
     "energy": {
       "source": "grid",
@@ -20174,7 +20412,7 @@
         "url": "https://www.blockopsmining.com/bitcoin-mining-rural-arkansas/",
         "label": "Bitcoin Mining Rural Arkansas: How BlockOps Is Transforming Communities in 2026",
         "publisher": "BlockOps Mining",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-18",
         "kind": "other"
       },
       {
@@ -20185,7 +20423,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-18",
     "notes": "Coordinates are an OpenStreetMap geocode of the street address named in the council coverage. precision is 'approximate', not 'exact': an address point is not a parcel footprint, and Nominatim returned two candidate points for this address about 450 m apart (34.5484515/-90.6556409 and 34.5444220/-90.6555170); the first is used. Acreage is contested in the council transcript, where the presenter cited both '168 acres under contract' and '116 acres' for the parcel; 168 is used as the figure the newspaper reported. BlockOps' headquarters is given as Austin, Texas by the Arkansas Democrat-Gazette and as Fayetteville by KATV - not resolved here. Status 'operational' rests on the company's own 2026 page plus the council-approved May 2025 completion target; no independent in-service confirmation was found, hence confidence 'reported'.",
     "energy": {
       "source": "grid",
@@ -20193,7 +20431,8 @@
       "notes": "Entergy told the company the city could allot 8 megawatts to the project, with a distribution-upgrade lead time of about 60 days; a roughly $500,000 substation investment was to be paid by the company. capacityMw.planned records that 8 MW allotment, which is an available-capacity figure from the utility rather than a measured operating load."
     },
     "water": {
-      "coolingType": "air"
+      "coolingType": "air",
+      "notes": "Operator says the former Dragon Woodland sawmill site uses fan air cooling with no water draw. It plans 2,900 miners in total."
     },
     "investmentUsd": 13500000,
     "landAcres": 168,
@@ -26445,6 +26684,89 @@
     "facilityType": "data_center"
   },
   {
+    "id": "clean-cloud-energy-sheridan-data-center-grant-county-ar",
+    "name": "Sheridan Data Center (Clean Cloud Energy, Grant County)",
+    "operator": "Clean Cloud Energy (Sheridan Data Center LLC)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.3100971,
+      "lon": -92.4013484,
+      "city": "Sheridan",
+      "county": "Grant",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 800
+    },
+    "announcedDate": "2025-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-07-21",
+        "note": "Quorum Court passed a resolution of intent on a data center tax abatement. EdgeConneX signed an LOI in June 2026 as a possible buyer, not a completed sale.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://arktimes.com/arkansas-blog/2026/07/21/worldwide-company-has-eye-on-data-center-plan-for-grant-county",
+        "label": "Worldwide company has eye on data center plan for Grant County",
+        "publisher": "Arkansas Times",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://mahometdaily.com/same-developer-same-playbook-clean-clouds-track-record-in-three-states/",
+        "label": "Same developer, same playbook? Clean Cloud's track record in three states",
+        "publisher": "Mahomet Daily",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.southarkansasreckoning.com/grant-county-data-center-opponents-to-protest-monday/",
+        "label": "Grant County Data Center Opponents To Protest Monday",
+        "publisher": "South Arkansas Reckoning",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://arktimes.com/arkansas-blog/2026/10/16/word-gets-out-about-second-grant-county-data-center-despite-ndas",
+        "label": "Word gets out about second Grant County data center - despite NDAs",
+        "publisher": "Arkansas Times",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "753-acre site outside Sheridan. Estimated cost is $8-12B (range only, so investmentUsd is left blank). EdgeConneX is in due diligence as a potential buyer. Coordinates are the Sheridan town centroid.",
+    "energy": {
+      "source": "grid",
+      "utility": "Arkansas Electric Cooperative Corp. / C&L Electric Cooperative",
+      "notes": "Clean Cloud first planned 500 MW. That rose to 800 MW after AECC located additional power providers."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Grant County's June 2026 conditions require closed-loop, air-chilled cooling. The Arkansas Times reports the closed-loop system would use about as much water a year as a handful of average homes."
+    },
+    "subsidies": [
+      {
+        "program": "Act 9 of 1960 PILOT: nonbinding resolution to negotiate up to a 65% property-tax abatement over 30 years",
+        "jurisdiction": "Grant County, AR",
+        "year": "2025",
+        "sourceIndex": 1
+      }
+    ],
+    "landAcres": 753,
+    "community": {
+      "status": "contested",
+      "notes": "Residents raised water and transparency concerns and protested at Quorum Court meetings. A FOIA lawsuit against county officials was dismissed.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "cleanarc-ruther-glen-va",
     "name": "CleanArc VA1",
     "operator": "CleanArc Data Centers",
@@ -29402,9 +29724,16 @@
         "publisher": "Inside Climate News",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://govtech.com/artificial-intelligence/lowndes-county-ala-approves-1-1b-in-data-center-tax-breaks",
+        "label": "Lowndes County, Ala., approves $1.1B in data center tax breaks",
+        "publisher": "GovTech (via AL.com)",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "SUBSIDY — CONFIRMED ABSENCE AS OF 24 JULY 2026: Yellowhammer News reports that no formal abatement request had been filed as of that date, and that the granting body would be the Lowndes County Commission. Under legislation signed by Gov. Kay Ivey in April 2026, an abatement approved before 1 January 2027 could run up to 30 years; after that date the maximum is 20 years. No dollar amount has been stated by any source, so no subsidies entry is recorded. NO NAMED TENANT: Cloverleaf is described by Yellowhammer as a Houston- and Seattle-based speculative developer assembling land for an unnamed future operator; aiClassification is therefore \"likely\", not confirmed. CONFLICTING FIGURES, recorded rather than reconciled: investment is \"$1.5 billion\" per WSFA and Route Fifty (\"at least $1.5 billion in the development stage\") but the developer's own site says \"Over a $1 billion taxable investment in Lowndes County\". Jobs: the developer's site says \"Over 1,000 high-paying construction jobs\" and \"at least 50 full-time jobs\" once operational; other coverage this run could not fetch cites 1,000-1,500 construction and over 200 permanent — the developer's own lower figures are recorded here. Footprint: \"more than 800 acres in northeast Lowndes County\" and \"2.88 million square feet\" (Yellowhammer). ZONING: reporting notes Cloverleaf could buy and develop here because Lowndes County has no planning or zoning authority. Coordinates are the OSM-confirmed U.S. 80 / AL 21 junction that WSFA names as the site vicinity — NOT a parcel boundary; the actual footprint is somewhere in northeast Lowndes County near that junction. Inside Climate News and WBHM coverage of this project returned HTTP 403 to both WebFetch and curl in this run and is therefore not cited.",
     "energy": {
       "source": "grid",
@@ -29416,6 +29745,15 @@
       "reportedMgd": 0.1,
       "notes": "Developer's project site states the building \"will only use as much water as an office building on a day-to-day basis\" and uses \"a closed-loop cooling system requiring a one-time fill\" — an explicitly recirculating circuit, hence closed_loop. Separately, a Cloverleaf representative told WSFA: \"The most amount of water that we've asked for for consumption is 100,000 gallons of water per day.\" That is a requested maximum, not metered use, so it is NOT recorded as reportedMgd. The Pintlala Water System is named as the supplier in secondary coverage this run could not fetch (Inside Climate News and WBHM both returned 403), so the supplier name is deliberately omitted."
     },
+    "subsidies": [
+      {
+        "program": "Lowndes County abatement (3-2 vote, Oct 2026): 50% of county non-educational property tax plus construction and server-refresh sales and use tax; reported as more than $1.1 billion",
+        "amountUsd": 1100000000,
+        "jurisdiction": "Lowndes County, AL",
+        "year": "2026",
+        "sourceIndex": 7
+      }
+    ],
     "investmentUsd": 1500000000,
     "landAcres": 800,
     "jobs": {
@@ -33667,7 +34005,7 @@
         "url": "https://www.madeinalabama.com/2025/02/core-scientific-bringing-high-performance-computing-operation-to-auburn/",
         "label": "Core Scientific bringing high-performance computing operation to Auburn",
         "publisher": "Made in Alabama (Alabama Dept. of Commerce)",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       },
       {
@@ -33685,7 +34023,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "STATUS RE-CHECK, NO CHANGE APPLIED, BUT FLAGGED. Two sources fetched this run point toward the site already serving customers - Core Scientific sells it as a current product, and the February 2026 $55M permit is framed as an EXPANSION of an existing facility rather than a first build. Neither states outright that the data center is energized and serving load, and this record is a pre-existing AUBix building that Core Scientific leased, so the boundary between the incumbent facility and Core Scientific's fit-out is genuinely unclear. I did not promote under_construction to operational on marketing tense alone. Worth a targeted check of Core Scientific's 10-Q or an earnings call transcript, which I did not reach this run.",
     "investmentUsd": 400000000,
     "jobs": {
@@ -45401,9 +45739,30 @@
         "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
         "retrievedAt": "2026-09-22",
         "kind": "filing"
+      },
+      {
+        "url": "https://finance.yahoo.com/technology/ai/articles/digi-power-x-announces-200-113000058.html",
+        "label": "Digi Power X Announces $200 Million Debt Financing Commitment to Support Completion of Alabama AI Data Center (Oct 13, 2026)",
+        "publisher": "Yahoo Finance (company release)",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://bhamnow.com/2026/06/29/data-center-columbiana-building-permits/",
+        "label": "Data center project in Columbiana among new $1M+ building permits",
+        "publisher": "Bham Now",
+        "retrievedAt": "2026-10-18",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.wbrc.com/2026/07/24/columbiana-receive-35m-data-center-deal-heres-how-it-could-change-your-neighborhood/",
+        "label": "Columbiana to receive $3.5M from data center deal",
+        "publisher": "WBRC",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-18",
     "notes": "SUBSIDY — AUDITED-STYLE NEGATIVE: the Columbiana City Council \"unanimously rejected a tax abatement proposal for Digi Power X\", and the article states \"The only governmental body that has the jurisdiction to give an abatement on taxes for the Columbiana data center is the City Council.\" So as of 29 May 2026 this site has NO local tax abatement, and by the reporter's account no other body could have granted one. Digi Power X had requested abatement on \"all state and local non-educational property taxes on the project's industrial development property\" plus construction-related transaction taxes through 2027. A further abatement proposal may come before the council later. ANCHOR TENANT: 10-year master services agreement with Cerebras Systems for colocation of the 40 MW AI data center, \"valued at approximately $1.1 billion with potential for the contract value to reach $2.5 billion, inclusive of renewal terms\" — that $1.1B is CONTRACT VALUE, not capital investment, and is deliberately not recorded as investmentUsd; the $371.5M figure is the stated \"total investment ... in building, machinery and personal property\" from the abatement filing. JOBS: \"Digi Power X plans to start out with two jobs at a total annual payroll of $200,000 and to expand to 45 permanent jobs by year three with a total payroll of $4.5 million\" — the 2 recorded under jobs.construction is actually the year-one headcount, not a construction workforce; the source states no construction-worker count. SITE HISTORY: property purchased by Digihost Technology Inc from Grede II LLC on 21 June 2022 after the Grede Foundry closed in 2020, and run as a bitcoin-mining operation until the January 2025 conversion announcement. Air emissions to be monitored by ADEM. Coordinates are the OSM industrial-park polygon centroid for Industrial Parkway, not a confirmed parcel footprint.",
     "energy": {
       "source": "grid",
@@ -45414,6 +45773,14 @@
       "coolingType": "unknown",
       "notes": "The abatement filing states only that \"the site will utilize water for liquid cooling\" and that noise will come from cooling equipment. The source does not state whether the water circuit recirculates or how heat is rejected, so coolingType is deliberately left unknown rather than guessed."
     },
+    "subsidies": [
+      {
+        "program": "City of Columbiana 12-month construction-period sales and use tax abatement (company to make a $3.5M community impact payment to the city)",
+        "jurisdiction": "City of Columbiana, AL",
+        "year": "2026",
+        "sourceIndex": 5
+      }
+    ],
     "investmentUsd": 371500000,
     "jobs": {
       "construction": 2,
@@ -53875,7 +54242,7 @@
         "url": "https://projectgatewayal.com/",
         "label": "Project Gateway | Sustainable Data Center Development in Prichard, AL (developer's project site)",
         "publisher": "Edged US",
-        "retrievedAt": "2026-09-28",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       },
       {
@@ -53891,9 +54258,16 @@
         "publisher": "OpenStreetMap / Nominatim",
         "retrievedAt": "2026-09-09",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.wkrg.com/news/93m-proposed-data-center-to-bring-20-jobs-to-prichard/amp/",
+        "label": "$93M proposed data center to bring 20 jobs to Prichard",
+        "publisher": "WKRG",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "Developer site states verbatim: \"8MW, 57,000 SF building – roughly the size of a football field\", \"$93 million investment in the local community\", \"150–200 construction jobs supported during an approximately 18-month construction period\", \"20 permanent full-time positions upon completion\", and \"Approximately $16.7 million in projected annual economic impact, including $8.3 million supporting local schools\". jobs.construction records the LOW end (150) of the stated 150-200 range rather than inventing a midpoint. FOX10 adds the ~20 jobs pay \"over $70,000 annually\". SUBSIDY: no incentive or abatement is mentioned on the developer's project site or in FOX10's coverage; this run did NOT check Prichard or Mobile County records, so that is an unchecked gap, not an audited negative. The $16.7M annual economic impact and $8.3M schools figure are developer projections, not incentives, and are deliberately not recorded as subsidies. STATUS: the developer's own site calls the project \"proposed\" and \"being evaluated\"; no construction start is reported. Coordinates are the Prichard municipal centroid — no street address appears in any fetched source.",
     "water": {
       "coolingType": "closed_loop",
@@ -54202,14 +54576,15 @@
         "url": "https://www.solarpowerworldonline.com/2026/05/meta-signs-250-mw-ppa-on-edp-renewables-arkansas-solar-project/",
         "label": "Meta signs 250-MW PPA on EDP Renewables' Arkansas solar project",
         "publisher": "Solar Power World",
-        "retrievedAt": "2026-09-29",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-18",
     "notes": "Only 'Chicot County' is published for the site; the coordinate is the county seat (Lake Village) and is a county-level placeholder, not the project footprint.",
     "energy": {
-      "source": "solar"
+      "source": "solar",
+      "notes": "Under a long-term PPA with Meta. Expected completion by 2028."
     },
     "facilityType": "power_generation",
     "generation": {
@@ -64309,6 +64684,7 @@
       "lon": -92.5572891,
       "city": "Conway",
       "county": "Faulkner",
+      "street": "Lollie Road",
       "state": "AR",
       "precision": "approximate"
     },
@@ -64347,10 +64723,30 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://armoneyandpolitics.com/conway-1-billion-data-center-fortune-100/",
+        "label": "Conway to Welcome New $1 Billion Data Center for Fortune 100 Company",
+        "publisher": "Arkansas Money & Politics",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-18",
     "notes": "Coordinates are the OpenStreetMap point for Conway Municipal Airport at Cantrell Field, whose OSM record places it on Lollie Road - the road named in reporting as the project's location ('Southwest Conway near Lollie Road and the Conway Municipal Airport area'). This is a landmark-level approximation, not a parcel. The end user is an unnamed Fortune 100 company; ForgeLight Ventures LLC is a Delaware shell with no in-state presence, so 'operator' here records the developer of record, not a confirmed operating company. A 300,000-square-foot building size is reported but square footage is not a schema field. A reported 65% tax abatement over 30 years appeared only in a search-result summary of a paywalled trade article that could not be fetched, so no subsidies entry is recorded. Confidence 'reported': the project has an MOU and rezoning but no named end user and no permit.",
+    "energy": {
+      "source": "grid",
+      "utility": "Conway Corp.",
+      "notes": "Initial 13.8 kV medium-voltage service from Conway Corp., expanding to 10 MW. A high-voltage electric franchise fee is set by city ordinance in cooperation with Entergy Arkansas."
+    },
+    "subsidies": [
+      {
+        "program": "City of Conway property tax abatement of at least 65% for 30 years (MOU)",
+        "jurisdiction": "City of Conway, AR",
+        "year": "2025",
+        "sourceIndex": 3
+      }
+    ],
     "investmentUsd": 1000000000,
     "jobs": {
       "permanent": 50,
@@ -70434,13 +70830,14 @@
     "id": "google-port-of-little-rock-data-center-ar",
     "name": "Port of Little Rock Data Center",
     "operator": "Google",
-    "status": "under_construction",
+    "status": "proposed",
     "confidence": "confirmed",
     "location": {
       "lat": 34.746,
       "lon": -92.29,
       "city": "Little Rock",
       "county": "Pulaski",
+      "street": "Zueber Road",
       "state": "AR",
       "precision": "approximate"
     },
@@ -70450,6 +70847,12 @@
         "date": "2026-03-31",
         "note": "380-acre, 5-building campus (1.43M sq ft) at the Port of Little Rock; permitting wetlands dredge/fill; 30-year tax abatement.",
         "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-10-18",
+        "note": "Google's project site lists the Section 404 Army Corps permit as 'Withdrawn (June 2026) for Design Optimization' and other permits as not yet filed. It says Google is 'in the very early stages of reviewing this opportunity' and that a final decision to build comes only after diligence and public review. Construction has not started.",
+        "sourceIndex": 4
       }
     ],
     "sources": [
@@ -70466,12 +70869,40 @@
         "publisher": "Arkansas Democrat-Gazette",
         "retrievedAt": "2026-07-17",
         "kind": "press"
+      },
+      {
+        "url": "https://www.nwaonline.com/news/2026/mar/31/googles-1b-port-of-little-rock-data-center/",
+        "label": "Google's $1B Port of Little Rock data center buildings to cover 1.43 million square feet",
+        "publisher": "Northwest Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.littlerockdatacenter.com/",
+        "label": "Little Rock Data Center (Google project information site)",
+        "publisher": "Google",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.littlerockdatacenter.com/",
+        "label": "Little Rock Data Center (Google project information site)",
+        "publisher": "Google",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-18",
     "notes": "380 acres, 5 industrial buildings totaling 1.43M sq ft at the Port of Little Rock. Distinct from the separately tracked Google West Memphis (Crittenden County) site roughly 130 miles away. 30-year tax abatement. Via Willowbend Capital LLC.",
+    "water": {
+      "notes": "Google says that if the project moves forward it would not use groundwater for cooling. The cooling approach has not been chosen."
+    },
     "investmentUsd": 1000000000,
     "landAcres": 380,
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -73899,7 +74330,7 @@
         "url": "https://www.akbizmag.com/industry/telecom-tech/greensparc-brings-reliable-powerful-computing-infrastructure-to-cordova/",
         "label": "Greensparc Brings Reliable, Powerful Computing Infrastructure to Cordova",
         "publisher": "Alaska Business Magazine",
-        "retrievedAt": "2026-09-28",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       },
       {
@@ -73908,9 +74339,16 @@
         "publisher": "CleanTechnica",
         "retrievedAt": "2026-09-28",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sdxcentral.com/news/greensparc-hpe-take-on-digital-divide-with-edge-data-center/",
+        "label": "Greensparc, HPE take on digital divide with edge data center",
+        "publisher": "SDxCentral",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "Small edge data center. CleanTechnica reports 170 kW of computing capacity. The pin is the OSM centroid of Humpback Creek, not the plant's footprint.",
     "energy": {
       "source": "hydro",
@@ -73919,6 +74357,117 @@
     },
     "water": {
       "notes": "Cool water from the hydro plant is incorporated into server cooling, and excess heat is recycled to heat the facility."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "greensparc-petersburg-ak",
+    "name": "Greensparc Petersburg Data Center (former Ocean Beauty cannery)",
+    "operator": "Greensparc",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 56.8125,
+      "lon": -132.9556,
+      "city": "Petersburg",
+      "county": "Petersburg Borough",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-04-20",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-20",
+        "note": "Proposal presented to the Petersburg Borough Assembly. The tenant contract was not finalized and no building permit applications had been received.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kfsk.org/2026/05/01/private-developer-plans-small-scale-data-center-project-on-petersburg-waterfront/",
+        "label": "Private developer plans small-scale data center project on Petersburg waterfront",
+        "publisher": "KFSK",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.petersburgpilot.com/story/2026/04/30/news/small-scale-data-center-proposed-at-former-ocean-beauty-cannery/15750.html",
+        "label": "Small-scale data center proposed at former Ocean Beauty cannery",
+        "publisher": "Petersburg Pilot",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "Micro-scale facility in a roughly 1,500 sq ft net-shed-style building beside the pier on the former Ocean Beauty Seafoods property on Petersburg's downtown waterfront. Mazzella Alaska LLC (Andrew Mazzella) owns the property; Greensparc is the prospective tenant. The coordinates are an approximate downtown-waterfront point.",
+    "energy": {
+      "source": "grid",
+      "utility": "Petersburg Municipal Power & Light",
+      "notes": "Would reuse the site's 2 MW cannery transformer, unused since the plant closed in 2016. A written power agreement covering diesel generator costs during high-demand periods was still needed."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Greensparc described a closed-loop system: water circulates out of the building, is cooled by Alaska's climate, and is recycled. The company says it draws no water."
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Borough power department officials support the project. Residents at the April 20, 2026 assembly meeting showed cautious enthusiasm and skepticism.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "greensparc-wrangell-ak",
+    "name": "Greensparc Wrangell Data Center (6-Mile Mill site)",
+    "operator": "Greensparc",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 56.4708,
+      "lon": -132.3767,
+      "city": "Wrangell",
+      "county": "City and Borough of Wrangell",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-01",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-01-22",
+        "note": "Wrangell planning and zoning commission voted 3-2 to recommend a 1-2 acre lease at the borough-owned former 6-Mile Mill site; the economic development board had voted 5-0",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-06-09",
+        "note": "Wrangell Borough Assembly unanimously voted down the land lease",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ketchikandailynews.com/news/alaska/data-center-lease-recommended-wrangell-planning-group-votes/article_55efe7dc-592f-4c6a-8606-21dd936f063a.html",
+        "label": "Data center lease recommended by Wrangell planning group (Wrangell Sentinel)",
+        "publisher": "Ketchikan Daily News / Wrangell Sentinel",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kstk.org/2026/06/18/wrangell-borough-assembly-votes-no-on-data-center-proposal",
+        "label": "Wrangell Borough Assembly votes no on data center proposal",
+        "publisher": "KSTK",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "Proposed 10,000 sq ft building, about 1-2 MW per the CEO, with battery backup and no diesel generators. Coordinates are Wrangell town, approximate; the actual site is the former 6-Mile Mill deepwater port site south of town.",
+    "community": {
+      "status": "opposed",
+      "notes": "Public opposition centered on power consumption, environmental issues, noise and peak-demand shortages. The assembly unanimously rejected the lease on June 9, 2026, keeping the waterfront for maritime industry.",
+      "sourceIndex": 1
     },
     "facilityType": "data_center"
   },
@@ -79326,12 +79875,20 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-29",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.gem.wiki/Chalk_Bluff_solar_farm",
+        "label": "Chalk Bluff solar farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-18",
     "notes": "The location is the county centroid only. The site parcel was not found.",
     "energy": {
-      "source": "solar"
+      "source": "solar",
+      "notes": "GEM (citing EIA-860M) lists it as pre-construction with planned commissioning in 2027."
     },
     "facilityType": "power_generation",
     "generation": {
@@ -79434,7 +79991,7 @@
         "url": "https://talkbusiness.net/2025/08/packed-house-for-600-million-keo-solar-farm-hearing/",
         "label": "Packed house for $600 million Keo solar farm hearing",
         "publisher": "Talk Business & Politics",
-        "retrievedAt": "2026-09-29",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       },
       {
@@ -79452,9 +80009,10 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-18",
     "energy": {
-      "source": "solar"
+      "source": "solar",
+      "notes": "Would tie into an Entergy Arkansas substation near Keo."
     },
     "subsidies": [
       {
@@ -79465,10 +80023,16 @@
       }
     ],
     "investmentUsd": 600000000,
+    "landAcres": 6000,
     "jobs": {
       "construction": 300,
       "permanent": 3,
       "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "The Lonoke County judge supported the project at the Aug 5, 2025 PILOT hearing (about 100 attendees). Residents raised ownership, environmental and farmland-loss concerns, and the Keo mayor sought clarity on local benefits.",
+      "sourceIndex": 1
     },
     "facilityType": "power_generation",
     "generation": {
@@ -85549,7 +86113,7 @@
         "url": "https://lightsourcebp.com/project/black-bear-solar/",
         "label": "Black Bear Solar Farm in Alabama — Lightsource bp project page",
         "publisher": "Lightsource bp",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-10-18",
         "kind": "other"
       },
       {
@@ -85560,11 +86124,15 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-18",
     "notes": "130 MWdc / 100 MWac plant in Montgomery County, roughly 15 miles from AMEA headquarters, with more than 280,000 First Solar panels on Array Technologies trackers; 20-year PPA with the Alabama Municipal Electric Authority serving 11 member municipal utilities. capacityMw records the 100 MWac figure. CAVEAT ON STATUS: the developer's own project page still shows the stage as 'final engineering, financing & construction', which conflicts with contemporaneous 2022 reporting that it was already exporting to the grid; the operational status here rests on the 2022 trade report, not the project page, and confidence is 'reported' for that reason. Coordinates are the Montgomery County centroid — no site address is published.",
     "energy": {
       "source": "solar",
       "utility": "Alabama Municipal Electric Authority"
+    },
+    "jobs": {
+      "construction": 400,
+      "sourceIndex": 0
     },
     "facilityType": "power_generation",
     "generation": {
@@ -98296,6 +98864,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "mill-creek-data-center-auburn-al",
+    "name": "Mill Creek Data Center",
+    "operator": "Undisclosed end user (applicant: LBYD, Inc.)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 32.5582505,
+      "lon": -85.5192388,
+      "city": "Auburn",
+      "county": "Lee",
+      "street": "406 West Veterans Boulevard",
+      "state": "AL",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2023-05",
+        "note": "Auburn City Council approved the 65,700 sq ft Mill Creek Data Center in Auburn Technology Park",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/authorization-of-a-new-data-facility-in-auburn-alabama",
+        "label": "Authorization of a New Data Facility in Auburn, Alabama",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "A 65,700 sq ft facility on 52 acres in Auburn Technology Park. LBYD Inc., an Alabama engineering firm, led the application, probably on behalf of an unnamed end user. No construction timeline or capacity was disclosed, and no later construction update was found. This is a separate site from AUBix/Core Scientific (1571 W Samford Ave). The coordinates are a street-level geocode of West Veterans Blvd from OSM Nominatim.",
+    "landAcres": 52,
+    "facilityType": "data_center"
+  },
+  {
     "id": "millcompute-bates-mill-lewiston-me",
     "name": "MillCompute Bates Mill No. 3 AI Data Center",
     "operator": "MillCompute LLC",
@@ -102814,22 +103419,27 @@
         "url": "https://www.waff.com/2019/01/18/largest-solar-farm-alabama-be-constructed-jackson-county-feed-google-data-center/",
         "label": "Largest solar farm in Alabama to be constructed in Jackson County to feed Google data center",
         "publisher": "WAFF",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       },
       {
         "url": "https://www.power-technology.com/marketdata/bellefonte-solar-pv-park-us/",
         "label": "Bellefonte Solar PV Park, US - project profile",
         "publisher": "Power Technology",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-18",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-18",
     "notes": "Status is recorded as proposed, not under construction or operational: the project does not appear anywhere in the July 2026 EIA-860M generator inventory (Operating or Planned sheets) for Alabama, and the most recent project profile still lists it as in permitting with construction that was to begin in 2023 and commercial operation in 2024. Acreage figures conflict between sources - roughly 800 acres per WAFF, 1,850 acres per the project profile - so no landAcres value is recorded. WAFF reported about 250 construction jobs. Coordinate is a County Road 33 road anchor in Hollywood, not a surveyed site boundary. Treat the timeline as stale pending a fresher primary source.",
     "energy": {
       "source": "solar",
       "utility": "Tennessee Valley Authority"
+    },
+    "investmentUsd": 161700000,
+    "jobs": {
+      "construction": 250,
+      "sourceIndex": 0
     },
     "facilityType": "power_generation",
     "generation": {
@@ -109276,11 +109886,11 @@
         "url": "https://origisenergy.com/project/walker-springs-i-solar/",
         "label": "Walker Springs I Solar — Origis Energy project page",
         "publisher": "Origis Energy",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-10-18",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-18",
     "notes": "80 MWac / 104 MWdc solar plant in Clarke County, operating since November 2025, selling to Alabama Power. Co-located with Walker Springs II; the two were funded together under a tax-equity commitment covering a combined 209 MW, so that combined figure is not attributed to either plant. Coordinates are the Walker Springs place geocode — the operator publishes no site address — and are shared with the adjacent Walker Springs II record.",
     "energy": {
       "source": "solar",
@@ -109321,11 +109931,11 @@
         "url": "https://origisenergy.com/project/walker-springs-ii-solar/",
         "label": "Walker Springs II Solar — Origis Energy project page",
         "publisher": "Origis Energy",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-10-18",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-18",
     "notes": "80 MWac / 105 MWdc solar plant in Clarke County, operating since May 2026, selling to Alabama Power. Co-located with Walker Springs I; coordinates are the Walker Springs place geocode and are deliberately shared with that record because the operator publishes no separate site address for either plant.",
     "energy": {
       "source": "solar",
@@ -110230,6 +110840,59 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "paradox-data-union-county-campus-el-dorado-ar",
+    "name": "Paradox Data Union County Campus",
+    "operator": "Paradox Data LLC (definitive agreement for acquisition by Z Squared Inc.)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 33.207042,
+      "lon": -92.6137253,
+      "city": "El Dorado",
+      "county": "Union",
+      "street": "713 Industrial Road",
+      "postalCode": "71730",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "announcedDate": "2026-06-25",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-03",
+        "note": "Z Squared signed a definitive agreement to acquire 100% of Paradox Data. Milestones run from initial AI compute energization to 50/100/150 MW.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.arkansasonline.com/news/2026/jun/25/florida-based-firm-details-plans-for-el-dorado/",
+        "label": "Florida-based firm details plans for El Dorado data center",
+        "publisher": "Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://finviz.com/news/375817/z-squared-inc-signs-definitive-agreement-to-acquire-100-of-paradox-data-and-its-union-county-campus",
+        "label": "Z Squared Inc. Signs Definitive Agreement to Acquire 100% of Paradox Data and Its Union County Campus",
+        "publisher": "Finviz (company press release)",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "About 8 MW is already energized. Entergy told the Democrat-Gazette Paradox is not a data center. Closing of the Z Squared deal was not confirmed. Coordinates were geocoded from the street address.",
+    "energy": {
+      "source": "grid",
+      "utility": "Entergy Arkansas",
+      "notes": "Existing interruptible Entergy service arrangement for up to 8.0 MW. The development target is up to 150 MW from utility power plus on-site generation."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "parkway-gravel-st-georges-de",
     "name": "St. Georges Business Park & Lighthouse Farms",
     "operator": "Parkway Gravel Inc.",
@@ -110468,6 +111131,7 @@
       "lon": -86.9150283,
       "city": "Fairfield",
       "county": "Jefferson",
+      "street": "7201 Aaron Aronov Dr",
       "state": "AL",
       "precision": "approximate"
     },
@@ -110496,9 +111160,16 @@
         "publisher": "WBHM",
         "retrievedAt": "2026-09-28",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/patmos-fairfield-al",
+        "label": "Patmos: Fairfield, AL",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "Retrofit of a former Walmart Supercenter in Fairfield into a colocation data center. WBRC states: \"Patmos would bring around 50 long-term jobs, plus roughly 120 construction workers during the build\" and \"If approved, construction could start in September, with the first phase completed by January or February 2027 and a larger expansion planned for 2028.\" CAPACITY AND INVESTMENT DELIBERATELY OMITTED — WBRC explicitly does not disclose either; an aggregator (servercountry.org) lists a \"Fairfield Colocation Data Center\" at 45 MW, which is NOT verified here and not cited. COORDINATES ARE THE FAIRFIELD MUNICIPAL CENTROID, not the building: the source identifies the site only as \"the former Walmart Supercenter\", no street address, and an Overpass query over the Fairfield bounding box returned no Walmart-named or former-retail building in OSM. Tighten this before mapping. STATUS is \"proposed\" — construction was conditional on approval as of 13 Aug 2026; if the September 2026 groundbreaking happened, this should move to under_construction, which is worth re-checking since that date has now passed. This is a genuinely distinct site from qts-marvel-bessemer-al (different operator, different city) though both sit in the same Birmingham-west corridor.",
     "energy": {
       "source": "grid",
@@ -110511,6 +111182,7 @@
       "notes": "Roughly 10,000 gallons per day, using closed-loop cooling."
     },
     "investmentUsd": 150000000,
+    "landAcres": 16,
     "jobs": {
       "construction": 120,
       "permanent": 50,
@@ -114321,11 +114993,11 @@
         "url": "https://adem.alabama.gov/sites/default/files/2026-04/04-26powersouth.html",
         "label": "ADEM public notice: PowerSouth Energy Cooperative – Charles R. Lowman Energy Center (PSD permit application)",
         "publisher": "Alabama Department of Environmental Management",
-        "retrievedAt": "2026-09-28",
+        "retrievedAt": "2026-10-18",
         "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "Lat/lon is the OSM footprint of the existing Charles R. Lowman Power Plant, where the new unit would be installed.",
     "facilityType": "power_generation",
     "generation": {
@@ -115381,9 +116053,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-29",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.gem.wiki/Prairie_Mist_Solar",
+        "label": "Prairie Mist Solar",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-18",
     "energy": {
       "source": "solar"
     },
@@ -120134,7 +120813,7 @@
         "url": "https://www.wbrc.com/2026/07/02/qts-confirms-plans-proposed-data-center-campus-bessemer/",
         "label": "QTS confirms plans for proposed data center campus in Bessemer",
         "publisher": "WBRC Fox6",
-        "retrievedAt": "2026-07-07",
+        "retrievedAt": "2026-10-18",
         "kind": "press"
       },
       {
@@ -120187,7 +120866,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-18",
     "notes": "Codename: Project Marvel. 18-building hyperscale campus on Red Ridge near I-459 and I-20/59 interchange in Bessemer (Jefferson County). Announced capacity: up to 1,200 MW at full build-out — reported as a planned ceiling, roughly 9% of Alabama Power's current generating capacity; recorded as capacityMw.planned = 1200 (an announced 'up to' full-build-out ceiling, consistent with how the dataset records other announced full-build-out figures). Investment: reported at $14–14.5B across sources (Logistics Land Investment anticipated 'close to $14.4B'; WBRC reported $14.5B at November 2025 rezoning; DCD reported ~$14B); no single firm company-confirmed figure exists — treated as a projected cost range and excluded from investmentUsd. Land: ~1,607.42 acres total after two rezoning rounds (initial ~700 acres November 2025 + 914-acre expansion April 2026). QTS affiliate purchased land from TPA Group affiliate for $431.73M. Chapter 9B statutory eligibility would have provided a 30-year abatement estimated at $500M+; QTS committed not to seek local property tax incentives (per WBRC July 2026) — subsidy excluded as eligibility does not equal award and QTS renounced pursuit. Full buildout timeline: 7+ years. Birmingham Business Alliance estimated ~$4B net benefit over 30 years; Bessemer City Schools projected ~$25M/year. AI framing not officially confirmed by QTS or the city as of July 2026 — size and scale (hyperscale, cloud/AI demand framing in QTS statement) support 'likely' classification. Coordinates are approximate for the Red Ridge parcel area. Jobs: ~1,000 construction and ~330 permanent are projected figures for the proposed (not-yet-built) campus (WBRC, Nov 2025) — recorded as projections in notes, not structured jobs fields, per data-rigor policy. QTS Data Centers is owned by Blackstone (2021 take-private). STATUS JUDGEMENT SURFACED, NOT APPLIED: Bessemer approved land-use rezonings for this campus in November 2025 and again (914 acres) in April 2026, which under the wave's rule that a rezoning approval means permitted could argue for permitted rather than proposed. I did not change it, because the record's own cited source dated 2026-07-02 postdates both rezonings and still describes the campus as proposed, and no building permit or site-preparation start was found in any source fetched this run. A maintainer should decide whether a rezoning alone promotes this record.",
     "energy": {
       "source": "grid",
@@ -129739,13 +130418,21 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.arkansasonline.com/news/2026/oct/08/clarksville-data-centers-gas-turbines-ok-arkansas/",
+        "label": "Clarksville data center's planned 40 gas turbines OK'd by Arkansas Division of Environmental Quality",
+        "publisher": "Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-18",
     "notes": "Coordinates are an OpenStreetMap geocode of Palmer Road in Clarksville, the road the Arkansas Democrat-Gazette identifies as the site's location ('just north of the city's water treatment plant on Palmer Road'); this is a road-level approximation, not a parcel-confirmed footprint. Reported figures diverge across sources and are NOT reconciled here: acreage is reported as two parcels totaling 135 acres at acquisition (Nov. 2025) and as a 463-acre campus (Aug. 2026); investment is reported as 'at least one billion' (Nov. 2025), $6.6 billion (2026 reporting and Serverfarm's own page) and $8 billion (Arkansas Advocate, May 2026); building count is reported as four (Serverfarm's own page and the 2026 permit reporting), five (Nov. 2025) and six (trade press). Building size is given as 300,000 sq ft each by Serverfarm and 360,000 sq ft each in trade press. The 463-acre and $6.6 billion figures are used above as the most recent reported values. Serverfarm is owned by Manulife Investment Management per trade press not fetched in this pass and so not cited.",
     "energy": {
       "source": "on_site_gas",
       "utility": "Clarksville Connected Utilities",
+      "onSiteGenerationMw": 660,
       "notes": "Per an ADEQ air permit application reported by the Arkansas Democrat-Gazette, the campus is to be served by 40 on-site natural gas turbines rated 16.5 MW each (about 660 MW combined base load) built on property adjacent to the data center, plus 10 natural gas line heaters and three diesel emergency generators. Clarksville Connected Utilities holds an energy service agreement with Serverfarm for 18 MW for 'construction power only.' The on-site generation plant is tracked separately as serverfarm-clarksville-power-plant-ar."
     },
     "water": {
@@ -129765,7 +130452,7 @@
     "id": "serverfarm-clarksville-power-plant-ar",
     "name": "Serverfarm Clarksville Campus On-Site Gas Turbine Plant",
     "operator": "Serverfarm",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 35.4673307,
@@ -129784,6 +130471,12 @@
         "date": "2026-08",
         "note": "Air permit application for the 40-turbine plant filed with the Arkansas Division of Environmental Quality; no issued permit reported as of this pass.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-10-18",
+        "note": "The Arkansas Division of Environmental Quality granted interim authority to construct (a temporary approval) for Solaris Resolute LLC's 40-turbine plant while Title V review continues.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -129800,9 +130493,23 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.arkansasonline.com/news/2026/oct/08/clarksville-data-centers-gas-turbines-ok-arkansas/",
+        "label": "Clarksville data center's planned 40 gas turbines OK'd by Arkansas Division of Environmental Quality",
+        "publisher": "Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.arkansasonline.com/news/2026/oct/08/clarksville-data-centers-gas-turbines-ok-arkansas/",
+        "label": "Clarksville data center's planned 40 gas turbines OK'd by Arkansas Division of Environmental Quality",
+        "publisher": "Arkansas Democrat-Gazette",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-18",
     "notes": "This record deliberately SHARES its approximate pin with serverfarm-clarksville-ar: the plant is described only as being on 'property adjacent to the data center,' and no source identifies its own parcel. The pin is a road-level OpenStreetMap geocode of Palmer Road, not a surveyed location for either facility. Single-sourced (one newspaper's reading of a permit application), hence confidence 'reported' rather than 'confirmed' - the underlying ADEQ application itself was not retrieved in this pass and is not cited.",
     "energy": {
       "source": "on_site_gas",
@@ -132048,6 +132755,51 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "sollensys-little-rock-data-center-ar",
+    "name": "Sollensys Little Rock Data Center",
+    "operator": "Sollensys Corp",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.7519536,
+      "lon": -92.4160447,
+      "city": "Little Rock",
+      "county": "Pulaski",
+      "street": "208 Atkins Road",
+      "postalCode": "72211",
+      "state": "AR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2022-04-13",
+        "note": "Sollensys announced it acquired a 5,044 sq ft purpose-built data center on about one acre",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1519177/000182912622008113/sollensyscorp_ex99-1.htm",
+        "label": "Sollensys Corp Exhibit 99.1 - Little Rock data center acquisition",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-10-18",
+        "kind": "filing"
+      },
+      {
+        "url": "https://baxtel.com/data-center/sollensys-little-rock",
+        "label": "Sollensys: Little Rock Data Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "Built in 2003 as the data-processing hub of Celerit Technologies. It has a Kohler backup generator and raised-floor cooling. No source after 2022 confirms current operation.",
+    "landAcres": 1,
+    "facilityType": "data_center"
+  },
+  {
     "id": "solon-township-data-center-kent-mi",
     "name": "Solon Township Data Center (16-17 Mile Road, US-131)",
     "operator": "Undisclosed technology company (site search via The Right Place)",
@@ -132887,6 +133639,7 @@
       "lon": -86.7603,
       "city": "Somerville",
       "county": "Morgan",
+      "street": "369 Union Road",
       "state": "AL",
       "precision": "approximate"
     },
@@ -132923,9 +133676,16 @@
         "publisher": "WAFF 48",
         "retrievedAt": "2026-09-15",
         "kind": "press"
+      },
+      {
+        "url": "https://www.decaturdaily.com/news/morgan_county/morgan-county-says-it-cannot-stop-proposed-data-center/article_f46952ff-7eba-4637-afd2-a6eb7c7ae886.html",
+        "label": "Morgan County says it cannot stop proposed data center",
+        "publisher": "The Decatur Daily",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-18",
     "notes": "Texas-based Sovereign Global Solutions Inc. (CEO Kevin Mohan, also affiliated with Big Star Blockchain, a bitcoin-data-center services firm) bought 15 acres at 369 Union Road for $300,000 in August 2025; incorporated the project entity 'Sovereign Gazelle' in April 2026. Plan: a 50MW bitcoin mining data center occupying 10 of the 15 acres. Build depends on easements from four neighboring landowners for 75-ft utility poles carrying the 50MW line — all four have refused as of June 2026. Morgan County Commission passed a 12-month moratorium on bitcoin-mining data centers on 2026-06-23 after resident petitions (450+ signatures) citing noise/air-quality/property-value concerns. VoltCore is the EPC/engineering contractor for the power buildout, not the site owner/operator — do not attribute operatorship to VoltCore. County officials describe the project as 'still pursuing' but stalled pending right-of-way. STATUS RE-CHECK, NO CHANGE - proposed remains correct. Morgan County adopted a unanimous 12-month data-center moratorium in June 2026, but the area is unzoned and the county has since said it cannot stop this site; the project's only forward movement found is negotiating utility easements. No building permit, construction start or cancellation was found, so the record should not move in either direction. The moratorium and the county's stated inability to enforce it against this parcel are recorded here as context.",
     "energy": {
       "source": "grid",
@@ -134864,9 +135624,23 @@
         "publisher": "Alaska Department of Natural Resources, Division of Oil and Gas",
         "retrievedAt": "2026-09-28",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.petroleumnews.com/story/2026/06/28/utilities/data-center-in-play/50228.html",
+        "label": "Data center in play",
+        "publisher": "Petroleum News",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://northern.org/news/stak-energy-campus-what-the-states-lease-documents-reveal-about-scale-risk-and-unanswered-questions/",
+        "label": "STAK Energy Campus: What the State's Lease Documents Reveal About Scale, Risk, and Unanswered Questions",
+        "publisher": "Northern Alaska Environmental Center",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "Preliminary state land lease approval covers 715.4 acres (corrected from 640; one square mile = 640 acres exactly but the approved lease footprint is 715.4 acres per Alaska Beacon). Campus is approximately 26 miles south of Deadhorse/Prudhoe Bay off the Dalton Highway (corrected from 25 miles). Supports AI training, cloud computing, and HPC. 3 GW is the project's claimed ultimate potential; $500M is Phase 1 capital. Coordinates estimated (~26 miles south of Prudhoe Bay 70.2N/148.5W); exact site not publicly disclosed.",
     "energy": {
       "source": "on_site_gas",
@@ -136352,6 +137126,74 @@
     "lastUpdated": "2026-08-27",
     "notes": "360,000 sq ft total with 225,000 sq ft of raised-floor computer room, shared by multiple Ohio government agencies on the west end of the Ohio State University campus. The Ohio Supercomputer Center occupies roughly 10,000 sq ft with about 1,200 kW of usable power — that is OSC's allocation, not the building's total, so capacityMw is omitted. Street address was not on the cited page; coordinates are an approximate geocode consistent with the cited 'west end of the OSU campus'.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "stax-capital-franklin-bluffs-ak",
+    "name": "Franklin Bluffs Pad Power Generation and Bitcoin Mining Project (Phase 1)",
+    "operator": "STaX Capital Partners, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 69.674,
+      "lon": -148.721,
+      "county": "North Slope Borough",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 50
+    },
+    "announcedDate": "2025-05-16",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-05-13",
+        "note": "Alaska DNR Division of Oil and Gas received a temporary land use permit application (LAS 35555) for up to 30 acres of pad space at the Franklin Bluffs pad; proposed term July 2025 to July 2029",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://aws.state.ak.us/OnlinePublicNotices/Notices/View.aspx?id=219652",
+        "label": "Alaska DNR public notice: STaX Capital Partners LLC, Franklin Bluffs Pad Power Generation and Bitcoin Mining Project, Application for Temporary Land Use Permit (LAS 35555)",
+        "publisher": "Alaska Department of Natural Resources, Division of Oil and Gas",
+        "retrievedAt": "2026-10-18",
+        "kind": "permit"
+      },
+      {
+        "url": "https://alaskapublic.org/news/economy/energy/2025-06-03/new-alaska-bitcoin-mine-would-use-as-much-power-as-the-states-largest-coal-plant-produces",
+        "label": "New Alaska Bitcoin mine would use as much power as the state's largest coal plant produces",
+        "publisher": "Alaska Public Media / Northern Journal",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.juneauempire.com/2025/06/02/new-alaska-bitcoin-mine-would-use-as-much-power-as-the-states-largest-coal-plant-produces/",
+        "label": "New Alaska Bitcoin mine would use as much power as the state's largest coal plant produces",
+        "publisher": "Juneau Empire",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://gtnpdatabase.org/boreholes/view/103",
+        "label": "GTN-P borehole 'Franklin Bluffs (dry)_b' coordinates (approximate location reference for the Franklin Bluffs area)",
+        "publisher": "Global Terrestrial Network for Permafrost",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "Phase 1 is a temporary proof-of-concept: 10 MW mobile gas turbine generator sets powering 50 MW of modular Bitcoin mining pods at the Franklin Bluffs pad, about 35 miles south of Deadhorse on the Dalton Highway. The CEO said cost would exceed $10 million, and McKinley Alaska Private Investment committed the pilot funding. The coordinates are approximate, taken from a nearby GTN-P permafrost borehole, not the pad itself. No DNR permit decision was found.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 50,
+      "notes": "Mobile gas turbine generator sets burning 'stranded' North Slope natural gas; as of June 2025 no gas supply contract had been signed. The company said it hoped to scale to about 1 GW if the pilot succeeds."
+    },
+    "landAcres": 30,
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "stranded_gas"
+    }
   },
   {
     "id": "steele-flats-energy-storage-jefferson-ne",
@@ -139755,10 +140597,22 @@
         "publisher": "WAFF",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://www.franklinfreepress.net/news/blrb5kjszintu5ro1fsryaaeijfbco",
+        "label": "Alabama Legislature remains supportive of digital data centers",
+        "publisher": "Franklin Free Press",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-18",
     "notes": "Operating mine on Jackson Avenue, Russellville, run by Synergy South; VoltCore was involved in developing it. Reported at 'less than 12 megawatts' — because that is an upper bound rather than a stated figure, no capacityMw value is recorded. Cooling-fan noise is described but the rig cooling method is not identified, so mining.coolingType is left unset. Russellville's police chief reported no complaints filed. Coordinates are the Russellville place centroid: the source names only 'Jackson Avenue', and Nominatim returns two distinct Jackson Avenue segments (North and South) in the city, so a street-level pin could not be chosen without guessing.",
+    "energy": {
+      "source": "grid",
+      "utility": "Russellville Electric Board",
+      "notes": "The site is leased from Russellville Electric Board at the south end of Jackson Avenue. Mining hardware is housed in storage containers."
+    },
     "facilityType": "crypto_mining"
   },
   {
@@ -140729,9 +141583,16 @@
         "publisher": "Alaska Department of Natural Resources",
         "retrievedAt": "2026-09-28",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.adn.com/business-economy/energy/2024/11/24/arctic-bitcoin-hilcorp-tech-firm-aim-to-test-north-slope-data-center/",
+        "label": "Arctic Bitcoin? Hilcorp, tech firm aim to test North Slope data center",
+        "publisher": "Anchorage Daily News",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "Texas-based TA Infrastructure filed a permit application to place Bitcoin-mining computers, collectively drawing 1.4 MW, inside a shipping container on a gravel pad at oil producer Hilcorp's Endicott field on Alaska's North Slope, powered by natural gas from Hilcorp's existing generators. Per the application quoted in the source: \"The goal of this pilot project is to demonstrate the ability to operate computers and associated data center infrastructure in the unique environment of the North Slope as well as identify any logistical and operational challenges that a larger project might present.\" The application named a four-year run with a permit start date of November 2024. No later source confirming the permit was granted or the container deployed was found this session, so status is kept at proposed rather than advanced to permitted/operational. This is a genuinely separate project from this dataset's existing stak-energy-north-slope-ak record: different named operator, different declared scale (a 1.4 MW pilot container versus a proposal described elsewhere as a \"massive AI data center\"), and reported about 18 months earlier — not a duplicate. Endicott field's own coordinates could not be resolved: OSM Nominatim's only match for \"Endicott\" in Alaska was Endicott Arm, a fjord near Juneau over 1,500 km from the North Slope, which was checked and rejected as clearly wrong rather than used. The pin used instead is Prudhoe Bay, the nearest well-mapped North Slope hub, as an explicit regional approximation — it is not the specific causeway/gravel-pad location, which this session could not geocode.",
     "energy": {
       "source": "on_site_gas",
@@ -143314,9 +144175,16 @@
         "publisher": "Alaska Public Media",
         "retrievedAt": "2026-09-28",
         "kind": "press"
+      },
+      {
+        "url": "https://www.eenews.net/articles/the-first-us-coal-plant-in-a-decade-is-on-shaky-ground/",
+        "label": "The first US coal plant in a decade is on shaky ground",
+        "publisher": "E&E News",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "Located west of Skwentna in the Susitna River watershed. The GEM coordinates are marked approximate. KOREIT has committed $500M equity at the entity level, which is not recorded here as site investment. The link to data centers is a marketing effort, not a named offtaker.",
     "energy": {
       "source": "other",
@@ -143331,6 +144199,11 @@
         "sourceIndex": 0
       }
     ],
+    "community": {
+      "status": "contested",
+      "notes": "Opposed by the Susitna River Coalition and The Alaska Center (concerns include a proposed 100-mile access road crossing 180+ streams). The Mat-Su Assembly overrode the mayor's veto 6-1 to advance a related data-center marketing partnership.",
+      "sourceIndex": 4
+    },
     "facilityType": "power_generation",
     "generation": {
       "technology": "other",
@@ -148540,6 +149413,49 @@
     }
   },
   {
+    "id": "uaf-butrovich-data-center-fairbanks-ak",
+    "name": "UAF Butrovich Data Center",
+    "operator": "University of Alaska",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 64.859,
+      "lon": -147.843,
+      "city": "Fairbanks",
+      "county": "Fairbanks North Star Borough",
+      "street": "2025 Yukon Drive",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-03-08",
+        "note": "University IT notice of UPS maintenance-bypass upgrade at the operating Butrovich Data Center",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.alaska.edu/news/it/2024-butrovich-datafacility-upgrades.php",
+        "label": "2024 Butrovich Data Center facility upgrades",
+        "publisher": "University of Alaska",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      },
+      {
+        "url": "https://service.alaska.edu/TDClient/39/Portal/Requests/Service/336/Data-Center-Rack-Management",
+        "label": "Data Center Rack Management (Butrovich Data Center service description)",
+        "publisher": "University of Alaska",
+        "retrievedAt": "2026-10-18",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "A 12,000 sq ft, 24x7 staffed facility in the Butrovich Building on the UAF campus. It hosts the university's system-wide business systems and the Research Computing Systems' high-performance computing clusters. N+1 redundant HVAC and UPS. Rack hosting is limited to UA/UAF users. Coordinates are approximate (campus building).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "uh-cancer-center-medai-core-honolulu-hi",
     "name": "UH Cancer Center Data Center – Medical AI Core (PAC-AID)",
     "operator": "University of Hawaiʻi Cancer Center",
@@ -148971,11 +149887,11 @@
         "url": "https://hpc.ua.edu/about/",
         "label": "About — High Performance Computing and Data Center, The University of Alabama",
         "publisher": "The University of Alabama",
-        "retrievedAt": "2026-09-28",
+        "retrievedAt": "2026-10-18",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-28",
+    "lastUpdated": "2026-10-18",
     "notes": "University research computing facility on the eastern edge of the Tuscaloosa campus, not a commercial colocation or hyperscale site — include or exclude according to whether Compute Atlas tracks institutional HPC. UA states verbatim: \"The facility's 40,000 square feet will allow for a substantial increase in UA's computing power\" and \"an estimated $25 million of computing power\"; it will host a \"petascale computing system, meaning it will be capable of performing quadrillions of calculations per second\" and be the \"only system in Alabama to meet the benchmarks for the Top500 list\". FUNDING, NOT RECORDED AS investmentUsd: the fetched source names a U.S. Department of Commerce NIST disbursement plus an Alabama Education Trust Fund appropriation approved by the legislature and Gov. Ivey in 2023, but states NO dollar totals for either; a search summary cited $96M total / $44.5M NIST / $46M ETF, and no page stating those was fetched, so they are omitted. The $25M is computing equipment, not construction investment, so investmentUsd is deliberately empty. NO CAPACITY RECORDED: no MW figure appears in the fetched source (an aggregator lists 14.6 MW — not verified, not cited). STATUS: recorded as under_construction because completion was projected for \"late 2026\" and that window is now open; a maintainer should check whether it has opened, in which case this becomes operational. Coordinates are the campus centroid, not the building on the eastern edge of campus.",
     "energy": {
       "source": "grid",
@@ -149534,6 +150450,149 @@
     ],
     "lastUpdated": "2026-08-18",
     "notes": "Originally constructed in 2008 with expansions in 2011, 2015 and 2017; Tier 3 with 4,500 kW of 2N generators, 6,000 kW of UPS, 9,000 kVA of utility feeds and 1,510 tons of N+1 HVAC; nine on-net carriers. This is the former OneNeck Madison data center — oneneck.com/colocation/data-centers/madison now 301-redirects to ussignal.com, so the operator is recorded as US Signal rather than OneNeck. capacityMw.operational is taken from installed UPS capacity. Coordinates are an address geocode.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "us-space-command-c2f-redstone-arsenal-al",
+    "name": "USSPACECOM Command and Control Facility Secure Data Center (Redstone Arsenal)",
+    "operator": "U.S. Space Command",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.6297568,
+      "lon": -86.6535802,
+      "city": "Huntsville",
+      "county": "Madison",
+      "state": "AL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03-27",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-27",
+        "note": "SAM.gov Industry Day notice for the USSPACECOM HQ Command and Control Facility, which includes a secure data center; design-build advance notice followed on Oct 13, 2026",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://app.govly.com/public/opportunities/16287452",
+        "label": "Industry Day for USSPACECOM HQ Command and Control Facility Construction and Project Management (SAM notice c09f90fb48d4435086078b67affa24bf)",
+        "publisher": "Govly (SAM.gov mirror)",
+        "retrievedAt": "2026-10-18",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.irecruit.co/insights/dod-seeks-partner-for-alabama-facility-data-center",
+        "label": "DoD seeks partner for Alabama facility and data center",
+        "publisher": "iRecruit (citing DatacenterDynamics)",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "The secure data center is one part of a 700,000 sq ft permanent HQ command-and-control facility for about 1,800 personnel, on a 64-acre site at Redstone Arsenal. The roughly $4B estimate covers the whole HQ, including fixtures, furniture and equipment, so it is not given as the data center's own cost. Data center capacity is not disclosed. The coordinates are a representative Redstone Arsenal point; the exact site is not public.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "usaf-eielson-ai-data-center-eul-ak",
+    "name": "Eielson Air Force Base AI Data Center Enhanced Use Lease Site",
+    "operator": "U.S. Department of the Air Force (lessor; developer not selected)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 64.6657,
+      "lon": -147.1015,
+      "county": "Fairbanks North Star Borough",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-04-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-10",
+        "note": "Air Force request for lease proposals for AI data center development at JBER, Eielson AFB and Clear SFS; no developer selected",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.newsminer.com/news/local_news/proposed-air-force-data-center-land-leases-raise-some-concerns/article_98cbed0c-6574-464a-8097-c054c46cb699.html",
+        "label": "Proposed Air Force data center land leases raise some concerns",
+        "publisher": "Fairbanks Daily News-Miner",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.airandspaceforces.com/usaf-land-ai-data-centers-three-alaska-bases/",
+        "label": "USAF Offers Land for AI Data Centers on Three Alaska Bases",
+        "publisher": "Air & Space Forces Magazine",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "Five potential sites in the Eielson area: one near southeast North Pole, two across the Richardson Highway, one mid-installation and one on the north side. Coordinates are approximate (base location). The multi-installation acreage total is not attributed to this site.",
+    "energy": {
+      "source": "grid",
+      "utility": "Golden Valley Electric Association",
+      "notes": "Three Eielson sites outside the fence rely on the GVEA grid. Two inside-fence sites connect to the base's aging coal power plant. GVEA said it cannot currently support a large data center."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "A resident raised concerns about proximity to homes and North Pole Middle School, noise, heat effects on permafrost, diesel backup generators, water table impacts and costs to GVEA members.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "usaf-jber-ai-data-center-eul-anchorage-ak",
+    "name": "Joint Base Elmendorf-Richardson AI Data Center Enhanced Use Lease Site",
+    "operator": "U.S. Department of the Air Force (lessor; developer not selected)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 61.251,
+      "lon": -149.8065,
+      "city": "Anchorage",
+      "county": "Municipality of Anchorage",
+      "state": "AK",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-04-10",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-10",
+        "note": "Air Force request for lease proposals for AI data center development at JBER, Eielson AFB and Clear SFS; proposals due May 29, 2026; no developer selected",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.airandspaceforces.com/usaf-land-ai-data-centers-three-alaska-bases/",
+        "label": "USAF Offers Land for AI Data Centers on Three Alaska Bases",
+        "publisher": "Air & Space Forces Magazine",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.adn.com/alaska-news/military/2026/05/05/the-military-wants-to-host-data-centers-in-alaska-raising-questions-about-whether-theres-enough-gas-to-power-them/",
+        "label": "The military wants to host data centers in Alaska, raising questions about whether there's enough gas to power them",
+        "publisher": "Anchorage Daily News",
+        "retrievedAt": "2026-10-18",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-18",
+    "notes": "Enhanced Use Lease offering: 5 sites at JBER of about 60 to nearly 200 acres each (per ADN). The ~4,700 acres and 12 parcels are totals across all three Alaska installations, not this site. Coordinates are approximate (base location).",
+    "energy": {
+      "source": "grid",
+      "utility": "Chugach Electric Association",
+      "notes": "The RFLP says JBER sites have insufficient power and need a new Chugach Electric connection. Chugach said it does not currently have gas to serve a large data center. Developers must secure their own power and water."
+    },
     "facilityType": "data_center"
   },
   {
