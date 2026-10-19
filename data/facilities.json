@@ -493,6 +493,52 @@
     "facilityType": "data_center"
   },
   {
+    "id": "365-data-centers-aurora-co1-co",
+    "name": "365 Data Centers Aurora (CO1)",
+    "operator": "365 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.762184,
+      "lon": -104.760923,
+      "city": "Aurora",
+      "street": "3431 N Windsor Dr",
+      "postalCode": "80011",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 8
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Operator page markets the facility for tours; PeeringDB lists it active.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://365datacenters.com/aurora-data-center/",
+        "label": "Aurora, CO Data Center",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/16128",
+        "label": "PeeringDB: 365 Data Centers Aurora (CO1)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "150,000 sq ft facility with an 8 MW data center per the operator. Previously listed in PeeringDB as Sungard AS Aurora at the same address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "365-data-centers-boca-raton-fl",
     "name": "365 Data Centers Boca Raton (BC1)",
     "operator": "365 Data Centers",
@@ -2761,6 +2807,48 @@
       "technology": "solar",
       "notes": "Bifacial tracking array. AECC states the facility is operating at full capacity and in commercial operation and expects it to generate about 270,487 MWh a year, enough for roughly 25,000 homes. Global Energy Monitor carries the plant as 'Bailey solar farm', 122 MWac, owned by Arkansas Electric Cooperative Corp, commissioned 2024."
     }
+  },
+  {
+    "id": "aerotropolis-industrial-development-aurora-co",
+    "name": "Aerotropolis Logistics Center Data Center Campus",
+    "operator": "Aerotropolis Industrial Development",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.7704988,
+      "lon": -104.6782723,
+      "city": "Aurora",
+      "county": "Adams",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-01",
+        "note": "Colorado Politics/Denver Gazette reported a site plan proposing data centers on a site bounded by E 48th Ave (north), E 26th Ave (south), Aerotropolis Pkwy (west) and Monaghan Rd (east), about 3 miles south of DIA, in an industrial zone where data centers are a permitted use.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coloradopolitics.com/2026/10/01/second-large-data-center-proposed-for-aurora-highlands-area/",
+        "label": "Second large data center proposed for Aurora Highlands area",
+        "publisher": "Colorado Politics",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Aerotropolis+Parkway,+Aurora,+Colorado&format=json",
+        "label": "OSM Nominatim geocode: North Aerotropolis Parkway, Aurora (western boundary road of the site)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "The article describes the plan as 'about 500 acres of new data centers' and also as a '1 million-square-foot site'. Those two figures conflict, so neither is recorded. No power or water figures are published, and the developer did not respond to the press. The coordinates are a point on Aerotropolis Pkwy, the site's western boundary road, between 26th and 48th Avenues. They are not a parcel centroid.",
+    "facilityType": "data_center"
   },
   {
     "id": "aes-delta-wind-tunica-ms",
@@ -11303,7 +11391,7 @@
         "url": "https://baxtel.com/data-center/atlas-capital-connecticut",
         "label": "Atlas Capital: Connecticut Data Center — 132 Griffin Rd N, Bloomfield (44-acre former tobacco field)",
         "publisher": "Baxtel",
-        "retrievedAt": "2026-09-30",
+        "retrievedAt": "2026-10-19",
         "kind": "other"
       },
       {
@@ -11314,7 +11402,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-10-19",
     "notes": "New York-based Atlas Capital Group informally presented a concept to the Bloomfield Town Plan and Zoning Commission in June 2025: a two-story building of about 1 million sq ft, with 900,000+ sq ft of data processing space and a 127,000 sq ft substation. The town expects about 40 employees. No formal application was found as of 2026-09-30. No MW figure is stated. Acreage (44) is from Baxtel, not the town notice. Coordinates are only the OpenStreetMap centroid of Griffin Road North: the exact address did not geocode, and OSM places that way in Windsor while the town places the site in Bloomfield, so the pin is approximate and needs parcel confirmation.",
     "landAcres": 44,
     "jobs": {
@@ -16705,6 +16793,73 @@
     "facilityType": "data_center"
   },
   {
+    "id": "axp-blackhart-pathfinder-2-florence-co",
+    "name": "Pathfinder #2 Gas-to-Power Bitcoin Mining Site (Florence Oil Field)",
+    "operator": "AXP Energy Limited (gas/power) with Blackhart Technologies (mining)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.3902777,
+      "lon": -105.1185988,
+      "city": "Florence",
+      "county": "Fremont",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 1.2
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2024-11-20",
+        "note": "Two modular data centres and 589 Antminers delivered to site; generator interconnection pending.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2025-02-06",
+        "note": "First two modular data centres online running 515 Bitmain S19J Pro miners, after receipt of State of Colorado permits.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://finanzwire.com/press-release/axp-energy-limited-asx-axp-first-two-modular-data-centres-online-at-pathfinder-lease-in-colorado-h9NwFpUEyOT",
+        "label": "AXP Energy: First Two Modular Data Centres Online at Pathfinder Lease in Colorado",
+        "publisher": "AXP Energy Limited (via Finanzwire)",
+        "retrievedAt": "2026-10-19",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.newswire.com/news/work-underway-at-pathfinder-for-first-gas-to-power-data-centre-operation",
+        "label": "Work Underway at Pathfinder for First Gas-To-Power Data Centre Operation",
+        "publisher": "AXP Energy Limited (via Newswire)",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Florence,+Fremont+County,+Colorado&format=json",
+        "label": "OSM Nominatim: Florence, Fremont County, Colorado (representative point)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "The coordinates are the Florence town point. The exact Pathfinder #2 well location was not sourced. The latest operator update found is from early 2025, and the current operating status after that was not verified. Planned expansion sites at the JW Powell and Kelce Court wells are not included.",
+    "energy": {
+      "source": "on_site_gas",
+      "onSiteGenerationMw": 1.2,
+      "notes": "Two gas-fired Gentec generators at the Pathfinder #2 well produce 1.2 MW. The company states a 5 MW target across its Florence leases."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "behind_meter"
+    }
+  },
+  {
     "id": "azimuth-moss-bluff-data-center-calcasieu-parish-la",
     "name": "Moss Bluff Data Center Site (Coffey Road)",
     "operator": "Azimuth Renewables",
@@ -19817,6 +19972,52 @@
     "facilityType": "data_center"
   },
   {
+    "id": "blackstart-digital-650-harry-road-san-jose-ca",
+    "name": "Former IBM Almaden Research Center Data Center Campus (650 Harry Road)",
+    "operator": "Blackstart Digital",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.2113478,
+      "lon": -121.8083246,
+      "city": "San Jose",
+      "county": "Santa Clara",
+      "street": "650 Harry Road",
+      "postalCode": "95120",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-10-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-06",
+        "note": "Blackstart Digital agreed to acquire the former IBM Almaden Research Center; close expected by end of 2026; environmental review requested for renovations",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/data-center-firm-set-to-acquire-former-ibm-research-campus-in-silicon-valley",
+        "label": "Data center firm set to acquire former IBM research campus in Silicon Valley",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://inforcapital.com/news/former-ibm-research-campus-in-silicon-valley-set-to-be-acquired-by-data-center-firm/",
+        "label": "Former IBM research campus in Silicon Valley set to be acquired by data center firm",
+        "publisher": "Infor Capital",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "The 35-acre developed area holds seven buildings of more than 500,000 sq ft. It sits within a 687-acre property, and the roughly 565 acres of open space would stay undeveloped. The site already has some data center capacity and is served by a 25 MW substation that Blackstart plans to expand. San José rezoned the campus to an industrial park district in August 2026. The deal is pending and expected to close by end of 2026; both articles relay Mercury News reporting.",
+    "landAcres": 35,
+    "facilityType": "data_center"
+  },
+  {
     "id": "blackstone-data-services-bluestone-tazewell-va",
     "name": "Blackstone Data Services — Bluestone Business and Technology Park",
     "operator": "Blackstone Data Services",
@@ -22271,6 +22472,63 @@
       "notes": "Lordstown Village Council voted 6-0 (Nov 3) to ban future data centers effective Dec 3; the developer (Bristolville 25 Developer LLC / BHGH Properties, whose Oct 20 site-plan submission predated the ban) petitioned the Ohio Supreme Court for a writ of mandamus to compel the village to process its application.",
       "sourceIndex": 1
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "broadstone-project-primestone-colorado-springs-co",
+    "name": "Project Primestone (Vineyards Research Park) GPU Test Facility",
+    "operator": "Broadstone Net Lease (developer/owner); operations partner Emergent Data Centers; tenant undisclosed",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.7897826,
+      "lon": -104.7932145,
+      "city": "Colorado Springs",
+      "county": "El Paso",
+      "street": "3819 Janitell Rd",
+      "postalCode": "80906",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05",
+        "note": "City issued a Rapid Response Certificate (expedited review) in May 2026. Broadstone targets substantial completion and rent commencement in 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://gazette.com/?p=2039973",
+        "label": "High-tech graphics card testing facility eyeing former golf course, vineyard for $303M development",
+        "publisher": "The Gazette (Colorado Springs)",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://pikespeakbulletin.org/?p=20887",
+        "label": "Project Primestone isn't a data center – it will just look and feel like one",
+        "publisher": "Pikes Peak Bulletin",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=3819+Janitell+Road,+Colorado+Springs,+CO&format=json",
+        "label": "OSM Nominatim geocode: 3819 Janitell Road",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Two 110,000 sq ft buildings for GPU burn-in, benchmarking and reliability testing for an unnamed 'Fortune 20' technology tenant. The developer's project statement says it is 'not a data center' because it does not sell compute. It is tracked here as a GPU compute facility. The Pikes Peak Bulletin reports a 100 MW initial building with an option to reach 200 MW, but The Gazette attributes the 100 MW figure to T5's 2013 plans, so no capacity is recorded.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Project statement describes a closed-loop cooling system. Cooling loops are re-piped between test campaigns."
+    },
+    "investmentUsd": 303000000,
+    "landAcres": 33.8,
     "facilityType": "data_center"
   },
   {
@@ -30924,7 +31182,7 @@
         "url": "https://westfaironline.com/fairfield/proposed-trumbull-ai-data-center-at-nasdaq-site-worrisome-to-residents/",
         "label": "Proposed Trumbull AI data center at Nasdaq site worrisome to residents (2026-07-19)",
         "publisher": "Westfair Communications",
-        "retrievedAt": "2026-09-30",
+        "retrievedAt": "2026-10-19",
         "kind": "press"
       },
       {
@@ -30940,9 +31198,16 @@
         "publisher": "Westfair Communications",
         "retrievedAt": "2026-09-30",
         "kind": "press"
+      },
+      {
+        "url": "https://www.ctpublic.org/news/2026-09-11/trumbull-could-become-home-to-one-of-cts-first-ai-data-centers-despite-new-2-year-moratorium",
+        "label": "Trumbull could become home to one of CT's first AI data centers despite new 2-year moratorium",
+        "publisher": "Connecticut Public",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-10-19",
     "notes": "Existing 228,000 sq ft building at 80 Merritt Blvd, Trumbull, CT, built in 1960 (originally for Nasdaq per the operator's account); currently operated by CogNovum. Aphorio Carter acquired the property in 2024. On 2026-05-06, 365 Data Centers and Aphorio Carter announced a ~200MW AI-ready data-center pipeline across six US markets; Trumbull is named as a site 'under evaluation' for AI-focused upgrades to this existing building, with letters of intent not yet signed for it (only Aurora, CO and Simpsonville, KY had signed LOIs as of the release). The operator's CEO described the plan as upgrading an existing facility on existing power infrastructure, not new construction: \"We are simply updating an existing, historic facility to ensure we can continue serving our customers effectively, while supporting the town with local jobs and substantial tax revenue.\" No MW, investment, or job-count figures were published for the current facility. Coordinates cross-checked: US Census geocoder (41.240871, -73.146313) and the OSM building footprint (41.2407281, -73.1474121) agree within ~100m; the OSM point is used per the mapped-building preference. Flagging for awareness, not asserted as fact: OSM's building tag for this address (as retrieved 2026-09-12) reads \"Digital Realty New York HVN10,\" which is not corroborated by any 2026 source found in this search and may reflect a prior/stale ownership label rather than current fact.",
     "energy": {
       "notes": "The owner committed to no additional electrical draw beyond the site's existing capacity; the operator lists 6.75 MW of UPS capacity"
@@ -30950,6 +31215,13 @@
     "water": {
       "notes": "The owner committed to no increase in water consumption and is converting the site to a closed-loop cooling system as part of the modernization (Westfair, 2026-08-12); the current heat-rejection method is not stated"
     },
+    "subsidies": [
+      {
+        "program": "Connecticut data center tax incentive — state sales and use tax exemption (AC Trumbull LLC)",
+        "jurisdiction": "CT",
+        "sourceIndex": 5
+      }
+    ],
     "investmentUsd": 200000000,
     "community": {
       "status": "contested",
@@ -33011,6 +33283,44 @@
     "notes": "New facility, not previously on the NM roster. Oppidan Investment Company (Connect Data Centers division) acquired the Westpointe 40 Business Park site from Titan Development in September 2024; general contractor PARIC Corporation targeted winter 2025 completion. Server Country's most recent record review (2026-07-18) lists status as operational colocation. No primary operator press release or City of Albuquerque permit record was directly fetched this run (only aggregator sites, both cited); a direct primary source would strengthen confidence above 'reported'. Coordinates are a street-level OpenStreetMap geocode of Daytona Road NW, not a confirmed parcel centroid -- precision is approximate. Capacity (10MW) and investment ($80M) figures are sourced from Server Country only and are unconfirmed against a second independent source; treat as reported, not confirmed.",
     "investmentUsd": 80000000,
     "landAcres": 10,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "connect-data-centers-comstock-street-santa-clara-ca",
+    "name": "Connect Data Centers Santa Clara (715 Comstock Street)",
+    "operator": "Connect Data Centers (Oppidan / Harrison Street Real Estate Capital JV)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.3748317,
+      "lon": -121.9474949,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "715 Comstock Street",
+      "postalCode": "95054",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-19",
+        "note": "Listed as planned (planned year 2027)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/connect-data-centers-santa-clara-ca",
+        "label": "Connect Data Centers: Santa Clara, CA",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Planned 200,000 sq ft facility on a 7-acre site assembled from four parcels near San José airport. A Harrison Street / Oppidan JV bought the land in Dec 2021 for $40.6M; Oppidan lists Connect Data Centers as a subsidiary. MW is not disclosed by this source.",
+    "landAcres": 7,
     "facilityType": "data_center"
   },
   {
@@ -35272,6 +35582,46 @@
     "aiClassification": "likely"
   },
   {
+    "id": "coresite-la3-los-angeles-ca",
+    "name": "CoreSite LA3 (200 Bauchet Street)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.0595449,
+      "lon": -118.230318,
+      "city": "Los Angeles",
+      "county": "Los Angeles",
+      "street": "200 Bauchet Street",
+      "postalCode": "90012",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 18
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2020-12",
+        "note": "First phase (51,000 sq ft, 6 MW) launched December 2020",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/la3-los-angeles-ca",
+        "label": "CoreSite LA3 Los Angeles data center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "160,000+ sq ft, 18 MW at full build. Coordinates are the OSM Bauchet Street centroid.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "coresite-mi1-miami-fl",
     "name": "CoreSite MI1 — Miami",
     "operator": "CoreSite",
@@ -35532,6 +35882,196 @@
     "notes": "OSM name 'San Jose Colocation Center' matches SV1 at 55 S. Market St, confirmed via facility page.",
     "energy": {
       "utility": "Pacific Gas & Electric (PG&E)"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-sv2-milpitas-ca",
+    "name": "CoreSite SV2 (Milpitas)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.405683,
+      "lon": -121.9162603,
+      "city": "Milpitas",
+      "county": "Santa Clara",
+      "street": "1656 McCarthy Boulevard",
+      "postalCode": "95035",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Operator lists SV2 as a current colocation offering",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/sv2-milpitas-ca",
+        "label": "CoreSite SV2 Milpitas data center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "76,000+ sq ft. Coordinates are the OSM 'CoreSite SV2' building footprint.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-sv4-santa-clara-ca",
+    "name": "CoreSite SV4 (2972 Stender Way)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3762625,
+      "lon": -121.9706843,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "2972 Stender Way",
+      "postalCode": "95054",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Operator lists SV4 as a current colocation offering",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/sv4-santa-clara-ca",
+        "label": "CoreSite SV4 Santa Clara data center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "101,000+ sq ft, part of CoreSite's Santa Clara campus. Coordinates are the OSM 'CoreSite SV4' building.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-sv7-santa-clara-ca",
+    "name": "CoreSite SV7 (3020 Coronado Drive)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3760788,
+      "lon": -121.9730567,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "3020 Coronado Drive",
+      "postalCode": "95054",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Operator lists SV7 as a current offering",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/sv7-santa-clara-ca",
+        "label": "CoreSite SV7 Santa Clara data center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "227,000+ sq ft purpose-built facility on CoreSite's Santa Clara campus. Coordinates are the OSM 'CoreSite SV7' building.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-sv8-santa-clara-ca",
+    "name": "CoreSite SV8 (3035 Stender Way)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3773826,
+      "lon": -121.97184,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "3035 Stender Way",
+      "postalCode": "95054",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Operator describes SV8 as currently offering colocation and interconnection",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/sv8-santa-clara-ca",
+        "label": "CoreSite SV8 Santa Clara data center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "161,000+ sq ft. Coordinates are the OSM 'CoreSite SV8' building.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "coresite-sv9-santa-clara-ca",
+    "name": "CoreSite SV9 (2915 Stender Way)",
+    "operator": "CoreSite",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.3756123,
+      "lon": -121.9696044,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "2915 Stender Way",
+      "postalCode": "95054",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Operator lists SV9 as the newest campus addition, NVIDIA DGX-Ready certified",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.coresite.com/data-center/sv9-santa-clara-ca",
+        "label": "CoreSite SV9 Santa Clara data center",
+        "publisher": "CoreSite",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "228,000+ sq ft purpose-built building. The page links a 'coming soon' brochure, so the opening date is unconfirmed. Coordinates are the OSM 'CoreSite SV9' building.",
+    "energy": {
+      "source": "grid",
+      "utility": "Silicon Valley Power",
+      "notes": "On-site 2N Silicon Valley Power substation"
     },
     "facilityType": "data_center"
   },
@@ -38197,6 +38737,7 @@
       "lon": -72.076516,
       "city": "Groton",
       "county": "New London",
+      "street": "445 Eastern Point Road",
       "state": "CT",
       "precision": "approximate"
     },
@@ -38223,9 +38764,16 @@
         "publisher": "Carlin Construction",
         "retrievedAt": "2026-09-30",
         "kind": "other"
+      },
+      {
+        "url": "https://portal.ct.gov/das/-/media/das/state-properties-review-board/agendas-and-meetings/2017/2017-07-13m.pdf",
+        "label": "State Properties Review Board minutes, July 13, 2017 — PRB #17-183, DAS-BEST State Data Center, Building 230, 445 Eastern Point Road, Groton",
+        "publisher": "CT State Properties Review Board",
+        "retrievedAt": "2026-10-19",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-10-19",
     "notes": "State government Tier II data center, leased from Pfizer for $1 a year in Building 230 of Pfizer's Groton research campus under a 2014 agreement. It serves roughly 50,000 state personnel and pairs with a Springfield, MA site. The contractor's fast-track renovation covered 9,000+ sq ft, including raised floor, electrical work and four replacement CRAC units. Coordinates are a Census geocode of the Pfizer Groton campus address on Eastern Point Road, not Building 230, so precision is approximate and no street is recorded. Not the Pfizer or NE Edge hyperscale proposals.",
     "facilityType": "data_center"
   },
@@ -39818,7 +40366,7 @@
         "url": "https://www.cyrusone.com/data-centers/north-america/norwalk-ct",
         "label": "CyrusOne facility directory",
         "publisher": "CyrusOne",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-19",
         "kind": "other"
       },
       {
@@ -39836,10 +40384,11 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-10-19",
     "notes": "Confirmed at 6 Norden Place, Norwalk, CT — Connecticut's largest data center per operator's own page.",
     "water": {
-      "coolingType": "air"
+      "coolingType": "air",
+      "notes": "Operator: 3,000 tons N+1 cooling with roof-mounted air-cooled chillers; water-free cooling, with minimal water used only for humidification and maintenance"
     },
     "facilityType": "data_center"
   },
@@ -43118,7 +43667,7 @@
         "url": "https://hoodline.com/2026/04/vernon-snags-32mw-data-fortress-as-databank-teams-with-goodman/",
         "label": "DataBank, Goodman launch 32MW data center project in Vernon",
         "publisher": "Hoodline",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-19",
         "kind": "press"
       },
       {
@@ -43127,10 +43676,23 @@
         "publisher": "Hoodline",
         "retrievedAt": "2026-09-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.connectcre.com/stories/goodman-breaks-ground-on-49-5-mw-data-center-in-vernon/",
+        "label": "Goodman breaks ground on 49.5 MW data center in Vernon",
+        "publisher": "Connect CRE",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-19",
     "notes": "Joint venture with Goodman Group; opening December 2026, phased through September 2027.",
+    "energy": {
+      "source": "grid",
+      "utility": "City of Vernon Public Utilities Department",
+      "notes": "Goodman LAX01 Vernon is 49.5 MW total, about 32 MW critical IT when fully fitted out"
+    },
+    "landAcres": 5.6,
     "facilityType": "data_center"
   },
   {
@@ -47602,6 +48164,80 @@
     "facilityType": "data_center"
   },
   {
+    "id": "digital-realty-lax10-los-angeles-ca",
+    "name": "Digital Realty LAX10 (600 West 7th Street)",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 34.0473298,
+      "lon": -118.2575439,
+      "city": "Los Angeles",
+      "county": "Los Angeles",
+      "street": "600 West 7th Street",
+      "postalCode": "90017",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Listed by operator as a colocation data center",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/los-angeles/lax10",
+        "label": "Digital Realty LAX10 data center",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Downtown LA building of 489,500 sq ft. Coordinates are the OSM building 'DRT LAX10'.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-lax11-el-segundo-ca",
+    "name": "Digital Realty LAX11 (200 North Nash Street)",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 33.9176631,
+      "lon": -118.3863556,
+      "city": "El Segundo",
+      "county": "Los Angeles",
+      "street": "200 North Nash Street",
+      "postalCode": "90245",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Listed by operator as its El Segundo facility",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/los-angeles/lax11",
+        "label": "Digital Realty LAX11 data center",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Two-level, 113,500 sq ft building. Coordinates are the OSM data_center building at 200 N Nash St.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "digital-realty-lax12-ca",
     "name": "Digital Realty LAX12",
     "operator": "Digital Realty",
@@ -48585,6 +49221,7 @@
       "city": "San Francisco",
       "county": "San Francisco",
       "street": "200 Paul Avenue",
+      "postalCode": "94124",
       "state": "CA",
       "precision": "exact"
     },
@@ -48603,9 +49240,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-07-22",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/silicon-valley",
+        "label": "Digital Realty Silicon Valley data centers",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-10-19",
     "notes": "200 Paul Avenue, San Francisco CA. Distinct and unrelated to the divested 360 Spear Street site.",
     "facilityType": "data_center"
   },
@@ -48877,6 +49521,80 @@
     "energy": {
       "utility": "Silicon Valley Power"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-sjc15-santa-clara-ca",
+    "name": "Digital Realty SJC15 (1201 Comstock Street)",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3749966,
+      "lon": -121.9540769,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "1201 Comstock Street",
+      "postalCode": "95054",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Listed by operator as a current Silicon Valley facility",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/silicon-valley/sjc15",
+        "label": "Digital Realty SJC15 data center",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "24,000 sq ft single-story building. Coordinates are the OSM building tagged 'Digital Realty Silicon Valley SJC15'.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-sjc29-santa-clara-ca",
+    "name": "Digital Realty SJC29 (1725 Comstock Street)",
+    "operator": "Digital Realty",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3750235,
+      "lon": -121.9581011,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "street": "1725 Comstock Street",
+      "postalCode": "95054",
+      "state": "CA",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Listed by operator with leasable space",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/data-centers/americas/silicon-valley/sjc29",
+        "label": "Digital Realty SJC29 data center",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "39,500 sq ft building. Coordinates are the OSM building tagged 'Digital Realty Silicon Valley SJC29'.",
     "facilityType": "data_center"
   },
   {
@@ -51829,9 +52547,16 @@
         "publisher": "Converge Digest",
         "retrievedAt": "2026-09-29",
         "kind": "press"
+      },
+      {
+        "url": "https://hoodline.com/2026/07/hydrogen-hustle-ecl-taps-powercell-to-juice-santa-clara-data-center-boom/",
+        "label": "Hydrogen hustle: ECL taps PowerCell to juice Santa Clara data center",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-19",
     "notes": "Exact street address not publicly disclosed. Coordinates are Santa Clara city centroid (approximate). Announced April 21, 2026. First phase targets Q4 2026 delivery. ECL CEO Yuval Bachar stated the project addresses SVP grid capacity constraints that have forced other data center developers into multi-year interconnection queues. Project targets AI training and inference workloads.",
     "energy": {
       "source": "mixed",
@@ -52265,6 +52990,8 @@
       "lon": -104.8275475,
       "city": "Englewood",
       "county": "Douglas",
+      "street": "8535 Highfield Pkwy",
+      "postalCode": "80112",
       "state": "CO",
       "precision": "approximate"
     },
@@ -52286,9 +53013,16 @@
         "publisher": "EdgeConneX",
         "retrievedAt": "2026-08-26",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?country=US&state=CO",
+        "label": "PeeringDB facility records, Colorado (EdgeConneX Denver EDCDEN01)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-10-19",
     "notes": "29,800 sq ft facility with 9,300 sq ft of raised floor across two data halls and 3 MW N+1, with an additional 1.5 MW build in progress. EPA ENERGY STAR certified per the operator. On Highfield Parkway in the Meridian/Englewood submarket; coordinates are an approximate street-level point.",
     "facilityType": "data_center"
   },
@@ -55051,6 +55785,50 @@
     "water": {
       "coolingType": "closed_loop"
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "eleven-eleven-systems-thornton-co",
+    "name": "11:11 Systems Thornton Data Center (DEN550)",
+    "operator": "11:11 Systems",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.847081,
+      "lon": -104.979182,
+      "city": "Thornton",
+      "county": "Adams",
+      "street": "550 E 84th Ave",
+      "postalCode": "80229",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Listed as a fully operational facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/11-11-systems-thornton",
+        "label": "11:11 Systems: Thornton",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/11867",
+        "label": "PeeringDB: Sungard AS Thornton",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Built 2004 and previously operated under the Sungard Availability Services and iland brands. PeeringDB still lists the Sungard name. Current 11:11 Systems operation comes from a third-party listing and has not been confirmed by the operator.",
     "facilityType": "data_center"
   },
   {
@@ -60208,6 +60986,53 @@
     "facilityType": "data_center"
   },
   {
+    "id": "expedient-centennial-co",
+    "name": "Expedient Denver (Centennial) Data Center",
+    "operator": "Expedient",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5812368,
+      "lon": -104.8426192,
+      "city": "Centennial",
+      "county": "Arapahoe",
+      "street": "7347 S Revere Pkwy",
+      "postalCode": "80112",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 2.5
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021-11-17",
+        "note": "Expedient announced the 32,000 sq ft, 2.5 MW Centennial data center began operations.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.builtincolorado.com/articles/expedient-opening-denver-data-center-hiring",
+        "label": "Expedient Opens Denver-Area Data Center",
+        "publisher": "Built In Colorado",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=7347+South+Revere+Parkway,+Centennial,+CO&format=json",
+        "label": "OSM Nominatim geocode: Building C, 7347 South Revere Parkway",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "The street address comes from directory listings and the OSM building record (Building C), not the launch article. The facility was previously associated with Digital Fortress.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "expedient-cleveland-neo-oh",
     "name": "Expedient Cleveland (NEO 151 / NEO 152)",
     "operator": "Expedient",
@@ -63489,9 +64314,16 @@
         "publisher": "KOAA",
         "retrievedAt": "2026-09-30",
         "kind": "press"
+      },
+      {
+        "url": "https://www.rmpbs.org/news/business-economy/parker-colorado-data-center",
+        "label": "One of the state's largest data centers is coming to Parker. Some locals aren't happy.",
+        "publisher": "Rocky Mountain PBS",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-10-19",
     "notes": "249,000 sq ft on 17 acres on Compark Boulevard near South Chambers Road. The town of Parker approved rezoning and a data center overlay district in February 2024 after a January 2024 planning-commission approval. A $19.3 million Douglas County business-personal-property tax rebate over 35 years was scheduled for a commissioner vote the week of 2026-08-11; it is not recorded here as a subsidy because the award had not been made as of the source date. County estimate of 16 permanent positions; company representatives suggested 30-50. Coordinates are an approximate Compark Boulevard geocode, not parcel-confirmed. Distinct from Flexential's existing Aurora, Centennial, Downtown and Englewood Denver-market sites.",
     "energy": {
       "source": "grid",
@@ -66682,6 +67514,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 20,
       "operational": 19.98
     },
     "statusHistory": [
@@ -66726,14 +67559,22 @@
         "publisher": "CT Mirror",
         "retrievedAt": "2026-09-30",
         "kind": "press"
+      },
+      {
+        "url": "https://local478.org/about-us/news-and-updates/ct-construction-digest-monday-march-11-2024/",
+        "label": "CT Construction Digest (Mar 11, 2024) — Stamford Advocate: $80M fuel cell project at former Stanley Works campus in New Britain set to power up in May",
+        "publisher": "IUOE Local 478 / Stamford Advocate",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-10-19",
     "notes": "19.98 MW Bloom Energy fuel-cell microgrid, the Phase I anchor of the Energy & Innovation Park on the former Stanley Black & Decker campus. O&G Industries (Dec 2022 kickoff) names Generate Capital as owner and operator and gives 67 Bloom units. The Siting Council record lists Generate NB Fuel Cells, LLC alongside EIP Investment LLC and shows a construction completion notice filed 2024-06-18. Operational status is inferred from that completion notice; no fetched source states commercial operation or what the plant supplies before the data center is built, so confidence is reported. Unit count: 67 (O&G 2022, CT Mirror 2025) versus 74 in a 2022 Hartford Business Journal report of the Siting Council filing; 67 is recorded.",
     "energy": {
       "source": "on_site_gas",
       "onSiteGenerationMw": 19.98
     },
+    "investmentUsd": 80000000,
     "facilityType": "power_generation",
     "generation": {
       "technology": "other",
@@ -67419,6 +68260,62 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "global-common-cromwell-ct",
+    "name": "Global Common Fuel-Cell Data Center (Geer Street)",
+    "operator": "Global Common LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.6260009,
+      "lon": -72.6611602,
+      "city": "Cromwell",
+      "county": "Middlesex",
+      "street": "Geer Street",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-16",
+        "note": "Advertised by Global Common on its website; no application filed with the town per Mayor James Demetriades",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.govtech.com/artificial-intelligence/residents-in-connecticut-town-fear-giant-sized-data-center",
+        "label": "Residents in Connecticut town fear giant-sized data center (Hartford Courant via TNS)",
+        "publisher": "GovTech / Hartford Courant",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Geer+Street,+Cromwell,+CT&format=json",
+        "label": "OpenStreetMap Nominatim geocode — Geer Street, Cromwell, CT (street-level, not parcel)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "About 1.2 million sq ft of data center space proposed on the ~159-160 acre Geer Street site, replacing a sand-and-gravel operation. Coordinates are the street centroid, not the parcel.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Company plans on-site fuel cells fueled by natural gas from three Enbridge interstate pipelines that share a right-of-way across the site; grid power expected only for office/auxiliary loads. Phase 1 ~40 MW IT; full build-out up to 300+ MW IT (company figures as reported)."
+    },
+    "landAcres": 159,
+    "community": {
+      "status": "contested",
+      "notes": "Residents formed 'Stop Cromwell CT Data Center' and a change.org petition; the planning and zoning commission rejected a proposed one-year data center moratorium 5-2. No zoning or site plan application filed as of Oct 2026; company says it intends to seek zoning approval in early 2027.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "global-reach-ames-ia",
     "name": "Global Reach Ames Data Center",
     "operator": "Global Reach Internet Productions",
@@ -67523,6 +68420,9 @@
       "state": "CA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 10
+    },
     "announcedDate": "2026-07",
     "statusHistory": [
       {
@@ -67560,9 +68460,16 @@
         "publisher": "Valley Voice",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://kmph.com/news/local/global-stack-studies-leasing-2-to-5-acres-at-kings-tulare-fairgrounds-for-emergency-site",
+        "label": "Global Stack studies leasing 2 to 5 acres at Kings, Tulare fairgrounds for emergency site",
+        "publisher": "KMPH FOX26",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-19",
     "notes": "Global Stack LLC (incorporated in Santa Ana, March 2026, no prior construction history) targets ~70 California fairgrounds by 2030. Capacity stated only as a range (8–10 MW per site) and so is not recorded. Location is the fairgrounds centroid (approximate).",
     "water": {
       "coolingType": "closed_loop",
@@ -67703,6 +68610,63 @@
     "community": {
       "status": "contested",
       "notes": "Proposal was on the Solano County Fair Association Board of Directors' meeting agenda for 2026-07-16. Named residents voiced opposition ahead of the meeting: Laurie Shaft (a former data-center-industry worker) warned about water/electricity draw and a possible 2-4 degree local temperature increase; Glencove resident Joe Estrada said he was 'not pro data center' and worried about impacts on Mare Island ratepayers. Organized social-media opposition preceded the meeting. This session found no report of the meeting's outcome.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "global-stack-ventura-county-fairgrounds-ca",
+    "name": "Ventura County Fairgrounds Edge Data Center (Global Stack proposal, dropped)",
+    "operator": "Global Stack LLC",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 34.2756169,
+      "lon": -119.3022499,
+      "city": "Ventura",
+      "county": "Ventura",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-04",
+        "note": "Non-binding MOU with Global Stack confirmed by fairgrounds CEO",
+        "sourceIndex": 1
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-09-16",
+        "note": "Fairgrounds board voted to give Global Stack 30-day notice that it would not move forward with the non-binding MOU",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://spectrumnews1.com/ca/la/politics/2026/09/16/ventura-community-speaks-out-against-plan-they-fear-includes-a-data-center",
+        "label": "Ventura community speaks out against plan they fear includes a data center",
+        "publisher": "Spectrum News 1",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://spectrumnews1.com/ca/la/technology/2026/09/04/company-looks-to-build-data-centers-at-fairgrounds-across-california--including-ventura-county-",
+        "label": "Company looks to build data centers at fairgrounds across California, including Ventura County",
+        "publisher": "Spectrum News 1",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Global Stack pitched container-sized compute, an aircraft landing area and a parking garage, with fairgrounds contributing up to 5 acres of land-use rights. The company disputes the 'data center' label and calls it emergency-resilience infrastructure.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Company said it would use a closed-loop cooling system"
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Residents spoke out against the plan; the fair board ended the MOU",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -75423,6 +76387,7 @@
       "city": "Greenwood Village",
       "county": "Arapahoe",
       "street": "5350 S Valentia Way",
+      "postalCode": "80111",
       "state": "CO",
       "precision": "approximate"
     },
@@ -75444,9 +76409,16 @@
         "publisher": "H5 Data Centers",
         "retrievedAt": "2026-09-13",
         "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?country=US&state=CO",
+        "label": "PeeringDB facility records, Colorado (H5 Data Centers Denver)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-19",
     "notes": "Two independent Tier III, concurrently maintainable buildings totaling 300,000 sq ft on a 12-acre campus in the Denver Tech Center; N+1 backup generators with 48-hour diesel runtime, 24/7 on-site staffing. Marketed as Denver's only wholesale colocation facility with ~15 years at 100% uptime. Water/cooling-circuit type not stated in either operator page checked (2026-09-13) — omitted rather than guessed.",
     "energy": {
       "source": "grid",
@@ -76954,7 +77926,7 @@
         "url": "https://www.hayward-ca.gov/business/for-developers/data-center-development-applications",
         "label": "Data Center Development Applications — City of Hayward",
         "publisher": "City of Hayward",
-        "retrievedAt": "2026-09-29",
+        "retrievedAt": "2026-10-19",
         "kind": "permit"
       },
       {
@@ -76972,7 +77944,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-19",
     "notes": "Roughly 300,000 sq ft data center building within the four-building Hayward Exchange @92 campus. The contractor's project page names Hines and MetLife Investment Management as owners and describes partial occupancy by Amazon; the city register names Hines as developer.",
     "facilityType": "data_center"
   },
@@ -79685,6 +80657,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "intel-santa-clara-hpc-data-center-ca",
+    "name": "Intel Santa Clara High-Performance Computing Data Center",
+    "operator": "Intel Corporation",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 37.3882663,
+      "lon": -121.963779,
+      "city": "Santa Clara",
+      "county": "Santa Clara",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2024-05-09",
+        "note": "Existing Intel HPC data center; Bloom fuel-cell expansion agreement announced",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.bloomenergy.com/news/bloom-energy-announces-largest-silicon-valley-data-center-power-capacity-agreement/",
+        "label": "Bloom Energy Announces Largest Silicon Valley Data Center Power Capacity Agreement",
+        "publisher": "Bloom Energy",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Intel describes the facility as running at 1.06 PUE, with over 400,000 Xeon servers, 700+ PB of storage and 800,000+ network ports. It supports Intel Products and Intel Foundry. The point is Intel's Santa Clara HQ campus; the exact data center building is not pinned.",
+    "energy": {
+      "source": "mixed",
+      "notes": "Bloom Energy solid-oxide fuel cells on site since 2014; May 2024 agreement adds more MW for the next data center expansion (MW not disclosed)"
+    },
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.06,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
+  },
+  {
     "id": "intermountain-power-delta-ut",
     "name": "Intermountain Power Project (IPP Renewed)",
     "operator": "Intermountain Power Agency",
@@ -82163,9 +83179,16 @@
         "publisher": "Calexico Chronicle",
         "retrievedAt": "2026-09-29",
         "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/330mw-google-linked-data-center-proposed-in-southern-california",
+        "label": "330MW Google-linked data center proposed in Southern California",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-19",
     "notes": "Coordinates approximate; actual site is near Aten Road and Clark Road just outside Imperial city limits. Developer Sebastian Rucci (Imperial Valley Computer Manufacturing) proposes ~950,000 sq ft facility described by developer as 'designed exclusively for advanced artificial intelligence and machine learning operations.' Imperial County Board of Supervisors was deliberating an emergency moratorium on new data center approvals as of June 4, 2026 — adoption not confirmed by cited source. Annual promised tax revenue: ~$28M.",
     "energy": {
       "source": "grid",
@@ -83997,6 +85020,58 @@
       "unitCount": 1,
       "notes": "645 MW (net summer rating) natural gas combined-cycle unit at KU's E.W. Brown Generating Station; estimated cost $1.38 billion, targeted in service 2030."
     }
+  },
+  {
+    "id": "kyndryl-boulder-co",
+    "name": "Kyndryl Boulder Data Center (former IBM Boulder campus)",
+    "operator": "Kyndryl",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.0890431,
+      "lon": -105.1976845,
+      "city": "Boulder",
+      "county": "Boulder",
+      "street": "6300 Diagonal Hwy",
+      "postalCode": "80301",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 15,
+      "operational": 6
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Listed as operational with future phases planned.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/kyndryl-boulder",
+        "label": "Kyndryl: Boulder",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=6300+Diagonal+Highway,+Boulder,+CO&format=json",
+        "label": "OSM Nominatim geocode: Building 1, 6300 Diagonal Highway",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Enterprise data center carried over from IBM in the 2021 Kyndryl spin-off. About 115,000 sq ft building with about 70,000 sq ft of data center. Phase 1 is about 6 MW and the ultimate design is about 15 MW (third-party listing). Coordinates are for Building 1 on the shared campus.",
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Outside-air economization for nearly half the year with a heat-exchanger mechanical design; cooling circuit type not stated."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "kyndryl-research-triangle-park-durham-nc",
@@ -87761,6 +88836,49 @@
     ],
     "lastUpdated": "2026-07-23",
     "notes": "1150 Regal Row, Dallas — distinct facility from Dallas 1 (3180 Irving Blvd), confirmed via baxtel.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-denver-1-1850-pearl-co",
+    "name": "Lumen Denver 1 (1850 Pearl Street Gateway)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.745119,
+      "lon": -104.979669,
+      "city": "Denver",
+      "county": "Denver",
+      "street": "1850 Pearl St",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Listed as a fully operational facility.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-denver-1-1850-north-pearl",
+        "label": "Lumen Denver 1 (1850 North Pearl)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac?country=US&state=CO",
+        "label": "PeeringDB facility records, Colorado (Level(3) Denver, 1850 Pearl)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Former Level 3 Denver gateway site, now under Lumen after the CenturyLink/Level 3 merger and the 2020 rebrand. It is adjacent to CoreSite DE2 (639 E 18th Ave) but is a separate building and operator.",
     "facilityType": "data_center"
   },
   {
@@ -94763,7 +95881,7 @@
         "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/san-jose-data-center",
         "label": "San Jose Data Center (19-SPPE-04), applicant Microsoft Corporation, 1657 Alviso-Milpitas Road",
         "publisher": "California Energy Commission",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-19",
         "kind": "permit"
       },
       {
@@ -94777,7 +95895,7 @@
         "url": "http://web.archive.org/web/20260813091228/https://www.sanjoseca.gov/your-government/departments-offices/planning-building-code-enforcement/planning-division/data-center-and-other-large-energy-use-projects",
         "label": "City of San José — Data Center and other Large Energy-Use Projects (application list updated 2026-07-13; Wayback capture 2026-08-13)",
         "publisher": "City of San José Planning Division",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-19",
         "kind": "permit"
       },
       {
@@ -94788,7 +95906,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-19",
     "notes": "Microsoft's first self-owned/operated data center in San Jose. Groundbreaking June 10, 2026, target completion 2028. 64-acre site (1657 Alviso-Milpitas Rd), two-building campus. Distinct from the already-tracked Prologis San Jose records.",
     "energy": {
       "source": "grid",
@@ -97578,7 +98696,7 @@
         "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/san-jose-data-center-04",
         "label": "California Energy Commission — San José Data Center 04 (22-SPPE-02), 97.8 MW, Orchard Parkway & Component Drive",
         "publisher": "California Energy Commission",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-19",
         "kind": "permit"
       },
       {
@@ -97589,7 +98707,7 @@
         "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-19",
     "notes": "Distinct from the Microsoft Alviso campus already tracked: separate parcel (APNs 101-02-019 and 101-02-020 at 2515 Orchard Parkway, about 4 km from 1657 Alviso-Milpitas Road) and a separate CEC docket (22-SPPE-02 vs 19-SPPE-04). Still under CEC review as of the July 2025 fourth revised project description.",
     "energy": {
       "source": "grid",
@@ -99318,7 +100436,7 @@
     "id": "mission-college-data-center-santa-clara-ca",
     "name": "Mission College Data Center",
     "operator": "Oppidan",
-    "status": "permitted",
+    "status": "operational",
     "confidence": "confirmed",
     "location": {
       "lat": 37.3887231,
@@ -99336,6 +100454,12 @@
         "date": "2020-08-13",
         "note": "Notice of Determination filed for the Mission College Data Center; the CEC granted the small power plant exemption for the associated backup generating facility.",
         "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "2305 Mission College Blvd is now an AWS campus. Building 1/A is listed as operational since 2023 by two trackers, and a second building is planned for 2027.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -99359,9 +100483,23 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-09-14",
         "kind": "osm"
+      },
+      {
+        "url": "https://cleanview.co/data-centers/california/1341/aws-mission-college-dc---building-1",
+        "label": "AWS Mission College DC - Building 1",
+        "publisher": "Cleanview",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/campus/amazon-mission-college-sc-campus",
+        "label": "Amazon: Mission College SC Campus",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-19",
     "notes": "Two three-story data center buildings totalling 490,000 sq ft at Mission College Boulevard and Agnew Road. Operator is recorded as the applicant of record in both fetched filings; secondary reporting associates the site with Amazon Web Services, but no source fetched this session states that, so it is deliberately not asserted here.",
     "energy": {
       "utility": "Silicon Valley Power",
@@ -101631,6 +102769,55 @@
     "aiClassification": "likely"
   },
   {
+    "id": "ne-edge-killingly-ct",
+    "name": "NE Edge Killingly Data Center (125 Alexander Parkway)",
+    "operator": "NE Edge LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.8702555,
+      "lon": -71.8965095,
+      "city": "Killingly",
+      "county": "Windham",
+      "street": "125 Alexander Parkway",
+      "postalCode": "06233",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2023-08-24",
+        "note": "Killingly approved sale of the 125 Alexander Parkway parcel to NE Edge for $5 million on August 8; NE Edge also intends to develop two adjacent parcels",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/ne-edge-purchases-a-parcel-of-land-in-connecticut",
+        "label": "NE Edge purchases a parcel of land in Connecticut (Killingly, 125 Alexander Parkway)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=125+Alexander+Parkway,+Killingly,+CT&format=json",
+        "label": "OpenStreetMap Nominatim geocode — Alexander Parkway, Killingly, CT (street-level)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Jobs: the source gives 80-100 long-term and 1,500-2,000 construction jobs; the lower bounds are recorded. No post-2023 evidence of closing or construction was found, and NE Edge's other CT sites (Waterford, Groton, Bozrah) did not proceed, so treat the status as unverified.",
+    "jobs": {
+      "construction": 1500,
+      "permanent": 80,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "ne-edge-millstone-ct",
     "name": "NE Edge Millstone Nuclear Data Center",
     "operator": "NE Edge",
@@ -101683,14 +102870,33 @@
         "publisher": "CT Mirror",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/waterford-asked-host-data-center-013100998.html",
+        "label": "Waterford asked to host data center project at Millstone (The Day, Feb 2023)",
+        "publisher": "The Day (via Yahoo News)",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.energizect.com/sites/default/files/documents/%234A%20-%20CT%20Data%20Center%20Proposed%20Projects%20Summary_2026-08-11_CI_MM.pdf",
+        "label": "Connecticut Data Center Proposed Projects (2026 Summary)",
+        "publisher": "Energize Connecticut",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-19",
     "notes": "Connecticut has no hyperscale data centers. Governor Lamont's administration has since required new data centers to bring their own power generation rather than draw from the grid, and has proposed a PILOT framework in lieu of the prior tax incentive structure. Only one company (Cigna) used Connecticut's data center tax incentive since its enactment.",
     "energy": {
       "source": "nuclear",
       "utility": "Dominion Energy (Millstone Nuclear Power Station)",
       "notes": "Proposed direct electrical interconnection to Millstone Units 2 and 3; 15% of Millstone output reserved for data centers. Host fee agreement executed March 2023 ($231M over 30 years to Waterford in lieu of taxes)."
+    },
+    "jobs": {
+      "construction": 1500,
+      "permanent": 200,
+      "sourceIndex": 2
     },
     "community": {
       "status": "opposed",
@@ -105410,6 +106616,48 @@
     "investmentUsd": 2800000000,
     "jobs": {
       "permanent": 27,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "northpoint-1200-graphics-drive-modesto-ca",
+    "name": "1200 Graphics Drive Data Center (reported NorthPoint Development inquiry)",
+    "operator": "NorthPoint Development (reported)",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 37.6517569,
+      "lon": -121.0209601,
+      "city": "Modesto",
+      "county": "Stanislaus",
+      "street": "1200 Graphics Drive",
+      "postalCode": "95351",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09",
+        "note": "Developer reportedly lobbied councilmembers; city says no plans have been submitted",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.turlockjournal.com/news/local/data-centers-two-toxic-words-that-frighten-stanislaus-leaders-are-they-an-existential-threat-or-unique-opportunity/",
+        "label": "'Data centers': two toxic words that frighten Stanislaus leaders",
+        "publisher": "Turlock Journal",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Former FMC barium plant site off Highway 99, north of Kansas Avenue. NorthPoint reportedly lobbied councilmembers. An inquiring developer had 25–50 MW in mind, but the article does not confirm that was NorthPoint. City officials said no plans had been submitted, and Modesto zoning currently prohibits data centers.",
+    "community": {
+      "status": "opposed",
+      "notes": "About three hours of mostly opposing public comment at a Modesto council meeting; some called for a moratorium",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -109192,7 +110440,7 @@
         "url": "http://web.archive.org/web/20260813091228/https://www.sanjoseca.gov/your-government/departments-offices/planning-building-code-enforcement/planning-division/data-center-and-other-large-energy-use-projects",
         "label": "City of San José — Data Center and other Large Energy-Use Projects (application list updated 2026-07-13; Wayback capture 2026-08-13)",
         "publisher": "City of San José Planning Division",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-19",
         "kind": "permit"
       },
       {
@@ -109217,7 +110465,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-19",
     "notes": "Rockpoint Group bought the parcel in 2022; Oppidan is the applicant. Site is next to Coyote Creek, ~1.3 miles from PG&E's Santa Teresa substation per The Real Deal.",
     "landAcres": 10,
     "facilityType": "data_center"
@@ -118126,9 +119374,23 @@
         "publisher": "KQED",
         "retrievedAt": "2026-09-29",
         "kind": "press"
+      },
+      {
+        "url": "https://www.energy.ca.gov/powerplant/backup-generating-system/silver-creek-backup-generating-facility-scbgf",
+        "label": "Silver Creek Backup Generating Facility (SCBGF), Docket 26-SPPE-02",
+        "publisher": "California Energy Commission",
+        "retrievedAt": "2026-10-19",
+        "kind": "permit"
+      },
+      {
+        "url": "http://web.archive.org/web/20260813091228/https://www.sanjoseca.gov/your-government/departments-offices/planning-building-code-enforcement/planning-division/data-center-and-other-large-energy-use-projects",
+        "label": "City of San José – Data Center and Large Energy-Use Projects (SP26-016), archived 2026-08-13",
+        "publisher": "City of San José",
+        "retrievedAt": "2026-10-19",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-19",
     "notes": "5977 Silver Creek Valley Road, South San Jose. Three-story facility, 516,000 sq ft. Permit filed July 2026; ~2-year buildout once approved. Prologis states it will self-fund substation/transmission costs. Distinct from Prologis's already-tracked Project Sail, Project Cardinal, and Project Mila entries. Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -119579,6 +120841,8 @@
       "lon": -104.7241,
       "city": "Aurora",
       "county": "Arapahoe",
+      "street": "1160 N Gun Club Rd",
+      "postalCode": "80018",
       "state": "CO",
       "precision": "exact"
     },
@@ -119621,9 +120885,16 @@
         "publisher": "Colorado Public Radio",
         "retrievedAt": "2026-09-30",
         "kind": "press"
+      },
+      {
+        "url": "https://q.com/data-centers/denver/",
+        "label": "QTS Denver 1 (Aurora-Denver) campus",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-10-19",
     "notes": "1160 N. Gun Club Rd, Aurora, CO 80018; eastern Aurora near E-470. Former JPMorgan data center site. Four-building campus on 67 acres. Colorado's first hyperscale facility at this scale. Coordinates based on Gun Club Rd address. Investment amount and specific job counts (previously $1B, 500 construction, 77 permanent) removed — not confirmed by cited sources. QTS Data Centers is owned by Blackstone (2021 take-private). As of 2026-07-08, one of the campus's three buildings is complete, a second is nearly finished, and site work has begun on the third. A July 2025 permit application seeks 98 additional diesel backup generators on top of the existing 40.",
     "energy": {
       "source": "grid",
@@ -122894,18 +124165,32 @@
         "url": "https://gazette.com/2026/06/12/colorado-springs-administratively-approves-data-center-on-garden-of-the-gods-road/",
         "label": "Colorado Springs administratively approves data center on Garden of the Gods Road (read via Internet Archive)",
         "publisher": "Colorado Springs Gazette",
-        "retrievedAt": "2026-08-26",
+        "retrievedAt": "2026-10-19",
         "kind": "press"
       },
       {
         "url": "https://gazette.com/2026/03/28/large-data-center-may-be-heading-to-former-computer-chip-facility-in-colorado-springs/",
         "label": "Large data center may be heading to former computer chip facility in Colorado Springs (read via Internet Archive)",
         "publisher": "Colorado Springs Gazette",
-        "retrievedAt": "2026-08-26",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://krdo.com/news/2026/04/06/data-center-could-come-to-colorado-springs/",
+        "label": "AI data center could come to Colorado Springs",
+        "publisher": "KRDO",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://krdo.com/news/2026/09/18/project-taurus-decision-postponed/",
+        "label": "Data center developer says it is 'evaluating' partnership after tense Colorado Springs City Council meeting",
+        "publisher": "KRDO",
+        "retrievedAt": "2026-10-19",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-10-19",
     "notes": "50 MW data center at the former Intel plant in Colorado Springs, El Paso County. Coordinates are the Colorado Springs area centroid.",
     "energy": {
       "source": "grid",
@@ -122915,6 +124200,10 @@
     "water": {
       "coolingType": "closed_loop",
       "notes": "Air-cooled closed-loop system with 36 chillers (34 typically running at 75%); the developer says the roughly 200,000 gallons in the loop are not replenished because there is no evaporation, leaving only domestic water use for occupants."
+    },
+    "jobs": {
+      "construction": 600,
+      "sourceIndex": 6
     },
     "community": {
       "status": "contested",
@@ -123881,6 +125170,126 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "renew-amston-colchester-ct",
+    "name": "ReNew Amston Data Center Campus (42 Old Amston Road)",
+    "operator": "ReNew Developers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.5920812,
+      "lon": -72.3379585,
+      "city": "Colchester",
+      "county": "New London",
+      "street": "42 Old Amston Road",
+      "postalCode": "06415",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 10
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-08",
+        "note": "ReNew (filing as CMMD LLC) sought a preliminary zone-change review in September 2026; no formal zoning approval yet",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hoodline.com/2026/10/colchester-data-center-plan-on-old-amston-road-sparks-resident-pushback/",
+        "label": "Colchester data center plan on Old Amston Road sparks resident pushback",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wfsb.com/2026/10/07/colchester-data-center-proposal-draws-resident-pushback-ahead-town-hall-meeting/",
+        "label": "Colchester data center proposal draws resident pushback ahead of town hall meeting",
+        "publisher": "WFSB",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://portal.ct.gov/CSC/3_Petitions/Petition-Nos-1501-1600/PE1533",
+        "label": "CT Siting Council Petition No. 1533 — ReNew Developers, customer-side fuel cell, 42 Old Amston Road, Colchester",
+        "publisher": "Connecticut Siting Council",
+        "retrievedAt": "2026-10-19",
+        "kind": "permit"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=42+Old+Amston+Road,+Colchester,+CT&format=json",
+        "label": "OpenStreetMap Nominatim geocode — 42 Old Amston Road, Colchester, CT",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Marketed with Gray Wolf Data Centers as 'ReNew Amston 2'. WFSB: two buildings (rack space, plus a 20,000 sq ft data center) of 5 MW each. The site is 17.15 wooded acres (Hoodline).",
+    "energy": {
+      "notes": "Behind-the-meter fuel cell power. The CT Siting Council approved a 4.99 MW customer-side Bloom Energy fuel cell at this address (Petition 1533, Oct 2022)."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Residents packed an October 2026 town hall, raising traffic, noise, water, lighting and environmental concerns; some asked for a data center moratorium.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "renew-old-amston-fuel-cell-colchester-ct",
+    "name": "Old Amston Road Customer-Side Fuel Cell Facility (42 Old Amston Road)",
+    "operator": "ReNew Developers, LLC",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.5920812,
+      "lon": -72.3379585,
+      "city": "Colchester",
+      "county": "New London",
+      "street": "42 Old Amston Road",
+      "postalCode": "06415",
+      "state": "CT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 4.99
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2022-10-14",
+        "note": "CT Siting Council Decision and Staff Report on Petition No. 1533 (declaratory ruling for a 4.99 MW customer-side fuel cell); a motion to reopen and modify was decided 2023-07-21",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://portal.ct.gov/CSC/3_Petitions/Petition-Nos-1501-1600/PE1533",
+        "label": "CT Siting Council Petition No. 1533 — ReNew Developers, 4.99 MW customer-side fuel cell, 42 Old Amston Road, Colchester",
+        "publisher": "Connecticut Siting Council",
+        "retrievedAt": "2026-10-19",
+        "kind": "permit"
+      },
+      {
+        "url": "https://portal.ct.gov/csc/3_petitions/petition-nos-1501-1600/pe1533a?archived=true",
+        "label": "CT Siting Council Petition No. 1533A — motion to reopen; Decision and Staff Report 11/14/23; Request for Extension of Construction Time and Council Decision 02/04/26",
+        "publisher": "Connecticut Siting Council",
+        "retrievedAt": "2026-10-19",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "The docket lists a 02/04/26 request to extend construction time, with a Council decision whose outcome the page does not state. No evidence of construction found.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "notes": "Bloom Energy Server 5 fuel cells (petition Exhibit B spec sheet). Customer-side generation for the co-located ReNew Amston data center proposal at the same address."
+    }
   },
   {
     "id": "renew-riverside-bristol-ct",
@@ -130633,7 +132042,7 @@
         "url": "https://www.serverfarmllc.com/los-angeles-data-center/",
         "label": "Serverfarm Los Angeles (LAX1) data center page",
         "publisher": "Serverfarm",
-        "retrievedAt": "2026-08-02",
+        "retrievedAt": "2026-10-19",
         "kind": "other"
       },
       {
@@ -130665,7 +132074,7 @@
         "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-08-02",
+    "lastUpdated": "2026-10-19",
     "notes": "Formerly T5 Data Centers (T5@LA), built 2011 (~$30M construction cost); sold to Serverfarm + NantWorks for $71M in April 2021 and rebranded LAX1. Capacity corrected: Serverfarm's own current site discloses 17.3MW IT capacity / 26MVA utility capacity (not the 22MW figure some discovery leads cite, which conflates the 2021 acquisition press release's '22 MVA' apparent-power figure with real MW); datacenterHawk independently corroborates ~18.3MW commissioned. aiClassification set to 'likely' on the strength of facility-specific 'AI-ready... liquid cooling... 200 W/sq ft' language on Serverfarm's current site, though no named AI/HPC tenant was confirmed. Distinct from an unrelated, separate 2026 community-opposition story at 750 North Nash Street (a different, proposed, since-withdrawn project) - no opposition attaches to this facility.",
     "facilityType": "data_center",
     "aiClassification": "likely"
@@ -132263,9 +133672,16 @@
         "publisher": "Cleanview",
         "retrievedAt": "2026-09-29",
         "kind": "other"
+      },
+      {
+        "url": "https://sfyimby.com/2021/03/permits-filed-for-data-center-at-1200-memorex-drive-santa-clara.html",
+        "label": "Permits Filed for Data Center at 1200 Memorex Drive, Santa Clara",
+        "publisher": "SFYIMBY",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-29",
+    "lastUpdated": "2026-10-19",
     "notes": "Site of the former Memorex headquarters. Four-story data center (472,920 sq ft) with a six-story ancillary office (87,520 sq ft), per Baxtel. Corgan states 60 MW critical load on an 11-acre site; Cleanview gives 9 acres. Operational status conflicts between sources.",
     "energy": {
       "source": "grid",
@@ -133739,6 +135155,60 @@
       "coolingType": "closed_loop"
     },
     "landAcres": 127.45,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "spartan-aemetis-riverbank-industrial-complex-ca",
+    "name": "Riverbank Industrial Complex Data Center",
+    "operator": "Spartan Data Centers (with Aemetis, Inc.)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.7276467,
+      "lon": -120.922033,
+      "city": "Riverbank",
+      "county": "Stanislaus",
+      "state": "CA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 60
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-09",
+        "note": "Aemetis developing a 60 MW data center at the Riverbank Industrial Complex; city moratorium on data center land-use approvals",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.yahoo.com/news/us/articles/stanislaus-city-considers-longer-data-230000804.html",
+        "label": "Stanislaus city considers a longer data center moratorium to evaluate new state laws (Modesto Bee)",
+        "publisher": "Modesto Bee via Yahoo News",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.turlockjournal.com/news/local/data-centers-two-toxic-words-that-frighten-stanislaus-leaders-are-they-an-existential-threat-or-unique-opportunity/",
+        "label": "'Data centers': two toxic words that frighten Stanislaus leaders",
+        "publisher": "Turlock Journal",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "The site is the former Army ammunition plant at Claus and Claribel roads, and Aemetis is the city's leasing agent for it. The ~$1 billion investment is Spartan's own claim as reported. The status of the moratorium extension vote was not confirmed.",
+    "energy": {
+      "notes": "Aemetis president said the facility would use Hetch Hetchy power and on-site wells"
+    },
+    "investmentUsd": 1000000000,
+    "community": {
+      "status": "contested",
+      "notes": "Riverbank imposed a 45-day data center moratorium on Sept. 8, 2026 and weighed a ~10.5-month extension in October",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -135553,11 +137023,18 @@
         "url": "http://web.archive.org/web/20260813091228/https://www.sanjoseca.gov/your-government/departments-offices/planning-building-code-enforcement/planning-division/data-center-and-other-large-energy-use-projects",
         "label": "City of San José — Data Center and other Large Energy-Use Projects (application list updated 2026-07-13; Wayback capture 2026-08-13)",
         "publisher": "City of San José Planning Division",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-19",
         "kind": "permit"
+      },
+      {
+        "url": "https://docs.cpuc.ca.gov/PublishedDocs/Published/G000/M603/K293/603293409.PDF",
+        "label": "CPUC Resolution E-5447 – PG&E EPC Agreement with STACK Infrastructure (Ringwood Switching Station)",
+        "publisher": "California Public Utilities Commission",
+        "retrievedAt": "2026-10-19",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-19",
     "notes": "At the corner of Trade Zone Boulevard and Ringwood Avenue (2400 Ringwood Avenue and 1849 Fortune Drive), San Jose — distinct from the tracked STACK Silicon Valley (SVY01/SVY02) and Hayward (SVY03A) sites. Acreage and building square footage appeared only in secondary summaries and are omitted.",
     "energy": {
       "source": "grid",
@@ -135568,6 +137045,7 @@
     "water": {
       "notes": "City of San José approved-project list (PD22-001) states cooling technology is air-cooled and the facility does not use significant amounts of potable water; heat-rejection method not further specified."
     },
+    "landAcres": 9.78,
     "facilityType": "data_center"
   },
   {
@@ -149694,7 +151172,7 @@
     "id": "undisclosed-brighton-cr4-50th-ave-co",
     "name": "Brighton Data Center Complex (County Road 4 & 50th Avenue)",
     "operator": "Undisclosed developer (Dewberry-planned rezoning application)",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 40.015,
@@ -149704,7 +151182,14 @@
       "state": "CO",
       "precision": "approximate"
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-10-19",
+        "note": "Brighton city officials said the developers withdrew the rezoning application for the proposed 2.5M sq ft, eight-building data center campus near County Road 4 and 50th Avenue. The article names Alberta Development Partners and Dewberry as companies behind the proposal.",
+        "sourceIndex": 2
+      }
+    ],
     "sources": [
       {
         "url": "https://www.denver7.com/news/local-news/in-your-community/north-metro/brighton-residents-uncover-proposal-for-massive-data-center-campus-spurring-potential-moratorium",
@@ -149719,9 +151204,16 @@
         "publisher": "BizWest",
         "retrievedAt": "2026-09-30",
         "kind": "press"
+      },
+      {
+        "url": "https://www.denver7.com/news/local-news/in-your-community/north-metro/plans-for-data-center-campus-in-brighton-halted-after-developers-withdraw-rezoning-application",
+        "label": "Plans for data center campus in Brighton halted after developers withdraw rezoning application",
+        "publisher": "Denver7",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-10-19",
     "notes": "The plan is eight two-story data center buildings, about 315,000 sq ft each and 2.52 million sq ft in total, in the Weld County portion of Brighton near County Road 4 and 50th Avenue. The city has received a rezoning application but no public hearing has been held. Planning firm Dewberry held pre-application meetings with city staff in January and July of the prior year. The developer and end user are not named, and no MW or acreage is disclosed. Coordinates are an approximate point at WCR 4 and N 50th Ave from OSM/Nominatim, not a parcel. This may relate to the aggregator-listed 'Cielo Hudson' Weld County site, but no source links them.",
     "community": {
       "status": "opposed",
@@ -150073,6 +151565,56 @@
       "technology": "wind",
       "notes": "Sited on the north and east side of Neligh in Antelope County. Ownership differs from the already-tracked Thunderhead Wind Energy Center, which is also partly in Antelope County — the two are separate projects."
     }
+  },
+  {
+    "id": "us-signal-co01-englewood-co",
+    "name": "US Signal CO01 Denver Data Center",
+    "operator": "US Signal",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.559076,
+      "lon": -104.833542,
+      "city": "Englewood",
+      "street": "8675 Concord Center Dr",
+      "postalCode": "80112",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-10-15",
+        "note": "Operator hosted a data center tour at the facility; operator spec page lists a 2015 build year.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://ussignal.com/data-centers/co01-denver/",
+        "label": "CO01 Denver Data Center",
+        "publisher": "US Signal",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/12305",
+        "label": "PeeringDB: US Signal CO01 - Denver",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://ussignal.com/?p=4505",
+        "label": "US Signal CIO Roundtable & Data Center Tour (Denver)",
+        "publisher": "US Signal",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "The operator spec page lists 1,500 kW 2N generators, 1,125 kW UPS (expandable to 2 MW) and a 2,500 kVA utility feed. Critical IT load is not published. PeeringDB lists the organization as OneNeck IT Solutions LLC.",
+    "facilityType": "data_center"
   },
   {
     "id": "us-signal-ia01-waukee-ia",
@@ -153050,6 +154592,49 @@
     "aiClassification": "likely"
   },
   {
+    "id": "visa-occ-highlands-ranch-co",
+    "name": "Visa OCC North & OCC South Data Centers (Highlands Ranch)",
+    "operator": "Visa Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5536247,
+      "lon": -104.9944646,
+      "city": "Highlands Ranch",
+      "county": "Douglas",
+      "postalCode": "80129",
+      "state": "CO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Uptime Institute lists Visa's OCC North and OCC South data centers in Highlands Ranch.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://uptimeinstitute.com/uptime-institute-awards/client/visa-inc/41",
+        "label": "Uptime Institute awards: Visa Inc. data centers",
+        "publisher": "Uptime Institute",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Visa,+Highlands+Ranch,+Colorado&format=json",
+        "label": "OSM Nominatim: Visa Inc., South Ridgeline Boulevard, Highlands Ranch",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Two Visa data centers (OCC North and OCC South) in Highlands Ranch per Uptime Institute. The coordinates are the OSM point for Visa Inc. on S Ridgeline Blvd, not a confirmed point for each building. No capacity is published.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "vision-net-billings-central-ave-billings-mt",
     "name": "Vision Net Billings 2 (1030 Central Avenue)",
     "operator": "Vision Net",
@@ -153915,6 +155500,71 @@
     ],
     "lastUpdated": "2026-09-21",
     "notes": "Walmart's East Data Center, on the David Glass Technology Center campus (DGTC) at 805 SE Moberly Ln, Bentonville. Identity, owner, address, county and coordinates are from the Arkansas DEQ Permit Data System facility record AFIN 04-01474, which names the site \"WAL-MART DGTC/ISD #9280\" with alternate name \"EAST DATA CENTER\", owner WALMART INC, status Active. Coordinates are ADEQ's own (36.364241, -94.182712; NAD83, ADEQ photo interpolation, measured 2013-02-04), which supersede the earlier US Census street geocode they sit ~87 m from. precision remains approximate: the campus holds several buildings and the specific data-hall footprint is not established. capacityMw omitted: the aggregator figures disagree (10-25 MW vs 12.884 MW) and neither is a primary source. ⚠ datacenter.fyi (source 1) additionally states the site \"connects to the El Paso Electric power grid\" — El Paso Electric serves only West Texas and southern New Mexico and has no Arkansas service territory, so that field is a data-quality error in that source and nothing from it is relied on beyond corroborating the site's existence.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "walmart-colorado-springs-co",
+    "name": "Walmart Colorado Springs Data Center",
+    "operator": "Walmart",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.985587,
+      "lon": -104.7874102,
+      "city": "Colorado Springs",
+      "county": "El Paso",
+      "street": "10625 Federal Dr",
+      "postalCode": "80921",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2012-10",
+        "note": "Walmart quietly opened its $100 million, 210,000 sq ft corporate data center.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://gazette.com/2012/11/23/wal-marts-new-data-center-seen-as-a-big-plus-for-city-36ac2f4a-bd18-5258-9230-6d9568c2fefa/",
+        "label": "Wal-Mart's new data center seen as a big plus for city",
+        "publisher": "The Gazette (Colorado Springs)",
+        "retrievedAt": "2026-10-19",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/walmart-colorado-springs",
+        "label": "Walmart Colorado Springs",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Walmart+data+center+Colorado+Springs&format=json",
+        "label": "OSM Nominatim: Walmart Colorado Data Center (building, data_center)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-19",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "Corporate enterprise data center. The jobs figures (about 200 construction, about 30 permanent) are 2012 expectations. Baxtel lists the site as currently operational.",
+    "subsidies": [
+      {
+        "program": "Sales and business personal property tax rebates",
+        "amountUsd": 4500000,
+        "jurisdiction": "Colorado Springs / El Paso County (local)",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 100000000,
+    "jobs": {
+      "construction": 200,
+      "permanent": 30,
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
