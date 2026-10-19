@@ -133,6 +133,20 @@
       "label": "Low (<10%)"
     }
   },
+  "365-data-centers-aurora-co1-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "365-data-centers-boca-raton-fl": {
     "nearestWater": {
       "name": "Lake Rogers",
@@ -909,6 +923,20 @@
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "aerotropolis-industrial-development-aurora-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "aes-delta-wind-tunica-ms": {
@@ -5064,6 +5092,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "axp-blackhart-pathfinder-2-florence-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    }
+  },
   "azimuth-moss-bluff-data-center-calcasieu-parish-la": {
     "nearestWater": {
       "name": "Little Indian Bayou",
@@ -6005,6 +6043,12 @@
       "label": "Low (<10%)"
     }
   },
+  "blackstart-digital-650-harry-road-san-jose-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "blackstone-data-services-bluestone-tazewell-va": {
     "nearestWater": {
       "name": "Mud Fork",
@@ -6846,6 +6890,16 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "broadstone-project-primestone-colorado-springs-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
     }
   },
   "broken-bow-wind-custer-ne": {
@@ -10543,6 +10597,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "connect-data-centers-comstock-street-santa-clara-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "connect-data-centers-eagan-mn": {
     "nearestWater": {
       "name": "Bald Lake",
@@ -11323,6 +11387,16 @@
       "label": "Extremely High (>80%)"
     }
   },
+  "coresite-la3-los-angeles-ca": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "coresite-mi1-miami-fl": {
     "nearestWater": {
       "name": "South Fork Miami River",
@@ -11432,6 +11506,56 @@
       "voltageKv": 230,
       "distanceMi": 2
     },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "coresite-sv2-milpitas-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "coresite-sv4-santa-clara-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "coresite-sv7-santa-clara-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "coresite-sv8-santa-clara-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "coresite-sv9-santa-clara-ca": {
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -15487,6 +15611,22 @@
       "rock": "Carbonate-rock"
     }
   },
+  "digital-realty-lax10-los-angeles-ca": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    }
+  },
+  "digital-realty-lax11-el-segundo-ca": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "digital-realty-lax12-ca": {
     "nearestWater": {
       "name": "Dominguez Channel",
@@ -16061,6 +16201,26 @@
       "voltageKv": 230,
       "distanceMi": 2.9
     },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "digital-realty-sjc15-santa-clara-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "digital-realty-sjc29-santa-clara-ca": {
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -18187,6 +18347,20 @@
       "rock": "Carbonate-rock"
     }
   },
+  "eleven-eleven-systems-thornton-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "elizabeth-solar-allen-parish-la": {
     "nearestWater": {
       "name": "Perkins Branch",
@@ -20139,6 +20313,20 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "expedient-centennial-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "expedient-cleveland-neo-oh": {
@@ -22696,6 +22884,16 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "global-common-cromwell-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Early Mesozoic Basin Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "global-reach-ames-ia": {
     "nearestWater": {
       "name": "Worrell Creek",
@@ -22812,6 +23010,16 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "global-stack-ventura-county-fairgrounds-ca": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
@@ -26106,6 +26314,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "intel-santa-clara-hpc-data-center-ca": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "intermountain-power-delta-ut": {
     "nearestWater": {
       "name": "North Sugarville Reservoir",
@@ -27557,6 +27775,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "kyndryl-boulder-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    }
+  },
   "kyndryl-research-triangle-park-durham-nc": {
     "nearestWater": {
       "name": "Stirrup Iron Creek",
@@ -28801,6 +29029,20 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "lumen-denver-1-1850-pearl-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "lumen-greensboro-1-nc": {
@@ -32905,6 +33147,12 @@
       "rock": "Carbonate-rock"
     }
   },
+  "ne-edge-killingly-ct": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "ne-edge-millstone-ct": {
     "nearestWater": {
       "name": "Niantic River",
@@ -34085,6 +34333,20 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "northpoint-1200-graphics-drive-modesto-ca": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Central Valley Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "northpoint-fairfield-data-center-solano-ca": {
@@ -40131,6 +40393,18 @@
       "rock": "Carbonate-rock"
     }
   },
+  "renew-amston-colchester-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
+  "renew-old-amston-fuel-cell-colchester-ct": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "renew-riverside-bristol-ct": {
     "nearestWater": {
       "name": "Pequabuck River",
@@ -43428,6 +43702,20 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "spartan-aemetis-riverbank-industrial-complex-ca": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "Central Valley Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "springfield-township-andersonville-road-data-center-mi": {
@@ -48474,6 +48762,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "us-signal-co01-englewood-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "us-signal-ia01-waukee-ia": {
     "nearestWater": {
       "name": "Little Walnut Creek",
@@ -49468,6 +49770,20 @@
       "rock": "Sandstone"
     }
   },
+  "visa-occ-highlands-ranch-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "vision-net-billings-central-ave-billings-mt": {
     "nearestWater": {
       "name": "Hogans Slough",
@@ -49813,6 +50129,20 @@
     "aquifer": {
       "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
+    }
+  },
+  "walmart-colorado-springs-co": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "warrenton-group-halifax-road-petersburg-va": {
