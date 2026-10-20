@@ -134,6 +134,15 @@
     }
   },
   "365-data-centers-aurora-co1-co": {
+    "nearestWater": {
+      "name": "First Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -897,6 +906,15 @@
     }
   },
   "aecc-fitzhugh-generating-station-expansion-ozark-ar": {
+    "nearestWater": {
+      "name": "Ozark Lake",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 27.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -926,6 +944,15 @@
     }
   },
   "aerotropolis-industrial-development-aurora-co": {
+    "nearestWater": {
+      "name": "Second Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -3775,6 +3802,15 @@
     }
   },
   "att-hoover-data-center-al": {
+    "nearestWater": {
+      "name": "Cahaba River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -3872,6 +3908,15 @@
     }
   },
   "avaio-digital-leo-behind-the-meter-generation-ar": {
+    "nearestWater": {
+      "name": "Fish Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -5093,6 +5138,15 @@
     }
   },
   "axp-blackhart-pathfinder-2-florence-co": {
+    "nearestWater": {
+      "name": "Coal Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 7
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -5191,6 +5245,15 @@
     }
   },
   "bcbs-alabama-pope-technology-center-birmingham-al": {
+    "nearestWater": {
+      "name": "Little Shades Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -6044,6 +6107,15 @@
     }
   },
   "blackstart-digital-650-harry-road-san-jose-ca": {
+    "nearestWater": {
+      "name": "Arroyo Calero",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6893,6 +6965,15 @@
     }
   },
   "broadstone-project-primestone-colorado-springs-co": {
+    "nearestWater": {
+      "name": "Fountain Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -8468,6 +8549,15 @@
     }
   },
   "clean-cloud-energy-sheridan-data-center-grant-county-ar": {
+    "nearestWater": {
+      "name": "Town Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -10598,6 +10688,15 @@
     }
   },
   "connect-data-centers-comstock-street-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Guadalupe River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -11388,6 +11487,15 @@
     }
   },
   "coresite-la3-los-angeles-ca": {
+    "nearestWater": {
+      "name": "Los Angeles River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -11516,6 +11624,15 @@
     }
   },
   "coresite-sv2-milpitas-ca": {
+    "nearestWater": {
+      "name": "Coyote Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -11526,6 +11643,15 @@
     }
   },
   "coresite-sv4-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -11536,6 +11662,15 @@
     }
   },
   "coresite-sv7-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -11546,6 +11681,15 @@
     }
   },
   "coresite-sv8-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -11556,6 +11700,15 @@
     }
   },
   "coresite-sv9-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -15612,12 +15765,30 @@
     }
   },
   "digital-realty-lax10-los-angeles-ca": {
+    "nearestWater": {
+      "name": "Los Angeles River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
     }
   },
   "digital-realty-lax11-el-segundo-ca": {
+    "nearestWater": {
+      "name": "Dominguez Channel",
+      "kind": "river",
+      "distanceMi": 2.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -16211,6 +16382,15 @@
     }
   },
   "digital-realty-sjc15-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -16221,6 +16401,15 @@
     }
   },
   "digital-realty-sjc29-santa-clara-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -18348,6 +18537,15 @@
     }
   },
   "eleven-eleven-systems-thornton-co": {
+    "nearestWater": {
+      "name": "Kalcevic Reservoir",
+      "kind": "lake",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -20316,6 +20514,15 @@
     }
   },
   "expedient-centennial-co": {
+    "nearestWater": {
+      "name": "Lone Tree Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -22885,6 +23092,15 @@
     }
   },
   "global-common-cromwell-ct": {
+    "nearestWater": {
+      "name": "Chestnut Brook",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -23017,6 +23233,15 @@
     }
   },
   "global-stack-ventura-county-fairgrounds-ca": {
+    "nearestWater": {
+      "name": "Ventura River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -26315,6 +26540,15 @@
     }
   },
   "intel-santa-clara-hpc-data-center-ca": {
+    "nearestWater": {
+      "name": "Saratoga Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -27776,6 +28010,15 @@
     }
   },
   "kyndryl-boulder-co": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -29032,6 +29275,15 @@
     }
   },
   "lumen-denver-1-1850-pearl-co": {
+    "nearestWater": {
+      "name": "Cherry Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -32210,6 +32462,15 @@
     }
   },
   "mill-creek-data-center-auburn-al": {
+    "nearestWater": {
+      "name": "Parkerson Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 8.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -33148,6 +33409,15 @@
     }
   },
   "ne-edge-killingly-ct": {
+    "nearestWater": {
+      "name": "Alexander Lake",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -34336,6 +34606,15 @@
     }
   },
   "northpoint-1200-graphics-drive-modesto-ca": {
+    "nearestWater": {
+      "name": "Dry Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -36190,6 +36469,15 @@
     }
   },
   "paradox-data-union-county-campus-el-dorado-ar": {
+    "nearestWater": {
+      "name": "Bogay Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -40394,12 +40682,30 @@
     }
   },
   "renew-amston-colchester-ct": {
+    "nearestWater": {
+      "name": "Judd Brook",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
     }
   },
   "renew-old-amston-fuel-cell-colchester-ct": {
+    "nearestWater": {
+      "name": "Judd Brook",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -43353,6 +43659,15 @@
     }
   },
   "sollensys-little-rock-data-center-ar": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -43705,6 +44020,15 @@
     }
   },
   "spartan-aemetis-riverbank-industrial-complex-ca": {
+    "nearestWater": {
+      "name": "Stanislaus River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -48565,6 +48889,10 @@
     }
   },
   "uaf-butrovich-data-center-fairbanks-ak": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 236.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -48763,6 +49091,15 @@
     }
   },
   "us-signal-co01-englewood-co": {
+    "nearestWater": {
+      "name": "Lone Tree Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -48947,6 +49284,15 @@
     }
   },
   "us-space-command-c2f-redstone-arsenal-al": {
+    "nearestWater": {
+      "name": "Guntersville Lake",
+      "kind": "lake",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -48957,12 +49303,20 @@
     }
   },
   "usaf-eielson-ai-data-center-eul-ak": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 230.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
     }
   },
   "usaf-jber-ai-data-center-eul-anchorage-ak": {
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -49771,6 +50125,15 @@
     }
   },
   "visa-occ-highlands-ranch-co": {
+    "nearestWater": {
+      "name": "McLellan Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -50132,6 +50495,15 @@
     }
   },
   "walmart-colorado-springs-co": {
+    "nearestWater": {
+      "name": "Kettle Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
