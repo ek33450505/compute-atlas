@@ -11449,7 +11449,7 @@
         "url": "https://www.wflx.com/2026/03/12/florida-based-company-announced-plans-build-ai-data-center-fort-pierce/",
         "label": "Florida-based company announces plans to build AI data center in Fort Pierce",
         "publisher": "WFLX",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-20",
         "kind": "press"
       },
       {
@@ -11466,7 +11466,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-20",
     "notes": "Land and utilities secured. Targeting operational Q4 2026-Q1 2027. Up to 1 GW expansion capacity. Distinct from the withdrawn Sentinel Grove/Project Jarvis project in the same county.",
     "energy": {
       "source": "on_site_gas",
@@ -23117,6 +23117,69 @@
     "aiClassification": "likely"
   },
   {
+    "id": "calpine-edge-moor-energy-center-wilmington-de",
+    "name": "Edge Moor Energy Center",
+    "operator": "Calpine Mid-Atlantic Generation LLC (Constellation Energy)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.73886,
+      "lon": -75.50384,
+      "city": "Wilmington",
+      "county": "New Castle",
+      "street": "200 Hay Road",
+      "postalCode": "19809",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 710.3
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1954-12",
+        "note": "GridInfo (EIA-860 data) gives the plant's initial operation as December 1954 (unit 3). Units 4 and 5 followed in April 1966 and August 1973.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://gridinfo.com/plant/edge-moor/593",
+        "label": "GridInfo: Edge Moor (EIA plant 593), Calpine Mid-Atlantic Generation LLC, with generator list",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gem.wiki/Edge_Moor_Power_Plant",
+        "label": "Global Energy Monitor: Edge Moor Power Plant",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.constellationenergy.com/news/2026/10/constellation-completes-sale-of-brazos-valley-energy-center-to-ls-power.html",
+        "label": "Constellation completes sale of Brazos Valley Energy Center to LS Power (Oct 14, 2026), which says the PJM asset sale including Hay Road and Edge Moor is expected to close by end of 2026",
+        "publisher": "Constellation Energy",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "Calpine's Edge Moor station is on the Wilmington Delaware River waterfront, next to Hay Road Energy Center (tracked separately as hay-road-energy-center-de). Its three steam units stopped burning coal in 2010 after Calpine bought the plant from Pepco Holdings/Conectiv (GEM). OWNERSHIP IS IN TRANSITION: Constellation, which acquired Calpine, has a pending sale of Edge Moor to LS Power, expected to close by end of 2026. Re-check the operator once it closes.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Per GridInfo/EIA-860, three natural gas steam turbines are operating: unit 3 (75 MW, 1954), unit 4 (176.8 MW, 1966) and unit 5 (446 MW, 1973). Generator 10 (12.5 MW, 1963) is a distillate-oil combustion turbine on standby. 710.3 MW is the sum of all four nameplates. The operating steam units alone total 697.8 MW."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 4,
+      "notes": "Part of the Constellation→LS Power PJM divestiture (Bethlehem, York 1, York 2, Hay Road, Edge Moor)."
+    }
+  },
+  {
     "id": "cambrin-project-cornmaze-town-of-beloit-wi",
     "name": "Project Cornmaze Data Center (Town of Beloit)",
     "operator": "Cambrin LLC",
@@ -23655,6 +23718,68 @@
     "generation": {
       "technology": "solar",
       "notes": "About 197,000 modules on roughly 560 acres near Port Allen; DEPCOM Power provided EPC and O&M."
+    }
+  },
+  {
+    "id": "cartier-energy-center-dover-de",
+    "name": "Energy Center Dover (Dover Cogen)",
+    "operator": "Cartier Energy, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.14955,
+      "lon": -75.54734,
+      "city": "Dover",
+      "county": "Kent",
+      "street": "1280 W. North Street",
+      "postalCode": "19904",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 118
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1985-05",
+        "note": "GridInfo (EIA-860 data) gives initial operation as May 1985 (COG1 steam unit). Combustion turbines KD-1 and KD-2 were added in June 2001.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://gridinfo.com/plant/energy-center-dover/10030",
+        "label": "GridInfo: Energy Center Dover (EIA plant 10030), Cartier Energy, LLC, with generator list and operator history",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://dcoenergy.com/?p=690",
+        "label": "DCO Energy: Energy Center Dover, a 111 MW cogeneration project (O&M for Cartier Energy, which bought it from DCO in 2022)",
+        "publisher": "DCO Energy",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gem.wiki/Energy_Center_Dover_power_plant",
+        "label": "Global Energy Monitor: Energy Center Dover power plant",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "A gas cogeneration plant supplying steam to Kraft Heinz and Procter & Gamble plants in Dover (DCO Energy). Ownership has changed several times. GridInfo lists NRG Energy Center Dover LLC (2013–2017), Energy Center Dover LLC (2018–2021) and Cartier Energy, LLC (2022–2025). DCO Energy says Cartier bought the asset in 2022 and DCO operates it. GEM's parent listing appears out of date. The capacity figure is the EIA nameplate sum (18 + 50 + 50 MW). DCO describes the project as 111 MW.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "COG1 (18 MW, combined-cycle steam part, 1985), KD-1 (50 MW, combined-cycle combustion turbine, 2001) and KD-2 (50 MW, gas/distillate simple-cycle combustion turbine, 2001), all GE LM6000PC SPRINT-based per DCO."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 3
     }
   },
   {
@@ -24980,7 +25105,7 @@
         "url": "https://www.csquare.com/data-centers/tampa",
         "label": "Centersquare — Tampa TPA1 data center page: 19,245 sq ft raised floor, 9MW utility power, 2.5MW UPS, 9MW generator",
         "publisher": "Centersquare",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -24998,10 +25123,15 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-20",
     "notes": "19,245 sq ft of raised floor; 9MW of utility and generator capacity against 2.5MW of UPS, so no single IT-load figure is asserted. Roughly 8 miles east of downtown Tampa, outside mandatory evacuation zones, with a 130-mph wind-rated TPO roof. Formerly branded Cyxtera TPA1 / TP1 — OSM still carries the Cyxtera name; Centersquare is the current operator.",
+    "energy": {
+      "source": "grid",
+      "notes": "Operator lists utility capacity of 9 MW, UPS capacity of 2.5 MW and generator capacity of 9 MW."
+    },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "Operator lists chilled water cooling. The heat-rejection method is not stated."
     },
     "facilityType": "data_center"
   },
@@ -25976,11 +26106,11 @@
         "url": "https://baynews9.com/fl/tampa/news/2026/07/10/haines-city-officials-explain-water-capacity-address-data-center-concerns",
         "label": "Haines City water limits puts data center plan on hold",
         "publisher": "Spectrum Bay News 9",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-20",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-20",
     "notes": "300 MW planned, ~74-acre site along Marion Road and State Road 544 East, Haines City, Polk County -- pre-application stage (no site plan, zoning request, or development agreement filed as of Aug 2026), distinct from the already-tracked Lakeland (Ryan Companies/Project Swan) and Fort Meade (Stonebridge/Florida Ecopark) Polk County sites. No precise parcel address, investment figure, or jobs figure disclosed in any source found; coordinates are the Haines City area centroid, not the actual site. The Data Center Dynamics original report (sources[2]) returned a 403 on direct re-fetch this session -- corroborated via Yahoo Finance syndication and independent Citrus Tea investigative reporting citing city commission records; multiple other independent local outlets (WFLA, Fox 13 Tampa Bay, Bay News 9) covered the same story at headline level.",
     "water": {
       "reportedMgd": 0.15,
@@ -26735,20 +26865,56 @@
         "publisher": "dcmap.us",
         "retrievedAt": "2026-10-01",
         "kind": "other"
+      },
+      {
+        "url": "https://datacenterknowledge.com/regulations/officials-approve-data-center-and-cogen-plant-project-in-delaware",
+        "label": "Officials Approve Data Center and Cogen Plant Project in Delaware (Aug 5, 2015)",
+        "publisher": "Data Center Knowledge",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.delmarvapublicmedia.org/local-news/2016-05-05/middletown-data-center-gets-7-5-million-state-grant",
+        "label": "Middletown Data Center Gets $7.5 Million State Grant (AP, May 5, 2016)",
+        "publisher": "Delmarva Public Media",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wmdt.com/?p=47480",
+        "label": "Panel OKs state funding for Middletown data center project (May 5, 2016)",
+        "publisher": "WMDT",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "Never built, and apparently dormant since the air-permit application was put on hold in October 2017. Status stays 'proposed' because no source records a formal withdrawal or cancellation. Treat the status as stalled, not active. The $7.5M state grant was conditional and reimbursement-only. No evidence was found that it was disbursed, so it is not recorded in subsidies. Sources disagree on cost: $250M (DCK 2015), about $400M (DBT 2015) and $350M (applicant, IIC 2016), so investmentUsd is unset. Jobs figures are the applicant's 2016 IIC projections. DBT 2015 cited 'more than 100' full-time and up to 2,000 construction jobs. Partners named at the IIC meeting were Duffield Associates (now Verdantas), MEP Associates and landowner Mautom, LLC. The end operator was never disclosed. The pin is Middletown's OSM boundary centroid, because the 70-acre Westown parcel did not resolve to a point.",
     "energy": {
       "source": "mixed",
       "onSiteGenerationMw": 52.5,
       "notes": "Per the applicant at the May 2016 IIC meeting, the facility would 'mostly pull power from the PJM grid from Middletown' over 138 kV lines from an adjacent substation. An on-site natural-gas cogeneration plant would supply redundancy and peak-period power within air-permit hour limits. DBT and Data Center Knowledge (2015) give the gas plant as 52.5 MW. At the 2016 IIC meeting the applicant described the data center as 40 MW, with 36 MW of white space at a design PUE of 1.4, for a 50 MW total requirement at full build."
     },
+    "subsidies": [
+      {
+        "program": "Delaware Infrastructure Investment Committee grant (reimbursement-only; conditioned on a state air permit within 12 months and financing disclosure)",
+        "amountUsd": 7500000,
+        "jurisdiction": "State of Delaware",
+        "year": "2016",
+        "sourceIndex": 5
+      }
+    ],
+    "investmentUsd": 350000000,
     "landAcres": 70,
     "jobs": {
       "construction": 750,
       "permanent": 117,
       "sourceIndex": 1
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Residents opposed the gas plant over air emissions and property values. Two petitions gathered 530 signatures (2015), and members of the public questioned taxpayer funding for a company with undisclosed financiers (2016).",
+      "sourceIndex": 4
     },
     "facilityType": "data_center"
   },
@@ -30918,6 +31084,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "cogent-pensacola-edge-fl",
+    "name": "Cogent Pensacola Edge Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.4180951,
+      "lon": -87.2092315,
+      "city": "Pensacola",
+      "county": "Escambia",
+      "street": "305 N 6th Ave",
+      "postalCode": "32501",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/en/cogent-tampa",
+        "label": "Cogent Florida data centers listing: Pensacola Edge Data Center, 305 N 6th Ave",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=305+N+6th+Ave,+Pensacola,+FL+32501&format=json",
+        "label": "OpenStreetMap Nominatim geocode of 305 North 6th Avenue, Pensacola",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-20",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "Cogent lists this as an edge data center. Its size and power are not published. Coordinates are a street-address geocode.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "cogent-seattle-federal-way-wa",
     "name": "Cogent Seattle Data Center (Federal Way)",
     "operator": "Cogent Communications",
@@ -30966,6 +31169,80 @@
     ],
     "lastUpdated": "2026-10-12",
     "notes": "A small colocation site. A tracker lists 5.3 MW of power; the operator does not confirm that figure, so it is not recorded as capacity.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cogent-tallahassee-edge-fl",
+    "name": "Cogent Tallahassee Edge Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.4344984,
+      "lon": -84.2887565,
+      "city": "Tallahassee",
+      "county": "Leon",
+      "street": "504 Saint Francis St",
+      "postalCode": "32301",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/en/cogent-tampa",
+        "label": "Cogent Florida data centers listing: Tallahassee Edge Data Center, 504 Saint Francis St",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=504+Saint+Francis+St,+Tallahassee,+FL+32301&format=json",
+        "label": "OpenStreetMap Nominatim geocode of 504 Saint Francis Street, Tallahassee",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-20",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "Cogent lists this as an edge data center. Its size and power are not published. It is separate from EdgeConneX TAL01 (1531 Commonwealth Business Dr). Coordinates are a street-address geocode.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "cogent-tampa-fl",
+    "name": "Cogent Tampa Data Center",
+    "operator": "Cogent Communications",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 27.947747,
+      "lon": -82.459056,
+      "city": "Tampa",
+      "county": "Hillsborough",
+      "street": "400 North Tampa St",
+      "postalCode": "33602",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.cogentco.com/en/cogent-tampa",
+        "label": "Cogent Tampa data centers: Tampa Data Center, 400 North Tampa St",
+        "publisher": "Cogent Communications",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/8566",
+        "label": "PeeringDB facility 8566: Cogent Tampa",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "Cogent lists a 3,298 sq ft data center (42U cabinets) with UPS and backup generator at 400 North Tampa St. The same building also hosts a WOW! Business Tampa datacenter, per PeeringDB.",
     "facilityType": "data_center"
   },
   {
@@ -31964,13 +32241,16 @@
       "state": "FL",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 0.74
+    },
     "statusHistory": [],
     "sources": [
       {
         "url": "https://cologix.com/data-centers/jacksonville/jax1/",
         "label": "Cologix facility directory",
         "publisher": "Cologix",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -31981,10 +32261,11 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-20",
     "notes": "11K sqft colocation hub at 421 West Church Street, Jacksonville FL central business district. Distinct from Cologix's other Jacksonville facility JAX2 (4800 Spring Park Road). Confirmed operational via official facility page.",
     "water": {
-      "coolingType": "air"
+      "coolingType": "air",
+      "notes": "Operator lists N+1 dry-cooled chillers and perimeter CRAC units: a recirculating chilled-water circuit with dry heat rejection."
     },
     "facilityType": "data_center"
   },
@@ -32004,13 +32285,16 @@
       "state": "FL",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 3
+    },
     "statusHistory": [],
     "sources": [
       {
         "url": "https://cologix.com/data-centers/jacksonville/jax2/",
         "label": "Cologix — JAX2 Jacksonville data center page (4800 Spring Park Road, 125,000 sq ft, N+1 DX cooling, 2N UPS)",
         "publisher": "Cologix",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -32021,10 +32305,11 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-20",
     "notes": "125,000 sq ft hurricane-rated facility (designed for 200-mph projectiles), outside the floodplain, with dark-fiber connectivity to the JAX1 meet-me room and access to 40+ carriers. N+1 DX cooling; 2N UPS and N+1 generator.",
     "water": {
-      "coolingType": "air"
+      "coolingType": "air",
+      "notes": "Operator lists N+1 DX (direct-expansion) cooling, which has no cooling water circuit."
     },
     "facilityType": "data_center"
   },
@@ -32135,13 +32420,16 @@
       "state": "FL",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 6.375
+    },
     "statusHistory": [],
     "sources": [
       {
         "url": "https://cologix.com/data-centers/lakeland/lak1/",
         "label": "Cologix — LAK1 Lakeland data center page (2850 Interstate Drive, 105,000+ sq ft, chilled-water cooling)",
         "publisher": "Cologix",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -32152,7 +32440,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-20",
     "notes": "105,000+ sq ft facility on I-4 between Tampa (32 mi) and Orlando (54 mi), sited at roughly 197 ft elevation and marketed for disaster recovery.",
     "water": {
       "coolingType": "closed_loop",
@@ -35192,7 +35480,7 @@
         "url": "https://www.coresite.com/data-center/dc1-washington-d-c",
         "label": "CoreSite facility directory",
         "publisher": "CoreSite",
-        "retrievedAt": "2026-07-22",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -35217,10 +35505,12 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "Confirmed via CoreSite official directory + dedicated facility page.",
     "energy": {
-      "utility": "Pepco"
+      "source": "grid",
+      "utility": "Pepco",
+      "notes": "CoreSite states a single utility feed from the 'highly stable White House utility grid', AC and DC power, and 2N UPS, PDU and RPP distribution."
     },
     "facilityType": "data_center"
   },
@@ -35246,7 +35536,7 @@
         "url": "https://www.coresite.com/data-center/dc2-washington-d-c",
         "label": "CoreSite DC2 - Washington D.C. Data Center",
         "publisher": "CoreSite",
-        "retrievedAt": "2026-10-01",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -35276,15 +35566,23 @@
         "publisher": "U.S. EPA ENERGY STAR",
         "retrievedAt": "2026-10-01",
         "kind": "other"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/0001490892/000155837018007845/ex-99d2.htm",
+        "label": "CoreSite Realty Q3 2018 earnings release (Form 8-K Ex. 99.2) – DC2: 24,563 sq ft turn-key capacity, $16.7M spent of estimated $22.0M, completion expected Q4 2018",
+        "publisher": "CoreSite Realty Corp / SEC EDGAR",
+        "retrievedAt": "2026-10-20",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "CoreSite's own DC2 facility page and its Washington D.C. locations page list DC2 at 1099 14th St. NW, Washington, D.C. 20005, at 24,000+ sq ft. The locations page calls it 'the only enterprise-class data center in downtown D.C. with direct, private connectivity to cloud service providers.' The facility page describes a 'single utility feed from highly stable White House utility grid,' 4:3 distributed-redundant UPS with 2N capability, and a connection to the DC1 interconnection hub at 1275 K St NW. DC1 is a separate live record (coresite-dc1-washington-d-c-dc) at a different street address, so this is not a duplicate. Operational status is inferred from the operator's current facility listing and an active PeeringDB facility entry (CoreSite org, 4 networks present, Any2East exchange). No power figure was published on any operator page fetched. A ~3 MW figure seen only in third-party aggregator summaries was NOT used, so capacityMw is omitted. There is no AI/GPU mention, so aiClassification is omitted. Coordinates are from the US Census geocoder, which interpolates along the street, so precision is 'approximate'. Pepco attribution: ENERGY STAR describes Pepco as the electric utility serving the Washington, DC area.",
     "energy": {
       "source": "grid",
       "utility": "Pepco",
       "notes": "Operator states a single utility feed from the downtown ('White House') utility grid; no on-site generation capacity published."
     },
+    "investmentUsd": 22000000,
     "facilityType": "data_center"
   },
   {
@@ -41882,7 +42180,7 @@
         "url": "https://dastorllc.com/locations/",
         "label": "DāSTOR data center locations: New Castle, DE, 3 Boulden Circle, 61,000 S.F., 8 MW Power",
         "publisher": "DāSTOR",
-        "retrievedAt": "2026-10-01",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -41907,7 +42205,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "Colocation facility. The operator lists it at 61,000 sq ft and 8 MW, with N+1 generator backing, 2N+1 UPS and N+1 cooling. The 8 MW is the operator's stated facility power, not a measured IT load. Delaware Business Now (April 2024) reported more than 30,000 sq ft of raised floor. Delaware Business Times (July 2025) said DāSTOR 'added a nondescript warehouse in the Boulden Interchange Park last year.' Coordinates are a US Census geocode of the street address, and an OSM Nominatim lookup agrees to within about 30 m. Not a surveyed footprint.",
     "facilityType": "data_center"
   },
@@ -41997,7 +42295,7 @@
         "url": "https://datacanopy.com/data-centers/newark-de/",
         "label": "Newark, DE data center: 350 Pencader Dr., 6MW building power capacity, 16,085 sq ft white space",
         "publisher": "Data Canopy",
-        "retrievedAt": "2026-10-01",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -42015,8 +42313,14 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "Colocation and managed-hosting facility. The operator lists 6 MW building power capacity, 16,085 sq ft of white space and 3 utility feeds. Backup is Generac generators with 7,000 gallons of diesel on site, and cooling is a DX system with 30+ CRAC units. The 6 MW is operator-stated building power, not a measured IT load. water.coolingType is left unset because the DX heat-rejection path is not described. Coordinates are a US Census geocode of the street address.",
+    "energy": {
+      "notes": "Operator lists 6 MW building power capacity, 3 utility feeds, and Generac backup generators with 60+ hours of fuel (7,000 gallons of diesel on site)."
+    },
+    "water": {
+      "notes": "Operator describes a fault-tolerant DX cooling system with 30+ Data Air DX CRAC units. The heat-rejection method is not stated, so no coolingType is assigned."
+    },
     "facilityType": "data_center"
   },
   {
@@ -43183,7 +43487,7 @@
         "url": "https://www.databank.com/data-centers/miami/",
         "label": "DataBank — Miami (MIA1) data center page: 36 NE 2nd Street Suite 700, 11,030 IT sq ft, 1.6MW critical IT load, 28 on-site carriers",
         "publisher": "DataBank",
-        "retrievedAt": "2026-09-14",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -43194,7 +43498,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-20",
     "notes": "11,030 sq ft of IT space with a 1.6MW critical IT load, across the street from the NAP of the Americas. Occupies suites in the 36 NE 2nd Street carrier hotel, a building that also houses separately-operated facilities (Digital Realty MIA10, Equinix MI2, ColoHouse).",
     "facilityType": "data_center"
   },
@@ -44872,6 +45176,115 @@
     "facilityType": "data_center"
   },
   {
+    "id": "dc-octo-ddot-data-center-60-florida-ave-ne-washington-dc",
+    "name": "DC OCTO/DDOT Replacement Data Center (60 Florida Avenue NE)",
+    "operator": "District of Columbia Office of the Chief Technology Officer (OCTO)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9102295,
+      "lon": -77.0067321,
+      "city": "Washington",
+      "county": "District of Columbia",
+      "street": "60 Florida Avenue NE",
+      "postalCode": "20002",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://threee60.com/d-c-issues-new-rfp-for-long-delayed-reeves-center-remake/",
+        "label": "D.C. Issues New RFP For Long-Delayed Reeves Center Remake (Dec 5, 2022) – data center functions to be rebuilt at 60 Florida Ave. NE, Eckington",
+        "publisher": "Three60",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://dgs.dc.gov/sites/default/files/dc/sites/dgs/event_content/attachments/OCTO%20and%20DDOT%20Relocation%20from%20Reeves%20-%20RFS%20%282021.06.08%29.pdf",
+        "label": "DC DGS Request for Space DGS-RFS-2021-11: OCTO and DDOT Data Center, June 2021",
+        "publisher": "DC Department of General Services",
+        "retrievedAt": "2026-10-20",
+        "kind": "filing"
+      },
+      {
+        "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/FEEDS/DCRA/FeatureServer/15/query?where=UPPER(FULL_ADDRESS)+LIKE+%2760+FLORIDA+AVE+NE%25%27&outFields=PERMIT_ID,FULL_ADDRESS,DESC_OF_WORK,ISSUE_DATE,OWNER_NAME,PERMIT_TYPE_NAME,PERMIT_SUBTYPE_NAME&f=json",
+        "label": "DC Building Permits 2023 – 60 Florida Ave NE (B2306169 interior renovation of 2-story commercial building, approx. 37,000 sq ft, plus supplemental electrical/mechanical/plumbing permits)",
+        "publisher": "DC Department of Buildings via DC GIS",
+        "retrievedAt": "2026-10-20",
+        "kind": "permit"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=60+Florida+Avenue+NE,+Washington,+DC&format=json",
+        "label": "OpenStreetMap Nominatim geocode for 60 Florida Avenue NE, Washington, DC 20002",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-20",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "A December 2022 report says the District picked 60 Florida Ave. NE in Eckington in fall 2022 as the building where OCTO/DDOT data center functions moving out of the Reeves Center would be rebuilt. The relocation and decommissioning were budgeted at about $47M; that is a program-wide figure, not this site's investment, so it is not recorded. DGS's 2021 request specified about 500 kW of critical power with N+1 UPS, generators and cooling, which is a requirement and not built capacity. DC permit records show building permit B2306169 (issued 2023-09-21) for an interior renovation of a 2-story commercial building, about 37,000 sq ft, owned by 60 Florida Avenue NE LLC. They also show supplemental electrical, mechanical and plumbing permits from October 2023 through June 2024. None of those permits mentions a data center, so status is kept at 'proposed' rather than 'under_construction' or 'operational'.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "dc-octo-reeves-center-data-center-washington-dc",
+    "name": "DC Government OCTO Data Center (Frank D. Reeves Municipal Center)",
+    "operator": "District of Columbia Office of the Chief Technology Officer (OCTO)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.917122,
+      "lon": -77.032054,
+      "city": "Washington",
+      "county": "District of Columbia",
+      "street": "2000 14th Street NW",
+      "postalCode": "20009",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://threee60.com/d-c-issues-new-rfp-for-long-delayed-reeves-center-remake/",
+        "label": "D.C. Issues New RFP For Long-Delayed Reeves Center Remake (Dec 5, 2022) – relocation of OCTO/DDOT data center functions out of the Reeves Center, approx. $47M",
+        "publisher": "Three60",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://dcist.com/story/22/12/05/reeves-center-redevelopment-naacp-rfp-deadline/",
+        "label": "D.C. Starts Over On Redevelopment Of Reeves Center – mission-critical IT housed at the Reeves Center",
+        "publisher": "DCist",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://dgs.dc.gov/sites/default/files/dc/sites/dgs/event_content/attachments/OCTO%20and%20DDOT%20Relocation%20from%20Reeves%20-%20RFS%20%282021.06.08%29.pdf",
+        "label": "DC DGS Request for Space DGS-RFS-2021-11: OCTO and DDOT Data Center (relocation from Reeves), June 2021",
+        "publisher": "DC Department of General Services",
+        "retrievedAt": "2026-10-20",
+        "kind": "filing"
+      },
+      {
+        "url": "https://hoodline.com/2026/02/reeves-center-facelift-d-c-to-rebuild-u-street-giant-in-shifts/",
+        "label": "D.C. unveils phased plan for Reeves Center redevelopment (Feb 21, 2026) – Reeves Center at 14th and U streets, parts kept operating during phased rebuild",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=2000+14th+Street+NW,+Washington,+DC&format=json",
+        "label": "OpenStreetMap Nominatim geocode for 2000 14th Street NW, Washington, DC 20009",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-20",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "District government enterprise data center for OCTO and DDOT, housed in the Frank D. Reeves Municipal Center at 14th and U Streets NW. Press reports from December 2022 say the city must move its 'complex mission-critical IT' and data center functions out of the Reeves Center before redevelopment, at about $47M including decommissioning. DGS's 2021 request for space (DGS-RFS-2021-11, 'OCTO and DDOT Data Center') sought a replacement with about 500 kW of critical power or 925 kVA of utility power. That figure is a procurement requirement, not this site's measured capacity, so it is not recorded as capacityMw. As of February 2026 the Reeves redevelopment was still being phased with parts of the building kept operating. No fetched source confirms the data center has moved, so status stays operational. Address is geocoded; the 2000 14th St NW street number is the geocoded Reeves Center building address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "dcblox-atlanta-east-conyers-ga",
     "name": "DC BLOX Atlanta East Hyperscale Data Center Campus",
     "operator": "DC BLOX",
@@ -45147,16 +45560,31 @@
         "publisher": "WGCU Public Media",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.yoursun.com/arcadia/news/desoto-county-data-center-defies-negative-image/article_db35f4a1-ab9e-4ef7-8c27-3b769a0b012a.html",
+        "label": "DeSoto County data center defies negative image",
+        "publisher": "Charlotte Sun (yoursun.com)",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wusf.org/politics-issues/2026-06-25/after-public-outcry-desoto-county-moves-forward-on-data-center-moratorium",
+        "label": "After public outcry, DeSoto County moves forward on data center moratorium",
+        "publisher": "WUSF / Suncoast Searchlight",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-20",
     "notes": "First DeSoto County data center: a 35,134 sq ft facility and office with on-site electrical generation on 34.22 acres at a decommissioned power plant site. Two further rezonings covering roughly 828 additional acres and about 8.3 million sq ft of building area (RZNE-0086-2026 and RZNE-0087-2026, filed May 2026) are pending public hearings; the developer has described an eventual footprint of roughly 1,300 acres. Recorded as one site because all three applications are the same developer on contiguous land split by Roan Street.",
     "energy": {
       "source": "on_site_gas",
       "notes": "The approved rezoning covers a data center facility and office together with an on-site electrical generation facility at a decommissioned power plant site. Reporting on the site plan describes an Energy Transfer natural gas station, a 1.5-million-gallon diesel fuel storage tank, and two 600-foot-deep water wells."
     },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "DCIP plans closed-loop cooling. The primary source would be reclaimed wastewater, pending an agreement with the City of Arcadia, then stormwater, with groundwater only as a last resort. The CEO estimated daily use at anywhere from 0 to 3 million gallons."
     },
     "landAcres": 34.22,
     "community": {
@@ -45851,6 +46279,8 @@
       "lat": 39.279179,
       "lon": -75.62393,
       "county": "Kent",
+      "street": "217 Artisan Drive",
+      "postalCode": "19977",
       "state": "DE",
       "precision": "exact"
     },
@@ -45872,9 +46302,16 @@
         "publisher": "U.S. Energy Information Administration",
         "retrievedAt": "2026-10-01",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/warren-f-sam-beasley-generation-station/7962",
+        "label": "GridInfo: Warren F Sam Beasley Generation Station (EIA plant 7962), 217 Artisan Drive, Smyrna, DE 19977",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "Peaking plant owned by Delaware's joint-action municipal power agency. Single-source (EIA) record, hence 'reported'. No city is recorded because EIA gives county only. Coordinates are the EIA-860M plant point.",
     "energy": {
       "source": "on_site_gas",
@@ -46206,6 +46643,62 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "diamond-state-generation-red-lion-fuel-cell-new-castle-de",
+    "name": "Red Lion Energy Center (Bloom fuel cells)",
+    "operator": "Diamond State Generation Partners, LLC",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.61008,
+      "lon": -75.62974,
+      "city": "New Castle",
+      "county": "New Castle",
+      "street": "1493 River Road",
+      "postalCode": "19720",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 24.9
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2012-12",
+        "note": "GridInfo (EIA-860 data) gives the first fuel-cell block (RED1) entering service in December 2012, and the last (RED6) in November 2013.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gridinfo.com/plant/red-lion-energy-center/58433",
+        "label": "GridInfo: Red Lion Energy Center (EIA plant 58433), Diamond State Generation Partners, LLC, six fuel-cell generators",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.southernpowercompany.com/content/dam/southernpower/pdfs/fact-sheets/RedLion_FuelCells_factsheet.pdf",
+        "label": "Southern Power fact sheet: Red Lion, New Castle, Delaware, fuel cells, 24.9 MW (March 2021)",
+        "publisher": "Southern Power",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "A natural-gas fuel-cell plant built from Bloom Energy Servers. Southern Power's 2021 fact sheet says it acquired an interest in the 24.9 MW project with Bloom Energy and lists Southern Power as owner. EIA lists Diamond State Generation Partners, LLC as the operator. 24.9 MW is the sum of six EIA nameplates (RED1–RED6). A separate 2.6 MW Diamond State fuel-cell site in Newark (Brookside, EIA 58110) is not included here.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Natural-gas fuel cells (Bloom Energy Servers), six EIA generator blocks of 3.2–5.9 MW."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "other",
+      "unitCount": 6,
+      "notes": "Fuel cell (Bloom Energy). Repowering supported by Southern Power's investment, per its 2021 fact sheet."
+    }
   },
   {
     "id": "dickson-city-development-bell-mountain-lackawanna-pa",
@@ -67184,6 +67677,8 @@
       "lon": -75.4994,
       "city": "Dover",
       "county": "Kent",
+      "street": "450 Garrison Oak Drive",
+      "postalCode": "19901",
       "state": "DE",
       "precision": "exact"
     },
@@ -67212,9 +67707,16 @@
         "publisher": "U.S. Securities and Exchange Commission (EDGAR)",
         "retrievedAt": "2026-10-01",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/garrison-energy-center-llc/57349",
+        "label": "GridInfo: Garrison Energy Center LLC (EIA plant 57349), 450 Garrison Oak Drive, Dover, DE 19901",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "Delaware's newest gas-fired plant. Calpine built it and sold 100% of Garrison Energy Center LLC to Cobalt Power, L.L.C. on July 10, 2019, for about $360M. So it was NOT part of Calpine's portfolio at the 2026 Constellation acquisition and is not in the LS Power divestiture. The operator field uses the project LLC that EIA lists as the August 2026 entity. The current ultimate parent after 2019 was not re-verified. Coordinates are the EIA-860M plant point.",
     "energy": {
       "source": "on_site_gas",
@@ -76992,6 +77494,8 @@
       "lat": 39.7436,
       "lon": -75.5072,
       "county": "New Castle",
+      "street": "198 Hay Road",
+      "postalCode": "19809",
       "state": "DE",
       "precision": "exact"
     },
@@ -77027,9 +77531,16 @@
         "publisher": "LS Power",
         "retrievedAt": "2026-10-01",
         "kind": "press"
+      },
+      {
+        "url": "https://www.gridinfo.com/plant/hay-road/7153",
+        "label": "GridInfo: Hay Road (EIA plant 7153), 198 Hay Road, Wilmington, DE 19809",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "Delaware's largest power plant, on the Wilmington-area Delaware River waterfront next to Calpine's Edge Moor station (EIA plant 593, not emitted separately). OWNERSHIP IS IN TRANSITION. The operator field reflects the EIA August 2026 entity and Constellation's January 2026 acquisition of Calpine. Re-check the operator once the LS Power sale closes, which was expected in Q4 2026. Coordinates are the EIA-860M plant point.",
     "energy": {
       "source": "on_site_gas",
@@ -78927,7 +79438,7 @@
         "url": "https://www.hostdime.com/new-orlando-data-center",
         "label": "HostDime New Orlando Data Center",
         "publisher": "HostDime",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-20",
         "kind": "press"
       },
       {
@@ -78973,10 +79484,16 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-20",
     "notes": "5-acre parcel (of the historic 99-acre Hungerford tract) fronting I-4 at Wymore Rd -- governing municipality is Eatonville, not Maitland; HostDime's own current marketing copy lists a mailing address of \"1 Innovative Pl, Maitland, FL 32751\" while an aggregator (baxtel) lists \"1000 Wymore Rd, Eatonville, FL\" for the same building -- both addresses are disputed/unverifiable via parcel search, so no street field is recorded. 100,000 sq ft, 7-story building, 3 data-center floors, >1,000 racks. Groundbreaking May 2021; HostDime's own landing page and data-sheet page disagree on completion quarter (Q3 2026 vs Q2 2026) and the project has slipped repeatedly since an original ~2024 target; as of ClickOrlando's June 2026 report the facility was still not open. Investment is conflicting and stale: GrowthSpotter (Oct 2023) reported an original $35M budget grown to $58M actual (65.7% overrun); a separately-circulating $100M figure is single-sourced and unreconciled, so no investmentUsd is recorded. No disclosed capacityMw. Distinct from HostDime's unrelated, already-operational 25,000 sq ft Tier III facility at 440 W Kennedy Blvd, Orlando. Eatonville Town Council (led by Councilwoman Wanda Randolph) has pushed a transparency measure over electricity/water use, noise, and appearance, and has assessed missed-deadline fines ($250-500/day); this intersects Florida SB 484 (effective July 1, 2026), which expands local authority over large-load customers and data-center water permits. Re-checked 2026-09-10: still under_construction. HostDime has requested multiple deadline extensions from the town of Eatonville (this is the third); September 2026 reporting says the facility could open as early as October 2026 pending final inspection.",
+    "energy": {
+      "source": "grid",
+      "utility": "Duke Energy",
+      "notes": "Operator says the redundant power infrastructure is planned with Duke Energy."
+    },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "Operator describes a closed-loop, air-cooled chilled water system in which water recirculates rather than drawing a continuous municipal supply."
     },
     "landAcres": 5,
     "community": {
@@ -78984,6 +79501,50 @@
       "notes": "Eatonville Town Council members have pushed for transparency and raised water/power/noise/appearance concerns; the town has assessed missed-deadline fines. No lawsuit or formal permit denial identified as of Aug 2026.",
       "sourceIndex": 3
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "hostdime-orlando-kennedy-blvd-fl",
+    "name": "HostDime Orlando Data Center (Orlando Telecom Center, 440 W Kennedy Blvd)",
+    "operator": "HostDime",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 28.617526,
+      "lon": -81.393381,
+      "city": "Orlando",
+      "county": "Orange",
+      "street": "440 West Kennedy Blvd",
+      "postalCode": "32810",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "http://www.hostdime.com/facilities/data-center",
+        "label": "HostDime data center facilities: Orlando Data Center, 440 W. Kennedy Blvd, Suite 1",
+        "publisher": "HostDime",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/5211",
+        "label": "PeeringDB facility 5211: HostDime Orlando Data Center",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.growthspotter.com/?p=8485",
+        "label": "Orlando Telecom Center at 440 West Kennedy Blvd sold to Houston investor (2015)",
+        "publisher": "GrowthSpotter",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "HostDime runs its existing 25,000 sq ft Tier III edge facility inside the Orlando Telecom Center building, which was converted to data center use in 1999 (117,000 sq ft building, 9.7-acre parcel). This site is separate from HostDime's new Tier IV 'SuperNova' building at 1 Innovative Pl, tracked as hostdime-eatonville-fl. GrowthSpotter places the building in Eatonville, while its mailing city is Orlando.",
     "facilityType": "data_center"
   },
   {
@@ -80204,7 +80765,7 @@
         "url": "https://imcritical.com/about/newsroom/introducing-im-criticals-miami-data-center-miamis-next-gen-hub-for-mission-critical-colocation/",
         "label": "Introducing iM Critical's Miami Data Center: Miami's Next-Gen Hub for Mission-Critical Colocation",
         "publisher": "iM Critical",
-        "retrievedAt": "2026-10-02",
+        "retrievedAt": "2026-10-20",
         "kind": "press"
       },
       {
@@ -80222,7 +80783,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-02",
+    "lastUpdated": "2026-10-20",
     "notes": "The 2022 launch release describes a 100,000 sq ft purpose-built building with over 60,000 sq ft for colocation, 5 MW of power and HPC environments up to 75 kW/rack. Data Center Frontier (2025-01-08) describes iM Data Centers' 100,000 sq ft Miami facility as launching with 10 MW of critical capacity, with potential for up to 40 MW more, and an Accelsius two-phase direct-to-chip cooling demonstration. This is apparently the same building under the company's later name. The operator-stated 5 MW is kept as the operational value. Address and coordinates are from PeeringDB; coordinates are approximate.",
     "facilityType": "data_center"
   },
@@ -82300,6 +82861,8 @@
       "lon": -80.247556,
       "city": "Westview",
       "county": "Miami-Dade",
+      "street": "2925 NW 120th Terrace",
+      "postalCode": "33167",
       "state": "FL",
       "precision": "approximate"
     },
@@ -82342,11 +82905,26 @@
         "publisher": "Iron Mountain",
         "retrievedAt": "2026-09-14",
         "kind": "other"
+      },
+      {
+        "url": "https://www.ironmountain.com/data-centers/locations/miami-data-center",
+        "label": "Iron Mountain Miami Data Center (MIA-1)",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.beaconcouncil.com/media/miami-news/2025/iron-mountain-breaks-ground-on-its-first-data-center-in-miami/",
+        "label": "Iron Mountain breaks ground on its first data center in Miami",
+        "publisher": "Miami-Dade Beacon Council",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-10-20",
     "notes": "150,000 sq ft. Classified a \"telecom hub\" rather than \"data center\" under Miami-Dade county code. Opens 2026.",
     "energy": {
+      "source": "grid",
       "utility": "Florida Power & Light (FPL)",
       "notes": "Iron Mountain states 26 MVA of redundant operational power supporting 16 MW of customer IT load, and markets the facility as running on 100% clean energy. The generation source behind that claim is not identified, so energy.source is left unset."
     },
@@ -83953,7 +84531,7 @@
         "url": "https://docs.dnrec.delaware.gov/render/2446576/c1b1b6791dc007b72fdca01fd2ea9fa568f551cf506d18581b522a1ea65cf5e667aa6b87b38cb1b1246515c1c0b04ca1/",
         "label": "DNREC Division of Air Quality: draft permit APC-2003/0285-OPERATION (SM)(NSPS)(A5), twelve emergency generators, JP Morgan Data Center CDC1, 501 Bear Christiana Road (Dec 2021)",
         "publisher": "Delaware DNREC",
-        "retrievedAt": "2026-10-01",
+        "retrievedAt": "2026-10-20",
         "kind": "permit"
       },
       {
@@ -83964,8 +84542,11 @@
         "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "Enterprise data center. The DNREC permit covers twelve diesel emergency generators: six at 19.6 MMBtu/hr, two at 19.8 and four at 20.3, each described in the DNREC memo as 3,058 HP. The original permit applications date to May 28, 2003. The 2021 amendment removed SCR systems from generators 5–8 and capped each generator at 124 hours/year. DNREC's public notice gives the address as Newark, while the permit itself says Bear. No IT capacity is published, so capacityMw is left unset. dcmap.us shows an 'estimated' 34.934 MW that comes from no primary source and is not used. The latest primary evidence of operation is the December 2021 permit action. Coordinates are a US Census geocode of the street address.",
+    "energy": {
+      "notes": "Backup power: twelve diesel emergency generators under a synthetic-minor permit. These are six Atlantic Detroit Diesel 2000 DSEB (19.6 MMBtu/hr each), two 2000 DSEB (19.8 MMBtu/hr each) and four 2000-XC6DT2 with SCR (20.3 MMBtu/hr each). Facility-wide NOx is capped at 23.57 tons per rolling 12 months."
+    },
     "facilityType": "data_center"
   },
   {
@@ -88839,6 +89420,138 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumen-dc1-1120-vermont-ave-nw-washington-dc",
+    "name": "Lumen DC 1 (1120 Vermont Avenue NW)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9041623,
+      "lon": -77.0329395,
+      "city": "Washington",
+      "county": "District of Columbia",
+      "street": "1120 Vermont Avenue NW, Suite T1000",
+      "postalCode": "20005",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-dc-1",
+        "label": "Lumen DC 1 – 1120 Vermont Avenue NW, Suite T1000 (1st Floor), Washington, DC (operational, built 2000)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://assets.lumen.com/is/content/Lumen/colocation-location-data-sheet",
+        "label": "Lumen Network Colocation and Data Center data sheet – Lumen Network Colocation Markets (lists Washington, DC)",
+        "publisher": "Lumen Technologies",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=1120+Vermont+Avenue+NW,+Washington,+DC&format=json",
+        "label": "OpenStreetMap Nominatim geocode for 1120 Vermont Avenue NW, Washington, DC 20005",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-20",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "Lumen network colocation suite in a multi-tenant building. Baxtel lists it as Lumen DC 1, fully operational, at 1120 Vermont Avenue NW, Suite T1000 (1st Floor), with year built 2000. Lumen's colocation data sheet lists Washington, DC as a market but does not name this address. The building also houses Cogent and Verizon (ex-XO) suites per Baxtel. Cogent's own Washington page now lists only its 1050 Connecticut Ave site, so this record covers only the Lumen suite. No capacity figure is published. Coordinates are geocoded to the building.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-dc2-1220-l-street-nw-washington-dc",
+    "name": "Lumen DC2 (1220 L Street NW)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9033541,
+      "lon": -77.0290774,
+      "city": "Washington",
+      "county": "District of Columbia",
+      "street": "1220 L Street NW, Suite 200",
+      "postalCode": "20005",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-dc2",
+        "label": "Lumen DC2 Data Center – 1220 L Street NW, Suite 200, Washington, DC (operational)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://assets.lumen.com/is/content/Lumen/colocation-location-data-sheet",
+        "label": "Lumen Network Colocation and Data Center data sheet – Lumen Network Colocation Markets (lists Washington, DC)",
+        "publisher": "Lumen Technologies",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=1220+L+Street+NW,+Washington,+DC&format=json",
+        "label": "OpenStreetMap Nominatim geocode for 1220 L Street NW, Washington, DC 20005",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-20",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "Lumen network colocation site. Baxtel lists it as Lumen DC2 at 1220 L Street NW, Suite 200, and as a fully operational facility. Lumen's own 2025 colocation data sheet lists Washington, DC among its network colocation markets but gives no street address, so the address rests on the directory listing alone. Baxtel also lists a Verizon site in the same building. Coordinates are geocoded to the building, not a surveyed parcel. No capacity, size or power figure was published in either source.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-dc4-1828-l-street-nw-washington-dc",
+    "name": "Lumen DC4 (1828 L Street NW)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9035119,
+      "lon": -77.0429399,
+      "city": "Washington",
+      "county": "District of Columbia",
+      "street": "1828 L Street NW, Suite 550",
+      "postalCode": "20036",
+      "state": "DC",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/lumen-dc4",
+        "label": "Lumen DC4 – 1828 L St NW, Suite 550, Washington, DC (operational)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://assets.lumen.com/is/content/Lumen/colocation-location-data-sheet",
+        "label": "Lumen Network Colocation and Data Center data sheet – Lumen Network Colocation Markets (lists Washington, DC)",
+        "publisher": "Lumen Technologies",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=1828+L+Street+NW,+Washington,+DC&format=json",
+        "label": "OpenStreetMap Nominatim geocode for 1828 L Street NW, Washington, DC 20036",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-20",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "Lumen network colocation suite. Baxtel lists it as Lumen DC4 at 1828 L St NW, Suite 550, and as fully operational. Lumen's colocation data sheet confirms a Washington, DC market but gives no site addresses. Size, power and year built are not published. Coordinates are geocoded to the building.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumen-denver-1-1850-pearl-co",
     "name": "Lumen Denver 1 (1850 Pearl Street Gateway)",
     "operator": "Lumen Technologies",
@@ -88960,6 +89673,36 @@
     ],
     "lastUpdated": "2026-10-02",
     "notes": "Lumen's colocation data sheet lists Honolulu, HI among its data center locations but gives no address. A directory entry for the legacy 'tw telecom – Hawaii Data Center' gives 550 Paiea St, Honolulu 96819. It says the building was constructed in 1997, has 861 sq ft of raised floor for colocation, and has redundant UPS, standby diesel generators and AC/DC power. Treating the tw telecom site as Lumen's current Honolulu location relies on tw telecom having become part of Level 3 and then Lumen. That chain is widely reported but was not confirmed from a fetched page, hence confidence 'reported'. 550 Paiea St is a multi-tenant commercial building near the airport. It is about 150 m from DRFortress (3375 Koapaka St) but at a different address with a different operator. Coordinates are the OSM building at 550 Paiea Street.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-jacksonville-philips-hwy-fl",
+    "name": "Lumen Jacksonville (Philips Hwy)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 30.271996,
+      "lon": -81.623873,
+      "city": "Jacksonville",
+      "county": "Duval",
+      "street": "4814 Philips Hwy",
+      "postalCode": "32207",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/13510",
+        "label": "PeeringDB facility 13510: Lumen Jacksonville",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "Listed in PeeringDB as an active Lumen facility (record created 2023-04-03). Size and power are not published.",
     "facilityType": "data_center"
   },
   {
@@ -89167,6 +89910,41 @@
     ],
     "lastUpdated": "2026-10-17",
     "notes": "Carrier/colocation site. Baxtel gives no capacity or size. Coordinates are an OSM address geocode.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-miami-5th-street-fl",
+    "name": "Lumen Miami 1 (5th Street, formerly Level(3) Miami)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 25.779013,
+      "lon": -80.192962,
+      "city": "Miami",
+      "county": "Miami-Dade",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/1731",
+        "label": "PeeringDB facility 1731: Level(3) Miami (5th St), Lumen Technologies Inc",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/lumen-miami-1-49-northwest-5th",
+        "label": "Lumen: Miami 1 (49 Northwest 5th)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "The sources disagree on the street direction: PeeringDB gives 49 NE 5th St (33132) and Baxtel gives 49 NW 5th Street. The street is therefore omitted, and the coordinates are PeeringDB's approximate pin. Baxtel describes it as a fully operational facility.",
     "facilityType": "data_center"
   },
   {
@@ -89417,6 +90195,43 @@
     ],
     "lastUpdated": "2026-10-17",
     "notes": "Carrier/colocation suite in an office building. Baxtel gives no capacity or size. Coordinates are an OSM address geocode.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-newark-interchange-blvd-de",
+    "name": "Lumen Newark (504 Interchange Boulevard)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.65969,
+      "lon": -75.781311,
+      "city": "Newark",
+      "county": "New Castle",
+      "street": "504 Interchange Boulevard",
+      "postalCode": "19711",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://assets.lumen.com/is/content/Lumen/colocation-location-data-sheet",
+        "label": "Lumen Network Colocation and Data Center data sheet (2025), Network Colocation Markets list includes Newark, DE",
+        "publisher": "Lumen Technologies",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/504-interchange-boulevard-newark/lumen/datacenter/newark",
+        "label": "Inflect: Lumen Newark 2, 504 Interchange Boulevard, Newark, DE 19711",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "A small carrier network colocation site. Lumen's own data sheet lists Newark, DE as a colocation market. The address and map point come from Inflect, so precision is approximate. Directories disagree on naming (\"Newark 1\" vs \"Newark 2\"), and one aggregator misprints the address as 1504. No power capacity is published.",
     "facilityType": "data_center"
   },
   {
@@ -89986,6 +90801,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumen-wilmington-jessup-street-de",
+    "name": "Lumen Wilmington (1603 Jessup Street, formerly Level 3 Wilmington 1)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.74953,
+      "lon": -75.538761,
+      "city": "Wilmington",
+      "county": "New Castle",
+      "street": "1603 Jessup Street",
+      "postalCode": "19802",
+      "state": "DE",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://assets.lumen.com/is/content/Lumen/colocation-location-data-sheet",
+        "label": "Lumen Network Colocation and Data Center data sheet (2025), Network Colocation Markets list includes Wilmington, DE",
+        "publisher": "Lumen Technologies",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/1603-jessup-street-wilmington/lumen/datacenter/wilmington",
+        "label": "Inflect: Lumen Wilmington, 1603 Jessup Street, Wilmington, DE 19802",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "A small carrier network colocation site. Lumen's own data sheet lists Wilmington, DE as a colocation market. The street address and map point come from the Inflect directory, so precision is approximate. No power capacity is published. A telecom colocation site, not an AI facility.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumon-solutions-marshfield-mo",
     "name": "Marshfield Data Center (Lumon Solutions)",
     "operator": "Lumon Solutions Marshfield, LLC",
@@ -90148,7 +91000,7 @@
         "url": "https://spotlightdelaware.org/2026/08/19/harrington-denies-data-center-proposal-despite-a-1-million-offer/",
         "label": "Harrington denies data center proposal despite a $1 million offer",
         "publisher": "Spotlight Delaware",
-        "retrievedAt": "2026-09-12",
+        "retrievedAt": "2026-10-20",
         "kind": "press"
       },
       {
@@ -90164,9 +91016,16 @@
         "publisher": "Delaware Business Times",
         "retrievedAt": "2026-10-01",
         "kind": "press"
+      },
+      {
+        "url": "https://technical.ly/civics/harrington-rejects-data-center-while-mystery-delaware-project-lingers",
+        "label": "Harrington rejects data center while mystery Delaware project lingers (Aug 20, 2026)",
+        "publisher": "Technical.ly",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-01",
+    "lastUpdated": "2026-10-20",
     "notes": "No street address given beyond 'the site of a former cold storage warehouse' in Harrington, DE; location pin is Harrington's OSM place centroid (approximate). Article was published 2026-08-19 and refers to a council vote 'Monday' with no explicit calendar date, so statusHistory entries are dated to month-precision (2026-08) only. A separate, still-unidentified 100 MW project appears in Delmarva Power's internal 'Kent County' project list per a 2026-09 Technical.ly FOIA report; that report states press coverage could not confirm whether it is the same project as this one. Treated here as a distinct, unconfirmed lead and NOT merged into this record given the capacity mismatch (24 MW here vs. 100 MW in Delmarva's list) — flagged in the wave summary rather than fabricated into its own record for lack of any name or location.",
     "landAcres": 24.6,
     "community": {
@@ -99982,6 +100841,53 @@
     "facilityType": "data_center"
   },
   {
+    "id": "milford-solar-farm-milford-de",
+    "name": "Milford Solar Farm",
+    "operator": "Milford Solar LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.92306,
+      "lon": -75.45333,
+      "city": "Milford",
+      "county": "Kent",
+      "street": "686 Milford-Harrington Highway",
+      "postalCode": "19963",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 11.8
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2012-12",
+        "note": "GridInfo (2025 EIA-860 data) gives initial operation as December 2012.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gridinfo.com/plant/milford-solar-farm/58228",
+        "label": "GridInfo: Milford Solar Farm (EIA plant 58228), Milford Solar LLC",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "An 11.8 MW solar PV plant. The EIA address reads \"Milford-Harrington Highwat\", corrected here to Highway. The county comes from the Wikipedia list of Delaware power stations, not EIA. Single-source record.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "unitCount": 1
+    }
+  },
+  {
     "id": "mill-creek-data-center-auburn-al",
     "name": "Mill Creek Data Center",
     "operator": "Undisclosed end user (applicant: LBYD, Inc.)",
@@ -102240,6 +103146,54 @@
     "lastUpdated": "2026-09-14",
     "notes": "Carrier-neutral colocation facility operated by Mountain West Technologies (Mountain West Technology Network). Operator describes N+1 cooling and power redundancy, a blended network with multiple on-site providers, and scalable space with capacity for 100 racks. No megawatt rating is published on the operator's own page, so none is recorded; colocation directories list roughly 1.2 MW and about 4,976 sq ft of raised floor inside a 132,000 sq ft building, which a maintainer should confirm before recording. Coordinates come from an OSM address point for the operator at this address, not a mapped building footprint.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "naes-van-sant-station-dover-de",
+    "name": "Van Sant Station",
+    "operator": "NAES Corporation",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.14504,
+      "lon": -75.54817,
+      "city": "Dover",
+      "county": "Kent",
+      "street": "125 Electric Avenue",
+      "postalCode": "19904",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 45.1
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1991-05",
+        "note": "GridInfo (EIA-860 data) gives initial operation as May 1991.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gridinfo.com/plant/van-sant-station/7318",
+        "label": "GridInfo: Van Sant Station (EIA plant 7318), NAES Corporation - (DE)",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "A single 45.1 MW natural-gas combustion turbine in Dover. EIA lists NAES Corporation as operator. The City of Dover's ownership was not independently verified this session. Single-source record.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "One natural-gas combustion turbine. GridInfo shows a minor distillate-oil share in its fuel mix."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 1
+    }
   },
   {
     "id": "natelli-appeal-digital-park-lusby-md",
@@ -106414,7 +107368,7 @@
         "url": "https://www.sarasotamagazine.com/news-and-profiles/2026/09/new-north-port-data-center-filings-detail-water-use-wetland-impacts-and-more",
         "label": "New North Port data center filings detail water use, wetland impacts and more",
         "publisher": "Sarasota Magazine",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-20",
         "kind": "press"
       },
       {
@@ -106432,8 +107386,12 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-20",
     "notes": "Seven data center buildings totaling ~896,000 sq ft (incl. ~123,200 sq ft office) on ~112 acres within the 282-acre 'Deep Park' master concept (Activity Center 6) north of I-75 and south of Yorkshire Street. Applicant LLC is registered to Valley Stream, NY; end tenant is under NDA. Application filed 2026-07-20; ~22.5 acres of stormwater ponds and 4.14 acres of wetland impacts per filings.",
+    "energy": {
+      "utility": "Florida Power & Light",
+      "notes": "FPL is the electric provider per the filings. FPL has not confirmed that the project has begun large-load review. A future substation is planned as a separate submission, and no definitive electrical load is stated."
+    },
     "water": {
       "reportedMgd": 0.0155,
       "notes": "Filing states average potable-water demand of 15,500 gallons/day (max 23,250 gpd); cooling technology not identified in the application (Sarasota Magazine, 2026-09)."
@@ -112622,6 +113580,61 @@
     "lastUpdated": "2026-10-16",
     "notes": "Enterprise (single-tenant) data centers. The 10-K says Paycom houses two fully redundant data centers at its Oklahoma City headquarters and a third at its Grapevine, TX facility, all owned and managed by Paycom, which is the only tenant. The HQ campus is about 500,000 sq ft on over 150 acres; that describes the whole campus, not the data centers, so it is not recorded as landAcres. No capacity has been published. The coordinates are OSM's Paycom point for the HQ address.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "pbf-delaware-city-refinery-power-plant-de",
+    "name": "Delaware City Plant (Delaware City Refinery power plant)",
+    "operator": "Delaware City Refining Company LLC (PBF Energy)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5871,
+      "lon": -75.6343,
+      "city": "Delaware City",
+      "county": "New Castle",
+      "street": "2000 Wrangle Hill Road",
+      "postalCode": "19706",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 324
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1956-10",
+        "note": "GridInfo (EIA-860 data) gives initial operation as October 1956. Combustion turbines CT1 and CT2 were added in May 2000.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gridinfo.com/plant/delaware-city-plant/52193",
+        "label": "GridInfo: Delaware City Plant (EIA plant 52193), Delaware City Refining Company LLC, with generator list",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.gem.wiki/Delaware_City_Plant_power_station",
+        "label": "Global Energy Monitor: Delaware City Plant power station (owner Delaware City Refining Co LLC; parent PBF Energy Inc)",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "An on-site power plant at the Delaware City oil refinery. GEM names PBF Energy as the parent. 324 MW is the sum of all six EIA nameplates, including the 75 MW G3 steam unit, which EIA lists as standby and GEM as mothballed. Without G3 the total is 249 MW.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Two natural-gas combustion turbines, CT1 and CT2 (92 MW each, 2000), and steam units G1, G2 and G4 (27.5, 27.5 and 10 MW) fired on refinery other-gases. GridInfo reports a fuel mix of about 85% natural gas and 15% other gas. It flags the steam units as combined heat and power."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "unitCount": 6
+    }
   },
   {
     "id": "pcc-dekalb-ellenwood-data-center-ga",
@@ -122188,7 +123201,7 @@
         "url": "https://q.com/data-centers/miami/",
         "label": "QTS Miami (MIA1) facility page",
         "publisher": "QTS Data Centers",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -122220,7 +123233,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-20",
     "notes": "1-acre / ~37,000-38,000 sq ft legacy colocation facility positioned around South American/Caribbean connectivity. Address (11234 NW 20th St) is commonly listed as \"Miami\" per USPS mailing-city convention, but independently resolves to Sweetwater city, Miami-Dade County via both the US Census Bureau Geocoder and OpenStreetMap Nominatim (same building/parcel, ~90m agreement) -- corrected here per dataset precedent (cf. iron-mountain-mia-1-miami-fl, tracked under city Westview). DC OIX-2 certified per a March 2022 QTS press release. No AI/HPC/GPU-specific marketing found; owned by Blackstone (Infrastructure Partners + BREIT) since the 2021 QTS acquisition. QTS Data Centers is owned by Blackstone (2021 take-private).",
     "water": {
       "coolingType": "closed_loop"
@@ -124632,6 +125645,58 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "readysetfundgrow-fishbowl-homestead-fl",
+    "name": "ReadySetFundGrow FishBowl AI Edge Micro-Datacenter",
+    "operator": "ReadySetFundGrow (subsidiary of Farrington Capital Group)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 25.5525391,
+      "lon": -80.3947082,
+      "city": "Homestead",
+      "county": "Miami-Dade",
+      "street": "23095 S Dixie Hwy",
+      "postalCode": "33170",
+      "state": "FL",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-04",
+        "note": "Remergify and Farrington Capital Group announce plans for the ReadySetFundGrow campus with a micro-datacenter",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.mediabistro.com/media-news/remergify-farrington-capital-group-announce-plans-to-develop-readysetfundgrow-south-miami-dades-first-micro-datacenter-tech-incubator-ev-charging-hub/",
+        "label": "Remergify & Farrington Capital Group announce plans to develop ReadySetFundGrow, South Miami-Dade's first micro-datacenter, tech incubator & EV charging hub (ACCESS Newswire release, Mar 4 2026)",
+        "publisher": "ACCESS Newswire via Mediabistro",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.mediabistro.com/media-news/readysetfundgrow-announces-south-dade-ai-edge-micro-datacenter-and-opportunity-zone-investment-platform/",
+        "label": "ReadySetFundGrow announces South Dade AI edge micro-datacenter and Opportunity Zone investment platform (Mar 20 2026)",
+        "publisher": "ACCESS Newswire via Mediabistro",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=23095+S+Dixie+Hwy,+Miami,+FL+33170&format=json",
+        "label": "OpenStreetMap Nominatim geocode of 23095 South Dixie Highway, 33170",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-20",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "The planned 10-rack micro-datacenter (the 'FishBowl') would sit in a 2,295 sq ft building on a 20,000 sq ft parcel fronting US-1. It is part of a campus that also includes a tech incubator, a virtual office hub and a 15-port EV charging hub. Development depends on closing $1,000,000 in senior secured financing, followed by a phased buildout of about 9 months. The March 20 release cites 1,600-amp power capacity. All figures are self-reported by the company. Coordinates are a street-address geocode.",
+    "facilityType": "data_center"
   },
   {
     "id": "red-ace-data-center-culpeper-va",
@@ -133009,7 +134074,7 @@
         "url": "https://www.wflx.com/2026/09/22/indiantown-project-silver-fox-data-center-plan-returns-with-changes-resident-concerns-remain/",
         "label": "Indiantown 'Project Silver Fox' data center plan returns with changes, resident concerns remain",
         "publisher": "WFLX",
-        "retrievedAt": "2026-10-02",
+        "retrievedAt": "2026-10-20",
         "kind": "press"
       },
       {
@@ -133025,9 +134090,16 @@
         "publisher": "TCPalm (via Yahoo News)",
         "retrievedAt": "2026-10-02",
         "kind": "press"
+      },
+      {
+        "url": "https://cbs12.com/news/local/data-center-developer-sues-indiantown-alleges-village-is-illegally-blocking-25m-project-indiantown-martin-county-data-center-silver-fox-606-llc-data-center-lawsuit-25-million-project-village-of-indiantown-village-council-planning-board-data",
+        "label": "Indiantown's data center war escalates as developer takes village to court",
+        "publisher": "CBS12 (WPEC)",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-02",
+    "lastUpdated": "2026-10-20",
     "notes": "A roughly 2-million-sq-ft AI data center campus proposed in the Village of Indiantown and withdrawn by the applicant. Separate from FPL's Tesoro Groves PUD on Kanner Highway, which FPL states is \"a planning framework for future development, not a specific project\" and is therefore not tracked here as a facility.",
     "water": {
       "coolingType": "closed_loop",
@@ -138339,6 +139411,7 @@
       "lon": -75.593,
       "city": "Delaware City",
       "county": "New Castle",
+      "street": "825 Governor Lea Road",
       "state": "DE",
       "precision": "exact"
     },
@@ -138396,9 +139469,30 @@
         "publisher": "WHYY",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.delawarepublic.org/politics-government/2025-08-19/mega-del-city-data-center-awaits-state-level-approval-county-officials-still-have-concerns",
+        "label": "Mega Del. City data center awaits state-level approval; county officials still have concerns (Aug 19, 2025)",
+        "publisher": "Delaware Public Media",
+        "retrievedAt": "2026-10-20",
+        "kind": "press"
+      },
+      {
+        "url": "https://documents.dnrec.delaware.gov/Admin/Public-Notices/CCE20260043/Status-Decision.pdf",
+        "label": "DNREC Coastal Zone Status Decision, Project Washington (Feb 3, 2026)",
+        "publisher": "Delaware DNREC",
+        "retrievedAt": "2026-10-20",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.delcog.org/ai/",
+        "label": "Data Centers in Delaware (Project Washington South Campus at 825 Governor Lea Road)",
+        "publisher": "Delaware Coalition for Open Government",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-20",
     "notes": "Largest proposed data center in Delaware history. 11 two-story buildings, 5 substations, 1 switch station, 516 emergency diesel generators on 580 acres. CZA permit denied February 4, 2026; denial unanimously upheld by Coastal Zone Industrial Control Board March 26, 2026. Appeal to Delaware Superior Court anticipated. Delaware Building Trades Council exclusive union labor agreement in place. Original $9.7B investment figure removed — not confirmed in any cited source. Coordinates approximate for Delaware City area.",
     "energy": {
       "source": "grid",
@@ -154887,7 +155981,7 @@
         "url": "https://www.volico.com/data-centers/deerfield-data-center/",
         "label": "Fort Lauderdale Data Center - FLL1",
         "publisher": "Volico",
-        "retrievedAt": "2026-10-02",
+        "retrievedAt": "2026-10-20",
         "kind": "other"
       },
       {
@@ -154905,7 +155999,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-02",
+    "lastUpdated": "2026-10-20",
     "notes": "The operator lists 20,000 sq ft of current capacity (140,000 sq ft future), 2 MW of power with 48 MW of expansion capacity, and 600 tons of Liebert 2N CRAC/HVAC. The 48 MW is marketed expansion headroom, not an announced build, so it is not recorded as planned capacity. The city is given as Pompano Beach by the operator and as Deerfield/Deerfield Beach by PeeringDB and Inflect. Coordinates are PeeringDB's and approximate.",
     "facilityType": "data_center"
   },
@@ -156755,6 +157849,53 @@
       "sourceIndex": 0
     },
     "facilityType": "crypto_mining"
+  },
+  {
+    "id": "white-oak-solar-dover-sun-park-de",
+    "name": "Dover Sun Park",
+    "operator": "White Oak Solar Energy LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.18361,
+      "lon": -75.50444,
+      "city": "Dover",
+      "county": "Kent",
+      "street": "1455 White Oak Blvd",
+      "postalCode": "19901",
+      "state": "DE",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 10
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011-07",
+        "note": "GridInfo (EIA-860 data) gives initial operation as July 2011.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gridinfo.com/plant/dover-sun-park/57337",
+        "label": "GridInfo: Dover Sun Park (EIA plant 57337), White Oak Solar Energy LLC",
+        "publisher": "GridInfo (EIA-860 derived)",
+        "retrievedAt": "2026-10-20",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-20",
+    "notes": "A 10 MW AC solar PV plant (11.3 MW DC per GridInfo). Single-source record.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "unitCount": 1
+    }
   },
   {
     "id": "white-oak-technology-park-columbia-county-ga",
