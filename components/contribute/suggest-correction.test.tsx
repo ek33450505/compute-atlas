@@ -381,6 +381,7 @@ describe("SuggestCorrection — submit outcomes", () => {
     mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
     const user = userEvent.setup();
     await openAndFillSourceUrl(user);
+    await user.click(screen.getByText("Add a note or credit (optional)"));
     await user.type(screen.getByLabelText(/name or handle/i), "jdoe");
 
     await user.click(screen.getByRole("button", { name: /submit correction/i }));
@@ -521,5 +522,97 @@ describe("SuggestCorrection — enum value options", () => {
       "Mixed",
       "Other",
     ]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Intent framing — "Know the capacity?" fills a gap, it doesn't report an
+// error, so FieldGapPrompt opens the dialog with intent="add".
+// ---------------------------------------------------------------------------
+
+describe("SuggestCorrection — intent framing", () => {
+  it('defaults to the correction framing: "Suggest a correction" / "What\u2019s wrong?"', async () => {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+
+    expect(screen.getByRole("dialog", { name: "Suggest a correction" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toBeInTheDocument();
+  });
+
+  it('intent="add" retitles the dialog and relabels the field select', async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        intent="add"
+        triggerLabel="Know the capacity?"
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /know the capacity/i }));
+
+    expect(screen.getByRole("dialog", { name: "Add missing information" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: /what.s wrong/i })).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Short screens, optional-field disclosure and source hint copy
+// ---------------------------------------------------------------------------
+
+describe("SuggestCorrection — form layout and copy", () => {
+  // jsdom has no layout, so this pins the classes that produce the behaviour:
+  // the popup is capped and never scrolls itself (its absolutely positioned
+  // close button would scroll away with it); only the body wrapper scrolls.
+  it("caps the dialog at the viewport and scrolls only the body, keeping the header and close button fixed", async () => {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveClass("max-h-[calc(100dvh-2rem)]", "grid-rows-[auto_minmax(0,1fr)]");
+    expect(dialog).not.toHaveClass("overflow-y-auto");
+
+    const scrollBody = screen.getByLabelText(/source url/i).closest(".overflow-y-auto");
+    expect(scrollBody).not.toBeNull();
+    expect(scrollBody).not.toBe(dialog);
+    expect(scrollBody).toHaveClass("min-h-0");
+    expect(scrollBody).not.toContainElement(screen.getByText("Test DC"));
+    expect(scrollBody).not.toContainElement(screen.getByRole("button", { name: "Close" }));
+  });
+
+  it("keeps the name and note fields behind a closed disclosure that opens on click", async () => {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+
+    const summary = screen.getByText("Add a note or credit (optional)");
+    const details = summary.closest("details");
+    expect(details).not.toBeNull();
+    expect(details).not.toHaveAttribute("open");
+    expect(screen.getByLabelText(/name or handle/i)).not.toBeVisible();
+    expect(screen.getByLabelText(/^note/i)).not.toBeVisible();
+
+    await user.click(summary);
+
+    expect(details).toHaveAttribute("open");
+    expect(screen.getByLabelText(/name or handle/i)).toBeVisible();
+    expect(screen.getByLabelText(/^note/i)).toBeVisible();
+  });
+
+  it("asks where the submitter saw it, instead of the old one-line source hint", async () => {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+
+    expect(
+      screen.getByText("Where did you see it? A news story, permit, filing, or company page.")
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/backs up this change/i)).not.toBeInTheDocument();
   });
 });

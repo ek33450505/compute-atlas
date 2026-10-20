@@ -90,6 +90,7 @@ export function FieldGapPrompt({
           facilityId={facilityId}
           facilityName={facilityName}
           defaultField={field as CorrectableKey}
+          intent="add"
           showIntro={false}
           triggerLabel={`Know ${label}?`}
           triggerClassName={`${QUIET_ACTION_CLASS} print:hidden`}

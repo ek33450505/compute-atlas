@@ -35,10 +35,13 @@ describe("FieldGapPrompt — correctable field", () => {
 
     await user.click(screen.getByRole("button", { name: /know permanent jobs\?/i }));
 
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toHaveTextContent(
+    // A gap prompt fills missing data, so it opens framed as an addition, not
+    // an error report.
+    expect(screen.getByRole("dialog", { name: "Add missing information" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
       "Permanent jobs"
     );
+    expect(screen.queryByRole("combobox", { name: /what.s wrong/i })).not.toBeInTheDocument();
     expect(
       screen.queryByText(/compute atlas is meant to be corrected/i)
     ).not.toBeInTheDocument();
