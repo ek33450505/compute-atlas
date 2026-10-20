@@ -7189,6 +7189,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "calpine-edge-moor-energy-center-wilmington-de": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "cambrin-project-cornmaze-town-of-beloit-wi": {
     "nearestWater": {
       "name": "Rock River",
@@ -7381,6 +7391,20 @@
     },
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "cartier-energy-center-dover-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
     }
   },
@@ -9871,6 +9895,20 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "cogent-pensacola-edge-fl": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "cogent-seattle-federal-way-wa": {
     "nearestWater": {
       "name": "Mill Creek",
@@ -9888,6 +9926,30 @@
     "aquifer": {
       "name": "Puget Sound Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cogent-tallahassee-edge-fl": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "cogent-tampa-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Floridan Aquifer System",
+      "rock": "Carbonate-rock"
     }
   },
   "cogent-troy-big-beaver-mi": {
@@ -14621,6 +14683,34 @@
       "label": "Low - Medium (0-2 cm/y)"
     }
   },
+  "dc-octo-ddot-data-center-60-florida-ave-ne-washington-dc": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "dc-octo-reeves-center-data-center-washington-dc": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "dcblox-atlanta-east-conyers-ga": {
     "nearestWater": {
       "name": "Tanyard Branch",
@@ -15059,6 +15149,20 @@
     "aquifer": {
       "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
+    }
+  },
+  "diamond-state-generation-red-lion-fuel-cell-new-castle-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "dickson-city-development-bell-mountain-lackawanna-pa": {
@@ -25989,6 +26093,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "hostdime-orlando-kennedy-blvd-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "hp-cherokee-data-center-tulsa-ok": {
     "nearestWater": {
       "name": "Coal Creek",
@@ -29274,6 +29392,48 @@
       "label": "High (40-80%)"
     }
   },
+  "lumen-dc1-1120-vermont-ave-nw-washington-dc": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "lumen-dc2-1220-l-street-nw-washington-dc": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
+  "lumen-dc4-1828-l-street-nw-washington-dc": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "lumen-denver-1-1850-pearl-co": {
     "nearestWater": {
       "name": "Cherry Creek",
@@ -29320,6 +29480,20 @@
     "aquifer": {
       "name": "Hawaiian Sedimentary Deposit Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "lumen-jacksonville-philips-hwy-fl": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "lumen-las-vegas-1-aerojet-nv": {
@@ -29431,6 +29605,16 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "lumen-miami-5th-street-fl": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
     }
   },
   "lumen-minneapolis-3-mn": {
@@ -29553,6 +29737,20 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "lumen-newark-interchange-blvd-de": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "lumen-norristown-pa": {
@@ -29792,6 +29990,20 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "lumen-wilmington-jessup-street-de": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "lumon-solutions-marshfield-mo": {
@@ -32461,6 +32673,20 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "milford-solar-farm-milford-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "mill-creek-data-center-auburn-al": {
     "nearestWater": {
       "name": "Parkerson Mill Creek",
@@ -33223,6 +33449,20 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "naes-van-sant-station-dover-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "natelli-appeal-digital-park-lusby-md": {
@@ -36633,6 +36873,20 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "pbf-delaware-city-refinery-power-plant-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "pcc-dekalb-ellenwood-data-center-ga": {
@@ -40481,6 +40735,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "readysetfundgrow-fishbowl-homestead-fl": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Biscayne Aquifer",
+      "rock": "Carbonate-rock"
     }
   },
   "red-ace-data-center-culpeper-va": {
@@ -50941,6 +51205,20 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "white-oak-solar-dover-sun-park-de": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "white-oak-technology-park-columbia-county-ga": {
