@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Flag } from "lucide-react";
 
+import { CORRECTABLE_FIELD_META, type CorrectableKey } from "@/lib/contribute-fields";
+
 import {
   SuggestCorrection,
   buildCorrectionPayload,
@@ -389,5 +391,135 @@ describe("SuggestCorrection — submit outcomes", () => {
     const [, init] = mockFetch.mock.calls[0];
     const body = JSON.parse(init.body as string);
     expect(body.attribution).toBe("jdoe");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Enum value options — regression for the dialog rendering the STATUS values
+// as the "New value" options of every enum-kind field. The server validates
+// against each field's own enumValues, so water/energy/community submissions
+// could never succeed.
+// ---------------------------------------------------------------------------
+
+describe("SuggestCorrection — enum value options", () => {
+  const ENUM_KEYS: CorrectableKey[] = ["status", "water", "energy", "community"];
+
+  async function openValueSelect(user: ReturnType<typeof userEvent.setup>, field: CorrectableKey) {
+    render(
+      <SuggestCorrection facilityId="facility-1" facilityName="Test DC" defaultField={field} />
+    );
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+    await user.click(screen.getByRole("combobox", { name: /new value/i }));
+  }
+
+  it.each(ENUM_KEYS)("offers exactly the %s field's own labels, in enumValues order", async (key) => {
+    const meta = CORRECTABLE_FIELD_META.find((m) => m.key === key)!;
+    const expected = (meta.enumValues ?? []).map((v) => meta.enumLabels![v]);
+    const user = userEvent.setup();
+
+    await openValueSelect(user, key);
+
+    const options = await screen.findAllByRole("option");
+    expect(options.map((o) => o.textContent)).toEqual(expected);
+  });
+
+  it("does not offer a status value (Operational) for the cooling-type field", async () => {
+    const user = userEvent.setup();
+
+    await openValueSelect(user, "water");
+
+    await screen.findByRole("option", { name: "Air-cooled" });
+    expect(screen.queryByRole("option", { name: "Operational" })).not.toBeInTheDocument();
+  });
+
+  it("submits the picked cooling type's enum value, not a label or a status", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+
+    await openValueSelect(user, "water");
+    await user.click(await screen.findByRole("option", { name: "Air-cooled" }));
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+
+    const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+    const [, init] = mockFetch.mock.calls[0];
+    const body = JSON.parse(init.body as string);
+    expect(body.field).toBe("water");
+    expect(body.value).toBe("air");
+  });
+
+  // Literal on purpose: the it.each above reads its expectation back from
+  // meta.enumLabels, so a wrong label string there would pass it.
+  it("pins the cooling-type label strings", async () => {
+    const user = userEvent.setup();
+
+    await openValueSelect(user, "water");
+
+    const options = await screen.findAllByRole("option");
+    expect(options.map((o) => o.textContent)).toEqual([
+      "Evaporative",
+      "Air-cooled",
+      "Closed-loop",
+      "Hybrid",
+      "Unknown",
+    ]);
+  });
+
+  it("pins the community-response label strings", async () => {
+    const user = userEvent.setup();
+
+    await openValueSelect(user, "community");
+
+    const options = await screen.findAllByRole("option");
+    expect(options.map((o) => o.textContent)).toEqual([
+      "Supported",
+      "Mixed",
+      "Contested",
+      "Opposed",
+      "Litigation",
+      "Unknown",
+    ]);
+  });
+
+  // The production path: the dialog opens on the default field and the user
+  // switches to an enum-kind field, rather than a gap prompt deep-linking one.
+  it("swaps the value options when the user switches between enum fields", async () => {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Cooling type" }));
+    await user.click(screen.getByRole("combobox", { name: /new value/i }));
+    expect((await screen.findAllByRole("option")).map((o) => o.textContent)).toEqual([
+      "Evaporative",
+      "Air-cooled",
+      "Closed-loop",
+      "Hybrid",
+      "Unknown",
+    ]);
+
+    // Pick a value, then switch fields: the "What's wrong?" handler must clear
+    // it, or the stale "air" would be submitted as an energy source and 400.
+    await user.click(screen.getByRole("option", { name: "Air-cooled" }));
+    expect(screen.getByRole("combobox", { name: /new value/i })).toHaveTextContent("Air-cooled");
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Energy source" }));
+    expect(screen.getByRole("combobox", { name: /new value/i })).toHaveTextContent("Select a value");
+
+    await user.click(screen.getByRole("combobox", { name: /new value/i }));
+    expect((await screen.findAllByRole("option")).map((o) => o.textContent)).toEqual([
+      "Grid",
+      "On-site gas",
+      "Nuclear",
+      "Solar",
+      "Wind",
+      "Hydro",
+      "Mixed",
+      "Other",
+    ]);
   });
 });

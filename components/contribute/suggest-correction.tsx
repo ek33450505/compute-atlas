@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/select";
 import { issuesToFieldMap, FieldError, type FieldIssues } from "@/components/contribute/field-primitives";
 import { CORRECTABLE_FIELD_META, type CorrectableKey } from "@/lib/contribute-fields";
-import { STATUS_ORDER, STATUS_META } from "@/lib/status";
 import { US_STATE_NAMES } from "@/lib/us-states";
 
 // ---------------------------------------------------------------------------
@@ -42,7 +41,6 @@ const CORRECTABLE_FIELD_ITEMS = CORRECTABLE_FIELD_META.map((m) => ({
   value: m.key,
   label: m.label,
 }));
-const STATUS_ITEMS = STATUS_ORDER.map((s) => ({ value: s, label: STATUS_META[s].label }));
 const STATE_ITEMS = STATE_OPTIONS.map((s) => ({ value: s.code, label: s.name }));
 
 // ---------------------------------------------------------------------------
@@ -191,6 +189,10 @@ export function SuggestCorrection({
   }
 
   const def = CORRECTABLE_FIELD_META.find((m) => m.key === state.field)!;
+  // Options for an enum-kind field come from THAT field's own values — the
+  // server validates against `def.enumValues` (lib/contribute.ts), so any other
+  // list (e.g. the status values) can never be submitted successfully.
+  const enumItems = (def.enumValues ?? []).map((v) => ({ value: v, label: def.enumLabels?.[v] ?? v }));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -383,7 +385,7 @@ export function SuggestCorrection({
                 )}
                 {def.valueKind === "enum" && (
                   <Select
-                    items={STATUS_ITEMS}
+                    items={enumItems}
                     value={state.value || null}
                     onValueChange={(v) => {
                       if (v === null) return;
@@ -399,9 +401,9 @@ export function SuggestCorrection({
                       <SelectValue placeholder="Select a value" />
                     </SelectTrigger>
                     <SelectContent>
-                      {STATUS_ORDER.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {STATUS_META[s].label}
+                      {enumItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
