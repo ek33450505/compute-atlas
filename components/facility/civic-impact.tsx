@@ -2,6 +2,11 @@ import type { Facility } from "@/lib/schema";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { formatUsdCompact, formatTonsPerYear } from "@/lib/format";
+import {
+  COMMUNITY_STATUS_LABELS,
+  COOLING_TYPE_LABELS,
+  ENERGY_SOURCE_LABELS,
+} from "@/lib/enum-labels";
 import { FieldGapPrompt, SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import {
   hasEconomics,
@@ -23,37 +28,9 @@ type PermittedTpy = NonNullable<NonNullable<Facility["emissions"]>["permittedTpy
 type EmissionsUnitGroup = NonNullable<NonNullable<Facility["emissions"]>["unitGroups"]>[number];
 
 // --- Enum label maps ---
-const energySourceLabels: Record<string, string> = {
-  grid: "Grid",
-  on_site_gas: "On-site gas",
-  nuclear: "Nuclear",
-  solar: "Solar",
-  wind: "Wind",
-  hydro: "Hydro",
-  mixed: "Mixed",
-  other: "Other",
-};
-
-const coolingTypeLabels: Record<string, string> = {
-  evaporative: "Evaporative",
-  air: "Air-cooled",
-  closed_loop: "Closed-loop",
-  hybrid: "Hybrid",
-  unknown: "Unknown",
-};
-
-const communityStatusLabels: Record<string, string> = {
-  supported: "Supported",
-  mixed: "Mixed",
-  contested: "Contested",
-  opposed: "Opposed",
-  litigation: "Litigation",
-  unknown: "Unknown",
-};
-
-// Distinct enum from `water.coolingType` above (mining rigs use
+// Distinct enum from `water.coolingType` (mining rigs use
 // immersion/hydro cooling, not the data-center evaporative/closed-loop set)
-// — do not merge with coolingTypeLabels.
+// — do not merge with COOLING_TYPE_LABELS.
 const miningCoolingTypeLabels: Record<string, string> = {
   immersion: "Immersion",
   air: "Air-cooled",
@@ -268,11 +245,11 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
   }
 
   const energySourceLabel = energy?.source
-    ? (energySourceLabels[energy.source] ?? energy.source)
+    ? (ENERGY_SOURCE_LABELS[energy.source] ?? energy.source)
     : null;
 
   const coolingLabel = water?.coolingType
-    ? (coolingTypeLabels[water.coolingType] ?? water.coolingType)
+    ? (COOLING_TYPE_LABELS[water.coolingType] ?? water.coolingType)
     : null;
 
   return (
@@ -612,7 +589,7 @@ function CommunityGroup({ facility }: { facility: Facility }) {
   if (!community) return null;
 
   const statusLabel = community.status
-    ? (communityStatusLabels[community.status] ?? community.status)
+    ? (COMMUNITY_STATUS_LABELS[community.status] ?? community.status)
     : "Unknown";
 
   return (

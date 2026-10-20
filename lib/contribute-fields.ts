@@ -1,5 +1,10 @@
-import { STATUS_ORDER } from "@/lib/status"; // client-safe (only imports lucide icons)
+import { STATUS_META, STATUS_ORDER } from "@/lib/status"; // client-safe (only imports lucide icons)
 import { communityStatusEnum, energySourceEnum, waterCoolingTypeEnum } from "@/lib/schema";
+import {
+  COMMUNITY_STATUS_LABELS,
+  COOLING_TYPE_LABELS,
+  ENERGY_SOURCE_LABELS,
+} from "@/lib/enum-labels";
 // lib/schema.ts is client-safe: it only imports zod + the client-safe
 // lib/status and lib/intake-fields leaves (no lib/db/client, lib/submissions,
 // lib/contribute, or lib/facility-write) and is already pulled into client
@@ -46,13 +51,22 @@ export interface CorrectableFieldMeta {
   label: string;
   valueKind: CorrectableValueKind;
   enumValues?: readonly string[];
+  /** Display label per `enumValues` member, for the correction dialog's
+   *  "New value" options. Every enum-kind entry sets it. */
+  enumLabels?: Readonly<Record<string, string>>;
 }
 
 export const CORRECTABLE_FIELD_META: readonly CorrectableFieldMeta[] = [
   { key: "name", label: "Facility name", valueKind: "text" },
   { key: "operator", label: "Operator", valueKind: "text" },
   { key: "poweredBy", label: "Powered by", valueKind: "text" },
-  { key: "status", label: "Status", valueKind: "enum", enumValues: STATUS_ORDER },
+  {
+    key: "status",
+    label: "Status",
+    valueKind: "enum",
+    enumValues: STATUS_ORDER,
+    enumLabels: Object.fromEntries(STATUS_ORDER.map((s) => [s, STATUS_META[s].label])),
+  },
   { key: "state", label: "State", valueKind: "state" },
   { key: "capacityOperationalMw", label: "Operational capacity (MW)", valueKind: "number" },
   { key: "capacityPlannedMw", label: "Planned capacity (MW)", valueKind: "number" },
@@ -78,6 +92,7 @@ export const CORRECTABLE_FIELD_META: readonly CorrectableFieldMeta[] = [
     label: "Cooling type",
     valueKind: "enum",
     enumValues: waterCoolingTypeEnum.options,
+    enumLabels: COOLING_TYPE_LABELS,
   },
   // Targets energy.source specifically; utility/onSiteGenerationMw/notes are
   // not correctable via this key.
@@ -86,6 +101,7 @@ export const CORRECTABLE_FIELD_META: readonly CorrectableFieldMeta[] = [
     label: "Energy source",
     valueKind: "enum",
     enumValues: energySourceEnum.options,
+    enumLabels: ENERGY_SOURCE_LABELS,
   },
   // Targets emissions.permitNumber specifically — a citable document
   // identifier, not a tonnage. emissionsSchema requires `basis` whenever a
@@ -104,5 +120,6 @@ export const CORRECTABLE_FIELD_META: readonly CorrectableFieldMeta[] = [
     label: "Community response",
     valueKind: "enum",
     enumValues: communityStatusEnum.options,
+    enumLabels: COMMUNITY_STATUS_LABELS,
   },
 ];
