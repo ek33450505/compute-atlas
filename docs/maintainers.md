@@ -70,6 +70,8 @@ populates them.
 `db:sync` cannot reach the search index behind the global ⌘K palette; that is an
 untagged 24-hour timer and refreshes on its own schedule.
 
+A public correction can target a field a record marks `notRecorded` (the contributor may have a source). Approving it returns a 400, because a field cannot be both set and marked; remove the mark in `data/facilities.json`, run `db:sync`, then approve.
+
 ## Scripts
 
 | Command | What it does |

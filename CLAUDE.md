@@ -68,6 +68,9 @@ opening a PR.
   everywhere data enters the system. Optional fields like `stakeholders` (named
   people with a documented stake in a specific site) are site-level curated,
   excluded from public intake and discovery enrichment.
+  `notRecorded` marks a field deliberately left out, with a public reason; validation rejects a field that
+  is both set and marked; and the field-extraction lane skips marked fields. It is maintainer-curated
+  and stripped from public intake and discovery staging like `stakeholders`.
 - **Map:** MapLibre GL (`components/map/*`), globe projection + vector/satellite
   basemaps. Optional overlays (waterways, transmission lines, drought, baseline
   water stress, groundwater decline, principal aquifers) are tinted,

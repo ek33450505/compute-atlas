@@ -129,7 +129,7 @@
 import { mkdirSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { waterCoolingTypeEnum, type Facility, type Source } from "../../lib/schema";
+import { NOT_RECORDABLE_FIELDS, waterCoolingTypeEnum, type Facility, type Source } from "../../lib/schema";
 import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
@@ -145,14 +145,9 @@ import { formatErrorSummary, formatFatalError } from "../../lib/db-error";
 // Fields covered
 // ============================================================================
 
-export const EXTRACTABLE_FIELDS = [
-  "capacityMw.planned",
-  "capacityMw.operational",
-  "energy.onSiteGenerationMw",
-  "energy.source",
-  "energy.utility",
-  "water.coolingType",
-] as const;
+// Derived from the schema's NOT_RECORDABLE_FIELDS so a field the lane can fill
+// is exactly a field a maintainer can mark `notRecorded` (one list, no drift).
+export const EXTRACTABLE_FIELDS = NOT_RECORDABLE_FIELDS;
 
 export type ExtractableField = (typeof EXTRACTABLE_FIELDS)[number];
 
@@ -204,6 +199,8 @@ export interface FieldGap {
 }
 
 function fieldIsMissing(facility: Facility, field: ExtractableField): boolean {
+  // A maintainer-marked field was left out on purpose; it is not a gap.
+  if (facility.notRecorded?.[field] !== undefined) return false;
   switch (field) {
     case "capacityMw.planned":
       return facility.capacityMw?.planned === undefined;

@@ -24,7 +24,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { MastheadFactGrid, MastheadFactRow } from "@/components/facility/fact-row";
+import { MastheadFactGrid, MastheadFactRow, NotRecordedText } from "@/components/facility/fact-row";
 import { StatusTimeline } from "@/components/facility/status-timeline";
 import { ProvenancePanel } from "@/components/facility/provenance-panel";
 import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-dynamic";
@@ -126,6 +126,12 @@ export async function generateMetadata({
   return { title, description, alternates: { canonical: `/facilities/${slug}` } };
 }
 
+// notRecorded key for each correctable capacity field.
+const CAPACITY_NOT_RECORDED_KEY = {
+  capacityOperationalMw: "capacityMw.operational",
+  capacityPlannedMw: "capacityMw.planned",
+} as const;
+
 /**
  * Facility detail page — static server component.
  *
@@ -147,6 +153,21 @@ export default async function FacilityPage({
 
   const location = formatLocation(facility);
   const capacity = formatCapacity(facility);
+  // Keyed on the field, not the reason text: two fields may share a reason.
+  const capacityNotRecorded = (
+    [
+      ["capacityMw.operational", "Operational"],
+      ["capacityMw.planned", "Planned"],
+    ] as const
+  ).flatMap(([field, label]) => {
+    const reason = facility.notRecorded?.[field];
+    return reason === undefined ? [] : [{ field, label, reason }];
+  });
+  // The fill prompt targets one capacity field (by status); it is suppressed
+  // only when THAT field is marked, not when its sibling is.
+  const capacityGapMarked =
+    facility.notRecorded?.[CAPACITY_NOT_RECORDED_KEY[capacityGapField(facility.status)]] !==
+    undefined;
   // Shown as "Currently: …" in the page's correction dialogs (masthead, bottom
   // CTA, ConfirmFactPrompt). FieldGapPrompt dialogs don't get it: they only
   // render for an empty field and fall back to "not recorded".
@@ -357,12 +378,14 @@ export default async function FacilityPage({
 
           <MastheadFactRow label="Capacity" valueClassName="mt-1 text-sm font-mono tabular-nums">
             {capacity === "—" ? (
-              <FieldGapPrompt
-                field={capacityGapField(facility.status)}
-                facilityId={facility.id}
-                facilityName={facility.name}
-                label="the capacity"
-              />
+              !capacityGapMarked && (
+                <FieldGapPrompt
+                  field={capacityGapField(facility.status)}
+                  facilityId={facility.id}
+                  facilityName={facility.name}
+                  label="the capacity"
+                />
+              )
             ) : (
               <>
                 {capacity}
@@ -378,6 +401,11 @@ export default async function FacilityPage({
                 </div>
               </>
             )}
+            {capacityNotRecorded.map(({ field, label, reason }) => (
+              <div key={field} className="font-sans">
+                <NotRecordedText reason={reason} label={label} />
+              </div>
+            ))}
           </MastheadFactRow>
 
           <MastheadFactRow label="Powered by">

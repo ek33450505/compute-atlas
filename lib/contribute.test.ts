@@ -687,3 +687,15 @@ describe("buildCorrectionPatch state field validation", () => {
     expect((result as { error: string }).error).toContain("2-letter code");
   });
 });
+
+describe("notRecorded is not accepted from public intake", () => {
+  it("is stripped by the create schema and absent from the built payload", () => {
+    const parsed = contributeInputSchema.parse({
+      ...baseCreateInput(),
+      notRecorded: { "capacityMw.operational": "Attacker-supplied reason text." },
+    });
+    expect("notRecorded" in parsed).toBe(false);
+    const payload = buildCreatePayload(parsed as CreateContributeInput, TODAY);
+    expect("notRecorded" in payload).toBe(false);
+  });
+});

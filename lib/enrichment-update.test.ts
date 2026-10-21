@@ -489,3 +489,36 @@ describe("missingEnrichableFamilies", () => {
     expect(missingEnrichableFamilies(facility)).toEqual([]);
   });
 });
+
+describe("missingEnrichableFamilies and notRecorded", () => {
+  const REASON = "Only backup-generator nameplate is published, not IT load.";
+
+  it("treats a marked sub-field as present, per field", () => {
+    const facility = makeDataCenter({
+      capacityMw: { planned: 300 },
+      notRecorded: { "capacityMw.operational": REASON },
+    });
+    expect(missingEnrichableFamilies(facility)).not.toContain("capacityMw");
+  });
+
+  it("still reports a family while an unmarked sub-field remains undefined", () => {
+    const facility = makeDataCenter({
+      notRecorded: { "capacityMw.operational": REASON },
+    });
+    expect(missingEnrichableFamilies(facility)).toContain("capacityMw");
+  });
+
+  it("energy and water stay missing until every fillable sub-field is set or marked", () => {
+    const allMarked = makeDataCenter({
+      notRecorded: {
+        "energy.source": REASON,
+        "energy.utility": REASON,
+        "energy.onSiteGenerationMw": REASON,
+      },
+    });
+    expect(missingEnrichableFamilies(allMarked)).not.toContain("energy");
+    // water.reportedMgd is not markable, so marking coolingType alone is not enough.
+    const coolingMarked = makeDataCenter({ notRecorded: { "water.coolingType": REASON } });
+    expect(missingEnrichableFamilies(coolingMarked)).toContain("water");
+  });
+});
