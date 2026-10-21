@@ -15,7 +15,7 @@ export function generateToken(): string {
   return randomBytes(32).toString("base64url");
 }
 
-function fromAddress(): string {
+export function fromAddress(): string {
   return process.env.EMAIL_FROM ?? "Compute Atlas <alerts@compute-atlas.com>";
 }
 
@@ -43,36 +43,68 @@ export function escapeHtml(value: string): string {
 }
 
 /**
- * Shared send path for every outbound email below: resolves the Resend
- * client (skipping with `skipLogMessage` if `RESEND_API_KEY` is unset), sends
- * `payload`, and logs any failure under `logLabel`. Each public sender still
- * composes its own subject/text/html (and any sender-specific guard, e.g.
- * sendContactEmail's CONTACT_TO_EMAIL check) before calling this.
+ * Outcome of one send attempt. `resendId` and `errorCode` are shaped to be
+ * persisted: `errorCode` is always an identifier (see `safeErrorCode`), never
+ * free text, an address, or a message.
  */
-async function sendViaResend(
+export type SendResult =
+  | { sent: true; resendId: string | null }
+  | { sent: false; errorCode: string; skipped?: "no_key" };
+
+/**
+ * What the public senders return: a `SendResult`, or a bare `{ sent: false }`
+ * from the two senders' pre-send guards (CONTACT_TO_EMAIL unset, EMAIL_FROM
+ * refused), where no send was attempted and there is no code to record.
+ */
+export type SendOutcome = SendResult | { sent: false };
+
+const ERROR_CODE_PATTERN = /^[A-Za-z0-9_]{1,64}$/;
+
+/**
+ * Returns `name` only if identifier-shaped, else "unknown". A SHAPE check, not
+ * an allowlist: acceptable because Resend error names are library-controlled,
+ * and it bounds anything persisted to identifier shape.
+ */
+export function safeErrorCode(name: unknown): string {
+  return typeof name === "string" && ERROR_CODE_PATTERN.test(name) ? name : "unknown";
+}
+
+/**
+ * Shared send path for every outbound email (this file and lib/notify.ts):
+ * resolves the Resend client (skipping with `skipLogMessage` if
+ * `RESEND_API_KEY` is unset), sends `payload`, and logs any failure under
+ * `logLabel`. Each sender still composes its own subject/text/html (and any
+ * sender-specific guard, e.g. sendContactEmail's CONTACT_TO_EMAIL check)
+ * before calling this. Never throws.
+ */
+export async function sendViaResend(
   logLabel: string,
   skipLogMessage: string,
   payload: Parameters<Resend["emails"]["send"]>[0],
-): Promise<{ sent: boolean }> {
-  const resend = getResend();
-  if (!resend) {
-    console.warn(skipLogMessage);
-    return { sent: false };
-  }
-
+): Promise<SendResult> {
   try {
+    // Client construction is inside the try so a constructor throw is a
+    // failed send, not an exception — the "never throws" contract.
+    const resend = getResend();
+    if (!resend) {
+      console.warn(skipLogMessage);
+      return { sent: false, errorCode: "no_key", skipped: "no_key" };
+    }
+
     const result = await resend.emails.send(payload);
     if (result.error) {
       // Log only the error type, not the raw Resend error object — it can
       // echo the recipient address back on a validation failure (caught in
       // a prior security review).
-      console.error(`${logLabel} failed:`, result.error?.name ?? "unknown");
-      return { sent: false };
+      const errorCode = safeErrorCode(result.error?.name);
+      console.error(`${logLabel} failed:`, errorCode);
+      return { sent: false, errorCode };
     }
-    return { sent: true };
+    return { sent: true, resendId: result.data?.id ?? null };
   } catch (error) {
-    console.error(`${logLabel} failed:`, error instanceof Error ? error.name : "unknown");
-    return { sent: false };
+    const errorCode = safeErrorCode(error instanceof Error ? error.name : undefined);
+    console.error(`${logLabel} failed:`, errorCode);
+    return { sent: false, errorCode };
   }
 }
 
@@ -80,7 +112,7 @@ export async function sendConfirmEmail(input: {
   email: string;
   targetLabel: string;
   confirmToken: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const confirmUrl = `${linkBase()}/api/subscribe/confirm?token=${encodeURIComponent(input.confirmToken)}`;
   const subject = "Confirm your Compute Atlas alerts";
   const text = `You asked to be notified when ${input.targetLabel} changes on Compute Atlas. Confirm to start receiving updates: ${confirmUrl}. If this wasn't you, ignore this email — nothing is sent unless you confirm.`;
@@ -96,7 +128,7 @@ export async function sendConfirmEmail(input: {
 export async function sendBulkAccessEmail(input: {
   email: string;
   confirmToken: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const confirmUrl = `${linkBase()}/api/access/confirm?token=${encodeURIComponent(input.confirmToken)}`;
   const subject = "Your Compute Atlas bulk API access link";
   const why =
@@ -118,7 +150,7 @@ export async function sendContactEmail(input: {
   email: string;
   topic: string;
   message: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const to = process.env.CONTACT_TO_EMAIL;
   if (!to) {
     // The message is already durably stored (the route inserts the row
@@ -154,7 +186,7 @@ export async function sendContactReply(input: {
   to: string;
   originalMessage: string;
   replyBody: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   // A reply to a member of the public must never go out under a personal From
   // (e.g. a misconfigured EMAIL_FROM); fail closed rather than expose it.
   const rawFrom = fromAddress();
@@ -186,7 +218,7 @@ export async function sendChangeNotification(input: {
   changeLabel: string;
   status: string;
   unsubscribeToken: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const facilityUrl = `${linkBase()}/facilities/${input.facilitySlug}`;
   const unsubUrl = `${linkBase()}/api/subscribe/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
   const subject = `${input.facilityName} — record updated on Compute Atlas`;
@@ -223,7 +255,7 @@ export async function sendWatchStartedEmail(input: {
   email: string;
   targetLabel: string;
   unsubscribeToken: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const unsubUrl = `${linkBase()}/api/subscribe/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
   const subject = `You're now watching ${input.targetLabel} — Compute Atlas`;
   const text = `You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching ${input.targetLabel} and will get an email whenever it changes.\n\nIf this wasn't you, unsubscribe from this one: ${unsubUrl}\nStop all automated email from Compute Atlas: ${unsubUrl}&scope=all`;
@@ -271,7 +303,7 @@ export async function sendSubmissionReviewedEmail(input: {
   decision: "approved" | "rejected";
   facilityName: string;
   facilitySlug?: string; // present on approval — links to the live /facilities/<slug> page
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   if (input.decision === "approved") {
     const facilityUrl = `${linkBase()}/facilities/${input.facilitySlug}`;
     const subject = `${input.facilityName} is now live on Compute Atlas`;

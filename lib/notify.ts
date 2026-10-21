@@ -1,9 +1,14 @@
 import { and, eq, gte, inArray, lt } from "drizzle-orm";
-import { Resend } from "resend";
 
 import { getDb } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
-import { escapeHtml, sendChangeNotification } from "@/lib/email";
+import {
+  escapeHtml,
+  fromAddress,
+  sendChangeNotification,
+  sendViaResend,
+  type SendResult,
+} from "@/lib/email";
 import { siteConfig } from "@/lib/site";
 import { claimDigestWindow, completeDigestWindow } from "@/lib/state-digest-ledger";
 import { STATUS_META } from "@/lib/status";
@@ -235,13 +240,9 @@ export async function sendGroupedChangeNotifications(
 /**
  * Composes and sends the multi-facility digest email for a recipient with
  * more than one change in a single run. Kept local to this file rather than
- * added to `lib/email.ts`. `escapeHtml` IS shared — it is exported from
- * lib/email.ts and imported above, so the XSS defense has exactly one
- * definition. The remaining send plumbing below (address resolution, Resend
- * client construction) is still a deliberate, minimal duplication of
- * lib/email.ts's private `fromAddress` / `getResend`. Theme D's monthly
- * digest needs the same sender, and hoisting a shared send primitive is
- * tracked as a fast-follow for that theme.
+ * added to `lib/email.ts`. `escapeHtml`, `fromAddress` and the send itself
+ * (`sendViaResend`, which owns the no-key skip and failure logging) are all
+ * shared from lib/email.ts, so each has exactly one definition.
  *
  * Never throws — same contract as `sendChangeNotification` — so a failed
  * digest send can never turn a successful publish into an error.
@@ -249,15 +250,8 @@ export async function sendGroupedChangeNotifications(
 async function sendChangeDigestEmail(
   email: string,
   changes: RecipientChangeGroup["changes"]
-): Promise<{ sent: boolean }> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    console.warn("RESEND_API_KEY not set — skipping change digest email send");
-    return { sent: false };
-  }
-
+): Promise<SendResult> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? siteConfig.url;
-  const from = process.env.EMAIL_FROM ?? "Compute Atlas <alerts@compute-atlas.com>";
   const subject = `${changes.length} updates on facilities you're watching — Compute Atlas`;
 
   // Each change here is a DISTINCT facility-watch subscription row, so each
@@ -295,10 +289,11 @@ async function sendChangeDigestEmail(
     .join("");
   const html = `<p>${changes.length} records you're watching changed on Compute Atlas:</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;"><a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a><br>${escapeHtml(mailboxNote)}</p>`;
 
-  try {
-    const resend = new Resend(key);
-    const result = await resend.emails.send({
-      from,
+  return sendViaResend(
+    "sendChangeDigestEmail",
+    "RESEND_API_KEY not set — skipping change digest email send",
+    {
+      from: fromAddress(),
       to: email,
       subject,
       text,
@@ -307,16 +302,8 @@ async function sendChangeDigestEmail(
         "List-Unsubscribe": `<${stopAllUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
-    });
-    if (result.error) {
-      console.error("sendChangeDigestEmail failed:", result.error?.name ?? "unknown");
-      return { sent: false };
-    }
-    return { sent: true };
-  } catch (error) {
-    console.error("sendChangeDigestEmail failed:", error instanceof Error ? error.name : "unknown");
-    return { sent: false };
-  }
+    },
+  );
 }
 
 /**
@@ -342,15 +329,8 @@ async function sendStateDigestEmail(
   email: string,
   stateName: string,
   changes: RecipientChangeGroup["changes"]
-): Promise<{ sent: boolean }> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    console.warn("RESEND_API_KEY not set — skipping state digest email send");
-    return { sent: false };
-  }
-
+): Promise<SendResult> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? siteConfig.url;
-  const from = process.env.EMAIL_FROM ?? "Compute Atlas <alerts@compute-atlas.com>";
   const facilityWord = changes.length === 1 ? "facility" : "facilities";
   const subject = `${changes.length} ${facilityWord} changed in ${stateName} — Compute Atlas monthly digest`;
 
@@ -375,10 +355,11 @@ async function sendStateDigestEmail(
     .join("");
   const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this state's digest</a> · <a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a></p>`;
 
-  try {
-    const resend = new Resend(key);
-    const result = await resend.emails.send({
-      from,
+  return sendViaResend(
+    "sendStateDigestEmail",
+    "RESEND_API_KEY not set — skipping state digest email send",
+    {
+      from: fromAddress(),
       to: email,
       subject,
       text,
@@ -387,16 +368,8 @@ async function sendStateDigestEmail(
         "List-Unsubscribe": `<${unsubUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
-    });
-    if (result.error) {
-      console.error("sendStateDigestEmail failed:", result.error?.name ?? "unknown");
-      return { sent: false };
-    }
-    return { sent: true };
-  } catch (error) {
-    console.error("sendStateDigestEmail failed:", error instanceof Error ? error.name : "unknown");
-    return { sent: false };
-  }
+    },
+  );
 }
 
 /**

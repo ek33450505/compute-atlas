@@ -73,6 +73,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   vi.unstubAllEnvs();
+  vi.restoreAllMocks();
 });
 
 afterAll(async () => {
@@ -331,6 +332,42 @@ describe("notifySubscribersOfChanges (batched, multi-facility)", () => {
     expect(args.text).toContain(facilityB.name);
   });
 
+  it("sends the digest through the shared path with sender and one-click unsubscribe headers", async () => {
+    // Hermetic: fromAddress() falls back to the default only when unset.
+    vi.stubEnv("EMAIL_FROM", undefined);
+    const sub = await insertSubscription({ targetType: "facility", targetId: facilityA.id });
+    await insertSubscription({ email: sub.email, targetType: "facility", targetId: facilityB.id });
+
+    await notifySubscribersOfChanges([
+      { facility: facilityA, changeLabel: "added to the atlas" },
+      { facility: facilityB, changeLabel: "record updated" },
+    ]);
+
+    const args = resendSendMock.mock.calls[0][0];
+    expect(args.from).toBe("Compute Atlas <alerts@compute-atlas.com>");
+    expect(args.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
+    expect(args.headers["List-Unsubscribe"]).toMatch(/^<.*\/api\/subscribe\/unsubscribe\?token=.*&scope=all>$/);
+  });
+
+  it("pins the change digest log labels and no-key warning", async () => {
+    const sub = await insertSubscription({ targetType: "facility", targetId: facilityA.id });
+    await insertSubscription({ email: sub.email, targetType: "facility", targetId: facilityB.id });
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const changes = [
+      { facility: facilityA, changeLabel: "added to the atlas" },
+      { facility: facilityB, changeLabel: "record updated" },
+    ];
+
+    resendSendMock.mockRejectedValueOnce(new TypeError("boom"));
+    await notifySubscribersOfChanges(changes);
+    expect(errSpy).toHaveBeenCalledWith("sendChangeDigestEmail failed:", "TypeError");
+
+    vi.stubEnv("RESEND_API_KEY", "");
+    await notifySubscribersOfChanges(changes);
+    expect(warnSpy).toHaveBeenCalledWith("RESEND_API_KEY not set — skipping change digest email send");
+  });
+
   it("gives each of multiple recipients their own single email", async () => {
     const subA = await insertSubscription({
       email: "a@example.com",
@@ -583,6 +620,37 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
   const until = new Date("2026-02-01T00:00:00Z");
   const withinPeriod = new Date("2026-01-15T00:00:00Z");
   const beforePeriod = new Date("2025-12-01T00:00:00Z");
+
+  async function seedStateDigestRecipient() {
+    await seedFacility(tdb.db, facilityTnA);
+    await insertHistoryRow(facilityTnA.id, "update", withinPeriod);
+    await insertSubscription({
+      email: "confirmed@example.com",
+      targetType: "state",
+      targetId: facilityTnA.location.state,
+      status: "confirmed",
+    });
+  }
+
+  it("pins the state digest failure log label", async () => {
+    await seedStateDigestRecipient();
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    resendSendMock.mockRejectedValueOnce(new TypeError("boom"));
+
+    await notifyStateSubscribersMonthly(since, until);
+
+    expect(errSpy).toHaveBeenCalledWith("sendStateDigestEmail failed:", "TypeError");
+  });
+
+  it("pins the state digest no-key warning text", async () => {
+    await seedStateDigestRecipient();
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.stubEnv("RESEND_API_KEY", "");
+
+    await notifyStateSubscribersMonthly(since, until);
+
+    expect(warnSpy).toHaveBeenCalledWith("RESEND_API_KEY not set — skipping state digest email send");
+  });
 
   it("notifies only a confirmed state subscriber — not pending, not unsubscribed, not 'all'", async () => {
     await seedFacility(tdb.db, facilityTnA);
