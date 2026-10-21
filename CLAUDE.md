@@ -154,7 +154,14 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
   back to an address-level check, and do not add a volume cap and call it consent — a cap makes an
   unconsented action bounded, not consented. ⚠️ The partial unique index
   `subscriptions_active_target_idx` is `WHERE status <> 'unsubscribed'`, so an unsubscribed row does
-  not block re-insertion; durable suppression is a known gap, tracked for a separate session.
+  not block re-insertion at the index level. Durable opt-outs now live in `email_suppressions`
+  (migration 0016: per-target, plus a global "Stop all automated email" that only its first stop
+  token can undo; see `docs/maintainers.md`). Every subscription email goes through `sendGated`
+  (`lib/email-gate.ts`), which re-reads the row by id and checks suppression and required status
+  before it sends, plus the per-address cap for confirm mail only. `lib/email-send-gate-guard.test.ts` fails if a
+  guarded sender is called outside the gate. Every attempt is written to `email_sends` (migration
+  0017) with the address as a salted hash only. County and metro watch targets exist behind
+  `WATCH_AREAS_ENABLED` (`lib/watch-target-types.ts`).
 - **Admin/pipeline writes** require a bearer token, but not all the same one.
   `POST /api/submissions` — staging only — accepts EITHER `API_INTAKE_TOKEN` or
   `API_ADMIN_TOKEN` (`requireIntake`), so the discovery pipeline can stage a

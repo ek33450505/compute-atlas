@@ -102,9 +102,10 @@ See `.env.example`.
 | `CRON_SECRET` | Bearer secret authenticating Vercel Cron to `/api/cron/*`. **Set in production since 2026-09-14**, with the state digest; unset means every cron-path caller is rejected (fail-closed). **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
 | `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Set to `"true"` in production since 2026-09-14.** Unsetting it (or any value but `"true"`) stops all digest mail, but only once a new deployment is live: Vercel applies env changes to new deployments only, so follow with `npx vercel redeploy --target production <url>` |
 | `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Set to `"true"` in production since 2026-09-14.** Same kill semantics (redeploy required), plus a Cloudflare purge for the form field: see "Turning it off" below |
+| `WATCH_AREAS_ENABLED` | Kill switch for county and metro watching (`lib/watch-target-types.ts`). **ON unless the value is exactly `"false"`.** Off: `POST /api/subscribe` rejects county and metro targets with the same 400 as an unknown target type, and the monthly digest reads only state rows. Redeploy after a change (Vercel applies env changes to new deployments only). See "Turning county and metro watching off" below |
 | `VERIFY_SOURCES_ENABLED` | Kill switch for the discovery pipeline's mechanical source-verification gate (local Ollama). **Polarity is the opposite of the two switches above:** the gate is ON by default and only the exact string `"false"` disables it, so a typo leaves verification enabled |
 | `API_ADMIN_TOKEN_SALT` | PBKDF2 salt for the admin-UI password login (`app/admin/login/actions.ts`). Required — login fails closed, rejecting every attempt, if unset |
-| `CONTRIBUTE_IP_SALT` | Salt for hashing submitter IPs for public-contribution rate limiting. **Required in production** — `hashIp()` throws on Vercel production rather than hash with the repo-public default; dev, tests and previews fall back to it. Since 2026-09-27 it has a second consumer: `lib/subscribe-consent.ts` derives the subscribe-consent cookie's HMAC key from it, under its own key domain. Rotating it invalidates every stored IP hash **and** every outstanding consent cookie |
+| `CONTRIBUTE_IP_SALT` | Salt for hashing submitter IPs for public-contribution rate limiting. **Required in production** — `hashIp()` throws on Vercel production rather than hash with the repo-public default; dev, tests and previews fall back to it. Since 2026-09-27 it has a second consumer: `lib/subscribe-consent.ts` derives the subscribe-consent cookie's HMAC key from it, under its own key domain. Rotating it invalidates every stored IP hash **and** every outstanding consent cookie. Since the email-send ledger it also salts every `email_sends` address hash (`hashAddress` calls `hashNotifyEmail`, the same function as the notify-email hashes), so rotation makes past ledger rows unfindable by address. The CLI and `/admin/email-sends` print only an 8-character hash prefix, never the address |
 | `EDGE_SHARED_SECRET` | Shared secret proving a request actually traversed Cloudflare: a Transform Rule injects it as `x-edge-shared-secret` and `proxy.ts` compares digests. **Fails closed on production since 2026-10-15**: unset or empty 403s every matched path (`/admin`, `/api` except `/api/cron/*`, `/map`, `/data`, `/table`). Checked only when `VERCEL_ENV === "production"`; `/api/cron/*` is exempt unconditionally. There is no safe two-step rotation — see §9 below |
 
 ✅ **The monthly state digest is LIVE as of 2026-09-14** (Ed's decision). Both switches that
@@ -272,6 +273,7 @@ subscribe-consent cookie's HMAC key from it (under its own `KEY_DOMAIN`, so the 
 Rotating therefore also invalidates every outstanding consent cookie — harmless on its own (30-minute
 lifetime; those users simply get the ordinary double-opt-in email), but it means this value is no
 longer only about IP hashes.
+It also salts the `email_sends` address hashes (see the env table). After a rotation, `npm run email-sends -- --email -` and `/admin/email-sends` find nothing for an address whose sends were recorded under the old salt.
 
 **8. `INDEXNOW_KEY`.** Public by design. If changed, write the new `public/<key>.txt` and delete the
 old one in the same commit — `indexnow.test.ts` asserts the file matches the constant.
@@ -396,6 +398,47 @@ model for source verification — treat it as an operator tool, not part of the 
   that watch or stop all automated email for the address. "Stop all automated email" keeps the FIRST
   stop-all's token (`email_suppressions.source_token_hash`) as the only one that can undo
   it; a later stop-all from another token is not undoable by that token.
+
+**Did this address get our mail?** Look it up in the send ledger (`email_sends`, one row per email
+attempt). Either form works; both need `CONTRIBUTE_IP_SALT` set to production's value, and the CLI
+exits 2 without it rather than hash with the public default salt:
+
+```bash
+printf '%s' 'addr@example.com' | npm run email-sends -- --email -
+```
+
+Use `--email -`, not `--email <addr>`: the latter leaves the address in shell history. Or open
+`/admin/email-sends`. The CLI is read-only and never prints the address. Narrow with `--kind`,
+`--outcome`, `--since YYYY-MM-DD` and `--limit N`. `--run <uuid>` shows one digest run, where the
+uuid is a `state_digest_runs` id.
+
+Outcomes (`EMAIL_SEND_OUTCOMES` in `lib/email-sends.ts`; meanings from `lib/email-gate.ts`):
+
+| Outcome | Meaning |
+|---|---|
+| `attempted` | Claimed before the send. Left here when the settle write failed or the process died mid-send, so the mail **may already have gone out**: `attempted` does not mean "not mailed". Counts toward the confirm cap |
+| `sent` | The sender reported success |
+| `error` | The send failed or threw; `error_code` says why. Counts toward the confirm cap |
+| `skipped_no_key` | No API key: nothing was mailed |
+| `skipped_suppressed` | A global or per-target suppression covers the address |
+| `skipped_unconfirmed` | The row is missing, the address does not match, or the row is not in the state this mail requires (a confirmed row asked for a confirm mail lands here too) |
+| `skipped_capped` | The per-address confirm cap (10 per 30 days) was exceeded: the 11th confirm attempt in the window is the first one skipped |
+| `skipped_check_failed` | The suppression lookup errored. Not sent, and NOT a suppression |
+
+`error_code = "covered_row"` means a digest email was skipped because a covered row (one of the
+watches the email lists) failed its own check, not the anchor row. The row records that covered
+subscription's id, target type and target id; the id is null if the row was deleted meanwhile. An
+anchor failure carries no `covered_row` code.
+
+**Turning county and metro watching off.** Set `WATCH_AREAS_ENABLED=false` and redeploy. From the new
+deployment on, the API rejects county and metro subscriptions. The county and metro hub pages that
+render the watch form are ISR-cached (86400s, `"facilities"` tag), so the form can keep showing there
+until the page regenerates (its 24h timer, or a `"facilities"` bust such as the next `db:sync --apply`),
+and Cloudflare may serve its own copy for longer. Submitting it returns the rejection. To make it
+immediate, bust `"facilities"` via the admin `POST /api/revalidate`, then purge Cloudflare with
+`purge_everything` (purge-by-URL does not evict here; see CLAUDE.md). Existing county and metro
+subscriptions are kept, not mailed: while the switch is off the monthly digest reads only state rows
+and logs one info line per run. Turning it back on is the same change in reverse.
 
 ## Caching, briefly
 
