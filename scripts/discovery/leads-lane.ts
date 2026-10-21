@@ -116,7 +116,7 @@ import { verifySource, type VerifyClaim } from "./verify-source";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
 import { isEntrypoint } from "../is-entrypoint";
-import { formatFatalError } from "../../lib/db-error";
+import { formatErrorSummary, formatFatalError } from "../../lib/db-error";
 
 // ============================================================================
 // Extraction shape — grounded, never coordinates
@@ -483,7 +483,7 @@ async function processLead(
   } catch (err) {
     // An HTTP/network failure is an outage, not a verdict on the lead.
     console.log(
-      `lead ${lead.id}: geocode errored (${err instanceof Error ? err.message : String(err)}) — leaving lead 'new'`
+      `lead ${lead.id}: geocode errored (${formatErrorSummary(err)}) — leaving lead 'new'`
     );
     summary.geocodeErrored++;
     return;

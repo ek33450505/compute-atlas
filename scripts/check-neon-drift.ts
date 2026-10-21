@@ -17,6 +17,7 @@
  * Uses relative imports, matching the other scripts in this folder.
  */
 import { readFileSync } from "node:fs";
+import { formatErrorSummary } from "../lib/db-error";
 import { facilitiesTable } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { rowToFacility } from "../lib/db/serialize";
@@ -98,7 +99,7 @@ async function main() {
     // error can't echo the DB host/DSN into this public repo's Actions logs.
     console.error(
       "::notice::drift check errored (non-blocking):",
-      err instanceof Error ? err.message : String(err),
+      formatErrorSummary(err),
     );
     // Still non-blocking — exit 0 so CI doesn't fail
     process.exit(0);

@@ -122,6 +122,7 @@ if (isEntrypoint()) {
       `hero-points: wrote ${count} points (${bytes} bytes) -> ${outPath.replace(`${repoRoot}/`, '')}`
     );
   } catch (err) {
+    // lint-no-raw-error-logs: allow -- file-only build step; imports no DB code, so the error cannot carry bound params
     console.error(err.message);
     process.exit(1);
   }

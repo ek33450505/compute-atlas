@@ -57,7 +57,7 @@ import path from "node:path";
 import { runWithConcurrency } from "./net-guard";
 import type { VerifyClaim, VerificationResult } from "./verify-source";
 import { isEntrypoint } from "../is-entrypoint";
-import { formatFatalError } from "../../lib/db-error";
+import { formatErrorSummary, formatFatalError } from "../../lib/db-error";
 
 // --- types -----------------------------------------------------------------
 
@@ -500,7 +500,7 @@ export async function runCensus(
       await onRecord(record);
       consecutiveWriteFailures = 0;
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = formatErrorSummary(error);
       consecutiveWriteFailures += 1;
       console.error(`[census] could not write the report line for ${url}: ${message}`);
       if (consecutiveWriteFailures >= REPORT_WRITE_ABORT_THRESHOLD && !aborted) {

@@ -139,7 +139,7 @@ import { findWaybackSnapshotUrl } from "./wayback";
 import { loadFacilities } from "./load-facilities";
 import { isNonDocumentSource } from "./non-document-source";
 import { isEntrypoint } from "../is-entrypoint";
-import { formatFatalError } from "../../lib/db-error";
+import { formatErrorSummary, formatFatalError } from "../../lib/db-error";
 
 // ============================================================================
 // Fields covered
@@ -2318,7 +2318,7 @@ async function main(): Promise<void> {
       } catch (err) {
         // Losing a checkpoint is survivable; killing a 17-hour sweep over a
         // transient write failure is not.
-        console.error(`checkpoint write failed (continuing sweep): ${err instanceof Error ? err.message : String(err)}`);
+        console.error(`checkpoint write failed (continuing sweep): ${formatErrorSummary(err)}`);
       }
     };
   }

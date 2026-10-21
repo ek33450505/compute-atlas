@@ -139,6 +139,7 @@ for (const file of files) {
       hit = await nominatim(query);
     } catch (err) {
       inconclusive += 1;
+      // lint-no-raw-error-logs: allow -- public Nominatim HTTP error; imports no DB code, so the error cannot carry bound params
       console.log(`  ! ${label} OSM error (${err.message}) — inconclusive`);
       continue;
     }

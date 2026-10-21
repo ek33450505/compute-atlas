@@ -155,6 +155,7 @@ async function main() {
         try {
           hit = await geocode(variant);
         } catch (err) {
+          // lint-no-raw-error-logs: allow -- public geocoder HTTP error; imports no DB code, so the error cannot carry bound params
           console.log(`  ! ${label} GEOCODER ERROR — ${err.message} (inconclusive, not a finding)`);
           break;
         }

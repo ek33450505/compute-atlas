@@ -69,6 +69,7 @@
  */
 import { eq } from "drizzle-orm";
 
+import { formatErrorSummary } from "../../lib/db-error";
 import { getDb, hasDatabaseUrl } from "../../lib/db/client";
 import { discoveryHeartbeatTable, type DiscoveryHeartbeatRow } from "../../lib/db/schema";
 import { isEntrypoint } from "../is-entrypoint";
@@ -277,7 +278,7 @@ async function main(): Promise<void> {
   try {
     thresholdHours = parseStaleHoursEnv(process.env.DISCOVERY_STALE_HOURS);
   } catch (err) {
-    console.error(`::error::${err instanceof Error ? err.message : String(err)}`);
+    console.error(`::error::${formatErrorSummary(err)}`);
     process.exit(1);
     return;
   }
@@ -292,6 +293,7 @@ async function main(): Promise<void> {
       err instanceof HeartbeatStaleError ||
       err instanceof HeartbeatDegradedError
     ) {
+      // lint-no-raw-error-logs: allow -- own error classes; messages are fixed text plus heartbeat age/status fields, never a driver error
       console.error(`::error::${err.message}`);
       process.exit(1);
       return;
@@ -301,7 +303,7 @@ async function main(): Promise<void> {
     // same precaution as check-neon-drift.ts / check-schema-drift.ts.
     console.error(
       "::error::heartbeat health check errored:",
-      err instanceof Error ? err.message : String(err)
+      formatErrorSummary(err)
     );
     process.exit(1);
   }

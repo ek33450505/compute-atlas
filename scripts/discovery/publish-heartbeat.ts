@@ -21,6 +21,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
+import { formatErrorSummary } from "../../lib/db-error";
 import { getDb } from "../../lib/db/client";
 import { discoveryHeartbeatTable } from "../../lib/db/schema";
 import { isEntrypoint } from "../is-entrypoint";
@@ -162,7 +163,7 @@ async function main(): Promise<void> {
 const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
-    console.error(err instanceof Error ? err.message : err);
+    console.error(formatErrorSummary(err));
     process.exit(1);
   });
 }

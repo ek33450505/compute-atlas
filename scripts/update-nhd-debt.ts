@@ -126,6 +126,7 @@ if (isMain) {
   try {
     run(process.argv.slice(2), root, today);
   } catch (err) {
+    // lint-no-raw-error-logs: allow -- local ledger/argv errors only; imports no DB code, and the CLI test pins this exact stderr text
     console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }

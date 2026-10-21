@@ -33,7 +33,7 @@
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { redactedErrorCode } from "../../lib/db-error";
+import { formatErrorSummary, formatFatalError, redactedErrorCode } from "../../lib/db-error";
 import { facilitySchema, type Facility, type Source } from "../../lib/schema";
 import { statusUpdateIntentSchema, type StatusUpdateIntent } from "../../lib/status-update";
 import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../../lib/enrichment-update";
@@ -43,7 +43,6 @@ import { fetchPageText } from "./fetch-page-text";
 import { callOllama } from "./ollama-client";
 import { loadFacilities } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
-import { formatFatalError } from "../../lib/db-error";
 
 // --- environment -------------------------------------------------------------
 
@@ -872,7 +871,7 @@ export async function runSubmit(
         summary.submitted++;
         summary.submittedIds.push(targetFacilityId);
       } catch (err) {
-        console.log(`error: submit threw for ${targetFacilityId} — ${(err as Error).message}`);
+        console.log(`error: submit threw for ${targetFacilityId} — ${formatErrorSummary(err)}`);
         summary.errors++;
       }
       continue;
@@ -988,7 +987,7 @@ export async function runSubmit(
         summary.submitted++;
         summary.submittedIds.push(targetFacilityId);
       } catch (err) {
-        console.log(`error: submit threw for ${targetFacilityId} — ${(err as Error).message}`);
+        console.log(`error: submit threw for ${targetFacilityId} — ${formatErrorSummary(err)}`);
         summary.errors++;
       }
       continue;
@@ -1139,7 +1138,7 @@ export async function runSubmit(
       summary.submitted++;
       summary.submittedIds.push(doc.id);
     } catch (err) {
-      console.log(`error: submit threw for ${doc.id} — ${(err as Error).message}`);
+      console.log(`error: submit threw for ${doc.id} — ${formatErrorSummary(err)}`);
       summary.errors++;
     }
   }
@@ -1386,7 +1385,7 @@ export async function main(): Promise<void> {
     const fileContents = readFileSync(args.inputPath, "utf-8");
     raw = parseCandidatesJson(fileContents);
   } catch (err) {
-    console.error(`Could not read/parse ${args.inputPath}: ${(err as Error).message}`);
+    console.error(`Could not read/parse ${args.inputPath}: ${formatErrorSummary(err)}`);
     process.exit(1);
     return;
   }

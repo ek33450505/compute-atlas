@@ -1,6 +1,11 @@
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
+  analyzeRawErrorLogs,
   collectFiles,
   countByRoot,
   findRawErrorLogs,
@@ -30,7 +35,7 @@ import {
  * under test cannot fail when that value is wrong; here, dropping a root would
  * have moved both sides of the comparison together.
  */
-const EXPECTED_SCAN_ROOTS = ["lib", "app"];
+const EXPECTED_SCAN_ROOTS = ["lib", "app", "scripts"];
 
 describe("findRawErrorLogs", () => {
   const lines = (source: string) => findRawErrorLogs(source, "lib/probe.ts").map((f) => f.line);
@@ -351,6 +356,117 @@ describe("findRawErrorLogs", () => {
   });
 
   it("scans no test files, whose fixtures would be false positives", () => {
-    expect(collectFiles().filter((f: string) => /\.test\.tsx?$/.test(f))).toEqual([]);
+    expect(collectFiles().filter((f: string) => /\.test\.(tsx?|[cm]?js)$/.test(f))).toEqual([]);
+  });
+});
+
+describe("formatErrorSummary", () => {
+  it("is a sanctioned sanitiser", () => {
+    expect(
+      findRawErrorLogs("try {} catch (err) { console.error(formatErrorSummary(err)); }", "scripts/p.ts")
+    ).toEqual([]);
+  });
+});
+
+describe("formatFatalError", () => {
+  it("is a sanctioned sanitiser, like redactedErrorCode", () => {
+    expect(
+      findRawErrorLogs("try {} catch (err) { console.error(formatFatalError(err)); }", "scripts/p.ts")
+    ).toEqual([]);
+  });
+  it("does not clear a sibling raw log", () => {
+    expect(
+      findRawErrorLogs("try {} catch (err) { console.error(formatFatalError(err), err); }", "scripts/p.ts")
+    ).toHaveLength(1);
+  });
+});
+
+describe("suppression markers", () => {
+  const analyze = (source: string) => analyzeRawErrorLogs(source, "scripts/probe.ts");
+  const M = "// lint-no-raw-error-logs: allow";
+
+  it("suppresses a finding when the marker with a reason is on the line above", () => {
+    const r = analyze(`try {} catch (err) {\n  ${M} -- fetch TypeError, message is a URL\n  console.error(err);\n}`);
+    expect(r.findings).toEqual([]);
+    expect(r.suppressed.map((f: { reason: string }) => f.reason)).toEqual(["fetch TypeError, message is a URL"]);
+  });
+
+  it("suppresses a finding when the marker trails the flagged line", () => {
+    const r = analyze(`try {} catch (err) {\n  console.error(err); ${M} -- url only\n}`);
+    expect(r.findings).toEqual([]);
+    expect(r.suppressed).toHaveLength(1);
+  });
+
+  it("does not suppress with no reason, and reports the marker itself", () => {
+    const r = analyze(`try {} catch (err) {\n  ${M}\n  console.error(err);\n}`);
+    expect(r.suppressed).toEqual([]);
+    expect(r.findings.map((f: { call: string }) => f.call).sort()).toEqual(["console.error", "marker"]);
+  });
+
+  it("treats an empty or whitespace reason as no reason", () => {
+    for (const tail of [" --", " --   ", " -- "]) {
+      const r = analyze(`try {} catch (err) {\n  ${M}${tail}\n  console.error(err);\n}`);
+      expect(r.suppressed).toEqual([]);
+      expect(r.findings).toHaveLength(2);
+    }
+  });
+
+  it("suppresses only its own line, not a later one", () => {
+    const r = analyze(
+      `try {} catch (err) {\n  ${M} -- ok\n  console.error(err);\n  console.error(err.message);\n}`
+    );
+    expect(r.suppressed).toHaveLength(1);
+    expect(r.findings.map((f: { line: number }) => f.line)).toEqual([4]);
+  });
+
+  it("does not let a trailing marker reach the next line", () => {
+    const r = analyze(`try {} catch (err) {\n  const x = 1; ${M} -- no\n  console.error(err);\n}`);
+    expect(r.suppressed).toEqual([]);
+    expect(r.findings).toHaveLength(1);
+  });
+
+  it("ignores marker text inside a string literal or block comment", () => {
+    const r = analyze(
+      `try {} catch (err) {\n  const s = "${M} -- x";\n  /* ${M} -- y */\n  console.error(err);\n}`
+    );
+    expect(r.suppressed).toEqual([]);
+    expect(r.findings).toHaveLength(1);
+  });
+
+  it("does not reach a later argument line of a multi-line call", () => {
+    const r = analyze(
+      `try {} catch (err) {\n  ${M} -- ok\n  console.error(\n    "x",\n    err\n  );\n}`
+    );
+    expect(r.suppressed).toEqual([]);
+    expect(r.findings).toHaveLength(1);
+  });
+
+  it("does not reach past an intervening plain comment", () => {
+    const r = analyze(`try {} catch (err) {\n  ${M} -- ok\n  // note\n  console.error(err);\n}`);
+    expect(r.suppressed).toEqual([]);
+    expect(r.findings).toHaveLength(1);
+  });
+
+  it("collects and parses .js, .cjs and .mjs files", () => {
+    const dir = mkdtempSync(join(tmpdir(), "lint-roots-"));
+    try {
+      mkdirSync(join(dir, "scripts"));
+      for (const name of ["a.js", "b.cjs", "c.mjs", "d.test.js", "e.txt"]) {
+        writeFileSync(join(dir, "scripts", name), "try {} catch (e) { console.error(e.message) }\n");
+      }
+      const files = collectFiles(dir, ["scripts"]).map((f: string) => f.split("/").pop());
+      expect(files).toEqual(["a.js", "b.cjs", "c.mjs"]);
+      for (const name of files) {
+        const text = readFileSync(join(dir, "scripts", name as string), "utf8");
+        expect(analyzeRawErrorLogs(text, `scripts/${name}`).findings).toHaveLength(1);
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("parses .mjs sources", () => {
+    const r = analyzeRawErrorLogs("try {} catch (e) { console.error(e.message) }", "scripts/x.mjs");
+    expect(r.findings).toHaveLength(1);
   });
 });

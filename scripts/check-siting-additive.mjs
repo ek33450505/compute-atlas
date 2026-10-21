@@ -372,6 +372,7 @@ function main() {
   } catch (err) {
     console.error(
       `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
+        // lint-no-raw-error-logs: allow -- local file and git reads; imports no DB code, so the error cannot carry bound params
         `failed to read/parse working-tree ${SITING_CONTEXT_REL_PATH}: ${err.message}`,
     );
     process.exit(2);
@@ -388,6 +389,7 @@ function main() {
   } catch (err) {
     console.error(
       `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
+        // lint-no-raw-error-logs: allow -- local file and git reads; imports no DB code, so the error cannot carry bound params
         `failed to read/parse working-tree ${FACILITIES_REL_PATH}: ${err.message}`,
     );
     process.exit(2);
@@ -471,6 +473,7 @@ if (isMain) {
   } catch (err) {
     console.error(
       `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
+        // lint-no-raw-error-logs: allow -- local file and git reads; imports no DB code, so the error cannot carry bound params
         `${err?.code ?? ""} ${err?.message ?? err}`,
     );
     process.exit(2);

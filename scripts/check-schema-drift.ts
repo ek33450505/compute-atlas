@@ -36,6 +36,7 @@
 import { eq, getTableName, is, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 
+import { formatErrorSummary } from "../lib/db-error";
 import * as schema from "../lib/db/schema";
 import { getDb, hasDatabaseUrl } from "../lib/db/client";
 import { isEntrypoint } from "./is-entrypoint";
@@ -207,7 +208,7 @@ async function main(): Promise<void> {
     // exits non-zero: an unreachable DB is a real failure to check, not a no-op.
     console.error(
       "::error::schema drift check errored:",
-      err instanceof Error ? err.message : String(err)
+      formatErrorSummary(err)
     );
     process.exit(1);
   }

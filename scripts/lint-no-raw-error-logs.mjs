@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Fails when a `console.*` call in `lib/` or `app/` logs a caught error OBJECT.
+ * Fails when a `console.*` call in `lib/`, `app/` or `scripts/` logs a caught error OBJECT.
  *
  * WHY THIS GATE EXISTS. drizzle-orm wraps every driver error in a
  * `DrizzleQueryError` whose own `.message` is literally
@@ -41,6 +41,10 @@
  * reference to a tainted binding is accepted only in a form that cannot carry
  * bound params:
  *   - `redactedErrorCode(err)` — the sanctioned helper, SQLSTATE only.
+ *   - `formatErrorSummary(err)` — message-level summary, no stack frames; the
+ *     right default for operator logs in `scripts/`.
+ *   - `formatFatalError(err)` — summary plus stack frames, for fatal handlers.
+ *     Both redact DB errors and scrub URI credentials (see `SAFE_SANITISERS`).
  *   - `err.name` / `err.code` — a class name and a SQLSTATE.
  *   - `err instanceof Error` — a type guard, reads no data off the error.
  * Everything else is a finding: bare `err`, `err.message`, `err.stack`,
@@ -53,10 +57,22 @@
  *     Next sanitizes server errors in production. If they ever moved to a
  *     `catch`, this gate would start flagging them, which is the right
  *     behaviour: that would be a new decision, not the same one.
- *   - The `main().catch` fatal handlers under `scripts/**` now route through
- *     `formatFatalError` (`lib/db-error.ts`), which redacts DB errors. `scripts/`
- *     is still not a scan root: widening it needs a suppression mechanism first.
- *   - Test files (`*.test.ts` / `*.test.tsx`).
+ *   - `scripts/` IS a scan root (it needed the suppression mechanism below
+ *     first). Its fatal handlers and operator logs route through
+ *     `formatFatalError`; plain-node `.mjs` build scripts cannot import
+ *     `lib/db-error.ts`, so they carry a marker where they import no DB code.
+ *   - Test files (`*.test.ts` / `*.test.tsx` / `*.test.mjs`).
+ *
+ * SUPPRESSION. `// lint-no-raw-error-logs: allow -- <reason>` silences findings on
+ * its own line, or on the line directly below when the comment stands alone. A
+ * marker with no reason after `--` suppresses nothing and is itself a finding.
+ * Every suppression is printed (and listed under `suppressed` in `--json`) on
+ * every run. Prefer `err.code` or `redactedErrorCode` — use a marker only for an
+ * error that provably cannot carry bound params.
+ * Marker reach FAILS CLOSED: it is matched against the line of the offending
+ * identifier, so a standalone marker above a multi-line call does not cover an
+ * argument on a later line (put it directly above that line), and a marker
+ * followed by a plain comment line does not reach the call below the comment.
  *
  * DESTRUCTURING IS FOLLOWED, in the body. `catch (err) { const { message } =
  * err; console.error(message) }` is a finding, as is the renamed
@@ -89,21 +105,38 @@
 
 import { readFileSync, readdirSync, realpathSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import ts from "typescript";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** Directories scanned, relative to the repo root. Deployed code only. */
-export const SCAN_ROOTS = ["lib", "app"];
+export const SCAN_ROOTS = ["lib", "app", "scripts"];
 
 /**
- * Calls whose return value is safe to log even when an error flows in. Keep
- * this list at one entry unless a second helper is genuinely proven to strip
- * bound params — every addition widens the hole this gate exists to close.
+ * Calls whose return value is safe to log even when an error flows in. Every
+ * addition widens the hole this gate exists to close, so each needs a proof:
+ *   - `redactedErrorCode` returns the SQLSTATE and nothing else.
+ *   - `formatErrorSummary` and `formatFatalError` (`lib/db-error.ts`) share one
+ *     DB-error test, `inspectDbError`: it inspects the error, its `.cause`
+ *     chain and `AggregateError.errors[]` (bounded to 5 layers / 25 nodes / 25
+ *     children per node), matches an object carrying both `query` and `params`
+ *     or any layer whose `.code` has Postgres SQLSTATE shape (5 chars, not
+ *     starting with `E`, so Node errno codes are unaffected), and matches any
+ *     string carrying `Failed query:`, `\nparams:`, `DETAIL:`, `invalid input
+ *     syntax for type` or a `Key (…) already exists` line. Hitting a bound with parts
+ *     uninspected counts as "possibly DB": it fails closed. A DB error becomes
+ *     the SQLSTATE header only (`formatErrorSummary`) or that header plus
+ *     `    at …` stack frames (`formatFatalError`), never the message that holds
+ *     the params. Any other Error is `name: message` (all lines, capped at 2000
+ *     chars, plus a bare-token `code` and its cause's short message) or its
+ *     full stack (fatal); a non-Error object shows only token-valued
+ *     allowlisted keys and finite numbers. Both scrub URI
+ *     credentials (`scheme://user:pass@`) ONLY: a bearer token or API key in
+ *     plain text is not detected, so none may ever be put in an error message.
  */
-const SAFE_SANITISERS = new Set(["redactedErrorCode"]);
+const SAFE_SANITISERS = new Set(["redactedErrorCode", "formatErrorSummary", "formatFatalError"]);
 
 /**
  * Properties of an error that carry no bound params. `message`, `stack` and
@@ -340,12 +373,53 @@ function findUnsafeReference(expr, tainted) {
  * sources — no fixture files, so nothing the real scan would then pick up.
  */
 export function findRawErrorLogs(sourceText, fileName = "input.ts") {
+  return analyzeRawErrorLogs(sourceText, fileName).findings;
+}
+
+/** `// lint-no-raw-error-logs: allow -- <reason>` — see SUPPRESSION in the header. */
+const MARKER = /^\/\/\s*lint-no-raw-error-logs:\s*allow\b(.*)$/;
+const MARKER_REASON = /^\s*--\s*(\S.*)$/;
+
+const scriptKindOf = (fileName) =>
+  /\.tsx$/.test(fileName)
+    ? ts.ScriptKind.TSX
+    : /\.[cm]?js$/.test(fileName)
+      ? ts.ScriptKind.JS
+      : ts.ScriptKind.TS;
+
+/**
+ * Every `//` comment in the file, found through the parser so a marker-shaped
+ * string literal or a line inside a block comment is never read as a marker.
+ */
+function lineComments(sourceFile) {
+  const text = sourceFile.text;
+  const seen = new Map();
+  const collect = (ranges) => {
+    for (const range of ranges ?? []) {
+      if (range.kind === ts.SyntaxKind.SingleLineCommentTrivia) seen.set(range.pos, range);
+    }
+  };
+  const walk = (node) => {
+    collect(ts.getLeadingCommentRanges(text, node.pos));
+    collect(ts.getTrailingCommentRanges(text, node.end));
+    ts.forEachChild(node, walk);
+  };
+  walk(sourceFile);
+  return [...seen.values()];
+}
+
+/**
+ * Like `findRawErrorLogs`, but also reports what was suppressed. `findings`
+ * holds the unsuppressed raw logs PLUS every reason-less marker (`call` is
+ * `"marker"`); `suppressed` holds the findings a valid marker silenced.
+ */
+export function analyzeRawErrorLogs(sourceText, fileName = "input.ts") {
   const sourceFile = ts.createSourceFile(
     fileName,
     sourceText,
     ts.ScriptTarget.Latest,
     /* setParentNodes */ true,
-    /\.tsx$/.test(fileName) ? ts.ScriptKind.TSX : ts.ScriptKind.TS
+    scriptKindOf(fileName)
   );
 
   /** @type {Map<ts.Node, Set<string>>} scope node -> tainted names */
@@ -461,26 +535,59 @@ export function findRawErrorLogs(sourceText, fileName = "input.ts") {
   };
   check(sourceFile);
 
-  return findings;
+  // ── Pass 4: suppression markers. A marker covers its own line, and the line
+  // below only when the comment stands alone on its line.
+  const covered = new Map(); // line -> reason
+  const kept = [];
+  for (const comment of lineComments(sourceFile)) {
+    const match = MARKER.exec(sourceText.slice(comment.pos, comment.end));
+    if (!match) continue;
+    const { line } = sourceFile.getLineAndCharacterOfPosition(comment.pos);
+    const reason = MARKER_REASON.exec(match[1])?.[1].trim();
+    if (!reason) {
+      kept.push({
+        file: fileName,
+        line: line + 1,
+        binding: "",
+        call: "marker",
+        expression: sourceText.slice(comment.pos, comment.end).slice(0, 120),
+      });
+      continue;
+    }
+    covered.set(line + 1, reason);
+    const lineStart = sourceFile.getLineStarts()[line];
+    if (sourceText.slice(lineStart, comment.pos).trim() === "") covered.set(line + 2, reason);
+  }
+
+  const suppressed = [];
+  for (const finding of findings) {
+    const reason = covered.get(finding.line);
+    if (reason) suppressed.push({ ...finding, reason });
+    else kept.push(finding);
+  }
+  kept.sort((a, b) => a.line - b.line);
+
+  return { findings: kept, suppressed };
 }
 
-/** Every non-test `.ts`/`.tsx` file under the scan roots. */
-export function collectFiles(root = REPO_ROOT) {
+/** Every non-test `.ts`/`.tsx`/`.js`/`.mjs`/`.cjs` file under the scan roots. */
+export function collectFiles(root = REPO_ROOT, roots = SCAN_ROOTS) {
   const walk = (dir) =>
     readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
       const full = join(dir, entry.name);
       if (entry.isDirectory()) return entry.name === "node_modules" ? [] : walk(full);
-      if (!/\.tsx?$/.test(entry.name)) return [];
-      if (/\.test\.tsx?$/.test(entry.name)) return [];
+      if (!/\.(tsx?|[cm]?js)$/.test(entry.name)) return [];
+      if (/\.test\.(tsx?|[cm]?js)$/.test(entry.name)) return [];
       return [full];
     });
 
-  return SCAN_ROOTS.flatMap((dir) => walk(join(root, dir))).sort();
+  return roots.flatMap((dir) => walk(join(root, dir))).sort();
 }
 
 /**
  * Minimum scanned files expected under EACH root — a floor PER ROOT, never one
- * on the total. Measured 2026-09-27: `lib/` 81, `app/` 106, 187 total.
+ * on the total. Measured 2026-09-27: `lib/` 81, `app/` 106, 187 total;
+ * `scripts/` added later, 61 (lib 88, app 111).
  *
  * WHY NOT A TOTAL: a total floor cannot detect losing a root. At 100, dropping
  * `app` fails but dropping `lib` leaves app/'s 106 and PASSES — and `lib/` is
@@ -488,8 +595,9 @@ export function collectFiles(root = REPO_ROOT) {
  * `facility-history.ts`, `search-db.ts`, `api-daily-limit.ts`). The floor has to
  * be denominated in the thing that can go missing.
  *
- * 50 sits well under the smaller root (81, so ordinary deletion churn will not
- * trip it) and well over any partial scan worth passing.
+ * 50 sits under the smallest root (`scripts/`, 61 — the margin there is only
+ * 11 files, so a large deletion under it needs the floor revisited deliberately)
+ * and well over any partial scan worth passing.
  */
 export const MIN_FILES_PER_ROOT = 50;
 
@@ -540,14 +648,17 @@ function main() {
   const asJson = process.argv.includes("--json");
   const files = collectFiles();
   const underfilled = underfilledRoots(files);
-  const findings = files.flatMap((file) =>
-    findRawErrorLogs(readFileSync(file, "utf8"), relative(REPO_ROOT, file))
+  const analyses = files.map((file) =>
+    analyzeRawErrorLogs(readFileSync(file, "utf8"), relative(REPO_ROOT, file))
   );
+  const findings = analyses.flatMap((a) => a.findings);
+  // Counted and listed on every run so a suppression can never go quiet.
+  const suppressed = analyses.flatMap((a) => a.suppressed);
 
   if (asJson) {
     console.log(
       JSON.stringify(
-        { filesScanned: files.length, underfilledRoots: underfilled, findings },
+        { filesScanned: files.length, underfilledRoots: underfilled, findings, suppressed },
         null,
         2
       )
@@ -573,6 +684,11 @@ function main() {
           `(scanned ${files.length} files under ${SCAN_ROOTS.join(", ")}/):\n`
       );
       for (const f of findings) {
+        if (f.call === "marker") {
+          console.error(`  ${f.file}:${f.line}  suppression marker has no reason: ${f.expression}`);
+          console.error(`    write \`// lint-no-raw-error-logs: allow -- <why this error cannot carry bound params>\``);
+          continue;
+        }
         console.error(`  ${f.file}:${f.line}  ${f.call}(… ${f.expression} …)`);
         console.error(`    '${f.binding}' is a caught error; log redactedErrorCode(${f.binding}) instead`);
       }
@@ -589,6 +705,11 @@ function main() {
         `no raw error logs — scanned ${files.length} files under ${SCAN_ROOTS.join(", ")}/`
       );
     }
+
+    if (suppressed.length > 0) {
+      console.log(`${suppressed.length} suppressed by marker:`);
+      for (const f of suppressed) console.log(`  ${f.file}:${f.line}  ${f.reason}`);
+    }
   }
 
   // Captured as a plain status, never through a pipe — a pipeline's exit code
@@ -596,26 +717,13 @@ function main() {
   process.exitCode = findings.length === 0 && underfilled.length === 0 ? 0 : 1;
 }
 
-/**
- * "Was this run directly, or imported by the test?" `import.meta.main` is not
- * available on Node 22, so the paths are compared by hand — and they MUST be
- * compared as realpaths.
- *
- * ⚠️ This guard silently no-opped on the first probe. `import.meta.url` is
- * already resolved through symlinks while `process.argv[1]` is not, so invoking
- * the script through a symlinked directory (`/tmp` → `/private/tmp` on macOS,
- * and any `node_modules/.bin` shim) made the two disagree: `main()` never ran,
- * the process printed nothing, and it exited 0 — a gate reporting a clean tree
- * by not looking at it, which is this repo's most expensive recurring bug.
- * Nothing about the finding logic was wrong; the entry point was.
- */
-function isRunDirectly() {
-  if (!process.argv[1]) return false;
+// Symlink/space-safe entrypoint check — see scripts/is-entrypoint.ts (plain node cannot import .ts).
+function isEntrypoint() {
   try {
-    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
   } catch {
-    return resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+    return false;
   }
 }
 
-if (isRunDirectly()) main();
+if (isEntrypoint()) main();

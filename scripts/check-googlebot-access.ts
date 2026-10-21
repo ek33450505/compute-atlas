@@ -61,6 +61,7 @@ import { createSign } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { formatErrorSummary } from "../lib/db-error";
 import { isEntrypoint } from "./is-entrypoint";
 
 export const SITE_URL = "sc-domain:compute-atlas.com";
@@ -315,7 +316,7 @@ async function main(): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
-    console.error("::error::googlebot access check errored:", err instanceof Error ? err.message : String(err));
+    console.error("::error::googlebot access check errored:", formatErrorSummary(err));
     process.exit(1);
   });
 }

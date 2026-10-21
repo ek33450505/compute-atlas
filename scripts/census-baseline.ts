@@ -26,6 +26,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
+import { formatErrorSummary } from "../lib/db-error";
 import { appendCensusHistory, BASELINE_PATH, buildHistoryEntry, HISTORY_PATH } from "./census-history";
 import { OUTPUT_PATH, type IndexCensusReport } from "./index-census";
 import { isEntrypoint } from "./is-entrypoint";
@@ -120,7 +121,7 @@ export async function main(argv: string[]): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main(process.argv.slice(2)).catch((err) => {
-    console.error(err instanceof Error ? err.message : String(err));
+    console.error(formatErrorSummary(err));
     process.exit(1);
   });
 }
