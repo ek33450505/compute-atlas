@@ -10,6 +10,36 @@ import { operatorSlug } from "@/lib/operator-slug";
 import nextConfig from "./next.config";
 
 /**
+ * A chain (one redirect's destination is another's source) costs a crawler
+ * an extra hop and happens when a survivor is itself retired later without
+ * repointing the earlier entries. Returns the offending destination paths.
+ */
+const chainedDestinations = (redirects: { source: string; destination: string }[]) => {
+  const sources = new Set(redirects.map((r) => r.source));
+  return redirects.map((r) => r.destination).filter((dest) => sources.has(dest));
+};
+
+describe("chainedDestinations", () => {
+  it("detects a chained pair when one is present", () => {
+    expect(
+      chainedDestinations([
+        { source: "/facilities/a", destination: "/facilities/b" },
+        { source: "/facilities/b", destination: "/facilities/c" },
+      ])
+    ).toEqual(["/facilities/b"]);
+  });
+
+  it("returns nothing when no destination is also a source", () => {
+    expect(
+      chainedDestinations([
+        { source: "/facilities/a", destination: "/facilities/c" },
+        { source: "/facilities/b", destination: "/facilities/c" },
+      ])
+    ).toEqual([]);
+  });
+});
+
+/**
  * Guards the retired-facility redirect list in `next.config.ts`.
  *
  * Both assertions have a real failure mode, and neither is satisfied by the
@@ -82,6 +112,21 @@ describe("retired-facility redirects", () => {
     );
     expect(redirect?.destination).toBe("/facilities/stargate-abilene-tx");
   });
+
+  /**
+   * Retired 2026-10-21: xai-southaven-ms duplicated
+   * xai-macrohardrr-southaven-ms (same xAI data center, Southaven, MS).
+   */
+  it("redirects the duplicate xai-southaven-ms slug to its survivor", async () => {
+    const redirect = (await facilityRedirects()).find(
+      (r) => r.source === "/facilities/xai-southaven-ms"
+    );
+    expect(redirect?.destination).toBe("/facilities/xai-macrohardrr-southaven-ms");
+  });
+
+  it("never chains a redirect source into another redirect's destination", async () => {
+    expect(chainedDestinations(await facilityRedirects())).toEqual([]);
+  });
 });
 
 /**
@@ -129,13 +174,7 @@ describe("retired-operator redirects", () => {
   });
 
   it("never chains a redirect source into another redirect's destination", async () => {
-    const redirects = await operatorRedirects();
-    const sources = new Set(redirects.map((r) => slugOf(r.source)));
-    const chained = redirects
-      .map((r) => slugOf(r.destination))
-      .filter((slug) => sources.has(slug));
-
-    expect(chained).toEqual([]);
+    expect(chainedDestinations(await operatorRedirects())).toEqual([]);
   });
 });
 
