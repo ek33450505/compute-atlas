@@ -22,6 +22,7 @@ import {
   getSubmissionNotifyRequest,
   submissionNotifyEnabled,
 } from "@/lib/submission-notify";
+import { WATCH_TARGET } from "@/lib/watch-target-types";
 
 const provenanceSchema = z.object({
   sources: z.array(z.string()).min(1), // ≥1 source — nothing stages uncited
@@ -127,7 +128,7 @@ export async function confirmedWatcherCounts(
     .where(
       and(
         eq(subscriptionsTable.status, "confirmed"),
-        eq(subscriptionsTable.targetType, "facility"),
+        eq(subscriptionsTable.targetType, WATCH_TARGET.facility),
         inArray(subscriptionsTable.targetId, ids)
       )
     )

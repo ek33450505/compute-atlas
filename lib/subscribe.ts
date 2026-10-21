@@ -7,8 +7,6 @@ import { emailSuppressionsTable, subscriptionsTable } from "@/lib/db/schema";
 import { redactedErrorCode } from "@/lib/db-error";
 import { generateToken } from "@/lib/email";
 import { normalizeEmail } from "@/lib/email-address";
-import { getFacilityById } from "@/lib/data";
-import { stateNameFromCode } from "@/lib/us-states";
 import { checkEmailSendCap, AUTO_CONFIRM_CAP_MAX, AUTO_CONFIRM_CAP_WINDOW_MS } from "@/lib/rate-limit";
 import { verifyConsentCookie } from "@/lib/subscribe-consent";
 import {
@@ -21,11 +19,12 @@ import {
 } from "@/lib/suppressions";
 import type { SuppressionScope, SuppressionSource } from "@/lib/suppressions";
 import { hashToken, isHashedToken } from "@/lib/token-hash";
+import { WATCH_TARGETS, WATCH_TARGET_TYPES } from "@/lib/watch-targets";
 
 export const subscribeInputSchema = z
   .object({
     email: z.string().email().max(254),
-    targetType: z.enum(["facility", "state"]),
+    targetType: z.enum(WATCH_TARGET_TYPES),
     targetId: storableText(z.string().max(120)).optional(),
     website: z.string().optional(), // honeypot — real users never fill this
   })
@@ -244,34 +243,19 @@ export async function subscribeToTarget(
 
   const email = normalizeEmail(data.email);
 
-  // Resolves and validates the target by type: a facility subscription needs
-  // a real facility id (checked against the DB); a state subscription needs
-  // a real 2-letter state code (checked against the static US_STATE_NAMES
-  // map in lib/us-states.ts — no DB round trip needed). Both branches 400 on
-  // an unresolved target, with a distinct error string per branch ("Unknown
-  // facility" / "Unknown state") — that distinction leaks nothing, since the
-  // caller already supplied targetType and therefore already knows which
-  // kind of target it asked about.
-  let targetId: string;
-  let targetLabel: string;
-  if (data.targetType === "facility") {
-    const facility = await getFacilityById(data.targetId!);
-    if (!facility) {
-      return { ok: false, status: 400, error: "Unknown facility" };
-    }
-    targetId = data.targetId!;
-    targetLabel = facility.name;
-  } else {
-    // Normalized to uppercase before storing/comparing so "ca" and "CA" are
-    // one target, not two — matches location.state's stored convention.
-    const code = data.targetId!.toUpperCase();
-    const stateName = stateNameFromCode(code);
-    if (!stateName) {
-      return { ok: false, status: 400, error: "Unknown state" };
-    }
-    targetId = code;
-    targetLabel = stateName;
+  // Resolves and validates the target via the watch-target registry: a facility
+  // id is checked against the DB; a state code against the static US_STATE_NAMES
+  // map in lib/us-states.ts (no DB round trip). An unresolved target 400s with a
+  // distinct error string per type ("Unknown facility" / "Unknown state") — that
+  // distinction leaks nothing, since the caller already supplied targetType and
+  // therefore already knows which kind of target it asked about.
+  const def = WATCH_TARGETS[data.targetType];
+  const resolved = await def.resolve(data.targetId!);
+  if (!resolved) {
+    return { ok: false, status: 400, error: def.notFoundError };
   }
+  const targetId = resolved.id;
+  const targetLabel = resolved.label;
 
   // Opt-out gate (A-3). An unsubscribed or "stop all" address, or one whose
   // lookup failed ("unknown"), gets NO row and NO mail, and the SAME generic

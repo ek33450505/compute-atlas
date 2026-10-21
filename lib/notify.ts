@@ -8,6 +8,7 @@ import { claimDigestWindow, completeDigestWindow } from "@/lib/state-digest-ledg
 import { STATUS_META } from "@/lib/status";
 import { subscriptionSuppressedSql } from "@/lib/suppressions";
 import { stateNameFromCode } from "@/lib/us-states";
+import { WATCH_TARGET } from "@/lib/watch-target-types";
 import type { Facility } from "@/lib/schema";
 
 /**
@@ -306,7 +307,7 @@ export async function notifySubscribersOfChange(
       .where(
         and(
           eq(subscriptionsTable.status, "confirmed"),
-          eq(subscriptionsTable.targetType, "facility"),
+          eq(subscriptionsTable.targetType, WATCH_TARGET.facility),
           eq(subscriptionsTable.targetId, facility.id)
         )
       )
@@ -372,7 +373,7 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
       .where(
         and(
           eq(subscriptionsTable.status, "confirmed"),
-          eq(subscriptionsTable.targetType, "facility"),
+          eq(subscriptionsTable.targetType, WATCH_TARGET.facility),
           inArray(subscriptionsTable.targetId, [...facilityById.keys()])
         )
       )
@@ -443,7 +444,7 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
       optedOut: subscriptionSuppressedSql(),
     })
     .from(subscriptionsTable)
-    .where(and(eq(subscriptionsTable.status, "confirmed"), eq(subscriptionsTable.targetType, "state")))
+    .where(and(eq(subscriptionsTable.status, "confirmed"), eq(subscriptionsTable.targetType, WATCH_TARGET.state)))
     .then(dropOptedOut);
 
   if (subs.length === 0) return [];

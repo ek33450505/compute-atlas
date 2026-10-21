@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn, QUIET_ACTION_CLASS } from "@/lib/utils";
+import type { WatchTargetType } from "@/lib/watch-target-types";
 
-export type WatchTargetType = "facility" | "state";
+export type { WatchTargetType };
 
 export interface WatchButtonProps {
   targetType: WatchTargetType;
