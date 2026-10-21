@@ -29,6 +29,7 @@ export function ActivityList({ entries }: ActivityListProps) {
       {entries.map((entry, i) => (
         <li
           key={`${entry.kind}-${entry.facilityId}-${entry.timestamp.getTime()}-${i}`}
+          data-community={entry.community ? "true" : "false"}
           className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3"
         >
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 min-w-0">

@@ -3,6 +3,7 @@ import { Rss } from "lucide-react";
 
 import { getQuarterlyPipelineSummary, getRecentActivity } from "@/lib/data";
 import { ActivityList } from "@/app/activity/activity-list";
+import { CommunityFilter } from "@/app/activity/community-filter";
 
 export const revalidate = 3600;
 
@@ -66,7 +67,12 @@ export default async function ActivityPage() {
           : "No pipeline changes recorded this quarter yet."}
       </p>
 
-      <ActivityList entries={entries} />
+      <CommunityFilter
+        total={entries.length}
+        communityCount={entries.filter((e) => e.community).length}
+      >
+        <ActivityList entries={entries} />
+      </CommunityFilter>
     </div>
   );
 }

@@ -88,7 +88,7 @@ const SUBMISSION_ENDPOINTS: Endpoint[] = [
     method: "POST",
     path: "/api/submissions",
     description:
-      'Admin-only. Stage a candidate for review: { kind: "create" | "update", targetFacilityId?, payload, provenance }. targetFacilityId is required when kind is "update".',
+      'Stage a candidate for review: { kind: "create" | "update", targetFacilityId?, payload, provenance }. targetFacilityId is required when kind is "update". Accepts either the intake token or the admin token; the intake token can stage a pending row but cannot publish one.',
   },
   {
     method: "GET",
@@ -98,7 +98,8 @@ const SUBMISSION_ENDPOINTS: Endpoint[] = [
   {
     method: "POST",
     path: "/api/submissions/{id}/approve",
-    description: "Admin-only. Validate a pending submission and promote it to a live facility.",
+    description:
+      'Admin-only. Validate a pending submission and promote it to a live facility. Optional body: { reviewNote?, notifyWatchers? }. Approving emails every confirmed watcher of the facility it writes, so the request is refused with 409 (nothing approved) when that facility has watchers and notifyWatchers is not exactly true. If the watcher check itself fails, the request is refused with 503 rather than approved unchecked.',
   },
   {
     method: "POST",
@@ -477,8 +478,10 @@ curl ${siteConfig.url}/api/stats`}</code>
           before it is{" "}
           <strong className="font-medium text-foreground">promoted</strong> to
           a live record. The submissions API is how that staging happens.
-          Every submissions endpoint — including the GET list — requires an
-          admin bearer token; the queue is not public, since it feeds the
+          Every submissions endpoint except staging requires an admin bearer
+          token; staging (POST /api/submissions) also accepts the intake token,
+          which cannot publish. The GET list is admin-only: the queue is not
+          public, since it feeds the
           same human-gated review process used internally. This is
           deliberately slower than auto-ingestion — the atlas optimizes for
           accuracy over count.
