@@ -87,45 +87,115 @@ export function isBlockedIpv4(ip: string): boolean {
 }
 
 /**
- * True for IPv6 loopback (::1), unspecified (::), ULA (fc00::/7),
- * link-local (fe80::/10), and IPv4-mapped addresses (::ffff:a.b.c.d or
- * ::ffff:h1:h2) whose embedded v4 address is itself blocked.
+ * Parses IPv6 text into 8 hextets, or null if it is not a valid IPv6 literal.
+ * Handles `::` compression anywhere, a dotted-quad tail, and either case.
+ * Zone ids (`%en0`), more than one `::`, too many/few groups, and junk are
+ * all null so callers can fail closed.
+ */
+function parseIpv6(text: string): number[] | null {
+  let s = text.toLowerCase();
+  const lastColon = s.lastIndexOf(":");
+  if (lastColon === -1) return null;
+  const tail = s.slice(lastColon + 1);
+  if (tail.includes(".")) {
+    const v4 = ipv4ToInt(tail);
+    if (v4 === null) return null;
+    s = `${s.slice(0, lastColon + 1)}${(v4 >>> 16).toString(16)}:${(v4 & 0xffff).toString(16)}`;
+  }
+
+  const halves = s.split("::");
+  if (halves.length > 2) return null;
+  const toGroups = (part: string): string[] | null => {
+    if (part === "") return [];
+    const groups = part.split(":");
+    return groups.every((g) => /^[0-9a-f]{1,4}$/.test(g)) ? groups : null;
+  };
+  const head = toGroups(halves[0]);
+  if (head === null) return null;
+  let groups: string[];
+  if (halves.length === 1) {
+    if (head.length !== 8) return null;
+    groups = head;
+  } else {
+    const rest = toGroups(halves[1]);
+    if (rest === null || head.length + rest.length > 7) return null;
+    groups = [...head, ...Array<string>(8 - head.length - rest.length).fill("0"), ...rest];
+  }
+  return groups.map((g) => parseInt(g, 16));
+}
+
+function hextetsToIpv4(high: number, low: number): string {
+  return [high >> 8, high & 0xff, low >> 8, low & 0xff].join(".");
+}
+
+/**
+ * Parses `hostname` as an IPv6 literal and classifies it. Input that does not
+ * parse as IPv6 (zone id, too many groups, junk, or no colon at all, e.g. a
+ * dotted-quad v4) is BLOCKED. Callers pass only `:`-containing hosts here.
+ *
+ * Blocked outright:
+ * - `::` (unspecified), `::1` (loopback)
+ * - fc00::/7 (ULA), fe80::/10 (link-local), fec0::/10 (site-local, deprecated)
+ * - ff00::/8 (multicast), 100::/64 (discard-only), 100:0:0:1::/64 (dummy prefix)
+ * - 5f00::/16 (SRv6 SIDs)
+ * - 64:ff9b:1::/48 (local-use NAT64, RFC 8215)
+ * - 2001::/23 (IETF protocol assignments, including Teredo 2001::/32)
+ *
+ * Blocked when the embedded IPv4 address is blocked by `isBlockedIpv4`
+ * (public embedded addresses stay allowed):
+ * - IPv4-mapped ::ffff:0:0/96, in any spelling
+ * - IPv4-compatible ::/96
+ * - IPv4-translated ::ffff:0:0:0/96
+ * - NAT64 well-known 64:ff9b::/96 (v4 in the last 32 bits)
+ * - 6to4 2002::/16 (v4 in hextets 1-2)
+ *
+ * Deliberately NOT classified:
+ * - Documentation ranges (2001:db8::/32, 3fff::/20), matching the IPv4 list,
+ *   which also leaves its documentation ranges alone.
+ * - RFC 6052 network-specific NAT64 prefixes (/32-/64): an operator's prefix
+ *   cannot be known, and neither the maintainer's Mac nor Vercel sits behind
+ *   NAT64. Only the well-known 64:ff9b::/96 and local-use 64:ff9b:1::/48 are
+ *   recognised.
+ * - ISATAP (::5efe:a.b.c.d interface IDs): the embedded v4 is a tunnel
+ *   endpoint, not a destination the local stack rewrites, and blocking it
+ *   would hit real global hosts.
  */
 export function isBlockedIpv6(hostname: string): boolean {
-  const lower = hostname.toLowerCase();
-  if (lower === "::1" || lower === "::") return true;
+  const h = parseIpv6(hostname);
+  if (h === null) return true;
 
-  // IPv4-mapped IPv6, dotted-quad form (::ffff:a.b.c.d) — extract the
-  // embedded v4 and check that. Kept for any hostname passed directly
-  // (not routed through new URL()'s canonicalization).
-  const mappedDottedMatch = lower.match(/^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/);
-  if (mappedDottedMatch) {
-    return isBlockedIpv4(mappedDottedMatch[1]);
-  }
+  const [h0, h1, h2, h3, h4, h5, h6, h7] = h;
+  const first96Zero = h0 === 0 && h1 === 0 && h2 === 0 && h3 === 0 && h4 === 0 && h5 === 0;
 
-  // IPv4-mapped IPv6, canonical hex-hextet form (::ffff:h1:h2) — this is
-  // what Node's WHATWG URL parser actually produces, e.g.
-  // new URL("http://[::ffff:169.254.169.254]/").hostname === "[::ffff:a9fe:a9fe]".
-  // Reconstruct the four v4 octets from the two 16-bit hextets and reuse the
-  // existing IPv4 block check.
-  const mappedHexMatch = lower.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
-  if (mappedHexMatch) {
-    const h1 = parseInt(mappedHexMatch[1], 16);
-    const h2 = parseInt(mappedHexMatch[2], 16);
-    const octets = [(h1 >> 8) & 0xff, h1 & 0xff, (h2 >> 8) & 0xff, h2 & 0xff];
-    return isBlockedIpv4(octets.join("."));
+  if (first96Zero && h6 === 0 && (h7 === 0 || h7 === 1)) return true; // :: and ::1
+  // IPv4-compatible (::/96).
+  if (first96Zero) return isBlockedIpv4(hextetsToIpv4(h6, h7));
+  if (h0 === 0 && h1 === 0 && h2 === 0 && h3 === 0 && h4 === 0 && h5 === 0xffff) {
+    return isBlockedIpv4(hextetsToIpv4(h6, h7));
   }
-
-  // fc00::/7 (ULA): first hextet's high 7 bits are 1111110 -> first hex
-  // nibble is 0xC-0xF is too broad; the precise test is first byte 0xFC/0xFD,
-  // i.e. first hextet matches fc00-fdff.
-  const firstHextetMatch = lower.match(/^([0-9a-f]{1,4})::?/) ?? lower.match(/^([0-9a-f]{1,4}):/);
-  if (firstHextetMatch) {
-    const firstHextet = parseInt(firstHextetMatch[1], 16);
-    if (firstHextet >= 0xfc00 && firstHextet <= 0xfdff) return true;
-    // fe80::/10: first 10 bits are 1111111010 -> first hextet in fe80-febf.
-    if (firstHextet >= 0xfe80 && firstHextet <= 0xfebf) return true;
+  // IPv4-translated (::ffff:0:0:0/96).
+  if (h0 === 0 && h1 === 0 && h2 === 0 && h3 === 0 && h4 === 0xffff && h5 === 0) {
+    return isBlockedIpv4(hextetsToIpv4(h6, h7));
   }
+  // NAT64 well-known prefix 64:ff9b::/96.
+  if (h0 === 0x64 && h1 === 0xff9b && h2 === 0 && h3 === 0 && h4 === 0 && h5 === 0) {
+    return isBlockedIpv4(hextetsToIpv4(h6, h7));
+  }
+  // Local-use NAT64 64:ff9b:1::/48.
+  if (h0 === 0x64 && h1 === 0xff9b && h2 === 1) return true;
+  // 6to4 2002::/16.
+  if (h0 === 0x2002) return isBlockedIpv4(hextetsToIpv4(h1, h2));
+  // IETF protocol assignments 2001::/23 (includes Teredo 2001::/32).
+  if (h0 === 0x2001 && h1 < 0x200) return true;
+  // Discard-only 100::/64 and dummy prefix 100:0:0:1::/64.
+  if (h0 === 0x100 && h1 === 0 && h2 === 0 && (h3 === 0 || h3 === 1)) return true;
+  // SRv6 SIDs 5f00::/16.
+  if (h0 === 0x5f00) return true;
+  // fc00::/7, fe80::/10, fec0::/10, ff00::/8.
+  if ((h0 & 0xfe00) === 0xfc00) return true;
+  if ((h0 & 0xffc0) === 0xfe80) return true;
+  if ((h0 & 0xffc0) === 0xfec0) return true;
+  if ((h0 & 0xff00) === 0xff00) return true;
 
   return false;
 }
@@ -205,13 +275,14 @@ export interface ResolveDeps {
  *   that was vetted in that same lookup. This pre-check is a classification
  *   fast path and defence in depth. IP-literal URLs never reach a lookup and
  *   rely on the synchronous `isBlockedHost` check.
- * - IPv6 embedded-IPv4 coverage: `::ffff:` mapped forms (both dotted and
- *   hex-hextet), `::`, `::1`, `fc00::/7`, and `fe80::/10` ARE classified.
- *   NOT covered: IPv4-compatible (`::7f00:1`), IPv4-translated
- *   (`::ffff:0:7f00:1`), 6to4 (`2002:7f00:1::`), and NAT64
- *   (`64:ff9b::7f00:1`). Reaching those requires an attacker-controlled
- *   AAAA record, and they are largely unroutable in practice, so they are
- *   documented here rather than blocked in v1.
+ * - IPv6 classification: see {@link isBlockedIpv6} for exactly what is
+ *   covered (mapped, compatible, translated, NAT64, 6to4, Teredo and the
+ *   reserved ranges). Deliberately NOT blocked: IPv6 documentation ranges
+ *   (2001:db8::/32, 3fff::/20), mirroring the IPv4 list, and public
+ *   addresses embedded in NAT64/6to4 forms (a DNS64 network legitimately
+ *   returns them for ordinary public sites). Also not classified: RFC 6052
+ *   network-specific NAT64 prefixes and ISATAP interface IDs (see
+ *   {@link isBlockedIpv6}).
  */
 export async function resolvesToBlockedAddress(hostname: string, deps: ResolveDeps = {}): Promise<boolean> {
   const { addresses } = await resolveAddresses(hostname, deps);

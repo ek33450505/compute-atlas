@@ -4,6 +4,8 @@ import {
   BROWSER_HEADERS,
   RETRY_AFTER_CAP_MS,
   RETRY_BACKOFF_MS,
+  SSRF_BLOCKED_CODE,
+  createGuardedLookup,
   defaultSleep,
   isBlockedHost,
   isBlockedIpv4,
@@ -81,8 +83,78 @@ describe("isBlockedIpv6", () => {
     expect(isBlockedIpv6("fe80::abcd:1234")).toBe(true);
   });
 
-  it("does not block an ordinary public IPv6 address", () => {
+  it("does not block ordinary public IPv6 addresses (2001:4860 is not Teredo)", () => {
     expect(isBlockedIpv6("2001:4860:4860::8888")).toBe(false);
+    expect(isBlockedIpv6("2606:4700:4700::1111")).toBe(false);
+  });
+
+  it("classifies IPv4-mapped addresses in any spelling", () => {
+    expect(isBlockedIpv6("0:0:0:0:0:ffff:7f00:1")).toBe(true);
+    expect(isBlockedIpv6("0:0:0:0:0:FFFF:7F00:1")).toBe(true);
+    expect(isBlockedIpv6("::ffff:808:808")).toBe(false);
+    expect(isBlockedIpv6("::ffff:8.8.8.8")).toBe(false);
+  });
+
+  it("classifies IPv4-compatible addresses (::/96) by the embedded v4", () => {
+    expect(isBlockedIpv6("::7f00:1")).toBe(true);
+    expect(isBlockedIpv6("::808:808")).toBe(false);
+  });
+
+  it("classifies IPv4-translated addresses (::ffff:0:0:0/96) by the embedded v4", () => {
+    expect(isBlockedIpv6("::ffff:0:7f00:1")).toBe(true);
+    expect(isBlockedIpv6("::ffff:0:808:808")).toBe(false);
+  });
+
+  it("classifies NAT64 well-known-prefix addresses by the embedded v4", () => {
+    expect(isBlockedIpv6("64:ff9b::7f00:1")).toBe(true);
+    expect(isBlockedIpv6("64:ff9b::127.0.0.1")).toBe(true);
+    expect(isBlockedIpv6("64:ff9b::808:808")).toBe(false);
+  });
+
+  it("blocks local-use NAT64 (64:ff9b:1::/48)", () => {
+    expect(isBlockedIpv6("64:ff9b:1::1")).toBe(true);
+  });
+
+  it("classifies 6to4 addresses by the embedded v4", () => {
+    expect(isBlockedIpv6("2002:7f00:1::")).toBe(true);
+    expect(isBlockedIpv6("2002:808:808::1")).toBe(false);
+  });
+
+  it("blocks Teredo (2001::/32)", () => {
+    expect(isBlockedIpv6("2001:0:4136:e378:8000:63bf:3fff:fdd2")).toBe(true);
+  });
+
+  it("blocks site-local, multicast and discard-only ranges", () => {
+    expect(isBlockedIpv6("fec0::1")).toBe(true);
+    expect(isBlockedIpv6("ff02::1")).toBe(true);
+    expect(isBlockedIpv6("100::1")).toBe(true);
+  });
+
+  it("keeps documentation ranges allowed", () => {
+    expect(isBlockedIpv6("2001:db8::1")).toBe(false);
+    expect(isBlockedIpv6("3fff::1")).toBe(false);
+  });
+
+  it("blocks the 2001::/23 protocol-assignments block, with its boundary", () => {
+    expect(isBlockedIpv6("2001:1ff::1")).toBe(true);
+    expect(isBlockedIpv6("2001:200::1")).toBe(false);
+  });
+
+  it("blocks SRv6 SIDs (5f00::/16) and the dummy prefix (100:0:0:1::/64)", () => {
+    expect(isBlockedIpv6("5f00::1")).toBe(true);
+    expect(isBlockedIpv6("100:0:0:1::1")).toBe(true);
+  });
+
+  it("blocks input with no colon at all (it is not IPv6)", () => {
+    expect(isBlockedIpv6("1.2.3.4")).toBe(true);
+  });
+
+  it("fails closed on input that contains a colon but does not parse", () => {
+    expect(isBlockedIpv6("1::2::3")).toBe(true);
+    expect(isBlockedIpv6("fe80::1%en0")).toBe(true);
+    expect(isBlockedIpv6(":::")).toBe(true);
+    expect(isBlockedIpv6("1:2:3:4:5:6:7:8:9")).toBe(true);
+    expect(isBlockedIpv6("gggg::1")).toBe(true);
   });
 });
 
@@ -94,6 +166,10 @@ describe("isBlockedHost", () => {
 
   it("blocks bracketed IPv6 literals", () => {
     expect(isBlockedHost("[::1]")).toBe(true);
+  });
+
+  it("blocks a NAT64 literal as canonicalized by the URL parser", () => {
+    expect(isBlockedHost(new URL("http://[64:ff9b::7f00:1]/").hostname)).toBe(true);
   });
 
   it("blocks the cloud metadata IPv4 address", () => {
@@ -254,5 +330,18 @@ describe("resolvesToBlockedAddress", () => {
     // argument without a type error, mirroring the fetchImpl/sleepImpl
     // optional-deps convention used elsewhere in this codebase.
     expect(typeof resolvesToBlockedAddress).toBe("function");
+  });
+});
+
+describe("createGuardedLookup IPv6 embedded-IPv4", () => {
+  it("refuses cloud metadata reached through NAT64 (64:ff9b::a9fe:a9fe)", async () => {
+    const err = await new Promise<Error | null>((resolve) => {
+      createGuardedLookup({ resolve4: async () => [], resolve6: async () => ["64:ff9b::a9fe:a9fe"] })(
+        "evil.test",
+        {},
+        (e) => resolve(e),
+      );
+    });
+    expect((err as { code?: string }).code).toBe(SSRF_BLOCKED_CODE);
   });
 });
