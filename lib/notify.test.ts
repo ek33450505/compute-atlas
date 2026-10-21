@@ -209,21 +209,21 @@ describe("groupChangesByRecipient", () => {
 /**
  * ⚠️ These two assert at COMPILE time, not run time. The `expect(...)` calls
  * below are deliberately vacuous — `npm test` alone can NEVER fail them. The
- * real gate is `npm run typecheck`: if `stateName` ever becomes optional
+ * real gate is `npm run typecheck`: if the area fields ever become optional
  * again (or `origin` stops being required), the `@ts-expect-error` directives
  * become UNUSED and tsc errors on them. Verified by mutation: reverting
- * `stateName` to optional produces "Unused '@ts-expect-error' directive" on
- * both, plus a genuine error where `sendStateDigestEmail` receives a possibly
- * -undefined `stateName`. Do not "fix" these into runtime assertions — the
+ * the area fields to optional produces "Unused '@ts-expect-error' directive" on
+ * both, plus a genuine error where `sendAreaDigestEmail` receives a possibly
+ * -undefined area field. Do not "fix" these into runtime assertions — the
  * constraint they pin is not observable at run time.
  */
 describe("RecipientFacilityChange origin discriminator (type-level)", () => {
-  it("rejects an origin: 'state-digest' change missing stateName at compile time", () => {
-    // @ts-expect-error — origin: "state-digest" requires stateName; omitting
+  it("rejects an origin: 'area-digest' change missing its area fields at compile time", () => {
+    // @ts-expect-error — origin: "area-digest" requires areaType/areaId/areaName; omitting
     // it is the exact mistake the required `origin` discriminator exists to
     // make impossible to construct silently.
     const invalid: RecipientFacilityChange = {
-      origin: "state-digest",
+      origin: "area-digest",
       email: "x@example.com",
       unsubscribeToken: "t",
       facilityName: "F",
@@ -234,7 +234,7 @@ describe("RecipientFacilityChange origin discriminator (type-level)", () => {
     expect(invalid).toBeDefined();
   });
 
-  it("rejects an origin: 'facility-watch' change that carries stateName at compile time", () => {
+  it("rejects an origin: 'facility-watch' change that carries area fields at compile time", () => {
     const invalid: RecipientFacilityChange = {
       origin: "facility-watch",
       email: "x@example.com",
@@ -243,10 +243,10 @@ describe("RecipientFacilityChange origin discriminator (type-level)", () => {
       facilitySlug: "f",
       changeLabel: "record updated",
       status: "Operational",
-      // @ts-expect-error — stateName does not exist on the facility-watch
-      // branch; a facility-watch change must never carry state-digest-only
+      // @ts-expect-error — areaName does not exist on the facility-watch
+      // branch; a facility-watch change must never carry area-digest-only
       // data.
-      stateName: "Tennessee",
+      areaName: "Tennessee",
     };
     expect(invalid).toBeDefined();
   });
@@ -643,7 +643,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
 
     await notifyStateSubscribersMonthly(since, until);
 
-    expect(errSpy).toHaveBeenCalledWith("sendStateDigestEmail failed:", "TypeError");
+    expect(errSpy).toHaveBeenCalledWith("sendAreaDigestEmail failed:", "TypeError");
   });
 
   it("pins the state digest no-key warning text", async () => {
@@ -653,7 +653,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
 
     await notifyStateSubscribersMonthly(since, until);
 
-    expect(warnSpy).toHaveBeenCalledWith("RESEND_API_KEY not set — skipping state digest email send");
+    expect(warnSpy).toHaveBeenCalledWith("RESEND_API_KEY not set — skipping area digest email send");
   });
 
   it("notifies only a confirmed state subscriber — not pending, not unsubscribed, not 'all'", async () => {
@@ -801,7 +801,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
       targetId: facilityTnA.location.state,
       status: "confirmed",
     });
-    // A state digest (even a single-change one) sends via sendStateDigestEmail
+    // A state digest (even a single-change one) sends via sendAreaDigestEmail
     // -> resendSendMock, never sendChangeNotification — see the "state-digest
     // copy" describe block below.
     resendSendMock.mockRejectedValueOnce(new Error("send failed"));
@@ -1093,8 +1093,10 @@ describe("sendGroupedChangeNotifications — mixed-state guard", () => {
     facility: Facility
   ): RecipientChangeGroup["changes"][number] {
     return {
-      origin: "state-digest",
-      stateName,
+      origin: "area-digest",
+      areaType: "state",
+      areaId: stateName,
+      areaName: stateName,
       subscriptionId: "s1",
       unsubscribeToken: "unsub-token-sentinel",
       facilityName: facility.name,
@@ -1207,8 +1209,10 @@ describe("sendGroupedChangeNotifications — state digest needs a run id", () =>
       email: "reader@example.com",
       changes: [
         {
-          origin: "state-digest",
-          stateName: tnStateName,
+          origin: "area-digest",
+          areaType: "state",
+          areaId: facilityTnA.location.state,
+          areaName: tnStateName,
           subscriptionId: "s1",
           unsubscribeToken: "tok",
           facilityName: facilityTnA.name,
@@ -1265,3 +1269,60 @@ describe("sendGroupedChangeNotifications — digest anchor token", () => {
     vi.unstubAllEnvs();
   });
 });
+
+// A-3 unit 8b: the mixed-group guard generalised to areaType + areaId.
+describe("area digest — mixed-group guard and run id", () => {
+  const change = (areaType: "county" | "metro", areaId: string, areaName: string) => ({
+    origin: "area-digest" as const,
+    areaType,
+    areaId,
+    areaName,
+    subscriptionId: "s1",
+    unsubscribeToken: "unsub-token-sentinel",
+    facilityName: "F",
+    facilitySlug: "f",
+    changeLabel: "record updated",
+    status: "Operational",
+  });
+
+  it("refuses a group mixing two counties (same areaType, different areaId), logging no address or token", async () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const claim = await claimDigestWindow(new Date("2026-01-01T00:00:00Z"), new Date("2026-02-01T00:00:00Z"));
+    if (!claim.claimed) throw new Error("fixture");
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [change("county", "loudoun-va", "Loudoun County, VA"), change("county", "fairfax-va", "Fairfax County, VA")],
+    };
+    expect(await sendGroupedChangeNotifications([group], claim.runId)).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    const logged = JSON.stringify(err.mock.calls);
+    expect(logged).toContain("mixed multiple areas");
+    expect(logged).not.toContain("reader@example.com");
+    expect(logged).not.toContain("unsub-token-sentinel");
+  });
+
+  it("refuses a group whose changes share areaType and areaName and differ only in areaId", async () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const claim = await claimDigestWindow(new Date("2026-01-01T00:00:00Z"), new Date("2026-02-01T00:00:00Z"));
+    if (!claim.claimed) throw new Error("fixture");
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [change("county", "washington-va", "Washington County"), change("county", "washington-nj", "Washington County")],
+    };
+    expect(await sendGroupedChangeNotifications([group], claim.runId)).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(JSON.stringify(err.mock.calls)).toContain("mixed multiple areas");
+  });
+
+  it("refuses a county group without a run id", async () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [change("county", "loudoun-va", "Loudoun County, VA")],
+    };
+    expect(await sendGroupedChangeNotifications([group])).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(JSON.stringify(err.mock.calls)).toContain("needs a run id");
+  });
+});
+

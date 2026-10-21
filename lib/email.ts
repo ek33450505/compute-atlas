@@ -366,7 +366,7 @@ export async function sendChangeDigestEmail(
   // unsubscribe link, and unsubscribing from one watch never silently
   // touches the recipient's other watches. This invariant holds because a
   // facility-watch group is N rows (one per facility). Contrast
-  // `sendStateDigestEmail` below: a state-digest group is exactly ONE row
+  // `sendAreaDigestEmail` below: a state-digest group is exactly ONE row
   // (one email + one state) shared across every change, which is why it
   // renders a single unsubscribe link instead of one per item.
   const textItems = changes.map((c) => {
@@ -414,7 +414,7 @@ export async function sendChangeDigestEmail(
 }
 
 /**
- * Composes and sends the monthly state-digest email (Theme D, D3a) — the
+ * Composes and sends the monthly area-digest email (Theme D, D3a; county and metro added by A-3 unit 8b) — the
  * state-digest counterpart to `sendChangeDigestEmail` above, deliberately NOT
  * a copy-paste of it. The two are the same SHAPE (a recipient, a list of
  * facility changes) but different TRUTHS: a facility-watch recipient asked to
@@ -430,13 +430,30 @@ export async function sendChangeDigestEmail(
  *     clicking it only mutes one facility, when it actually unsubscribes the
  *     recipient from the whole state.
  *
+ * One sender for state, county and metro: only the NAME and the noun in the
+ * unsubscribe label vary ("this state's" / "this county's" / "this metro
+ * area's"). The state output is pinned byte-for-byte by a golden test in
+ * lib/notify.test.ts.
+ *
  * Never throws — same contract as `sendChangeDigestEmail`.
  */
-export async function sendStateDigestEmail(
+export type AreaDigestType = "state" | "county" | "metro";
+
+const AREA_NOUN: Record<AreaDigestType, string> = {
+  state: "state",
+  county: "county",
+  metro: "metro area",
+};
+
+export async function sendAreaDigestEmail(
   email: string,
-  stateName: string,
+  area: { type: AreaDigestType; name: string },
   changes: DigestChange[],
 ): Promise<SendResult> {
+  // Collapse C0 controls (and DEL) so a name can never inject a header line
+  // into the subject or break the text body.
+  const stateName = area.name.replace(/[\u0000-\u001f\u007f]+/g, " ").trim();
+  const noun = AREA_NOUN[area.type];
   const base = linkBase();
   const facilityWord = changes.length === 1 ? "facility" : "facilities";
   const subject = `${changes.length} ${facilityWord} changed in ${stateName} — Compute Atlas monthly digest`;
@@ -452,7 +469,7 @@ export async function sendStateDigestEmail(
     const url = `${base}/facilities/${c.facilitySlug}`;
     return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url}`;
   });
-  const text = `Your monthly Compute Atlas digest for ${stateName}: ${changes.length} tracked ${facilityWord} changed this period.\n\n${textItems.join("\n")}\n\nYou're receiving this because you subscribed to a monthly digest for ${stateName} on Compute Atlas. Unsubscribe from this state's digest: ${unsubUrl}\nStop all automated email from Compute Atlas: ${stopAllUrl}`;
+  const text = `Your monthly Compute Atlas digest for ${stateName}: ${changes.length} tracked ${facilityWord} changed this period.\n\n${textItems.join("\n")}\n\nYou're receiving this because you subscribed to a monthly digest for ${stateName} on Compute Atlas. Unsubscribe from this ${noun}'s digest: ${unsubUrl}\nStop all automated email from Compute Atlas: ${stopAllUrl}`;
 
   const htmlItems = changes
     .map((c) => {
@@ -460,11 +477,11 @@ export async function sendStateDigestEmail(
       return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a></li>`;
     })
     .join("");
-  const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this state's digest</a> · <a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a></p>`;
+  const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this ${noun}'s digest</a> · <a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a></p>`;
 
   return sendViaResend(
-    "sendStateDigestEmail",
-    "RESEND_API_KEY not set — skipping state digest email send",
+    "sendAreaDigestEmail",
+    "RESEND_API_KEY not set — skipping area digest email send",
     {
       from: fromAddress(),
       to: email,

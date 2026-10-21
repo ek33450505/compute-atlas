@@ -8,10 +8,10 @@ vi.mock("resend", () => ({
 }));
 
 import { Resend } from "resend";
-import { safeErrorCode, sendContactEmail, sendStateDigestEmail } from "./email";
+import { safeErrorCode, sendContactEmail, sendAreaDigestEmail } from "./email";
 
 // sendViaResend is module-private, so its result mapping is exercised through
-// public senders: sendContactEmail (plain payload) and sendStateDigestEmail (headers).
+// public senders: sendContactEmail (plain payload) and sendAreaDigestEmail (headers).
 const input = { name: "N", email: "v@example.com", topic: "T", message: "M" };
 const send = () => sendContactEmail(input);
 const change = {
@@ -36,7 +36,7 @@ describe("sendViaResend result (via public senders)", () => {
   it("surfaces the Resend id on success and passes the payload (headers included) through", async () => {
     vi.stubEnv("RESEND_API_KEY", "k");
     resendSendMock.mockResolvedValue({ data: { id: "re_123" }, error: null });
-    const result = await sendStateDigestEmail("x@example.com", "Texas", [change]);
+    const result = await sendAreaDigestEmail("x@example.com", { type: "state", name: "Texas" }, [change]);
     expect(result).toEqual({ sent: true, resendId: "re_123" });
     expect(resendSendMock).toHaveBeenCalledWith(
       expect.objectContaining({

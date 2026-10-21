@@ -3,7 +3,7 @@ import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } 
 
 vi.mock("@/lib/db/client");
 
-// The ONLY send path a state digest can take is sendStateDigestEmail -> resend, so this mock
+// The ONLY send path a state digest can take is sendAreaDigestEmail -> resend, so this mock
 // is the hard guarantee that no test in this file can put mail on the wire, and its call
 // count is the real assertion throughout: a 200 status proves the route ran, only the call
 // count proves whether anyone was mailed. Hoisted so the vi.mock factory below can close

@@ -55,7 +55,7 @@ const GATED_SENDERS = new Set([
   "sendWatchStartedEmail",
   "sendChangeNotification",
   "sendChangeDigestEmail",
-  "sendStateDigestEmail",
+  "sendAreaDigestEmail",
 ]);
 
 /**
