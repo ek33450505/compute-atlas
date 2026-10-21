@@ -5,14 +5,14 @@ import Link from "next/link";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import type { FilterValues, FilterSetters } from "@/components/explorer/filter-bar";
 import { WIDE_AND_TALL_VIEWPORT_QUERY } from "@/lib/map";
-import type { Facility } from "@/lib/schema";
+import type { FilterableFacility } from "@/lib/facility-slim";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 export interface MapFilterSubheaderProps {
-  facilities: Facility[];
+  facilities: FilterableFacility[];
   values: FilterValues;
   setters: FilterSetters;
   filteredCount: number;

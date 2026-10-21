@@ -6,6 +6,7 @@ import { STATUS_ORDER, STATUS_META } from "@/lib/status";
 import { getFilterOptions } from "@/lib/filters";
 import { StatusBadge } from "@/components/status-badge";
 import type { Facility } from "@/lib/schema";
+import type { FilterableFacility } from "@/lib/facility-slim";
 
 // ---------------------------------------------------------------------------
 // Facility-type labels
@@ -61,7 +62,7 @@ export interface FilterSetters {
 }
 
 interface FilterBarProps {
-  facilities: Facility[];
+  facilities: FilterableFacility[];
   values: FilterValues;
   setters: FilterSetters;
 }

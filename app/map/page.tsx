@@ -9,6 +9,7 @@ import {
   getStatusCounts,
   getFacilityTypeCounts,
 } from "@/lib/data";
+import { toMapFacility } from "@/lib/facility-slim";
 import { Explorer } from "@/components/explorer/explorer";
 import { MapPageContent } from "@/components/map/map-page-content";
 
@@ -39,7 +40,9 @@ export async function generateMetadata(): Promise<Metadata> {
  * had no heading at all). The full-bleed map shell's height is unaffected;
  * the content sits below the fold as a normal sibling.
  *
- * Server component: facilities loaded at request time, passed to Explorer.
+ * Server component: facilities are loaded at request time and projected to
+ * the slim `MapFacility` shape (lib/facility-slim.ts) BEFORE crossing to the
+ * client Explorer, so the RSC/HTML payload carries only what the map reads.
  */
 export default async function MapPage() {
   const [facilities, stats, topStates, topOperators, statusCounts, typeCounts] =
@@ -58,7 +61,7 @@ export default async function MapPage() {
         Map of US data centers, crypto-mining sites, and power generation
       </h1>
       <Suspense>
-        <Explorer facilities={facilities} mode="map" />
+        <Explorer facilities={facilities.map(toMapFacility)} mode="map" />
       </Suspense>
       <MapPageContent
         stats={stats}

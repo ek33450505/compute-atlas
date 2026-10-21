@@ -56,13 +56,13 @@ import {
   WATERWAYS_COLOR,
   WATER_STRESS_RAMP,
 } from "@/lib/map-overlays";
-import type { Facility } from "@/lib/schema";
+import type { MapFacility } from "@/lib/facility-slim";
 import type { GeocodeResult } from "@/lib/geocode";
 
 const TOOLS_PANEL_ID = "map-tools-panel";
 
 interface FacilityMapProps {
-  facilities: Facility[];
+  facilities: MapFacility[];
   /** Tailwind height classes for the map container. Defaults to "h-[70vh] min-h-[420px]". */
   heightClass?: string;
   /**
@@ -221,7 +221,7 @@ export function FacilityMap({
   const pathname = usePathname();
   const escapeLinks = linksOpenInNewTab ?? isEmbedRoute(pathname);
 
-  const [selectedFacility, setSelectedFacility] = useState<Facility | null>(
+  const [selectedFacility, setSelectedFacility] = useState<MapFacility | null>(
     null
   );
   const [zoom, setZoom] = useState<number>(INITIAL_VIEW_STATE.zoom);
@@ -509,7 +509,7 @@ export function FacilityMap({
   }, [showTools]);
 
   const handleSelectFacility = useCallback(
-    (facility: Facility) => {
+    (facility: MapFacility) => {
       lastSelectedIdRef.current = facility.id;
       setSelectedFacility(facility);
       mapRef.current?.easeTo({

@@ -1,6 +1,6 @@
 import { getStatusMeta } from "@/lib/status";
 import { getFacilityTypeMeta } from "@/lib/facility-type";
-import type { Facility } from "@/lib/schema";
+import type { MapFacility } from "@/lib/facility-slim";
 
 /**
  * Initial view centered on the contiguous United States.
@@ -65,7 +65,7 @@ export const SATELLITE_MAX_ZOOM = 19;
  * buildMarkerLabel(colossus)
  * // "Colossus, xAI — Memphis, TN — Data center — Operational — 150 MW operational"
  */
-export function buildMarkerLabel(f: Facility): string {
+export function buildMarkerLabel(f: MapFacility): string {
   const meta = getStatusMeta(f.status);
   const typeLabel = getFacilityTypeMeta(f.facilityType).label;
   const cityState = f.location.city
@@ -102,7 +102,7 @@ export interface FacilitiesBounds {
  * instead of fitting a degenerate box.
  */
 export function computeFacilitiesBounds(
-  facilities: Facility[]
+  facilities: Pick<MapFacility, "location">[]
 ): FacilitiesBounds | null {
   if (facilities.length === 0) return null;
 

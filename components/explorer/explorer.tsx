@@ -14,6 +14,7 @@ import {
 import { filterFacilities } from "@/lib/filters";
 import { STATUS_ORDER } from "@/lib/status";
 import type { Facility } from "@/lib/schema";
+import type { MapFacility } from "@/lib/facility-slim";
 import { facilityTypeEnum } from "@/lib/schema";
 import { FacilityTable } from "@/components/table/facility-table";
 import { FacilityMap } from "@/components/map/facility-map-dynamic";
@@ -37,17 +38,27 @@ type ExplorerMode = "toggle" | "map" | "table";
 // Component
 // ---------------------------------------------------------------------------
 
-interface ExplorerProps {
-  facilities: Facility[];
-  /** Controls whether the view-toggle UI is rendered.
-   *  - "toggle" (default): renders Map/Table toggle buttons (existing behavior)
-   *  - "map": renders FilterBar + map only; toggle buttons replaced by a cross-link
-   *  - "table": reserved; toggle hidden, table rendered
-   */
-  mode?: ExplorerMode;
-}
+/**
+ * `mode` controls whether the view-toggle UI is rendered.
+ *  - "toggle" (default): renders Map/Table toggle buttons (existing behavior)
+ *  - "map": renders FilterBar + map only; toggle buttons replaced by a cross-link
+ *  - "table": reserved; toggle hidden, table rendered
+ *
+ * Map mode accepts the slim server-projected `MapFacility[]` (see
+ * lib/facility-slim.ts); the table and toggle modes still need full records.
+ */
+type ExplorerProps =
+  | { mode: "map"; facilities: MapFacility[] }
+  | { mode?: Exclude<ExplorerMode, "map">; facilities: Facility[] };
 
-export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
+/** Filter result tagged with the record type it holds, so branches narrow without casts. */
+type Filtered =
+  | { kind: "map"; rows: MapFacility[] }
+  | { kind: "full"; rows: Facility[] };
+
+export function Explorer(props: ExplorerProps) {
+  const { facilities } = props;
+  const mode = props.mode ?? "toggle";
   const [view, setView] = useQueryState<ViewValue>(
     "view",
     parseAsStringLiteral(VIEW_VALUES).withDefault("map")
@@ -75,17 +86,18 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
 
   const searchParams = useSearchParams();
 
-  const filtered = useMemo(
-    () =>
-      filterFacilities(facilities, {
-        statuses: status,
-        states: state,
-        operators: operator,
-        facilityTypes: facilityType,
-        minMw,
-      }),
-    [facilities, status, state, operator, facilityType, minMw]
-  );
+  const filtered = useMemo((): Filtered => {
+    const filters = {
+      statuses: status,
+      states: state,
+      operators: operator,
+      facilityTypes: facilityType,
+      minMw,
+    };
+    return props.mode === "map"
+      ? { kind: "map", rows: filterFacilities(props.facilities, filters) }
+      : { kind: "full", rows: filterFacilities(props.facilities, filters) };
+  }, [props.mode, props.facilities, status, state, operator, facilityType, minMw]);
 
   // m13: the map-mode shell below subtracts a hardcoded header height
   // (`4rem` = 64px) from the viewport height, but the real sticky header
@@ -137,7 +149,7 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
   // Filter sub-header sits in normal document flow ABOVE the map; the map
   // flexes to fill the remaining viewport height below the site header (4 rem).
   // -------------------------------------------------------------------------
-  if (mode === "map") {
+  if (filtered.kind === "map") {
     return (
       <div
         data-testid="map-shell"
@@ -148,10 +160,10 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
           facilities={facilities}
           values={{ status, state, operator, facilityType, minMw }}
           setters={{ setStatus, setState, setOperator, setFacilityType, setMinMw }}
-          filteredCount={filtered.length}
+          filteredCount={filtered.rows.length}
           totalCount={facilities.length}
         />
-        {filtered.length === 0 ? (
+        {filtered.rows.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <StatePanel
               titleAs="p"
@@ -179,9 +191,9 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
                   scroll into view — it silently pushes the legend/scale bar/OSM
                   attribution below the fold instead. */}
               <FacilityMap
-                facilities={filtered}
+                facilities={filtered.rows}
                 heightClass="h-full"
-                surveyOnMount={filtered.length !== facilities.length}
+                surveyOnMount={filtered.rows.length !== facilities.length}
                 // Same "is this a real subset of the full dataset" question
                 // surveyOnMount already answers above — isFiltered feeds the
                 // SAME expression to the ongoing (post-mount) survey-pass
@@ -190,7 +202,7 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
                 // the full AK-to-HI dataset. See the isFiltered doc comment
                 // on FacilityMapProps (components/map/facility-map.tsx) for
                 // the full rationale and its known limitation.
-                isFiltered={filtered.length !== facilities.length}
+                isFiltered={filtered.rows.length !== facilities.length}
               />
             </section>
           </div>
@@ -228,15 +240,15 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
             aria-live="polite"
             className="font-mono text-xs uppercase tracking-wider text-muted-foreground"
           >
-            Showing {filtered.length} of {facilities.length} facilities
+            Showing {filtered.rows.length} of {facilities.length} facilities
           </p>
           <div className="flex items-center gap-2">
-            <ExportButtons facilities={filtered} />
+            <ExportButtons facilities={filtered.rows} />
             <ShareLinkButton />
           </div>
         </div>
         <section aria-label="Facilities data table">
-          <FacilityTable facilities={filtered} />
+          <FacilityTable facilities={filtered.rows} />
         </section>
       </div>
     );
@@ -260,11 +272,11 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
           aria-live="polite"
           className="text-sm text-muted-foreground"
         >
-          Showing {filtered.length} of {facilities.length} facilities
+          Showing {filtered.rows.length} of {facilities.length} facilities
         </p>
         {view === "table" && (
           <div className="flex items-center gap-2">
-            <ExportButtons facilities={filtered} />
+            <ExportButtons facilities={filtered.rows} />
             <ShareLinkButton />
           </div>
         )}
@@ -296,8 +308,8 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
 
       {/* Active view */}
       {view === "table" ? (
-        <FacilityTable facilities={filtered} />
-      ) : filtered.length === 0 ? (
+        <FacilityTable facilities={filtered.rows} />
+      ) : filtered.rows.length === 0 ? (
         <div className="flex h-[70vh] min-h-[420px] items-center justify-center">
           <StatePanel
             titleAs="p"
@@ -319,7 +331,7 @@ export function Explorer({ facilities, mode = "toggle" }: ExplorerProps) {
               mode. This branch intentionally does NOT pass surveyOnMount or
               heightClass: those are unrelated to isFiltered and specific to
               the map-only route's full-bleed, deep-link-aware layout. */}
-          <FacilityMap facilities={filtered} isFiltered={filtered.length !== facilities.length} />
+          <FacilityMap facilities={filtered.rows} isFiltered={filtered.rows.length !== facilities.length} />
         </section>
       )}
     </div>

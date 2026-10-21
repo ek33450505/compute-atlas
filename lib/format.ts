@@ -5,7 +5,7 @@ import type { Facility } from "@/lib/schema";
  * Returns the maximum of operational/planned capacity in MW, or undefined if
  * the facility has no capacity data.
  */
-export function getFacilityMaxMw(f: Facility): number | undefined {
+export function getFacilityMaxMw(f: Pick<Facility, "capacityMw">): number | undefined {
   const operational = f.capacityMw?.operational;
   const planned = f.capacityMw?.planned;
   if (operational !== undefined && planned !== undefined) {

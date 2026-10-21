@@ -1,5 +1,6 @@
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import type { Facility } from "@/lib/schema";
+import type { FilterableFacility } from "@/lib/facility-slim";
 import { facilityTypeEnum } from "@/lib/schema";
 import { getFacilityMaxMw } from "@/lib/format";
 
@@ -18,10 +19,10 @@ export interface FacilityFilters {
  * Returns facilities that match ALL provided filters.
  * Empty or omitted filter arrays / undefined values → no constraint applied.
  */
-export function filterFacilities(
-  facilities: Facility[],
+export function filterFacilities<T extends FilterableFacility>(
+  facilities: T[],
   f: FacilityFilters
-): Facility[] {
+): T[] {
   return facilities.filter((facility) => {
     // Status: include if filter is empty/undefined OR facility.status is in the list
     if (f.statuses && f.statuses.length > 0) {
@@ -83,7 +84,7 @@ export interface FilterOptions {
 /**
  * Derives available filter values from the given facilities array.
  */
-export function getFilterOptions(facilities: Facility[]): FilterOptions {
+export function getFilterOptions(facilities: FilterableFacility[]): FilterOptions {
   const presentStatuses = STATUS_ORDER.filter((s) =>
     facilities.some((f) => f.status === s)
   );
