@@ -3767,6 +3767,71 @@
     "facilityType": "data_center"
   },
   {
+    "id": "alcove-project-catalyst-osawatomie-ks",
+    "name": "Project Catalyst (Osawatomie)",
+    "operator": "Alcove Development",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.5016,
+      "lon": -94.9522,
+      "city": "Osawatomie",
+      "county": "Miami County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "announcedDate": "2026-02",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-29",
+        "note": "City announced partnership and pre-development agreement with Alcove for a 500+ MW campus on 283 acres",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kctv5.com/2026/05/29/osawatomie-moves-forward-with-500-megawatt-data-center-campus/",
+        "label": "Osawatomie moves forward with 500-megawatt data center campus",
+        "publisher": "KCTV5",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/kansas/miami-county/project-catalyst-data-center-developer-in-osawatomie-offers-update-touting-economic-opportunity",
+        "label": "Project Catalyst data center developer in Osawatomie offers update",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "283-acre site inside Osawatomie city limits. The capacity is reported as '500+ MW'. Coordinates are the city centroid, which is approximate. Residents report that the agenda referenced a natural gas power plant and easement.",
+    "energy": {
+      "utility": "Evergy",
+      "notes": "Officials say all new transmission, substation and generation infrastructure will be funded by the project under Evergy's large load tariff."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Fully air-cooled design; day-to-day water use limited to restrooms and hand-washing per officials."
+    },
+    "investmentUsd": 1000000000,
+    "landAcres": 283,
+    "jobs": {
+      "permanent": 90,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Hundreds attended the council meeting to oppose the project.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "aligned-atl-01-lithia-springs-ga",
     "name": "Aligned Data Centers ATL-01",
     "operator": "Aligned Data Centers",
@@ -12118,6 +12183,41 @@
     "facilityType": "data_center"
   },
   {
+    "id": "att-keawaula-cable-landing-station-waianae-hi",
+    "name": "Keawaula Cable Landing Station",
+    "operator": "AT&T",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 21.54907,
+      "lon": -158.238082,
+      "city": "Waianae",
+      "county": "Honolulu County",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "1985",
+        "note": "Station constructed in 1985 under CDUP OA-1417; the landing site has been in use since 1963.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.submarinenetworks.com/en/stations/north-america/usa-hawaii/keawaula",
+        "label": "Keawaula Cable Landing Station",
+        "publisher": "Submarine Networks",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "Cable landing station in Keawaula Ahupuaa, Waianae District, Oahu. The landing is in Kaena State Park ('Yokohamas'), with a 285 m duct from the beach manhole to the station. The source (dated 2011) lists TPC-5, Telstra Endeavour, AAG and ASH. The original Samoa-Hawaii link of ASH was decommissioned in 2020. Coordinates come from a zoom-12 embedded map and are approximate. AT&T ownership comes from a 2011 source and was not re-verified.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "att-redwood-city-ca",
     "name": "AT&T Redwood City Data Center",
     "operator": "AT&T",
@@ -17322,7 +17422,7 @@
     "id": "beale-gardner-johnson-county-ks",
     "name": "Beale Infrastructure Gardner Campus",
     "operator": "Beale Infrastructure",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 38.81,
@@ -17333,7 +17433,14 @@
       "state": "KS",
       "precision": "exact"
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-10-21",
+        "note": "Beale Infrastructure withdrew its application on 2026-05-06 after the City of Gardner said it would grant no incentives; Beale: 'We will not be moving forward with the project at this time.' No revival was found through October 2026.",
+        "sourceIndex": 4
+      }
+    ],
     "sources": [
       {
         "url": "https://bealeinfra.com/gardner-kansas/",
@@ -17345,7 +17452,8 @@
       {
         "url": "https://www.kcur.org/housing-development-section/2026-05-07/gardner-data-center-plan-withdrawn-by-company-after-resident-opposition",
         "label": "KCUR",
-        "retrievedAt": "2026-07-26",
+        "publisher": "KCUR / Johnson County Post",
+        "retrievedAt": "2026-10-21",
         "kind": "press"
       },
       {
@@ -17361,9 +17469,23 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-10-04",
         "kind": "other"
+      },
+      {
+        "url": "https://www.kcur.org/housing-development-section/2026-05-07/gardner-data-center-plan-withdrawn-by-company-after-resident-opposition",
+        "label": "Gardner data center plan withdrawn by company after resident opposition",
+        "publisher": "KCUR / Johnson County Post",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/kansas/johnson-county/beale-infrastructure-withdraws-application-for-gardner-data-center",
+        "label": "Beale Infrastructure withdraws application for Gardner data center",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-04",
+    "lastUpdated": "2026-10-21",
     "notes": "Near 191st St & S Clare Rd. Up to 16 data halls. Distinct from Beale's existing tracked Project Pilot in De Soto, KS. Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -17376,6 +17498,10 @@
       "notes": "Developer estimated roughly 20,000 gallons/day for a closed-loop system; the project was withdrawn before construction began."
     },
     "landAcres": 300,
+    "jobs": {
+      "permanent": 50,
+      "sourceIndex": 1
+    },
     "community": {
       "status": "opposed",
       "notes": "Beale Infrastructure withdrew its Gardner application on May 7, 2026, days after roughly 100 residents (30+ speaking against) packed a May 4 city council meeting and the city said no incentives would be granted.",
@@ -17717,15 +17843,23 @@
         "publisher": "Data Center Dynamics",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://johnsoncountypost.com/2026/07/07/beale-de-soto-data-center-update-290529/",
+        "label": "De Soto's approved data center project doubles in size from initial designs",
+        "publisher": "Johnson County Post",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-06",
+    "lastUpdated": "2026-10-21",
     "notes": "Developer (Mount Sunflower Properties LLC / Beale Infrastructure, backed by Blue Owl) has pre-leased the entire campus to an unnamed large technology company. Attorney described the tenant as among 'the strongest, most financially profitable companies in the world.' Four buildings of 285,000 sq ft each (1.14M sq ft total); full build-out in 7–9 years. Kansas's first announced hyperscale data center. Permanent job figure of 100 is sourced from Johnson County Post ('over 100 long-term jobs paying six figures'); DCD separately cited 50 operational jobs for the first phase only. Coordinates are De Soto city centroid; exact site is at NW corner of 103rd St and Edgerton Rd.",
     "energy": {
       "source": "grid",
       "utility": "Evergy"
     },
     "water": {
+      "coolingType": "closed_loop",
       "notes": "Developer funding new industrial wastewater treatment facility; cooling water drawn from Kansas River; significant infrastructure upgrades borne by developer"
     },
     "subsidies": [
@@ -29711,9 +29845,16 @@
         "publisher": "Tonganoxie Mirror",
         "retrievedAt": "2026-10-04",
         "kind": "press"
+      },
+      {
+        "url": "https://fox4kc.com/news/project-bluestem-paves-way-for-data-center-in-leavenworth-county/amp/",
+        "label": "Project Bluestem paves way for data center in Leavenworth County",
+        "publisher": "FOX4 Kansas City",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-04",
+    "lastUpdated": "2026-10-21",
     "notes": "Proposed hyperscale data center campus on the former Tailgate Ranch in unincorporated Leavenworth County, south of Tonganoxie and south of the Tonganoxie Business Park, near the Tonganoxie/Eudora interchange on I-70. Reported as roughly 1,000 acres (KSHB; the Lawrence Journal-World writes \"more than 1,000 acres\" and the community lead that surfaced this record claimed 1,100 acres — no source seen states 1,100, so 1,000 is recorded and the discrepancy is noted here). KSHB reports 330 acres set aside for permanent land conservation. The planned capacity recorded here is the reported ceiling: a revised proposal submitted after Leavenworth County's data center moratorium expired in August 2026 roughly doubled the project's electricity demand to \"up to 1.2 gigawatts\" and added an on-site gas power plant; a lower figure appears in one Journal-World reference (\"600-watt data center\", evidently a units error in the source) and is not used. Location precision is approximate: no source seen states coordinates, a street address or a parcel, so the pin is the Tonganoxie town centroid (OpenStreetMap/Nominatim) and the actual footprint lies some distance south of it. Cloverleaf Infrastructure, a Houston-based developer founded by former Microsoft energy executives, describes itself as a site-preparation developer that will introduce an end user later; no hyperscale tenant has been named. Cloverleaf's own site describes a \"multi-billion-dollar taxable investment\" but states no dollar figure, so investmentUsd is omitted. As of 2026-09-23 the project is conceptual: Cloverleaf's FAQ states no formal applications have been submitted to local jurisdictions, and the county's data center planning and zoning regulations are not finalized.",
     "energy": {
       "utility": "Evergy",
@@ -31067,7 +31208,7 @@
         "url": "https://www.sdxcentral.com/news/cogent-data-center-up-for-sale-in-hawaii/",
         "label": "Cogent data center up for sale in Hawaii",
         "publisher": "SDxCentral",
-        "retrievedAt": "2026-10-02",
+        "retrievedAt": "2026-10-21",
         "kind": "press"
       },
       {
@@ -31078,8 +31219,12 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-10-02",
+    "lastUpdated": "2026-10-21",
     "notes": "This is a former Sprint facility. Cogent got it from T-Mobile in 2022, when T-Mobile sold its wireline business to Cogent for $1; that is an entity-level deal, not a value for this site. The building is 10,320 sq ft on a 2.5-acre site with 800 kW of power. Carriers on site are Hawaiian Tel, Lumen and Spectrum, and it sits next to an AT&T facility. In March 2025 Cogent listed the building for sale as 'move-in-ready' at an $8M asking price, through Hawaii Commercial Real Estate. No sale, vacancy or closure was confirmed this session, so status is operational but confidence is reported. A completed sale or vacancy should prompt a re-check. capacityMw.operational is the stated 800 kW building power, not a measured IT load. Coordinates are the OSM building at this address tagged office=telecommunication.",
+    "energy": {
+      "utility": "Hawaiian Electric Company",
+      "notes": "Described as an '800kW facility'. Cogent says it verified with Hawaiian Electric that additional power is available."
+    },
     "landAcres": 2.5,
     "facilityType": "data_center"
   },
@@ -36842,6 +36987,61 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "cormor-data-shelter-wellington-ks",
+    "name": "Cormor / Data Shelter Wellington Data Center",
+    "operator": "Cormor and Data Shelter",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.29,
+      "lon": -97.4,
+      "city": "Wellington",
+      "county": "Sumner County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-17",
+        "note": "City entering early negotiations on a letter of intent to sell municipal power to the data center",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kwch.com/2026/03/17/wellington-officials-discuss-proposed-data-center-power-agreement/",
+        "label": "Wellington officials to discuss proposed data center, power agreement",
+        "publisher": "KWCH",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://foxkansas.com/news/local/new-data-center-proposal-draws-optimism-in-wellington-despite-pushback-elsewhere",
+        "label": "New data center proposal draws optimism in Wellington despite pushback elsewhere",
+        "publisher": "FOX Kansas",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "Proposed for the north end of Wellington; coordinates are approximate. The city runs two generation plants (~40 MW combined) and would sell power to the facility.",
+    "energy": {
+      "utility": "City of Wellington municipal utility",
+      "notes": "Letter of intent under negotiation for the data center to buy electricity from the city."
+    },
+    "water": {
+      "coolingType": "air",
+      "notes": "Developer describes the facility as waterless and battery-free."
+    },
+    "jobs": {
+      "permanent": 18,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "corscale-gainesville-crossing-va",
     "name": "Gainesville Crossing Digital Campus (GCDC)",
     "operator": "Corscale Data Centers (Patrinely / USAA Real Estate)",
@@ -41440,6 +41640,81 @@
     "facilityType": "data_center"
   },
   {
+    "id": "damac-heartland-edgerton-ks",
+    "name": "DAMAC Digital Heartland Data Center (Project Heartland)",
+    "operator": "DAMAC Digital Solutions Kansas LLC",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.77374,
+      "lon": -94.953635,
+      "city": "Edgerton",
+      "county": "Johnson County",
+      "street": "31800 W. 196th St.",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-12",
+        "note": "Preliminary plat approved; final site plan tabled by Edgerton Planning Commission",
+        "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-24",
+        "note": "Planning Commission denial overturned by City Council 2026-07-16; final plat approved by City Council 2026-09-24",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://edgertonks.org/damac-data-center/",
+        "label": "DAMAC Data Center – City of Edgerton",
+        "publisher": "City of Edgerton",
+        "retrievedAt": "2026-10-21",
+        "kind": "permit"
+      },
+      {
+        "url": "https://ingrams.com/article/dubai-company-860m-data-center-edgerton-ks/",
+        "label": "Dubai company's $860M data center in Edgerton, KS",
+        "publisher": "Ingram's",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/data-centers/edgerton-city-council-overrides-data-center-development-denial-pushing-project-forward",
+        "label": "Edgerton City Council overrides data center development denial",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "Conversion of an existing 378,000 sq ft NorthPoint warehouse (built 2016) in Logistics Park Kansas City. The plans include 60 diesel backup generators. DAMAC has not requested tax abatements.",
+    "energy": {
+      "source": "grid",
+      "notes": "DAMAC funds dedicated electrical infrastructure including an on-site switching station; backup generators permitted via KDHE."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop system; ~615,000 gallon one-time fill, no public water supply after fill per city FAQ."
+    },
+    "investmentUsd": 860000000,
+    "jobs": {
+      "construction": 500,
+      "sourceIndex": 1
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Planning Commission denied the site plan 3-2; Council overrode it unanimously; residents launched a ballot petition and the city sued the petition organizers.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "darkhorse-cathedra-rockwood-tn",
     "name": "DarkHorse Technologies (Cathedra Bitcoin) Rockwood Data Center",
     "operator": "DarkHorse Technologies Inc. (formerly Sphere 3D Corp.; site from Cathedra Bitcoin)",
@@ -43336,6 +43611,7 @@
       "city": "Lenexa",
       "county": "Johnson",
       "street": "11200 Lakeview Ave",
+      "postalCode": "66219",
       "state": "KS",
       "precision": "approximate"
     },
@@ -43348,7 +43624,7 @@
         "url": "https://www.databank.com/data-centers/kansas-city/",
         "label": "Kansas City Data Center and Colocation Solutions",
         "publisher": "DataBank",
-        "retrievedAt": "2026-09-13",
+        "retrievedAt": "2026-10-21",
         "kind": "other"
       },
       {
@@ -43359,7 +43635,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-04",
+    "lastUpdated": "2026-10-21",
     "notes": "Operator's own site lists this as (MCI3) South Lake Campus Data Center, 69,762 IT sq ft, 12.75MW critical IT load, 15 onsite carriers -- one of two named DataBank facilities in the Kansas City metro (the other is the separate Pine Ridge / Overland Park site, recorded separately). Coordinates are the US Census geocode of the listed street address, retrieved 2026-09-13; precision set to approximate since the parcel/building footprint was not independently confirmed.",
     "facilityType": "data_center"
   },
@@ -45816,6 +46092,53 @@
     "facilityType": "data_center"
   },
   {
+    "id": "deep-atomic-inl-ai-data-center-id",
+    "name": "Deep Atomic MK60 Nuclear-Powered AI Data Center Campus (Idaho National Laboratory)",
+    "operator": "Deep Atomic",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.53333,
+      "lon": -112.94472,
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-12-04",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-04",
+        "note": "Deep Atomic, with Parker Tide, submitted a proposal to the US DOE Office of Nuclear Energy for a fully integrated, nuclear-powered AI data-centre campus at Idaho National Laboratory. As of February 2026 the proposal was still awaiting DOE approval.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://smr.nucnet.org/news/swiss-reactor-company-submits-nuclear-powered-data-centre-proposal-to-us-doe-12-4-2025",
+        "label": "Swiss reactor company submits nuclear-powered data centre proposal to US DOE",
+        "publisher": "NucNet",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.neimagazine.com/?p=102396",
+        "label": "Deep Atomic consortium proposes nuclear-powered AI data centre at INL",
+        "publisher": "Nuclear Engineering International",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "Proposal only. Deep Atomic submitted it to the DOE Office of Nuclear Energy in late November 2025 and it awaited DOE approval as of February 2026. The consortium includes Parker Tide, Clayco, Future-tech, Paragon Energy Solutions and Moonlite. Data-centre operations would start within 24-36 months on existing INL grid power plus solar and geothermal, while the MK60 SMR goes through design certification and commissioning; MK60 series manufacturing is targeted for the end of 2029. No data-centre IT capacity is stated. The 60 MW figure is the reactor's electrical output, so capacityMw is omitted. Sources describe Deep Atomic differently: NucNet calls it Switzerland-based and NEI calls it Swiss-American. Coordinates are Wikipedia's centroid for the whole INL reservation, the same convention as the aalo-atomics-inl-id record. No specific parcel has been disclosed, so precision is approximate and county is omitted. This is a different operator and project from the tracked Aalo Atomics and Oklo INL records.",
+    "energy": {
+      "source": "mixed",
+      "onSiteGenerationMw": 60,
+      "notes": "Phased plan: start on existing INL grid power plus solar and geothermal, then add an on-site Deep Atomic MK60 light-water SMR rated 60 MWe plus 60 MW of integrated cooling. Waste heat would support direct liquid cooling for the AI servers. The reactor is not yet certified."
+    },
+    "facilityType": "data_center",
+    "aiClassification": "confirmed"
+  },
+  {
     "id": "deep-green-lansing-mi",
     "name": "Deep Green Lansing Data Center",
     "operator": "Deep Green",
@@ -47641,6 +47964,82 @@
     "lastUpdated": "2026-07-23",
     "energy": {
       "utility": "Dominion Energy Virginia"
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-astra-north-de-soto-ks",
+    "name": "Digital Realty Astra North (Project Jayhawk)",
+    "operator": "Digital Realty",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.945,
+      "lon": -94.965,
+      "city": "De Soto",
+      "county": "Johnson County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-09",
+        "note": "Plans presented to De Soto City Council",
+        "sourceIndex": 1
+      },
+      {
+        "status": "permitted",
+        "date": "2026-09-22",
+        "note": "De Soto Planning Commission approved the Phase One site plan",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.digitalrealty.com/about/projects/de-soto",
+        "label": "Bringing long-term investment to De Soto",
+        "publisher": "Digital Realty",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
+      },
+      {
+        "url": "https://ingrams.com/article/digital-realty-wants-to-build-600mw-data-center-campus-in-de-soto/",
+        "label": "Digital Realty wants to build data center campus in De Soto",
+        "publisher": "Ingram's",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/kansas/johnson-county/second-hyper-scale-data-center-moves-forward-in-de-soto-amid-petition-efforts-to-ban-development",
+        "label": "Second hyper-scale data center moves forward in De Soto amid petition efforts",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "Astra North is the first phase (about 280 acres) of the roughly 1,400-acre Astra Enterprise Park, on the former Sunflower Army Ammunition Plant near W. 103rd St and Lexington Ave. It is planned as nine buildings of about 3 million sq ft. This is a separate site from Beale's Project Pilot (103rd St & Edgerton Rd). Coordinates are approximate. Construction is expected to start in 2027.",
+    "energy": {
+      "source": "grid",
+      "utility": "Evergy",
+      "notes": "Two substations: one built by Digital Realty, one by Evergy; Digital Realty funds transmission and substation work."
+    },
+    "water": {
+      "notes": "North parcel allocated 1 million gallons per day; Digital Realty to fund an industrial wastewater treatment plant."
+    },
+    "investmentUsd": 4000000000,
+    "landAcres": 280,
+    "jobs": {
+      "construction": 1000,
+      "permanent": 250,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Neighbors circulating a petition to put later phases of high-impact data center development to a public vote.",
+      "sourceIndex": 2
     },
     "facilityType": "data_center"
   },
@@ -51340,9 +51739,16 @@
         "publisher": "PeeringDB",
         "retrievedAt": "2026-10-02",
         "kind": "other"
+      },
+      {
+        "url": "https://www.drfortress.com/services/colocation/data-center-specifications/",
+        "label": "DRFortress Data Center Specifications",
+        "publisher": "DRFortress",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-02",
+    "lastUpdated": "2026-10-21",
     "notes": "Hawaii's largest carrier-neutral data center per the operator's own site, described as a single ~65,000 sq ft location that has been expanded multiple times. Coordinates geocoded from the street address via OSM Nominatim (matched a specific building at this house number on Koapaka Street, Salt Lake/Airport Industrial Park area); not confirmed against a surveyed parcel, so precision is approximate. No MW, cabinet-count, or investment figures were stated on the pages fetched, so those fields are omitted rather than estimated.",
     "energy": {
       "notes": "1547's facility page describes the 65,000 sq ft Honolulu facility as having '4.2 Megawatts of back-up power with minimum N+1 configuration', with 120V-480V and -48VDC power options. This is backup generation capacity, not a stated IT or utility load, so it is not recorded as capacityMw."
@@ -72464,7 +72870,7 @@
         "url": "https://www.kwch.com/2026/08/31/barber-county-commission-approves-agreement-google-data-center/",
         "label": "Barber County Commission approves agreement for Google data center",
         "publisher": "KWCH",
-        "retrievedAt": "2026-10-04",
+        "retrievedAt": "2026-10-21",
         "kind": "press"
       },
       {
@@ -72473,9 +72879,16 @@
         "publisher": "Barber County, Kansas",
         "retrievedAt": "2026-10-04",
         "kind": "filing"
+      },
+      {
+        "url": "https://barber.ks.gov/uploads/5/6/1/9/56198487/deal_summary.pdf",
+        "label": "Summary of Agreement Terms with Google Regarding Project Helium",
+        "publisher": "Board of Barber County Commissioners",
+        "retrievedAt": "2026-10-21",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-04",
+    "lastUpdated": "2026-10-21",
     "notes": "1.7 million sq ft facility near Sharon, ~8 miles east of Medicine Lodge. County materials estimate roughly $327.5M in total ad valorem tax revenue over 20 years (~$138.4M to Barber County) once the project's Kansas data-center tax exemption period lapses; that is a projected tax-revenue figure, not an investment or subsidy amount, and is not recorded as such here. Construction targeted for early 2027; initial operations 2030.",
     "water": {
       "coolingType": "air",
@@ -72483,6 +72896,11 @@
     },
     "jobs": {
       "permanent": 500,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Commission approved 2-0-1; residents divided between landowners who sold to Google and opponents.",
       "sourceIndex": 0
     },
     "facilityType": "data_center"
@@ -77361,6 +77779,57 @@
     "generation": {
       "technology": "solar"
     }
+  },
+  {
+    "id": "hawaii-ets-kalanimoku-state-data-center-honolulu-hi",
+    "name": "Hawaii State Data Center (Kalanimōkū Building)",
+    "operator": "State of Hawaii Office of Enterprise Technology Services",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 21.3056252,
+      "lon": -157.8555881,
+      "city": "Honolulu",
+      "county": "Honolulu County",
+      "street": "1151 Punchbowl Street",
+      "postalCode": "96813",
+      "state": "HI",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-06",
+        "note": "Civil Beat reported the state's primary data center still operating in the flood-prone basement of the Kalanimōkū Building, with sensitive criminal-justice and tax data still housed there, and no clear relocation plan.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.civilbeat.org/2023/06/hawaiis-critical-data-is-at-risk-from-flooding-so-why-wait-to-move-it",
+        "label": "Hawaii's Critical Data Is At Risk From Flooding. So Why Wait To Move It?",
+        "publisher": "Honolulu Civil Beat",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://data.capitol.hawaii.gov/sessions/session2024/Bills/SB284_SD1_.HTM",
+        "label": "SB284 SD1 (2024): relocation of the state data center from the Kalanimoku building",
+        "publisher": "Hawaii State Legislature",
+        "retrievedAt": "2026-10-21",
+        "kind": "filing"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Kalanimoku+Building+Honolulu&format=json",
+        "label": "OpenStreetMap: Kalanimoku Building, 1151 Punchbowl Street (way 134104678)",
+        "publisher": "OpenStreetMap Nominatim",
+        "retrievedAt": "2026-10-21",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "The state's primary enterprise data center is in the basement of the Kalanimōkū state office building. SB284 SD1 says it was created more than forty years ago, has had minimal upgrades, and is 'no longer used to run any critical state programs' in its current condition. The bill would have required it to be decommissioned by June 30, 2024, but enactment was not verified. In 2023 Civil Beat reported that about 70% of ETS data had moved to out-of-state servers, that sensitive data remained in the basement, and that Gov. Green had rejected relocation to the proposed Mililani First Responders Technology Campus. Whether the facility is still in use as of 2026 is not confirmed.",
+    "facilityType": "data_center"
   },
   {
     "id": "hawaiiantel-endeavor-honolulu-hi",
@@ -84876,11 +85345,23 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-10-04",
         "kind": "press"
+      },
+      {
+        "url": "https://www.emporiagazette.com/free/article_fc7fa6b2-01c1-49f0-9588-613c39a721b4.html",
+        "label": "City Commission approves data center zoning measures, water policies after hours of public comment",
+        "publisher": "Emporia Gazette",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-04",
+    "lastUpdated": "2026-10-21",
     "notes": "Proposed gigawatt-scale campus on up to 1,000 acres in Emporia's Industrial Park IV; developer says the project would combine dedicated grid infrastructure with on-site generation. No exact MW, investment, or jobs figures disclosed (developer cites 'thousands' of construction jobs and 'hundreds' of permanent jobs, not exact counts). Public hearing held 2026-06-23. Not yet under construction as of this session.",
     "landAcres": 1000,
+    "community": {
+      "status": "contested",
+      "notes": "July 22, 2026 commission votes (5-0 rezoning, overlay, water policies) drew one of the largest crowds in recent history with overflow rooms; opponents cited transparency and water use, supporters included the Chamber; one attendee arrested.",
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -87135,6 +87616,9 @@
       "state": "ID",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 100
+    },
     "statusHistory": [
       {
         "status": "proposed",
@@ -87163,14 +87647,27 @@
         "publisher": "KIFI Local News 8",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://web.archive.org/web/20260721123928id_/https://boisedev.com/news/2026/05/14/lex-portneuf-data-center/",
+        "label": "Another large Idaho data center proposed, valued at $2 billion+ (archived)",
+        "publisher": "BoiseDev (via Internet Archive)",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-21",
     "notes": "Projected investment of $2.26 billion and 150-300 permanent local jobs were part of the developer's denied application (Idaho State Journal), not a built or committed project. No MW capacity, secured tenant, or site acreage was stated in either source fetched. This pin is a Pocatello city-centroid placeholder (precision: approximate): neither source fetched gave a parcel-level address for the former Hoku polysilicon site, and OpenStreetMap has no feature for it. It is NOT a claim about where on the Hoku parcel the proposal sat, and it is not co-located with the FBI Grey Wolf record in this batch, whose pin was corrected to its own OSM building POI 4.0 km north.",
+    "energy": {
+      "source": "grid",
+      "utility": "Idaho Power",
+      "notes": "In February 2026 Idaho Power sent Lex principal Gus Shultz a letter about the site as 'Project IV West'. It described a 'significant load increase' of more than 100 MW, with the site expected to use 100 MW by 2031. The proposal covered seven 100,000 sq ft buildings. When the city's Water Pollution Control asked about wastewater discharge, Lex did not answer directly."
+    },
     "water": {
       "coolingType": "closed_loop"
     },
     "investmentUsd": 2260000000,
+    "landAcres": 49,
     "community": {
       "status": "contested",
       "notes": "Hearing Examiner Kathleen Lewis denied the conditional use permit after a 2026-05-14 hearing, finding the application did not meet Pocatello Municipal Code 17.02.130(D)'s criteria that the use adequately serve public facilities and not be detrimental to public health, safety, or welfare; critics said the applicant could not answer specifics of the conditions and no tenant was confirmed pending an Idaho Power capacity study. Lex Developments (represented by Gus Shultz) appealed; the Pocatello City Council voted 4-1 on 2026-07-16 to uphold the denial. Dissenting Council Member Bates warned the path led to 'exhausting appeals, taking the city to court'; Mayor Dahlquist cited 'the speculative nature' of the proposal, noting 'we don't have an exact company that is committed.' No court filing was confirmed in either source fetched.",
@@ -87539,6 +88036,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lightedge-lenexa-ks",
+    "name": "LightEdge Lenexa Data Center",
+    "operator": "LightEdge",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.951691,
+      "lon": -94.789276,
+      "city": "Lenexa",
+      "county": "Johnson County",
+      "street": "17501 West 98th Street",
+      "postalCode": "66219",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-21",
+        "note": "Operator markets colocation suites at this site",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.lightedge.com/data-centers/lenexa/",
+        "label": "Lenexa, KS Colocation Data Center",
+        "publisher": "LightEdge",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "Underground colocation facility about 125 feet below ground in a cavern, held at a steady 68°F (formerly Cavern Technologies).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lightedge-papillion-ne",
     "name": "LightEdge Omaha Data Center",
     "operator": "LightEdge",
@@ -87665,6 +88199,72 @@
       "offtaker": "Co-located data center at Chickasha Airport Industrial Park",
       "notes": "Phased build: 125-150 MW added roughly every six months, first phase 18-24 months, remaining phases over ~2.5 further years. Combined power-plant-plus-data-center investment reported at $3.5 billion or more; 280 acres purchased for $1.358 million, of which about 200 acres is designated for the power plant and data center and 80 acres for a commercial/industrial subdivision."
     }
+  },
+  {
+    "id": "lightfield-energy-proximity-park-ottawa-ks",
+    "name": "Lightfield Energy Proximity Park Technology Campus (Ottawa) — cancelled",
+    "operator": "Lightfield Energy LLC",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.5856,
+      "lon": -95.2494,
+      "city": "Ottawa",
+      "county": "Franklin County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-12-18",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-12-18",
+        "note": "Ottawa City Commission approved $5.3M sales contract for 300 acres of Proximity Park",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2026-09",
+        "note": "City Commission voted 5-0 to terminate the sales contract after Lightfield failed to submit a development agreement",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kshb.com/news/local-news/data-centers/ottawa-residents-push-back-against-300-acre-technology-campus-plan",
+        "label": "Ottawa residents push back against 300-acre technology campus plan",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/data-centers/out-of-time-ottawa-ends-data-center-contract-as-ballot-fight-continues",
+        "label": "'Out of time': Ottawa ends data center contract as ballot fight continues",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/kansas/douglas-county/ottawa-data-center-question-is-on-the-ballot-and-in-court",
+        "label": "Ottawa data center question is on the ballot and in court",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "Planned AI data center with an on-site natural gas power plant at Proximity Park, near Kingman and Montana roads on Ottawa's south side. Coordinates are approximate. The city says the site is still marketed as available.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Developer planned a natural gas power plant to serve the campus; never built."
+    },
+    "landAcres": 300,
+    "community": {
+      "status": "opposed",
+      "notes": "Ottawa United petition to ban hyperscale data centers was placed on the November 2026 ballot; residents sued the city.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "lighthouse-data-centers-spartanburg-sc",
@@ -89231,6 +89831,46 @@
     "lastUpdated": "2026-10-17",
     "notes": "Carrier facility. Baxtel gives the address as 445 North Boulevard. A separate Inflect listing for 'Lumen Baton Rouge' gives 9826 Burbank Drive, which may be a different Lumen site, so a reviewer should confirm the address. Coordinates are an OSM geocode of the Baxtel address.",
     "facilityType": "data_center"
+  },
+  {
+    "id": "lumen-boise-mcgregor-id",
+    "name": "Lumen Boise (Level(3) Boise)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.56619,
+      "lon": -116.185889,
+      "city": "Boise",
+      "county": "Ada",
+      "street": "435 W. McGregor Dr.",
+      "postalCode": "83705",
+      "state": "ID",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/1948",
+        "label": "PeeringDB facility 1948: Level(3) Boise (Lumen Technologies Inc), 435 W. McGregor Dr., Boise 83705",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
+      },
+      {
+        "url": "https://inflect.com/building/435-west-mcgregor-drive-boise/lumen/datacenter/boise-2",
+        "label": "Inflect: Lumen Boise 2 data center listing (colocation, internet access, exchange services)",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "PeeringDB lists 'Level(3) Boise' under Lumen Technologies Inc at 435 W. McGregor Dr., Boise 83705. The record has status ok, was created 2014-10-24, was updated 2025-09-26 and has 4 networks present. The coordinates are PeeringDB's own and have not been checked against a parcel. Address data conflicts. An Inflect URL keyed to 435 West McGregor Drive renders a 'Lumen Boise 2' listing that offers colocation (cabinets and cages) but gives the address as 1103 West Miller Street, Boise. Baxtel separately lists a 'Lumen Boise 1' at 2223 W Airport Way, which is not covered by this record. No capacity, square footage or AI use has been published. This is distinct from the tracked Syringa Networks Boise (3795 S Development Ave) and the other Boise colocation records.",
+    "facilityType": "data_center",
+    "environmental": {
+      "waterStress": "unknown"
+    }
   },
   {
     "id": "lumen-boston-cambridge-ma",
@@ -102164,6 +102804,42 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "monarch-energy-colwich-ks",
+    "name": "Monarch Energy Colwich/Andale Site",
+    "operator": "Monarch Energy",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 37.78,
+      "lon": -97.56,
+      "city": "Colwich",
+      "county": "Sedgwick County",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-03-17",
+        "note": "Purchase and sale agreements for 300+ acres reported; no zoning application filed (county moratorium in place)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kcur.org/housing-development-section/2026-03-17/two-data-center-companies-are-trying-to-buy-more-than-1-000-acres-of-kansas-land",
+        "label": "Two data center companies are trying to buy more than 1,000 acres of Kansas land",
+        "publisher": "KMUW / KCUR",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "San Diego-based Monarch Energy, which pivoted to data centers in 2024, signed purchase agreements for more than 300 acres between 183rd W and 215th W off 53rd N in Colwich/Andale. The intended use is not stated explicitly, and the county had received no zoning application. Coordinates are approximate.",
+    "landAcres": 300,
+    "facilityType": "data_center"
   },
   {
     "id": "monarch-on-site-generation-yerington-nv",
@@ -117278,6 +117954,7 @@
       "lon": -94.635,
       "city": "Kansas City",
       "county": "Wyandotte",
+      "street": "3601 N. 12th Street",
       "state": "KS",
       "precision": "approximate"
     },
@@ -117297,7 +117974,7 @@
         "url": "https://www.kcur.org/housing-development-section/2026-01-29/wyandotte-county-data-centers-would-require-a-lot-of-power-will-that-raise-your-energy-bill",
         "label": "Wyandotte County data centers would require a lot of power",
         "publisher": "KCUR",
-        "retrievedAt": "2026-07-17",
+        "retrievedAt": "2026-10-21",
         "kind": "press"
       },
       {
@@ -117306,10 +117983,23 @@
         "publisher": "PowerTransitions",
         "retrievedAt": "2026-07-17",
         "kind": "other"
+      },
+      {
+        "url": "https://newprojectmedia.com/origination-wyandotte-county-ks-considering-sale-of-former-power-plant-for-192-mw-data-center-development/",
+        "label": "Wyandotte County, KS considering sale of former power plant for 192 MW data center development",
+        "publisher": "New Project Media",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-17",
+    "lastUpdated": "2026-10-21",
     "notes": "Converts the decommissioned Quindaro coal Power Station (BPU) in the Quindaro neighborhood of Kansas City, KS. $13.6M option to buy (May 2025), currently in due diligence.",
+    "energy": {
+      "source": "grid",
+      "utility": "Kansas City Board of Public Utilities (BPU)",
+      "notes": "Reuses former Quindaro Power Station grid infrastructure; KCUR reports ~200 MW."
+    },
+    "landAcres": 85,
     "facilityType": "data_center"
   },
   {
@@ -123466,6 +124156,50 @@
     "facilityType": "data_center"
   },
   {
+    "id": "qts-new-century-ks",
+    "name": "QTS New Century Commerce Center (Building B1)",
+    "operator": "QTS Data Centers",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.8357,
+      "lon": -94.8761,
+      "city": "New Century",
+      "county": "Johnson County",
+      "street": "16175 John Glenn Pkwy",
+      "state": "KS",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-03-21",
+        "note": "QTS signed a lease on the 756,571 sq ft B1 building for a new data center development",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/qts-new-century-commerce-center",
+        "label": "QTS: New Century Commerce Center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
+      },
+      {
+        "url": "https://thetechcapital.com/qts-signs-major-lease-near-kansas-city-as-data-centre-development-expands/",
+        "label": "QTS signs major lease near Kansas City as data centre development expands",
+        "publisher": "The Tech Capital",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "QTS leased the 756,571 sq ft Building B1 (completed 2023 by VanTrust Real Estate) at New Century Commerce Center for conversion to a data center. Baxtel lists it as land-banked for future development. No capacity or construction status was disclosed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "qts-overland-park-ks",
     "name": "QTS Overland Park Data Center (OVP1)",
     "operator": "QTS Data Centers",
@@ -125867,10 +126601,29 @@
         "publisher": "Wyandotte County GIS / Assessor",
         "retrievedAt": "2026-07-18",
         "kind": "other"
+      },
+      {
+        "url": "https://www2.ljworld.com/news/state-region/2025/may/29/kansas-city-kansas-planning-commission-advances-proposed-12-6b-data-center/",
+        "label": "Kansas City, Kansas, planning commission advances proposed $12.6B data center",
+        "publisher": "Lawrence Journal-World",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kcur.org/housing-development-section/2026-01-29/wyandotte-county-data-centers-would-require-a-lot-of-power-will-that-raise-your-energy-bill",
+        "label": "Wyandotte County data centers would require a lot of power",
+        "publisher": "KCUR",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-07-26",
+    "lastUpdated": "2026-10-21",
     "notes": "400-acre, 6-building campus west of Kansas Speedway (13000 Parallel Parkway). Zoning approval failed a vote and drew a lawsuit; contested, decision pending in 2026.",
+    "energy": {
+      "source": "grid",
+      "utility": "Kansas City Board of Public Utilities (BPU)",
+      "notes": "Two substations to handle 600 MW (300 MW north and 300 MW south of Parallel Parkway); load exceeds BPU's 500 MW capacity so would draw from SPP; developer pledged to pay for upgrades."
+    },
     "investmentUsd": 12000000000,
     "landAcres": 400,
     "community": {
@@ -136059,6 +136812,40 @@
       }
     ],
     "lastUpdated": "2026-10-11",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "southern-cross-kahe-point-cable-landing-station-hi",
+    "name": "Kahe Point Cable Landing Station (Southern Cross)",
+    "operator": "Pacific Carriage Limited (Southern Cross Cable Network)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 21.353099,
+      "lon": -158.13051,
+      "county": "Honolulu County",
+      "state": "HI",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.submarinenetworks.com/en/stations/north-america/usa-hawaii/kahe-point",
+        "label": "Kahe Point Cable Landing Station",
+        "publisher": "Submarine Networks",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.southerncrosscables.com/access-points/kahe-point",
+        "label": "Southern Cross access point: Kahe Point (KAH)",
+        "publisher": "Southern Cross Cable Network",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-21",
+    "notes": "Southern Cross Cable Network landing station within Kahe Point Beach Park, on Oahu's southwest coast. Pacific Carriage Limited Inc. owns it and contracts Verizon for landing-party services, which Verizon subcontracts to Hawaiian Telcom (per Submarine Networks). Southern Cross currently lists Kahe Point (site KAH) as an access point, with Lumen and Calian as backhaul providers. The coordinates are from a map labelled 'Kahe Point Cable Landing Site' and may mark the landing rather than the station building. ⚠️ Possible co-location: this is distinct in operator from the tracked Hawaiki CLS at 92-384 Farrington Highway, which also lands at Kahe Point Beach Park. A reviewer should confirm these are separate buildings before approving.",
     "facilityType": "data_center"
   },
   {
@@ -148147,6 +148934,8 @@
       "lon": -94.7552326,
       "city": "Lenexa",
       "county": "Johnson",
+      "street": "14500 West 105th Street",
+      "postalCode": "66215",
       "state": "KS",
       "precision": "exact"
     },
@@ -148156,7 +148945,7 @@
         "url": "https://www.tierpoint.com/data-centers/kansas/kansas-city-lenexa/",
         "label": "TierPoint facility directory",
         "publisher": "TierPoint",
-        "retrievedAt": "2026-07-22",
+        "retrievedAt": "2026-10-21",
         "kind": "other"
       },
       {
@@ -148167,7 +148956,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-07-22",
+    "lastUpdated": "2026-10-21",
     "notes": "Confirmed on TierPoint's own directory: Kansas - Kansas City - Lenexa, 14500 W 105th St, Lenexa KS.",
     "facilityType": "data_center"
   },
@@ -152080,10 +152869,25 @@
         "publisher": "University of Hawaiʻi Cancer Center",
         "retrievedAt": "2026-10-02",
         "kind": "other"
+      },
+      {
+        "url": "https://www.hawaii.edu/news/2026/06/21/12-million-establishes-pac-aid/",
+        "label": "$12 million establishes PAC-AID",
+        "publisher": "University of Hawaiʻi News",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-02",
+    "lastUpdated": "2026-10-21",
     "notes": "UH is renovating the Cancer Center's existing garage-sized, air-conditioned, ground-floor data center room in Kakaʻako into the Medical AI Core (MedAI Core), which will provide high-performance computing for the new Pacific Center for Artificial Intelligence and Data Science in Medicine (PAC-AID). PAC-AID is funded by a $12M, five-year NIH COBRE grant, awarded 2026-06-04 and running through February 2031. About $300,000 of that money is going to renovate and equip the room. The Star-Advertiser (via GovTech) calls it a first-of-its-kind AI data center for Hawaiʻi. This is a single room in an existing building, not a campus. No MW, GPU count or cooling method was published. investmentUsd covers only the ~$300K room renovation, not the $12M research grant. Coordinates are the OSM feature for the UH Cancer Center building at 701 Ilalo St, the address the Cancer Center publishes.",
+    "subsidies": [
+      {
+        "program": "NIH Centers of Biomedical Research Excellence (COBRE), NIGMS, award establishing PAC-AID; over five years it funds renovation of the UH Cancer Center Data Center into the Medical AI Core (MedAI Core)",
+        "jurisdiction": "federal",
+        "year": "2026",
+        "sourceIndex": 4
+      }
+    ],
     "investmentUsd": 300000,
     "facilityType": "data_center",
     "aiClassification": "confirmed"
@@ -152158,6 +152962,7 @@
       "lon": -156.439610266824,
       "city": "Kihei",
       "street": "550 Lipoa Pkwy",
+      "postalCode": "96753",
       "state": "HI",
       "precision": "approximate"
     },
@@ -152183,9 +152988,16 @@
         "publisher": "Maui Now",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sandia.gov/cs-conferences/?p=829",
+        "label": "Speaker bio listing Maui High Performance Computing Center address",
+        "publisher": "Sandia National Laboratories",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-12",
+    "lastUpdated": "2026-10-21",
     "notes": "A real, currently-operating federal HPC installation on Maui: one of five DoD Supercomputing Resource Centers, run as an Air Force Research Laboratory Center managed by the University of Hawaiʻi since 1993. A new $11,980,000 Department of War contract awarded to UH in January 2026 (work through May 2031, for satellite-resiliency research/modeling) confirms it is still active as of this wave, not a legacy listing. None of the three fetched sources publish a street address. Business directories (Yelp, Yellow Pages) independently and consistently name 550 Lipoa Pkwy, Kihei as the address, and the US Census geocoder resolves that exact string to a valid address at this zip (96753); however, both directory pages themselves returned HTTP 403 when fetched directly this session, so the address is corroborated but not confirmed via a source this record can cite in sources[]. Precision is approximate accordingly. No AI-specific capability was named in what was fetched (the recent contract is satellite-resiliency modeling), so aiClassification is omitted rather than guessed.",
     "facilityType": "data_center"
   },
