@@ -98,11 +98,23 @@ const AXE_TAGS = [
  * empty link and low-contrast text in the LAST of the 2,678 rows: both modes
  * reported the same three violations (image-alt, link-name, color-contrast).
  * The price of legacy mode: axe cannot reach into a cross-origin frame and
- * reports it as an INCOMPLETE `frame-tested` result, which this spec does
- * not read, so frame coverage is reduced in legacy mode. Neither route has
- * a frame of any kind today (0 on `/table` and 0 on `/counties`, measured),
- * and the test asserts zero frames on these routes so that adding one fails
- * loudly instead of going unscanned. `test.slow()` stays as headroom.
+ * reports it as an INCOMPLETE `frame-tested` result. `frame-tested` is a
+ * `best-practice` rule, so the WCAG-tag scan above never runs it and its
+ * `incomplete` list cannot show it. The spec therefore runs a second, one-rule
+ * legacy pass (`withRules(["frame-tested"])`, ~0.1s against ~8s for the tag
+ * scan on a 24k-node synthetic page) and fails if it reports anything, so a
+ * frame added to these routes, at load or later, fails loudly instead of going
+ * unscanned. Probed in a scratch Chromium (axe-core 4.13, legacy mode,
+ * `resultTypes: ["violations"]`, one-rule pass): a cross-origin frame yields a
+ * `frame-tested` incomplete result (one node); a frameless page yields none.
+ * A same-origin `srcdoc` frame (holding an `<img>` with no alt) depends on how
+ * the page was loaded: on a page loaded from an http(s) URL the frame's
+ * content WAS scanned (`image-alt` reported, no `frame-tested`), while on a
+ * `page.setContent()` page it was NOT scanned (no `image-alt`, `frame-tested`
+ * reported). `@axe-core/playwright` in legacy mode injects axe only into the
+ * main frame, so do not assume any frame is covered; the guard fires for
+ * every frame axe could not reach.
+ * `test.slow()` stays as headroom.
  * The page's own DOM weight is still a real user-facing cost; this removes
  * harness overhead, not page weight.
  */
@@ -133,9 +145,6 @@ for (const route of ROUTES) {
     // the builder's option object, which is where `.withTags()` stores
     // `runOnly`, so it has to run BEFORE `.withTags()`.
     if (DATASET_SIZED_ROUTES.has(route)) {
-      // Legacy mode cannot scan a cross-origin frame and reports it only as
-      // INCOMPLETE, which this spec does not read; fail instead of skipping it.
-      await expect(page.locator("iframe, frame")).toHaveCount(0);
       builder.setLegacyMode(true).options({ resultTypes: ["violations"] });
     }
     const results = await builder.withTags([...AXE_TAGS]).analyze();
@@ -146,6 +155,27 @@ for (const route of ROUTES) {
       type: "tag",
       values: [...AXE_TAGS],
     });
+
+    // Legacy mode cannot scan a cross-origin frame; it reports one as an
+    // INCOMPLETE `frame-tested`, a rule the WCAG tags above do not select, so
+    // run it on its own (see DATASET_SIZED_ROUTES).
+    if (DATASET_SIZED_ROUTES.has(route)) {
+      const frames = await new AxeBuilder({ page })
+        .setLegacyMode(true)
+        .options({ resultTypes: ["violations"] })
+        .withRules(["frame-tested"])
+        .analyze();
+      // Same ordering guard as the first pass: without it this could silently
+      // run every rule (or none) and still pass.
+      expect(frames.toolOptions.runOnly).toEqual({
+        type: "rule",
+        values: ["frame-tested"],
+      });
+      expect(
+        frames.incomplete.filter((r) => r.id === "frame-tested"),
+        `${route} has a frame axe's legacy mode could not scan; it would go unchecked`,
+      ).toEqual([]);
+    }
 
     // Separate by impact tier
     const seriousOrCritical = results.violations.filter(
