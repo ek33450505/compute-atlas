@@ -2036,8 +2036,13 @@ describe("SuggestCorrection — notify email", () => {
     expect(await screen.findByText("Check the email address, or leave it blank.")).toBeInTheDocument();
     expect(details).toHaveAttribute("open");
     expect(screen.getByLabelText(/your email/i)).toHaveFocus();
-    expect(screen.getByText("Please fix the errors below.")).toBeInTheDocument();
+    const formError = "Check the email address under “Add a note, credit or email”.";
+    expect(screen.getByText(formError)).toBeInTheDocument();
     expect(screen.queryByText("Invalid notify email")).not.toBeInTheDocument();
+    // Collapsing the disclosure hides the field error; the form error must still say where to look.
+    await user.click(screen.getByText(/add a note, credit or email \(optional\)/i));
+    expect(details).not.toHaveAttribute("open");
+    expect(screen.getByText(formError)).toBeInTheDocument();
   });
 
   it("drops the no-status sentence only when an email was sent", async () => {

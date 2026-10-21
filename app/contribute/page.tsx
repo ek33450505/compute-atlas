@@ -26,11 +26,12 @@ export const metadata: Metadata = {
  * (Breadcrumb -> header -> border-t -> body).
  */
 export default function ContributePage() {
-  // Read once per request, at render time — never cached at module scope.
-  // Passed down as a plain boolean; ContributeFacilityForm (a client
-  // component) never reads process.env itself. Leave ContributeLeadForm
-  // alone — it posts to /api/leads, a different table with no notify
-  // support.
+  // Read at render time, never at module scope. This page is static, so the
+  // value is fixed at build; an env change needs a new deployment anyway,
+  // and that re-renders it. Passed down as a plain boolean;
+  // ContributeFacilityForm (a client component) never reads process.env
+  // itself. Leave ContributeLeadForm alone — it posts to /api/leads, a
+  // different table with no notify support.
   const notifyEnabled = submissionNotifyEnabled();
   return (
     <div
