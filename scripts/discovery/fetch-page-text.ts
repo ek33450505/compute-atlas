@@ -29,6 +29,7 @@ import {
   resolvesToBlockedAddress,
   type ResolveDeps,
 } from "./net-guard";
+import { decodeEntities } from "../../lib/html-entities";
 
 /** Hard cap on hops followed before giving up — bounds both latency and the
  * SSRF re-validation loop below. */
@@ -220,32 +221,6 @@ async function readBodyWithCap(res: Response, maxBytes: number): Promise<Buffer 
 const SCRIPT_OR_STYLE_RE = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\b[^>]*>/gi;
 const TAG_RE = /<[^>]+>/g;
 const WHITESPACE_RE = /\s+/g;
-
-/** The common named entities this dependency-free extractor decodes. Decimal
- * numeric entities (`&#NNN;`) are handled separately below; hex numeric
- * entities (`&#xNNN;`) are out of scope for v1. */
-const NAMED_ENTITY_RE = /&amp;|&lt;|&gt;|&quot;|&#39;|&nbsp;/g;
-const NAMED_ENTITIES: Record<string, string> = {
-  "&amp;": "&",
-  "&lt;": "<",
-  "&gt;": ">",
-  "&quot;": '"',
-  "&#39;": "'",
-  "&nbsp;": " ",
-};
-
-function decodeEntities(input: string): string {
-  const named = input.replace(NAMED_ENTITY_RE, (match) => NAMED_ENTITIES[match]);
-  return named.replace(/&#(\d+);/g, (match, code: string) => {
-    const codepoint = Number(code);
-    if (!Number.isFinite(codepoint)) return match;
-    // > 0x10FFFF makes fromCodePoint throw a RangeError; NUL and lone
-    // surrogates are unstorable downstream.
-    const unstorable =
-      codepoint === 0 || (codepoint >= 0xd800 && codepoint <= 0xdfff) || codepoint > 0x10ffff;
-    return unstorable ? "\ufffd" : String.fromCodePoint(codepoint);
-  });
-}
 
 /**
  * Strips HTML down to plain text: drops `<script>`/`<style>` elements

@@ -18,24 +18,37 @@ const SCRIPT_OR_STYLE_RE = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\b[^>]*>/gi;
 const TAG_RE = /<[^>]+>/g;
 const WHITESPACE_RE = /\s+/g;
 
-// The common named entities this dependency-free extractor decodes. Decimal
-// numeric entities (`&#NNN;`) are handled separately below; hex numeric
-// entities (`&#xNNN;`) are out of scope, mirroring fetch-page-text.ts's v1.
-const NAMED_ENTITY_RE = /&amp;|&lt;|&gt;|&quot;|&#39;|&nbsp;/g;
+// Entity decoding: a hand-ported copy of lib/html-entities.ts (a .mjs cannot
+// import the TS original). Single pass over the five named entities (`&#39;` is decimal), decimal and
+// hex numeric references, with the same storable-codepoint guard.
+// `html-entities-drift.test.ts` (lib/) is what keeps the two byte-identical.
 const NAMED_ENTITIES = {
   "&amp;": "&",
   "&lt;": "<",
   "&gt;": ">",
   "&quot;": '"',
-  "&#39;": "'",
   "&nbsp;": " ",
 };
+const ENTITY_RE = /&amp;|&lt;|&gt;|&quot;|&nbsp;|&#(\d+);|&#[xX]([0-9a-fA-F]+);/g;
 
-function decodeEntities(input) {
-  const named = input.replace(NAMED_ENTITY_RE, (match) => NAMED_ENTITIES[match]);
-  return named.replace(/&#(\d+);/g, (match, code) => {
-    const codepoint = Number(code);
-    return Number.isFinite(codepoint) ? String.fromCodePoint(codepoint) : match;
+function fromCodePointSafe(codepoint) {
+  if (
+    // Explicit Infinity guard: a 400-digit run parses to Infinity.
+    !Number.isFinite(codepoint) ||
+    codepoint === 0 ||
+    (codepoint >= 0xd800 && codepoint <= 0xdfff) ||
+    codepoint > 0x10ffff
+  ) {
+    return "\ufffd";
+  }
+  return String.fromCodePoint(codepoint);
+}
+
+export function decodeEntities(input) {
+  return input.replace(ENTITY_RE, (match, dec, hex) => {
+    if (dec !== undefined) return fromCodePointSafe(Number.parseInt(dec, 10));
+    if (hex !== undefined) return fromCodePointSafe(Number.parseInt(hex, 16));
+    return NAMED_ENTITIES[match] ?? match;
   });
 }
 
