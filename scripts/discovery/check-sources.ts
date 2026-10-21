@@ -30,7 +30,9 @@ import {
   isBlockedHost,
   isHttpUrl,
   parseRetryAfterMs,
+  resolvesToBlockedAddress,
   runWithConcurrency,
+  type ResolveDeps,
 } from "./net-guard";
 import { loadFacilities } from "./load-facilities";
 import type { Facility } from "../../lib/schema";
@@ -69,6 +71,8 @@ export interface SourceCheckDeps {
   maxRetries?: number;
   /** Injectable sleep for retry backoff. Defaults to a real setTimeout-based sleep. */
   sleepImpl?: (ms: number) => Promise<void>;
+  /** Injectable DNS resolvers for the SSRF resolution check. Defaults to real DNS. */
+  resolveDeps?: ResolveDeps;
 }
 
 interface SourceTask {
@@ -189,6 +193,30 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
   const maxRetries = deps.maxRetries ?? 2;
   const sleepImpl = deps.sleepImpl ?? defaultSleep;
 
+  // One DNS check per hostname per run: sources share hosts heavily. The check
+  // runs outside probeUrl's AbortController, so it is raced against timeoutMs
+  // and fails open (false) on timeout, DNS failure or a throwing resolver; the
+  // probe then runs under its own timeout.
+  const blockedByHost = new Map<string, Promise<boolean>>();
+  const resolvesBlocked = (hostname: string): Promise<boolean> => {
+    let pending = blockedByHost.get(hostname);
+    if (!pending) {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const timeout = new Promise<boolean>((resolve) => {
+        timer = setTimeout(() => resolve(false), deps.timeoutMs);
+      });
+      const lookup = (async () => resolvesToBlockedAddress(hostname, deps.resolveDeps))().catch(() => false);
+      // Fail-open on timeout is deliberate: failing closed would mislabel slow
+      // but legitimate resolvers "blocked" without closing the real gap, since
+      // a zone owner defeats this check via rebinding (public answer now,
+      // TTL-0 private answer at probe time). The fix is connection pinning
+      // (resolve once, connect to the pinned address), not a stricter timeout.
+      pending = Promise.race([lookup, timeout]).finally(() => clearTimeout(timer));
+      blockedByHost.set(hostname, pending);
+    }
+    return pending;
+  };
+
   return runWithConcurrency(tasks, deps.concurrency, async (task): Promise<SourceCheckResult> => {
     const checkedAt = new Date().toISOString();
 
@@ -207,7 +235,13 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
     // SSRF guard: never connect to private/loopback/link-local/reserved
     // addresses or the cloud metadata endpoint. Checked after isHttpUrl so
     // this only runs on URLs that would otherwise be probed.
-    if (isBlockedHost(new URL(task.url).hostname)) {
+    // User-submitted sources reach this lane after approval, so a name that
+    // merely resolves to a private address (e.g. 127.0.0.1.nip.io) is refused
+    // too. A DNS failure resolves to false and falls through to the probe, so
+    // ENOTFOUND stays the outage-vs-link-rot signal. Limitation: resolve-then-
+    // connect leaves a TOCTOU/rebinding window (see net-guard.ts).
+    const hostname = new URL(task.url).hostname;
+    if (isBlockedHost(hostname) || (await resolvesBlocked(hostname))) {
       return {
         facilityId: task.facilityId,
         facilityName: task.facilityName,

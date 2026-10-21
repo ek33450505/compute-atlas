@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eq, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
+import { storableText } from "@/lib/intake-fields";
 import { subscriptionsTable } from "@/lib/db/schema";
 import { redactedErrorCode } from "@/lib/db-error";
 import { generateToken } from "@/lib/email";
@@ -15,7 +16,7 @@ export const subscribeInputSchema = z
   .object({
     email: z.string().email().max(254),
     targetType: z.enum(["facility", "state"]),
-    targetId: z.string().max(120).optional(),
+    targetId: storableText(z.string().max(120)).optional(),
     website: z.string().optional(), // honeypot — real users never fill this
   })
   .refine((s) => Boolean(s.targetId), {

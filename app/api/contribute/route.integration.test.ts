@@ -569,6 +569,36 @@ describe("POST /api/contribute — 'email me when reviewed' (SUBMISSION_NOTIFY_E
     expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
   });
 
+  it.each(["a\u0000@example.com", "a\ud800@example.com"])(
+    "flag ON, unstorable notifyEmail %j: 400 on path notifyEmail, zero rows",
+    async (email) => {
+      vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+
+      const res = await POST(req({ ...validCreateBody, notifyEmail: email }));
+      expect(res.status).toBe(400);
+      expect((await res.json()).issues?.[0]?.path).toEqual(["notifyEmail"]);
+
+      expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+      expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+    }
+  );
+
+  it("flag OFF: an unstorable notifyEmail is silently ignored — 201, zero notify rows", async () => {
+    const res = await POST(req({ ...validCreateBody, notifyEmail: "a\u0000@example.com" }));
+    expect(res.status).toBe(201);
+
+    expect(await tdb.db.select().from(submissionNotifyRequestsTable)).toHaveLength(0);
+  });
+
+  it.each(["x\u0000y", "x\ud800y"])(
+    "unstorable character %j in note: 400, nothing stored",
+    async (bad) => {
+      const res = await POST(req({ ...validCreateBody, note: bad }));
+      expect(res.status).toBe(400);
+      expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+    }
+  );
+
   it("flag ON, honeypot tripped: zero notify rows and zero submissions", async () => {
     vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
 

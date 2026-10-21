@@ -42,12 +42,23 @@ function makeFetch(
   });
 }
 
+function publicResolver() {
+  return {
+    resolve4: vi.fn(async () => ["93.184.215.14"]),
+    resolve6: vi.fn(async (): Promise<string[]> => {
+      throw new Error("no AAAA");
+    }),
+  };
+}
+
 function baseDeps(overrides: Partial<SourceCheckDeps> = {}): SourceCheckDeps {
   return {
     fetchImpl: makeFetch(async () => ({ ok: true, status: 200 })),
     concurrency: 5,
     timeoutMs: 10000,
     sleepImpl: async () => {},
+    // Never hit real DNS in tests.
+    resolveDeps: publicResolver(),
     ...overrides,
   };
 }
@@ -384,5 +395,68 @@ describe("checkSources", () => {
       expect(results[0].classification).toBe("blocked");
       expect(results[0].httpStatus).toBeNull();
     });
+  });
+});
+
+describe("checkSources DNS guard", () => {
+  it("blocks a hostname resolving to a loopback address without probing", async () => {
+    const fetchImpl = makeFetch(async () => ({ ok: true, status: 200 }));
+    const resolveDeps = { ...publicResolver(), resolve4: vi.fn(async () => ["127.0.0.1"]) };
+    const results = await checkSources([makeFacility({}, ["http://127.0.0.1.nip.io/"])], baseDeps({ fetchImpl, resolveDeps }));
+    expect(results[0].classification).toBe("blocked");
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("falls through to the probe when DNS fails (ENOTFOUND is not blocked)", async () => {
+    const fetchImpl = makeFetch(async () => ({ ok: false, status: 404 }));
+    const enotfound = async (): Promise<string[]> => {
+      throw Object.assign(new Error("queryA ENOTFOUND dead.example"), { code: "ENOTFOUND" });
+    };
+    const results = await checkSources(
+      [makeFacility({}, ["https://dead.example/a"])],
+      baseDeps({ fetchImpl, resolveDeps: { resolve4: enotfound, resolve6: enotfound } }),
+    );
+    expect(fetchImpl).toHaveBeenCalled();
+    expect(results[0].classification).toBe("gone");
+  });
+
+  it("probes a hostname resolving to a public address", async () => {
+    const fetchImpl = makeFetch(async () => ({ ok: true, status: 200 }));
+    const results = await checkSources([makeFacility()], baseDeps({ fetchImpl }));
+    expect(results[0].classification).toBe("ok");
+    expect(fetchImpl).toHaveBeenCalled();
+  });
+
+  it("resolves each hostname once across sources", async () => {
+    const resolveDeps = publicResolver();
+    await checkSources(
+      [makeFacility({}, ["https://example.com/a", "https://example.com/b", "https://example.com/c"])],
+      baseDeps({ resolveDeps }),
+    );
+    expect(resolveDeps.resolve4).toHaveBeenCalledTimes(1);
+    expect(resolveDeps.resolve6).toHaveBeenCalledTimes(1);
+  });
+
+  it("fails open when the resolver never settles (bounded by timeoutMs)", async () => {
+    const fetchImpl = makeFetch(async () => ({ ok: true, status: 200 }));
+    const hang = () => new Promise<string[]>(() => {});
+    const results = await checkSources(
+      [makeFacility()],
+      baseDeps({ fetchImpl, timeoutMs: 20, resolveDeps: { resolve4: hang, resolve6: hang } }),
+    );
+    expect(results[0].classification).toBe("ok");
+    expect(fetchImpl).toHaveBeenCalled();
+  });
+
+  it("falls through to the probe when the resolver throws synchronously", async () => {
+    const fetchImpl = makeFetch(async () => ({ ok: true, status: 200 }));
+    const boom = (): Promise<string[]> => {
+      throw new Error("sync boom");
+    };
+    const results = await checkSources(
+      [makeFacility()],
+      baseDeps({ fetchImpl, resolveDeps: { resolve4: boom, resolve6: boom } }),
+    );
+    expect(results[0].classification).toBe("ok");
   });
 });

@@ -2,16 +2,17 @@ import { z } from "zod";
 import { eq, desc } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
+import { storableText } from "@/lib/intake-fields";
 import { contactMessagesTable, type ContactMessageRow } from "@/lib/db/schema";
 
 export const CONTACT_TOPICS = ["press", "research", "partnership", "correction", "other"] as const;
 export type ContactTopic = (typeof CONTACT_TOPICS)[number];
 
 export const contactInputSchema = z.object({
-  name: z.string().trim().min(1).max(120),
+  name: storableText(z.string().trim().min(1).max(120)),
   email: z.string().trim().email().max(200),
   topic: z.enum(CONTACT_TOPICS),
-  message: z.string().trim().min(20).max(4000),
+  message: storableText(z.string().trim().min(20).max(4000)),
   website: z.string().max(200).optional(), // honeypot field; checked by the route before createContactMessage
 });
 

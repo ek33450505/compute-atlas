@@ -16,6 +16,7 @@
  * distinguish a title from surrounding body text once flattened.
  */
 import { fetchPageText, type FetchPageTextDeps, type FetchPageTextResult } from "@/scripts/discovery/fetch-page-text";
+import { dropTrailingHighSurrogate } from "@/lib/intake-fields";
 import type { LeadTriage } from "@/lib/leads";
 
 /** This request runs inside a user-facing POST. Per-attempt timeout is
@@ -56,7 +57,12 @@ function decodeEntities(input: string): string {
   const named = input.replace(NAMED_ENTITY_RE, (match) => NAMED_ENTITIES[match]);
   return named.replace(/&#(\d+);/g, (match, code: string) => {
     const codepoint = Number(code);
-    return Number.isFinite(codepoint) ? String.fromCodePoint(codepoint) : match;
+    if (!Number.isFinite(codepoint)) return match;
+    // NUL and lone surrogates are rejected by jsonb (the title lands in
+    // leads.triage), and > 0x10FFFF makes fromCodePoint throw a RangeError.
+    const unstorable =
+      codepoint === 0 || (codepoint >= 0xd800 && codepoint <= 0xdfff) || codepoint > 0x10ffff;
+    return unstorable ? "\ufffd" : String.fromCodePoint(codepoint);
   });
 }
 
@@ -67,8 +73,10 @@ function extractTitle(rawHtml: string | undefined): string | undefined {
   if (!rawHtml) return undefined;
   const match = TITLE_TAG_RE.exec(rawHtml);
   if (!match) return undefined;
-  const decoded = decodeEntities(match[1]).replace(WHITESPACE_RE, " ").trim();
-  return decoded.length > 0 ? decoded.slice(0, MAX_TITLE_LENGTH) : undefined;
+  const decoded = decodeEntities(match[1]).replace(/\u0000/g, "\ufffd").replace(WHITESPACE_RE, " ").trim();
+  if (decoded.length === 0) return undefined;
+  // slice() can cut a surrogate pair in half, leaving an unstorable lone high surrogate.
+  return dropTrailingHighSurrogate(decoded.slice(0, MAX_TITLE_LENGTH));
 }
 
 /** Human-readable summary of a failed fetchPageText call, for LeadTriage.error. */
@@ -126,7 +134,7 @@ export async function triageUrl(url: string, deps: TriageUrlDeps = {}): Promise<
         fetchedAt,
         ok: false,
         httpStatus: result.httpStatus,
-        error: describeFailure(result).slice(0, MAX_ERROR_LENGTH),
+        error: dropTrailingHighSurrogate(describeFailure(result).slice(0, MAX_ERROR_LENGTH)),
       };
     }
 
@@ -139,6 +147,6 @@ export async function triageUrl(url: string, deps: TriageUrlDeps = {}): Promise<
       title: extractTitle(result.rawHtml),
     };
   } catch (err) {
-    return { fetchedAt, ok: false, error: String(err).slice(0, MAX_ERROR_LENGTH) };
+    return { fetchedAt, ok: false, error: dropTrailingHighSurrogate(String(err).slice(0, MAX_ERROR_LENGTH)) };
   }
 }

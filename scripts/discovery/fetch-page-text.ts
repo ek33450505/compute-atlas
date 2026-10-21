@@ -224,7 +224,12 @@ function decodeEntities(input: string): string {
   const named = input.replace(NAMED_ENTITY_RE, (match) => NAMED_ENTITIES[match]);
   return named.replace(/&#(\d+);/g, (match, code: string) => {
     const codepoint = Number(code);
-    return Number.isFinite(codepoint) ? String.fromCodePoint(codepoint) : match;
+    if (!Number.isFinite(codepoint)) return match;
+    // > 0x10FFFF makes fromCodePoint throw a RangeError; NUL and lone
+    // surrogates are unstorable downstream.
+    const unstorable =
+      codepoint === 0 || (codepoint >= 0xd800 && codepoint <= 0xdfff) || codepoint > 0x10ffff;
+    return unstorable ? "\ufffd" : String.fromCodePoint(codepoint);
   });
 }
 
