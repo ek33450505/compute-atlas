@@ -4,7 +4,8 @@ import { join } from "node:path";
 import { brotliCompressSync, constants } from "node:zlib";
 
 import { facilitiesSchema, type Facility } from "@/lib/schema";
-import { toMapFacility } from "@/lib/facility-slim";
+import { toMapFacility, toTableRow } from "@/lib/facility-slim";
+import { facilitiesToCsv } from "@/lib/export";
 
 // A record with every field the projector may carry, one per facility type.
 const SOURCES = [
@@ -68,7 +69,7 @@ describe("toMapFacility", () => {
     ];
     expect(Object.keys(dc).sort()).toEqual([...common, "aiClassification"].sort());
     expect(Object.keys(mining).sort()).toEqual([...common, "environmental", "mining"].sort());
-    expect(Object.keys(power).sort()).toEqual(common);
+    expect(Object.keys(power).sort()).toEqual([...common].sort());
     expect(Object.keys(dc.location).sort()).toEqual(
       ["city", "lat", "lon", "multiSite", "precision", "state"].sort()
     );
@@ -139,6 +140,105 @@ describe("map payload size budget", () => {
     expect(
       perRecord,
       `map payload is ${br} B brotli (q5) over ${all.length} records = ${perRecord.toFixed(1)} B/record`
+    ).toBeLessThanOrEqual(MAX_BR_BYTES_PER_RECORD);
+  });
+});
+
+describe("toTableRow", () => {
+  // Adding a field to the /table payload is a deliberate act: update this list.
+  it("emits exactly the allow-listed keys", () => {
+    const [dc, mining, power] = FULL.map(toTableRow);
+    const common = [
+      "capacityMw",
+      "announcedDate",
+      "confidence",
+      "facilityType",
+      "id",
+      "lastUpdated",
+      "location",
+      "name",
+      "operator",
+      "sourceCount",
+      "sources",
+      "status",
+    ];
+    expect(Object.keys(dc).sort()).toEqual([...common, "aiClassification"].sort());
+    expect(Object.keys(mining).sort()).toEqual(
+      [...common, "aiClassification", "environmental", "mining"].sort()
+    );
+    expect(Object.keys(power).sort()).toEqual([...common].sort());
+    expect(Object.keys(dc.location).sort()).toEqual(
+      ["city", "county", "lat", "lon", "multiSite", "precision", "state"].sort()
+    );
+    expect(Object.keys(dc.sources[0]).sort()).toEqual(["label", "url"]);
+  });
+
+  it("carries the real source count and only the first source", () => {
+    const row = toTableRow(FULL[0]);
+    expect(row.sourceCount).toBe(2);
+    expect(row.sources).toEqual([{ url: "https://example.com/a", label: "A" }]);
+  });
+
+  it("keeps full-precision coordinates for the CSV", () => {
+    const { location } = toTableRow(FULL[0]);
+    expect(location.lat).toBe(31.123456789);
+    expect(location.lon).toBe(-97.987654321);
+  });
+
+  it("drops heavy fields", () => {
+    const json = JSON.stringify(FULL.map(toTableRow));
+    for (const k of ["statusHistory", "community", "notes", "secret prose", "street", "postalCode", "example.com/b"]) {
+      expect(json).not.toContain(k);
+    }
+  });
+
+  it("carries a power plant's offtaker and nothing else from generation", () => {
+    const [plant] = facilitiesSchema.parse([
+      {
+        ...BASE,
+        facilityType: "power_generation",
+        generation: { offtaker: "Acme Cloud", fuel: "gas" },
+      },
+    ]);
+    const row = toTableRow(plant);
+    expect("generation" in row && row.generation).toEqual({ offtaker: "Acme Cloud" });
+  });
+});
+
+describe("table CSV parity", () => {
+  const all = facilitiesSchema.parse(
+    JSON.parse(readFileSync(join(process.cwd(), "data/facilities.json"), "utf8"))
+  );
+
+  it("is byte-identical for full records and their TableRow projections (whole dataset)", () => {
+    expect(facilitiesToCsv(all.map(toTableRow))).toBe(facilitiesToCsv(all));
+  });
+
+  it("is byte-identical for the fixture records, whose source counts differ from 1", () => {
+    expect(facilitiesToCsv(FULL.map(toTableRow))).toBe(facilitiesToCsv(FULL));
+    expect(facilitiesToCsv(FULL.map(toTableRow))).toContain(",2,https://example.com/a");
+  });
+});
+
+describe("table payload size budget", () => {
+  // Same method and caveats as the map budget above. Measured 2026-10-21:
+  // 284,870 B / 2,745 records = 103.8 B per record (full records: 495 B,
+  // 1,359,639 B). Ceiling = measured x ~1.2. Mutation-tested: projecting
+  // `sources: f.sources` pushes it well past the ceiling.
+  const MAX_BR_BYTES_PER_RECORD = 125;
+
+  it("brotli-compressed projection stays within the per-record ceiling", () => {
+    const all = facilitiesSchema.parse(
+      JSON.parse(readFileSync(join(process.cwd(), "data/facilities.json"), "utf8"))
+    );
+    const json = JSON.stringify(all.map(toTableRow));
+    const br = brotliCompressSync(Buffer.from(json), {
+      params: { [constants.BROTLI_PARAM_QUALITY]: 5 },
+    }).length;
+    const perRecord = br / all.length;
+    expect(
+      perRecord,
+      `table payload is ${br} B brotli (q5) over ${all.length} records = ${perRecord.toFixed(1)} B/record`
     ).toBeLessThanOrEqual(MAX_BR_BYTES_PER_RECORD);
   });
 });

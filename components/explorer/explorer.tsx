@@ -13,14 +13,13 @@ import {
 
 import { filterFacilities } from "@/lib/filters";
 import { STATUS_ORDER } from "@/lib/status";
-import type { Facility } from "@/lib/schema";
-import type { MapFacility } from "@/lib/facility-slim";
+import type { MapFacility, TableRow } from "@/lib/facility-slim";
 import { facilityTypeEnum } from "@/lib/schema";
 import { FacilityTable } from "@/components/table/facility-table";
 import { FacilityMap } from "@/components/map/facility-map-dynamic";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import { MapFilterSubheader } from "@/components/map/map-filter-subheader";
-import { ExportButtons } from "@/components/explorer/export-buttons";
+import { ExportButtons, type ExportSnapshot } from "@/components/explorer/export-buttons";
 import { ShareLinkButton } from "@/components/explorer/share-link-button";
 import { StatePanel } from "@/components/feedback/state-panel";
 import { Button } from "@/components/ui/button";
@@ -44,17 +43,22 @@ type ExplorerMode = "toggle" | "map" | "table";
  *  - "map": renders FilterBar + map only; toggle buttons replaced by a cross-link
  *  - "table": reserved; toggle hidden, table rendered
  *
- * Map mode accepts the slim server-projected `MapFacility[]` (see
- * lib/facility-slim.ts); the table and toggle modes still need full records.
+ * Map mode accepts the slim server-projected `MapFacility[]`, the table and
+ * toggle modes `TableRow[]` (see lib/facility-slim.ts). `snapshot` identifies
+ * the static /data/facilities.json the JSON export fetches.
  */
 type ExplorerProps =
   | { mode: "map"; facilities: MapFacility[] }
-  | { mode?: Exclude<ExplorerMode, "map">; facilities: Facility[] };
+  | {
+      mode?: Exclude<ExplorerMode, "map">;
+      facilities: TableRow[];
+      snapshot: ExportSnapshot;
+    };
 
 /** Filter result tagged with the record type it holds, so branches narrow without casts. */
 type Filtered =
   | { kind: "map"; rows: MapFacility[] }
-  | { kind: "full"; rows: Facility[] };
+  | { kind: "full"; rows: TableRow[] };
 
 export function Explorer(props: ExplorerProps) {
   const { facilities } = props;
@@ -243,7 +247,10 @@ export function Explorer(props: ExplorerProps) {
             Showing {filtered.rows.length} of {facilities.length} facilities
           </p>
           <div className="flex items-center gap-2">
-            <ExportButtons facilities={filtered.rows} />
+            {/* `props.mode !== "map"` only narrows the prop union for TypeScript. */}
+            {props.mode !== "map" && (
+              <ExportButtons facilities={filtered.rows} snapshot={props.snapshot} />
+            )}
             <ShareLinkButton />
           </div>
         </div>
@@ -276,7 +283,10 @@ export function Explorer(props: ExplorerProps) {
         </p>
         {view === "table" && (
           <div className="flex items-center gap-2">
-            <ExportButtons facilities={filtered.rows} />
+            {/* `props.mode !== "map"` only narrows the prop union for TypeScript. */}
+            {props.mode !== "map" && (
+              <ExportButtons facilities={filtered.rows} snapshot={props.snapshot} />
+            )}
             <ShareLinkButton />
           </div>
         )}

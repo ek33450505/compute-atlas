@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { Explorer } from "./explorer";
 import type { Facility } from "@/lib/schema";
+import { toTableRow } from "@/lib/facility-slim";
 
 // jsdom can't render the real FacilityMap (MapLibre/WebGL — see the
 // render-in-table-view note below). Explorer's OWN logic for what it passes
@@ -96,7 +97,8 @@ const facilityD: Facility = {
   lastUpdated: "2023-12-01",
 };
 
-const fixtures: Facility[] = [facilityA, facilityB, facilityC, facilityD];
+const SNAPSHOT = { asOf: "2026-10-20T00:00:00.000Z" };
+const fixtures = [facilityA, facilityB, facilityC, facilityD].map(toTableRow);
 
 // ---------------------------------------------------------------------------
 // Helper — render in table view (jsdom can't render WebGL map)
@@ -105,7 +107,7 @@ const fixtures: Facility[] = [facilityA, facilityB, facilityC, facilityD];
 function renderExplorer(searchParams?: Record<string, string>) {
   return render(
     <NuqsTestingAdapter searchParams={searchParams ?? { view: "table" }}>
-      <Explorer facilities={fixtures} />
+      <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
     </NuqsTestingAdapter>
   );
 }
@@ -244,7 +246,7 @@ describe("Explorer — map empty state", () => {
   it("shows a StatePanel instead of the map when filters exclude everything", () => {
     render(
       <NuqsTestingAdapter searchParams={{ view: "map", status: "permitted" }}>
-        <Explorer facilities={fixtures} />
+        <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
       </NuqsTestingAdapter>
     );
 
@@ -300,7 +302,7 @@ describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={fixtures} />
+        <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
       </NuqsTestingAdapter>
     );
 

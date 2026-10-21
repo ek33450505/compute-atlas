@@ -132,3 +132,55 @@ export function toMapFacility(f: Facility): MapFacility {
       return { ...base, facilityType: "power_generation" };
   }
 }
+
+/**
+ * Row shape for the /table client tree (PERF-1 unit C).
+ *
+ * What the table columns, the filters, the CSV export and the toggle-mode map
+ * read: no statusHistory, community, notes or full `sources` array. It extends
+ * `MapFacility` (so the toggle map takes rows directly, which is why it also
+ * carries precision, multiSite and the crypto fields the map popup shows) with
+ * the CSV and table-only fields. Coordinates keep FULL
+ * precision because the CSV exports them; `sources` still holds only the
+ * first source and `sourceCount` carries the real length.
+ */
+interface TableExtras {
+  lastUpdated: Facility["lastUpdated"];
+  announcedDate?: string;
+  /** `sources.length` of the full record (the projected `sources` holds only the first). */
+  sourceCount: number;
+  location: { county?: string };
+}
+
+export type TableRow =
+  | (MapDataCenter & TableExtras)
+  | (MapCryptoMining & TableExtras & { aiClassification?: "confirmed" | "likely" | "mixed_use" })
+  | (MapPowerGeneration & TableExtras & { generation?: { offtaker?: string } });
+
+/** Projects a full facility to a `TableRow`. Optional fields are omitted, not `undefined`. */
+export function toTableRow(f: Facility): TableRow {
+  const slim = toMapFacility(f);
+  const location = { ...slim.location, lat: f.location.lat, lon: f.location.lon };
+  const extras = {
+    location: f.location.county !== undefined ? { ...location, county: f.location.county } : location,
+    lastUpdated: f.lastUpdated,
+    sourceCount: f.sources.length,
+    ...(f.announcedDate !== undefined ? { announcedDate: f.announcedDate } : {}),
+  };
+  switch (slim.facilityType) {
+    case "data_center":
+      return { ...slim, ...extras };
+    case "crypto_mining":
+      return {
+        ...slim,
+        ...extras,
+        ...(f.facilityType === "crypto_mining" && f.aiClassification
+          ? { aiClassification: f.aiClassification }
+          : {}),
+      };
+    case "power_generation": {
+      const offtaker = f.facilityType === "power_generation" ? f.generation?.offtaker : undefined;
+      return { ...slim, ...extras, ...(offtaker !== undefined ? { generation: { offtaker } } : {}) };
+    }
+  }
+}

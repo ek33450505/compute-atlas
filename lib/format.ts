@@ -49,7 +49,7 @@ export function sortByMaxMwDesc(a: Facility, b: Facility): number {
  * - "1,200 MW planned"    when only planned capacity is present
  * - "—"                   when no capacity data is available
  */
-export function formatCapacity(f: Facility): string {
+export function formatCapacity(f: Pick<Facility, "capacityMw">): string {
   const operational = f.capacityMw?.operational;
   const planned = f.capacityMw?.planned;
   if (operational !== undefined) {
@@ -65,7 +65,7 @@ export function formatCapacity(f: Facility): string {
  * Returns a location string in the form "City, ST" or just "ST" when city is
  * absent.
  */
-export function formatLocation(f: Facility): string {
+export function formatLocation(f: { location: { city?: string; state: string } }): string {
   const { city, state } = f.location;
   if (city) {
     return `${city}, ${state}`;

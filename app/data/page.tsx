@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getDatasetEdition } from "@/lib/dataset-edition";
+import { formatAsOfDate } from "@/lib/as-of";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { Download } from "lucide-react";
@@ -27,22 +28,6 @@ const DOWNLOAD_CLASS =
   "focus-visible:ring-ring focus-visible:ring-offset-2";
 
 /**
- * Formats `DatasetEdition.asOf` for display. `asOf` can be the literal
- * string "unknown" (see lib/dataset-edition.ts's FALLBACK_EDITION) or an
- * unparseable value — both render nothing rather than "Invalid Date".
- */
-function formatAsOf(asOf: string): string | null {
-  if (asOf === "unknown") return null;
-  const date = new Date(asOf);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-/**
  * /data — plain-language front door to the full dataset download. Built for
  * an audience that doesn't know what an API is: "click here, get
  * everything."
@@ -64,7 +49,7 @@ function formatAsOf(asOf: string): string | null {
  */
 export default function DataPage() {
   const edition = getDatasetEdition();
-  const asOfLabel = formatAsOf(edition.asOf);
+  const asOfLabel = formatAsOfDate(edition.asOf);
   const count = edition.recordCount.toLocaleString("en-US");
   // The files are edge-cached for a day under /data/:path+, so the URL carries
   // the snapshot's asOf: a fresh page links to a URL no older cache entry can

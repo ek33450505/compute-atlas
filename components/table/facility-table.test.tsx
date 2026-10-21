@@ -3,6 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FacilityTable } from "./facility-table";
 import type { Facility } from "@/lib/schema";
+import { toTableRow } from "@/lib/facility-slim";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -77,7 +78,7 @@ const facilityDelta: Facility = {
   lastUpdated: "2024-03-10",
 };
 
-const fixtures = [facilityAlpha, facilityBeta, facilityGamma, facilityDelta];
+const fixtures = [facilityAlpha, facilityBeta, facilityGamma, facilityDelta].map(toTableRow);
 
 // ---------------------------------------------------------------------------
 // Header tests
@@ -159,7 +160,7 @@ describe("FacilityTable — row content", () => {
         precision: "exact",
       },
     };
-    render(<FacilityTable facilities={[longLocationFacility]} />);
+    render(<FacilityTable facilities={[toTableRow(longLocationFacility)]} />);
 
     const locationText = screen.getByText("Boardman area (Tower Road), OR");
     expect(locationText).toHaveAttribute(
