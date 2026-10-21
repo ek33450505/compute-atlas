@@ -236,12 +236,180 @@ export function isBlockedHost(hostname: string): boolean {
 
 // --- SSRF guard: DNS-resolution pinning (Task 2, new) ---------------------
 
+/** Codes meaning the resolver could not answer at all, which says nothing
+ * about the host. Deliberately excludes `ENOTFOUND`/`ENODATA`: those are
+ * per-host facts (the outage-vs-link-rot discriminator). */
+export const RESOLVER_FAILURE_CODES: ReadonlySet<string> = new Set([
+  "EREFUSED",
+  "ESERVFAIL",
+  "ETIMEOUT",
+  "ECONNREFUSED",
+  "EAI_AGAIN",
+  "ECANCELLED",
+]);
+
+/** Marks an error that came from the DNS lookup itself. `ECONNREFUSED` is also
+ * what undici reports for a refused TCP connect to the SOURCE host (a per-host
+ * fact), so a code alone cannot say which; this tag can. */
+const DNS_LOOKUP_ERROR = Symbol("dnsLookupError");
+
+const tagLookupError = (err: unknown): unknown => {
+  if (err && typeof err === "object" && !Object.isFrozen(err)) {
+    Object.defineProperty(err, DNS_LOOKUP_ERROR, { value: true, enumerable: false, configurable: true });
+  }
+  return err;
+};
+
+const codeOf = (e: unknown): string | undefined => {
+  const code = (e as { code?: unknown } | null | undefined)?.code;
+  return typeof code === "string" ? code : undefined;
+};
+
+/** The `code` of a DNS-lookup error found on `err` or its `cause` chain, or
+ * undefined if `err` did not come from a lookup (e.g. a socket-level refusal). */
+export function lookupFailureCode(err: unknown): string | undefined {
+  let cur: unknown = err;
+  for (let depth = 0; depth < 5 && cur && typeof cur === "object"; depth++) {
+    if ((cur as Record<symbol, unknown>)[DNS_LOOKUP_ERROR] === true) return codeOf(cur);
+    cur = (cur as { cause?: unknown }).cause;
+  }
+  return undefined;
+}
+
+const isResolverFailure = (err: unknown): boolean => {
+  const code = lookupFailureCode(err);
+  return code !== undefined && RESOLVER_FAILURE_CODES.has(code);
+};
+
 /** Injectable DNS resolvers for {@link resolvesToBlockedAddress} — mirrors
  * the `fetchImpl`/`sleepImpl` DI pattern used elsewhere in this codebase so
  * tests never touch real DNS. */
 export interface ResolveDeps {
   resolve4?: (hostname: string) => Promise<string[]>;
   resolve6?: (hostname: string) => Promise<string[]>;
+  /** Awaited before every UNCACHED resolution (cache hits skip it): the hook a
+   * caller uses to cap how fast new queries leave the process. Rejecting aborts
+   * that resolution. */
+  beforeResolve?: () => Promise<void>;
+}
+
+// --- vetted-address cache ---------------------------------------------------
+
+/** Cache expiry and the rate gate read `performance.now()` (monotonic), not
+ * `Date.now()`, so a wall-clock step cannot extend a TTL or stall the gate.
+ *
+ * How long a vetted address list is reused. Short on purpose: the residual
+ * DNS-rebinding window is exactly one TTL (the same exposure any caching
+ * resolver has), and a record that changes is picked up within a minute. */
+export const LOOKUP_CACHE_TTL_MS = 60_000;
+
+/** Entry cap per cache; the least-recently-used entry is evicted past it. */
+export const LOOKUP_CACHE_MAX_ENTRIES = 4096;
+
+interface LookupCache {
+  entries: Map<string, { addresses: string[]; expiresAt: number }>;
+  inflight: Map<string, Promise<{ addresses: string[]; v4Error: unknown; resolverFailed: boolean }>>;
+}
+
+const makeLookupCache = (): LookupCache => ({ entries: new Map(), inflight: new Map() });
+
+/** Real-DNS cache, shared by every caller that injects no resolver. */
+const defaultLookupCache = makeLookupCache();
+/** Injected-resolver callers (tests) get a cache per `deps` object, so a stub's
+ * answers never leak into another test or into the real-DNS cache. */
+const injectedLookupCaches = new WeakMap<ResolveDeps, LookupCache>();
+
+function lookupCacheFor(deps: ResolveDeps): LookupCache {
+  if (!deps.resolve4 && !deps.resolve6) return defaultLookupCache;
+  let cache = injectedLookupCaches.get(deps);
+  if (!cache) {
+    cache = makeLookupCache();
+    injectedLookupCaches.set(deps, cache);
+  }
+  return cache;
+}
+
+/** @internal Test seam: plants an entry (as if a prior resolution had cached it) so a
+ * test can prove a cached address is re-vetted on every hit. */
+export function __seedLookupCacheForTests(deps: ResolveDeps, hostname: string, addresses: string[]): void {
+  lookupCacheFor(deps).entries.set(hostname, { addresses, expiresAt: performance.now() + LOOKUP_CACHE_TTL_MS });
+}
+
+/** @internal Test seam: empties the shared real-DNS cache. */
+export function __resetLookupCacheForTests(): void {
+  defaultLookupCache.entries.clear();
+  defaultLookupCache.inflight.clear();
+}
+
+/**
+ * The one resolver both the pre-check and the connect-time lookup go through.
+ * Returns the addresses to connect to plus whether any is blocked.
+ *
+ * Cache rules (this is the SSRF guard, so each is load-bearing):
+ * - Only a successful result with at least one address, NONE of them blocked,
+ *   is stored. A blocked result is never cached, so it can never be replayed
+ *   as allowed.
+ * - A partial result is not cached when one family failed with a RESOLVER
+ *   failure (refused, servfail, timeout): the missing family may hold a blocked
+ *   address. A family that answered ENODATA/ENOTFOUND (no AAAA is normal) is cached.
+ * - Errors and empty results are never cached: ENOTFOUND vs a resolver outage
+ *   must stay visible per attempt, and a transient failure must not stick.
+ * - Every HIT is re-vetted with {@link isBlockedAddress} before it is returned
+ *   (defence in depth: a policy change, or a cache bug, cannot hand out a
+ *   blocked address). A hit that fails the re-vet is evicted and reported blocked.
+ * - The connect uses exactly the address list returned here; pinning is
+ *   unchanged. The residual rebinding window is one {@link LOOKUP_CACHE_TTL_MS}.
+ * - Concurrent misses for one hostname share one in-flight resolution.
+ */
+export async function resolveVetted(
+  hostname: string,
+  deps: ResolveDeps = {},
+): Promise<{ addresses: string[]; v4Error: unknown; blocked: boolean }> {
+  const cache = lookupCacheFor(deps);
+
+  const hit = cache.entries.get(hostname);
+  if (hit) {
+    cache.entries.delete(hostname);
+    if (hit.expiresAt > performance.now()) {
+      if (hit.addresses.some(isBlockedAddress)) return { addresses: [], v4Error: undefined, blocked: true };
+      cache.entries.set(hostname, hit);
+      return { addresses: [...hit.addresses], v4Error: undefined, blocked: false };
+    }
+  }
+
+  let pending = cache.inflight.get(hostname);
+  if (!pending) {
+    pending = (async () => {
+      await deps.beforeResolve?.();
+      const resolved = await resolveAddresses(hostname, deps);
+      if (resolved.addresses.length > 0 && !resolved.resolverFailed && !resolved.addresses.some(isBlockedAddress)) {
+        cache.entries.delete(hostname);
+        cache.entries.set(hostname, { addresses: resolved.addresses, expiresAt: performance.now() + LOOKUP_CACHE_TTL_MS });
+        if (cache.entries.size > LOOKUP_CACHE_MAX_ENTRIES) {
+          const oldest = cache.entries.keys().next().value;
+          if (oldest !== undefined) cache.entries.delete(oldest);
+        }
+      }
+      return resolved;
+    })().finally(() => cache.inflight.delete(hostname));
+    cache.inflight.set(hostname, pending);
+  }
+  const resolved = await pending;
+  // Vetted again per caller: the in-flight result is shared, the verdict is not.
+  return { addresses: resolved.addresses, v4Error: resolved.v4Error, blocked: resolved.addresses.some(isBlockedAddress) };
+}
+
+/** Spaces calls to `gate()` at least `1000 / perSecond` ms apart (first call
+ * immediate), queueing the rest. `now` is injectable for tests. Use as {@link ResolveDeps.beforeResolve}. */
+export function createRateGate(perSecond: number, now: () => number = () => performance.now()): () => Promise<void> {
+  const intervalMs = 1000 / perSecond;
+  let nextSlot = 0;
+  return async () => {
+    const current = now();
+    const slot = Math.max(current, nextSlot);
+    nextSlot = slot + intervalMs;
+    if (slot > current) await defaultSleep(slot - current);
+  };
 }
 
 /**
@@ -285,8 +453,7 @@ export interface ResolveDeps {
  *   {@link isBlockedIpv6}).
  */
 export async function resolvesToBlockedAddress(hostname: string, deps: ResolveDeps = {}): Promise<boolean> {
-  const { addresses } = await resolveAddresses(hostname, deps);
-  return addresses.some(isBlockedAddress);
+  return (await resolveVetted(hostname, deps)).blocked;
 }
 
 function isBlockedAddress(address: string): boolean {
@@ -295,12 +462,13 @@ function isBlockedAddress(address: string): boolean {
 }
 
 /** Resolves both families (v4 first, then v6). A family that fails is simply
- * omitted; `v4Error` carries the v4 rejection so a caller can surface it
+ * omitted; `v4Error` carries the v4 rejection (or, when nothing resolved and only the
+ * v6 failure is a resolver failure, that one) so a caller can surface it
  * UNCHANGED when nothing resolved (preserves `ENOTFOUND`). */
 async function resolveAddresses(
   hostname: string,
   deps: ResolveDeps,
-): Promise<{ addresses: string[]; v4Error: unknown }> {
+): Promise<{ addresses: string[]; v4Error: unknown; resolverFailed: boolean }> {
   // Wrapped in single-arg arrow functions rather than assigned directly so
   // the overloaded node:dns/promises signatures (extra optional rrtype/
   // options params) don't need to structurally match ResolveDeps exactly.
@@ -312,7 +480,17 @@ async function resolveAddresses(
   const addresses: string[] = [];
   if (v4Result.status === "fulfilled") addresses.push(...v4Result.value);
   if (v6Result.status === "fulfilled") addresses.push(...v6Result.value);
-  return { addresses, v4Error: v4Result.status === "rejected" ? v4Result.reason : undefined };
+  const v4Error = v4Result.status === "rejected" ? tagLookupError(v4Result.reason) : undefined;
+  const v6Error = v6Result.status === "rejected" ? tagLookupError(v6Result.reason) : undefined;
+  // Nothing resolved and the AAAA failure is a resolver failure while the A one
+  // is not (e.g. A=ENODATA, AAAA=EREFUSED): hand back the resolver failure, so a
+  // refusing resolver is never masked by a per-host code. If only one family
+  // failed, the other answered, and the error is unchanged.
+  const surfaced =
+    addresses.length === 0 && v6Error !== undefined && !isResolverFailure(v4Error) && isResolverFailure(v6Error)
+      ? v6Error
+      : v4Error;
+  return { addresses, v4Error: surfaced, resolverFailed: isResolverFailure(v4Error) || isResolverFailure(v6Error) };
 }
 
 // --- connection-level pinning ---------------------------------------------
@@ -338,6 +516,9 @@ type LookupCallback = (err: Error | null, address?: string | LookupAddress[], fa
  * hostname is a blocked literal/name or ANY resolved address is blocked.
  * Fails closed: no vetted address, no connect.
  *
+ * Resolution goes through {@link resolveVetted}, which caches vetted results
+ * for {@link LOOKUP_CACHE_TTL_MS} (see its rules).
+ *
  * Differences from `dns.lookup`: `hints` is ignored; v4 addresses are ordered
  * before v6; resolution uses `resolve4`/`resolve6` (DNS only, not
  * getaddrinfo), so names that exist only in /etc/hosts or mDNS fail closed
@@ -353,8 +534,8 @@ export function createGuardedLookup(deps: ResolveDeps = {}) {
     const notFound = (): Outcome => [Object.assign(new Error(`getaddrinfo ENOTFOUND ${hostname}`), { code: "ENOTFOUND" })];
 
     if (isBlockedHost(hostname)) return blocked();
-    const { addresses, v4Error } = await resolveAddresses(hostname, deps);
-    if (addresses.some(isBlockedAddress)) return blocked();
+    const { addresses, v4Error, blocked: anyBlocked } = await resolveVetted(hostname, deps);
+    if (anyBlocked) return blocked();
     // Pass the v4 rejection through untouched so ENOTFOUND survives.
     if (addresses.length === 0) return v4Error instanceof Error ? [v4Error] : notFound();
 
@@ -393,10 +574,18 @@ export function createPinnedFetch(deps?: ResolveDeps): typeof fetch {
 const pinnedFetchByDeps = new WeakMap<ResolveDeps, typeof fetch>();
 
 function buildPinnedFetch(deps: ResolveDeps): typeof fetch {
+  return createClosablePinnedFetch(deps).fetch;
+}
+
+/** Like {@link createPinnedFetch} but never memoized: the caller owns the
+ * Agent and must `close()` it when done (a per-run lane would otherwise leak
+ * one Agent per call). */
+export function createClosablePinnedFetch(deps: ResolveDeps): { fetch: typeof fetch; close: () => Promise<void> } {
   const dispatcher = new Agent({ connect: { lookup: createGuardedLookup(deps) as never } });
   // undici's fetch uses its own Response/Request types, structurally distinct from the DOM ones.
-  return ((input: unknown, init?: Record<string, unknown>) =>
+  const pinned = ((input: unknown, init?: Record<string, unknown>) =>
     undiciFetch(input as never, { ...init, dispatcher } as never)) as unknown as typeof fetch;
+  return { fetch: pinned, close: () => dispatcher.destroy() };
 }
 
 let sharedPinnedFetch: typeof fetch | undefined;

@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { checkSources } from "./check-sources";
 import { fetchPageText } from "./fetch-page-text";
 import {
+  LOOKUP_CACHE_TTL_MS,
   SSRF_BLOCKED_CODE,
   createGuardedLookup,
   createPinnedFetch,
@@ -169,12 +170,19 @@ describe("isSsrfBlockedError", () => {
 });
 
 // DNS rebinding: public answer for the pre-check, loopback for the connect.
+// Vetted answers are cached for LOOKUP_CACHE_TTL_MS, so the rebind only bites
+// once the cached entry has expired: every clock read here jumps past the TTL
+// (the residual one-TTL window is documented on resolveVetted).
 describe("DNS rebinding regression (no external network)", () => {
+  let nowSpy: ReturnType<typeof vi.spyOn>;
+
   let server: Server;
   let port: number;
   let connections: number;
 
   beforeEach(async () => {
+    let t = performance.now();
+    nowSpy = vi.spyOn(performance, "now").mockImplementation(() => (t += LOOKUP_CACHE_TTL_MS + 1));
     connections = 0;
     server = createServer((_req, res) => {
       res.writeHead(200, { "content-type": "text/html" });
@@ -188,6 +196,7 @@ describe("DNS rebinding regression (no external network)", () => {
   });
 
   afterEach(async () => {
+    nowSpy.mockRestore();
     await new Promise<void>((r) => server.close(() => r()));
   });
 

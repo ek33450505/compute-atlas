@@ -8,11 +8,22 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 // because they all inject their own fetchImpl. The Wayback defaults
 // in verify-source.ts, verify-fields.ts and extract-fields.ts are each driven
 // through their own function.
-const { pinnedFetchMock } = vi.hoisted(() => ({ pinnedFetchMock: vi.fn() }));
+const { pinnedFetchMock, closableDeps } = vi.hoisted(() => ({
+  pinnedFetchMock: vi.fn(),
+  closableDeps: [] as Array<Record<string, unknown>>,
+}));
 
 vi.mock("./net-guard", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./net-guard")>()),
   pinnedFetch: pinnedFetchMock,
+  // checkSources builds its own pinned fetch (to attach the lookup rate gate and
+  // own the Agent). Routing that factory to the same mock keeps the guard
+  // meaningful, and the deps it receives are captured so a test can prove the
+  // default is not built with permissive or overridden resolvers.
+  createClosablePinnedFetch: (deps: Record<string, unknown>) => {
+    closableDeps.push(deps);
+    return { fetch: pinnedFetchMock, close: async () => {} };
+  },
 }));
 
 // No real DNS for the pre-check (callers below pass no resolveDeps).
@@ -42,6 +53,7 @@ function globalFetchGuard() {
 }
 
 afterEach(() => {
+  closableDeps.length = 0;
   vi.unstubAllGlobals();
 });
 
@@ -71,6 +83,11 @@ describe("production default fetch is pinnedFetch", () => {
     expect(row.classification).toBe("ok");
     expect(pinnedFetchMock).toHaveBeenCalled();
     expect(globalSpy).not.toHaveBeenCalled();
+    // Real resolvers only: no resolve4/resolve6 override (a stub could vet anything).
+    const built = closableDeps.at(-1) as Record<string, unknown>;
+    expect(built.resolve4).toBeUndefined();
+    expect(built.resolve6).toBeUndefined();
+    expect(typeof built.beforeResolve).toBe("function");
   });
 
   it("triageUrl(url) with no deps", async () => {
