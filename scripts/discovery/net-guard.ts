@@ -1,18 +1,19 @@
 /**
  * Shared SSRF-guard, retry/backoff, and bounded-concurrency primitives.
  *
- * Extracted verbatim from check-sources.ts (Task 1) so they can be
- * reused by the (untrusted, model-proposed) candidate-source verification
- * path without duplicating hard-won correctness logic. check-sources.ts
- * imports these back rather than redefining them; its own behavior is
- * unchanged by the extraction.
+ * Extracted from check-sources.ts so the guarded fetchers (check-sources,
+ * fetch-page-text and the verification path built on it) share one
+ * implementation. check-sources.ts imports these back rather than
+ * redefining them.
  *
- * `resolvesToBlockedAddress` (Task 2) is new here, not moved — it closes the
- * DNS-resolution gap that check-sources.ts's own `isBlockedHost` doc-comment
- * names and deliberately leaves open for its curated-URL use case. Only the
- * verification path (untrusted, model-proposed URLs) needs it.
+ * Two layers: `isBlockedHost` / `resolvesToBlockedAddress` classify a URL
+ * before a request (fast path, and the only check for IP-literal URLs), and
+ * `createPinnedFetch` enforces at connect time, where a socket can only reach
+ * an address its own lookup vetted.
  */
 import { resolve4 as dnsResolve4, resolve6 as dnsResolve6 } from "node:dns/promises";
+import type { LookupAddress } from "node:dns";
+import { Agent, fetch as undiciFetch } from "undici";
 
 // --- scheme guard --------------------------------------------------------
 
@@ -134,9 +135,11 @@ export function isBlockedIpv6(hostname: string): boolean {
  * link-local/reserved IPv4 or IPv6 literals (including the cloud metadata
  * IP 169.254.169.254), `localhost`, or any `*.localhost`.
  *
- * DNS resolution of ordinary hostnames to catch a public name that resolves
- * to a private IP is intentionally OUT of scope — these source URLs are
- * curated, not user-submitted. A follow-up could pin DNS if that changes.
+ * This check is purely syntactic. A public name that resolves to a private IP
+ * is caught at connect time by {@link createGuardedLookup} (see
+ * {@link createPinnedFetch}), and pre-checked by
+ * {@link resolvesToBlockedAddress}. It stays load-bearing for IP-literal
+ * URLs: `net.connect` skips `lookup` for literals, so no lookup ever sees them.
  */
 export function isBlockedHost(hostname: string): boolean {
   // `new URL(...).hostname` on a bracketed IPv6 literal (e.g. "[::1]")
@@ -175,11 +178,11 @@ export interface ResolveDeps {
  * Resolves `hostname` via DNS and returns true if ANY resolved address (v4
  * or v6) falls in a blocked range (`BLOCKED_IPV4_CIDRS` / `isBlockedIpv6`).
  *
- * `isBlockedHost` above deliberately does not resolve DNS — its doc-comment
- * names that as out of scope because check-sources.ts's URLs are curated,
- * not user-submitted. Candidate URLs proposed by a model are neither
- * curated nor trusted, so the verification path pairs `isBlockedHost` with
- * this resolution check to close that gap.
+ * `isBlockedHost` above is purely syntactic and does not resolve DNS, so a
+ * public name that points at a private address passes it. This pre-check
+ * catches that case early and lets callers classify it. It is not the
+ * enforcement point: a second resolution happens at connect time, and the
+ * pinned lookup ({@link createGuardedLookup}) is what closes that gap.
  *
  * A resolution failure for either address family (ENOTFOUND, timeout, a
  * v4-only or v6-only host that has no records of the other family, etc.) is
@@ -195,12 +198,13 @@ export interface ResolveDeps {
  * so the two families are never cross-checked against each other's rules.
  *
  * LIMITATIONS (v1, deliberate):
- * - TOCTOU / DNS rebinding: this function resolves once, but the caller's
- *   own `fetch()` resolves DNS again, independently, moments later. The
- *   address checked here is not provably the address ultimately connected
- *   to. Real mitigation is connection-level pinning (resolve once, connect
- *   to the pinned literal, carry the original Host header) — out of scope
- *   for v1.
+ * - TOCTOU / DNS rebinding: this function is only a pre-check; a caller's
+ *   own `fetch()` would resolve DNS again. Enforcement therefore lives at the
+ *   connection: {@link createPinnedFetch} resolves through
+ *   {@link createGuardedLookup}, so the socket connects only to an address
+ *   that was vetted in that same lookup. This pre-check is a classification
+ *   fast path and defence in depth. IP-literal URLs never reach a lookup and
+ *   rely on the synchronous `isBlockedHost` check.
  * - IPv6 embedded-IPv4 coverage: `::ffff:` mapped forms (both dotted and
  *   hex-hextet), `::`, `::1`, `fc00::/7`, and `fe80::/10` ARE classified.
  *   NOT covered: IPv4-compatible (`::7f00:1`), IPv4-translated
@@ -210,6 +214,22 @@ export interface ResolveDeps {
  *   documented here rather than blocked in v1.
  */
 export async function resolvesToBlockedAddress(hostname: string, deps: ResolveDeps = {}): Promise<boolean> {
+  const { addresses } = await resolveAddresses(hostname, deps);
+  return addresses.some(isBlockedAddress);
+}
+
+function isBlockedAddress(address: string): boolean {
+  if (isBlockedIpv4(address)) return true;
+  return address.includes(":") && isBlockedIpv6(address);
+}
+
+/** Resolves both families (v4 first, then v6). A family that fails is simply
+ * omitted; `v4Error` carries the v4 rejection so a caller can surface it
+ * UNCHANGED when nothing resolved (preserves `ENOTFOUND`). */
+async function resolveAddresses(
+  hostname: string,
+  deps: ResolveDeps,
+): Promise<{ addresses: string[]; v4Error: unknown }> {
   // Wrapped in single-arg arrow functions rather than assigned directly so
   // the overloaded node:dns/promises signatures (extra optional rrtype/
   // options params) don't need to structurally match ResolveDeps exactly.
@@ -221,13 +241,100 @@ export async function resolvesToBlockedAddress(hostname: string, deps: ResolveDe
   const addresses: string[] = [];
   if (v4Result.status === "fulfilled") addresses.push(...v4Result.value);
   if (v6Result.status === "fulfilled") addresses.push(...v6Result.value);
-
-  for (const address of addresses) {
-    if (isBlockedIpv4(address)) return true;
-    if (address.includes(":") && isBlockedIpv6(address)) return true;
-  }
-  return false;
+  return { addresses, v4Error: v4Result.status === "rejected" ? v4Result.reason : undefined };
 }
+
+// --- connection-level pinning ---------------------------------------------
+
+/** `code` on the error a guarded lookup raises when a hostname is, or
+ * resolves to, a blocked address. Callers map it to a "blocked" outcome. */
+export const SSRF_BLOCKED_CODE = "ESSRFBLOCKED";
+
+/** True when `err` (or its `cause`, where undici nests the socket error) is
+ * a {@link SSRF_BLOCKED_CODE} refusal. */
+export function isSsrfBlockedError(err: unknown): boolean {
+  const code = (e: unknown) => (e as { code?: unknown } | null | undefined)?.code;
+  return code(err) === SSRF_BLOCKED_CODE || code((err as { cause?: unknown } | null | undefined)?.cause) === SSRF_BLOCKED_CODE;
+}
+
+type LookupOptions = { all?: boolean; family?: number | string } | number | undefined;
+type LookupCallback = (err: Error | null, address?: string | LookupAddress[], family?: number) => void;
+
+/**
+ * A `net.connect`-compatible `lookup` that resolves once and hands the socket
+ * only vetted addresses: the connection is made to the address that was
+ * checked, so there is no second resolution to rebind. Refuses when the
+ * hostname is a blocked literal/name or ANY resolved address is blocked.
+ * Fails closed: no vetted address, no connect.
+ *
+ * Differences from `dns.lookup`: `hints` is ignored; v4 addresses are ordered
+ * before v6; resolution uses `resolve4`/`resolve6` (DNS only, not
+ * getaddrinfo), so names that exist only in /etc/hosts or mDNS fail closed
+ * (usually ENOTFOUND; the v4 resolver's own error is passed through) —
+ * intended. The callback is invoked exactly once, on a later
+ * tick, outside the promise chain.
+ */
+export function createGuardedLookup(deps: ResolveDeps = {}) {
+  type Outcome = [Error | null, (string | LookupAddress[])?, number?];
+
+  const settle = async (hostname: string, opts: { all?: boolean; family?: number | string }): Promise<Outcome> => {
+    const blocked = (): Outcome => [Object.assign(new Error(`blocked address for ${hostname}`), { code: SSRF_BLOCKED_CODE })];
+    const notFound = (): Outcome => [Object.assign(new Error(`getaddrinfo ENOTFOUND ${hostname}`), { code: "ENOTFOUND" })];
+
+    if (isBlockedHost(hostname)) return blocked();
+    const { addresses, v4Error } = await resolveAddresses(hostname, deps);
+    if (addresses.some(isBlockedAddress)) return blocked();
+    // Pass the v4 rejection through untouched so ENOTFOUND survives.
+    if (addresses.length === 0) return v4Error instanceof Error ? [v4Error] : notFound();
+
+    const family = Number(opts.family) || 0;
+    const entries: LookupAddress[] = addresses
+      .map((address) => ({ address, family: address.includes(":") ? 6 : 4 }))
+      .filter((e) => family === 0 || e.family === family);
+    if (entries.length === 0) return notFound();
+    return opts.all ? [null, entries] : [null, entries[0].address, entries[0].family];
+  };
+
+  return (hostname: string, options: LookupOptions, callback: LookupCallback): void => {
+    const opts = typeof options === "number" ? { family: options } : (options ?? {});
+    settle(hostname, opts)
+      .catch((err: unknown): Outcome => [err instanceof Error ? err : new Error(String(err))])
+      .then((outcome) => process.nextTick(() => callback(...outcome)));
+  };
+}
+
+/** `fetch` whose connections resolve DNS only through {@link createGuardedLookup}.
+ * Memoized per `deps` object when one is passed.
+ * Host header and TLS SNI remain the original hostname; only the lookup differs. */
+export function createPinnedFetch(deps?: ResolveDeps): typeof fetch {
+  if (deps) {
+    const cached = pinnedFetchByDeps.get(deps);
+    if (cached) return cached;
+    const created = buildPinnedFetch(deps);
+    pinnedFetchByDeps.set(deps, created);
+    return created;
+  }
+  return buildPinnedFetch({});
+}
+
+/** One Agent per injected `deps` object, so per-call construction in the
+ * fetchers does not leak an Agent (never closed) on every request. */
+const pinnedFetchByDeps = new WeakMap<ResolveDeps, typeof fetch>();
+
+function buildPinnedFetch(deps: ResolveDeps): typeof fetch {
+  const dispatcher = new Agent({ connect: { lookup: createGuardedLookup(deps) as never } });
+  // undici's fetch uses its own Response/Request types, structurally distinct from the DOM ones.
+  return ((input: unknown, init?: Record<string, unknown>) =>
+    undiciFetch(input as never, { ...init, dispatcher } as never)) as unknown as typeof fetch;
+}
+
+let sharedPinnedFetch: typeof fetch | undefined;
+
+/** Lazily-created singleton over real DNS (no Agent per serverless request). */
+export const pinnedFetch: typeof fetch = ((input: unknown, init?: unknown) => {
+  sharedPinnedFetch ??= createPinnedFetch();
+  return (sharedPinnedFetch as (i: unknown, n?: unknown) => Promise<Response>)(input, init);
+}) as typeof fetch;
 
 // --- browser headers + retry/backoff --------------------------------------
 

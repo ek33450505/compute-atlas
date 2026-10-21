@@ -1275,15 +1275,16 @@ export async function runSubmitAndLog(
 
 /**
  * Constructs the real verification gate: verify-source.ts composed with
- * fetch-page-text.ts and ollama-client.ts, both bound to the real global
- * `fetch`. Called ONLY from inside `main()`, never at module scope —
- * tests/discovery/run.bats's retry-gate check (`candidates_file_shape()`)
- * really does execute this module's top-level scope, via a real `tsx -e`
- * with no Ollama available in CI (see run.bats:43-52 and its Task 7
- * "import safety" regression tests). Importing `verifySource`/
- * `fetchPageText`/`callOllama` at the top of this file is safe (function
- * references only), and merely CALLING this function is also safe — it just
- * returns a closure, it does not invoke `verifySource` itself. The actual
+ * fetch-page-text.ts (default DNS-pinned fetch) and ollama-client.ts (bound
+ * to the global `fetch`, as Ollama is localhost). Called ONLY from inside
+ * `main()`, never at module scope — tests/discovery/run.bats's retry-gate
+ * check (`candidates_file_shape()`) really does execute this module's
+ * top-level scope, via a real `tsx -e` with no Ollama available in CI (see
+ * run.bats:43-52 and its Task 7 "import safety" regression tests).
+ * Importing `verifySource`/`fetchPageText`/`callOllama` at the top of this
+ * file is safe (function references only), and merely CALLING this
+ * function is also safe — it just returns a closure, it does not invoke
+ * `verifySource` itself. The actual
  * risk is a step further: `main()` both builds AND passes this closure to
  * `runSubmit`, which — if a candidate has sources — genuinely INVOKES it,
  * reaching out over the network. Keeping construction confined to `main()`
@@ -1295,7 +1296,7 @@ export async function runSubmitAndLog(
 function buildRealVerifyImpl(): (url: string, claim: VerifyClaim) => Promise<VerificationResult> {
   return (url, claim) =>
     verifySource(url, claim, {
-      fetchPageTextImpl: (pageUrl) => fetchPageText(pageUrl, { fetchImpl: fetch }),
+      fetchPageTextImpl: (pageUrl) => fetchPageText(pageUrl, {}),
       callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
     });
 }

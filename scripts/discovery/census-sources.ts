@@ -1017,7 +1017,7 @@ async function main(): Promise<void> {
   ]);
   const verifyImpl: VerifyImpl = (url, claim) =>
     verifySource(url, claim, {
-      fetchPageTextImpl: (pageUrl) => fetchPageText(pageUrl, { fetchImpl: fetch }),
+      fetchPageTextImpl: (pageUrl) => fetchPageText(pageUrl, {}),
       callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
     });
 

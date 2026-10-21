@@ -246,6 +246,7 @@ import {
 import { callOllama } from "./ollama-client";
 import { fetchPageText } from "./fetch-page-text";
 import { fetchPdfText } from "./fetch-pdf-text";
+import { pinnedFetch } from "./net-guard";
 import { findWaybackSnapshotUrl } from "./wayback";
 import { loadFacilities } from "./load-facilities";
 import { isNonDocumentSource } from "./non-document-source";
@@ -507,8 +508,8 @@ export interface VerifyFieldsDeps extends ExtractFieldModelDeps, SourceFetchDeps
    * verify-source.ts's own `VerifySourceDeps.fetchImpl` for the same reason:
    * `fetchPageTextImpl`/`fetchPdfTextImpl` enforce guards this trusted,
    * fixed host doesn't need, and a content-type allowlist that would reject
-   * its JSON response outright. Defaults to the global `fetch` in
-   * production; tests should always inject their own mock.
+   * its JSON response outright. Defaults to the DNS-pinned fetch
+   * (net-guard.ts) in production; tests should always inject their own mock.
    */
   fetchImpl?: typeof fetch;
 }
@@ -542,7 +543,7 @@ interface FacilityVerifyResult {
  * Real-world default for `VerifyFieldsDeps.sleep` — a plain `setTimeout`
  * wrapped as a Promise. `buildRealDeps()` wires this explicitly, but
  * `attemptArchiveRecovery` also falls back to it directly (mirrors the
- * `deps.fetchImpl ?? fetch` pattern below) so any future caller that forgets
+ * `deps.fetchImpl ?? pinnedFetch` pattern below) so any future caller that forgets
  * to wire `sleep` degrades to a real sleep rather than a crash.
  */
 async function realSleep(ms: number): Promise<void> {
@@ -579,7 +580,7 @@ const WAYBACK_LOOKUP_PACING_MS = 1_200;
  * `{ ok: false }` fetchResult mean "never actually read a snapshot," so
  * neither ever sets those fields.
  */
-async function attemptArchiveRecovery(
+export async function attemptArchiveRecovery(
   url: string,
   deps: VerifyFieldsDeps,
   fetchState: FetchState
@@ -587,7 +588,7 @@ async function attemptArchiveRecovery(
   const sleep = deps.sleep ?? realSleep;
   await sleep(WAYBACK_LOOKUP_PACING_MS);
 
-  const archiveUrl = await findWaybackSnapshotUrl(url, deps.fetchImpl ?? fetch);
+  const archiveUrl = await findWaybackSnapshotUrl(url, deps.fetchImpl ?? pinnedFetch);
   if (!archiveUrl) return null;
 
   const fetchResult = await fetchSourceText(archiveUrl, deps, fetchState);
@@ -1229,14 +1230,13 @@ function printHumanSummary(summary: VerifyFieldsSummary): void {
  * `main()`, never at module scope — mirrors extract-fields.ts's
  * `buildRealDeps`: importing this module for tests must never open a socket.
  */
-function buildRealDeps(): VerifyFieldsDeps {
+export function buildRealDeps(): VerifyFieldsDeps {
   return {
-    fetchPageTextImpl: (url) => fetchPageText(url, { fetchImpl: fetch }),
-    fetchPdfTextImpl: (url) => fetchPdfText(url, { fetchImpl: fetch }),
+    fetchPageTextImpl: (url) => fetchPageText(url, {}),
+    fetchPdfTextImpl: (url) => fetchPdfText(url, {}),
     callOllamaImpl: (opts) => callOllama<ModelExtraction>({ ...opts, fetchImpl: fetch }),
     now: () => new Date(),
     sleep: realSleep,
-    fetchImpl: fetch,
   };
 }
 

@@ -100,7 +100,8 @@ function describeFailure(result: Extract<FetchPageTextResult, { ok: false }>): s
 }
 
 export interface TriageUrlDeps {
-  /** Defaults to the global `fetch`. Tests inject a fake — never hit the real network. */
+  /** Defaults to the DNS-pinned fetch (net-guard.ts). Tests inject a fake —
+   * never hit the real network. */
   fetchImpl?: typeof fetch;
   /** Defaults to 5000ms — see TRIAGE_TIMEOUT_MS. */
   timeoutMs?: number;
@@ -123,7 +124,7 @@ export async function triageUrl(url: string, deps: TriageUrlDeps = {}): Promise<
   const fetchedAt = new Date().toISOString();
   try {
     const result = await fetchPageText(url, {
-      fetchImpl: deps.fetchImpl ?? fetch,
+      fetchImpl: deps.fetchImpl,
       timeoutMs: deps.timeoutMs ?? TRIAGE_TIMEOUT_MS,
       totalTimeoutMs: deps.totalTimeoutMs ?? TRIAGE_TOTAL_TIMEOUT_MS,
       resolveDeps: deps.resolveDeps,
