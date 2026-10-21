@@ -2850,9 +2850,12 @@ function getCurrentQuarterRange(now: Date = new Date()): { start: Date; end: Dat
  * write-staging invariant docs; a submission's approval is what produces the
  * history row this reads).
  *
- * `facility_history.change_type` is only `create | update | delete` (see
- * lib/db/schema.ts) — there is no distinct "cancelled" or "status-change"
- * change type, so those two counts can't be read off `change_type` alone.
+ * `facility_history.change_type` is `create | update | delete | editorial`
+ * (see lib/db/schema.ts; `editorial` is a notes-only update written by
+ * db:sync). This function's `update` filter excludes `editorial` rows, which
+ * is correct: an editorial row carries no status change. There is no
+ * distinct "cancelled" or "status-change" change type, so those two counts
+ * can't be read off `change_type` alone.
  * Instead this inspects each `update` row's stored `diff` (`DiffEntry[]`,
  * computed once at write time by `lib/facility-write.ts` via
  * `computeDocDiff`, which diffs the full Facility doc at its top level):

@@ -145,7 +145,7 @@ export const facilityHistoryTable = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     facilityId: text("facility_id").notNull(),
     changedAt: timestamp("changed_at", { withTimezone: true }).defaultNow().notNull(),
-    changeType: text("change_type").notNull(), // create | update | delete
+    changeType: text("change_type").notNull(), // create | update | delete | editorial
     diff: jsonb("diff").$type<DiffEntry[]>().notNull(),
     source: text("source").notNull(), // "admin-direct" or a submission id
   },

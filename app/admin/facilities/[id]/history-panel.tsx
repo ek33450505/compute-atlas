@@ -8,6 +8,7 @@ const CHANGE_TYPE_LABEL: Record<string, string> = {
   create: "Created",
   update: "Updated",
   delete: "Deleted",
+  editorial: "Editorial (notes only)",
 };
 
 function formatChangedAt(changedAt: Date): string {
