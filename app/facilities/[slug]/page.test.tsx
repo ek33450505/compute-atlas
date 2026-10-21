@@ -1,5 +1,6 @@
 import { vi, describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import type { Facility } from "@/lib/schema";
 
@@ -268,14 +269,15 @@ describe("generateMetadata", () => {
 // Masthead gap prompts (Theme B / B1a) — capacity and powered-by are
 // CORRECTABLE_KEYS members so a missing value renders FieldGapPrompt's
 // inline "Know ...?" correction trigger; announcedDate is not (yet)
-// correctable, so a missing value renders the lighter /contribute lead
-// link instead. Same em-dash today, different affordance once wired — that
-// contrast is the thing under test, not FieldGapPrompt's own branching
-// (already covered by field-gap-prompt.test.tsx).
+// correctable, so a missing value renders the "Know a source for …" tip
+// trigger instead (it opens the same dialog, on "Something else"). Same
+// em-dash today, different affordance once wired — that contrast is the thing
+// under test, not FieldGapPrompt's own branching (already covered by
+// field-gap-prompt.test.tsx).
 // ---------------------------------------------------------------------------
 
 describe("FacilityPage masthead — capacity / powered-by / announced gap prompts", () => {
-  it("renders the correction trigger for missing capacity and powered-by, and the lead-form link for missing announced date", async () => {
+  it("renders the correction trigger for missing capacity and powered-by, and the tip trigger for missing announced date", async () => {
     const facility = makeFacility({
       name: "Gapville Data Center",
       // capacityMw, poweredBy, announcedDate all deliberately omitted.
@@ -294,10 +296,13 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
       screen.getByRole("button", { name: /know who powers this facility\?/i })
     ).toBeInTheDocument();
 
-    const announcedLink = screen.getByRole("link", {
-      name: /know a source for the announcement date/i,
-    });
-    expect(announcedLink).toHaveAttribute("href", "/contribute");
+    // A button that opens the dialog on "Something else", not a link away.
+    // Found by its text, not by role, so the tag check below sees whatever was
+    // actually rendered; the closest("a") check catches a button wrapped in a
+    // link, which a getByRole("button") query would still find.
+    const announcedPrompt = screen.getByText(/Know a source for the announcement date/);
+    expect(announcedPrompt.tagName).toBe("BUTTON");
+    expect(announcedPrompt.closest("a")).toBeNull();
 
     // No em-dash placeholders left over for the three wired fields.
     expect(screen.queryByText("—")).not.toBeInTheDocument();
@@ -327,9 +332,91 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
     expect(
       screen.queryByRole("button", { name: /know who powers this facility\?/i })
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: /know a source for the announcement date/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Know a source for the announcement date/)).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Correction dialogs on the page: each shows the facility's current value, and
+// the masthead Capacity row targets the capacity field that applies to the
+// facility (planned for every status but operational) or that the page
+// actually shows.
+// ---------------------------------------------------------------------------
+
+describe("FacilityPage — correction dialogs", () => {
+  async function renderPage(facility: Facility) {
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+    const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
+    render(page);
+  }
+
+  it("gives the 'Spot an error?' dialog the facility's current values", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ name: "Colossus" }));
+
+    await user.click(screen.getByRole("button", { name: /spot an error\?/i }));
+
+    expect(screen.getByText("Currently: Colossus")).toBeInTheDocument();
+  });
+
+  it("gives the bottom 'Suggest a correction' dialog the facility's current values", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ name: "Colossus" }));
+
+    await user.click(screen.getByRole("button", { name: /^suggest a correction$/i }));
+
+    expect(screen.getByText("Currently: Colossus")).toBeInTheDocument();
+  });
+
+  it.each([["proposed"], ["permitted"], ["under_construction"], ["cancelled"]] as const)(
+    "a %s facility with no capacity opens 'Know the capacity?' on planned capacity",
+    async (status) => {
+      const user = userEvent.setup();
+      await renderPage(makeFacility({ status }));
+
+      await user.click(screen.getByRole("button", { name: /know the capacity\?/i }));
+
+      expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
+        "Planned capacity (MW)"
+      );
+      expect(screen.getByText("Currently: not recorded")).toBeInTheDocument();
+    }
+  );
+
+  it("an operational facility with no capacity opens 'Know the capacity?' on operational capacity", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ status: "operational" }));
+
+    await user.click(screen.getByRole("button", { name: /know the capacity\?/i }));
+
+    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
+      "Operational capacity (MW)"
+    );
+  });
+
+  it("'No' on a planned-only capacity corrects planned capacity, and shows its current value", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ status: "proposed", capacityMw: { planned: 1200 } }));
+
+    expect(screen.getByText("1,200 MW planned")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "No, the capacity needs a correction" }));
+
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toHaveTextContent(
+      "Planned capacity (MW)"
+    );
+    expect(screen.getByText("Currently: 1,200 MW")).toBeInTheDocument();
+  });
+
+  it("'No' on an operational capacity corrects operational capacity, and shows its current value", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ capacityMw: { operational: 150 } }));
+
+    await user.click(screen.getByRole("button", { name: "No, the capacity needs a correction" }));
+
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toHaveTextContent(
+      "Operational capacity (MW)"
+    );
+    expect(screen.getByText("Currently: 150 MW")).toBeInTheDocument();
   });
 });
 

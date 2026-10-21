@@ -111,6 +111,7 @@ export async function PowerLinksSection({ facility }: { facility: Facility }) {
   if (!(await hasPowerLinks(facility))) {
     return (
       <SectionGapPrompt
+        facilityId={facility.id}
         facilityName={facility.name}
         label={isGenerator ? "what this facility powers" : "its power supply"}
       />

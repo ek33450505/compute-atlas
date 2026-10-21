@@ -147,7 +147,7 @@ describe("GapsPage", () => {
     expect(screen.getByText(/738 of 1563 sites are missing it/)).toBeInTheDocument();
   });
 
-  it("renders an inline correction trigger for a correctable dimension (jobs) and a /contribute link for a non-correctable one (needs a second source)", async () => {
+  it("renders an inline correction trigger for a correctable dimension (jobs) and a tip trigger that opens the dialog for a non-correctable one (needs a second source)", async () => {
     mockGetDatasetGaps.mockResolvedValue(makeGapCounts());
     mockGetGapExamples.mockImplementation((dim: GapDimension) => {
       if (dim === "jobs") {
@@ -180,11 +180,16 @@ describe("GapsPage", () => {
     ).toBeInTheDocument();
 
     // singleSource ("secondSource") is the one remaining non-correctable
-    // dimension — FieldGapPrompt falls back to a plain /contribute link.
-    const sourceLink = screen.getByRole("link", {
-      name: /know a source for additional corroboration on sourceville dc/i,
-    });
-    expect(sourceLink).toHaveAttribute("href", "/contribute");
+    // dimension — FieldGapPrompt falls back to the tip trigger, which opens
+    // the dialog on "Something else" rather than leaving the page.
+    expect(
+      screen.getByRole("button", {
+        name: /know a source for additional corroboration on sourceville dc/i,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /know a source for additional corroboration/i })
+    ).not.toBeInTheDocument();
 
     // The example facility names/links themselves render too. The link's
     // accessible name includes both child spans (name + operator/location),
@@ -203,8 +208,9 @@ describe("GapsPage", () => {
   // boolean is exactly what drifted when CORRECTABLE_KEYS widened 2026-09-11
   // to add water/energy, leaving a working correction button under a note
   // that said no such form existed. This test renders the real page and
-  // checks the note against the actual rendered affordance (button vs link)
-  // for every GAP_SECTIONS entry, using the real CORRECTABLE_KEYS import —
+  // checks the note against the actual rendered affordance (a "Know …?"
+  // field trigger vs a "Know a source for …" tip trigger; both are buttons that
+  // open the dialog) for every GAP_SECTIONS entry, using the real CORRECTABLE_KEYS import —
   // so a regression to a stale/hand-maintained flag fails here even though
   // no boolean literal remains in page.tsx to eyeball.
   // -------------------------------------------------------------------------
@@ -239,18 +245,38 @@ describe("GapsPage", () => {
         ).toBeInTheDocument();
         expect(within(region).queryAllByRole("button").length).toBeGreaterThan(0);
         expect(
-          within(region).queryAllByRole("link", { name: /know a source for/i }).length
+          within(region).queryAllByRole("button", { name: /know a source for/i }).length
         ).toBe(0);
       } else {
         expect(
           within(region).getByText(/no structured correction field yet/i)
         ).toBeInTheDocument();
-        expect(within(region).queryAllByRole("button").length).toBe(0);
-        expect(
-          within(region).queryAllByRole("link", { name: /know a source for/i }).length
-        ).toBeGreaterThan(0);
+        // Every button here is a tip trigger: there is no field to correct, so a
+        // "Know …?" trigger or a default "Suggest a correction" would be a
+        // stray. The count must be above zero, or the equality below is vacuous.
+        const buttons = within(region).queryAllByRole("button");
+        const tips = within(region).queryAllByRole("button", { name: /know a source for/i });
+        expect(tips.length).toBeGreaterThan(0);
+        expect(buttons.length).toBe(tips.length);
       }
+      // Neither kind sends the reader to another page any more.
+      expect(
+        within(region).queryAllByRole("link", { name: /know (a source for|.*\?)/i }).length
+      ).toBe(0);
     }
+  });
+
+  // /gaps shares capacityGapField with the facility page; this pins the field
+  // AND the label it renders for every status, so a rule change is deliberate.
+  it.each([
+    ["operational", "capacityOperationalMw", "the operational capacity"],
+    ["under_construction", "capacityPlannedMw", "the planned capacity"],
+    ["permitted", "capacityPlannedMw", "the planned capacity"],
+    ["proposed", "capacityPlannedMw", "the planned capacity"],
+    ["cancelled", "capacityPlannedMw", "the planned capacity"],
+  ] as const)("the capacity prompt for a %s facility is %s / %s", (status, field, label) => {
+    const capacity = GAP_SECTIONS.find((s) => s.key === "capacity")!;
+    expect(capacity.gapPromptFor({ status })).toEqual({ field, label });
   });
 
   it("targets capacityOperationalMw for an operational example and capacityPlannedMw for an under_construction one", async () => {

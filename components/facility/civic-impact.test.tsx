@@ -125,7 +125,7 @@ describe("CivicImpactSection — Economics", () => {
 // FieldGapPrompt, correctable vs. non-correctable)
 // ---------------------------------------------------------------------------
 describe("CivicImpactSection — Economics gap prompts", () => {
-  it("renders exactly one SectionGapPrompt lead-path link, and no Economics heading, when investmentUsd/landAcres/jobs are all absent", () => {
+  it("renders exactly one SectionGapPrompt tip trigger, and no Economics heading, when investmentUsd/landAcres/jobs are all absent", () => {
     // energy keeps hasCivicImpact true so CivicImpactSection actually renders
     // its sub-groups (otherwise the whole section — a different, untouched
     // guard — would return null before EconomicsGroup ever runs).
@@ -135,8 +135,8 @@ describe("CivicImpactSection — Economics gap prompts", () => {
     // By role, not text — the stronger form, and repo convention. `getByRole`
     // throws on more than one match, which is the "exactly one" half of this
     // test's name.
-    const link = screen.getByRole("link", { name: /economic impact data/i });
-    expect(link).toHaveAttribute("href", "/contribute");
+    expect(screen.getByRole("button", { name: /economic impact data/i })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /economic impact data/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Economics" })).not.toBeInTheDocument();
     expect(screen.queryByText("Investment")).not.toBeInTheDocument();
   });
@@ -149,12 +149,16 @@ describe("CivicImpactSection — Economics gap prompts", () => {
     expect(screen.getByRole("button", { name: /know jobs\?/i })).toBeInTheDocument();
   });
 
-  it("renders a lead-path link, not a correction dialog trigger, for a missing investmentUsd field inside an otherwise-populated Economics group", () => {
+  it("renders the tip trigger, not a field-correction trigger, for a missing investmentUsd field inside an otherwise-populated Economics group", () => {
     const facility = makeFacility({ jobs: { permanent: 100 } });
     render(<CivicImpactSection facility={facility} />);
 
-    const link = screen.getByRole("link", { name: /the investment amount/i });
-    expect(link).toHaveAttribute("href", "/contribute");
+    // investmentUsd is not in CORRECTABLE_KEYS, so the trigger is the "Know a
+    // source for …" tip invite (it opens the dialog), not "Know …?".
+    expect(
+      screen.getByRole("button", { name: /know a source for the investment amount/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /the investment amount/i })).not.toBeInTheDocument();
   });
 
   it("renders a per-field gap prompt inside a dt/dd pair, not as a bare <dl> child (WCAG 1.3.1 dl structure)", () => {
@@ -166,13 +170,13 @@ describe("CivicImpactSection — Economics gap prompts", () => {
     const facility = makeFacility({ jobs: { permanent: 100 } });
     render(<CivicImpactSection facility={facility} />);
 
-    const link = screen.getByRole("link", { name: /the investment amount/i });
-    expect(link.closest("dd")).toBeInTheDocument();
-    expect(link.closest("dd")?.previousElementSibling?.tagName).toBe("DT");
+    const trigger = screen.getByRole("button", { name: /the investment amount/i });
+    expect(trigger.closest("dd")).toBeInTheDocument();
+    expect(trigger.closest("dd")?.previousElementSibling?.tagName).toBe("DT");
 
     // Every direct child of the enclosing <dl> must be a <div> wrapping a
-    // dt/dd pair — never a bare <div><a>...</a></div>.
-    const dl = link.closest("dl") as HTMLElement;
+    // dt/dd pair — never a bare <div><button>...</button></div>.
+    const dl = trigger.closest("dl") as HTMLElement;
     for (const child of Array.from(dl.children)) {
       expect(child.tagName).toBe("DIV");
       expect(child.querySelector(":scope > dt")).toBeInTheDocument();
@@ -636,7 +640,7 @@ describe("CivicImpactSection — Public subsidies", () => {
     expect(screen.getByText("Subsidy")).toBeInTheDocument();
   });
 
-  it("renders a correction-dialog trigger (not a lead-path link) when subsidies is absent", () => {
+  it("renders a correction-dialog trigger (not the tip trigger that opens the dialog on 'Something else') when subsidies is absent", () => {
     const facility = makeFacility({ investmentUsd: 1_000_000 });
     render(<CivicImpactSection facility={facility} />);
     expect(
@@ -915,9 +919,7 @@ describe("CivicImpactSection — Air permit, empty emissions object", () => {
 
     // The gap prompt renders INSTEAD of the panel — not alongside it, and not
     // the bare `null` that left the section silently blank.
-    expect(
-      screen.getByRole("link", { name: /air permit data/i })
-    ).toHaveAttribute("href", "/contribute");
+    expect(screen.getByRole("button", { name: /air permit data/i })).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Air permit" })
     ).not.toBeInTheDocument();

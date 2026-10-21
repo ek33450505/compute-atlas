@@ -179,7 +179,9 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
   // inline here — the printed brief's consolidated nil line reads the same
   // functions, and a local copy is exactly how the two would drift apart.
   if (!hasEconomics(facility)) {
-    return <SectionGapPrompt facilityName={facilityName} label="economic impact data" />;
+    return (
+      <SectionGapPrompt facilityId={facilityId} facilityName={facilityName} label="economic impact data" />
+    );
   }
 
   const jobsText = (() => {
@@ -241,7 +243,9 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
 function EnergyWaterGroup({ facility }: { facility: Facility }) {
   const { energy, water, id: facilityId, name: facilityName } = facility;
   if (!hasEnergyWater(facility)) {
-    return <SectionGapPrompt facilityName={facilityName} label="energy or water data" />;
+    return (
+      <SectionGapPrompt facilityId={facilityId} facilityName={facilityName} label="energy or water data" />
+    );
   }
 
   const energySourceLabel = energy?.source
@@ -304,7 +308,7 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
 // that real regulatory fact.
 function EmissionsGroup({ facility }: { facility: Facility }) {
   if (!hasEmissions(facility)) {
-    return <SectionGapPrompt facilityName={facility.name} label="air permit data" />;
+    return <SectionGapPrompt facilityId={facility.id} facilityName={facility.name} label="air permit data" />;
   }
   const { emissions } = facility;
 
@@ -534,7 +538,8 @@ function SubsidiesGroup({ facility }: { facility: Facility }) {
     // FieldGapPrompt, not SectionGapPrompt, even though this stands in for the
     // whole group: `subsidies` IS in CORRECTABLE_KEYS (lib/contribute-fields.ts),
     // so this renders a real SuggestCorrection trigger on screen. Swapping to
-    // SectionGapPrompt would silently downgrade that to the lead-form link.
+    // SectionGapPrompt would silently downgrade that to the tip trigger, which
+    // cannot correct the field.
     // `coveredByPrintSummary` is what reconciles the two — see its doc comment.
     return (
       <FieldGapPrompt

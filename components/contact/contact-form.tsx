@@ -55,6 +55,37 @@ const TOPIC_OPTIONS: { value: ContactTopic; label: string }[] = [
 
 const MESSAGE_MIN = 20;
 const MESSAGE_MAX = 4000;
+const ABOUT_MAX = 200;
+
+// ---------------------------------------------------------------------------
+// URL prefill — the correction dialog links here, for people with no source to
+// cite, as `/contact?topic=correction&about=<facility name>`. Pure so the
+// "never overwrite what the user typed" and allowlist rules are testable
+// without waiting on a mount effect. Values only ever land in form state.
+//
+// The topic is checked against TOPIC_OPTIONS (this file's own list), not
+// CONTACT_TOPICS from lib/contact.ts: that module imports the DB client, which
+// must not reach a client bundle (see lib/lead-fields.guard.test.ts).
+// ---------------------------------------------------------------------------
+
+export function applyPrefill(state: ContactFormState, search: string): ContactFormState {
+  const params = new URLSearchParams(search);
+  const topic = TOPIC_OPTIONS.find((t) => t.value === params.get("topic"))?.value;
+  // Cap by code points, not UTF-16 units: slicing a string can cut an emoji
+  // in half and leave a lone surrogate in the message.
+  const about = Array.from((params.get("about") ?? "").trim())
+    .slice(0, ABOUT_MAX)
+    .join("")
+    .trimEnd();
+
+  const nextTopic = topic && !state.topic ? topic : state.topic;
+  const nextMessage = about && !state.message ? `About ${about}: ` : state.message;
+
+  // Same object back when nothing valid applies, so setState bails out and a
+  // plain /contact renders exactly as before.
+  if (nextTopic === state.topic && nextMessage === state.message) return state;
+  return { ...state, topic: nextTopic, message: nextMessage };
+}
 
 // ---------------------------------------------------------------------------
 // Payload building — mirrors buildLeadPayload / buildContributePayload.
@@ -274,6 +305,17 @@ export function ContactForm() {
   useEffect(() => {
     if (outcome === "success") successRef.current?.focus();
   }, [outcome]);
+
+  // Read on mount, not via useSearchParams: per Next's use-search-params docs
+  // that hook needs a Suspense boundary (a static page without one fails the
+  // production build), and under one the Client Component tree up to the
+  // boundary is client-side rendered, so the form would drop out of the
+  // prerendered HTML of /contact.
+  useEffect(() => {
+    const search = window.location.search;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- SSR-safe one-time read of window.location.search; initial state must match the server render, and applyPrefill hands back the same state when the URL carries nothing valid.
+    setState((prev) => applyPrefill(prev, search));
+  }, []);
 
   function handleReset() {
     setState(EMPTY_STATE);

@@ -31,7 +31,7 @@ export function hasSitingContext(facility: Facility): boolean {
 export function SitingContextSection({ facility }: { facility: Facility }) {
   const context = getSitingContext(facility.id);
   if (!hasAnyDatum(context)) {
-    return <SectionGapPrompt facilityName={facility.name} label="the siting context" />;
+    return <SectionGapPrompt facilityId={facility.id} facilityName={facility.name} label="the siting context" />;
   }
 
   const headingId = `siting-context-${facility.id}`;

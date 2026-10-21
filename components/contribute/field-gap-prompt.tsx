@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 import { CORRECTABLE_KEYS, type CorrectableKey } from "@/lib/contribute-fields";
 import { QUIET_ACTION_CLASS } from "@/lib/utils";
@@ -65,6 +63,38 @@ interface FieldGapPromptProps {
 }
 
 /**
+ * The "Know a source for …? Send us a link." invite for a gap with no field of
+ * its own to correct. It opens the correction dialog on "Something else", so
+ * the tip (still source-cited) is sent to the leads intake from right here,
+ * with `label` as the topic, instead of sending the reader to another page.
+ */
+function TipPrompt({
+  facilityId,
+  facilityName,
+  label,
+  className,
+}: {
+  facilityId: string;
+  facilityName: string;
+  label: string;
+  className: string;
+}) {
+  return (
+    <SuggestCorrection
+      facilityId={facilityId}
+      facilityName={facilityName}
+      defaultField="other"
+      topic={label}
+      intent="add"
+      showIntro={false}
+      triggerLabel={`Know a source for ${label} on ${facilityName}? Send us a link.`}
+      // text-left: a <button> centres wrapped text, which the old inline link did not.
+      triggerClassName={`${className} text-left print:hidden`}
+    />
+  );
+}
+
+/**
  * Turns a silent empty-field gap into a working invite. Eligibility is
  * derived from membership in the imported CORRECTABLE_KEYS array — never a
  * second, hand-maintained list — so widening CORRECTABLE_KEYS (the deferred
@@ -90,28 +120,33 @@ export function FieldGapPrompt({
           facilityId={facilityId}
           facilityName={facilityName}
           defaultField={field as CorrectableKey}
+          intent="add"
           showIntro={false}
           triggerLabel={`Know ${label}?`}
-          triggerClassName={`${QUIET_ACTION_CLASS} print:hidden`}
+          triggerClassName={`${QUIET_ACTION_CLASS} text-left print:hidden`}
         />
         {printNil}
       </>
     );
   }
 
-  // Not (yet) correctable — route to the lighter lead form instead of
-  // promising an edit the system can't apply automatically.
+  // Not (yet) correctable — offer the tip path instead of promising an edit
+  // the system can't apply automatically.
   return (
     <>
-      <Link href="/contribute" className={`${QUIET_ACTION_CLASS} print:hidden`}>
-        Know a source for {label} on {facilityName}? Send us a link.
-      </Link>
+      <TipPrompt
+        facilityId={facilityId}
+        facilityName={facilityName}
+        label={label}
+        className={QUIET_ACTION_CLASS}
+      />
       {printNil}
     </>
   );
 }
 
 interface SectionGapPromptProps {
+  facilityId: string;
   facilityName: string;
   /** Human copy, e.g. "economic impact data", "a documented stakeholder". */
   label: string;
@@ -131,7 +166,7 @@ const SECTION_LINK_CLASS =
  * every field in "Economics" is undefined, or a facility has no siting-
  * context entry), so there is no single field key to target a correction
  * at. Unlike FieldGapPrompt, this never does an eligibility check and
- * always renders the lead-path CTA. Render exactly one per empty group —
+ * always offers the tip path (see TipPrompt). Render exactly one per empty group —
  * never one per hypothetical field inside it, which would be noise — and
  * keep it visually quieter (smaller, muted, italic) than a populated
  * section so an empty facility page doesn't read louder than a full one.
@@ -142,10 +177,13 @@ const SECTION_LINK_CLASS =
  * predicates from lib/facility-gaps.ts, so the summary and the sections
  * cannot drift apart about what is missing.
  */
-export function SectionGapPrompt({ facilityName, label }: SectionGapPromptProps) {
+export function SectionGapPrompt({ facilityId, facilityName, label }: SectionGapPromptProps) {
   return (
-    <Link href="/contribute" className={`${SECTION_LINK_CLASS} print:hidden`}>
-      Know a source for {label} on {facilityName}? Send us a link.
-    </Link>
+    <TipPrompt
+      facilityId={facilityId}
+      facilityName={facilityName}
+      label={label}
+      className={SECTION_LINK_CLASS}
+    />
   );
 }

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import { getDatasetGaps, getGapExamples, getStats, type GapCount, type GapDimension } from "@/lib/data";
-import { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
+import { CORRECTABLE_KEYS, capacityGapField } from "@/lib/contribute-fields";
 import type { Facility } from "@/lib/schema";
 import { formatLocation } from "@/lib/format";
 import { itemListJsonLdString } from "@/lib/seo";
@@ -108,10 +108,13 @@ export const GAP_SECTIONS = [
         an operator ever states one in a press release.
       </>
     ),
-    gapPromptFor: (f) =>
-      f.status === "operational"
-        ? { field: "capacityOperationalMw", label: "the operational capacity" }
-        : { field: "capacityPlannedMw", label: "the planned capacity" },
+    gapPromptFor: (f) => {
+      const field = capacityGapField(f.status);
+      return {
+        field,
+        label: field === "capacityOperationalMw" ? "the operational capacity" : "the planned capacity",
+      };
+    },
   },
   {
     key: "subsidies",

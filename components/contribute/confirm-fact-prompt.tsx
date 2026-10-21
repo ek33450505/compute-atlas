@@ -3,7 +3,11 @@
 import { useState } from "react";
 
 import { SuggestCorrection } from "@/components/contribute/suggest-correction";
-import { CORRECTABLE_KEYS, type CorrectableKey } from "@/lib/contribute-fields";
+import {
+  CORRECTABLE_KEYS,
+  type CorrectableDisplayValues,
+  type CorrectableKey,
+} from "@/lib/contribute-fields";
 import { QUIET_ACTION_CLASS } from "@/lib/utils";
 
 interface ConfirmFactPromptProps {
@@ -19,6 +23,8 @@ interface ConfirmFactPromptProps {
    *  honest, date-agnostic copy when omitted rather than inventing a
    *  vintage the call site can't back up. */
   vintage?: string;
+  /** Passed straight through to the "No" dialog's "Currently: …" line. */
+  currentValues?: CorrectableDisplayValues;
 }
 
 /**
@@ -55,6 +61,7 @@ export function ConfirmFactPrompt({
   facilityName,
   label,
   vintage,
+  currentValues,
 }: ConfirmFactPromptProps) {
   const correctable = (CORRECTABLE_KEYS as readonly string[]).includes(field);
   const [confirmed, setConfirmed] = useState(false);
@@ -98,6 +105,7 @@ export function ConfirmFactPrompt({
         triggerLabel="No"
         triggerClassName={QUIET_ACTION_CLASS}
         triggerAriaLabel={`No, ${label} needs a correction`}
+        currentValues={currentValues}
       />
     </div>
   );

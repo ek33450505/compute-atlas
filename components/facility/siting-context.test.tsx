@@ -85,14 +85,13 @@ describe("SitingContextSection", () => {
     expect(screen.getByText(/HIFLD/)).toBeInTheDocument();
   });
 
-  it("renders a SectionGapPrompt lead-path link when the facility has no siting-context entry", () => {
+  it("renders a SectionGapPrompt tip trigger when the facility has no siting-context entry", () => {
     const facility = makeFacility({ id: "not-a-real-facility-id-xyz" });
     render(<SitingContextSection facility={facility} />);
 
-    const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/contribute");
-    expect(link).toHaveTextContent(/the siting context/i);
-    expect(link).toHaveTextContent(/test datacenter/i);
+    const trigger = screen.getByRole("button");
+    expect(trigger).toHaveTextContent(/the siting context/i);
+    expect(trigger).toHaveTextContent(/test datacenter/i);
     expect(screen.queryByRole("heading", { name: "Siting context" })).not.toBeInTheDocument();
   });
 
