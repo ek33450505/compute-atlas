@@ -27,20 +27,22 @@ import {
   RETRY_AFTER_CAP_MS,
   RETRY_BACKOFF_MS,
   defaultSleep,
-  createPinnedFetch,
+  RESOLVER_FAILURE_CODES,
+  createClosablePinnedFetch,
+  createRateGate,
   isBlockedHost,
   isHttpUrl,
   isSsrfBlockedError,
   parseRetryAfterMs,
-  pinnedFetch,
-  resolvesToBlockedAddress,
+  resolveVetted,
+  lookupFailureCode,
   runWithConcurrency,
   type ResolveDeps,
 } from "./net-guard";
 import { loadFacilities } from "./load-facilities";
 import type { Facility } from "../../lib/schema";
 import { isEntrypoint } from "../is-entrypoint";
-import { formatFatalError } from "../../lib/db-error";
+import { formatFatalError, redactedErrorCode } from "../../lib/db-error";
 
 // --- types -----------------------------------------------------------------
 
@@ -63,7 +65,43 @@ export interface SourceCheckResult {
   sourceIndex: number;
   httpStatus: number | null;
   classification: SourceClassification;
+  /** Identifier-shaped error code (`redactedErrorCode`) present on every
+   * `error` classification (`"unknown"` when the error carries none), so a
+   * report can tell a resolver outage (`EREFUSED`) from link rot (`ENOTFOUND`).
+   * Absent on every other classification; never a message. */
+  errorCode?: string;
   checkedAt: string;
+}
+
+export { RESOLVER_FAILURE_CODES };
+
+/** Consecutive resolver failures that abort the lane. */
+export const RESOLVER_OUTAGE_THRESHOLD = 25;
+
+/** Consecutive probe timeouts that abort the lane. A resolver that silently
+ * drops queries produces timeouts, not error codes, so the code-based breaker
+ * cannot see it. */
+export const TIMEOUT_OUTAGE_THRESHOLD = 50;
+
+/** New DNS resolutions per second the lane may start (cache hits are free).
+ * One resolution is two queries (A + AAAA), so 5/s is ~600 queries/min,
+ * under a 1000/60 s per-client resolver limit even with an empty cache. */
+export const LOOKUP_RATE_PER_SECOND = 5;
+
+/** Thrown by {@link checkSources} when the resolver or network looks down; no report is written. */
+export class ResolverOutageError extends Error {
+  constructor(
+    readonly code: string,
+    readonly consecutive: number,
+    readonly kind: "lookup" | "timeout" = "lookup",
+  ) {
+    super(
+      kind === "lookup"
+        ? `resolver outage: ${consecutive} consecutive lookup failures (${code})`
+        : `${consecutive} consecutive probe timeouts (possible silent resolver or network drop)`,
+    );
+    this.name = "ResolverOutageError";
+  }
 }
 
 export interface SourceCheckDeps {
@@ -77,6 +115,14 @@ export interface SourceCheckDeps {
   sleepImpl?: (ms: number) => Promise<void>;
   /** Injectable DNS resolvers for the SSRF resolution check. Defaults to real DNS. */
   resolveDeps?: ResolveDeps;
+  /** Cap on new DNS resolutions per second. Defaults to {@link LOOKUP_RATE_PER_SECOND}. */
+  lookupsPerSecond?: number;
+  /** Consecutive resolver failures that abort. Defaults to {@link RESOLVER_OUTAGE_THRESHOLD}. */
+  outageThreshold?: number;
+  /** Consecutive probe timeouts that abort. Defaults to {@link TIMEOUT_OUTAGE_THRESHOLD}. */
+  timeoutThreshold?: number;
+  /** Clock for the lookup rate gate (ms, monotonic). Defaults to `performance.now`. */
+  nowImpl?: () => number;
 }
 
 interface SourceTask {
@@ -130,7 +176,7 @@ async function probeUrl(
   timeoutMs: number,
   maxRetries: number,
   sleepImpl: (ms: number) => Promise<void>,
-): Promise<{ httpStatus: number | null; classification: SourceClassification }> {
+): Promise<{ httpStatus: number | null; classification: SourceClassification; errorCode?: string; lookupCode?: string }> {
   const attempt = async (method: "HEAD" | "GET"): Promise<Response> => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -182,7 +228,9 @@ async function probeUrl(
     if (isSsrfBlockedError(err)) {
       return { httpStatus: null, classification: "blocked" };
     }
-    return { httpStatus: null, classification: "error" };
+    // lookupCode is set only when the failure came from the DNS lookup itself,
+    // never for a socket-level ECONNREFUSED to the source host.
+    return { httpStatus: null, classification: "error", errorCode: redactedErrorCode(err), lookupCode: lookupFailureCode(err) };
   }
 }
 
@@ -202,82 +250,149 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
   const maxRetries = deps.maxRetries ?? 2;
   const sleepImpl = deps.sleepImpl ?? defaultSleep;
 
-  const fetchImpl = deps.fetchImpl ?? (deps.resolveDeps ? createPinnedFetch(deps.resolveDeps) : pinnedFetch);
+  // Every resolution this run starts (pre-check and connect) passes one rate
+  // gate and one vetted-address cache, so a host costs one A+AAAA pair per TTL.
+  const resolveDeps: ResolveDeps = {
+    ...deps.resolveDeps,
+    beforeResolve: createRateGate(deps.lookupsPerSecond ?? LOOKUP_RATE_PER_SECOND, deps.nowImpl),
+  };
+  const closable = deps.fetchImpl ? undefined : createClosablePinnedFetch(resolveDeps);
+  const fetchImpl = deps.fetchImpl ?? (closable as NonNullable<typeof closable>).fetch;
 
-  // One DNS check per hostname per run: sources share hosts heavily. This is a
-  // classification fast path and defence in depth, not the enforcement point.
-  // It runs outside probeUrl's AbortController, so it is raced against
-  // timeoutMs and fails open (false) on timeout, DNS failure or a throwing
-  // resolver; the probe then runs under its own timeout.
-  const blockedByHost = new Map<string, Promise<boolean>>();
-  const resolvesBlocked = (hostname: string): Promise<boolean> => {
-    let pending = blockedByHost.get(hostname);
-    if (!pending) {
-      let timer: ReturnType<typeof setTimeout> | undefined;
-      const timeout = new Promise<boolean>((resolve) => {
-        timer = setTimeout(() => resolve(false), deps.timeoutMs);
-      });
-      const lookup = (async () => resolvesToBlockedAddress(hostname, deps.resolveDeps))().catch(() => false);
-      // Fail-open on timeout is safe because enforcement moved to the pinned
-      // connection (createPinnedFetch): its lookup re-resolves and vets the
-      // address the socket actually uses, and fails closed (no vetted
-      // address, no connect). Failing closed HERE would only mislabel slow
-      // but legitimate resolvers "blocked".
-      pending = Promise.race([lookup, timeout]).finally(() => clearTimeout(timer));
-      blockedByHost.set(hostname, pending);
+  // Circuit breakers: consecutive resolver failures (or silent timeouts) mean
+  // the resolver is down, refusing us or dropping queries, so every later
+  // result would be noise and would keep hammering it.
+  const threshold = deps.outageThreshold ?? RESOLVER_OUTAGE_THRESHOLD;
+  const timeoutLimit = deps.timeoutThreshold ?? TIMEOUT_OUTAGE_THRESHOLD;
+  let consecutiveResolverFailures = 0;
+  // Distinct hostnames that have timed out in a row: sources cluster by facility, so
+  // many timeouts on ONE dead domain must not read as a silent resolver drop.
+  const timeoutHosts = new Set<string>();
+  let outage: ResolverOutageError | undefined;
+  const observe = (outcome: { host: string; httpStatus: number | null; classification: SourceClassification; errorCode?: string; lookupCode?: string }): void => {
+    const lookupCode = outcome.lookupCode;
+    if (lookupCode !== undefined && RESOLVER_FAILURE_CODES.has(lookupCode)) {
+      consecutiveResolverFailures++;
+      timeoutHosts.clear();
+      if (!outage && consecutiveResolverFailures >= threshold) {
+        outage = new ResolverOutageError(lookupCode, consecutiveResolverFailures);
+      }
+    } else if (outcome.classification === "timeout") {
+      // Neutral for the code-based streak: a timeout says nothing about the lookup code.
+      timeoutHosts.add(outcome.host);
+      if (!outage && timeoutHosts.size >= timeoutLimit) {
+        outage = new ResolverOutageError("ABORT_TIMEOUT", timeoutHosts.size, "timeout");
+      }
+    } else if (outcome.httpStatus !== null || outcome.errorCode !== undefined || outcome.classification === "blocked") {
+      // A definite outcome (including `blocked`: DNS answered) resets both streaks.
+      consecutiveResolverFailures = 0;
+      timeoutHosts.clear();
     }
-    return pending;
   };
 
-  return runWithConcurrency(tasks, deps.concurrency, async (task): Promise<SourceCheckResult> => {
-    const checkedAt = new Date().toISOString();
+  // Resolves (or reads the cache) OUTSIDE probeUrl's AbortController, so time
+  // spent queued behind the lookup rate gate never counts against a probe's
+  // timeout. Raced against timeoutMs and failing open (undefined) on timeout
+  // or a throwing gate; the probe then runs under its own timeout. Fail-open is
+  // safe because enforcement lives in the pinned connection (createPinnedFetch):
+  // its lookup re-vets whatever address the socket uses and fails closed.
+  const vet = async (hostname: string) => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<undefined>((resolve) => {
+      timer = setTimeout(() => resolve(undefined), deps.timeoutMs);
+    });
+    try {
+      return await Promise.race([resolveVetted(hostname, resolveDeps).catch(() => undefined), timeout]);
+    } finally {
+      clearTimeout(timer);
+    }
+  };
 
-    if (!isHttpUrl(task.url)) {
+  let results: SourceCheckResult[];
+  try {
+    results = await runWithConcurrency(tasks, deps.concurrency, async (task): Promise<SourceCheckResult> => {
+      const checkedAt = new Date().toISOString();
+
+      // Tripped: schedule nothing more. This placeholder is discarded (the run throws).
+      if (outage) {
+        return { ...task, httpStatus: null, classification: "error", errorCode: "ABORTED", checkedAt };
+      }
+
+      if (!isHttpUrl(task.url)) {
+        return {
+          facilityId: task.facilityId,
+          facilityName: task.facilityName,
+          url: task.url,
+          sourceIndex: task.sourceIndex,
+          httpStatus: null,
+          classification: "error",
+          errorCode: "INVALID_URL",
+          checkedAt,
+        };
+      }
+
+      // SSRF guard: never connect to private/loopback/link-local/reserved
+      // addresses or the cloud metadata endpoint. Checked after isHttpUrl so
+      // this only runs on URLs that would otherwise be probed.
+      // User-submitted sources reach this lane after approval, so a name that
+      // merely resolves to a private address (e.g. 127.0.0.1.nip.io) is refused
+      // too. A DNS failure resolves to false and falls through to the probe, so
+      // ENOTFOUND stays the outage-vs-link-rot signal. The synchronous
+      // isBlockedHost check is load-bearing for IP-literal URLs (net.connect
+      // skips lookup for literals); for names, rebinding between this check and
+      // the connect is closed by the pinned fetch (see net-guard.ts).
+      const hostname = new URL(task.url).hostname;
+      const vetted = isBlockedHost(hostname) ? undefined : await vet(hostname);
+      if (isBlockedHost(hostname) || vetted?.blocked) {
+        observe({ host: hostname, httpStatus: null, classification: "blocked" });
+        return {
+          facilityId: task.facilityId,
+          facilityName: task.facilityName,
+          url: task.url,
+          sourceIndex: task.sourceIndex,
+          httpStatus: null,
+          classification: "blocked",
+          checkedAt,
+        };
+      }
+
+      // The resolver itself refused or failed: count it and skip the fetch, which
+      // would only re-send the same two queries to a resolver that just failed.
+      const resolverCode = vetted && vetted.addresses.length === 0 ? lookupFailureCode(vetted.v4Error) : undefined;
+      if (resolverCode !== undefined && RESOLVER_FAILURE_CODES.has(resolverCode)) {
+        observe({ host: hostname, httpStatus: null, classification: "error", errorCode: resolverCode, lookupCode: resolverCode });
+        return {
+          facilityId: task.facilityId,
+          facilityName: task.facilityName,
+          url: task.url,
+          sourceIndex: task.sourceIndex,
+          httpStatus: null,
+          classification: "error",
+          errorCode: resolverCode,
+          checkedAt,
+        };
+      }
+
+      const probe = await probeUrl(task.url, fetchImpl, deps.timeoutMs, maxRetries, sleepImpl);
+      observe({ ...probe, host: hostname });
+      const { httpStatus, classification, errorCode } = probe;
       return {
         facilityId: task.facilityId,
         facilityName: task.facilityName,
         url: task.url,
         sourceIndex: task.sourceIndex,
-        httpStatus: null,
-        classification: "error",
+        httpStatus,
+        classification,
+        ...(errorCode !== undefined ? { errorCode } : {}),
         checkedAt,
       };
-    }
-
-    // SSRF guard: never connect to private/loopback/link-local/reserved
-    // addresses or the cloud metadata endpoint. Checked after isHttpUrl so
-    // this only runs on URLs that would otherwise be probed.
-    // User-submitted sources reach this lane after approval, so a name that
-    // merely resolves to a private address (e.g. 127.0.0.1.nip.io) is refused
-    // too. A DNS failure resolves to false and falls through to the probe, so
-    // ENOTFOUND stays the outage-vs-link-rot signal. The synchronous
-    // isBlockedHost check is load-bearing for IP-literal URLs (net.connect
-    // skips lookup for literals); for names, rebinding between this check and
-    // the connect is closed by the pinned fetch (see net-guard.ts).
-    const hostname = new URL(task.url).hostname;
-    if (isBlockedHost(hostname) || (await resolvesBlocked(hostname))) {
-      return {
-        facilityId: task.facilityId,
-        facilityName: task.facilityName,
-        url: task.url,
-        sourceIndex: task.sourceIndex,
-        httpStatus: null,
-        classification: "blocked",
-        checkedAt,
-      };
-    }
-
-    const { httpStatus, classification } = await probeUrl(task.url, fetchImpl, deps.timeoutMs, maxRetries, sleepImpl);
-    return {
-      facilityId: task.facilityId,
-      facilityName: task.facilityName,
-      url: task.url,
-      sourceIndex: task.sourceIndex,
-      httpStatus,
-      classification,
-      checkedAt,
-    };
-  });
+    });
+  } finally {
+    // Also runs on a breaker trip: the lane's Agent is never left open.
+    await closable?.close();
+  }
+  if (outage) throw outage;
+  return results;
 }
 
 // --- CLI ---------------------------------------------------------------
@@ -333,6 +448,26 @@ function summarize(results: SourceCheckResult[]): string {
   );
 }
 
+/**
+ * Checks `facilities`, writes the report and returns the process exit code.
+ * A resolver outage aborts with NO report (so `loadLatestSourceHealth`, which
+ * picks the newest file, never reads a polluted one) and a non-zero code; the
+ * reason names the error code only.
+ */
+export async function runLane(facilities: Facility[], deps: SourceCheckDeps): Promise<number> {
+  try {
+    const results = await checkSources(facilities, deps);
+    const logPath = writeReport(results);
+    console.log(`${summarize(results)} -> ${logPath}`);
+    return 0;
+  } catch (err) {
+    if (!(err instanceof ResolverOutageError)) throw err;
+    // Error code only (ABORT_TIMEOUT for the timeout breaker), never the message.
+    console.error(`check-sources aborted: resolver outage (${redactedErrorCode(err)}); no report written`);
+    return 1;
+  }
+}
+
 async function main(): Promise<void> {
   const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
   const concurrency = Number(process.env.CHECK_SOURCES_CONCURRENCY) || DEFAULT_CONCURRENCY;
@@ -345,9 +480,7 @@ async function main(): Promise<void> {
         `falling back to the committed data/facilities.json snapshot, which may be stale.`
     );
   }
-  const results = await checkSources(facilities, { concurrency, timeoutMs });
-  const logPath = writeReport(results);
-  console.log(`${summarize(results)} -> ${logPath}`);
+  process.exitCode = await runLane(facilities, { concurrency, timeoutMs });
 }
 
 const isMainModule = isEntrypoint(import.meta.url);

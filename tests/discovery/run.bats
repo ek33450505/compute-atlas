@@ -82,10 +82,9 @@ case "\$*" in
 	exit 0
 	;;
 *check-sources.ts*)
-	# Simulate the shimmed failure/empty-input case; run.sh's source-liveness
-	# lane wraps this call in an if-not-npx-then-log-WARN guard, so a nonzero
-	# exit here must NOT fail the overall run.
-	exit 1
+	# Healthy by default. A nonzero exit is a recorded FAILURES entry (see the
+	# source-liveness tests), so tests that want one set CHECK_SOURCES_RC.
+	exit \${CHECK_SOURCES_RC:-0}
 	;;
 *)
 	exit 0
@@ -233,15 +232,14 @@ teardown() {
 	[ "$cursor_after_2" = "OH" ]
 }
 
-@test "check-sources failure after submit does not fail the overall run" {
+@test "check-sources runs after submit-candidates" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=true
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
 	# both submit-candidates.ts and check-sources.ts must have been invoked,
-	# with check-sources coming after submit in the call log (fail-open
-	# ordering: check-sources' shimmed nonzero exit must not propagate).
+	# with check-sources coming after submit in the call log.
 	run grep -n "submit-candidates.ts\|check-sources.ts" "$NPX_CALL_LOG"
 	[ "$status" -eq 0 ]
 	submit_line="$(grep -n "submit-candidates.ts" "$NPX_CALL_LOG" | head -1 | cut -d: -f1)"
@@ -251,12 +249,14 @@ teardown() {
 	[ "$check_line" -gt "$submit_line" ]
 }
 
-@test "check-sources failure emits a visible WARN and still completes the run" {
+@test "check-sources failure emits a visible WARN, is recorded as a FAIL, and still completes the run" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=true
+	export CHECK_SOURCES_RC=1
 	run bash "$RUN_SH"
-	[ "$status" -eq 0 ]
+	[ "$status" -eq 1 ]
 	[[ "$output" == *"WARN: source-liveness check failed"* ]]
+	[[ "$output" == *"liveness: check-sources failed"* ]]
 	[[ "$output" == *"discovery run"*"complete"* ]]
 }
 
@@ -1960,7 +1960,7 @@ case "\$*" in
 	exit 0
 	;;
 *check-sources.ts*)
-	exit 1
+	exit 0
 	;;
 *retention-prune.ts*)
 	exit 1
@@ -2000,7 +2000,7 @@ case "\$*" in
 	exit 0
 	;;
 *check-sources.ts*)
-	exit 1
+	exit 0
 	;;
 *retention-prune.ts*)
 	exit 1
@@ -2088,7 +2088,7 @@ case "\$*" in
 	exit 0
 	;;
 *check-sources.ts*)
-	exit 1
+	exit 0
 	;;
 *publish-heartbeat.ts*)
 	exit 1
@@ -2127,7 +2127,7 @@ case "\$*" in
 	exit 0
 	;;
 *check-sources.ts*)
-	exit 1
+	exit 0
 	;;
 *publish-heartbeat.ts*)
 	exit 1
@@ -2719,7 +2719,7 @@ case "\$*" in
 	exit 0
 	;;
 *check-sources.ts*)
-	exit 1
+	exit 0
 	;;
 *leads-lane.ts*)
 	exit 1
@@ -2736,6 +2736,39 @@ EOF
 	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
 	[[ "$output" == *"leads: lane failed"* ]]
 	# retention-prune runs AFTER the leads lane; it must not have been skipped
+	grep -q "retention-prune.ts" "$NPX_CALL_LOG"
+	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+}
+
+@test "a failing source-liveness check is reported as a FAIL but later steps still run" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	cat >"$BIN_DIR/npx" <<EOF
+#!/usr/bin/env bash
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*)
+	exec "$REAL_NPX" "\$@"
+	;;
+*existing-facilities.ts*)
+	echo ""
+	exit 0
+	;;
+*check-sources.ts*)
+	exit 1
+	;;
+*)
+	exit 0
+	;;
+esac
+EOF
+	chmod +x "$BIN_DIR/npx"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
+	[[ "$output" == *"liveness: check-sources failed"* ]]
+	# retention-prune runs AFTER the liveness step; it must not have been skipped
 	grep -q "retention-prune.ts" "$NPX_CALL_LOG"
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
 }

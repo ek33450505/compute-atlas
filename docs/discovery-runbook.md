@@ -296,7 +296,48 @@ classifications: `ok` (2xx), `redirected` (3xx), `gone` (404/410/451), `bot_bloc
 `client_error` (other 4xx), `timeout`, `error`, `blocked` (SSRF-guard refusal).
 Note that `bot_blocked` and `throttled` are transient/anti-bot signals, not
 "dead" sources. This is a flag/report-only tool — it never modifies facilities or
-submissions. A future enhancement may wire these reports into an admin dashboard
+submissions.
+
+**DNS load.** Resolution goes through `resolveVetted` in `net-guard.ts`: vetted
+(non-blocked, successful) address lists are cached per hostname for 60 s
+(`LOOKUP_CACHE_TTL_MS`, max 4096 entries), re-checked against the block list on
+every hit, and shared by the pre-check and the connect, so a host costs one A+AAAA
+pair per TTL. Errors and blocked results are never cached. The residual
+DNS-rebinding window is one TTL. New resolutions are capped at
+`LOOKUP_RATE_PER_SECOND` (5, i.e. about 600 queries/min) so the lane stays under a
+per-client resolver limit such as Pi-hole's 1000 queries/60 s (the 2026-10-21 flood).
+
+**Duration.** Cold, the lookup cap alone sets a floor of about 2,193 hosts / 5 per
+second, roughly 7.3 minutes (an estimate, not a measurement), and more when a
+host's 60 s cache entry expires between its URLs. Before each probe the lane
+resolves (or reads the cache for) the host outside the probe's timeout, so time
+queued behind the cap never counts against a probe; with concurrency 5 and 5/s a
+miss waits at most about a second. Raising `CHECK_SOURCES_CONCURRENCY` lengthens
+that queue but does not raise the query rate.
+
+**Resolver-outage breakers.** Two consecutive-failure breakers abort the lane,
+write NO report (so the newest `source-health-*.json` is never a polluted one),
+print one line (the error code only, never a message), and exit 1:
+- `RESOLVER_OUTAGE_THRESHOLD` (25) consecutive failures from the DNS lookup itself
+  with code `EREFUSED`, `ESERVFAIL`, `ETIMEOUT`, `ECONNREFUSED`, `EAI_AGAIN` or
+  `ECANCELLED`. Only errors raised by the resolver count: a socket-level
+  `ECONNREFUSED` from the source host is a per-host fact and does not. `ENOTFOUND`
+  and `ENODATA` never count (link rot).
+- `TIMEOUT_OUTAGE_THRESHOLD` (50) consecutive probe timeouts on 50 DISTINCT
+  hosts, which catches a resolver that silently drops queries. A repeat timeout on
+  a host already in the streak does not advance it, so one dead domain with many
+  URLs cannot trip it. It counts completions, so a higher
+  `CHECK_SOURCES_CONCURRENCY` reaches it faster.
+
+Resets: any result with an HTTP status, any `error` result with a non-resolver
+code, and a `blocked` result (DNS answered) reset BOTH streaks. A lookup-level
+resolver failure advances the first streak and clears the timeout streak. A
+timeout leaves the resolver streak untouched and advances the timeout streak. `run.sh` records the non-zero exit
+as `liveness: check-sources failed` in FAILURES (heartbeat, watchdog and
+notification) and continues to the later lanes. An `error` result carries
+`errorCode` (`unknown` when code-less) so a report can tell an outage from link rot.
+
+A future enhancement may wire these reports into an admin dashboard
 or automated deprecation workflow.
 
 ## Field extraction from existing sources

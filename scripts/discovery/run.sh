@@ -1068,11 +1068,15 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" && "$ROTATION_IS_DEFAULT" == "true
 fi
 
 # --- source-liveness check (read-only — runs ONCE per batch, after all
-# states, including dry-run). Global, not per-state, and takes ~4 minutes —
-# running it once per state would be pure waste. -----------------------------
+# states, including dry-run). Global, not per-state, and takes well over 7
+# minutes cold (lookups are rate-capped; see docs/discovery-runbook.md) —
+# running it once per state would be pure waste. A non-zero exit (including a
+# resolver-outage abort, which writes no report) is recorded in FAILURES so the
+# heartbeat and watchdog see it; later lanes still run. -------------------------
 log "checking source liveness"
 if ! npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_DIR/check-sources.err"; then
   log "WARN: source-liveness check failed — continuing (see check-sources.err)"
+  FAILURES+=("liveness: check-sources failed")
 fi
 
 # --- field-extraction + field-verification lane (step 3) ----------
