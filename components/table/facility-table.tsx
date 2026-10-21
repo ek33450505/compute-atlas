@@ -32,7 +32,7 @@ import {
 } from "@/lib/format";
 import { getFacilityTypeMeta } from "@/lib/facility-type";
 import { cn } from "@/lib/utils";
-import type { Facility } from "@/lib/schema";
+import type { TableRow as TableRowData } from "@/lib/facility-slim";
 
 // ---------------------------------------------------------------------------
 // Column definitions
@@ -43,8 +43,8 @@ import type { Facility } from "@/lib/schema";
  * cancelled last).
  */
 function statusSortFn(
-  rowA: { original: Facility },
-  rowB: { original: Facility }
+  rowA: { original: TableRowData },
+  rowB: { original: TableRowData }
 ): number {
   return (
     STATUS_ORDER.indexOf(rowA.original.status) -
@@ -56,8 +56,8 @@ function statusSortFn(
  * Custom sort for Capacity; facilities with no capacity data sort last.
  */
 function capacitySortFn(
-  rowA: { original: Facility },
-  rowB: { original: Facility }
+  rowA: { original: TableRowData },
+  rowB: { original: TableRowData }
 ): number {
   const a = getFacilityMaxMw(rowA.original);
   const b = getFacilityMaxMw(rowB.original);
@@ -67,7 +67,7 @@ function capacitySortFn(
   return a - b;
 }
 
-const columns: ColumnDef<Facility>[] = [
+const columns: ColumnDef<TableRowData>[] = [
   {
     id: "name",
     header: "Name",
@@ -193,7 +193,7 @@ function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
 // ---------------------------------------------------------------------------
 
 interface FacilityTableProps {
-  facilities: Facility[];
+  facilities: TableRowData[];
 }
 
 export function FacilityTable({ facilities }: FacilityTableProps) {

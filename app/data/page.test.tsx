@@ -3,20 +3,14 @@ import { render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import type { DataCenterFacility } from "@/lib/schema";
 import type { DatasetEdition } from "@/lib/dataset-edition";
 
 // vi.mock calls are hoisted above imports by Vitest. Route the shared mocks
 // through vi.hoisted() so their initialization is hoisted alongside the
 // vi.mock call itself, rather than relying on plain top-level consts (same
 // pattern as app/states/page.test.tsx, app/stakeholders/[person]/page.test.tsx).
-const { mockGetAllFacilities, mockGetDatasetEdition } = vi.hoisted(() => ({
-  mockGetAllFacilities: vi.fn(),
+const { mockGetDatasetEdition } = vi.hoisted(() => ({
   mockGetDatasetEdition: vi.fn(),
-}));
-
-vi.mock("@/lib/data", () => ({
-  getAllFacilities: mockGetAllFacilities,
 }));
 
 vi.mock("@/lib/dataset-edition", () => ({
@@ -42,72 +36,116 @@ vi.mock("next/link", () => ({
 
 import DataPage, { metadata } from "./page";
 
-function makeFacility(overrides: Partial<DataCenterFacility> = {}): DataCenterFacility {
-  return {
-    id: "test-facility",
-    name: "Test Facility",
-    operator: "Acme Corp",
-    status: "operational",
-    confidence: "confirmed",
-    facilityType: "data_center",
-    location: { lat: 40, lon: -90, city: "Springfield", state: "IL", precision: "exact" },
-    statusHistory: [],
-    sources: [
-      { url: "https://example.com", label: "Example source", retrievedAt: "2026-01-01", kind: "press" },
-    ],
-    lastUpdated: "2026-01-01",
-    ...overrides,
-  };
-}
-
-const FIXTURE_FACILITIES: DataCenterFacility[] = [
-  makeFacility({ id: "facility-1", name: "Facility One" }),
-  makeFacility({ id: "facility-2", name: "Facility Two" }),
-  makeFacility({ id: "facility-3", name: "Facility Three" }),
-];
-
 const FIXTURE_EDITION: DatasetEdition = {
   version: "1.31.0",
-  asOf: "2026-08-15T00:00:00.000Z",
+  asOf: "2026-08-15T12:00:00.000Z",
   recordCount: 3,
   schemaVersion: 4,
 };
 
 beforeEach(() => {
-  mockGetAllFacilities.mockReset();
   mockGetDatasetEdition.mockReset();
-  mockGetAllFacilities.mockResolvedValue(FIXTURE_FACILITIES);
   mockGetDatasetEdition.mockReturnValue(FIXTURE_EDITION);
 });
 
 describe("DataPage", () => {
-  it("renders the h1", async () => {
-    const page = await DataPage();
+  it("renders the h1", () => {
+    const page = DataPage();
     render(page);
     expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
   });
 
-  it("renders the download buttons with aria-labels reflecting the fixture facility count", async () => {
-    const page = await DataPage();
-    render(page);
+  it("renders versioned static download links with the count in the accessible name", () => {
+    render(DataPage());
+    const csv = screen.getByRole("link", { name: "Download CSV: all 3 facilities" });
+    const version = encodeURIComponent(FIXTURE_EDITION.asOf);
+    expect(csv).toHaveAttribute("href", `/data/facilities.csv?v=${version}`);
+    expect(csv).toHaveAttribute("download", "compute-atlas-facilities.csv");
+    const json = screen.getByRole("link", { name: "Download JSON: all 3 facilities" });
+    expect(json).toHaveAttribute("href", `/data/facilities.json?v=${version}`);
+    expect(json).toHaveAttribute("download", "compute-atlas-facilities.json");
+  });
+
+  it("omits the version and the as-of claim when the edition date is unusable", () => {
+    mockGetDatasetEdition.mockReturnValue({ ...FIXTURE_EDITION, asOf: "unknown" });
+    render(DataPage());
+    expect(screen.getByRole("link", { name: /Download CSV/ })).toHaveAttribute(
+      "href",
+      "/data/facilities.csv"
+    );
+    expect(screen.queryByText(/as of/)).not.toBeInTheDocument();
+  });
+
+  it("renders even if the DB-backed data layer throws on any use", async () => {
+    vi.resetModules();
+    vi.doMock("@/lib/data", () => {
+      const boom = () => {
+        throw new Error("data layer must not be touched by /data");
+      };
+      return { getAllFacilities: boom, loadFacilities: boom };
+    });
+    try {
+      const { default: FreshPage } = await import("./page");
+      render(FreshPage());
+      expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /Download CSV/ })).toBeInTheDocument();
+    } finally {
+      vi.doUnmock("@/lib/data");
+    }
+  });
+
+  it("states that the downloads are a deploy-time snapshot that can trail the live site", () => {
+    render(DataPage());
     expect(
-      screen.getByRole("button", { name: "Download 3 facilities as CSV" })
+      screen.getByText(
+        new RegExp(
+          "Both files are a snapshot as of August 15, 2026, published with each site deploy\\. " +
+            "They can trail the live site until the next deploy\\."
+        )
+      )
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Download 3 facilities as JSON" })
+      screen.queryByText(/same one counted above|same snapshot|regenerated/)
+    ).not.toBeInTheDocument();
+  });
+
+  it("drops the date but keeps the snapshot caveat when the edition date is unusable", () => {
+    mockGetDatasetEdition.mockReturnValue({ ...FIXTURE_EDITION, asOf: "unknown" });
+    render(DataPage());
+    expect(
+      screen.getByText(/Both files are a snapshot published with each site deploy\. They can trail/)
     ).toBeInTheDocument();
   });
 
-  it("renders a link to /methodology", async () => {
-    const page = await DataPage();
+  it("qualifies the meta description as the deployed snapshot", () => {
+    expect(metadata.description).toBe(
+      "Download the full Compute Atlas dataset free under CC-BY-4.0 — every tracked facility " +
+        "in the deployed snapshot, no login, no sign-up, no query building."
+    );
+    expect((metadata.description ?? "").length).toBeLessThanOrEqual(160);
+  });
+
+  it("shows the snapshot count and as-of date from the bundled edition", () => {
+    render(DataPage());
+    expect(screen.getByText(/3 facilities, as of August 15, 2026/)).toBeInTheDocument();
+  });
+
+  it("does not import the DB-backed data layer", () => {
+    expect(readSource("app/data/page.tsx")).not.toMatch(
+      /from "@\/lib\/data"|getAllFacilities\(|loadFacilities\(/
+    );
+  });
+
+  it("renders a link to /methodology", () => {
+    const page = DataPage();
     render(page);
     expect(
       screen.getByRole("link", { name: /Read the full methodology/ })
     ).toHaveAttribute("href", "/methodology");
   });
 
-  it("renders a link to /api", async () => {
-    const page = await DataPage();
+  it("renders a link to /api", () => {
+    const page = DataPage();
     render(page);
     expect(screen.getByRole("link", { name: /developer docs/ })).toHaveAttribute(
       "href",
@@ -115,8 +153,8 @@ describe("DataPage", () => {
     );
   });
 
-  it("renders the DOI link", async () => {
-    const page = await DataPage();
+  it("renders the DOI link", () => {
+    const page = DataPage();
     render(page);
     const doiLinks = screen.getAllByRole("link", {
       name: "https://doi.org/10.5281/zenodo.22284476",
@@ -127,8 +165,9 @@ describe("DataPage", () => {
     }
   });
 
-  it("gives one canonical attribution in How to cite: site link, license link, non-partisan note", async () => {
-    const page = await DataPage();
+  it("gives one canonical attribution in How to cite: site link, license link, " +
+    "non-partisan note", () => {
+    const page = DataPage();
     render(page);
     const section = screen.getByRole("heading", { name: "How to cite" }).closest("section");
     expect(section).not.toBeNull();
@@ -147,8 +186,8 @@ describe("DataPage", () => {
     expect(metadata.alternates).toEqual({ canonical: "/data" });
   });
 
-  it("emits a BreadcrumbList JSON-LD with a valid trail of at least two items", async () => {
-    const page = await DataPage();
+  it("emits a BreadcrumbList JSON-LD with a valid trail of at least two items", () => {
+    const page = DataPage();
     const { container } = render(page);
 
     const scripts = container.querySelectorAll('script[type="application/ld+json"]');
@@ -215,7 +254,9 @@ function getRevalidate(relativePath: string): string | null {
 
 // The facility-reading aggregate pages — each carries the "facilities" cache
 // tag (see lib/cache-tags.ts) and must agree on how often it revalidates, or
-// one silently drifts onto a different timer the way /data once did. The
+// one silently drifts. /data is NOT in this list: it no longer reads facilities
+// (static downloads + bundled meta), so it carries no tag; its own 86400
+// declaration is asserted separately below. The
 // homepage is deliberately excluded: it reads tagged data (getStats/loadFacilities)
 // AND also reads untagged direct-DB data (recent activity, quarterly pipeline), so it stays on a 1h timer.
 const AGGREGATE_PAGES = [
@@ -223,10 +264,9 @@ const AGGREGATE_PAGES = [
   "app/table/page.tsx",
   "app/ai/page.tsx",
   "app/map/page.tsx",
-  "app/data/page.tsx",
 ];
 
-describe("revalidate: /data must not drift from its aggregate-page siblings", () => {
+describe("revalidate: /data keeps its own timer; aggregate pages agree with each other", () => {
   it("app/data/page.tsx declares revalidate = 86400", () => {
     expect(getRevalidate("app/data/page.tsx")).toBe("86400");
   });

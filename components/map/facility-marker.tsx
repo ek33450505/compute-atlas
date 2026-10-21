@@ -3,12 +3,12 @@
 import { forwardRef } from "react";
 import { getStatusMeta, getStatusColor } from "@/lib/status";
 import { buildMarkerLabel } from "@/lib/map";
-import type { Facility } from "@/lib/schema";
+import type { MapFacility } from "@/lib/facility-slim";
 
 interface FacilityMarkerProps {
-  facility: Facility;
+  facility: MapFacility;
   isSelected: boolean;
-  onSelect: (facility: Facility) => void;
+  onSelect: (facility: MapFacility) => void;
 }
 
 /**

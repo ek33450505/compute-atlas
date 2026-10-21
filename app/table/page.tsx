@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 
 import { getAllFacilities } from "@/lib/data";
+import { toTableRow } from "@/lib/facility-slim";
 import { getDatasetEdition } from "@/lib/dataset-edition";
 import { Explorer } from "@/components/explorer/explorer";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
  * client-side (Suspense boundary required for useSearchParams / nuqs).
  */
 export default async function TablePage() {
-  const facilities = await getAllFacilities();
+  const rows = (await getAllFacilities()).map(toTableRow);
   const edition = getDatasetEdition();
 
   return (
@@ -46,7 +47,11 @@ export default async function TablePage() {
       </header>
 
       <Suspense>
-        <Explorer facilities={facilities} mode="table" />
+        <Explorer
+          facilities={rows}
+          mode="table"
+          snapshot={{ asOf: edition.asOf }}
+        />
       </Suspense>
     </div>
   );

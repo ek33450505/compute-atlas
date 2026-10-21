@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getAllFacilities } from "@/lib/data";
 import { getDatasetEdition } from "@/lib/dataset-edition";
+import { formatAsOfDate } from "@/lib/as-of";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
-import { ExportButtons } from "@/components/explorer/export-buttons";
+import { Download } from "lucide-react";
 import { breadcrumbJsonLdString, DATASET_DOI_URL } from "@/lib/seo";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
@@ -14,44 +14,50 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: "Get the data",
   description:
-    "Download the full Compute Atlas dataset for free, under CC-BY-4.0 — every tracked facility, no login, no query parameters, no explanation required.",
+    "Download the full Compute Atlas dataset free under CC-BY-4.0 — every tracked facility " +
+      "in the deployed snapshot, no login, no sign-up, no query building.",
   alternates: { canonical: "/data" },
 };
 
 const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
 
-/**
- * Formats `DatasetEdition.asOf` for display. `asOf` can be the literal
- * string "unknown" (see lib/dataset-edition.ts's FALLBACK_EDITION) or an
- * unparseable value — both render nothing rather than "Invalid Date".
- */
-function formatAsOf(asOf: string): string | null {
-  if (asOf === "unknown") return null;
-  const date = new Date(asOf);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
+const DOWNLOAD_CLASS =
+  "inline-flex h-8 items-center gap-1.5 rounded-sm border border-border bg-background px-3 " +
+  "text-sm font-medium hover:bg-muted focus-visible:outline-none focus-visible:ring-2 " +
+  "focus-visible:ring-ring focus-visible:ring-offset-2";
 
 /**
  * /data — plain-language front door to the full dataset download. Built for
  * an audience that doesn't know what an API is: "click here, get
- * everything." Reuses the same <ExportButtons> /table's filter UI uses, but
- * fed the FULL unfiltered facility list and none of the filter chrome.
+ * everything."
+ *
+ * The page does NOT load the facility array (it used to ship ~6 MB into the
+ * RSC payload just to build a blob on click). The downloads are plain links
+ * to static files that `scripts/build-data-exports.ts` generates on prebuild
+ * from data/facilities.json. Trade-off: those files come from the bundled
+ * snapshot, so they can lag live Neon until the next code deploy (data-only
+ * merges skip builds). The visible copy says so plainly: the files are a
+ * snapshot published with each deploy and can trail the live site. The "as of"
+ * date shown comes from data/facilities.meta.json; nothing claims the files and
+ * the page are content-identical (`version` below is only a cache-busting key).
+ * With no loadFacilities call the page carries no "facilities" cache tag; it
+ * revalidates on its 86400s timer only, which is fine for static prose.
  *
  * Deliberately does NOT emit Dataset JSON-LD — that already lives site-wide
  * on the homepage; duplicating it here would be redundant.
  */
-export default async function DataPage() {
-  const [facilities, edition] = await Promise.all([
-    getAllFacilities(),
-    Promise.resolve(getDatasetEdition()),
-  ]);
-  const asOfLabel = formatAsOf(edition.asOf);
+export default function DataPage() {
+  const edition = getDatasetEdition();
+  const asOfLabel = formatAsOfDate(edition.asOf);
+  const count = edition.recordCount.toLocaleString("en-US");
+  // The files are edge-cached for a day under /data/:path+, so the URL carries
+  // the snapshot's asOf: a fresh page links to a URL no older cache entry can
+  // hold, so a fresh page never gets a stale cached file. One direction only:
+  // an old edge-cached page linking ?v=OLD still fetches the CURRENT files,
+  // because the origin only ever holds the current build. (The static file
+  // server ignores the query.) Omitted when asOf is unusable.
+  const version = asOfLabel ? `?v=${encodeURIComponent(edition.asOf)}` : "";
 
   return (
     <div
@@ -73,7 +79,10 @@ export default async function DataPage() {
       <PageMasthead
         eyebrow="DATASET"
         title="Get the data"
-        dek="The full dataset, free to download — no login, no query parameters, no explanation required."
+        dek={
+          "The full dataset, free to download — no login, no sign-up, no query building, " +
+          "no explanation required."
+        }
       />
 
       {/* Primary download — the whole point of the page, above everything else */}
@@ -85,10 +94,41 @@ export default async function DataPage() {
           Download everything
         </h2>
         <p className="text-sm text-muted-foreground">
-          {edition.recordCount.toLocaleString("en-US")} facilities
+          {count} facilities
           {asOfLabel ? `, as of ${asOfLabel}` : ""}.
         </p>
-        <ExportButtons facilities={facilities} />
+        <div
+          role="group"
+          aria-label="Download the dataset"
+          className="flex flex-wrap items-center gap-2"
+        >
+          <a
+            href={`/data/facilities.csv${version}`}
+            download="compute-atlas-facilities.csv"
+            aria-label={`Download CSV: all ${count} facilities`}
+            className={DOWNLOAD_CLASS}
+          >
+            <Download className="size-4" aria-hidden="true" />
+            Download CSV
+          </a>
+          <a
+            href={`/data/facilities.json${version}`}
+            download="compute-atlas-facilities.json"
+            aria-label={`Download JSON: all ${count} facilities`}
+            className={DOWNLOAD_CLASS}
+          >
+            <Download className="size-4" aria-hidden="true" />
+            Download JSON
+          </a>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {asOfLabel
+            ? `Both files are a snapshot as of ${asOfLabel}, ` +
+              "published with each site deploy."
+            : "Both files are a snapshot published with each site deploy."}{" "}
+          They can trail the live site until the next deploy. CSV is a flat table of the main
+          fields; JSON has every field, including all sources.
+        </p>
       </section>
 
       <section aria-labelledby="what-heading" className="space-y-4 border-t border-border pt-10">

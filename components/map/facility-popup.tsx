@@ -9,10 +9,10 @@ import {
   formatNearestWater,
   getSitingContext,
 } from "@/lib/siting-context";
-import type { Facility } from "@/lib/schema";
+import type { MapFacility } from "@/lib/facility-slim";
 
 interface FacilityPopupProps {
-  facility: Facility;
+  facility: MapFacility;
   onClose: () => void;
   /**
    * When true, the "View details →" link opens the facility page in a new
@@ -153,7 +153,7 @@ export function FacilityPopup({
   }, [facility.id]);
 
   const { location, capacityMw, sources, confidence } = facility;
-  const firstSource = sources[0];
+  const firstSource: MapFacility["sources"][number] | undefined = sources[0];
   const cityState = location.city
     ? `${location.city}, ${location.state}`
     : location.state;
@@ -291,16 +291,18 @@ export function FacilityPopup({
           >
             View details →
           </Link>
-          <a
-            href={firstSource.url}
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label={`${firstSource.label} (opens in new tab)`}
-            className="text-xs text-foreground/80 hover:text-foreground flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded py-1.5"
-          >
-            <ExternalLink className="size-3" aria-hidden="true" />
-            Source
-          </a>
+          {firstSource && (
+            <a
+              href={firstSource.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label={`${firstSource.label} (opens in new tab)`}
+              className="text-xs text-foreground/80 hover:text-foreground flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded py-1.5"
+            >
+              <ExternalLink className="size-3" aria-hidden="true" />
+              Source
+            </a>
+          )}
         </div>
       </div>
     </div>
