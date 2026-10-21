@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { ContactForm } from "./contact-form";
+import { ContactForm, applyPrefill } from "./contact-form";
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency
 // in jsdom (same pattern as components/site-footer.test.tsx).
@@ -280,4 +280,143 @@ describe("ContactForm — submit outcomes", () => {
     resolveFetch!({ ok: true, status: 201, json: async () => ({ ok: true }) });
     await screen.findByText(/on its way/i);
   });
+});
+
+// ---------------------------------------------------------------------------
+// URL prefill — the correction dialog links here as
+// /contact?topic=correction&about=<facility name> for people with no source.
+// ---------------------------------------------------------------------------
+
+describe("ContactForm — URL prefill", () => {
+  function renderAt(search: string) {
+    window.history.pushState({}, "", `/contact${search}`);
+    render(<ContactForm />);
+  }
+
+  afterEach(() => {
+    window.history.pushState({}, "", "/");
+  });
+
+  it("selects the topic and seeds the message from ?topic and ?about", () => {
+    renderAt("?topic=correction&about=Test%20DC");
+
+    expect(screen.getByRole("combobox", { name: /topic/i })).toHaveTextContent(
+      "Correction to the project or site"
+    );
+    expect(screen.getByLabelText(/^message/i)).toHaveValue("About Test DC: ");
+  });
+
+  it("ignores a topic that is not one of the form's topics", () => {
+    renderAt("?topic=evil&about=Test%20DC");
+
+    expect(screen.getByRole("combobox", { name: /topic/i })).toHaveTextContent("Choose a topic");
+    // A bad topic does not discard the valid ?about.
+    expect(screen.getByLabelText(/^message/i)).toHaveValue("About Test DC: ");
+  });
+
+  it("caps ?about at 200 characters", () => {
+    renderAt(`?topic=correction&about=${"a".repeat(250)}`);
+
+    expect(screen.getByLabelText(/^message/i)).toHaveValue(`About ${"a".repeat(200)}: `);
+  });
+
+  it("applies a topic alone without touching the message", () => {
+    renderAt("?topic=press");
+
+    expect(screen.getByRole("combobox", { name: /topic/i })).toHaveTextContent("Press inquiry");
+    expect(screen.getByLabelText(/^message/i)).toHaveValue("");
+  });
+
+  it("seeds the message alone without choosing a topic", () => {
+    renderAt("?about=Test%20DC");
+
+    expect(screen.getByRole("combobox", { name: /topic/i })).toHaveTextContent("Choose a topic");
+    expect(screen.getByLabelText(/^message/i)).toHaveValue("About Test DC: ");
+  });
+
+  it("ignores a blank ?about", () => {
+    renderAt("?topic=correction&about=%20%20");
+
+    expect(screen.getByLabelText(/^message/i)).toHaveValue("");
+  });
+
+  it("leaves a plain /contact exactly as before", () => {
+    renderAt("");
+
+    expect(screen.getByRole("combobox", { name: /topic/i })).toHaveTextContent("Choose a topic");
+    expect(screen.getByLabelText(/^message/i)).toHaveValue("");
+    expect(screen.getByText("0/4000")).toBeInTheDocument();
+  });
+
+  it("submits the prefilled topic and message once the rest is filled in", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    renderAt("?topic=correction&about=Test%20DC");
+
+    await user.type(screen.getByLabelText(/^name/i), "Jane Reporter");
+    await user.type(screen.getByLabelText(/^email/i), "jane@example.com");
+    await user.type(screen.getByLabelText(/^message/i), "the capacity figure looks wrong");
+    await user.click(screen.getByRole("button", { name: /send message/i }));
+
+    await screen.findByText(/your message is on its way/i);
+    const body = getPostedBody();
+    expect(body.topic).toBe("correction");
+    expect(body.message).toBe("About Test DC: the capacity figure looks wrong");
+  });
+});
+
+// The pure helper behind the mount effect. The effect normally sees an empty
+// form, but its empty-only guards also protect anything typed between hydration
+// and the effect running, a window a mount-time test can't drive. So "never
+// overwrite what the user typed" is pinned here, on the helper.
+describe("applyPrefill", () => {
+  const EMPTY: Parameters<typeof applyPrefill>[0] = {
+    name: "",
+    email: "",
+    topic: "",
+    message: "",
+    website: "",
+  };
+
+  it("never overwrites a message the user already typed", () => {
+    const typed = { ...EMPTY, message: "my own words" };
+    expect(applyPrefill(typed, "?about=Test%20DC").message).toBe("my own words");
+  });
+
+  it("never overwrites a topic the user already chose", () => {
+    const chosen = { ...EMPTY, topic: "press" as const };
+    expect(applyPrefill(chosen, "?topic=correction").topic).toBe("press");
+  });
+
+  it.each(["", "?topic=evil", "?about=%20%20", "?foo=bar", "?topic=", "?about="])(
+    "hands back the very same state when %j carries nothing valid, so React skips the render",
+    (search) => {
+      expect(applyPrefill(EMPTY, search)).toBe(EMPTY);
+    }
+  );
+
+  it("decodes '+' as a space and trims the facility name", () => {
+    expect(applyPrefill(EMPTY, "?about=++Test+DC++").message).toBe("About Test DC: ");
+  });
+
+  it("does not leave a dangling space when the 200-character cut lands on one", () => {
+    const about = `${"a".repeat(199)} b`;
+    expect(applyPrefill(EMPTY, `?about=${encodeURIComponent(about)}`).message).toBe(
+      `About ${"a".repeat(199)}: `
+    );
+  });
+
+  it("cuts at 200 code points, not UTF-16 units, so an emoji on the boundary stays whole", () => {
+    const about = `${"a".repeat(199)}\u{1F600}b`;
+    expect(applyPrefill(EMPTY, `?about=${encodeURIComponent(about)}`).message).toBe(
+      `About ${"a".repeat(199)}\u{1F600}: `
+    );
+  });
+
+  it.each(["press", "research", "partnership", "correction", "other"] as const)(
+    "accepts the %s topic",
+    (topic) => {
+      expect(applyPrefill(EMPTY, `?topic=${topic}`).topic).toBe(topic);
+    }
+  );
 });
