@@ -553,7 +553,10 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
  * `status='confirmed'` only, so they are not a silent list waiting to be
  * woken. ⚠️ Do not widen that audience as a side effect of other work; a
  * backfill of pending rows, a new `targetType`, or a catch-up over months
- * that were never sent is a NEW reactivation decision, not this one.
+ * that were never sent is a NEW reactivation decision, not this one. (D9, Ed
+ * 2026-10-21, is that decision for `county` and `metro`, delivered by the area
+ * digest of unit 8b and gated by `WATCH_AREAS_ENABLED`; it does not extend to
+ * anything else.)
  *
  * Best-effort and never throws — same contract as `notifySubscribersOfChange`.
  * Returns counts rather than `void` so a caller can tell a FAILED run from a

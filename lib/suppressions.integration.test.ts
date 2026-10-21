@@ -112,6 +112,11 @@ const state = (targetId: string): SuppressionScope => ({
   targetType: "state",
   targetId,
 });
+const area = (targetType: "county" | "metro", targetId: string): SuppressionScope => ({
+  kind: "target",
+  targetType,
+  targetId,
+});
 const T0 = Date.UTC(2026, 9, 21, 12, 0, 0);
 /** Pins only Date, so PGlite's timers keep working. */
 const at = (ms: number) => {
@@ -161,6 +166,20 @@ describe("isSuppressed", () => {
     expect(await isSuppressed(db, "a@example.com", state("VA"))).toBe("suppressed");
     expect(await isSuppressed(db, "a@example.com", state("va"))).toBe("suppressed");
     expect(await isSuppressed(db, "a@example.com", facility(" alpha"))).toBe("suppressed");
+  });
+
+  it("normalizes county and metro slugs to lowercase, so \"Loudoun-VA\" matches a row stored as \"loudoun-va\"", async () => {
+    await suppress(db, "a@example.com", area("county", " Loudoun-VA "), "unsubscribe");
+    await suppress(db, "a@example.com", area("metro", "Northern-Virginia"), "unsubscribe");
+    const rows = await db.select().from(emailSuppressionsTable);
+    expect(rows.map((r) => `${r.targetType}|${r.targetId}`).sort()).toEqual([
+      "county|loudoun-va",
+      "metro|northern-virginia",
+    ]);
+    expect(await isSuppressed(db, "a@example.com", area("county", "loudoun-va"))).toBe("suppressed");
+    expect(await isSuppressed(db, "a@example.com", area("county", "LOUDOUN-VA"))).toBe("suppressed");
+    expect(await isSuppressed(db, "a@example.com", area("metro", "NORTHERN-VIRGINIA"))).toBe("suppressed");
+    expect(await isSuppressed(db, "a@example.com", area("county", "fairfax-va"))).toBe("clear");
   });
 
   it("returns unknown (never clear) when the lookup errors, logging SQLSTATE only", async () => {

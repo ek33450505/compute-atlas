@@ -7,6 +7,7 @@ import { emailSuppressionsTable, subscriptionsTable } from "@/lib/db/schema";
 import type * as schema from "@/lib/db/schema";
 import { verifyConsentCookieIssuedAt } from "@/lib/subscribe-consent";
 import { hashToken } from "@/lib/token-hash";
+import { normalizeWatchTargetId } from "@/lib/watch-target-types";
 
 /**
  * Durable opt-out list (table `email_suppressions`; see its doc comment in
@@ -29,8 +30,9 @@ export type SuppressionScope =
 
 /**
  * Canonical (targetType, targetId) key for a scope, normalized the way
- * `subscribeToTarget` stores them (state codes uppercase, ids trimmed) so a
- * caller cannot mismatch. Global is the empty pair.
+ * `subscribeToTarget` stores them (per `normalizeWatchTargetId`: state codes
+ * uppercase, county/metro slugs lowercase, ids trimmed) so a caller cannot
+ * mismatch. Global is the empty pair.
  */
 function scopeKey(scope: SuppressionScope): {
   targetType: string;
@@ -40,10 +42,7 @@ function scopeKey(scope: SuppressionScope): {
     return { targetType: "", targetId: "" };
   }
   const targetType = scope.targetType.trim();
-  let targetId = scope.targetId.trim();
-  if (targetType === "state") {
-    targetId = targetId.toUpperCase();
-  }
+  const targetId = normalizeWatchTargetId(targetType, scope.targetId);
   // An empty half would silently become (part of) the global key.
   if (!targetType || !targetId) {
     throw new Error("target suppression requires a non-empty targetType and targetId");

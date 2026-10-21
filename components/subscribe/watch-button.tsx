@@ -13,7 +13,7 @@ export type { WatchTargetType };
 
 export interface WatchButtonProps {
   targetType: WatchTargetType;
-  /** Facility id, or (for targetType="state") a 2-letter state code. */
+  /** Facility id, or (for targetType="state") a 2-letter state code, or (for "county"/"metro") the hub slug. */
   targetId: string;
   /** Trigger button copy, e.g. "Watch this facility". */
   label: string;

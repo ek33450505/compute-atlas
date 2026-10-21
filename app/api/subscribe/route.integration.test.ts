@@ -844,3 +844,30 @@ describe("POST /api/subscribe: gate outcomes are invisible to the requester", ()
     expect(resendSendMock).not.toHaveBeenCalled();
   });
 });
+
+describe("POST /api/subscribe: the WATCH_AREAS_ENABLED kill switch is invisible", () => {
+  async function post(body: unknown) {
+    const res = await POST(req(body));
+    return { status: res.status, text: await res.text() };
+  }
+  const bad = { email: "reader@example.com", targetType: "zzz", targetId: "x" };
+  const county = { email: "reader@example.com", targetType: "county", targetId: "loudoun-va" };
+
+  it("answers an invalid targetType byte-identically with the flag on and off", async () => {
+    vi.stubEnv("WATCH_AREAS_ENABLED", "true");
+    const on = await post(bad);
+    vi.stubEnv("WATCH_AREAS_ENABLED", "false");
+    const off = await post(bad);
+    expect(on.status).toBe(400);
+    expect(off).toEqual(on);
+    // No echoed input and no enum members in the body.
+    expect(off.text).not.toMatch(/zzz|facility|state|county|metro|values|options|received/);
+  });
+
+  it("answers a county request with the flag off exactly like an invalid type", async () => {
+    vi.stubEnv("WATCH_AREAS_ENABLED", "false");
+    const invalid = await post(bad);
+    const areas = await post(county);
+    expect(areas).toEqual(invalid);
+  });
+});

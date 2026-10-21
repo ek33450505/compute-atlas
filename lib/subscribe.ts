@@ -2,7 +2,7 @@ import { z } from "zod";
 import { and, eq, ne, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
-import { storableText } from "@/lib/intake-fields";
+import { storableText, UNSTORABLE_MESSAGE } from "@/lib/intake-fields";
 import { emailSuppressionsTable, subscriptionsTable } from "@/lib/db/schema";
 import { redactedErrorCode } from "@/lib/db-error";
 import { generateToken } from "@/lib/email";
@@ -19,19 +19,77 @@ import {
 } from "@/lib/suppressions";
 import type { SuppressionScope, SuppressionSource } from "@/lib/suppressions";
 import { hashToken, isHashedToken } from "@/lib/token-hash";
+import { watchAreasEnabled } from "@/lib/watch-target-types";
+import type { WatchTargetType } from "@/lib/watch-target-types";
 import { WATCH_TARGETS, WATCH_TARGET_TYPES } from "@/lib/watch-targets";
 
-export const subscribeInputSchema = z
-  .object({
-    email: z.string().email().max(254),
-    targetType: z.enum(WATCH_TARGET_TYPES),
-    targetId: storableText(z.string().max(120)).optional(),
-    website: z.string().optional(), // honeypot — real users never fill this
-  })
-  .refine((s) => Boolean(s.targetId), {
-    message: "targetId is required",
-    path: ["targetId"],
-  });
+function buildSubscribeInputSchema<T extends readonly [WatchTargetType, ...WatchTargetType[]]>(
+  targetTypes: T
+) {
+  return z
+    .object({
+      email: z.string().email().max(254),
+      targetType: z.enum(targetTypes),
+      targetId: storableText(z.string().max(120)).optional(),
+      website: z.string().optional(), // honeypot — real users never fill this
+    })
+    .refine((s) => Boolean(s.targetId), {
+      message: "targetId is required",
+      path: ["targetId"],
+    });
+}
+
+export const subscribeInputSchema = buildSubscribeInputSchema(WATCH_TARGET_TYPES);
+
+/**
+ * The schema used while `WATCH_AREAS_ENABLED=false`: the kill-switched types
+ * are simply absent from the enum, so a county/metro request fails exactly as
+ * any unknown targetType does (same status, error and issues): the disabled
+ * response is indistinguishable from an unknown type. With the flag on, a
+ * county/metro request is resolved normally, so it behaves differently by design.
+ */
+const WATCH_TARGET_TYPES_AREAS_OFF: readonly [WatchTargetType, ...WatchTargetType[]] = ["facility", "state"];
+
+const subscribeInputSchemaAreasOff = buildSubscribeInputSchema(WATCH_TARGET_TYPES_AREAS_OFF);
+
+/**
+ * Validation issues for the 400 body, with static text only. Zod's own issues
+ * echo the enum's allowed `values` and the `received` input, which would
+ * reveal whether county/metro are enabled (the kill switch), so only `code`,
+ * `path` and a message chosen here ever leave. Messages keep their pre-kill-
+ * switch text wherever that text is static and flag-independent (the public
+ * /api contract); `targetType` is deliberately generic because zod's text for
+ * it lists the enum. `invalid_type` messages name only the expected and
+ * received TYPES ("expected string, received number"), never a value.
+ */
+const GENERIC_ISSUE_MESSAGE = "Invalid value";
+
+/** `${field}:${code}` -> the message zod produced before the kill switch existed. */
+export const STATIC_ISSUE_MESSAGES: Readonly<Record<string, string>> = {
+  "email:invalid_format": "Invalid email address",
+  "email:too_big": "Too big: expected string to have <=254 characters",
+  "targetId:too_big": "Too big: expected string to have <=120 characters",
+};
+
+/** Our own `custom` refine messages (static; asserted by tests). */
+const STATIC_CUSTOM_MESSAGES: ReadonlySet<string> = new Set([
+  "targetId is required",
+  UNSTORABLE_MESSAGE,
+]);
+
+function safeIssueMessage(issue: z.core.$ZodIssue): string {
+  const field = issue.path[0];
+  if (field === "targetType") return GENERIC_ISSUE_MESSAGE;
+  const fixed = STATIC_ISSUE_MESSAGES[`${String(field)}:${issue.code}`];
+  if (fixed) return fixed;
+  if (issue.code === "custom" && STATIC_CUSTOM_MESSAGES.has(issue.message)) return issue.message;
+  if (issue.code === "invalid_type") return issue.message;
+  return GENERIC_ISSUE_MESSAGE;
+}
+
+function safeIssues(issues: readonly z.core.$ZodIssue[]): { code: string; path: PropertyKey[]; message: string }[] {
+  return issues.map((i) => ({ code: i.code, path: [...i.path], message: safeIssueMessage(i) }));
+}
 
 export type SubscribeInput = z.infer<typeof subscribeInputSchema>;
 
@@ -231,9 +289,11 @@ export async function subscribeToTarget(
   rawInput: unknown,
   consentCookie?: string
 ): Promise<SubscribeResult> {
-  const parsed = subscribeInputSchema.safeParse(rawInput);
+  const parsed = (watchAreasEnabled() ? subscribeInputSchema : subscribeInputSchemaAreasOff).safeParse(
+    rawInput
+  );
   if (!parsed.success) {
-    return { ok: false, status: 400, error: "Invalid subscription", issues: parsed.error.issues };
+    return { ok: false, status: 400, error: "Invalid subscription", issues: safeIssues(parsed.error.issues) };
   }
   const data = parsed.data;
 
@@ -250,7 +310,7 @@ export async function subscribeToTarget(
   // distinction leaks nothing, since the caller already supplied targetType and
   // therefore already knows which kind of target it asked about.
   const def = WATCH_TARGETS[data.targetType];
-  const resolved = await def.resolve(data.targetId!);
+  const resolved = await def.resolve(def.normalizeId(data.targetId!));
   if (!resolved) {
     return { ok: false, status: 400, error: def.notFoundError };
   }
