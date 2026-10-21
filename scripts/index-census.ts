@@ -156,6 +156,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
+import { formatErrorSummary } from "../lib/db-error";
 import { collectSitemapUrlsByFamily, type SitemapFamilyUrls } from "../lib/sitemap-urls";
 import {
   fetchAccessToken,
@@ -839,7 +840,7 @@ export async function main(
     ...(loopError !== undefined
       ? {
           partial: true as const,
-          partialReason: loopError instanceof Error ? loopError.message : String(loopError),
+          partialReason: formatErrorSummary(loopError),
         }
       : {}),
   };
@@ -851,6 +852,7 @@ export async function main(
     console.error(
       `\n::error::Census PARTIAL — inspected ${Object.keys(byRoute).length}/${plan.totalInspected} ` +
         `planned URL(s) before the run failed. Wrote a partial report (partial: true) to ${OUTPUT_PATH}. ` +
+        // lint-no-raw-error-logs: allow -- partialReason is formatErrorSummary(loopError): a DB error becomes the redacted header, other errors are scrubbed message text; report is tainted only by the `loopError !== undefined` condition
         `Reason: ${report.partialReason}`
     );
   } else {
@@ -874,7 +876,7 @@ export async function main(
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main(process.argv.slice(2)).catch((err) => {
-    console.error(err instanceof Error ? err.message : String(err));
+    console.error(formatErrorSummary(err));
     process.exit(1);
   });
 }

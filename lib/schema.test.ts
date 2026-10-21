@@ -388,6 +388,39 @@ describe("facilitySchema — location.street / location.postalCode", () => {
   });
 });
 
+describe("facilitySchema — jurisdiction codes", () => {
+  const withState = (state: string) => ({
+    ...baseFacility,
+    location: { ...baseFacility.location, state },
+  });
+  const withMultiSite = (states: string[]) => ({
+    ...baseFacility,
+    location: { ...baseFacility.location, multiSite: { states } },
+  });
+
+  it.each(["CA", "DC", "PR", "GU"])("accepts %s", (code) => {
+    expect(facilitySchema.safeParse(withState(code)).success).toBe(true);
+    expect(facilitySchema.safeParse(withMultiSite([code])).success).toBe(true);
+  });
+
+  it("refuses an unknown 2-letter state code", () => {
+    const r = facilitySchema.safeParse(withState("XX"));
+    expect(r.success).toBe(false);
+    if (!r.success) expect(r.error.issues[0].message).toMatch(/known US state/);
+  });
+
+  it("refuses an unknown code in multiSite.states", () => {
+    expect(facilitySchema.safeParse(withMultiSite(["CA", "XX"])).success).toBe(false);
+  });
+
+  it("refuses lowercase codes so stored codes are canonical", () => {
+    const state = facilitySchema.safeParse(withState("ca"));
+    expect(state.success).toBe(false);
+    if (!state.success) expect(state.error.issues[0].message).toMatch(/uppercase/);
+    expect(facilitySchema.safeParse(withMultiSite(["ca"])).success).toBe(false);
+  });
+});
+
 describe("facilitySchema — invalid cases", () => {
   it("fails when state is not 2 characters", () => {
     const result = facilitySchema.safeParse({

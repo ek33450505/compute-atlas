@@ -466,9 +466,11 @@ tool, not part of the deployed app.
   Drizzle's `DrizzleQueryError.message` is `Failed query: … params: …`, so logging the error
   **object** puts bound parameters (an IP hash, a subscriber email, a raw bearer token) into Vercel
   Runtime Logs. There is exactly **one** implementation — do not fork a private copy; three existed
-  before 2026-09-27 and diverged. ⚠️ Its permissive `typeof code === "string"` check is **deliberate**:
-  a strict `/^[0-9A-Z]{5}$/` SQLSTATE regex would regress the neon-http driver and discard
-  `ENOTFOUND`/`ECONNREFUSED`, and `ENOTFOUND` is this project's outage-vs-link-rot discriminator.
+  before 2026-09-27 and diverged. ⚠️ Its code check accepts any identifier-shaped code
+  (`/^[A-Z0-9_]{2,40}$/`) and returns `"unknown"` otherwise; the identifier shape is what keeps a
+  crafted `code` from carrying data. A strict 5-character `/^[0-9A-Z]{5}$/` SQLSTATE regex is still
+  **wrong**: it would regress the neon-http driver and discard `ENOTFOUND`/`ECONNREFUSED`, and
+  `ENOTFOUND` is this project's outage-vs-link-rot discriminator.
   ⚠️ A regex is the wrong tool for finding these sites: `[^)]*` breaks on a `)` inside a format string
   and an end-of-line anchor misses a multi-line call. Both happened; use a paren-balanced scan.
 - **JSON ↔ Neon — Neon is truth, and `db:sync` is the only bulk write path.**

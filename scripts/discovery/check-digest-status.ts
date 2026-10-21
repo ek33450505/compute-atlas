@@ -31,6 +31,7 @@
  */
 import { isNull } from "drizzle-orm";
 
+import { formatErrorSummary } from "../../lib/db-error";
 import { getDb, hasDatabaseUrl } from "../../lib/db/client";
 import { stateDigestRunsTable, type StateDigestRunRow } from "../../lib/db/schema";
 import { isEntrypoint } from "../is-entrypoint";
@@ -108,7 +109,9 @@ export async function fetchIncompleteRuns(): Promise<StateDigestRunRow[] | null>
       return null;
     }
     // Any other error is unexpected — log it and fail.
-    throw new DigestCheckError(`Failed to query state_digest_runs: ${message}`);
+    throw new DigestCheckError(
+      `Failed to query state_digest_runs: ${formatErrorSummary(err)}`
+    );
   }
 }
 
@@ -148,18 +151,20 @@ async function main(): Promise<void> {
     throw new DigestCrashError(incompleteRuns);
   } catch (err) {
     if (err instanceof DigestCrashError) {
+      // lint-no-raw-error-logs: allow -- own error class; message is built from run ids and timestamps, never a driver error
       console.error(`::error::${err.message}`);
       process.exit(1);
       return;
     }
     if (err instanceof DigestCheckError) {
+      // lint-no-raw-error-logs: allow -- own error class; its only producer builds the message from formatErrorSummary(err), which redacts DB errors
       console.error(`::error::${err.message}`);
       process.exit(1);
       return;
     }
     // Log only the message (not the raw error object) so a Neon/pg connection
     // error can't echo the DB host/DSN into the public repo's Actions logs.
-    console.error("::error::digest status check errored:", err instanceof Error ? err.message : String(err));
+    console.error("::error::digest status check errored:", formatErrorSummary(err));
     process.exit(1);
   }
 }

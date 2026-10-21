@@ -67,6 +67,7 @@ import {
   isSitemapIndex,
   parseLocs,
 } from "../lib/sitemap-urls";
+import { formatErrorSummary } from "../lib/db-error";
 import { isEntrypoint } from "./is-entrypoint";
 
 export const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
@@ -313,7 +314,7 @@ export async function main(argv: string[]): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main(process.argv.slice(2)).catch((err) => {
-    console.error(err instanceof Error ? err.message : err);
+    console.error(formatErrorSummary(err));
     process.exit(1);
   });
 }

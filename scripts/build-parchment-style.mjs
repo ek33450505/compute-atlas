@@ -314,6 +314,7 @@ async function main() {
     style = await res.json();
     console.log(`Fetched positron — version ${style.version}, ${style.layers?.length ?? 0} layers.`);
   } catch (err) {
+    // lint-no-raw-error-logs: allow -- public style-URL fetch; imports no DB code, so the error cannot carry bound params
     console.error(`Fetch failed: ${err.message}`);
     process.exit(1);
   }
@@ -417,6 +418,7 @@ async function main() {
 }
 
 main().catch(err => {
+  // lint-no-raw-error-logs: allow -- public style-URL fetch; imports no DB code, so the error cannot carry bound params
   console.error(err);
   process.exit(1);
 });

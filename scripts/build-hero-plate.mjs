@@ -661,6 +661,7 @@ if (isEntrypoint()) {
       }) from ${r.total} facilities -> ${r.outPath.replace(`${repoRoot}/`, '')} (${(r.bytes / 1024).toFixed(1)} KB, paths ${(r.pathBytes / 1024).toFixed(1)} KB); ${r.svgPath.replace(`${repoRoot}/`, '')} (${(r.svgBytes / 1024).toFixed(1)} KB)`
     );
   } catch (err) {
+    // lint-no-raw-error-logs: allow -- file-only build step; imports no DB code, so the error cannot carry bound params
     console.error(err.message);
     process.exit(1);
   }

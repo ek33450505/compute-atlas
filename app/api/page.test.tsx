@@ -182,6 +182,45 @@ describe("ApiPage — How to cite", () => {
     expect(persistentIdText).not.toContain("No DOI is assigned");
   });
 
+  it("documents intake-token staging and the approve body and refusals", () => {
+    mockGetDatasetEdition.mockReturnValue({
+      version: "1.30.0",
+      asOf: "2026-09-01T16:58:23.496Z",
+      recordCount: 1309,
+      schemaVersion: 1,
+    });
+
+    render(<ApiPage />);
+
+    const stageRow = screen.getByText("POST /api/submissions").closest("tr")!;
+    expect(stageRow.textContent).toContain("intake token or the admin token");
+    expect(stageRow.textContent).not.toContain("Admin-only");
+
+    const approveRow = screen.getByText("POST /api/submissions/{id}/approve").closest("tr")!;
+    const text = approveRow.textContent ?? "";
+    expect(text).toContain("notifyWatchers");
+    expect(text).toContain("409");
+    expect(text).toContain("503");
+  });
+
+  it("says staging also accepts the intake token, not that every submissions endpoint is admin-only", () => {
+    mockGetDatasetEdition.mockReturnValue({
+      version: "1.30.0",
+      asOf: "2026-09-01T16:58:23.496Z",
+      recordCount: 1309,
+      schemaVersion: 1,
+    });
+
+    render(<ApiPage />);
+
+    const text = (document.body.textContent ?? "").replace(/\s+/g, " ");
+    expect(text).toContain(
+      "Every submissions endpoint except staging requires an admin bearer token; staging (POST /api/submissions) also accepts the intake token"
+    );
+    expect(text).toContain("The GET list is admin-only");
+    expect(text).not.toContain("Every submissions endpoint — including the GET list");
+  });
+
   it("states the canonical attribution naming www.compute-atlas.com, not the repo", () => {
     mockGetDatasetEdition.mockReturnValue({
       version: "1.30.0",

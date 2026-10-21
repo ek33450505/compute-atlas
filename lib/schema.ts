@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { STATUS_ORDER } from "@/lib/status";
 import { httpUrlSchema } from "@/lib/intake-fields";
+import { stateNameFromCode } from "@/lib/us-states";
 
 /**
  * Disable Zod's JIT schema compilation, which builds validators with the
@@ -390,6 +391,18 @@ export const communityStatusEnum = z.enum([
   "unknown",
 ]);
 
+// A canonical (uppercase) US state, DC or territory code. Membership goes
+// through `stateNameFromCode` so the code table lives in one place; the
+// uppercase regex keeps stored codes canonical. Downstream
+// `splitJurisdictions` silently ignores unknown codes, so without this check a
+// typo would pass validation and vanish from every state stat and route.
+const jurisdictionCodeSchema = z
+  .string()
+  .regex(/^[A-Z]{2}$/, "must be a 2-letter uppercase state code")
+  .refine((c) => stateNameFromCode(c) !== undefined, {
+    message: "not a known US state, DC or territory code",
+  });
+
 // Shared fields common to every facility, regardless of type.
 // Both discriminated-union branches spread this shape and add their own
 // `facilityType` literal plus type-specific fields.
@@ -408,7 +421,7 @@ const baseFacilityShape = {
     county: z.string().optional(),
     street: z.string().min(1).optional(),
     postalCode: z.string().min(1).optional(),
-    state: z.string().length(2),
+    state: jurisdictionCodeSchema,
     // "exact": lat/lon is this facility's real footprint (default — every
     // pre-existing record without this field is "exact").
     // "approximate": best-effort geocode (e.g. a street address, not a
@@ -419,7 +432,7 @@ const baseFacilityShape = {
     precision: z.enum(["exact", "approximate", "representative_multi_site"]).optional().default("exact"),
     multiSite: z
       .object({
-        states: z.array(z.string().length(2)).min(1),
+        states: z.array(jurisdictionCodeSchema).min(1),
         siteCountNote: z.string().optional(),
       })
       .optional(),

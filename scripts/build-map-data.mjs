@@ -273,6 +273,7 @@ export async function fetchJSON(url, { label = url, retries = 1, timeoutMs = nul
       return body;
     } catch (err) {
       lastErr = err;
+      // lint-no-raw-error-logs: allow -- public-API fetch and local file reads; imports no DB code, so the error cannot carry bound params
       console.error(`  [warn] fetch failed (attempt ${attempt + 1}/${retries + 1}) for ${label}: ${err.message}`);
     }
   }
@@ -726,6 +727,7 @@ async function nhdQueryLayer(layer, lat, lon, halfDeg) {
     const data = await fetchJSON(url, { label: `NHD layer ${layer} @ ${lat.toFixed(3)},${lon.toFixed(3)} D=${halfDeg}`, retries: 1 });
     return { ok: true, features: data.features || [] };
   } catch (err) {
+    // lint-no-raw-error-logs: allow -- public-API fetch and local file reads; imports no DB code, so the error cannot carry bound params
     console.error(`  [warn] NHD layer ${layer} permanently failed at (${lat.toFixed(3)},${lon.toFixed(3)}) D=${halfDeg}: ${err.message}`);
     return { ok: false, features: [] };
   }
@@ -1785,6 +1787,7 @@ async function main() {
         // integrity check, unlike the benign per-item geometry skips elsewhere
         // in this file that legitimately use this same comment tag.
         console.error(
+          // lint-no-raw-error-logs: allow -- public-API fetch and local file reads; imports no DB code, so the error cannot carry bound params
           `  [warn] could not read/parse ${SITING_CONTEXT_OUT}, proceeding with no carry-forward data: ${err.message}`
         );
       }
@@ -1898,6 +1901,7 @@ function isEntrypoint() {
 }
 if (isEntrypoint()) {
   main().catch((err) => {
+    // lint-no-raw-error-logs: allow -- public-API fetch and local file reads; imports no DB code, so the error cannot carry bound params
     console.error(err);
     process.exit(1);
   });

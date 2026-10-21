@@ -84,6 +84,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { formatErrorSummary } from "../../lib/db-error";
 import { matchMachineDataRule } from "./census-triage";
 import type { SourceVerification, VerifyFieldsSummary } from "./verify-fields";
 import type { Facility } from "../../lib/schema";
@@ -515,7 +516,7 @@ async function main(): Promise<void> {
 const isMainModule = isEntrypoint(import.meta.url);
 if (isMainModule) {
   main().catch((err) => {
-    console.error(`[triage-disagreements] ${(err as Error).message ?? err}`);
+    console.error(`[triage-disagreements] ${formatErrorSummary(err)}`);
     process.exit(1);
   });
 }

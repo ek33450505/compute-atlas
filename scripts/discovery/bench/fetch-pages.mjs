@@ -17,9 +17,10 @@
 // canonical string), not truncated from the head. Windows are entity-anchored,
 // NOT unit-anchored: anchoring on "MW" would hand the model pre-filtered evidence
 // and inflate recall. The real pipeline needs this same windowing for the same reason.
-import { readFileSync, realpathSync, writeFileSync } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { readFileSync, writeFileSync } from "node:fs";
 import { fetchGuardedBody } from "../fetch-page-text";
+import { isEntrypoint } from "../../is-entrypoint";
+import { formatErrorSummary } from "../../../lib/db-error";
 import { htmlToText } from "./html.mjs";
 
 // Run under tsx (`npx tsx scripts/discovery/bench/fetch-pages.mjs`): the guarded
@@ -153,7 +154,7 @@ export async function fetchOne(t, { droppableIds = new Set() } = {}) {
         text: w.text, truth: t.truth };
       console.log(`  ok  raw=${String(full.length).padStart(7)}  kept=${String(w.text.length).padStart(6)}  ${w.mode.padEnd(13)} ${t.id}`);
       return entry;
-    } catch (e) { console.log(`  ERR      ${t.id}  ${String(e.message).slice(0, 40)}`); lastSkip = "error"; }
+    } catch (e) { console.log(`  ERR      ${t.id}  ${formatErrorSummary(e).split("\n")[0].slice(0, 80)}`); lastSkip = "error"; }
   }
   console.log(`  >>> NO PAGE for ${t.id}`);
   if (droppableIds.has(t.id)) {
@@ -251,15 +252,7 @@ export function readExistingPages(path = PAGES_PATH) {
   return pages;
 }
 
-// Symlink/space-safe entrypoint check — see scripts/is-entrypoint.ts (this script runs under tsx).
-function isEntrypoint() {
-  try {
-    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
-  } catch {
-    return false;
-  }
-}
-if (isEntrypoint()) {
+if (isEntrypoint(import.meta.url)) {
   const targets = JSON.parse(readFileSync(new URL("./targets.json", import.meta.url).pathname, "utf8"));
   const args = process.argv.slice(2);
   const REFRESH = args.includes("--refresh");

@@ -248,6 +248,7 @@ async function main(): Promise<void> {
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   main().catch((err) => {
+    // lint-no-raw-error-logs: allow -- CLI over the HTTP API; imports no DB code, and its test runs a lone copy of this file that cannot import lib/
     console.error(err);
     process.exit(1);
   });
