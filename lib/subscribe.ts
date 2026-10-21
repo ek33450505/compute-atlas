@@ -415,22 +415,10 @@ export async function subscribeToTarget(
 }
 
 /**
- * Consumes a confirm token.
- *
- * Returns the row's `email` alongside the status on both non-`invalid`
- * outcomes, for one caller and one purpose: the confirm route mints the
- * address-bound consent cookie from it (`lib/subscribe-consent.ts`). The
- * address is never put in the redirect URL, the response body, or a log — it
- * goes into an HMAC and nothing else. `invalid` carries no email, because
- * there is no row to name.
+ * The one confirm-token lookup, shared by `peekConfirmToken` and
+ * `confirmSubscription` so the hash-first + guarded legacy fallback never forks.
  */
-export async function confirmSubscription(
-  token: string
-): Promise<{ status: "confirmed" | "already" | "invalid"; email?: string }> {
-  if (!token) {
-    return { status: "invalid" };
-  }
-
+async function findRowByConfirmToken(token: string) {
   const db = getDb();
   const hashed = hashToken(token);
   let rows = await db
@@ -454,7 +442,52 @@ export async function confirmSubscription(
       .where(eq(subscriptionsTable.confirmToken, token));
     matchedValue = token;
   }
-  const row = rows[0];
+  return { row: rows[0], hashed, matchedValue };
+}
+
+/**
+ * Read-only look at a confirm token: never writes. The GET confirm link uses
+ * it so a mail scanner's prefetch cannot consume the token. Unsubscribed and
+ * any other non-active rows read as `invalid`.
+ */
+export async function peekConfirmToken(
+  token: string
+): Promise<{ status: "pending" | "confirmed" | "invalid"; email?: string }> {
+  if (!token) {
+    return { status: "invalid" };
+  }
+  const { row } = await findRowByConfirmToken(token);
+  if (!row) {
+    return { status: "invalid" };
+  }
+  if (row.status === "confirmed") {
+    return { status: "confirmed", email: row.email };
+  }
+  if (row.status === "pending") {
+    return { status: "pending", email: row.email };
+  }
+  return { status: "invalid" };
+}
+
+/**
+ * Consumes a confirm token. Called only from the confirm POST; a GET never
+ * reaches it.
+ *
+ * Returns the row's `email` alongside the status on both non-`invalid`
+ * outcomes, for one caller and one purpose: the confirm route mints the
+ * address-bound consent cookie from it (`lib/subscribe-consent.ts`). The
+ * address is never put in the redirect URL, the response body, or a log — it
+ * goes into an HMAC and nothing else. `invalid` carries no email, because
+ * there is no row to name.
+ */
+export async function confirmSubscription(
+  token: string
+): Promise<{ status: "confirmed" | "already" | "invalid"; email?: string }> {
+  if (!token) {
+    return { status: "invalid" };
+  }
+
+  const { row, hashed, matchedValue } = await findRowByConfirmToken(token);
   if (!row) {
     return { status: "invalid" };
   }
@@ -466,12 +499,25 @@ export async function confirmSubscription(
     return { status: "invalid" };
   }
 
-  await db
+  // Compare-and-set: only a still-pending row may be confirmed, so a concurrent
+  // unsubscribe between the lookup and this write can never be undone.
+  const updated = await getDb()
     .update(subscriptionsTable)
     .set({ status: "confirmed", confirmedAt: new Date(), confirmToken: hashed })
-    .where(eq(subscriptionsTable.confirmToken, matchedValue));
+    .where(
+      and(eq(subscriptionsTable.confirmToken, matchedValue), eq(subscriptionsTable.status, "pending"))
+    )
+    .returning({ id: subscriptionsTable.id });
+  if (updated.length > 0) {
+    return { status: "confirmed", email: row.email };
+  }
 
-  return { status: "confirmed", email: row.email };
+  // Lost the race: a concurrent confirm or unsubscribe got there first.
+  const { row: current } = await findRowByConfirmToken(token);
+  if (current?.status === "confirmed") {
+    return { status: "already", email: current.email };
+  }
+  return { status: "invalid" };
 }
 
 /**
