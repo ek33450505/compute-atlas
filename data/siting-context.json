@@ -1318,6 +1318,15 @@
     }
   },
   "alcove-project-catalyst-osawatomie-ks": {
+    "nearestWater": {
+      "name": "Marais des Cygnes River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -11951,6 +11960,15 @@
     }
   },
   "cormor-data-shelter-wellington-ks": {
+    "nearestWater": {
+      "name": "Hargis Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -12276,13 +12294,13 @@
   },
   "crusoe-abilene-onsite-generation-tx": {
     "nearestWater": {
-      "name": "Truitt Davis Lake",
-      "kind": "lake",
-      "distanceMi": 0.8
+      "name": "Elm Creek",
+      "kind": "river",
+      "distanceMi": 1.1
     },
     "nearestTransmission": {
       "voltageKv": 345,
-      "distanceMi": 1.5
+      "distanceMi": 1.1
     },
     "waterStress": {
       "cat": 3,
@@ -13352,6 +13370,15 @@
     }
   },
   "damac-heartland-edgerton-ks": {
+    "nearestWater": {
+      "name": "Bull Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -14946,6 +14973,15 @@
     }
   },
   "deep-atomic-inl-ai-data-center-id": {
+    "nearestWater": {
+      "name": "Big Lost River",
+      "kind": "river",
+      "distanceMi": 2.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -15567,6 +15603,15 @@
     }
   },
   "digital-realty-astra-north-de-soto-ks": {
+    "nearestWater": {
+      "name": "Kill Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -28829,6 +28874,15 @@
     }
   },
   "lightedge-lenexa-ks": {
+    "nearestWater": {
+      "name": "Mill Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -28880,6 +28934,15 @@
     }
   },
   "lightfield-energy-proximity-park-ottawa-ks": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 15.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -29452,6 +29515,15 @@
     }
   },
   "lumen-boise-mcgregor-id": {
+    "nearestWater": {
+      "name": "Boise River",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -33318,6 +33390,15 @@
     }
   },
   "monarch-energy-colwich-ks": {
+    "nearestWater": {
+      "name": "Cowskin Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -40230,6 +40311,15 @@
     }
   },
   "qts-new-century-ks": {
+    "nearestWater": {
+      "name": "Cedar Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -45275,13 +45365,13 @@
   },
   "stargate-abilene-tx": {
     "nearestWater": {
-      "name": "Cedar Creek",
-      "kind": "river",
-      "distanceMi": 0.6
+      "name": "Truitt Davis Lake",
+      "kind": "lake",
+      "distanceMi": 0.7
     },
     "nearestTransmission": {
       "voltageKv": 345,
-      "distanceMi": 5.2
+      "distanceMi": 1.6
     },
     "waterStress": {
       "cat": 3,
@@ -51909,7 +51999,7 @@
     },
     "nearestTransmission": {
       "voltageKv": 230,
-      "distanceMi": 0.2
+      "distanceMi": 0.1
     },
     "waterStress": {
       "cat": 0,
@@ -51951,11 +52041,11 @@
     "nearestWater": {
       "name": "Cypress Creek",
       "kind": "river",
-      "distanceMi": 1.2
+      "distanceMi": 1.1
     },
     "nearestTransmission": {
       "voltageKv": 500,
-      "distanceMi": 0.3
+      "distanceMi": 0.2
     },
     "waterStress": {
       "cat": 0,
@@ -51979,29 +52069,6 @@
     "nearestTransmission": {
       "voltageKv": 500,
       "distanceMi": 0.3
-    },
-    "waterStress": {
-      "cat": 0,
-      "label": "Low (<10%)"
-    },
-    "groundwaterDecline": {
-      "cat": 1,
-      "label": "Low - Medium (0-2 cm/y)"
-    },
-    "aquifer": {
-      "name": "Mississippi Embayment Aquifer System",
-      "rock": "Semiconsolidated sand"
-    }
-  },
-  "xai-southaven-ms": {
-    "nearestWater": {
-      "name": "Rocky Creek",
-      "kind": "river",
-      "distanceMi": 0.6
-    },
-    "nearestTransmission": {
-      "voltageKv": 500,
-      "distanceMi": 0.8
     },
     "waterStress": {
       "cat": 0,
