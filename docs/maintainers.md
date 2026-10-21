@@ -392,8 +392,9 @@ model for source verification — treat it as an operator tool, not part of the 
 
 Four surfaces. Three are Next.js render tiers, all reading from Neon:
 
-- **Aggregate pages** (home, map, table, stats, explore) — 1-hour timer, tagged
-  `facilities`. Self-heal within the hour even if a tag bust is missed.
+- **Aggregate pages** (home, map, table, stats, explore) — 24-hour timer (home keeps 1 hour
+  for its untagged activity reads), tagged `facilities`. Self-heal within a day even if a tag
+  bust is missed.
 - **Facility pages** — scoped tags only (`facility:<id>`, `operator:<slug>`, `state:<XX>`,
   plus `power-generation` where relevant), floored at 24 hours. A bust is how they refresh.
 - **Search index** — 24-hour untagged timer. No tag bust reaches it.
@@ -416,6 +417,15 @@ follow, and both are easy to get wrong:
 - **A new GET under `/api/` has to decide this explicitly.** Mutating or token-bearing
   GETs emit `no-store`: `/api/cron/state-digest` mutates, and the `?token=` confirm,
   unsubscribe and access routes would otherwise put a single-use token in the cache key.
+
+**Chicago-area visitors are served from Tokyo** (measured 2026-10-21; accepted, not fixable
+on our plan). `/cdn-cgi/trace` on our hostname reads `colo=NRT` from Chicago-area networks,
+with a TCP connect of 140–200 ms, while `www.cloudflare.com` from the same probes reads
+`colo=ORD`. Sixteen Globalping probes elsewhere in the US all landed on a nearby colo. This is
+Cloudflare's Free-plan routing; no setting we hold controls it, and the proxy cannot be turned
+off because the edge-secret gate depends on it. Each colo keeps its own cache, so measure
+cache behaviour with the colo in hand. The `/data` CSV and JSON downloads do cache: repeat
+GETs read `HIT` at NRT, and an earlier reading of `MISS` on every repeat was not reproducible.
 
 ⚠️ Locally, a restart does **not** clear `.next/cache`, so a "fresh" dev server can replay
 an ISR-cached page from before the last publish. That looks exactly like JSON ↔ Neon drift
