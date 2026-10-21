@@ -404,6 +404,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "source_token_hash": {
+          "name": "source_token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {

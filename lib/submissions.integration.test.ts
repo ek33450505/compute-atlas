@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } from "vitest";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 
 vi.mock("next/cache", () => ({
@@ -85,6 +85,7 @@ import {
 import type { DataCenterFacility, Source } from "@/lib/schema";
 import { recordSubmissionNotifyRequest } from "@/lib/submission-notify";
 import { hashNotifyEmail, SUBMISSION_NOTIFY_SEND_CAP_MAX } from "@/lib/rate-limit";
+import { suppress } from "@/lib/suppressions";
 
 // Imported after the mocks above so the mocked @/lib/db/client is in effect.
 import {
@@ -658,6 +659,92 @@ describe("approveSubmission / rejectSubmission → notifySubmitterOfReview", () 
  * the redaction is safe to add: nothing is sent, the notify-request row's fate
  * is whatever that site's contract says, and the review itself still succeeds.
  */
+describe("notifySubmitterOfReview — global suppression gate", () => {
+  async function approveWithNotifyRow(email: string): Promise<string> {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+    const id = await seedStatusUpdateSubmission(makeSeedDoc());
+    await recordSubmissionNotifyRequest(id, email);
+    expect((await approveSubmission(id)).ok).toBe(true);
+    return id;
+  }
+
+  it("a globally stopped address gets no review email, spends no send cap, and the request row is still deleted", async () => {
+    const email = "stopped@example.com";
+    await suppress(tdb.db, email, { kind: "global" }, "unsubscribe_all");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const id = await approveWithNotifyRow(email);
+
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(await notifyRowsFor(id)).toHaveLength(0);
+    expect(await sendRowsFor(email)).toHaveLength(0);
+    const logged = warn.mock.calls.flat().map(String).join(" ");
+    expect(logged).toContain("skipped (address suppressed");
+    expect(logged).not.toContain(email);
+    warn.mockRestore();
+  });
+
+  it("a target-only suppression does not block it (only the global stop does)", async () => {
+    const email = "target-only@example.com";
+    await suppress(tdb.db, email, { kind: "target", targetType: "state", targetId: "TN" }, "unsubscribe");
+    await approveWithNotifyRow(email);
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("an unreadable suppression list (unknown) sends nothing and still deletes the row", async () => {
+    await tdb.db.execute(sql`alter table email_suppressions rename to email_suppressions_away`);
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    let id: string;
+    try {
+      id = await approveWithNotifyRow("unk@example.com");
+    } finally {
+      errSpy.mockRestore();
+      warn.mockRestore();
+      await tdb.db.execute(sql`alter table email_suppressions_away rename to email_suppressions`);
+    }
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(await notifyRowsFor(id)).toHaveLength(0);
+  });
+
+  it("a synchronous throw in the gate sends nothing, logs SQLSTATE only, and the request row is still deleted", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    vi.stubEnv("SUBMISSION_NOTIFY_ENABLED", "true");
+    const id = await seedStatusUpdateSubmission(makeSeedDoc());
+    await recordSubmissionNotifyRequest(id, "throw@example.com");
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    // approveSubmission and the lookups call getDb() many times; make ONLY the
+    // gate's call throw by failing the call right after the notify-request lookup.
+    const real = vi.mocked(dbClient.getDb).getMockImplementation();
+    const sqlstateErr = Object.assign(new Error("no db for throw@example.com"), { code: "08006" });
+    let armed = false;
+    let logged = "";
+    const mod = await import("@/lib/suppressions");
+    const spy = vi.spyOn(mod, "isSuppressed").mockImplementation(() => {
+      armed = true;
+      throw sqlstateErr;
+    });
+    try {
+      expect((await approveSubmission(id)).ok).toBe(true);
+    } finally {
+      logged = errSpy.mock.calls.flat().map(String).join(" ");
+      spy.mockRestore();
+      errSpy.mockRestore();
+      if (real) vi.mocked(dbClient.getDb).mockImplementation(real);
+    }
+    expect(armed).toBe(true);
+    expect(logged).toContain("suppression gate failed (sqlstate: 08006)");
+    expect(logged).not.toContain("throw@example.com");
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(await notifyRowsFor(id)).toHaveLength(0);
+  });
+
+  it("a clear address still gets the email", async () => {
+    await approveWithNotifyRow("clear@example.com");
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("notifySubmitterOfReview — a DB failure is logged redacted, never as the error object", () => {
   /**
    * A DrizzleQueryError's real shape: the bound params sit in the WRAPPER's own

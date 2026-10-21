@@ -693,12 +693,14 @@ describe("canAutoConfirm — fails safe when the lookup itself throws (H2)", () 
   // (with `default` placeholders for ones not set), so breaking any single
   // column at the DDL level takes the insert down with it too, and this test
   // needs the insert to still succeed. Instead this patches `tdb.db.select`
-  // to throw on exactly the SECOND `.select()` call made while resolving a
-  // "state" target (the FIRST is checkEmailSendCap's own read, which must
-  // keep working normally; a "state" target is used specifically so
-  // getFacilityById never makes a third DB read). This is order-dependent on
-  // subscribeToTarget's current sequencing (checkEmailSendCap, then
-  // canAutoConfirm) — the same sequencing the security review asked to keep
+  // to throw on exactly the THIRD `.select()` call made while resolving a
+  // "state" target: the FIRST is the suppression lookup, the SECOND is
+  // checkEmailSendCap's own read (which must keep working normally), and the
+  // THIRD is canAutoConfirm's. A "state" target is used specifically so
+  // getFacilityById makes no DB read of its own and the numbering holds. This
+  // is order-dependent on subscribeToTarget's current sequencing
+  // (isSuppressed, checkEmailSendCap, then canAutoConfirm) — the same
+  // sequencing the security review asked to keep
   // unconditional and in place.
   it("a thrown lookup falls through to the ordinary pending/confirm path — never notice, never a throw — and logs no email address", async () => {
     const email = "flaky-lookup@example.com";
@@ -708,7 +710,7 @@ describe("canAutoConfirm — fails safe when the lookup itself throws (H2)", () 
     let selectCalls = 0;
     db.select = (...args: unknown[]) => {
       selectCalls += 1;
-      if (selectCalls === 2) {
+      if (selectCalls === 3) {
         // A realistic transient-error shape (Postgres connection_failure),
         // not a bare Error — exercises redactedErrorCode's real-code path,
         // not just its "unknown" fallback.

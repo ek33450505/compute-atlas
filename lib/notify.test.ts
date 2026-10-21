@@ -835,11 +835,12 @@ describe("notifyStateSubscribersMonthly — state-digest copy correctness", () =
     expect(args.html).toContain(tnStateName);
     expect(args.subject).toContain(tnStateName);
 
-    // Exactly one unsubscribe link in each of html and text — not one per
+    // Exactly one PER-TARGET unsubscribe link (the regex excludes the separate
+    // `&scope=all` stop-all link) in each of html and text — not one per
     // changed facility (contrast the facility-watch digest test below, which
     // pins the OPPOSITE: one link per item).
-    const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=/g) ?? []).length;
-    const textUnsubCount = (args.text.match(/\/api\/subscribe\/unsubscribe\?token=/g) ?? []).length;
+    const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=[^&"\s]*(?=["\s]|$)/g) ?? []).length;
+    const textUnsubCount = (args.text.match(/\/api\/subscribe\/unsubscribe\?token=[^&"\s]*(?=["\s]|$)/g) ?? []).length;
     expect(htmlUnsubCount).toBe(1);
     expect(textUnsubCount).toBe(1);
     expect(args.html).toContain(`token=${encodeURIComponent(sub.unsubscribeToken)}`);
@@ -859,7 +860,7 @@ describe("notifyStateSubscribersMonthly — state-digest copy correctness", () =
 
     const args = resendSendMock.mock.calls[0][0];
     expect(args.subject).toBe("2 updates on facilities you're watching — Compute Atlas");
-    const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=/g) ?? []).length;
+    const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=[^&"\s]*(?=["\s]|$)/g) ?? []).length;
     expect(htmlUnsubCount).toBe(2); // one per facility, unlike the state digest's one-total
     expect(args.html).toContain("Unsubscribe from this one");
   });

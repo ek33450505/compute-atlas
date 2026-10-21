@@ -1,10 +1,11 @@
-import { and, eq, lt, or } from "drizzle-orm";
+import { and, eq, lt, or, sql } from "drizzle-orm";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 
 import { redactedErrorCode } from "@/lib/db-error";
 import { emailSuppressionsTable, subscriptionsTable } from "@/lib/db/schema";
 import type * as schema from "@/lib/db/schema";
 import { verifyConsentCookieIssuedAt } from "@/lib/subscribe-consent";
+import { hashToken } from "@/lib/token-hash";
 
 /**
  * Durable opt-out list (table `email_suppressions`; see its doc comment in
@@ -134,18 +135,59 @@ export async function isSuppressed(
   }
 }
 
-/** Idempotent: suppressing an already-suppressed (email, scope) is a no-op. */
+/**
+ * Query-side twin of `isSuppressed` for the notify recipient queries: a
+ * correlated boolean over a `subscriptions` row, true when a global row or
+ * that row's exact target row exists. Select it as a column and drop the
+ * rows where it is true. A lookup failure fails the WHOLE recipient query,
+ * which the notify callers catch, so an error means nobody is mailed
+ * (the SQL form of "unknown means do not send").
+ */
+export function subscriptionSuppressedSql() {
+  // Table-qualified RAW identifiers on purpose: drizzle renders a column
+  // interpolated into `sql` without its table prefix when the outer query has
+  // one table, which would make every inner reference resolve to the
+  // suppressions table and match every row. Pinned by the
+  // `subscriptionSuppressedSql` tests in lib/suppressions.integration.test.ts.
+  return sql<boolean>`exists (
+    select 1 from "email_suppressions" "es"
+    where "es"."email" = lower("subscriptions"."email")
+      and (
+        ("es"."target_type" = '' and "es"."target_id" = '')
+        or (
+          "es"."target_type" = "subscriptions"."target_type"
+          and "es"."target_id" = coalesce("subscriptions"."target_id", '')
+        )
+      )
+  )`;
+}
+
+/**
+ * Idempotent: suppressing an already-suppressed (email, scope) is a no-op.
+ *
+ * `sourceTokenHash` (the hashToken() of the raw unsubscribe token, never the
+ * raw token) is stored for the "Undo" action. Because a conflict does nothing,
+ * a second stop-all with a DIFFERENT token keeps the FIRST token as the undo
+ * key: the first stop-all wins.
+ */
 export async function suppress(
   db: SuppressionDb,
   email: string,
   scope: SuppressionScope,
-  source: SuppressionSource
+  source: SuppressionSource,
+  sourceTokenHash?: string
 ): Promise<void> {
   await db
     .insert(emailSuppressionsTable)
     // createdAt from the app clock (not the DB default) so it is comparable
     // with a cookie's app-stamped issuedAt in `lift`.
-    .values({ email: normalizeEmail(email), ...scopeKey(scope), source, createdAt: new Date() })
+    .values({
+      email: normalizeEmail(email),
+      ...scopeKey(scope),
+      source,
+      sourceTokenHash: sourceTokenHash ?? null,
+      createdAt: new Date(),
+    })
     .onConflictDoNothing({
       target: [
         emailSuppressionsTable.email,
@@ -163,14 +205,15 @@ export async function suppress(
  * at runtime too.
  *
  * Each proof is limited to what it demonstrably covers:
- *   - consent cookie: the address, any scope (target OR global); the global
- *     row only if the cookie was issued more than CONSENT_LIFT_SKEW_MS after
- *     that row was created.
- *   - unsubscribe token: the address AND only the issuing subscription row's
- *     exact target. It can never lift the global row, so an old per-target
- *     email (or a scanner prefetching its Resume link) cannot undo a later
- *     explicit "stop all". There is no global-scope token yet; if a global
- *     "stop all" email ever carries one, add a grant for it here.
+ *   - consent cookie: the address, any scope (target OR global); a row only
+ *     if the cookie was issued more than CONSENT_LIFT_SKEW_MS after that row
+ *     was created.
+ *   - unsubscribe token: the address AND the issuing subscription row's exact
+ *     target. It lifts the GLOBAL row only if the token's hash equals that
+ *     row's `source_token_hash`, i.e. it is the very token that stopped all
+ *     email. So an old per-target email, another token for the address, or a
+ *     scanner prefetching a Resume link cannot undo a "stop all" it did not
+ *     write; backfilled and admin rows (NULL hash) can't be lifted by a token.
  */
 declare const inboxProofBrand: unique symbol;
 export interface InboxProof {
@@ -179,7 +222,7 @@ export interface InboxProof {
   readonly via: "consent_cookie" | "unsubscribe_token";
 }
 
-type ProofGrant = "any" | { targetType: string; targetId: string };
+type ProofGrant = "any" | { targetType: string; targetId: string; tokenHash: string };
 
 interface IssuedProof {
   email: string;
@@ -245,11 +288,10 @@ export async function inboxProofFromUnsubscribeToken(
     if (row.targetType === "all") {
       return null;
     }
-    const grant = scopeKey({
-      kind: "target",
-      targetType: row.targetType,
-      targetId: row.targetId ?? "",
-    });
+    const grant = {
+      ...scopeKey({ kind: "target", targetType: row.targetType, targetId: row.targetId ?? "" }),
+      tokenHash: hashToken(token),
+    };
     return issueProof(normalizeEmail(row.email), "unsubscribe_token", grant);
   } catch (err) {
     console.error(`inboxProofFromUnsubscribeToken failed (sqlstate: ${redactedErrorCode(err)})`);
@@ -278,12 +320,8 @@ export async function lift(
   const key = scopeKey(scope);
   if (
     issued.grant !== "any" &&
-    // Deliberately redundant defence in depth: a token grant always has a
-    // non-empty targetType, so the comparisons below already refuse a global
-    // scope. No test fails if this line is removed, by design.
-    (scope.kind === "global" ||
-      issued.grant.targetType !== key.targetType ||
-      issued.grant.targetId !== key.targetId)
+    scope.kind !== "global" &&
+    (issued.grant.targetType !== key.targetType || issued.grant.targetId !== key.targetId)
   ) {
     return false;
   }
@@ -294,12 +332,19 @@ export async function lift(
         eq(emailSuppressionsTable.email, normalized),
         eq(emailSuppressionsTable.targetType, key.targetType),
         eq(emailSuppressionsTable.targetId, key.targetId),
-        // A cookie minted before a "stop all" click must not undo it: the
-        // global row only lifts for a cookie issued more than
-        // CONSENT_LIFT_SKEW_MS after it. The check lives in the DELETE itself
-        // so it cannot race a re-created row.
-        scope.kind === "global" && issued.issuedAtMs !== undefined
+        // A cookie minted before an explicit opt-out must not undo it, at
+        // ANY scope: a suppression row only lifts for a cookie issued more
+        // than CONSENT_LIFT_SKEW_MS after it. Token grants carry no
+        // issuedAtMs and stay unrestricted (that is the Resume path). The
+        // check lives in the DELETE itself so it cannot race a re-created row.
+        issued.issuedAtMs !== undefined
           ? lt(emailSuppressionsTable.createdAt, new Date(issued.issuedAtMs - CONSENT_LIFT_SKEW_MS))
+          : undefined,
+        // A token grant lifts the global row only if it is the very token that
+        // wrote it (a NULL hash never matches). In the DELETE for the same
+        // no-race reason.
+        scope.kind === "global" && issued.grant !== "any"
+          ? eq(emailSuppressionsTable.sourceTokenHash, issued.grant.tokenHash)
           : undefined
       )
     )

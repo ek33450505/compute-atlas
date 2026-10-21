@@ -213,6 +213,13 @@ export type SubscriptionRow = typeof subscriptionsTable.$inferSelect;
  * email"). Empty string rather than NULL so the plain unique index below makes
  * inserts idempotent via ON CONFLICT DO NOTHING (NULLs never collide).
  * `source`: unsubscribe | unsubscribe_all | backfill | admin.
+ *
+ * `source_token_hash`: on a GLOBAL row written by "stop all email", the
+ * sha256 (lib/token-hash.ts) of the unsubscribe token that stopped it. Only a
+ * request presenting that same token may lift the global row (the "Undo"
+ * action), so no other token for the address, and no stranger, can. NULL on
+ * backfill and admin rows: nothing can lift those through a token. The first
+ * stop-all wins (ON CONFLICT DO NOTHING keeps its hash). Never the raw token.
  */
 export const emailSuppressionsTable = pgTable(
   "email_suppressions",
@@ -223,6 +230,7 @@ export const emailSuppressionsTable = pgTable(
     targetType: text("target_type").notNull().default(""),
     targetId: text("target_id").notNull().default(""),
     source: text("source").notNull(),
+    sourceTokenHash: text("source_token_hash"),
   },
   (table) => [
     uniqueIndex("email_suppressions_email_target_idx").on(

@@ -7,8 +7,27 @@ import { escapeHtml, sendChangeNotification } from "@/lib/email";
 import { siteConfig } from "@/lib/site";
 import { claimDigestWindow, completeDigestWindow } from "@/lib/state-digest-ledger";
 import { STATUS_META } from "@/lib/status";
+import { subscriptionSuppressedSql } from "@/lib/suppressions";
 import { stateNameFromCode } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
+
+/**
+ * Drops recipient rows the suppression list blocks and logs how many, with no
+ * address (unit 4's send log will record these per recipient). A failed
+ * suppression subquery fails the whole recipient query instead, so an error
+ * means nobody is mailed.
+ */
+function dropOptedOut<T extends { optedOut: boolean }>(rows: T[]): Omit<T, "optedOut">[] {
+  const kept = rows.filter((r) => !r.optedOut);
+  if (kept.length < rows.length) {
+    console.warn(`notify: skipped ${rows.length - kept.length} suppressed recipient row(s)`);
+  }
+  return kept.map((row) => {
+    const { optedOut, ...rest } = row;
+    void optedOut;
+    return rest;
+  });
+}
 
 /**
  * One subscriber's view of one facility's change — the unit `groupChangesByRecipient`
@@ -254,7 +273,18 @@ async function sendChangeDigestEmail(
     const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
     return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url} (unsubscribe from this one: ${unsubUrl})`;
   });
-  const text = `${changes.length} records you're watching changed on Compute Atlas:\n\n${textItems.join("\n")}`;
+  // The stop-all link rides the first change's token: any of the recipient's
+  // tokens proves the same address.
+  //
+  // A digest covers MORE THAN ONE watch (the single-change case goes through
+  // `sendChangeNotification`), so the mailbox "Unsubscribe" button cannot
+  // honestly mean "this one watch": a client shows it as "stop email from this
+  // sender". The header therefore carries the stop-all link, and the footer
+  // says so.
+  const stopAllUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(changes[0].unsubscribeToken)}&scope=all`;
+  const mailboxNote =
+    "Your mail program's Unsubscribe button stops all automated email from Compute Atlas. To stop just one watch, use the link beside it.";
+  const text = `${changes.length} records you're watching changed on Compute Atlas:\n\n${textItems.join("\n")}\n\nStop all automated email from Compute Atlas: ${stopAllUrl}\n${mailboxNote}`;
 
   const htmlItems = changes
     .map((c) => {
@@ -263,11 +293,21 @@ async function sendChangeDigestEmail(
       return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a> · <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this one</a></li>`;
     })
     .join("");
-  const html = `<p>${changes.length} records you're watching changed on Compute Atlas:</p><ul>${htmlItems}</ul>`;
+  const html = `<p>${changes.length} records you're watching changed on Compute Atlas:</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;"><a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a><br>${escapeHtml(mailboxNote)}</p>`;
 
   try {
     const resend = new Resend(key);
-    const result = await resend.emails.send({ from, to: email, subject, text, html });
+    const result = await resend.emails.send({
+      from,
+      to: email,
+      subject,
+      text,
+      html,
+      headers: {
+        "List-Unsubscribe": `<${stopAllUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    });
     if (result.error) {
       console.error("sendChangeDigestEmail failed:", result.error?.name ?? "unknown");
       return { sent: false };
@@ -319,12 +359,13 @@ async function sendStateDigestEmail(
   // them — take it once rather than repeating an identical link per item.
   const unsubscribeToken = changes[0].unsubscribeToken;
   const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`;
+  const stopAllUrl = `${unsubUrl}&scope=all`;
 
   const textItems = changes.map((c) => {
     const url = `${base}/facilities/${c.facilitySlug}`;
     return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url}`;
   });
-  const text = `Your monthly Compute Atlas digest for ${stateName}: ${changes.length} tracked ${facilityWord} changed this period.\n\n${textItems.join("\n")}\n\nYou're receiving this because you subscribed to a monthly digest for ${stateName} on Compute Atlas. Unsubscribe from this state's digest: ${unsubUrl}`;
+  const text = `Your monthly Compute Atlas digest for ${stateName}: ${changes.length} tracked ${facilityWord} changed this period.\n\n${textItems.join("\n")}\n\nYou're receiving this because you subscribed to a monthly digest for ${stateName} on Compute Atlas. Unsubscribe from this state's digest: ${unsubUrl}\nStop all automated email from Compute Atlas: ${stopAllUrl}`;
 
   const htmlItems = changes
     .map((c) => {
@@ -332,7 +373,7 @@ async function sendStateDigestEmail(
       return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a></li>`;
     })
     .join("");
-  const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this state's digest</a></p>`;
+  const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this state's digest</a> · <a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a></p>`;
 
   try {
     const resend = new Resend(key);
@@ -389,6 +430,7 @@ export async function notifySubscribersOfChange(
       .select({
         email: subscriptionsTable.email,
         unsubscribeToken: subscriptionsTable.unsubscribeToken,
+        optedOut: subscriptionSuppressedSql(),
       })
       .from(subscriptionsTable)
       .where(
@@ -397,7 +439,8 @@ export async function notifySubscribersOfChange(
           eq(subscriptionsTable.targetType, "facility"),
           eq(subscriptionsTable.targetId, facility.id)
         )
-      );
+      )
+      .then(dropOptedOut);
 
     const statusLabel = STATUS_META[facility.status].label;
 
@@ -451,6 +494,7 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
         email: subscriptionsTable.email,
         unsubscribeToken: subscriptionsTable.unsubscribeToken,
         targetId: subscriptionsTable.targetId,
+        optedOut: subscriptionSuppressedSql(),
       })
       .from(subscriptionsTable)
       .where(
@@ -459,7 +503,8 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
           eq(subscriptionsTable.targetType, "facility"),
           inArray(subscriptionsTable.targetId, [...facilityById.keys()])
         )
-      );
+      )
+      .then(dropOptedOut);
 
     const recipientChanges: RecipientFacilityChange[] = [];
     for (const row of rows) {
@@ -521,9 +566,11 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
       email: subscriptionsTable.email,
       unsubscribeToken: subscriptionsTable.unsubscribeToken,
       state: subscriptionsTable.targetId,
+      optedOut: subscriptionSuppressedSql(),
     })
     .from(subscriptionsTable)
-    .where(and(eq(subscriptionsTable.status, "confirmed"), eq(subscriptionsTable.targetType, "state")));
+    .where(and(eq(subscriptionsTable.status, "confirmed"), eq(subscriptionsTable.targetType, "state")))
+    .then(dropOptedOut);
 
   if (subs.length === 0) return [];
 

@@ -190,8 +190,8 @@ export async function sendChangeNotification(input: {
   const facilityUrl = `${linkBase()}/facilities/${input.facilitySlug}`;
   const unsubUrl = `${linkBase()}/api/subscribe/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
   const subject = `${input.facilityName} — record updated on Compute Atlas`;
-  const text = `The record you're watching changed: ${input.facilityName} — ${input.changeLabel} (now ${input.status}). View it: ${facilityUrl}.\n\nYou're receiving this because you asked to be notified when this record changes on Compute Atlas. Unsubscribe: ${unsubUrl}`;
-  const html = `<p>The record you're watching changed: <strong>${escapeHtml(input.facilityName)}</strong> — ${escapeHtml(input.changeLabel)} (now ${escapeHtml(input.status)}).</p><p><a href="${escapeHtml(facilityUrl)}">View it</a></p><p style="color:#666;font-size:0.85em;">You're receiving this because you asked to be notified when this record changes on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe</a></p>`;
+  const text = `The record you're watching changed: ${input.facilityName} — ${input.changeLabel} (now ${input.status}). View it: ${facilityUrl}.\n\nYou're receiving this because you asked to be notified when this record changes on Compute Atlas. Unsubscribe from this record: ${unsubUrl}\nStop all automated email from Compute Atlas: ${unsubUrl}&scope=all`;
+  const html = `<p>The record you're watching changed: <strong>${escapeHtml(input.facilityName)}</strong> — ${escapeHtml(input.changeLabel)} (now ${escapeHtml(input.status)}).</p><p><a href="${escapeHtml(facilityUrl)}">View it</a></p><p style="color:#666;font-size:0.85em;">You're receiving this because you asked to be notified when this record changes on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this record</a> · <a href="${escapeHtml(unsubUrl + "&scope=all")}">Stop all automated email from Compute Atlas</a></p>`;
 
   return sendViaResend(
     "sendChangeNotification",
@@ -226,8 +226,8 @@ export async function sendWatchStartedEmail(input: {
 }): Promise<{ sent: boolean }> {
   const unsubUrl = `${linkBase()}/api/subscribe/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
   const subject = `You're now watching ${input.targetLabel} — Compute Atlas`;
-  const text = `You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching ${input.targetLabel} and will get an email whenever it changes.\n\nIf this wasn't you, unsubscribe: ${unsubUrl}`;
-  const html = `<p>You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching <strong>${escapeHtml(input.targetLabel)}</strong> and will get an email whenever it changes.</p><p style="color:#666;font-size:0.85em;">If this wasn't you, <a href="${escapeHtml(unsubUrl)}">unsubscribe</a>.</p>`;
+  const text = `You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching ${input.targetLabel} and will get an email whenever it changes.\n\nIf this wasn't you, unsubscribe from this one: ${unsubUrl}\nStop all automated email from Compute Atlas: ${unsubUrl}&scope=all`;
+  const html = `<p>You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching <strong>${escapeHtml(input.targetLabel)}</strong> and will get an email whenever it changes.</p><p style="color:#666;font-size:0.85em;">If this wasn't you, <a href="${escapeHtml(unsubUrl)}">unsubscribe from this one</a> · <a href="${escapeHtml(unsubUrl + "&scope=all")}">Stop all automated email from Compute Atlas</a>.</p>`;
 
   return sendViaResend(
     "sendWatchStartedEmail",

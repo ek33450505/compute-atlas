@@ -390,6 +390,13 @@ model for source verification — treat it as an operator tool, not part of the 
 - Operator mechanics (launchd, `ollama pull`, running it by hand):
   [discovery-runbook.md](discovery-runbook.md)
 
+## Subscriber notifications and unsubscribe links
+
+- **Unsubscribe links are bearer tokens.** Anyone holding a forwarded email can unsubscribe
+  that watch or stop all automated email for the address. "Stop all automated email" keeps the FIRST
+  stop-all's token (`email_suppressions.source_token_hash`) as the only one that can undo
+  it; a later stop-all from another token is not undoable by that token.
+
 ## Caching, briefly
 
 Four surfaces. Three are Next.js render tiers, all reading from Neon:

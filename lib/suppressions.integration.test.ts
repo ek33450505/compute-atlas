@@ -2,6 +2,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { sql } from "drizzle-orm";
 import { beforeAll, beforeEach, afterEach, afterAll, describe, it, expect, vi } from "vitest";
 
 import { emailSuppressionsTable, subscriptionsTable } from "@/lib/db/schema";
@@ -10,6 +11,7 @@ import {
   inboxProofFromUnsubscribeToken,
   isSuppressed,
   lift,
+  subscriptionSuppressedSql,
   CONSENT_LIFT_SKEW_MS,
   mayEmail,
   type SuppressionScope,
@@ -18,6 +20,7 @@ import {
   type SuppressionDb,
 } from "@/lib/suppressions";
 import { createConsentValue } from "@/lib/subscribe-consent";
+import { hashToken } from "@/lib/token-hash";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 
 let tdb: TestDbHandle;
@@ -274,12 +277,24 @@ describe("lift", () => {
     expect(await isSuppressed(db, "a@example.com", GLOBAL)).toBe("clear");
   });
 
-  it("an older cookie can still lift a TARGET row", async () => {
+  it("an older (or within-skew) cookie cannot lift a TARGET row; a later one can", async () => {
     at(0);
     const before = cookieProof("a@example.com");
     at(1000);
     await suppress(db, "a@example.com", state("VA"), "unsubscribe");
-    expect(await lift(db, "a@example.com", state("VA"), before)).toBe(true);
+    expect(await lift(db, "a@example.com", state("VA"), before)).toBe(false);
+    at(1000 + CONSENT_LIFT_SKEW_MS); // exactly the margin: still refused
+    expect(await lift(db, "a@example.com", state("VA"), cookieProof("a@example.com"))).toBe(false);
+    expect(await isSuppressed(db, "a@example.com", state("VA"))).toBe("suppressed");
+    at(1000 + CONSENT_LIFT_SKEW_MS + 1000);
+    expect(await lift(db, "a@example.com", state("VA"), cookieProof("a@example.com"))).toBe(true);
+  });
+
+  it("a TOKEN grant lifts a target row regardless of age (the Resume path)", async () => {
+    const token = await seedSub("a@example.com", "unsubscribed", "state", "VA");
+    await suppress(db, "a@example.com", state("VA"), "unsubscribe");
+    const proof = (await inboxProofFromUnsubscribeToken(db, token)) as InboxProof;
+    expect(await lift(db, "a@example.com", state("VA"), proof)).toBe(true);
   });
 
   it("returns false when no matching row exists", async () => {
@@ -351,5 +366,72 @@ describe("lift", () => {
     expect(await inboxProofFromUnsubscribeToken(db, token)).toBeNull();
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
+  });
+});
+
+describe("subscriptionSuppressedSql", () => {
+  it("flags only the suppressed subscription rows (table-qualified correlation)", async () => {
+    await seedSub("out@example.com", "confirmed", "state", "VA");
+    await seedSub("in@example.com", "confirmed", "state", "VA");
+    await seedSub("other@example.com", "confirmed", "state", "TX");
+    await suppress(db, "out@example.com", state("VA"), "unsubscribe");
+    await suppress(db, "other@example.com", state("VA"), "unsubscribe"); // different target than its row
+    const rows = await db
+      .select({ email: subscriptionsTable.email, blocked: subscriptionSuppressedSql() })
+      .from(subscriptionsTable);
+    expect(Object.fromEntries(rows.map((r) => [r.email, r.blocked]))).toEqual({
+      "out@example.com": true,
+      "in@example.com": false,
+      "other@example.com": false,
+    });
+  });
+
+  // Pins WHY the helper uses raw qualified identifiers: drizzle drops the table
+  // prefix from interpolated columns in a single-table query, so the naive form
+  // correlates the inner reference with itself and matches EVERY row. If this
+  // ever stops being true the raw identifiers are no longer needed.
+  it("the naive interpolated-column form matches every row (the bug the raw identifiers avoid)", async () => {
+    await seedSub("out@example.com", "confirmed", "state", "VA");
+    await seedSub("in@example.com", "confirmed", "state", "VA");
+    await suppress(db, "out@example.com", state("VA"), "unsubscribe");
+    const naive = sql<boolean>`exists (
+      select 1 from "email_suppressions" "es"
+      where ${emailSuppressionsTable.email} = lower(${subscriptionsTable.email})
+    )`;
+    const rows = await db
+      .select({ email: subscriptionsTable.email, blocked: naive })
+      .from(subscriptionsTable);
+    expect(rows.every((r) => r.blocked)).toBe(true);
+  });
+});
+
+describe("token grant on the GLOBAL row (Undo)", () => {
+  it("lifts it only for the token whose hash is stored; the first stop-all's hash wins", async () => {
+    const t1 = await seedSub("a@example.com", "confirmed", "state", "VA");
+    const t2 = await seedSub("a@example.com", "confirmed", "state", "TX");
+    await suppress(db, "a@example.com", GLOBAL, "unsubscribe_all", hashToken(t1));
+    await suppress(db, "a@example.com", GLOBAL, "unsubscribe_all", hashToken(t2)); // conflict: ignored
+    const p2 = (await inboxProofFromUnsubscribeToken(db, t2)) as InboxProof;
+    expect(await lift(db, "a@example.com", GLOBAL, p2)).toBe(false);
+    const p1 = (await inboxProofFromUnsubscribeToken(db, t1)) as InboxProof;
+    expect(await lift(db, "a@example.com", GLOBAL, p1)).toBe(true);
+  });
+
+  it("never lifts a NULL-hash global row, and a token never lifts another address's row", async () => {
+    const t = await seedSub("a@example.com", "confirmed", "state", "VA");
+    await suppress(db, "a@example.com", GLOBAL, "admin");
+    await suppress(db, "b@example.com", GLOBAL, "unsubscribe_all", hashToken(t));
+    const p = (await inboxProofFromUnsubscribeToken(db, t)) as InboxProof;
+    expect(await lift(db, "a@example.com", GLOBAL, p)).toBe(false);
+    expect(await lift(db, "b@example.com", GLOBAL, p)).toBe(false);
+    expect(await rowCount()).toBe(2);
+  });
+
+  it("the migration adds a nullable source_token_hash and the backfill leaves it NULL", async () => {
+    await seedSub("gone@example.com", "unsubscribed", "state", "VA");
+    await tdb.client.exec(statements[statements.length - 1]);
+    const rows = await db.select().from(emailSuppressionsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].sourceTokenHash).toBeNull();
   });
 });

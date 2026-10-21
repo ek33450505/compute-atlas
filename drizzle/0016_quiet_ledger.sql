@@ -21,6 +21,10 @@
 -- by hand. It is idempotent, and it catches unsubscribes made between the
 -- migration and the deploy (before the code wrote suppressions itself).
 --
+-- `source_token_hash` (nullable): on a global "stop all" row, the sha256 of the
+-- unsubscribe token that wrote it, the key for the "Undo" action. The backfill
+-- below leaves it NULL, so no token can lift a backfilled row.
+--
 -- RETIRED 'all' TARGET: its unsubscribed rows backfill as the inert pair
 -- ('all', ''), NOT a global opt-out. They were system-closed with a closing
 -- email in 2026-09, not a user-requested "stop all".
@@ -30,7 +34,8 @@ CREATE TABLE IF NOT EXISTS "email_suppressions" (
 	"email" text NOT NULL,
 	"target_type" text DEFAULT '' NOT NULL,
 	"target_id" text DEFAULT '' NOT NULL,
-	"source" text NOT NULL
+	"source" text NOT NULL,
+	"source_token_hash" text
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "email_suppressions_email_target_idx" ON "email_suppressions" USING btree ("email","target_type","target_id");--> statement-breakpoint

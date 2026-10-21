@@ -6,6 +6,7 @@ import { getDb } from "@/lib/db/client";
 import { apiAccessGrantsTable } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
 import { checkAccessGrantEmailSendCap } from "@/lib/rate-limit";
+import { isSuppressed, mayEmail } from "@/lib/suppressions";
 import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 export const accessGrantInputSchema = z.object({
@@ -86,6 +87,12 @@ export async function requestAccessGrant(
 
   const db = getDb();
 
+  // "Stop all email" covers this automated send: a stranger can type any
+  // address into this form, so a globally stopped address (or one whose
+  // lookup failed, "unknown") must get no mail. Always runs, in the same slot
+  // for every caller, and the response below is the same generic `{ok:true}`.
+  const mailable = mayEmail(await isSuppressed(db, email, { kind: "global" }));
+
   const existing = await db
     .select({ id: apiAccessGrantsTable.id })
     .from(apiAccessGrantsTable)
@@ -97,6 +104,21 @@ export async function requestAccessGrant(
     // A pending or active grant already exists for this email — generic
     // success, no second row, no second email (same enumeration-safety
     // reasoning as the subscribe flow's active-target dedup).
+    return { ok: true };
+  }
+
+  if (!mailable) {
+    // No grant row either: a pending grant for an address that can never
+    // receive its confirm link would be dead weight, and it would make the
+    // address's future requests (after an Undo) hit the "already pending"
+    // dedup above and silently send nothing. Query-count symmetry: one read of
+    // the same table stands in for the INSERT the other paths run; its result
+    // is unused.
+    await db
+      .select({ id: apiAccessGrantsTable.id })
+      .from(apiAccessGrantsTable)
+      .where(eq(apiAccessGrantsTable.email, email))
+      .limit(1);
     return { ok: true };
   }
 
