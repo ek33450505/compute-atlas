@@ -1317,6 +1317,12 @@
       "label": "Low (<0 cm/y)"
     }
   },
+  "alcove-project-catalyst-osawatomie-ks": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "aligned-atl-01-lithia-springs-ga": {
     "nearestWater": {
       "name": "Sweetwater Creek",
@@ -3820,6 +3826,7 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "att-keawaula-cable-landing-station-waianae-hi": {},
   "att-redwood-city-ca": {
     "nearestWater": {
       "name": "Smith Slough",
@@ -11943,6 +11950,12 @@
       "rock": "Carbonate-rock"
     }
   },
+  "cormor-data-shelter-wellington-ks": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "corscale-gainesville-crossing-va": {
     "nearestWater": {
       "name": "Lake Manassas",
@@ -13336,6 +13349,12 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "damac-heartland-edgerton-ks": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "darkhorse-cathedra-rockwood-tn": {
@@ -14926,6 +14945,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "deep-atomic-inl-ai-data-center-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Northern Rocky Mountains Intermontane Basins Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "deep-green-lansing-mi": {
     "nearestWater": {
       "name": "Grand River",
@@ -15535,6 +15564,12 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "digital-realty-astra-north-de-soto-ks": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "digital-realty-atl11-ga": {
@@ -25530,6 +25565,12 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "hawaii-ets-kalanimoku-state-data-center-honolulu-hi": {
+    "aquifer": {
+      "name": "Hawaiian Sedimentary Deposit Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "hawaiiantel-endeavor-honolulu-hi": {
     "aquifer": {
       "name": "Hawaiian Sedimentary Deposit Aquifers",
@@ -28787,6 +28828,12 @@
       "label": "Low (<10%)"
     }
   },
+  "lightedge-lenexa-ks": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "lightedge-papillion-ne": {
     "nearestWater": {
       "name": "Papillion Creek",
@@ -28830,6 +28877,12 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "lightfield-energy-proximity-park-ottawa-ks": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "lighthouse-data-centers-spartanburg-sc": {
@@ -29396,6 +29449,20 @@
     "aquifer": {
       "name": "Coastal Lowlands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "lumen-boise-mcgregor-id": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Snake River Plain Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "lumen-boston-cambridge-ma": {
@@ -33247,6 +33314,20 @@
     },
     "aquifer": {
       "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "monarch-energy-colwich-ks": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -40148,6 +40229,12 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "qts-new-century-ks": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "qts-overland-park-ks": {
     "nearestWater": {
       "name": "Tomahawk Creek",
@@ -44406,6 +44493,7 @@
       "rock": "Carbonate-rock"
     }
   },
+  "southern-cross-kahe-point-cable-landing-station-hi": {},
   "southern-power-south-cheyenne-solar-laramie-county-wy": {
     "nearestWater": {
       "name": "Owl Creek",
