@@ -8,6 +8,7 @@ import {
   createConsentValue,
   readConsentCookie,
   verifyConsentCookie,
+  verifyConsentCookieIssuedAt,
 } from "@/lib/subscribe-consent";
 
 const TEST_SALT = "consent-test-salt-v1";
@@ -227,5 +228,52 @@ describe("readConsentCookie", () => {
       cookie: `${CONSENT_COOKIE_NAME}=first; ${CONSENT_COOKIE_NAME}=second`,
     });
     expect(readConsentCookie(headers)).toBe("first");
+  });
+});
+
+describe("verifyConsentCookieIssuedAt", () => {
+  const T0 = Date.UTC(2026, 9, 21, 12, 0, 0);
+
+  it("returns the issue time of a valid cookie", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(T0);
+    const value = createConsentValue(EMAIL);
+    vi.setSystemTime(T0 + 60_000);
+    expect(verifyConsentCookieIssuedAt(value, EMAIL)).toBe(T0);
+    expect(verifyConsentCookieIssuedAt(value, " READER@example.com ")).toBe(T0);
+  });
+
+  it("returns null for a tampered cookie", () => {
+    const value = createConsentValue(EMAIL) as string;
+    const flipped = value.endsWith("0") ? "1" : "0";
+    expect(verifyConsentCookieIssuedAt(value.slice(0, -1) + flipped, EMAIL)).toBeNull();
+    expect(verifyConsentCookieIssuedAt(withPart(value, 1, String(T0)), EMAIL)).toBeNull();
+  });
+
+  it("returns null for an expired cookie", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(T0);
+    const value = createConsentValue(EMAIL);
+    vi.setSystemTime(T0 + CONSENT_MAX_AGE_SECONDS * 1000 + 1);
+    expect(verifyConsentCookieIssuedAt(value, EMAIL)).toBeNull();
+  });
+
+  it("returns null for the wrong address", () => {
+    expect(verifyConsentCookieIssuedAt(createConsentValue(EMAIL), "victim@example.com")).toBeNull();
+  });
+
+  it("returns null for a future-dated cookie beyond the skew tolerance", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(T0 + 60 * 60 * 1000);
+    const value = createConsentValue(EMAIL);
+    vi.setSystemTime(T0);
+    expect(verifyConsentCookieIssuedAt(value, EMAIL)).toBeNull();
+  });
+
+  it("returns null with no key or no cookie", () => {
+    const value = createConsentValue(EMAIL);
+    expect(verifyConsentCookieIssuedAt(undefined, EMAIL)).toBeNull();
+    delete process.env.CONTRIBUTE_IP_SALT;
+    expect(verifyConsentCookieIssuedAt(value, EMAIL)).toBeNull();
   });
 });

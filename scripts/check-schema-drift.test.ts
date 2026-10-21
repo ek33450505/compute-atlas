@@ -24,6 +24,7 @@ const ALL_TABLES = [
   "api_daily_usage",
   "contact_messages",
   "discovery_heartbeat",
+  "email_suppressions",
   "facilities",
   "facility_history",
   "intake_attempts",

@@ -200,6 +200,42 @@ export const subscriptionsTable = pgTable(
 export type SubscriptionRow = typeof subscriptionsTable.$inferSelect;
 
 /**
+ * Durable opt-out list: one row means "never email this address for this
+ * target again." `subscriptions.status = 'unsubscribed'` is not durable — the
+ * partial unique index excludes it, so a fresh anonymous POST can re-insert
+ * the pair and trigger a confirm email.
+ *
+ * Holds the PLAINTEXT address (stored lowercased + trimmed, same as
+ * `subscriptions.email`), by decision (Ed, 2026-10-21): the backfill is one SQL
+ * INSERT..SELECT, and a salted hash would break if the salt rotated.
+ *
+ * `target_type = '' AND target_id = ''` is a GLOBAL opt-out ("stop all
+ * email"). Empty string rather than NULL so the plain unique index below makes
+ * inserts idempotent via ON CONFLICT DO NOTHING (NULLs never collide).
+ * `source`: unsubscribe | unsubscribe_all | backfill | admin.
+ */
+export const emailSuppressionsTable = pgTable(
+  "email_suppressions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    email: text("email").notNull(),
+    targetType: text("target_type").notNull().default(""),
+    targetId: text("target_id").notNull().default(""),
+    source: text("source").notNull(),
+  },
+  (table) => [
+    uniqueIndex("email_suppressions_email_target_idx").on(
+      table.email,
+      table.targetType,
+      table.targetId
+    ),
+  ]
+);
+
+export type EmailSuppressionRow = typeof emailSuppressionsTable.$inferSelect;
+
+/**
  * One row per request to `POST /api/subscribe` that reaches a branch decision
  * — the counter `checkSubscribeRateLimit` reads.
  *
