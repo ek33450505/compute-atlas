@@ -1966,7 +1966,7 @@ describe("SuggestCorrection — notify email", () => {
     expect(screen.getByText(/add a note, credit or email \(optional\)/i)).toBeInTheDocument();
     const input = screen.getByLabelText(/your email \(optional\)/i);
     expect(input).toHaveAttribute("type", "email");
-    expect(input).toHaveAccessibleDescription(/used once/i);
+    expect(input).toHaveAccessibleDescription(/email you once when this is reviewed/i);
   });
 
   it("drops the field for Something else", async () => {

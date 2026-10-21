@@ -893,7 +893,7 @@ export function SuggestCorrection({
                           aria-describedby={notifyEmailDescribedBy}
                         />
                         <p id={notifyEmailHintId} className="text-xs text-muted-foreground">
-                          Used once, to tell you whether this submission was published, then deleted. You won&rsquo;t hear from us for any other reason.
+                          We&rsquo;ll try to email you once when this is reviewed, then delete the address. You won&rsquo;t hear from us for any other reason.
                         </p>
                         <FieldError id={notifyEmailErrorId} message={errors["notifyEmail"]} />
                       </div>

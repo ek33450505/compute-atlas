@@ -705,7 +705,7 @@ function SourceSection({
             onChange={(v) => setState((prev) => ({ ...prev, notifyEmail: v }))}
             error={errors["notifyEmail"]}
             maxLength={254}
-            hint="Used once, to tell you whether this submission was published, then deleted. You won't hear from us for any other reason."
+            hint="We'll try to email you once when this is reviewed, then delete the address. You won't hear from us for any other reason."
           />
         ) : null}
       </CardContent>
