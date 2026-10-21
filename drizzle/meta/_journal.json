@@ -120,6 +120,13 @@
       "when": 1792597673924,
       "tag": "0016_quiet_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792605421668,
+      "tag": "0017_email_send_ledger",
+      "breakpoints": true
     }
   ]
 }

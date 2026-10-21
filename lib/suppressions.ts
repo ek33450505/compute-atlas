@@ -2,6 +2,7 @@ import { and, eq, lt, or, sql } from "drizzle-orm";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 
 import { redactedErrorCode } from "@/lib/db-error";
+import { normalizeEmail } from "@/lib/email-address";
 import { emailSuppressionsTable, subscriptionsTable } from "@/lib/db/schema";
 import type * as schema from "@/lib/db/schema";
 import { verifyConsentCookieIssuedAt } from "@/lib/subscribe-consent";
@@ -25,11 +26,6 @@ export type SuppressionSource = "unsubscribe" | "unsubscribe_all" | "backfill" |
 /** A global opt-out names no target; a target opt-out names exactly one. */
 export type SuppressionScope =
   { kind: "global" } | { kind: "target"; targetType: string; targetId: string };
-
-/** Same normalization as `subscribeToTarget` (lib/subscribe.ts): trim + lowercase. */
-export function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase();
-}
 
 /**
  * Canonical (targetType, targetId) key for a scope, normalized the way

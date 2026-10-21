@@ -525,6 +525,68 @@ export const stateDigestRunsTable = pgTable(
 export type StateDigestRunRow = typeof stateDigestRunsTable.$inferSelect;
 
 /**
+ * One row per outbound subscription email attempt (A-3 accountability log):
+ * who-hash, which kind, which subscription/run, and how it ended.
+ * `lib/email-sends.ts` is the only writer.
+ *
+ * WRITTEN BEFORE THE SEND: `recordSendAttempt` inserts an `attempted` row
+ * first and `completeSend` settles it afterwards. A row still `attempted`
+ * with a NULL `completed_at` is a send whose outcome was never recorded (a
+ * crash or timeout between the provider call and the UPDATE), not a clean
+ * send.
+ *
+ * NEVER STORES the subject, the body, the plaintext address, or a raw
+ * provider error. `email_hash` is the salted `hashNotifyEmail` digest;
+ * `error_code` is an identifier from `safeErrorCode`, never free text.
+ *
+ * NOT A DEDUPE LEDGER. Never use it for at-most-once delivery: a failed
+ * insert, a pruned row or a retried send all leave it silent. At-most-once
+ * for the monthly digest is `state_digest_runs`' unique window claim.
+ *
+ * The ONLY counting reader is the 30-day per-address confirm cap
+ * (`countRecentConfirmSends`). Its window must stay well inside the
+ * retention in `scripts/retention-prune.ts` (`EMAIL_SENDS_RETENTION_DAYS`,
+ * 180 days), so pruning can never shorten the cap; a test pins the ratio.
+ *
+ * `subscription_id` and `run_id` are ON DELETE SET NULL: deleting a
+ * subscription (retention-prune removes unsubscribed rows after 30 days) or
+ * a digest run must not delete the log row that records what was mailed.
+ *
+ * `kind`: confirm | watch_started | facility_change | facility_digest |
+ * state_digest | area_digest. `outcome`: attempted | sent | error |
+ * skipped_no_key | skipped_suppressed | skipped_unconfirmed | skipped_capped.
+ * Both are validated at the type level only (no CHECK constraint), so a new
+ * value needs no migration.
+ */
+export const emailSendsTable = pgTable(
+  "email_sends",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    kind: text("kind").notNull(),
+    emailHash: text("email_hash").notNull(),
+    subscriptionId: uuid("subscription_id").references(() => subscriptionsTable.id, {
+      onDelete: "set null",
+    }),
+    targetType: text("target_type"),
+    targetId: text("target_id"),
+    runId: uuid("run_id").references(() => stateDigestRunsTable.id, { onDelete: "set null" }),
+    outcome: text("outcome").notNull().default("attempted"),
+    resendId: text("resend_id"),
+    errorCode: text("error_code"),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("email_sends_hash_created_idx").on(table.emailHash, table.createdAt),
+    index("email_sends_subscription_idx").on(table.subscriptionId),
+    index("email_sends_run_idx").on(table.runId),
+    index("email_sends_created_idx").on(table.createdAt),
+  ]
+);
+
+export type EmailSendRow = typeof emailSendsTable.$inferSelect;
+
+/**
  * Unstructured research inbox for bare tips — a URL and an optional one-line
  * note, submitted anonymously by the public. A lead is NOT a facility and NOT
  * a submission: it carries no facility payload, and nothing in

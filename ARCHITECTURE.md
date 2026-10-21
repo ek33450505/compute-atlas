@@ -6,7 +6,7 @@ Compute Atlas is a source-cited public tracker of AI data centers, crypto-mining
 
 **Frontend:** Next.js 16 App Router with React 19 + TypeScript. Renders facility data via React Server Components; components never query the database directly. Reads are centralized through `lib/data.ts` and served through tag-based `unstable_cache` with ISR (Incremental Static Regeneration). The UI itself is Tailwind v4 with Base UI + shadcn primitives, and features MapLibre GL for the globe view.
 
-**Backend:** Neon serverless Postgres, schema in `lib/db/schema.ts`, accessed via Drizzle ORM. The database holds **14 tables** (measured 2026-09-28; `grep -c "pgTable(" lib/db/schema.ts` — re-measure, this grows). Five carry the domain: `facilities` (live records), `submissions` (staging), `facility_history` (the audit trail), `subscriptions` (email alerts), and `leads` (public tip-offs). The other nine are operational ledgers that no facility read touches — per-IP rate-limit counters (`subscribe_attempts`, `intake_attempts`), the submission-notify pair (`submission_notify_requests`, `submission_notify_sends`), `state_digest_runs`, `contact_messages`, the public read-API pair (`api_access_grants`, `api_daily_usage`), and `discovery_heartbeat`. Unreviewed intake flows through the `submissions` table (staged and `pending`-by-default) and requires explicit human approval to become live; maintainer-reviewed data publishes directly through `lib/facility-write.ts` (admin UI, admin REST) or `scripts/sync-to-neon.ts` (bulk). See "Invariants (as Absences)".
+**Backend:** Neon serverless Postgres, schema in `lib/db/schema.ts`, accessed via Drizzle ORM. The database holds **16 tables** (measured 2026-10-21; `grep -c "pgTable(" lib/db/schema.ts` — re-measure, this grows). Five carry the domain: `facilities` (live records), `submissions` (staging), `facility_history` (the audit trail), `subscriptions` (email alerts), and `leads` (public tip-offs). The other eleven are operational ledgers that no facility read touches — per-IP rate-limit counters (`subscribe_attempts`, `intake_attempts`), the submission-notify pair (`submission_notify_requests`, `submission_notify_sends`), `state_digest_runs`, the email pair (`email_suppressions`, the opt-out list; `email_sends`, the outbound send log), `contact_messages`, the public read-API pair (`api_access_grants`, `api_daily_usage`), and `discovery_heartbeat`. Unreviewed intake flows through the `submissions` table (staged and `pending`-by-default) and requires explicit human approval to become live; maintainer-reviewed data publishes directly through `lib/facility-write.ts` (admin UI, admin REST) or `scripts/sync-to-neon.ts` (bulk). See "Invariants (as Absences)".
 
 **Discovery Pipeline:** A local, scheduled operator tool (`scripts/discovery/`) that proposes new facilities and status changes to the staging queue. It runs via launchd on the maintainer's machine and never writes live facilities — it's not part of the deployed application.
 
@@ -135,7 +135,7 @@ graph TB
         History["facility_history<br/>(audit trail)"]
         Subs["subscriptions<br/>(for email alerts)"]
         Leads["leadsTable<br/>(public tip-offs)"]
-        Ops["+9 operational tables<br/>(rate-limit ledgers, notify<br/>queue, contact messages,<br/>API grants, heartbeat)"]
+        Ops["+11 operational tables<br/>(rate-limit ledgers, notify<br/>queue, email suppressions<br/>and send log, contact messages,<br/>API grants, heartbeat)"]
     end
 
     subgraph "Operator Tool (Local)"

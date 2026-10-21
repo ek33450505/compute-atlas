@@ -90,11 +90,12 @@ describe("claimDigestWindow", () => {
   it("propagates a non-unique-violation error rather than reporting a claim", async () => {
     // Isolated instance: dropping a table is not something tdb.reset()'s
     // TRUNCATE can undo, and every other test in this file depends on the
-    // shared instance keeping state_digest_runs intact (same pattern as
+    // shared instance keeping state_digest_runs intact (CASCADE because
+    // email_sends.run_id now references it; same pattern as
     // scripts/check-schema-drift.test.ts's drop-table test).
     const isolated = await makeTestDb();
     try {
-      await isolated.client.exec(`DROP TABLE "state_digest_runs"`);
+      await isolated.client.exec(`DROP TABLE "state_digest_runs" CASCADE`);
       vi.mocked(dbClient.getDb).mockReturnValueOnce(isolated.db as never);
 
       await expect(claimDigestWindow(since, until)).rejects.toThrow();

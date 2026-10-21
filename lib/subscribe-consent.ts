@@ -1,5 +1,7 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
+import { normalizeEmail } from "@/lib/email-address";
+
 /**
  * Cookie name for the subscribe auto-confirm consent proof. Deliberately
  * unrelated to `admin_session` (`lib/admin-session.ts`): different audience,
@@ -82,16 +84,6 @@ function resolveConsentKey(): string | undefined {
     return undefined;
   }
   return createHmac("sha256", salt).update(KEY_DOMAIN).digest("hex");
-}
-
-/**
- * Normalized exactly as `subscribeToTarget` normalizes the submitted address
- * (`trim().toLowerCase()`) and as `subscriptions.email` is stored, so the
- * issuing side (a DB row) and the verifying side (a request body) always
- * agree on the same input.
- */
-function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase();
 }
 
 /**
