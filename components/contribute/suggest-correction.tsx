@@ -494,7 +494,7 @@ export function SuggestCorrection({
           // The field lives in the closed disclosure: open it (synchronous in
           // the DOM) so the error and focus target are visible.
           if (detailsRef.current) detailsRef.current.open = true;
-          setFormError("Please fix the errors below.");
+          setFormError("Check the email address under “Add a note, credit or email”.");
           document.getElementById(notifyEmailId)?.focus();
           return;
         }

@@ -123,3 +123,69 @@ describe("triageUrl total-timeout threading", () => {
     expect(result.title).toBe("Hello");
   });
 });
+
+describe("triageUrl title entity decoding is storable", () => {
+  async function titleFor(html: string): Promise<string | undefined> {
+    const fetchImpl = vi.fn<typeof fetch>(async () => {
+      return {
+        status: 200,
+        ok: true,
+        headers: new Headers({ "content-type": "text/html" }),
+        body: {
+          getReader: () => {
+            let done = false;
+            return {
+              read: vi.fn(async () => {
+                if (done) return { done: true, value: undefined };
+                done = true;
+                return { done: false, value: new TextEncoder().encode(html) };
+              }),
+              cancel: vi.fn(async () => {}),
+              releaseLock: vi.fn(),
+            };
+          },
+        },
+      } as unknown as Response;
+    });
+    const result = await triageUrl("https://public.example.com/ok", {
+      fetchImpl,
+      resolveDeps: SAFE_RESOLVE_DEPS,
+    });
+    if (!result.ok) throw new Error(`expected ok:true: ${result.error}`);
+    return result.title;
+  }
+
+  it("turns &#0; into U+FFFD, never NUL", async () => {
+    expect(await titleFor("<title>a&#0;b</title>")).toBe("a\ufffdb");
+  });
+
+  it("turns a surrogate-range entity into U+FFFD", async () => {
+    expect(await titleFor("<title>a&#55357;b</title>")).toBe("a\ufffdb");
+  });
+
+  it("still decodes a valid numeric entity", async () => {
+    expect(await titleFor("<title>caf&#233; &#128512;</title>")).toBe("caf\u00e9 \ud83d\ude00");
+  });
+
+  it("does not leave a lone high surrogate when truncation splits a pair", async () => {
+    const title = await titleFor(`<title>${"a".repeat(299)}\ud83d\ude00</title>`);
+    expect(title).toBe("a".repeat(299));
+  });
+});
+
+describe("triageUrl error strings stay storable after truncation", () => {
+  // Two paddings so that, whatever prefix the error text carries, one of them
+  // lands the 300-char cut in the middle of a surrogate pair.
+  it.each([250, 251])("never ends in a lone high surrogate (padding %i)", async (pad) => {
+    const fetchImpl = vi.fn<typeof fetch>(async () => {
+      throw new Error("a".repeat(pad) + "\ud83d\ude00".repeat(100));
+    });
+    const result = await triageUrl("https://public.example.com/ok", {
+      fetchImpl,
+      resolveDeps: SAFE_RESOLVE_DEPS,
+    });
+    expect(result.ok).toBe(false);
+    expect(result.error).toBeDefined();
+    expect(result.error).not.toMatch(/[\ud800-\udbff]$/);
+  });
+});

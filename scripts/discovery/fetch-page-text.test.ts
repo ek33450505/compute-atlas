@@ -80,6 +80,12 @@ describe("htmlToText", () => {
     );
   });
 
+  it("replaces out-of-range, NUL and surrogate numeric entities with U+FFFD", () => {
+    expect(htmlToText("<p>a&#99999999;b</p>")).toBe("a\ufffdb");
+    expect(htmlToText("<p>a&#0;b</p>")).toBe("a\ufffdb");
+    expect(htmlToText("<p>a&#55357;b</p>")).toBe("a\ufffdb");
+  });
+
   it("decodes decimal numeric entities", () => {
     expect(htmlToText("<p>caf&#233;</p>")).toBe("café");
   });

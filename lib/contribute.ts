@@ -8,7 +8,7 @@ import {
   CORRECTABLE_FIELD_META,
   type CorrectableKey,
 } from "@/lib/contribute-fields";
-import { httpUrlSchema, sanitizeAttribution } from "@/lib/intake-fields";
+import { httpUrlSchema, sanitizeAttribution, storableText } from "@/lib/intake-fields";
 import { checkSubmissionNotifyCap } from "@/lib/rate-limit";
 import { recordSubmissionNotifyRequest, submissionNotifyEnabled } from "@/lib/submission-notify";
 import { stateNameFromCode } from "@/lib/us-states";
@@ -62,14 +62,11 @@ const createSchema = z.object({
   // The `value.length === 0` escape mirrors `usStateCodeSchema`'s: Zod v4 runs a
   // refinement even after `min(1)` fails, so without it an empty name would
   // report two issues for one field.
-  name: z
-    .string()
-    .min(1)
-    .max(200)
-    .refine((value) => value.length === 0 || slugBase(value).length > 0, {
-      message: "Name must contain at least one letter or number",
-    }),
-  operator: z.string().min(1).max(200),
+  name: storableText(z.string().min(1).max(200)).refine(
+    (value) => value.length === 0 || slugBase(value).length > 0,
+    { message: "Name must contain at least one letter or number" }
+  ),
+  operator: storableText(z.string().min(1).max(200)),
   state: usStateCodeSchema,
   facilityType: z
     .enum(["data_center", "crypto_mining", "power_generation"])
@@ -79,24 +76,24 @@ const createSchema = z.object({
     .default("proposed"),
   lat: z.number().min(-90).max(90),
   lon: z.number().min(-180).max(180),
-  city: z.string().max(200).optional(),
+  city: storableText(z.string().max(200)).optional(),
   capacityOperationalMw: z.number().positive().optional(),
   capacityPlannedMw: z.number().positive().optional(),
   sourceUrl: httpUrlSchema,
-  sourceLabel: z.string().max(200).optional(),
-  note: z.string().max(2000).optional(),
-  attribution: z.string().max(80).optional(),
+  sourceLabel: storableText(z.string().max(200)).optional(),
+  note: storableText(z.string().max(2000)).optional(),
+  attribution: storableText(z.string().max(80)).optional(),
 });
 
 const correctionSchema = z.object({
   kind: z.literal("correction"),
   website: z.string().max(200).optional(),
-  targetFacilityId: z.string().min(1),
+  targetFacilityId: storableText(z.string().min(1)),
   field: z.enum(CORRECTABLE_KEYS),
-  value: z.union([z.string().max(2000), z.number()]),
+  value: z.union([storableText(z.string().max(2000)), z.number()]),
   sourceUrl: httpUrlSchema,
-  note: z.string().max(2000).optional(),
-  attribution: z.string().max(80).optional(),
+  note: storableText(z.string().max(2000)).optional(),
+  attribution: storableText(z.string().max(80)).optional(),
 });
 
 export const contributeInputSchema = z.discriminatedUnion("kind", [

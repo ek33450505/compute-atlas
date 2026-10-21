@@ -3,7 +3,7 @@ import { and, asc, eq, desc, inArray, ne, or, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { facilitiesTable, leadsTable, submissionsTable, type LeadRow } from "@/lib/db/schema";
-import { httpUrlSchema, sanitizeAttribution } from "@/lib/intake-fields";
+import { httpUrlSchema, sanitizeAttribution, storableText } from "@/lib/intake-fields";
 import { facilitySchema } from "@/lib/schema";
 import { createSubmission } from "@/lib/submissions";
 import {
@@ -32,8 +32,8 @@ export {
 
 export const leadInputSchema = z.object({
   url: httpUrlSchema,
-  note: z.string().max(500).optional(),
-  attribution: z.string().max(80).optional(),
+  note: storableText(z.string().max(500)).optional(),
+  attribution: storableText(z.string().max(80)).optional(),
   website: z.string().max(200).optional(), // honeypot field; checked by the route before createLead
 });
 

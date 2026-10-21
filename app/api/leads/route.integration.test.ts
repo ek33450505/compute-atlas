@@ -45,6 +45,7 @@ import { RATE_LIMIT_MAX, hashIp } from "@/lib/rate-limit";
 import facilitiesRaw from "@/data/facilities.json";
 import type { Facility } from "@/lib/schema";
 import type { LeadTriage } from "@/lib/leads";
+import { triageUrl } from "@/lib/url-triage";
 
 // Imported after the mocks above so the mocked modules are in effect.
 import { POST } from "./route";
@@ -327,21 +328,27 @@ describe("POST /api/leads", () => {
     expect(triage.title).toBe("New Data Center & Site");
   });
 
-  it("SSRF: a lead pointing at a private/blocked address never reaches fetch and triages ok:false", async () => {
-    // 127.0.0.1 is a literal blocked address (scripts/discovery/net-guard.ts
-    // isBlockedIpv4) — caught before any DNS resolution or connection
-    // attempt. If triageUrl ever bypassed fetchPageText's guard (e.g. a bare
-    // `fetch()` on the raw URL), this fetchImpl WOULD be called.
+  it("SSRF: intake now rejects an IP-literal lead outright (400, no row, no fetch)", async () => {
     const fetchImpl = vi.fn(async () => htmlResponse("<title>should never be reached</title>"));
     vi.stubGlobal("fetch", fetchImpl);
 
     const res = await POST(req({ url: "http://127.0.0.1/admin" }));
-    expect(res.status).toBe(201);
-    await flushAfter();
+    expect(res.status).toBe(400);
 
     expect(fetchImpl).not.toHaveBeenCalled();
-    const rows = await tdb.db.select().from(leadsTable);
-    const triage = rows[0].triage as LeadTriage;
+    expect(await tdb.db.select().from(leadsTable)).toHaveLength(0);
+  });
+
+  it("SSRF (defence in depth): triageUrl itself still refuses a blocked address without fetching", async () => {
+    // Intake no longer lets this URL through, but triageUrl is also reached
+    // by other callers, so its own net-guard stays covered. If it ever bypassed
+    // fetchPageText's guard (a bare `fetch()` on the raw URL), this would be called.
+    const fetchImpl = vi.fn(async () => htmlResponse("<title>should never be reached</title>"));
+    vi.stubGlobal("fetch", fetchImpl);
+
+    const triage = await triageUrl("http://127.0.0.1/admin");
+
+    expect(fetchImpl).not.toHaveBeenCalled();
     expect(triage.ok).toBe(false);
     expect(triage.error).toMatch(/blocked/i);
   });
