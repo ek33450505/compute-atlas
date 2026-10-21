@@ -70,14 +70,15 @@ export function safeErrorCode(name: unknown): string {
 }
 
 /**
- * Shared send path for every outbound email (this file and lib/notify.ts):
- * resolves the Resend client (skipping with `skipLogMessage` if
+ * Shared send path for every outbound email. Module-private on purpose: a
+ * public sender is the only way to mail, so the gate guard can see every use.
+ * Resolves the Resend client (skipping with `skipLogMessage` if
  * `RESEND_API_KEY` is unset), sends `payload`, and logs any failure under
  * `logLabel`. Each sender still composes its own subject/text/html (and any
  * sender-specific guard, e.g. sendContactEmail's CONTACT_TO_EMAIL check)
  * before calling this. Never throws.
  */
-export async function sendViaResend(
+async function sendViaResend(
   logLabel: string,
   skipLogMessage: string,
   payload: Parameters<Resend["emails"]["send"]>[0],
@@ -332,5 +333,148 @@ export async function sendSubmissionReviewedEmail(input: {
     "sendSubmissionReviewedEmail",
     "RESEND_API_KEY not set — skipping submission-reviewed email send",
     { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+/** One facility change as a digest email lists it (structurally a subset of lib/notify.ts's change rows). */
+export interface DigestChange {
+  facilityName: string;
+  facilitySlug: string;
+  changeLabel: string;
+  status: string;
+  unsubscribeToken: string;
+}
+
+/**
+ * Composes and sends the multi-facility digest email for a recipient with
+ * more than one change in a single run. Lives here so `sendViaResend` can stay
+ * module-private: the only way to mail is a public sender, and every
+ * subscription sender is guarded to run inside `sendGated`.
+ *
+ * Never throws — same contract as `sendChangeNotification` — so a failed
+ * digest send can never turn a successful publish into an error.
+ */
+export async function sendChangeDigestEmail(
+  email: string,
+  changes: DigestChange[],
+): Promise<SendResult> {
+  const base = linkBase();
+  const subject = `${changes.length} updates on facilities you're watching — Compute Atlas`;
+
+  // Each change here is a DISTINCT facility-watch subscription row, so each
+  // carries its OWN unsubscribeToken — every list item gets its own
+  // unsubscribe link, and unsubscribing from one watch never silently
+  // touches the recipient's other watches. This invariant holds because a
+  // facility-watch group is N rows (one per facility). Contrast
+  // `sendStateDigestEmail` below: a state-digest group is exactly ONE row
+  // (one email + one state) shared across every change, which is why it
+  // renders a single unsubscribe link instead of one per item.
+  const textItems = changes.map((c) => {
+    const url = `${base}/facilities/${c.facilitySlug}`;
+    const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
+    return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url} (unsubscribe from this one: ${unsubUrl})`;
+  });
+  // The stop-all link rides the first change's token: any of the recipient's
+  // tokens proves the same address.
+  //
+  // A digest covers MORE THAN ONE watch (the single-change case goes through
+  // `sendChangeNotification`), so the mailbox "Unsubscribe" button cannot
+  // honestly mean "this one watch": a client shows it as "stop email from this
+  // sender". The header therefore carries the stop-all link, and the footer
+  // says so.
+  const stopAllUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(changes[0].unsubscribeToken)}&scope=all`;
+  const mailboxNote =
+    "Your mail program's Unsubscribe button stops all automated email from Compute Atlas. To stop just one watch, use the link beside it.";
+  const text = `${changes.length} records you're watching changed on Compute Atlas:\n\n${textItems.join("\n")}\n\nStop all automated email from Compute Atlas: ${stopAllUrl}\n${mailboxNote}`;
+
+  const htmlItems = changes
+    .map((c) => {
+      const url = `${base}/facilities/${c.facilitySlug}`;
+      const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
+      return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a> · <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this one</a></li>`;
+    })
+    .join("");
+  const html = `<p>${changes.length} records you're watching changed on Compute Atlas:</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;"><a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a><br>${escapeHtml(mailboxNote)}</p>`;
+
+  return sendViaResend(
+    "sendChangeDigestEmail",
+    "RESEND_API_KEY not set — skipping change digest email send",
+    {
+      from: fromAddress(),
+      to: email,
+      subject,
+      text,
+      html,
+      headers: {
+        "List-Unsubscribe": `<${stopAllUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    },
+  );
+}
+
+/**
+ * Composes and sends the monthly state-digest email (Theme D, D3a) — the
+ * state-digest counterpart to `sendChangeDigestEmail` above, deliberately NOT
+ * a copy-paste of it. The two are the same SHAPE (a recipient, a list of
+ * facility changes) but different TRUTHS: a facility-watch recipient asked to
+ * be told about specific records; a state-digest recipient asked to be told
+ * about a state. This copy:
+ *   - names the state and states the monthly cadence, instead of implying a
+ *     per-facility watch the recipient never set up;
+ *   - renders exactly ONE unsubscribe link, not one per change — a
+ *     state-digest recipient has exactly ONE subscription row (one email +
+ *     one state), so every `changes` entry here carries that SAME row's
+ *     `unsubscribeToken`. Taking it once (from the first change) and never
+ *     labelling it "unsubscribe from this one" avoids the false claim that
+ *     clicking it only mutes one facility, when it actually unsubscribes the
+ *     recipient from the whole state.
+ *
+ * Never throws — same contract as `sendChangeDigestEmail`.
+ */
+export async function sendStateDigestEmail(
+  email: string,
+  stateName: string,
+  changes: DigestChange[],
+): Promise<SendResult> {
+  const base = linkBase();
+  const facilityWord = changes.length === 1 ? "facility" : "facilities";
+  const subject = `${changes.length} ${facilityWord} changed in ${stateName} — Compute Atlas monthly digest`;
+
+  // Every change in a state-digest group shares ONE subscription row (one
+  // email + one state), so its unsubscribeToken is identical across all of
+  // them — take it once rather than repeating an identical link per item.
+  const unsubscribeToken = changes[0].unsubscribeToken;
+  const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`;
+  const stopAllUrl = `${unsubUrl}&scope=all`;
+
+  const textItems = changes.map((c) => {
+    const url = `${base}/facilities/${c.facilitySlug}`;
+    return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url}`;
+  });
+  const text = `Your monthly Compute Atlas digest for ${stateName}: ${changes.length} tracked ${facilityWord} changed this period.\n\n${textItems.join("\n")}\n\nYou're receiving this because you subscribed to a monthly digest for ${stateName} on Compute Atlas. Unsubscribe from this state's digest: ${unsubUrl}\nStop all automated email from Compute Atlas: ${stopAllUrl}`;
+
+  const htmlItems = changes
+    .map((c) => {
+      const url = `${base}/facilities/${c.facilitySlug}`;
+      return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a></li>`;
+    })
+    .join("");
+  const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this state's digest</a> · <a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a></p>`;
+
+  return sendViaResend(
+    "sendStateDigestEmail",
+    "RESEND_API_KEY not set — skipping state digest email send",
+    {
+      from: fromAddress(),
+      to: email,
+      subject,
+      text,
+      html,
+      headers: {
+        "List-Unsubscribe": `<${unsubUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    },
   );
 }

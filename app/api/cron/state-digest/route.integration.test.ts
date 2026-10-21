@@ -480,14 +480,15 @@ describe("GET /api/cron/state-digest — idempotency (D3)", () => {
   });
 
   it("distinguishes a CRASHED prior run (claimed, never completed) from a completed one, in the response body", async () => {
-    // Make the completion write (the 3rd of 3 getDb() calls on the success
-    // path: claim, build, complete) throw, so the first call's send genuinely
+    // Make the completion write (the 4th of 4 getDb() calls on the success
+    // path: claim, build, send gate, complete) throw, so the first call's send genuinely
     // happens but the ledger row is left claimed with completedAt still
     // null — the crashed-run shape a real timeout/kill would leave behind.
     await seedConfirmedSubscriberWithInWindowChange();
     vi.mocked(dbClient.getDb)
       .mockReturnValueOnce(tdb.db as never) // claim
       .mockReturnValueOnce(tdb.db as never) // build
+      .mockReturnValueOnce(tdb.db as never) // send gate
       .mockImplementationOnce(() => {
         throw new Error("completion write failed");
       }); // complete

@@ -2,14 +2,8 @@ import { and, eq, gte, inArray, lt } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { facilitiesTable, facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
-import {
-  escapeHtml,
-  fromAddress,
-  sendChangeNotification,
-  sendViaResend,
-  type SendResult,
-} from "@/lib/email";
-import { siteConfig } from "@/lib/site";
+import { sendChangeDigestEmail, sendChangeNotification, sendStateDigestEmail } from "@/lib/email";
+import { sendGated } from "@/lib/email-gate";
 import { claimDigestWindow, completeDigestWindow } from "@/lib/state-digest-ledger";
 import { STATUS_META } from "@/lib/status";
 import { subscriptionSuppressedSql } from "@/lib/suppressions";
@@ -18,7 +12,8 @@ import type { Facility } from "@/lib/schema";
 
 /**
  * Drops recipient rows the suppression list blocks and logs how many, with no
- * address (unit 4's send log will record these per recipient). A failed
+ * address. The send gate (lib/email-gate.ts) re-checks every row at send time,
+ * so this is the first of two checks, not the only one. A failed
  * suppression subquery fails the whole recipient query instead, so an error
  * means nobody is mailed.
  */
@@ -45,6 +40,8 @@ function dropOptedOut<T extends { optedOut: boolean }>(rows: T[]): Omit<T, "opte
  * origins carry different truths about why the recipient is being emailed.
  */
 interface RecipientChangeBase {
+  /** The subscription row this change was selected for; the send gate re-reads it by id. */
+  subscriptionId: string;
   email: string;
   unsubscribeToken: string;
   facilityName: string;
@@ -188,8 +185,10 @@ export function groupChangesByRecipient(
  * one" link would silently unsubscribe the reader from a whole state.
  */
 export async function sendGroupedChangeNotifications(
-  groups: RecipientChangeGroup[]
+  groups: RecipientChangeGroup[],
+  runId?: string
 ): Promise<number> {
+  const db = getDb();
   let sentCount = 0;
   for (const group of groups) {
     const first = group.changes[0];
@@ -217,159 +216,56 @@ export async function sendGroupedChangeNotifications(
         );
         continue;
       }
-      const { sent } = await sendStateDigestEmail(group.email, stateName, group.changes);
+      // Every state-digest email is attributed to the run that claimed its
+      // window; without one there is nothing to attribute it to.
+      if (!runId) {
+        console.error("sendGroupedChangeNotifications: a state digest needs a run id — refusing to send");
+        continue;
+      }
+      // A state-digest group is exactly one subscription row (see above).
+      const { sent } = await sendGated(
+        db,
+        { kind: "state_digest", subscriptionId: first.subscriptionId, email: group.email, runId },
+        () => sendStateDigestEmail(group.email, stateName, group.changes)
+      );
       if (sent) sentCount++;
     } else if (group.changes.length === 1) {
-      const { sent } = await sendChangeNotification({
-        email: group.email,
-        facilityName: first.facilityName,
-        facilitySlug: first.facilitySlug,
-        changeLabel: first.changeLabel,
-        status: first.status,
-        unsubscribeToken: first.unsubscribeToken,
-      });
+      const { sent } = await sendGated(
+        db,
+        { kind: "facility_change", subscriptionId: first.subscriptionId, email: group.email },
+        () =>
+          sendChangeNotification({
+            email: group.email,
+            facilityName: first.facilityName,
+            facilitySlug: first.facilitySlug,
+            changeLabel: first.changeLabel,
+            status: first.status,
+            unsubscribeToken: first.unsubscribeToken,
+          })
+      );
       if (sent) sentCount++;
     } else {
-      const { sent } = await sendChangeDigestEmail(group.email, group.changes);
+      // One email lists N distinct watch rows: the gate checks every one of
+      // them. The ANCHOR is the row whose token the digest's stop-all link and
+      // List-Unsubscribe header carry (sendChangeDigestEmail reads
+      // `changes[0]`), so it is both the gate's `subscriptionId` and the
+      // first element passed to the sender.
+      const [anchor, ...rest] = group.changes;
+      const ordered = [anchor, ...rest];
+      const { sent } = await sendGated(
+        db,
+        {
+          kind: "facility_digest",
+          subscriptionId: anchor.subscriptionId,
+          email: group.email,
+          coveredSubscriptionIds: ordered.map((c) => c.subscriptionId),
+        },
+        () => sendChangeDigestEmail(group.email, ordered)
+      );
       if (sent) sentCount++;
     }
   }
   return sentCount;
-}
-
-/**
- * Composes and sends the multi-facility digest email for a recipient with
- * more than one change in a single run. Kept local to this file rather than
- * added to `lib/email.ts`. `escapeHtml`, `fromAddress` and the send itself
- * (`sendViaResend`, which owns the no-key skip and failure logging) are all
- * shared from lib/email.ts, so each has exactly one definition.
- *
- * Never throws — same contract as `sendChangeNotification` — so a failed
- * digest send can never turn a successful publish into an error.
- */
-async function sendChangeDigestEmail(
-  email: string,
-  changes: RecipientChangeGroup["changes"]
-): Promise<SendResult> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? siteConfig.url;
-  const subject = `${changes.length} updates on facilities you're watching — Compute Atlas`;
-
-  // Each change here is a DISTINCT facility-watch subscription row, so each
-  // carries its OWN unsubscribeToken — every list item gets its own
-  // unsubscribe link, and unsubscribing from one watch never silently
-  // touches the recipient's other watches. This invariant holds because a
-  // facility-watch group is N rows (one per facility). Contrast
-  // `sendStateDigestEmail` below: a state-digest group is exactly ONE row
-  // (one email + one state) shared across every change, which is why it
-  // renders a single unsubscribe link instead of one per item.
-  const textItems = changes.map((c) => {
-    const url = `${base}/facilities/${c.facilitySlug}`;
-    const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
-    return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url} (unsubscribe from this one: ${unsubUrl})`;
-  });
-  // The stop-all link rides the first change's token: any of the recipient's
-  // tokens proves the same address.
-  //
-  // A digest covers MORE THAN ONE watch (the single-change case goes through
-  // `sendChangeNotification`), so the mailbox "Unsubscribe" button cannot
-  // honestly mean "this one watch": a client shows it as "stop email from this
-  // sender". The header therefore carries the stop-all link, and the footer
-  // says so.
-  const stopAllUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(changes[0].unsubscribeToken)}&scope=all`;
-  const mailboxNote =
-    "Your mail program's Unsubscribe button stops all automated email from Compute Atlas. To stop just one watch, use the link beside it.";
-  const text = `${changes.length} records you're watching changed on Compute Atlas:\n\n${textItems.join("\n")}\n\nStop all automated email from Compute Atlas: ${stopAllUrl}\n${mailboxNote}`;
-
-  const htmlItems = changes
-    .map((c) => {
-      const url = `${base}/facilities/${c.facilitySlug}`;
-      const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
-      return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a> · <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this one</a></li>`;
-    })
-    .join("");
-  const html = `<p>${changes.length} records you're watching changed on Compute Atlas:</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;"><a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a><br>${escapeHtml(mailboxNote)}</p>`;
-
-  return sendViaResend(
-    "sendChangeDigestEmail",
-    "RESEND_API_KEY not set — skipping change digest email send",
-    {
-      from: fromAddress(),
-      to: email,
-      subject,
-      text,
-      html,
-      headers: {
-        "List-Unsubscribe": `<${stopAllUrl}>`,
-        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-      },
-    },
-  );
-}
-
-/**
- * Composes and sends the monthly state-digest email (Theme D, D3a) — the
- * state-digest counterpart to `sendChangeDigestEmail` above, deliberately NOT
- * a copy-paste of it. The two are the same SHAPE (a recipient, a list of
- * facility changes) but different TRUTHS: a facility-watch recipient asked to
- * be told about specific records; a state-digest recipient asked to be told
- * about a state. This copy:
- *   - names the state and states the monthly cadence, instead of implying a
- *     per-facility watch the recipient never set up;
- *   - renders exactly ONE unsubscribe link, not one per change — a
- *     state-digest recipient has exactly ONE subscription row (one email +
- *     one state), so every `changes` entry here carries that SAME row's
- *     `unsubscribeToken`. Taking it once (from the first change) and never
- *     labelling it "unsubscribe from this one" avoids the false claim that
- *     clicking it only mutes one facility, when it actually unsubscribes the
- *     recipient from the whole state.
- *
- * Never throws — same contract as `sendChangeDigestEmail`.
- */
-async function sendStateDigestEmail(
-  email: string,
-  stateName: string,
-  changes: RecipientChangeGroup["changes"]
-): Promise<SendResult> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? siteConfig.url;
-  const facilityWord = changes.length === 1 ? "facility" : "facilities";
-  const subject = `${changes.length} ${facilityWord} changed in ${stateName} — Compute Atlas monthly digest`;
-
-  // Every change in a state-digest group shares ONE subscription row (one
-  // email + one state), so its unsubscribeToken is identical across all of
-  // them — take it once rather than repeating an identical link per item.
-  const unsubscribeToken = changes[0].unsubscribeToken;
-  const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`;
-  const stopAllUrl = `${unsubUrl}&scope=all`;
-
-  const textItems = changes.map((c) => {
-    const url = `${base}/facilities/${c.facilitySlug}`;
-    return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url}`;
-  });
-  const text = `Your monthly Compute Atlas digest for ${stateName}: ${changes.length} tracked ${facilityWord} changed this period.\n\n${textItems.join("\n")}\n\nYou're receiving this because you subscribed to a monthly digest for ${stateName} on Compute Atlas. Unsubscribe from this state's digest: ${unsubUrl}\nStop all automated email from Compute Atlas: ${stopAllUrl}`;
-
-  const htmlItems = changes
-    .map((c) => {
-      const url = `${base}/facilities/${c.facilitySlug}`;
-      return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a></li>`;
-    })
-    .join("");
-  const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this state's digest</a> · <a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a></p>`;
-
-  return sendViaResend(
-    "sendStateDigestEmail",
-    "RESEND_API_KEY not set — skipping state digest email send",
-    {
-      from: fromAddress(),
-      to: email,
-      subject,
-      text,
-      html,
-      headers: {
-        "List-Unsubscribe": `<${unsubUrl}>`,
-        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-      },
-    },
-  );
 }
 
 /**
@@ -401,6 +297,7 @@ export async function notifySubscribersOfChange(
 
     const rows = await db
       .select({
+        subscriptionId: subscriptionsTable.id,
         email: subscriptionsTable.email,
         unsubscribeToken: subscriptionsTable.unsubscribeToken,
         optedOut: subscriptionSuppressedSql(),
@@ -419,6 +316,7 @@ export async function notifySubscribersOfChange(
 
     const recipientChanges: RecipientFacilityChange[] = rows.map((row) => ({
       origin: "facility-watch",
+      subscriptionId: row.subscriptionId,
       email: row.email,
       unsubscribeToken: row.unsubscribeToken,
       facilityName: facility.name,
@@ -464,6 +362,7 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
 
     const rows = await db
       .select({
+        subscriptionId: subscriptionsTable.id,
         email: subscriptionsTable.email,
         unsubscribeToken: subscriptionsTable.unsubscribeToken,
         targetId: subscriptionsTable.targetId,
@@ -488,6 +387,7 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
 
       recipientChanges.push({
         origin: "facility-watch",
+        subscriptionId: row.subscriptionId,
         email: row.email,
         unsubscribeToken: row.unsubscribeToken,
         facilityName: facility.name,
@@ -536,6 +436,7 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
 
   const subs = await db
     .select({
+      subscriptionId: subscriptionsTable.id,
       email: subscriptionsTable.email,
       unsubscribeToken: subscriptionsTable.unsubscribeToken,
       state: subscriptionsTable.targetId,
@@ -580,7 +481,7 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
     }
   }
 
-  const changesByState = new Map<string, Array<Omit<RecipientChangeBase, "email" | "unsubscribeToken">>>();
+  const changesByState = new Map<string, Array<Omit<RecipientChangeBase, "subscriptionId" | "email" | "unsubscribeToken">>>();
   for (const row of latestByFacility.values()) {
     const list = changesByState.get(row.facilityState) ?? [];
     list.push({
@@ -605,6 +506,7 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
     for (const change of changes) {
       recipientChanges.push({
         origin: "state-digest",
+        subscriptionId: sub.subscriptionId,
         email: sub.email,
         unsubscribeToken: sub.unsubscribeToken,
         stateName,
@@ -723,7 +625,7 @@ export async function notifyStateSubscribersMonthly(
       changes,
       (c) => `${c.email}::${c.origin === "state-digest" ? c.stateName : ""}`
     );
-    const recipients = await sendGroupedChangeNotifications(groups);
+    const recipients = await sendGroupedChangeNotifications(groups, claim.runId);
     await completeDigestWindow(since, until, {
       changes: changes.length,
       groups: groups.length,

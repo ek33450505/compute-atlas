@@ -45,17 +45,28 @@ const GATE_FN = "sendGated";
 const GATE_FILE = join("lib", "email-gate.ts");
 const RESEND_OWNER = { file: join("lib", "email.ts"), fn: "sendViaResend" };
 
-/** Routed through `sendGated` today: usable ONLY inside a gate callback. */
-const GATED_SENDERS = new Set(["sendConfirmEmail", "sendWatchStartedEmail"]);
+/**
+ * Routed through `sendGated` today: usable ONLY inside a gate callback. The
+ * two notify.ts digest senders are module-private and call `sendViaResend`
+ * directly, so naming them here is what stops a direct call from slipping past.
+ */
+const GATED_SENDERS = new Set([
+  "sendConfirmEmail",
+  "sendWatchStartedEmail",
+  "sendChangeNotification",
+  "sendChangeDigestEmail",
+  "sendStateDigestEmail",
+]);
 
 /**
  * Not gated YET. Each may be used inside a gate callback, or in its listed
- * files and nowhere else. Routing lib/notify.ts through the gate empties its entry;
+ * files and nowhere else. TO GATE ANOTHER SENDER: move its name from
+ * PENDING_SENDERS to GATED_SENDERS and route its call sites through
+ * `sendGated`; the test fails on a stale PENDING_SENDERS entry.
  * sendBulkAccessEmail mails an access-request link (no subscription row), so
  * it cannot go through the subscription gate and stays allowlisted.
  */
 const PENDING_SENDERS: Record<string, string[]> = {
-  sendChangeNotification: [join("lib", "notify.ts")],
   sendBulkAccessEmail: [join("app", "api", "access", "request", "route.ts")],
 };
 
@@ -195,6 +206,21 @@ function isNamePosition(id: ts.Identifier): boolean {
 const nameText = (n: ts.ModuleExportName | undefined): string | undefined =>
   n && (ts.isIdentifier(n) || ts.isStringLiteral(n)) ? n.text : undefined;
 
+/** Names in GUARDED that `source` really references: AST identifiers or string keys, never comments. */
+export function guardedReferences(source: string, fileName: string): Set<string> {
+  const found = new Set<string>();
+  const visit = (node: ts.Node) => {
+    if (ts.isIdentifier(node) && GUARDED.has(node.text) && !isNamePosition(node)) {
+      found.add(node.text);
+    } else if (isStringy(node) && GUARDED.has(node.text)) {
+      found.add(node.text);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(parse(source, fileName));
+  return found;
+}
+
 export function findGateViolations(source: string, fileName: string): string[] {
   const sf = parse(source, fileName);
   const out: string[] = [];
@@ -321,12 +347,11 @@ describe("email send gate guard", () => {
       )
         sawGatedCall = true;
       violations.push(...findGateViolations(source, rel));
-      for (const name of Object.keys(PENDING_SENDERS)) {
-        if (
-          rel !== RESEND_OWNER.file &&
-          new RegExp(`\\b${name}\\b`).test(source)
-        ) {
-          usedIn.set(name, (usedIn.get(name) ?? new Set()).add(rel));
+      if (rel !== RESEND_OWNER.file) {
+        for (const name of guardedReferences(source, rel)) {
+          if (name in PENDING_SENDERS) {
+            usedIn.set(name, (usedIn.get(name) ?? new Set()).add(rel));
+          }
         }
       }
     }
@@ -417,13 +442,22 @@ describe("email send gate guard", () => {
       ).toHaveLength(1);
     });
 
+    it("counts only real references as a use: a comment mention is not one", () => {
+      expect(guardedReferences("// sendBulkAccessEmail is pending\n/* sendBulkAccessEmail */ const x = 1;", "lib/x.ts").size).toBe(0);
+      expect(guardedReferences("await sendBulkAccessEmail(x);", "lib/x.ts").has("sendBulkAccessEmail")).toBe(true);
+    });
+
     it("allows a pending sender only in its listed files", () => {
+      // sendChangeNotification is gated now: no file may call it bare.
       expect(
         flagged("await sendChangeNotification(x);", join("lib", "notify.ts")),
-      ).toHaveLength(0);
-      expect(
-        flagged("await sendChangeNotification(x);", join("lib", "other.ts")),
       ).toHaveLength(1);
+      expect(
+        flagged(
+          "await sendGated(db, o, () => sendChangeNotification(x));",
+          join("lib", "notify.ts"),
+        ),
+      ).toHaveLength(0);
       expect(
         flagged(
           "await sendBulkAccessEmail(x);",

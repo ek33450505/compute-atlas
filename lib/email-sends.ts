@@ -113,13 +113,16 @@ export async function completeSend(db: EmailSendsDb, id: string, outcome: SendOu
   }
 }
 
-/** Inserts an already-completed skip row. THROWS on DB error. */
+/** Inserts an already-completed skip row. THROWS on DB error. `errorCode` is a fixed identifier (never free text). */
 export async function recordSkip(
   db: EmailSendsDb,
   base: EmailSendBase,
-  outcome: EmailSendSkipOutcome
+  outcome: EmailSendSkipOutcome,
+  errorCode?: string
 ): Promise<void> {
-  await db.insert(emailSendsTable).values({ ...baseValues(base), outcome, completedAt: new Date() });
+  await db
+    .insert(emailSendsTable)
+    .values({ ...baseValues(base), outcome, completedAt: new Date(), ...(errorCode ? { errorCode } : {}) });
 }
 
 /**

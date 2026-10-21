@@ -102,41 +102,69 @@ export async function isSuppressed(
   email: string,
   scope: SuppressionScope
 ): Promise<SuppressionStatus> {
-  let key: { targetType: string; targetId: string };
+  const [status] = await suppressionStatuses(db, email, [scope]);
+  return status;
+}
+
+const GLOBAL_ROW = and(eq(emailSuppressionsTable.targetType, ""), eq(emailSuppressionsTable.targetId, ""));
+
+/** The one scope predicate: a global row always matches; a target scope also matches its exact row. */
+function scopeCondition(scope: SuppressionScope, key: { targetType: string; targetId: string }) {
+  return scope.kind === "global"
+    ? GLOBAL_ROW
+    : or(
+        GLOBAL_ROW,
+        and(
+          eq(emailSuppressionsTable.targetType, key.targetType),
+          eq(emailSuppressionsTable.targetId, key.targetId)
+        )
+      );
+}
+
+/**
+ * `isSuppressed` for several scopes of ONE address in a single query (the
+ * send gate uses it for every row a digest lists). Returns one status per
+ * scope, in order, with the same meaning as `isSuppressed`; the predicate is
+ * shared via `scopeCondition`. Any lookup failure (or an invalid scope) makes
+ * EVERY status "unknown": fail closed, never a partial answer.
+ */
+export async function suppressionStatuses(
+  db: SuppressionDb,
+  email: string,
+  scopes: SuppressionScope[]
+): Promise<SuppressionStatus[]> {
+  if (scopes.length === 0) return [];
+  const unknown = scopes.map((): SuppressionStatus => "unknown");
+  let keys: { targetType: string; targetId: string }[];
   try {
-    key = scopeKey(scope);
+    keys = scopes.map(scopeKey);
   } catch {
     // A caller bug, not an outage: still fail closed, but log it distinctly.
     console.error("isSuppressed invalid scope (caller bug)");
-    return "unknown";
+    return unknown;
   }
   try {
-    const globalRow = and(
-      eq(emailSuppressionsTable.targetType, ""),
-      eq(emailSuppressionsTable.targetId, "")
-    );
     const rows = await db
-      .select({ id: emailSuppressionsTable.id })
+      .select({ targetType: emailSuppressionsTable.targetType, targetId: emailSuppressionsTable.targetId })
       .from(emailSuppressionsTable)
       .where(
         and(
           eq(emailSuppressionsTable.email, normalizeEmail(email)),
-          scope.kind === "global"
-            ? globalRow
-            : or(
-                globalRow,
-                and(
-                  eq(emailSuppressionsTable.targetType, key.targetType),
-                  eq(emailSuppressionsTable.targetId, key.targetId)
-                )
-              )
+          or(...scopes.map((scope, i) => scopeCondition(scope, keys[i])))
         )
+      );
+    return keys.map((key, i): SuppressionStatus =>
+      rows.some(
+        (r) =>
+          (r.targetType === "" && r.targetId === "") ||
+          (scopes[i].kind === "target" && r.targetType === key.targetType && r.targetId === key.targetId)
       )
-      .limit(1);
-    return rows.length > 0 ? "suppressed" : "clear";
+        ? "suppressed"
+        : "clear"
+    );
   } catch (err) {
     console.error(`isSuppressed lookup failed (sqlstate: ${redactedErrorCode(err)})`);
-    return "unknown";
+    return unknown;
   }
 }
 

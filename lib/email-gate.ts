@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import { subscriptionsTable } from "@/lib/db/schema";
 import { redactedErrorCode } from "@/lib/db-error";
@@ -16,7 +16,7 @@ import {
   type EmailSendKind,
   type EmailSendsDb,
 } from "@/lib/email-sends";
-import { isLookupFailure, isSuppressed, mayEmail, type SuppressionScope } from "@/lib/suppressions";
+import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type SuppressionScope, type SuppressionStatus } from "@/lib/suppressions";
 
 /**
  * The one door every subscription email goes through. A sender is handed to
@@ -34,6 +34,22 @@ import { isLookupFailure, isSuppressed, mayEmail, type SuppressionScope } from "
  *      row is inserted and THEN counted (the count includes the claim), so
  *      concurrent confirms each see the others' claims. Count-then-insert
  *      would let N concurrent requests all read a count under the cap.
+ *      A multi-row email (a facility digest) lists several watches.
+ *      `coveredSubscriptionIds` names every row the email lists; each is
+ *      re-read in ONE query and must pass checks 1-3 on its own (exists, same
+ *      address, own-scope suppression, required status) or the WHOLE email is
+ *      skipped, because a digest that still lists a watch the reader just
+ *      left is the "opt-out not final" defect. Covered rows' suppression is
+ *      ONE query for the address (`suppressionStatuses`), not one per row.
+ *      Exactly one `email_sends` row per email, recorded as follows:
+ *        (a) The anchor (`subscriptionId`) is checked first. If it fails the
+ *            row is anchored on it.
+ *        (b) If the anchor passes and a covered row fails, the outcome is
+ *            the most severe covered failure (check_failed > suppressed >
+ *            unconfirmed) and the row references the FIRST covered row with
+ *            that outcome: its `subscription_id` (null if it vanished),
+ *            `target_type` and `target_id`, plus `error_code = "covered_row"`
+ *            so an auditor can tell a covered failure from an anchor one.
  *   5. The `attempted` row was written. A failure here is fail-closed: no
  *      row means no accountability, so no mail.
  *
@@ -91,6 +107,11 @@ export interface GatedSend {
   /** Plaintext address of the send; must match the row's, else nothing is sent. */
   email: string;
   runId?: string | null;
+  /**
+   * Every subscription row a multi-row email lists (include the anchor or
+   * not; it is checked either way). All must pass or nothing is sent.
+   */
+  coveredSubscriptionIds?: string[];
 }
 
 const REQUIRED_STATUS: Record<EmailSendKind, "pending" | "confirmed"> = {
@@ -107,6 +128,31 @@ function scopeForRow(row: { targetType: string; targetId: string | null }): Supp
   return { kind: "target", targetType: row.targetType, targetId: row.targetId };
 }
 
+type SubscriptionRow = typeof subscriptionsTable.$inferSelect;
+type SkipOutcome = "skipped_suppressed" | "skipped_check_failed" | "skipped_unconfirmed";
+
+/**
+ * The one predicate for checks 1-3 on an already-read row, given its
+ * suppression status (looked up by the caller, singly or batched). Pure; null
+ * means the row may be mailed. An absent row, or one that belongs to another
+ * address, is unconfirmed before any suppression status is consulted.
+ */
+function outcomeFor(
+  row: SubscriptionRow | undefined,
+  suppression: SuppressionStatus | undefined,
+  email: string,
+  kind: EmailSendKind
+): SkipOutcome | null {
+  if (!row || suppression === undefined || normalizeEmail(row.email) !== normalizeEmail(email)) {
+    return "skipped_unconfirmed";
+  }
+  if (!mayEmail(suppression)) return isLookupFailure(suppression) ? "skipped_check_failed" : "skipped_suppressed";
+  if (row.status !== REQUIRED_STATUS[kind]) return "skipped_unconfirmed";
+  return null;
+}
+
+const SKIP_SEVERITY: SkipOutcome[] = ["skipped_check_failed", "skipped_suppressed", "skipped_unconfirmed"];
+
 function logGateError(what: string, err: unknown): void {
   console.error(`email gate: ${what} (sqlstate: ${redactedErrorCode(err)})`);
 }
@@ -119,7 +165,7 @@ export async function sendGated(
   const none = (disposition: GateDisposition): GateResult => ({ sent: false, disposition });
 
   // 1. Re-read the row by id.
-  let row: typeof subscriptionsTable.$inferSelect | undefined;
+  let row: SubscriptionRow | undefined;
   try {
     [row] = await db.select().from(subscriptionsTable).where(eq(subscriptionsTable.id, opts.subscriptionId)).limit(1);
   } catch (err) {
@@ -136,11 +182,23 @@ export async function sendGated(
     runId: opts.runId ?? null,
   };
 
+  // `covered` set => the failing row is a covered one (undefined row = it vanished).
   const skip = async (
-    outcome: "skipped_suppressed" | "skipped_check_failed" | "skipped_unconfirmed"
+    outcome: SkipOutcome,
+    covered?: { row: SubscriptionRow | undefined }
   ): Promise<GateResult> => {
     try {
-      await recordSkip(db, base, outcome);
+      if (covered) {
+        const coveredBase: EmailSendBase = {
+          ...base,
+          subscriptionId: covered.row?.id ?? null,
+          targetType: covered.row?.targetType ?? null,
+          targetId: covered.row?.targetId ?? null,
+        };
+        await recordSkip(db, coveredBase, outcome, "covered_row");
+      } else {
+        await recordSkip(db, base, outcome);
+      }
     } catch (err) {
       logGateError("could not record skip", err);
       return none("gate_error");
@@ -148,19 +206,39 @@ export async function sendGated(
     return none(outcome);
   };
 
-  if (!row || normalizeEmail(row.email) !== normalizeEmail(opts.email)) {
-    return skip("skipped_unconfirmed");
-  }
+  // 2 + 3. Address, suppression from the row's own scope, required state.
+  const anchorSkip = outcomeFor(
+    row,
+    row && normalizeEmail(row.email) === normalizeEmail(opts.email)
+      ? await isSuppressed(db, row.email, scopeForRow(row))
+      : undefined,
+    opts.email,
+    opts.kind
+  );
+  if (anchorSkip) return skip(anchorSkip);
 
-  // 2. Suppression, from the row's own scope.
-  const suppression = await isSuppressed(db, row.email, scopeForRow(row));
-  if (!mayEmail(suppression)) {
-    return skip(isLookupFailure(suppression) ? "skipped_check_failed" : "skipped_suppressed");
-  }
-
-  // 3. State the kind requires.
-  if (row.status !== REQUIRED_STATUS[opts.kind]) {
-    return skip("skipped_unconfirmed");
+  // Every other row a multi-row email lists, in one query.
+  const coveredIds = [...new Set(opts.coveredSubscriptionIds ?? [])].filter((id) => id !== opts.subscriptionId);
+  if (coveredIds.length > 0) {
+    let covered: SubscriptionRow[];
+    try {
+      covered = await db.select().from(subscriptionsTable).where(inArray(subscriptionsTable.id, coveredIds));
+    } catch (err) {
+      logGateError("covered subscription lookup failed", err);
+      return none("gate_error");
+    }
+    const byId = new Map(covered.map((r) => [r.id, r]));
+    const coveredRows = coveredIds.map((id) => byId.get(id));
+    // Address first (a row that is gone or belongs to someone else is
+    // unconfirmed), then ONE suppression query for every remaining row's scope.
+    const present = coveredRows.filter(
+      (r): r is SubscriptionRow => !!r && normalizeEmail(r.email) === normalizeEmail(opts.email)
+    );
+    const statuses = await suppressionStatuses(db, opts.email, present.map(scopeForRow));
+    const statusOf = new Map(present.map((r, i) => [r, statuses[i]]));
+    const failures = coveredRows.map((r) => outcomeFor(r, r && statusOf.get(r), opts.email, opts.kind));
+    const worst = SKIP_SEVERITY.find((o) => failures.includes(o));
+    if (worst) return skip(worst, { row: coveredRows[failures.indexOf(worst)] });
   }
 
   // 4 + 5. Claim a send slot; for confirm, count including the claim.

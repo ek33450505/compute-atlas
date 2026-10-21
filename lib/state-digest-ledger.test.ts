@@ -30,7 +30,7 @@ describe("claimDigestWindow", () => {
   it("claims an unclaimed window and writes an incomplete row", async () => {
     const claim = await claimDigestWindow(since, until);
 
-    expect(claim).toEqual({ claimed: true });
+    expect(claim).toEqual({ claimed: true, runId: expect.any(String) });
     const rows = await tdb.db.select().from(stateDigestRunsTable);
     expect(rows).toHaveLength(1);
     expect(rows[0].completedAt).toBeNull();
@@ -69,7 +69,7 @@ describe("claimDigestWindow", () => {
     const otherUntil = new Date("2026-10-01T00:00:00Z");
     const claim = await claimDigestWindow(otherSince, otherUntil);
 
-    expect(claim).toEqual({ claimed: true });
+    expect(claim).toEqual({ claimed: true, runId: expect.any(String) });
     const rows = await tdb.db.select().from(stateDigestRunsTable);
     expect(rows).toHaveLength(2);
   });

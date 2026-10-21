@@ -20,7 +20,7 @@ vi.mock("resend", () => ({
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { facilityHistoryTable, stateDigestRunsTable, subscriptionsTable } from "@/lib/db/schema";
+import { emailSendsTable, facilityHistoryTable, stateDigestRunsTable, subscriptionsTable } from "@/lib/db/schema";
 import { generateToken, sendChangeNotification } from "@/lib/email";
 import { stateNameFromCode } from "@/lib/us-states";
 import facilitiesRaw from "@/data/facilities.json";
@@ -128,6 +128,7 @@ describe("groupChangesByRecipient", () => {
       {
         origin: "facility-watch",
         email: "a@example.com",
+        subscriptionId: "s1",
         unsubscribeToken: "t1",
         facilityName: "Facility A",
         facilitySlug: "a",
@@ -137,6 +138,7 @@ describe("groupChangesByRecipient", () => {
       {
         origin: "facility-watch",
         email: "a@example.com",
+        subscriptionId: "s2",
         unsubscribeToken: "t2",
         facilityName: "Facility B",
         facilitySlug: "b",
@@ -158,6 +160,7 @@ describe("groupChangesByRecipient", () => {
       {
         origin: "facility-watch",
         email: "a@example.com",
+        subscriptionId: "s1",
         unsubscribeToken: "t1",
         facilityName: "Facility A",
         facilitySlug: "a",
@@ -167,6 +170,7 @@ describe("groupChangesByRecipient", () => {
       {
         origin: "facility-watch",
         email: "b@example.com",
+        subscriptionId: "s2",
         unsubscribeToken: "t2",
         facilityName: "Facility A",
         facilitySlug: "a",
@@ -1034,14 +1038,14 @@ describe("notifyStateSubscribersMonthly — idempotency (D3)", () => {
 
   it("leaves the window claimed with completedAt still null when the completion write throws after a successful claim and send", async () => {
     await seedOneChangeOneSubscriber();
-    // getDb() is called 3 times on the success path — claimDigestWindow,
-    // buildStateDigestChanges, completeDigestWindow, in that order (sending
-    // itself never touches the DB — it goes through the mocked Resend
-    // client). Let the first two through to the real PGlite instance and
-    // make only the THIRD (the completion write) throw, so the claim and the
-    // send both genuinely happen and only the completion record is what
-    // fails.
+    // getDb() is called 4 times on the success path — claimDigestWindow,
+    // buildStateDigestChanges, sendGroupedChangeNotifications (the send
+    // gate's email_sends writes), completeDigestWindow, in that order. Let
+    // the first three through to the real PGlite instance and make only the
+    // FOURTH (the completion write) throw, so the claim and the send both
+    // genuinely happen and only the completion record is what fails.
     vi.mocked(dbClient.getDb)
+      .mockReturnValueOnce(tdb.db as never)
       .mockReturnValueOnce(tdb.db as never)
       .mockReturnValueOnce(tdb.db as never)
       .mockImplementationOnce(() => {
@@ -1091,6 +1095,7 @@ describe("sendGroupedChangeNotifications — mixed-state guard", () => {
     return {
       origin: "state-digest",
       stateName,
+      subscriptionId: "s1",
       unsubscribeToken: "unsub-token-sentinel",
       facilityName: facility.name,
       facilitySlug: facility.id,
@@ -1124,17 +1129,139 @@ describe("sendGroupedChangeNotifications — mixed-state guard", () => {
   it("positive control: the identical group with ONE state DOES send", async () => {
     // Without this, "zero sends" above could be an artifact of the fixture
     // rather than proof the guard fired.
+    const [row] = await tdb.db
+      .insert(subscriptionsTable)
+      .values({
+        email: "reader@example.com",
+        targetType: "state",
+        targetId: facilityTnA.location.state,
+        status: "confirmed",
+        confirmToken: generateToken(),
+        unsubscribeToken: "unsub-token-sentinel",
+      })
+      .returning();
     const group: RecipientChangeGroup = {
       email: "reader@example.com",
       changes: [
-        stateDigestChange(tnStateName, facilityTnA),
-        stateDigestChange(tnStateName, facilityTnB),
+        { ...stateDigestChange(tnStateName, facilityTnA), subscriptionId: row.id },
+        { ...stateDigestChange(tnStateName, facilityTnB), subscriptionId: row.id },
       ],
     };
 
-    const sent = await sendGroupedChangeNotifications([group]);
+    const claim = await claimDigestWindow(new Date("2026-03-01T00:00:00Z"), new Date("2026-04-01T00:00:00Z"));
+    if (!claim.claimed) throw new Error("fixture window already claimed");
+    const sent = await sendGroupedChangeNotifications([group], claim.runId);
 
     expect(sent).toBe(1);
     expect(resendSendMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+// A facility digest lists N distinct watch rows; the send gate must re-check
+// every one of them, or a watch the reader just left is still mailed.
+describe("sendGroupedChangeNotifications — facility digest covers every row", () => {
+  it("skips the WHOLE digest, recording one skipped row, when one covered row was unsubscribed after the recipient query", async () => {
+    const insert = async (facility: Facility, status: "confirmed" | "unsubscribed") => {
+      const [row] = await tdb.db
+        .insert(subscriptionsTable)
+        .values({
+          email: "many@example.com",
+          targetType: "facility",
+          targetId: facility.id,
+          status,
+          confirmToken: generateToken(),
+          unsubscribeToken: generateToken(),
+        })
+        .returning();
+      return row;
+    };
+    const rowA = await insert(facilityA, "confirmed");
+    const rowB = await insert(facilityB, "unsubscribed");
+    const change = (row: typeof rowA, facility: Facility): RecipientFacilityChange => ({
+      origin: "facility-watch",
+      subscriptionId: row.id,
+      email: "many@example.com",
+      unsubscribeToken: row.unsubscribeToken,
+      facilityName: facility.name,
+      facilitySlug: facility.id,
+      changeLabel: "record updated",
+      status: "Operational",
+    });
+
+    const sent = await sendGroupedChangeNotifications(
+      groupChangesByRecipient([change(rowA, facilityA), change(rowB, facilityB)])
+    );
+
+    expect(sent).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    const all = await tdb.db.select().from(emailSendsTable);
+    expect(all).toHaveLength(1);
+    expect(all[0]).toMatchObject({ kind: "facility_digest", outcome: "skipped_unconfirmed" });
+  });
+});
+
+describe("sendGroupedChangeNotifications — state digest needs a run id", () => {
+  it("refuses a state-digest group without a runId: logs a fixed message, sends nothing, writes no row", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [
+        {
+          origin: "state-digest",
+          stateName: tnStateName,
+          subscriptionId: "s1",
+          unsubscribeToken: "tok",
+          facilityName: facilityTnA.name,
+          facilitySlug: facilityTnA.id,
+          changeLabel: "record updated",
+          status: "Operational",
+        },
+      ],
+    };
+    expect(await sendGroupedChangeNotifications([group])).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(await tdb.db.select().from(emailSendsTable)).toHaveLength(0);
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain("reader@example.com");
+    consoleError.mockRestore();
+  });
+});
+
+describe("sendGroupedChangeNotifications — digest anchor token", () => {
+  it("the facility digest's List-Unsubscribe token is the anchor (first) row's token", async () => {
+    const insert = async (facility: Facility, token: string) => {
+      const [row] = await tdb.db
+        .insert(subscriptionsTable)
+        .values({
+          email: "many@example.com",
+          targetType: "facility",
+          targetId: facility.id,
+          status: "confirmed",
+          confirmToken: generateToken(),
+          unsubscribeToken: token,
+        })
+        .returning();
+      return row;
+    };
+    const rowA = await insert(facilityA, "anchor-token");
+    const rowB = await insert(facilityB, "second-token");
+    const change = (row: typeof rowA, facility: Facility): RecipientFacilityChange => ({
+      origin: "facility-watch",
+      subscriptionId: row.id,
+      email: "many@example.com",
+      unsubscribeToken: row.unsubscribeToken,
+      facilityName: facility.name,
+      facilitySlug: facility.id,
+      changeLabel: "record updated",
+      status: "Operational",
+    });
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    resendSendMock.mockResolvedValue({ data: { id: "m-1" }, error: null });
+    await sendGroupedChangeNotifications(groupChangesByRecipient([change(rowA, facilityA), change(rowB, facilityB)]));
+    const header = resendSendMock.mock.calls[0][0].headers["List-Unsubscribe"] as string;
+    expect(header).toContain("token=anchor-token");
+    expect(header).not.toContain("second-token");
+    const [send] = await tdb.db.select().from(emailSendsTable);
+    expect(send.subscriptionId).toBe(rowA.id);
+    vi.unstubAllEnvs();
   });
 });

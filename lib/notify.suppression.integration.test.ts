@@ -14,12 +14,13 @@ import { sql } from "drizzle-orm";
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
+import { emailSendsTable, facilityHistoryTable, stateDigestRunsTable, subscriptionsTable } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
 import { suppress } from "@/lib/suppressions";
 import facilitiesRaw from "@/data/facilities.json";
 import type { Facility } from "@/lib/schema";
 
+import { eq } from "drizzle-orm";
 import {
   notifyStateSubscribersMonthly,
   notifySubscribersOfChange,
@@ -182,5 +183,61 @@ describe("List-Unsubscribe headers", () => {
       expect(call![0].html).toContain("Stop all automated email from Compute Atlas");
       expect(call![0].text).toContain("Stop all automated email from Compute Atlas");
     }
+  });
+});
+
+describe("every send is recorded in email_sends", () => {
+  const sends = () => tdb.db.select().from(emailSendsTable);
+
+  async function subRow(email: string, targetId: string, targetType: "facility" | "state" = "facility") {
+    await sub(email, targetType, targetId);
+    const [row] = await tdb.db
+      .select()
+      .from(subscriptionsTable)
+      .where(eq(subscriptionsTable.targetId, targetId));
+    return row;
+  }
+
+  it("a single facility change writes one facility_change row, sent, no plaintext address", async () => {
+    const row = await subRow("one@example.com", facilityA.id);
+    await notifySubscribersOfChange(facilityA, "record updated");
+    const all = await sends();
+    expect(all).toHaveLength(1);
+    expect(all[0]).toMatchObject({ kind: "facility_change", outcome: "sent", subscriptionId: row.id });
+    expect(JSON.stringify(all[0])).not.toContain("one@example.com");
+  });
+
+  it("a 2-facility digest writes exactly one facility_digest row", async () => {
+    await sub("many@example.com", "facility", facilityA.id);
+    await sub("many@example.com", "facility", facilityB.id);
+    await notifySubscribersOfChanges([
+      { facility: facilityA, changeLabel: "a" },
+      { facility: facilityB, changeLabel: "b" },
+    ]);
+    const all = await sends();
+    expect(all).toHaveLength(1);
+    expect(all[0]).toMatchObject({ kind: "facility_digest", outcome: "sent" });
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("the state digest writes one state_digest row per email carrying the claimed run id; a repeat writes nothing", async () => {
+    await seedFacility(tdb.db, facilityA);
+    await tdb.db.insert(facilityHistoryTable).values({
+      facilityId: facilityA.id,
+      changeType: "update",
+      changedAt: new Date("2026-01-15T00:00:00Z"),
+      diff: [],
+      source: "test",
+    });
+    await sub("state@example.com", "state", state);
+    await notifyStateSubscribersMonthly(since, until);
+    const [run] = await tdb.db.select().from(stateDigestRunsTable);
+    const all = await sends();
+    expect(all).toHaveLength(1);
+    expect(all[0]).toMatchObject({ kind: "state_digest", outcome: "sent", runId: run.id });
+
+    await notifyStateSubscribersMonthly(since, until);
+    expect(await sends()).toHaveLength(1);
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
   });
 });

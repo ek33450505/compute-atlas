@@ -280,3 +280,174 @@ describe("sendGated: confirm cap", () => {
     expect((await rows()).filter((r) => r.outcome === "sent").length).toBeLessThanOrEqual(CONFIRM_CAP_MAX);
   });
 });
+
+describe("sendGated: coveredSubscriptionIds (multi-row email)", () => {
+  const digest = (anchor: string, covered: string[], send: () => Promise<SendOutcome>) =>
+    sendGated(tdb.db, { kind: "facility_digest", subscriptionId: anchor, email: EMAIL, coveredSubscriptionIds: covered }, send);
+
+  it("all covered rows good: sends, one row anchored on the first", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("confirmed", { targetId: "TX" });
+    const send = sender();
+    expect((await digest(a.id, [a.id, b.id], send)).disposition).toBe("sent");
+    expect(send).toHaveBeenCalledTimes(1);
+    const all = await rows();
+    expect(all).toHaveLength(1);
+    expect(all[0].subscriptionId).toBe(a.id);
+  });
+
+  it("a covered row that is not confirmed skips the whole email", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("unsubscribed", { targetId: "TX" });
+    const send = sender();
+    expect((await digest(a.id, [a.id, b.id], send)).disposition).toBe("skipped_unconfirmed");
+    expect(send).not.toHaveBeenCalled();
+    expect(await rows()).toHaveLength(1);
+  });
+
+  it("a covered row with another address skips the whole email", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("confirmed", { targetId: "TX", email: "other@example.com" });
+    const send = sender();
+    expect((await digest(a.id, [a.id, b.id], send)).disposition).toBe("skipped_unconfirmed");
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("a covered row suppressed in its own scope skips the whole email", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("confirmed", { targetId: "TX" });
+    await suppress(tdb.db, EMAIL, { kind: "target", targetType: "state", targetId: "TX" }, "unsubscribe");
+    const send = sender();
+    expect((await digest(a.id, [a.id, b.id], send)).disposition).toBe("skipped_suppressed");
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("a vanished covered row skips the whole email", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const send = sender();
+    const ghost = "00000000-0000-4000-8000-000000000000";
+    expect((await digest(a.id, [a.id, ghost], send)).disposition).toBe("skipped_unconfirmed");
+    expect(send).not.toHaveBeenCalled();
+  });
+});
+
+describe("sendGated: covered-row skip rows and severity", () => {
+  const digest = (anchor: string, covered: string[], send: () => Promise<SendOutcome>) =>
+    sendGated(tdb.db, { kind: "facility_digest", subscriptionId: anchor, email: EMAIL, coveredSubscriptionIds: covered }, send);
+
+  it("a covered failure records the covered row, its target, and error_code covered_row", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("unsubscribed", { targetId: "TX" });
+    await digest(a.id, [a.id, b.id], sender());
+    const all = await rows();
+    expect(all).toHaveLength(1);
+    expect(all[0]).toMatchObject({
+      subscriptionId: b.id,
+      targetType: "state",
+      targetId: "TX",
+      errorCode: "covered_row",
+      outcome: "skipped_unconfirmed",
+    });
+  });
+
+  it("a vanished covered row records a null subscription id with covered_row", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    await digest(a.id, [a.id, "00000000-0000-4000-8000-000000000000"], sender());
+    const all = await rows();
+    expect(all).toHaveLength(1);
+    expect(all[0]).toMatchObject({ subscriptionId: null, errorCode: "covered_row" });
+  });
+
+  it("an anchor failure is anchored on the anchor with no covered_row code, even if a covered row also fails", async () => {
+    const a = await seedSub("unsubscribed", { targetId: "TN" });
+    const b = await seedSub("unsubscribed", { targetId: "TX" });
+    await digest(a.id, [a.id, b.id], sender());
+    const all = await rows();
+    expect(all).toHaveLength(1);
+    expect(all[0].subscriptionId).toBe(a.id);
+    expect(all[0].errorCode).toBeNull();
+  });
+
+  it("the first covered row with the most severe outcome is the one referenced", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("unsubscribed", { targetId: "TX" });
+    const c = await seedSub("confirmed", { targetId: "CA" });
+    await suppress(tdb.db, EMAIL, { kind: "target", targetType: "state", targetId: "CA" }, "unsubscribe");
+    const result = await digest(a.id, [a.id, b.id, c.id], sender());
+    expect(result.disposition).toBe("skipped_suppressed");
+    expect((await rows())[0].subscriptionId).toBe(c.id);
+  });
+
+  it("among equally severe covered rows, the FIRST in coveredSubscriptionIds order is referenced", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("confirmed", { targetId: "TX" });
+    const c = await seedSub("confirmed", { targetId: "CA" });
+    await suppress(tdb.db, EMAIL, { kind: "target", targetType: "state", targetId: "TX" }, "unsubscribe");
+    await suppress(tdb.db, EMAIL, { kind: "target", targetType: "state", targetId: "CA" }, "unsubscribe");
+    await digest(a.id, [a.id, b.id, c.id], sender());
+    expect((await rows())[0].subscriptionId).toBe(b.id);
+    await tdb.reset();
+    const a2 = await seedSub("confirmed", { targetId: "TN" });
+    const b2 = await seedSub("confirmed", { targetId: "TX" });
+    const c2 = await seedSub("confirmed", { targetId: "CA" });
+    await suppress(tdb.db, EMAIL, { kind: "target", targetType: "state", targetId: "TX" }, "unsubscribe");
+    await suppress(tdb.db, EMAIL, { kind: "target", targetType: "state", targetId: "CA" }, "unsubscribe");
+    await digest(a2.id, [a2.id, c2.id, b2.id], sender());
+    expect((await rows())[0].subscriptionId).toBe(c2.id);
+  });
+
+  it("an unreadable suppression list for covered rows is skipped_check_failed (outranks suppressed)", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("confirmed", { targetId: "TX" });
+    const c = await seedSub("confirmed", { targetId: "CA" });
+    await suppress(tdb.db, EMAIL, { kind: "target", targetType: "state", targetId: "TX" }, "unsubscribe");
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    // The anchor's own lookup must succeed; only the covered batch fails.
+    const orig = tdb.db.select.bind(tdb.db);
+    let suppressionCalls = 0;
+    vi.spyOn(tdb.db, "select").mockImplementation(((...args: unknown[]) => {
+      const q = (orig as (...a: unknown[]) => unknown)(...args);
+      const fields = args[0] as Record<string, unknown> | undefined;
+      if (fields && "targetType" in fields && "targetId" in fields && !("email" in fields)) {
+        suppressionCalls++;
+        if (suppressionCalls >= 2) throw new Error("boom"); // call 1 is the anchor's own lookup
+      }
+      return q;
+    }) as never);
+    const send = sender();
+    const result = await digest(a.id, [a.id, b.id, c.id], send);
+    expect(result.disposition).toBe("skipped_check_failed");
+    expect(send).not.toHaveBeenCalled();
+    expect((await rows())[0].errorCode).toBe("covered_row");
+  });
+
+  it("a covered-lookup DB error is gate_error and leaves NO email_sends row", async () => {
+    const a = await seedSub("confirmed", { targetId: "TN" });
+    const b = await seedSub("confirmed", { targetId: "TX" });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const orig = tdb.db.select.bind(tdb.db);
+    let calls = 0;
+    vi.spyOn(tdb.db, "select").mockImplementation(((...args: unknown[]) => {
+      calls++;
+      // call 1 = anchor re-read, 2 = anchor suppression, 3 = covered subscription read
+      if (calls === 3) throw new Error("boom");
+      return (orig as (...a: unknown[]) => unknown)(...args);
+    }) as never);
+    const send = sender();
+    const result = await digest(a.id, [a.id, b.id], send);
+    expect(result.disposition).toBe("gate_error");
+    expect(send).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+    expect(await rows()).toHaveLength(0);
+  });
+
+  it("a 5-row digest issues ONE suppression query for the covered rows (plus the anchor's own)", async () => {
+    const ids: string[] = [];
+    for (const t of ["TN", "TX", "CA", "NY", "FL"]) ids.push((await seedSub("confirmed", { targetId: t })).id);
+    const spy = vi.spyOn(tdb.client, "query");
+    const result = await digest(ids[0], ids, sender());
+    expect(result.disposition).toBe("sent");
+    const suppressionQueries = spy.mock.calls.filter((c) => String(c[0]).includes("email_suppressions")).length;
+    expect(suppressionQueries).toBe(2);
+  });
+});
