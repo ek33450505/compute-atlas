@@ -98,8 +98,8 @@ See `.env.example`.
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
 | `API_INTAKE_TOKEN` | Staging-only bearer, accepted by `POST /api/submissions` ALONE. For the discovery pipeline. Optional — unset, the pipeline falls back to `API_ADMIN_TOKEN` and nothing changes. **Must be an independent value**; see the activation steps below |
 | `CRON_SECRET` | Bearer secret authenticating Vercel Cron to `/api/cron/*`. **Set in production since 2026-09-14**, with the state digest; unset means every cron-path caller is rejected (fail-closed). **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
-| `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Set to `"true"` in production since 2026-09-14.** Unsetting it (or any value but `"true"`) stops all digest mail immediately, without a deploy |
-| `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Set to `"true"` in production since 2026-09-14.** Same kill semantics |
+| `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Set to `"true"` in production since 2026-09-14.** Unsetting it (or any value but `"true"`) stops all digest mail, but only once a new deployment is live: Vercel applies env changes to new deployments only, so follow with `npx vercel redeploy --target production <url>` |
+| `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Set to `"true"` in production since 2026-09-14.** Same kill semantics (redeploy required), plus a Cloudflare purge for the form field: see "Turning it off" below |
 | `VERIFY_SOURCES_ENABLED` | Kill switch for the discovery pipeline's mechanical source-verification gate (local Ollama). **Polarity is the opposite of the two switches above:** the gate is ON by default and only the exact string `"false"` disables it, so a typo leaves verification enabled |
 | `API_ADMIN_TOKEN_SALT` | PBKDF2 salt for the admin-UI password login (`app/admin/login/actions.ts`). Required — login fails closed, rejecting every attempt, if unset |
 | `CONTRIBUTE_IP_SALT` | Salt for hashing submitter IPs for public-contribution rate limiting. **Required in production** — `hashIp()` throws on Vercel production rather than hash with the repo-public default; dev, tests and previews fall back to it. Since 2026-09-27 it has a second consumer: `lib/subscribe-consent.ts` derives the subscribe-consent cookie's HMAC key from it, under its own key domain. Rotating it invalidates every stored IP hash **and** every outstanding consent cookie |
@@ -139,6 +139,15 @@ The historical note on the disabled state follows, because it still describes wh
 the flag returns you to: with `SUBMISSION_NOTIFY_ENABLED` unset, `POST /api/contribute`
 ignores a `notifyEmail` entirely — not read, not validated, not stored, responses
 byte-identical to before the feature existed.
+
+⚠️ **Turning it off is a redeploy, then a Cloudflare purge.** Vercel applies an env change to
+new deployments only, so unsetting the variable does nothing until
+`npx vercel redeploy --target production <url>` is READY. The email field follows that same deploy:
+`/contribute` is prerendered at build, and the correction dialog on facility pages and `/gaps` (ISR)
+gets the flag from the page render via `CorrectionNotifyProvider`; a new deployment gets its own ISR
+cache, so it renders both without the field. Cloudflare can still serve HTML cached before the
+deploy, so finish with `{ purge_everything: true }` and confirm with a fresh GET. Until then a visitor
+can type an email the server silently ignores, which is why neither form's success copy promises one.
 
 Two things were true before it was set to `"true"`, and stay true for any future re-enable:
 
