@@ -69,7 +69,7 @@ test("/map shows result count status", async ({ page }) => {
   // doesn't hit a strict-mode violation once both are mounted.
   await expect(
     page.getByRole("status").filter({ hasText: /Showing/ })
-  ).toContainText(/Showing \d+ of \d+ facilities/);
+  ).toContainText(/Showing [\d,]+ of [\d,]+ facilities/);
 });
 
 test("/map has View as table cross-link", async ({ page }) => {
@@ -89,7 +89,7 @@ test("/map status filter updates URL and reduces results; Clear all resets", asy
   // location-search jump-to status); scope to the one with text so this
   // doesn't hit a strict-mode violation once both are mounted.
   const statusEl = page.getByRole("status").filter({ hasText: /Showing/ });
-  await expect(statusEl).toContainText(/Showing \d+ of \d+ facilities/);
+  await expect(statusEl).toContainText(/Showing [\d,]+ of [\d,]+ facilities/);
 
   // Click the "Operational" status checkbox
   const operationalCheckbox = page.getByRole("checkbox", {
@@ -101,7 +101,7 @@ test("/map status filter updates URL and reduces results; Clear all resets", asy
   await expect(page).toHaveURL(/[?&]status=operational/);
 
   // Count region still shows a valid result summary
-  await expect(statusEl).toContainText(/Showing \d+ of \d+ facilities/);
+  await expect(statusEl).toContainText(/Showing [\d,]+ of [\d,]+ facilities/);
 
   // "Clear all" button appears when filters are active; click it
   await page.getByRole("button", { name: /Clear all/i }).click();
@@ -120,7 +120,7 @@ test("filter state carries from /map to /table via the shared URL", async ({
   // doesn't hit a strict-mode violation once both are mounted.
   const statusEl = page.getByRole("status").filter({ hasText: /Showing/ });
   // Capture the unfiltered count: "Showing N of N facilities"
-  await expect(statusEl).toContainText(/Showing \d+ of \d+ facilities/);
+  await expect(statusEl).toContainText(/Showing [\d,]+ of [\d,]+ facilities/);
 
   // Click the "Operational" status checkbox to apply a filter
   const operationalCheckbox = page.getByRole("checkbox", {
@@ -145,15 +145,15 @@ test("filter state carries from /map to /table via the shared URL", async ({
   const tableStatusEl = page
     .getByRole("status")
     .filter({ hasText: /Showing/ });
-  await expect(tableStatusEl).toContainText(/Showing \d+ of \d+ facilities/);
+  await expect(tableStatusEl).toContainText(/Showing [\d,]+ of [\d,]+ facilities/);
 
   // Parse the status text to confirm the filter is actually applied:
   // The filtered count (first number) should be less than the total (second number)
   const statusText = await tableStatusEl.textContent();
-  const match = statusText?.match(/Showing (\d+) of (\d+)/);
+  const match = statusText?.match(/Showing ([\d,]+) of ([\d,]+)/);
   expect(match).toBeTruthy();
-  const filteredCount = Number(match![1]);
-  const totalCount = Number(match![2]);
+  const filteredCount = Number(match![1].replace(/,/g, ""));
+  const totalCount = Number(match![2].replace(/,/g, ""));
   expect(filteredCount).toBeLessThan(totalCount);
 
   // Verify the table is visible on /table

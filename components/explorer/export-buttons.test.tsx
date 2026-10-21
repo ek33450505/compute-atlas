@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ExportButtons } from "./export-buttons";
+import { ExportButtons, exportedMessage } from "./export-buttons";
 import type { Facility } from "@/lib/schema";
 import { toTableRow } from "@/lib/facility-slim";
 
@@ -63,6 +63,26 @@ describe("ExportButtons", () => {
     expect(
       screen.getByRole("button", { name: "Download 1 facility as JSON (snapshot as of October 20, 2026)" })
     ).toBeInTheDocument();
+  });
+
+  it("puts thousands separators in the labels", () => {
+    const rows = Array.from({ length: 1234 }, () => facility);
+    render(<ExportButtons facilities={rows} snapshot={SNAPSHOT} />);
+    expect(screen.getByRole("button", { name: "Download 1,234 facilities as CSV" })).toBeInTheDocument();
+  });
+
+  it("keeps an empty live region in the DOM before any export, and renders children outside the group", () => {
+    const { container } = render(
+      <ExportButtons facilities={[facility]} snapshot={SNAPSHOT}>
+        <button type="button">Extra</button>
+      </ExportButtons>
+    );
+    const region = container.querySelector('p[aria-live="polite"]');
+    expect(region).toBeInTheDocument();
+    expect(region).toBeEmptyDOMElement();
+    expect(screen.getByRole("group", { name: "Export facilities" })).not.toContainElement(
+      screen.getByRole("button", { name: "Extra" })
+    );
   });
 
   it("pluralizes the labels", () => {
@@ -129,12 +149,12 @@ describe("ExportButtons", () => {
       const region = container.querySelector('[aria-live="polite"]');
       expect(region).not.toBeNull();
       expect(region).toBeEmptyDOMElement();
-      // Reserves one line and is never hidden, so filling it shifts nothing above.
-      expect(region).toHaveClass("min-h-4");
+      // Reserves two lines at every width and is never hidden, so filling it shifts nothing above.
+      expect(region).toHaveClass("min-h-8");
       expect(region).not.toHaveClass("sr-only");
       expect(region).not.toHaveClass("hidden");
       await user.click(screen.getByRole("button", { name: /as JSON/ }));
-      await waitFor(() => expect(region).toHaveTextContent(/^Downloaded 1 facility as JSON/));
+      await waitFor(() => expect(region).toHaveTextContent(/^Downloaded 1 facility /));
       expect(region).not.toHaveClass("sr-only");
     });
 
@@ -154,9 +174,18 @@ describe("ExportButtons", () => {
       expect(exported[1]).toEqual(fullFacility);
       expect(
         screen.getByText(
-          "Downloaded 2 facilities as JSON from the snapshot as of October 20, 2026. Values edited since then may differ from the table."
+          "Downloaded 2 facilities (JSON snapshot, Oct 20, 2026; later edits aren't in it)."
         )
       ).toBeInTheDocument();
+    });
+
+    it("uses the thousands separator in the success message", async () => {
+      const user = userEvent.setup();
+      const rows = Array.from({ length: 1234 }, (_, i) => ({ ...facility, id: `f-${i}` }));
+      mockFetch(async () => ({ ok: true, json: async () => rows.map((r) => ({ ...fullFacility, id: r.id })) }));
+      render(<ExportButtons facilities={rows} snapshot={SNAPSHOT} />);
+      await user.click(screen.getByRole("button", { name: /as JSON/ }));
+      expect(await screen.findByText(/^Downloaded 1,234 facilities \(JSON snapshot, Oct 20, 2026;/)).toBeInTheDocument();
     });
 
     it("says 'the deployed snapshot' and omits the cache key when asOf is unknown", async () => {
@@ -168,7 +197,7 @@ describe("ExportButtons", () => {
       ).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: /as JSON/ }));
       expect(
-        await screen.findByText(/^Downloaded 1 facility as JSON from the deployed snapshot\. Values edited since/)
+        await screen.findByText(/^Downloaded 1 facility \(deployed JSON snapshot; later edits/)
       ).toBeInTheDocument();
       expect(fetchMock).toHaveBeenCalledWith("/data/facilities.json", expect.anything());
     });
@@ -224,7 +253,7 @@ describe("ExportButtons", () => {
       render(<ExportButtons facilities={[facility, toTableRow(second)]} snapshot={SNAPSHOT} />);
       await user.click(screen.getByRole("button", { name: /as JSON/ }));
       expect(
-        await screen.findByText(/1 of 2 facilities isn't in the downloadable snapshot \(it may have been added since the last deploy\) and was left out/)
+        await screen.findByText("Downloaded 1 of 2 facilities (JSON snapshot, Oct 20, 2026; newer ones and later edits aren't in it).")
       ).toBeInTheDocument();
       const exported = JSON.parse(await blobs[0].text());
       expect(exported.map((f: Facility) => f.id)).toEqual(["alpha-facility"]);
@@ -251,6 +280,17 @@ describe("ExportButtons", () => {
       ).toBeInTheDocument();
     });
 
+    it("formats the count with a separator when thousands of rows are all newer than the snapshot", async () => {
+      const user = userEvent.setup();
+      const rows = Array.from({ length: 1234 }, (_, i) => ({ ...facility, id: `new-${i}` }));
+      mockFetch(async () => ({ ok: true, json: async () => [fullFacility] }));
+      render(<ExportButtons facilities={rows} snapshot={SNAPSHOT} />);
+      await user.click(screen.getByRole("button", { name: /as JSON/ }));
+      expect(
+        await screen.findByText("None of the 1,234 facilities are in the downloadable snapshot yet, so nothing was downloaded.")
+      ).toBeInTheDocument();
+    });
+
     it("uses plural wording when several rows are newer than the snapshot", async () => {
       const user = userEvent.setup();
       mockFetch(async () => ({ ok: true, json: async () => [fullFacility] }));
@@ -259,7 +299,7 @@ describe("ExportButtons", () => {
       );
       await user.click(screen.getByRole("button", { name: /as JSON/ }));
       expect(
-        await screen.findByText(/2 of 3 facilities aren't in the downloadable snapshot \(they may have been added since the last deploy\) and were left out/)
+        await screen.findByText("Downloaded 1 of 3 facilities (JSON snapshot, Oct 20, 2026; newer ones and later edits aren't in it).")
       ).toBeInTheDocument();
     });
 
@@ -273,6 +313,21 @@ describe("ExportButtons", () => {
         "1 of 2 facilities has no readable entry in the downloadable snapshot, which also had 1 unreadable entry, and was left out."
       );
       expect(message).not.toHaveTextContent("newer");
+    });
+
+    it("formats every count with separators when many rows have no readable entry", async () => {
+      const user = userEvent.setup();
+      const rows = Array.from({ length: 2000 }, (_, i) => ({ ...facility, id: `f-${i}` }));
+      mockFetch(async () => ({
+        ok: true,
+        json: async () => [...Array.from({ length: 1000 }, () => null), ...rows.slice(0, 500).map((r) => ({ ...fullFacility, id: r.id }))],
+      }));
+      render(<ExportButtons facilities={rows} snapshot={SNAPSHOT} />);
+      await user.click(screen.getByRole("button", { name: /as JSON/ }));
+      const message = await screen.findByText(/no readable entry in the downloadable snapshot/);
+      expect(message).toHaveTextContent(
+        "1,500 of 2,000 facilities have no readable entry in the downloadable snapshot, which also had 1,000 unreadable entries, and were left out."
+      );
     });
 
     it("uses plural wording when several rows have no readable entry", async () => {
@@ -440,6 +495,15 @@ describe("ExportButtons", () => {
         resolve({ ok: true, json: async () => [fullFacility] });
       });
       expect(URL.createObjectURL).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("message length", () => {
+    it("keeps the common messages within the two-line reservation for 5-digit counts", () => {
+      for (const label of ["JSON snapshot, Sep 30, 2026", "deployed JSON snapshot"]) {
+        expect(exportedMessage(12757, 12757, label).length).toBeLessThanOrEqual(112);
+        expect(exportedMessage(12750, 12757, label).length).toBeLessThanOrEqual(112);
+      }
     });
   });
 });
