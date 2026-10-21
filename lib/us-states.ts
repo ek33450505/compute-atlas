@@ -156,6 +156,10 @@ export function isStateCode(code: string): boolean {
  * sorted and de-duplicated. Codes are case-normalized to uppercase; a code
  * that isn't a recognized state, DC, or territory is silently ignored
  * rather than thrown on — a bad code in the data must never crash a page.
+ * Every app write path now refuses unknown codes via `facilitySchema`, but
+ * runtime Neon reads are not re-validated, so a row written before that check
+ * or by a raw Neon write can still arrive here. This ignore is therefore the
+ * backstop that keeps a page from crashing.
  */
 export function splitJurisdictions(codes: Iterable<string>): { states: string[]; other: string[] } {
   const states = new Set<string>();

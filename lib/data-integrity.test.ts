@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { getAllFacilities, getFacilityById } from "@/lib/data";
 import { facilitySchema } from "@/lib/schema";
 import type { Facility } from "@/lib/schema";
+import { stateCodeFromSlug, stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 
 describe("data integrity — facilities.json", () => {
   let facilities: Facility[];
@@ -22,6 +23,23 @@ describe("data integrity — facilities.json", () => {
     expect(
       failing,
       `Schema violations:\n${failing.join("\n")}`
+    ).toHaveLength(0);
+  });
+
+  it("every location.state and multiSite.states code has a name and round-trips through its slug", () => {
+    const failing: string[] = [];
+    for (const f of facilities) {
+      const codes = [f.location.state, ...(f.location.multiSite?.states ?? [])];
+      for (const code of codes) {
+        const slug = stateSlugFromCode(code);
+        if (!stateNameFromCode(code) || !slug || stateCodeFromSlug(slug) !== code) {
+          failing.push(`${f.id}: ${code}`);
+        }
+      }
+    }
+    expect(
+      failing,
+      `Jurisdiction codes without a name or a slug round-trip:\n${failing.join("\n")}`
     ).toHaveLength(0);
   });
 
