@@ -7190,6 +7190,15 @@
     }
   },
   "calpine-edge-moor-energy-center-wilmington-de": {
+    "nearestWater": {
+      "name": "Shellpot Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -7395,6 +7404,15 @@
     }
   },
   "cartier-energy-center-dover-de": {
+    "nearestWater": {
+      "name": "Puncheon Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -9896,6 +9914,15 @@
     }
   },
   "cogent-pensacola-edge-fl": {
+    "nearestWater": {
+      "name": "Carpenter Creek",
+      "kind": "river",
+      "distanceMi": 2.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -9929,6 +9956,15 @@
     }
   },
   "cogent-tallahassee-edge-fl": {
+    "nearestWater": {
+      "name": "Lake Ella",
+      "kind": "lake",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -9943,6 +9979,15 @@
     }
   },
   "cogent-tampa-fl": {
+    "nearestWater": {
+      "name": "Hillsborough River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -14684,6 +14729,15 @@
     }
   },
   "dc-octo-ddot-data-center-60-florida-ave-ne-washington-dc": {
+    "nearestWater": {
+      "name": "McMillan Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -14698,6 +14752,15 @@
     }
   },
   "dc-octo-reeves-center-data-center-washington-dc": {
+    "nearestWater": {
+      "name": "McMillan Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -15152,6 +15215,15 @@
     }
   },
   "diamond-state-generation-red-lion-fuel-cell-new-castle-de": {
+    "nearestWater": {
+      "name": "Red Lion Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -26094,6 +26166,15 @@
     }
   },
   "hostdime-orlando-kennedy-blvd-fl": {
+    "nearestWater": {
+      "name": "Hungerford Lake",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -29393,6 +29474,15 @@
     }
   },
   "lumen-dc1-1120-vermont-ave-nw-washington-dc": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29407,6 +29497,15 @@
     }
   },
   "lumen-dc2-1220-l-street-nw-washington-dc": {
+    "nearestWater": {
+      "name": "Carp Pond (historical)",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29421,6 +29520,15 @@
     }
   },
   "lumen-dc4-1828-l-street-nw-washington-dc": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29483,6 +29591,15 @@
     }
   },
   "lumen-jacksonville-philips-hwy-fl": {
+    "nearestWater": {
+      "name": "New Rose Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -29608,6 +29725,15 @@
     }
   },
   "lumen-miami-5th-street-fl": {
+    "nearestWater": {
+      "name": "Miami River",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 5.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -29740,6 +29866,15 @@
     }
   },
   "lumen-newark-interchange-blvd-de": {
+    "nearestWater": {
+      "name": "West Branch Christina River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -29993,6 +30128,15 @@
     }
   },
   "lumen-wilmington-jessup-street-de": {
+    "nearestWater": {
+      "name": "Brandywine Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -32674,6 +32818,15 @@
     }
   },
   "milford-solar-farm-milford-de": {
+    "nearestWater": {
+      "name": "Mullet Run",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -33452,6 +33605,15 @@
     }
   },
   "naes-van-sant-station-dover-de": {
+    "nearestWater": {
+      "name": "Puncheon Run",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -36876,6 +37038,15 @@
     }
   },
   "pbf-delaware-city-refinery-power-plant-de": {
+    "nearestWater": {
+      "name": "Dragon Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -40738,6 +40909,15 @@
     }
   },
   "readysetfundgrow-fishbowl-homestead-fl": {
+    "nearestWater": {
+      "name": "Black Creek",
+      "kind": "river",
+      "distanceMi": 2.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -51208,6 +51388,15 @@
     }
   },
   "white-oak-solar-dover-sun-park-de": {
+    "nearestWater": {
+      "name": "Little River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
