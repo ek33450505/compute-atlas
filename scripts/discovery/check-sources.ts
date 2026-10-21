@@ -27,9 +27,12 @@ import {
   RETRY_AFTER_CAP_MS,
   RETRY_BACKOFF_MS,
   defaultSleep,
+  createPinnedFetch,
   isBlockedHost,
   isHttpUrl,
+  isSsrfBlockedError,
   parseRetryAfterMs,
+  pinnedFetch,
   resolvesToBlockedAddress,
   runWithConcurrency,
   type ResolveDeps,
@@ -64,7 +67,8 @@ export interface SourceCheckResult {
 }
 
 export interface SourceCheckDeps {
-  fetchImpl: typeof fetch;
+  /** Defaults to a DNS-pinned fetch (see net-guard.ts), so the shortest call is the safe one. */
+  fetchImpl?: typeof fetch;
   concurrency: number;
   timeoutMs: number;
   /** Max retry attempts for 429/5xx responses. Defaults to 2. */
@@ -173,6 +177,11 @@ async function probeUrl(
     if (name === "AbortError") {
       return { httpStatus: null, classification: "timeout" };
     }
+    // The pinned connection refused a blocked address (e.g. DNS rebinding):
+    // terminal, never retried.
+    if (isSsrfBlockedError(err)) {
+      return { httpStatus: null, classification: "blocked" };
+    }
     return { httpStatus: null, classification: "error" };
   }
 }
@@ -193,10 +202,13 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
   const maxRetries = deps.maxRetries ?? 2;
   const sleepImpl = deps.sleepImpl ?? defaultSleep;
 
-  // One DNS check per hostname per run: sources share hosts heavily. The check
-  // runs outside probeUrl's AbortController, so it is raced against timeoutMs
-  // and fails open (false) on timeout, DNS failure or a throwing resolver; the
-  // probe then runs under its own timeout.
+  const fetchImpl = deps.fetchImpl ?? (deps.resolveDeps ? createPinnedFetch(deps.resolveDeps) : pinnedFetch);
+
+  // One DNS check per hostname per run: sources share hosts heavily. This is a
+  // classification fast path and defence in depth, not the enforcement point.
+  // It runs outside probeUrl's AbortController, so it is raced against
+  // timeoutMs and fails open (false) on timeout, DNS failure or a throwing
+  // resolver; the probe then runs under its own timeout.
   const blockedByHost = new Map<string, Promise<boolean>>();
   const resolvesBlocked = (hostname: string): Promise<boolean> => {
     let pending = blockedByHost.get(hostname);
@@ -206,11 +218,11 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
         timer = setTimeout(() => resolve(false), deps.timeoutMs);
       });
       const lookup = (async () => resolvesToBlockedAddress(hostname, deps.resolveDeps))().catch(() => false);
-      // Fail-open on timeout is deliberate: failing closed would mislabel slow
-      // but legitimate resolvers "blocked" without closing the real gap, since
-      // a zone owner defeats this check via rebinding (public answer now,
-      // TTL-0 private answer at probe time). The fix is connection pinning
-      // (resolve once, connect to the pinned address), not a stricter timeout.
+      // Fail-open on timeout is safe because enforcement moved to the pinned
+      // connection (createPinnedFetch): its lookup re-resolves and vets the
+      // address the socket actually uses, and fails closed (no vetted
+      // address, no connect). Failing closed HERE would only mislabel slow
+      // but legitimate resolvers "blocked".
       pending = Promise.race([lookup, timeout]).finally(() => clearTimeout(timer));
       blockedByHost.set(hostname, pending);
     }
@@ -238,8 +250,10 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
     // User-submitted sources reach this lane after approval, so a name that
     // merely resolves to a private address (e.g. 127.0.0.1.nip.io) is refused
     // too. A DNS failure resolves to false and falls through to the probe, so
-    // ENOTFOUND stays the outage-vs-link-rot signal. Limitation: resolve-then-
-    // connect leaves a TOCTOU/rebinding window (see net-guard.ts).
+    // ENOTFOUND stays the outage-vs-link-rot signal. The synchronous
+    // isBlockedHost check is load-bearing for IP-literal URLs (net.connect
+    // skips lookup for literals); for names, rebinding between this check and
+    // the connect is closed by the pinned fetch (see net-guard.ts).
     const hostname = new URL(task.url).hostname;
     if (isBlockedHost(hostname) || (await resolvesBlocked(hostname))) {
       return {
@@ -253,7 +267,7 @@ export async function checkSources(facilities: Facility[], deps: SourceCheckDeps
       };
     }
 
-    const { httpStatus, classification } = await probeUrl(task.url, deps.fetchImpl, deps.timeoutMs, maxRetries, sleepImpl);
+    const { httpStatus, classification } = await probeUrl(task.url, fetchImpl, deps.timeoutMs, maxRetries, sleepImpl);
     return {
       facilityId: task.facilityId,
       facilityName: task.facilityName,
@@ -331,7 +345,7 @@ async function main(): Promise<void> {
         `falling back to the committed data/facilities.json snapshot, which may be stale.`
     );
   }
-  const results = await checkSources(facilities, { fetchImpl: fetch, concurrency, timeoutMs });
+  const results = await checkSources(facilities, { concurrency, timeoutMs });
   const logPath = writeReport(results);
   console.log(`${summarize(results)} -> ${logPath}`);
 }

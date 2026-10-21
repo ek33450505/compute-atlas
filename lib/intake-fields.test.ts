@@ -8,7 +8,7 @@ import { subscribeInputSchema } from "@/lib/subscribe";
 import { z } from "zod";
 
 const PUBLIC_MESSAGE =
-  "Use a link to a public web page, without a username, IP address or local host name.";
+  "Use a link to a public web page, without a username, IP address, local host name or international domain name.";
 
 describe("httpUrlSchema", () => {
   it.each([
@@ -18,6 +18,13 @@ describe("httpUrlSchema", () => {
     "https://www.example.co.uk:8443/path",
     "https://gis.example.gov:6443/arcgis/rest/services",
     "https://example.com./trailing-dot",
+    "https://example.com/@foo",
+    "https://example.com/caf\u00e9?q=\u00fc",
+    "https://example.com/?q=\u00fc#\u00e9",
+    "https://example.com/a%20b?q=%41#%42",
+    "https://example.com/?a=@b",
+    "https://example.com/#@x",
+    "https://example.com:6443/arcgis",
     "https://example.com/caf\u00e9/\ud83d\ude00?q=\ud83d\ude00",
   ])("accepts %s", (url) => {
     expect(httpUrlSchema.safeParse(url).success).toBe(true);
@@ -28,6 +35,23 @@ describe("httpUrlSchema", () => {
     ["tab", "https://x.org/a\tb"],
     ["DEL", "https://x.org/\u007f"],
     ["userinfo", "https://a.com@evil.com/"],
+    ["fullwidth letters", "https://\uff45\uff56\uff49\uff4c.com/"],
+    ["ideographic full stop", "https://example\u3002com/"],
+    ["fullwidth full stop", "https://example\uff0ecom/"],
+    ["zero-width space", "https://exam\u200bple.com/"],
+    ["soft hyphen", "https://ex\u00adample.com/"],
+    ["percent-encoded fullwidth letter", "https://%ef%bd%85vil.com/x"],
+    ["percent-encoded zero-width space", "https://%E2%80%8Bexample.com/"],
+    ["percent-encoded soft hyphen", "https://%C2%ADexample.com/"],
+    ["percent-encoded ideographic full stop", "https://example%E3%80%82com/"],
+    ["percent-encoded dot", "https://example%2Ecom/"],
+    ["percent-encoded letter", "https://ex%41mple.com/"],
+    ["percent-encoded dot in suffix", "https://good.com%E3%80%82evil"],
+    ["empty userinfo", "https://@example.com/"],
+    ["empty userinfo with colon", "https://:@example.com/"],
+    ["empty userinfo, no slashes", "https:@example.com"],
+    ["empty userinfo, extra slash", "https:///@example.com/"],
+    ["empty userinfo, uppercase", "HTTPS://@EXAMPLE.COM/"],
     ["userinfo with password", "https://user:pw@example.com/"],
     ["IPv4 literal", "http://169.254.169.254/latest/meta-data/"],
     ["loopback IP with port", "http://127.0.0.1:8080/"],
@@ -211,10 +235,11 @@ describe("contact and subscribe schemas reject unstorable text", () => {
       expect(r.error?.issues[0]?.message).toBe("Remove unsupported characters.");
     });
 
-    it("contact.email", () => {
+    it("contact.email is rejected by .email() format validation, not storableText", () => {
       const r = contactInputSchema.safeParse({ ...contact, email: `a${bad}@example.com` });
       expect(r.success).toBe(false);
       expect(r.error?.issues[0]?.path).toEqual(["email"]);
+      expect(r.error?.issues.map((i) => i.message)).toEqual(["Invalid email address"]);
     });
 
     it("subscribe.targetId", () => {

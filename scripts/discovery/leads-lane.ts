@@ -256,11 +256,11 @@ export interface LeadsLaneDeps {
   /**
    * Raw fetch, threaded through to `verifySource`'s own `fetchImpl` — used
    * ONLY on its Wayback-fallback path (queried when `fetchPageTextImpl`
-   * itself fails). Verify-source.ts defaults this to the real global `fetch`
+   * itself fails). Verify-source.ts defaults this to the DNS-pinned fetch
    * when omitted, so tests that reach a fetch-failure/escalate/rejected path
    * through the verification gate MUST supply this (even a stub that reports
    * "no snapshot") — otherwise a fetch-failure branch in a test would reach
-   * out to archive.org for real. `main()` passes the real `fetch`.
+   * out to archive.org for real. `main()` omits it.
    */
   rawFetchImpl?: typeof fetch;
 }
@@ -630,10 +630,10 @@ async function listNewLeadsReal(limit: number): Promise<LeadForLane[]> {
  * merely calling this function, must never reach a real database or the
  * network. Only `main()` actually invokes the closures it returns.
  */
-function buildRealDeps(): LeadsLaneDeps {
+export function buildRealDeps(): LeadsLaneDeps {
   return {
     listNewLeadsImpl: listNewLeadsReal,
-    fetchPageTextImpl: (url) => fetchPageText(url, { fetchImpl: fetch }),
+    fetchPageTextImpl: (url) => fetchPageText(url, {}),
     callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
     geocodeImpl: (query) => geocodeUS(query, undefined, { userAgent: LEADS_LANE_USER_AGENT }),
     findPossibleDuplicatesImpl: async ({ operator, state }) => {
@@ -652,7 +652,6 @@ function buildRealDeps(): LeadsLaneDeps {
     markDeferredImpl: (id, note) => updateLeadStatus(id, "deferred", note),
     promoteLeadImpl: (id, submissionId, note) => promoteLead(id, submissionId, note),
     now: () => new Date(),
-    rawFetchImpl: fetch,
   };
 }
 

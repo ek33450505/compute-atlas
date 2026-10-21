@@ -351,6 +351,16 @@ release-please; see [CHANGELOG.md](../CHANGELOG.md).
 Each release exports a versioned snapshot — `data/facilities.json` carries an `asOf`
 timestamp in `data/facilities.meta.json` so consumers can track data currency.
 
+## Accepted dependency advisories
+
+`npm audit` is not a CI gate. Any finding left open is recorded here with its reason, and is
+re-checked when its trigger fires. Never run `npm audit fix --force`. Bumps follow the 14-day
+publish-age floor (`npm update <pkg> --before=<today minus 14 days>`).
+
+| Advisory | Reported as | Why it is accepted | Re-check when | Accepted |
+|---|---|---|---|---|
+| [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm): `braces` ≤3.0.3, stack exhaustion on deeply nested patterns | 9 "high" findings: `braces`, `micromatch`, `fast-glob`, `@ts-morph/common`, `ts-morph`, `@shadcn/registry`, `@next/eslint-plugin-next`, `shadcn`, `eslint-config-next` | No patched version exists; 3.0.3 is the newest release. The chain is devDependencies only (the `shadcn` CLI and `eslint-config-next`). `npm ls --omit=dev` lists none of these packages, so nothing ships to production, and `braces` only ever sees maintainer-written lint and CLI globs. `npm audit fix` would major-downgrade `shadcn` to 1.0.0 and `eslint-config-next` to 14.2.35. | A patched `braces` release, or any `shadcn` / `eslint-config-next` bump | 2026-10-21 (Ed) |
+
 ## Builds are gated, production included
 
 `vercel.json` runs `scripts/vercel-ignore-build.sh` as Vercel's Ignored Build Step. Any

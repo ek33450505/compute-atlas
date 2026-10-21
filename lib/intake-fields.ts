@@ -5,7 +5,7 @@
 import { z } from "zod";
 
 const PUBLIC_URL_MESSAGE =
-  "Use a link to a public web page, without a username, IP address or local host name.";
+  "Use a link to a public web page, without a username, IP address, local host name or international domain name.";
 
 // The single source of truth for the http/https URL refine — rejects
 // javascript:/data: URLs at submit time, not just at facility-write time.
@@ -29,6 +29,9 @@ export const httpUrlSchema = z.string().trim().max(2000).refine(hasNoControlChar
 // Why this exists: a reviewer must see where a link really goes (userinfo and
 // IDN lookalikes deceive), the nightly check-sources run fetches approved
 // sources from the maintainer's Mac (so IP-literal / local hosts are SSRF-ish),
+// punycode (`xn--`) hosts are refused outright (the message says so), an `@`
+// or any non-ASCII character in the authority is refused even when WHATWG
+// normalizes it away (`https://@example.com/`),
 // and Postgres jsonb rejects NUL. Ports stay allowed (ArcGIS uses :6443).
 // Surrounding whitespace is trimmed first (a pasted URL with a trailing "\n");
 // interior control chars are rejected. They are tested BEFORE `.url()`: WHATWG URL
@@ -37,6 +40,7 @@ export const httpUrlSchema = z.string().trim().max(2000).refine(hasNoControlChar
 // A backslash is rejected too: WHATWG reads `\` as `/`, so `https://a.com\@b.com/`
 // has host a.com while a human reviewer reads b.com.
 const CONTROL_CHARS_RE = /[\u0000-\u001f\u007f\\]/;
+const SCHEME_RE = /^[a-z][a-z0-9+.-]*:\/*/i;
 const IPV4_RE = /^\d{1,3}(\.\d{1,3}){3}$/;
 const LOCAL_SUFFIXES = [
   ".localhost",
@@ -55,6 +59,21 @@ function hasNoControlChars(value: string): boolean {
   return !CONTROL_CHARS_RE.test(value);
 }
 
+// A reviewer must see the host the fetcher actually reaches. WHATWG gives
+// `https://@example.com/` an empty username and password, and folds some
+// non-ASCII characters onto ASCII (fullwidth letters, U+3002 and U+FF0E dots,
+// zero-width space, soft hyphen), so neither is visible in the parsed fields or
+// reaches the `xn--` check. It also percent-decodes the host before that
+// mapping, so an all-ASCII `%ef%bd%85vil.com` or `example%2Ecom` hides the same
+// lookalikes; a public host never contains `%`. Inspect the raw authority
+// instead; a non-ASCII or percent-encoded path, query or fragment is fine.
+const NON_ASCII_RE = /[^\u0000-\u007f]/;
+
+function hasUnsafeAuthority(value: string): boolean {
+  const authority = value.replace(SCHEME_RE, "").split(/[/?#]/, 1)[0];
+  return authority.includes("@") || authority.includes("%") || NON_ASCII_RE.test(authority);
+}
+
 function isPublicWebUrl(value: string): boolean {
   let url: URL;
   try {
@@ -64,7 +83,7 @@ function isPublicWebUrl(value: string): boolean {
   }
   // The protocol refine owns non-http(s) URLs; don't pile a second message on.
   if (url.protocol !== "http:" && url.protocol !== "https:") return true;
-  if (url.username !== "" || url.password !== "") return false;
+  if (url.username !== "" || url.password !== "" || hasUnsafeAuthority(value)) return false;
   // Strip ALL trailing dots: `localhost..` resolves like `localhost`.
   const host = url.hostname.toLowerCase().replace(/\.+$/, "");
   if (host.startsWith("[") || IPV4_RE.test(host)) return false;

@@ -82,10 +82,10 @@ describe("curated edge cases: both implementations agree", () => {
     expect(htmlToTextJs(html)).toBe("");
   });
 
-  it("leaves an unrecognized numeric-looking entity form (&#xNNN; hex) undecoded on both sides", () => {
+  it("decodes hex numeric entities (&#xNNN;) identically on both sides", () => {
     const html = "value &#x2013; here";
     expect(htmlToTextJs(html)).toBe(htmlToTextTs(html));
-    expect(htmlToTextJs(html)).toBe("value &#x2013; here");
+    expect(htmlToTextJs(html)).toBe("value \u2013 here");
   });
 
   it("leaves a bare `<>` as literal text — the tag regex requires at least one character between the brackets, so `<>` is not a tag on either side", () => {

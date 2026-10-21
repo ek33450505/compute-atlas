@@ -33,7 +33,7 @@ import { createWriteStream, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
-import { runWithConcurrency } from "./net-guard";
+import { pinnedFetch, runWithConcurrency } from "./net-guard";
 import { distinctiveEntityTokens } from "./verify-source";
 import { isEntrypoint } from "../is-entrypoint";
 import { formatFatalError } from "../../lib/db-error";
@@ -634,7 +634,8 @@ async function main(): Promise<void> {
     triaged = await runTriage(records, {
       // Real deps are constructed only here, inside main() — module scope stays
       // import-safe (no network), the way census-sources.ts keeps it.
-      fetchImpl: fetch,
+      // DNS-pinned (net-guard.ts); omitting it would leave triage with no fetcher.
+      fetchImpl: pinnedFetch,
       liveNames,
       sourceKinds,
       concurrency: options.concurrency,

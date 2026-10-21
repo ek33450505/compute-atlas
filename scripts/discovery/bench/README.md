@@ -20,7 +20,27 @@ correct value and correct abstention **+1**, a miss **0**. Inventing a number fo
 a field the page never states is the failure that puts a fabricated fact behind a
 real citation.
 
-To refresh the page cache: `node scripts/discovery/bench/fetch-pages.mjs` (re-fetches from `targets.json`).
+To refresh the page cache: `npx tsx scripts/discovery/bench/fetch-pages.mjs` to re-fetch from `targets.json`. It needs tsx, not plain node, because it imports the guarded fetcher, `fetch-page-text.ts`.
+
+It fetches through the same guarded fetcher as the pipeline (`fetchGuardedBody`),
+which differs from the old global-`fetch` version deliberately: SSRF guard with
+connection pinning; redirects followed manually, re-validated per hop; a 32 MB
+byte cap (`MAX_BENCH_BYTES`, because the SEC XBRL filings exceed the fetcher's
+2 MB default); a content-type allowlist (`text/html`, `text/plain`,
+`application/xhtml+xml`; a response with no content-type header is now skipped);
+bodies decoded as UTF-8 regardless of the header charset, matching
+`fetchPageText`; and skip lines now read `<reason>[ status|code] skip  <id>`
+(`blocked`, `too_large`, `bad_content_type`, `http_error 404`,
+`network_error ENOTFOUND`, `redirect_limit`; a page too short to use logs
+`thin_page skip  <id> (<n>ch)`, and an empty extract logs
+`!!! empty_extract skip  <id> (raw=<n>) -- NOT CACHED`). Under `--refresh`, a
+target already in `pages.json` that ends with no page, for any reason, prints one
+`!!!` warning naming the last skip reason, and a cached id that is no longer in
+`targets.json` prints a `!!!` line saying the rebuild drops it. An unreadable or
+corrupt `pages.json` aborts the run before any fetch (only a missing file counts
+as an empty cache), and that also blocks `--refresh`, which used to overwrite such a
+file; recover by fixing the file or deleting it deliberately. A duplicated target id is
+fetched once.
 
 ⚠️ **Refreshing the corpus now changes the cached text, even for a page whose
 HTML hasn't changed.** `fetch-pages.mjs` extracts through `html.mjs`'s

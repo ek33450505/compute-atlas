@@ -19,9 +19,22 @@
 // and inflate recall. The real pipeline needs this same windowing for the same reason.
 import { readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { fetchGuardedBody } from "../fetch-page-text";
 import { htmlToText } from "./html.mjs";
 
-const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
+// Run under tsx (`npx tsx scripts/discovery/bench/fetch-pages.mjs`): the guarded
+// fetcher is TypeScript. Sources are approved facility URLs, some contributor-
+// submitted, so every fetch goes through its pinned connection, per-hop SSRF
+// re-validation, content-type allowlist and byte cap -- never the global fetch.
+const ATTEMPT_TIMEOUT_MS = 25000;
+// A response with NO content-type header is rejected (bad_content_type); the
+// old global-fetch path accepted it.
+const ALLOWED_CONTENT_TYPES = ["text/html", "text/plain", "application/xhtml+xml"];
+// The guarded fetcher's 2 MB default would silently drop the SEC inline-XBRL
+// filings in the corpus (808,982 and 332,732 chars AFTER tag stripping, so the
+// raw HTML is several times that), shrinking the corpus on --refresh. This is a
+// hand-run bench, not the nightly pipeline, so a generous cap is acceptable.
+const MAX_BENCH_BYTES = 32 * 1024 * 1024;
 const HEAD_LIMIT = 20000;   // short docs pass through untouched
 const RADIUS = 3000;        // chars kept either side of an entity mention
 const MAX_WINDOWS = 12;
@@ -92,14 +105,32 @@ export function windowText(text, name, city) {
 // Fetch a single target, trying each of its sources in turn. Returns the cache
 // entry on success, or null if nothing usable was found (mirrors the original
 // inline loop's semantics -- unchanged fetch/strip/window/fail-loud guards).
-async function fetchOne(t) {
+// `droppableIds` are ids whose cached page this run would LOSE if no source
+// yields an entry (see fetchOptions): when such a target ends with no page after
+// any source, one loud warning naming the last skip reason is printed after the
+// source loop.
+/**
+ * @param {{ id: string, name: string, city?: string, state?: string, facilityType?: string, status?: string, truth?: unknown, sources: string[] }} t
+ * @param {{ droppableIds?: Set<string> }} [options]
+ * @returns {Promise<{ facilityId: string, url: string, rawLength: number, text: string, [k: string]: unknown } | null>} the cache entry, or null when no source yielded a page
+ */
+export async function fetchOne(t, { droppableIds = new Set() } = {}) {
+  let tooLarge = false;
+  let lastSkip = "no usable source";
   for (const url of t.sources) {
-    if (/\.pdf(\?|$)/i.test(url)) continue;
+    if (/\.pdf(\?|$)/i.test(url)) { lastSkip = "pdf_extension"; continue; }
     try {
-      const r = await fetch(url, { headers: { "User-Agent": UA }, redirect: "follow", signal: AbortSignal.timeout(25000) });
-      if (!r.ok) { console.log(`  ${String(r.status).padStart(3)} skip  ${t.id}`); continue; }
-      if (/pdf/i.test(r.headers.get("content-type") || "")) { console.log(`  pdf skip ${t.id}`); continue; }
-      const html = await r.text();
+      const r = await fetchGuardedBody(url, { timeoutMs: ATTEMPT_TIMEOUT_MS }, { allowedContentTypes: ALLOWED_CONTENT_TYPES, maxBytes: MAX_BENCH_BYTES });
+      if (!r.ok) {
+        const detail = r.reason === "http_error" ? ` ${r.httpStatus}` : r.reason === "network_error" ? ` ${r.errorCode ?? ""}` : "";
+        console.log(`  ${r.reason}${detail} skip  ${t.id}`);
+        lastSkip = `${r.reason}${detail}`.trimEnd();
+        if (r.reason === "too_large") tooLarge = true;
+        continue;
+      }
+      // UTF-8 regardless of the header charset (r.text() used to honour it): the
+      // shipped fetchPageText decodes UTF-8, and bench parity with it is the point.
+      const html = r.bytes.toString("utf-8");
       // htmlToText is a hand-ported copy of fetch-page-text.ts's `htmlToText`
       // (scripts/discovery/bench/html.mjs) — script/style stripped WITH
       // contents, remaining tags stripped, then entities decoded (named +
@@ -111,32 +142,116 @@ async function fetchOne(t) {
       // and the shipped one leaves as text. Deliberate: the point is matching
       // fetch-page-text.ts exactly, not preserving the old bench behavior.
       const full = htmlToText(html);
-      if (full.length < 400) { console.log(`  thin skip ${t.id} (${full.length}ch)`); continue; }
+      if (full.length < 400) { console.log(`  thin_page skip  ${t.id} (${full.length}ch)`); lastSkip = "thin_page"; continue; }
       const w = windowText(full, t.name, t.city);
       // Fail loudly: an empty/near-empty extract must never reach the cache and
       // become a "miss" the model gets blamed for.
-      if (w.text.length < 400) { console.log(`  !!! EMPTY EXTRACT ${t.id} (raw=${full.length}) -- NOT CACHED`); continue; }
+      if (w.text.length < 400) { console.log(`  !!! empty_extract skip  ${t.id} (raw=${full.length}) -- NOT CACHED`); lastSkip = "empty_extract"; continue; }
       const entry = { facilityId: t.id, name: t.name, city: t.city, state: t.state,
         facilityType: t.facilityType, status: t.status, url,
         rawLength: full.length, extractMode: w.mode, windows: w.windows,
         text: w.text, truth: t.truth };
       console.log(`  ok  raw=${String(full.length).padStart(7)}  kept=${String(w.text.length).padStart(6)}  ${w.mode.padEnd(13)} ${t.id}`);
       return entry;
-    } catch (e) { console.log(`  ERR      ${t.id}  ${String(e.message).slice(0, 40)}`); }
+    } catch (e) { console.log(`  ERR      ${t.id}  ${String(e.message).slice(0, 40)}`); lastSkip = "error"; }
   }
   console.log(`  >>> NO PAGE for ${t.id}`);
+  if (droppableIds.has(t.id)) {
+    console.log(`  !!! ${t.id} is in pages.json and --refresh will DROP it from the corpus (last: ${lastSkip})${tooLarge ? "; too_large: raise MAX_BENCH_BYTES" : ""}`);
+  }
   return null;
 }
 
-function readExistingPages() {
-  try {
-    return JSON.parse(readFileSync(new URL("./pages.json", import.meta.url).pathname, "utf8"));
-  } catch {
-    return [];
-  }
+// Options for fetchOne. Only --refresh rebuilds from scratch, so only there is a
+// cached page lost when its refetch fails; additive mode never refetches cached
+// ids and --only keeps the old entry on a failed refetch.
+/**
+ * @param {{ facilityId: string }[]} cachedPages
+ * @param {{ refresh?: boolean }} [mode]
+ * @returns {{ droppableIds: Set<string> }}
+ */
+export function fetchOptions(cachedPages, { refresh = false } = {}) {
+  return { droppableIds: refresh ? new Set(cachedPages.map((e) => e.facilityId)) : new Set() };
 }
 
-// Symlink/space-safe entrypoint check — see scripts/is-entrypoint.ts (plain node cannot import .ts).
+// Which targets a run fetches: everything under --refresh, the named ids under
+// --only, otherwise only targets missing from the cache (additive).
+/**
+ * @template {{ id: string }} T
+ * @param {T[]} targets
+ * @param {{ facilityId: string }[]} cachedPages
+ * @param {{ refresh?: boolean, only?: Set<string> | null }} [mode] `refresh` wins over `only`
+ * @returns {T[]} the targets this run fetches
+ */
+export function selectTargets(targets, cachedPages, { refresh = false, only = null } = {}) {
+  // First occurrence of a duplicated id wins, so an id is fetched (and warned
+  // about) once and never cached twice.
+  const seen = new Set();
+  const unique = targets.filter((t) => !seen.has(t.id) && seen.add(t.id));
+  if (refresh) return unique;
+  if (only) return unique.filter((t) => only.has(t.id));
+  const cachedIds = new Set(cachedPages.map((e) => e.facilityId));
+  return unique.filter((t) => !cachedIds.has(t.id));
+}
+
+/**
+ * Every cached id --refresh drops, split by who reports it: `removed` ids are no
+ * longer in targets.json (main prints their warning), `failed` ids are still
+ * targets but yielded no entry (fetchOne printed their warning). `all` is the
+ * union, each id once.
+ * @param {{ facilityId: string }[]} cachedPages
+ * @param {{ id: string }[]} targets
+ * @param {{ facilityId: string }[]} fetched
+ * @returns {{ removed: string[], failed: string[], all: string[] }}
+ */
+export function refreshDrops(cachedPages, targets, fetched) {
+  const targetIds = new Set(targets.map((t) => t.id));
+  const fetchedIds = new Set(fetched.map((f) => f.facilityId));
+  const cached = [...new Set(cachedPages.map((e) => e.facilityId))].filter((id) => !fetchedIds.has(id));
+  const removed = cached.filter((id) => !targetIds.has(id));
+  const failed = cached.filter((id) => targetIds.has(id));
+  return { removed, failed, all: cached };
+}
+
+/**
+ * Ids that appear more than once in targets.json (selectTargets keeps the first).
+ * @param {{ id: string }[]} targets
+ * @returns {string[]} each duplicated id once
+ */
+export function duplicateIds(targets) {
+  const seen = new Set();
+  const dups = new Set();
+  for (const t of targets) (seen.has(t.id) ? dups : seen).add(t.id);
+  return [...dups];
+}
+
+const PAGES_PATH = new URL("./pages.json", import.meta.url).pathname;
+
+/**
+ * Fails closed: only a missing file means "empty cache". An unreadable or corrupt
+ * pages.json must stop the run, or it would be treated as empty and overwritten.
+ * @param {string} [path]
+ * @returns {{ facilityId: string }[]}
+ */
+export function readExistingPages(path = PAGES_PATH) {
+  let raw;
+  try {
+    raw = readFileSync(path, "utf8");
+  } catch (e) {
+    if (e && e.code === "ENOENT") return [];
+    throw new Error(`cannot read ${path}: ${e instanceof Error ? e.message : String(e)}`);
+  }
+  let pages;
+  try {
+    pages = JSON.parse(raw);
+  } catch (e) {
+    throw new Error(`${path} is not valid JSON (refusing to treat it as empty and overwrite it): ${e instanceof Error ? e.message : String(e)}`);
+  }
+  if (!Array.isArray(pages)) throw new Error(`${path} is valid JSON but not an array (refusing to treat it as empty and overwrite it)`);
+  return pages;
+}
+
+// Symlink/space-safe entrypoint check — see scripts/is-entrypoint.ts (this script runs under tsx).
 function isEntrypoint() {
   try {
     return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
@@ -174,20 +289,29 @@ if (isEntrypoint()) {
   // are, which is what truth.json is pinned to.)
   // --refresh opts back into the old destructive whole-corpus rebuild, and
   // --only=<id,id> repairs specific stale entries without touching the rest.
-  const existing = REFRESH ? [] : readExistingPages();
+  const cachedPages = readExistingPages();
+  const existing = REFRESH ? [] : cachedPages;
   const existingIds = new Set(existing.map((e) => e.facilityId));
 
-  let toFetch;
-  if (REFRESH) toFetch = targets;
-  else if (ONLY) toFetch = targets.filter((t) => ONLY.has(t.id));
-  else toFetch = targets.filter((t) => !existingIds.has(t.id));
+  for (const id of duplicateIds(targets)) {
+    console.log(`  !!! duplicate target id ${id} in targets.json — only the first entry is fetched`);
+  }
+  const toFetch = selectTargets(targets, cachedPages, { refresh: REFRESH, only: ONLY });
 
+  const opts = fetchOptions(cachedPages, { refresh: REFRESH });
   const fetched = [];
   for (const t of toFetch) {
-    const entry = await fetchOne(t);
+    const entry = await fetchOne(t, opts);
     if (entry) fetched.push(entry);
   }
   const fetchedById = new Map(fetched.map((f) => [f.facilityId, f]));
+  if (REFRESH) {
+    const drops = refreshDrops(cachedPages, targets, fetched);
+    for (const id of drops.removed) {
+      console.log(`  !!! ${id} is in pages.json but not in targets.json; --refresh will DROP it`);
+    }
+    if (drops.all.length) console.log(`  !!! --refresh will drop ${drops.all.length} cached page(s) (each listed above)`);
+  }
 
   let finalOut;
   if (REFRESH) {

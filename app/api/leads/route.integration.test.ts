@@ -22,6 +22,15 @@ vi.mock("node:dns/promises", () => ({
   }),
 }));
 
+// triageUrl's default fetch is now the DNS-pinned undici fetch, which bypasses
+// the `vi.stubGlobal("fetch", ...)` stubs below and would hit the real network.
+// Route it back to whatever global fetch the test installed; the pinned
+// lookup itself is covered by scripts/discovery/net-guard-pinning.test.ts.
+vi.mock("@/scripts/discovery/net-guard", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/scripts/discovery/net-guard")>()),
+  pinnedFetch: ((...args: Parameters<typeof fetch>) => globalThis.fetch(...args)) as typeof fetch,
+}));
+
 // `after()` throws "called outside a request scope" unless invoked inside a
 // real Next.js request lifecycle, which this suite (calling POST directly)
 // never sets up. Mocked to run the task immediately and capture its promise

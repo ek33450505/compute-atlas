@@ -16,6 +16,7 @@
  * distinguish a title from surrounding body text once flattened.
  */
 import { fetchPageText, type FetchPageTextDeps, type FetchPageTextResult } from "@/scripts/discovery/fetch-page-text";
+import { decodeEntities } from "@/lib/html-entities";
 import { dropTrailingHighSurrogate } from "@/lib/intake-fields";
 import type { LeadTriage } from "@/lib/leads";
 
@@ -39,32 +40,6 @@ const MAX_ERROR_LENGTH = 300;
 
 const TITLE_TAG_RE = /<title[^>]*>([\s\S]*?)<\/title>/i;
 const WHITESPACE_RE = /\s+/g;
-
-// Mirrors fetch-page-text.ts's own NAMED_ENTITY_RE/NAMED_ENTITIES — kept as a
-// small standalone copy rather than exported from that file, since a title
-// decoder is a lead-triage concern, not part of the shared SSRF fetcher.
-const NAMED_ENTITY_RE = /&amp;|&lt;|&gt;|&quot;|&#39;|&nbsp;/g;
-const NAMED_ENTITIES: Record<string, string> = {
-  "&amp;": "&",
-  "&lt;": "<",
-  "&gt;": ">",
-  "&quot;": '"',
-  "&#39;": "'",
-  "&nbsp;": " ",
-};
-
-function decodeEntities(input: string): string {
-  const named = input.replace(NAMED_ENTITY_RE, (match) => NAMED_ENTITIES[match]);
-  return named.replace(/&#(\d+);/g, (match, code: string) => {
-    const codepoint = Number(code);
-    if (!Number.isFinite(codepoint)) return match;
-    // NUL and lone surrogates are rejected by jsonb (the title lands in
-    // leads.triage), and > 0x10FFFF makes fromCodePoint throw a RangeError.
-    const unstorable =
-      codepoint === 0 || (codepoint >= 0xd800 && codepoint <= 0xdfff) || codepoint > 0x10ffff;
-    return unstorable ? "\ufffd" : String.fromCodePoint(codepoint);
-  });
-}
 
 /** Extracts, entity-decodes, and whitespace-collapses a page's `<title>`,
  * truncated to 300 chars. Returns undefined when there's no rawHtml (e.g. a
@@ -100,7 +75,8 @@ function describeFailure(result: Extract<FetchPageTextResult, { ok: false }>): s
 }
 
 export interface TriageUrlDeps {
-  /** Defaults to the global `fetch`. Tests inject a fake — never hit the real network. */
+  /** Defaults to the DNS-pinned fetch (net-guard.ts). Tests inject a fake —
+   * never hit the real network. */
   fetchImpl?: typeof fetch;
   /** Defaults to 5000ms — see TRIAGE_TIMEOUT_MS. */
   timeoutMs?: number;
@@ -123,7 +99,7 @@ export async function triageUrl(url: string, deps: TriageUrlDeps = {}): Promise<
   const fetchedAt = new Date().toISOString();
   try {
     const result = await fetchPageText(url, {
-      fetchImpl: deps.fetchImpl ?? fetch,
+      fetchImpl: deps.fetchImpl,
       timeoutMs: deps.timeoutMs ?? TRIAGE_TIMEOUT_MS,
       totalTimeoutMs: deps.totalTimeoutMs ?? TRIAGE_TOTAL_TIMEOUT_MS,
       resolveDeps: deps.resolveDeps,

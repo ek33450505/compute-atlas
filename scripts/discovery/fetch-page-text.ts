@@ -19,7 +19,17 @@
  * entity decoding and whitespace collapsing here directly determine whether
  * a genuine verbatim quote validates.
  */
-import { BROWSER_HEADERS, isBlockedHost, isHttpUrl, resolvesToBlockedAddress, type ResolveDeps } from "./net-guard";
+import {
+  BROWSER_HEADERS,
+  createPinnedFetch,
+  isBlockedHost,
+  isHttpUrl,
+  isSsrfBlockedError,
+  pinnedFetch,
+  resolvesToBlockedAddress,
+  type ResolveDeps,
+} from "./net-guard";
+import { decodeEntities } from "../../lib/html-entities";
 
 /** Hard cap on hops followed before giving up — bounds both latency and the
  * SSRF re-validation loop below. */
@@ -106,7 +116,9 @@ function describeNetworkError(err: unknown): { errorCode?: string; errorMessage?
 }
 
 export interface FetchPageTextDeps {
-  fetchImpl: typeof fetch;
+  /** Defaults to a DNS-pinned fetch (net-guard.ts `createPinnedFetch`, built
+   * over `resolveDeps` when given), so the shortest call is the safe one. */
+  fetchImpl?: typeof fetch;
   /** Per-attempt timeout in ms. Defaults to 10s. */
   timeoutMs?: number;
   /**
@@ -125,8 +137,8 @@ export interface FetchPageTextDeps {
    */
   totalTimeoutMs?: number;
   /** Injectable DNS resolvers, threaded through to `resolvesToBlockedAddress`
-   * so tests never touch real DNS. Production callers omit this and get the
-   * real `node:dns/promises` resolvers. */
+   * and the default pinned fetch so tests never touch real DNS. Production
+   * callers omit this and get the real `node:dns/promises` resolvers. */
   resolveDeps?: ResolveDeps;
 }
 
@@ -134,7 +146,10 @@ export interface FetchPageTextDeps {
 
 /** Validates a URL is safe to connect to: http(s) scheme, not a blocked
  * literal/hostname, and does not resolve (via DNS) to a blocked address.
- * Called before EVERY connection attempt, including each redirect hop. */
+ * Called before EVERY connection attempt, including each redirect hop. A
+ * classification fast path and defence in depth: the pinned default fetch
+ * enforces at connect time (rebinding); the synchronous isBlockedHost check
+ * stays load-bearing for IP-literal URLs, which skip the lookup. */
 async function isUnsafeToConnect(url: string, resolveDeps?: ResolveDeps): Promise<boolean> {
   if (!isHttpUrl(url)) return true;
 
@@ -207,32 +222,6 @@ const SCRIPT_OR_STYLE_RE = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\b[^>]*>/gi;
 const TAG_RE = /<[^>]+>/g;
 const WHITESPACE_RE = /\s+/g;
 
-/** The common named entities this dependency-free extractor decodes. Decimal
- * numeric entities (`&#NNN;`) are handled separately below; hex numeric
- * entities (`&#xNNN;`) are out of scope for v1. */
-const NAMED_ENTITY_RE = /&amp;|&lt;|&gt;|&quot;|&#39;|&nbsp;/g;
-const NAMED_ENTITIES: Record<string, string> = {
-  "&amp;": "&",
-  "&lt;": "<",
-  "&gt;": ">",
-  "&quot;": '"',
-  "&#39;": "'",
-  "&nbsp;": " ",
-};
-
-function decodeEntities(input: string): string {
-  const named = input.replace(NAMED_ENTITY_RE, (match) => NAMED_ENTITIES[match]);
-  return named.replace(/&#(\d+);/g, (match, code: string) => {
-    const codepoint = Number(code);
-    if (!Number.isFinite(codepoint)) return match;
-    // > 0x10FFFF makes fromCodePoint throw a RangeError; NUL and lone
-    // surrogates are unstorable downstream.
-    const unstorable =
-      codepoint === 0 || (codepoint >= 0xd800 && codepoint <= 0xdfff) || codepoint > 0x10ffff;
-    return unstorable ? "\ufffd" : String.fromCodePoint(codepoint);
-  });
-}
-
 /**
  * Strips HTML down to plain text: drops `<script>`/`<style>` elements
  * (including their contents — never leak JS/CSS source into the text a
@@ -292,7 +281,8 @@ export async function fetchGuardedBody(
   deps: FetchPageTextDeps,
   options: GuardedBodyOptions,
 ): Promise<GuardedBodyResult> {
-  const { fetchImpl, resolveDeps } = deps;
+  const { resolveDeps } = deps;
+  const fetchImpl = deps.fetchImpl ?? (resolveDeps ? createPinnedFetch(resolveDeps) : pinnedFetch);
   const { allowedContentTypes } = options;
   const maxBytes = options.maxBytes ?? MAX_RESPONSE_BYTES;
   const timeoutMs = deps.timeoutMs ?? DEFAULT_TIMEOUT_MS;
@@ -350,6 +340,7 @@ export async function fetchGuardedBody(
           headers: BROWSER_HEADERS,
         });
       } catch (err) {
+        if (isSsrfBlockedError(err)) return { ok: false, reason: "blocked" };
         return { ok: false, reason: "network_error", ...describeNetworkError(err) };
       }
 

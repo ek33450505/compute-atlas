@@ -337,9 +337,9 @@ describe("ContributeFacilityForm — notify email (C1b)", () => {
     expect(screen.getByLabelText(/your email/i)).toBeInTheDocument();
   });
 
-  it("associates the notify-email field with its 'used once, then deleted' description", () => {
+  it("associates the notify-email field with its 'email you once when this is reviewed' description", () => {
     render(<ContributeFacilityForm notifyEnabled />);
-    expect(screen.getByLabelText(/your email/i)).toHaveAccessibleDescription(/used once/i);
+    expect(screen.getByLabelText(/your email/i)).toHaveAccessibleDescription(/email you once when this is reviewed/i);
   });
 
   it("includes a trimmed notifyEmail in the submitted payload when the flag is on and a value is entered", async () => {

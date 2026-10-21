@@ -54,6 +54,7 @@
  */
 import type { CallOllamaOptions, CallOllamaResult } from "./ollama-client";
 import type { FetchPageTextResult } from "./fetch-page-text";
+import { pinnedFetch } from "./net-guard";
 import { findWaybackSnapshotUrl, WAYBACK_MAX_RESPONSE_BYTES } from "./wayback";
 import { isRestrictedSourceUrl, restrictedSourceReason } from "../../lib/restricted-sources";
 
@@ -134,9 +135,8 @@ export interface VerifySourceDeps {
    * Fetches and extracts plain text from a URL — either the candidate source
    * URL itself, or (on the Wayback fallback path) an archived snapshot URL.
    * Production callers pass a closure around the real `fetchPageText`
-   * (fetch-page-text.ts) with a real `fetchImpl`/`resolveDeps` already bound
-   * in, e.g. `(url) => fetchPageText(url, { fetchImpl: fetch })`. Tests pass
-   * a mock keyed on URL.
+   * (fetch-page-text.ts) which defaults to the DNS-pinned fetch, e.g.
+   * `(url) => fetchPageText(url, {})`. Tests pass a mock keyed on URL.
    */
   fetchPageTextImpl: (url: string) => Promise<FetchPageTextResult>;
   /**
@@ -153,8 +153,8 @@ export interface VerifySourceDeps {
    * reject that endpoint's JSON response outright, and archive.org is a
    * fixed, trusted host rather than the untrusted candidate URL itself, so
    * it doesn't need `fetchPageTextImpl`'s SSRF/size guarding either.
-   * Defaults to the global `fetch` in production; tests should always inject
-   * their own mock rather than relying on this default.
+   * Defaults to the DNS-pinned fetch (net-guard.ts) in production; tests
+   * should always inject their own mock rather than relying on this default.
    */
   fetchImpl?: typeof fetch;
 }
@@ -631,7 +631,7 @@ export async function verifySource(url: string, claim: VerifyClaim, deps: Verify
   // (this project has hit datacenters.com/lncompute.com bot-walls) from
   // one that never existed — try the Wayback Machine before giving up.
   const originalFailure = describeFetchFailure(fetchResult);
-  const fetchImpl = deps.fetchImpl ?? fetch;
+  const fetchImpl = deps.fetchImpl ?? pinnedFetch;
   const snapshotUrl = await findWaybackSnapshotUrl(url, fetchImpl);
 
   if (!snapshotUrl) {
