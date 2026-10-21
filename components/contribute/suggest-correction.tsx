@@ -81,6 +81,9 @@ const SOURCE_MAX = 2000;
 const LEAD_PREFIX_MAX = 100;
 const LEAD_TOPIC_MAX = 50;
 
+const INLINE_LINK_CLASS =
+  "underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+
 const TEXTAREA_CLASS =
   "rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20";
 
@@ -215,7 +218,7 @@ export function validateCorrection(state: CorrectionFormState): FieldIssues {
     const text = state.value.trim();
     if (text === "") issues["value"] = "Tell us what to look into.";
     // A carried-over Note can exceed the textarea's maxLength, which only stops typing.
-    else if (text.length > OTHER_TEXT_MAX) issues["value"] = "Keep it under 400 characters.";
+    else if (text.length > OTHER_TEXT_MAX) issues["value"] = `Keep it to ${OTHER_TEXT_MAX} characters or fewer.`;
   } else if (def?.valueKind === "number") {
     const parsed = parseCorrectionNumber(state.value, state.field);
     if (!parsed.ok) issues["value"] = parsed.error;
@@ -574,7 +577,7 @@ export function SuggestCorrection({
                     : "Most submissions are reviewed within about a week. If it checks out, it will appear on the map and on the "}
                   <Link
                     href="/activity"
-                    className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                    className={INLINE_LINK_CLASS}
                   >
                     public activity feed
                   </Link>
@@ -784,6 +787,16 @@ export function SuggestCorrection({
                   />
                   <p id={sourceHintId} className="text-xs text-muted-foreground">
                     Where did you see it? A news story, permit, filing, or company page.
+                  </p>
+                  {/* Every staged item stays source-cited, so no link means the contact
+                      form instead; /contact reads these two params on mount. */}
+                  <p className="text-xs text-muted-foreground">
+                    <Link
+                      href={`/contact?topic=correction&about=${encodeURIComponent(facilityName)}`}
+                      className={INLINE_LINK_CLASS}
+                    >
+                      No link? Tell us through the contact form
+                    </Link>
                   </p>
                   <FieldError id={sourceErrorId} message={errors["sourceUrl"]} />
                 </div>

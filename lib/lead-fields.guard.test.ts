@@ -89,3 +89,80 @@ describe("client bundle guard: lib/contribute-fields.ts must stay a server-free 
     expect(source).not.toMatch(DISALLOWED_IMPORT);
   });
 });
+
+// lib/correction-input.ts is imported by components/contribute/suggest-
+// correction.tsx ("use client"), and it promises to be a pure leaf: its only
+// import is `import type`, which is erased at build time. A RUNTIME import, of
+// anything, would put that module (and whatever it pulls in) in the client
+// bundle, so this is stricter than DISALLOWED_IMPORT: no value import at all.
+// Matches `import x from`, `import { x } from`, `import * as x`, a bare
+// `import "x"` (indented, or with no spaces: `import{z}from"zod"`), a dynamic
+// `import(`, `require(`, and a re-export (`export { x } from`, `export * from`,
+// `export * as n from`, with or without spaces, indented or not).
+// `import type` (any spacing) is erased and allowed. A type re-export
+// (`export type { X } from "y"`) is erased too, but is flagged DELIBERATELY:
+// the leaf has no reason to re-export anything, and a looser rule is harder to
+// trust than a strict one. Applied to the whole file with the `m` flag, so `^`
+// is any line start.
+const RUNTIME_IMPORT =
+  /^\s*import\b(?!\s+type\b)|\bimport\s*\(|\brequire\s*\(|^\s*export\s*(?:type\b\s*)?(?:\*(?:\s*as\s*\w+)?|\{[^}]*\})\s*from\b/m;
+
+describe("RUNTIME_IMPORT pattern sanity", () => {
+  it("matches each line-leading way of pulling in a runtime dependency", () => {
+    expect('import { z } from "zod";').toMatch(RUNTIME_IMPORT);
+    expect('import z from "zod";').toMatch(RUNTIME_IMPORT);
+    expect('import * as z from "zod";').toMatch(RUNTIME_IMPORT);
+    expect('import "side-effect";').toMatch(RUNTIME_IMPORT);
+    expect('const m = await import("zod");').toMatch(RUNTIME_IMPORT);
+    expect('const m = require("zod");').toMatch(RUNTIME_IMPORT);
+    expect('export { x } from "./x";').toMatch(RUNTIME_IMPORT);
+    expect('// header\nimport { z } from "zod";').toMatch(RUNTIME_IMPORT);
+  });
+
+  it("matches the shapes a looser pattern misses: no spaces, indented, and star re-exports", () => {
+    expect('import{z}from"zod";').toMatch(RUNTIME_IMPORT);
+    expect('  import { z } from "zod";').toMatch(RUNTIME_IMPORT);
+    expect('\timport z from "zod";').toMatch(RUNTIME_IMPORT);
+    expect('export { x } from "y";').toMatch(RUNTIME_IMPORT);
+    expect('export * from "y";').toMatch(RUNTIME_IMPORT);
+    expect('export * as ns from "y";').toMatch(RUNTIME_IMPORT);
+    expect('export {\n  a,\n  b,\n} from "y";').toMatch(RUNTIME_IMPORT);
+  });
+
+  it("matches re-exports with no spaces, an indent, or a quote straight after `from`", () => {
+    expect('export{x} from "y";').toMatch(RUNTIME_IMPORT);
+    expect('export {x}from"y";').toMatch(RUNTIME_IMPORT);
+    expect('export * from"y";').toMatch(RUNTIME_IMPORT);
+    expect('export*from"y";').toMatch(RUNTIME_IMPORT);
+    expect('  export { x } from "y";').toMatch(RUNTIME_IMPORT);
+    expect('\texport * as ns from"y";').toMatch(RUNTIME_IMPORT);
+  });
+
+  it("flags a type-only re-export too, on purpose", () => {
+    expect('export type { X } from "y";').toMatch(RUNTIME_IMPORT);
+    expect('export type {X}from"y";').toMatch(RUNTIME_IMPORT);
+  });
+
+  it("does not match a type-only import, single- or multi-line, or comments that mention import", () => {
+    expect('import type { CorrectableKey } from "@/lib/contribute-fields";').not.toMatch(RUNTIME_IMPORT);
+    expect('import type {\n  A,\n  B,\n} from "@/lib/x";').not.toMatch(RUNTIME_IMPORT);
+    expect('import  type { A } from "@/lib/x";').not.toMatch(RUNTIME_IMPORT); // two spaces
+    expect('  import type { A } from "@/lib/x";').not.toMatch(RUNTIME_IMPORT); // indented
+    expect("// a type-only import and pure string handling").not.toMatch(RUNTIME_IMPORT);
+    expect("export type ParsedNumber = { ok: true };").not.toMatch(RUNTIME_IMPORT);
+    expect("export function fromage() {}").not.toMatch(RUNTIME_IMPORT);
+    expect("export const x = { from: 1 };").not.toMatch(RUNTIME_IMPORT);
+  });
+});
+
+describe("client bundle guard: lib/correction-input.ts must stay a dependency-free leaf", () => {
+  it("has no runtime import of any kind (only `import type`)", () => {
+    const source = readSource("lib/correction-input.ts");
+    expect(source).not.toMatch(RUNTIME_IMPORT);
+  });
+
+  it("does not import any server-only module", () => {
+    const source = readSource("lib/correction-input.ts");
+    expect(source).not.toMatch(DISALLOWED_IMPORT);
+  });
+});

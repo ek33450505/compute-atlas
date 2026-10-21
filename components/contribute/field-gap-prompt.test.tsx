@@ -1,9 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { FieldGapPrompt, SectionGapPrompt } from "./field-gap-prompt";
 import { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("FieldGapPrompt — correctable field", () => {
   it("renders an inline correction trigger, not a link", () => {
@@ -49,30 +53,73 @@ describe("FieldGapPrompt — correctable field", () => {
 });
 
 describe("FieldGapPrompt — non-correctable field", () => {
-  it("renders a /contribute link instead of a correction trigger", () => {
-    render(
-      <FieldGapPrompt
-        field="stakeholders"
-        facilityId="facility-1"
-        facilityName="Test DC"
-        label="the stakeholders"
-      />
-    );
+  const props = {
+    field: "stakeholders",
+    facilityId: "facility-1",
+    facilityName: "Test DC",
+    label: "the stakeholders",
+  } as const;
 
-    const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/contribute");
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  it("renders a tip trigger button with the same words as before, not a link to /contribute", () => {
+    render(<FieldGapPrompt {...props} />);
+
+    expect(
+      screen.getByRole("button", {
+        name: "Know a source for the stakeholders on Test DC? Send us a link.",
+      })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+
+  it("opens the dialog on 'Something else', titled for adding, with the label as the topic", async () => {
+    const user = userEvent.setup();
+    render(<FieldGapPrompt {...props} />);
+
+    await user.click(screen.getByRole("button", { name: /know a source for the stakeholders/i }));
+
+    expect(screen.getByRole("dialog", { name: "Add missing information" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
+      "Something else"
+    );
+    expect(screen.getByLabelText(/what should we know/i)).toHaveAttribute(
+      "placeholder",
+      "e.g. the stakeholders, and where you saw it"
+    );
+    expect(screen.queryByLabelText(/new value/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/compute atlas is meant to be corrected/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it("puts the facility and topic in the tip it sends, to the leads intake", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    vi.stubGlobal("fetch", fetchSpy);
+    const user = userEvent.setup();
+    render(<FieldGapPrompt {...props} />);
+
+    await user.click(screen.getByRole("button", { name: /know a source for the stakeholders/i }));
+    await user.type(screen.getByLabelText(/what should we know/i), "named in the filing");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/filing");
+    await user.click(screen.getByRole("button", { name: /send for review/i }));
+
+    await screen.findByText(/we.ll look into it/i);
+    const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("/api/leads");
+    expect(JSON.parse(init.body as string).note).toBe(
+      "Test DC \u2014 the stakeholders: named in the filing"
+    );
+  });
+
+  // A <button> centres wrapped text; the inline link this replaced was
+  // left-aligned, so a long label wrapping under its heading must stay left.
+  it("left-aligns the tip trigger, since a long label wraps", () => {
+    render(<FieldGapPrompt {...props} />);
+
+    expect(screen.getByRole("button")).toHaveClass("text-left");
   });
 
   it("mentions the facility name and label without promising an automatic edit", () => {
-    render(
-      <FieldGapPrompt
-        field="stakeholders"
-        facilityId="facility-1"
-        facilityName="Test DC"
-        label="the stakeholders"
-      />
-    );
+    render(<FieldGapPrompt {...props} />);
 
     expect(screen.getByText(/test dc/i)).toBeInTheDocument();
     expect(screen.getByText(/send us a link/i)).toBeInTheDocument();
@@ -101,7 +148,7 @@ describe("FieldGapPrompt — eligibility tracks CORRECTABLE_KEYS", () => {
     }
   });
 
-  it("renders the lead-form link for a field that is not in CORRECTABLE_KEYS", () => {
+  it("renders the tip trigger for a field that is not in CORRECTABLE_KEYS", () => {
     render(
       <FieldGapPrompt
         field="waterCoolingType"
@@ -110,7 +157,10 @@ describe("FieldGapPrompt — eligibility tracks CORRECTABLE_KEYS", () => {
         label="the cooling type"
       />
     );
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/contribute");
+    expect(
+      screen.getByRole("button", { name: /know a source for the cooling type/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 });
 
@@ -132,6 +182,7 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
     );
 
     const button = screen.getByRole("button", { name: /know permanent jobs\?/i });
+    expect(button).toHaveClass("text-left"); // a wrapped <button> label stays left-aligned
     expect(button).toHaveClass(
       "focus-visible:outline-none",
       "focus-visible:ring-2",
@@ -140,7 +191,7 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
     );
   });
 
-  it("renders the lead-form link with focus-visible ring classes", () => {
+  it("renders the tip trigger with focus-visible ring classes", () => {
     render(
       <FieldGapPrompt
         field="stakeholders"
@@ -150,7 +201,7 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
       />
     );
 
-    const link = screen.getByRole("link");
+    const link = screen.getByRole("button");
     expect(link).toHaveClass(
       "focus-visible:outline-none",
       "focus-visible:ring-2",
@@ -162,25 +213,59 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
 
 // ---------------------------------------------------------------------------
 // SectionGapPrompt — whole-group/whole-section gaps. Unlike FieldGapPrompt,
-// there is no eligibility check: it always renders the lead-path link, even
-// when `label` echoes a key that IS in CORRECTABLE_KEYS, because a whole
-// missing section has no single field to target a correction at.
+// there is no eligibility check: it always renders the tip trigger, even when
+// `label` echoes a key that IS in CORRECTABLE_KEYS, because a whole missing
+// section has no single field to target a correction at.
 // ---------------------------------------------------------------------------
 describe("SectionGapPrompt", () => {
-  it("renders a /contribute link mentioning the facility name and label", () => {
-    render(<SectionGapPrompt facilityName="Test DC" label="economic impact data" />);
+  const props = { facilityId: "facility-1", facilityName: "Test DC", label: "economic impact data" };
 
-    const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/contribute");
-    expect(link).toHaveTextContent(/economic impact data/i);
-    expect(link).toHaveTextContent(/test dc/i);
+  it("renders a tip trigger button mentioning the facility name and label, not a link", () => {
+    render(<SectionGapPrompt {...props} />);
+
+    const trigger = screen.getByRole("button");
+    expect(trigger).toHaveTextContent("Know a source for economic impact data on Test DC? Send us a link.");
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 
-  it("always renders a link, never a correction dialog trigger, even for a CORRECTABLE_KEYS-shaped label", () => {
-    render(<SectionGapPrompt facilityName="Test DC" label="jobs" />);
+  it("is screen-only and carries the quiet section styling", () => {
+    render(<SectionGapPrompt {...props} />);
 
-    expect(screen.getByRole("link")).toBeInTheDocument();
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.getByRole("button")).toHaveClass("print:hidden", "text-xs", "italic");
+  });
+
+  it("left-aligns the tip trigger, since a long label wraps", () => {
+    render(<SectionGapPrompt {...props} />);
+
+    expect(screen.getByRole("button")).toHaveClass("text-left");
+  });
+
+  it("opens the dialog on 'Something else' with the label as the topic", async () => {
+    const user = userEvent.setup();
+    render(<SectionGapPrompt {...props} />);
+
+    await user.click(screen.getByRole("button"));
+
+    expect(screen.getByRole("dialog", { name: "Add missing information" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
+      "Something else"
+    );
+    expect(screen.getByLabelText(/what should we know/i)).toHaveAttribute(
+      "placeholder",
+      "e.g. economic impact data, and where you saw it"
+    );
+  });
+
+  it("opens on 'Something else' even for a CORRECTABLE_KEYS-shaped label, never on that field", async () => {
+    const user = userEvent.setup();
+    render(<SectionGapPrompt {...props} label="jobs" />);
+
+    await user.click(screen.getByRole("button"));
+
+    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
+      "Something else"
+    );
+    expect(screen.queryByLabelText(/new value/i)).not.toBeInTheDocument();
   });
 });
 
@@ -222,7 +307,7 @@ describe("print-only 'Not recorded' marker", () => {
     expect(notRecordedNode()).toBeInTheDocument();
   });
 
-  it("is in the DOM alongside the lead-form link for a non-correctable field", () => {
+  it("is in the DOM alongside the tip trigger for a non-correctable field", () => {
     render(
       <FieldGapPrompt
         field="stakeholders"
@@ -232,7 +317,9 @@ describe("print-only 'Not recorded' marker", () => {
       />
     );
 
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/contribute");
+    expect(
+      screen.getByRole("button", { name: /know a source for the stakeholders/i })
+    ).toBeInTheDocument();
     expect(notRecordedNode()).toBeInTheDocument();
   });
 
@@ -240,9 +327,9 @@ describe("print-only 'Not recorded' marker", () => {
   // printed as an orphan sentence. The consolidated summary line replaced it;
   // this pins that SectionGapPrompt is screen-only and prints nothing.
   it("is absent from a section-level gap, which prints via the consolidated summary", () => {
-    render(<SectionGapPrompt facilityName="Test DC" label="economic impact data" />);
+    render(<SectionGapPrompt facilityId="f" facilityName="Test DC" label="economic impact data" />);
 
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/contribute");
+    expect(screen.getByRole("button")).toHaveClass("print:hidden");
     expect(screen.queryByText(/^Not recorded/)).not.toBeInTheDocument();
   });
 
@@ -319,8 +406,8 @@ describe("print-only 'Not recorded' marker", () => {
 //
 // The screen half is the reason it is not simply switched to SectionGapPrompt:
 // `subsidies` IS in CORRECTABLE_KEYS, so this call site renders a real
-// correction dialog trigger, and SectionGapPrompt only ever renders the
-// lead-form link. The flag suppresses the PRINT marker and must leave the
+// correction dialog trigger, and SectionGapPrompt only ever renders the tip
+// trigger (which opens that dialog on "Something else"). The flag suppresses the PRINT marker and must leave the
 // screen affordance exactly as it was — that pair is what these tests pin.
 //
 // Per the scope warning above, this is DOM presence only. That the printed
@@ -370,7 +457,8 @@ describe("FieldGapPrompt — coveredByPrintSummary", () => {
     );
 
     // The whole point of keeping FieldGapPrompt here: a real dialog trigger,
-    // not the lead-form link SectionGapPrompt would have downgraded it to.
+    // not the tip trigger (which opens the dialog on "Something else") that
+    // SectionGapPrompt would have downgraded it to.
     expect(
       screen.getByRole("button", { name: /know a public subsidy\?/i })
     ).toBeInTheDocument();

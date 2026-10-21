@@ -65,7 +65,9 @@ function StakeholderRow({
 // --- Main export ---
 export function StakeholdersSection({ facility }: { facility: Facility }) {
   if (!hasStakeholders(facility)) {
-    return <SectionGapPrompt facilityName={facility.name} label="a documented stakeholder" />;
+    return (
+      <SectionGapPrompt facilityId={facility.id} facilityName={facility.name} label="a documented stakeholder" />
+    );
   }
 
   const stakeholders = facility.stakeholders ?? [];

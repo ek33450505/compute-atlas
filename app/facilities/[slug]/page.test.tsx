@@ -269,14 +269,15 @@ describe("generateMetadata", () => {
 // Masthead gap prompts (Theme B / B1a) — capacity and powered-by are
 // CORRECTABLE_KEYS members so a missing value renders FieldGapPrompt's
 // inline "Know ...?" correction trigger; announcedDate is not (yet)
-// correctable, so a missing value renders the lighter /contribute lead
-// link instead. Same em-dash today, different affordance once wired — that
-// contrast is the thing under test, not FieldGapPrompt's own branching
-// (already covered by field-gap-prompt.test.tsx).
+// correctable, so a missing value renders the "Know a source for …" tip
+// trigger instead (it opens the same dialog, on "Something else"). Same
+// em-dash today, different affordance once wired — that contrast is the thing
+// under test, not FieldGapPrompt's own branching (already covered by
+// field-gap-prompt.test.tsx).
 // ---------------------------------------------------------------------------
 
 describe("FacilityPage masthead — capacity / powered-by / announced gap prompts", () => {
-  it("renders the correction trigger for missing capacity and powered-by, and the lead-form link for missing announced date", async () => {
+  it("renders the correction trigger for missing capacity and powered-by, and the tip trigger for missing announced date", async () => {
     const facility = makeFacility({
       name: "Gapville Data Center",
       // capacityMw, poweredBy, announcedDate all deliberately omitted.
@@ -295,10 +296,13 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
       screen.getByRole("button", { name: /know who powers this facility\?/i })
     ).toBeInTheDocument();
 
-    const announcedLink = screen.getByRole("link", {
-      name: /know a source for the announcement date/i,
-    });
-    expect(announcedLink).toHaveAttribute("href", "/contribute");
+    // A button that opens the dialog on "Something else", not a link away.
+    // Found by its text, not by role, so the tag check below sees whatever was
+    // actually rendered; the closest("a") check catches a button wrapped in a
+    // link, which a getByRole("button") query would still find.
+    const announcedPrompt = screen.getByText(/Know a source for the announcement date/);
+    expect(announcedPrompt.tagName).toBe("BUTTON");
+    expect(announcedPrompt.closest("a")).toBeNull();
 
     // No em-dash placeholders left over for the three wired fields.
     expect(screen.queryByText("—")).not.toBeInTheDocument();
@@ -328,9 +332,7 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
     expect(
       screen.queryByRole("button", { name: /know who powers this facility\?/i })
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: /know a source for the announcement date/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Know a source for the announcement date/)).not.toBeInTheDocument();
   });
 });
 

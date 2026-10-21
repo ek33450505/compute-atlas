@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Flag } from "lucide-react";
 
+import { applyPrefill } from "@/components/contact/contact-form";
 import { CORRECTABLE_FIELD_META, type CorrectableKey } from "@/lib/contribute-fields";
 
 import {
@@ -1714,7 +1715,7 @@ describe("validateCorrection — lengths", () => {
 
   it("rejects a tip over 400 characters instead of cutting it", () => {
     expect(validateCorrection({ ...other, value: "x".repeat(401) })).toEqual({
-      value: "Keep it under 400 characters.",
+      value: "Keep it to 400 characters or fewer.",
     });
   });
 
@@ -1770,7 +1771,7 @@ describe("SuggestCorrection — lengths in the dialog", () => {
     await user.click(screen.getByRole("button", { name: /send for review/i }));
 
     expect(fetchSpy).not.toHaveBeenCalled();
-    expect(screen.getByText("Keep it under 400 characters.")).toBeInTheDocument();
+    expect(screen.getByText("Keep it to 400 characters or fewer.")).toBeInTheDocument();
     expect(textarea).toHaveAttribute("aria-invalid", "true");
     expect(textarea).toHaveFocus();
   });
@@ -1810,6 +1811,68 @@ describe("SuggestCorrection — lengths in the dialog", () => {
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(screen.getByText("That link is too long.")).toBeInTheDocument();
-    expect(screen.getByLabelText(/source url/i)).toHaveFocus();
+    const source = screen.getByLabelText(/source url/i);
+    expect(source).toHaveAttribute("aria-invalid", "true");
+    expect(source).toHaveAccessibleDescription(/That link is too long\./);
+    expect(source).toHaveFocus();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// "No link?" — every staged item stays source-cited, so someone without a link
+// is sent to the contact form, which prefills from these two params.
+// ---------------------------------------------------------------------------
+
+describe("SuggestCorrection — no-link contact fallback", () => {
+  const NAME = "Smith & Sons DC #2";
+
+  async function openDialog(defaultField?: CorrectableKey | "other") {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName={NAME} defaultField={defaultField} />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+    return user;
+  }
+
+  it("links to the contact form with the facility name URI-encoded", async () => {
+    await openDialog();
+
+    const link = screen.getByRole("link", { name: "No link? Tell us through the contact form" });
+    expect(link).toHaveAttribute(
+      "href",
+      "/contact?topic=correction&about=Smith%20%26%20Sons%20DC%20%232"
+    );
+  });
+
+  it("is a contract with /contact: its own prefill reads the same topic and facility back", async () => {
+    await openDialog();
+
+    const href = screen
+      .getByRole("link", { name: /no link\?/i })
+      .getAttribute("href") as string;
+    const search = href.slice(href.indexOf("?"));
+    const prefilled = applyPrefill(
+      { name: "", email: "", topic: "", message: "", website: "" },
+      search
+    );
+
+    expect(prefilled.topic).toBe("correction");
+    expect(prefilled.message).toBe(`About ${NAME}: `);
+  });
+
+  it("sits right under the source hint", async () => {
+    await openDialog();
+
+    const hint = screen.getByText(/where did you see it\?/i);
+    const link = screen.getByRole("link", { name: /no link\?/i });
+    expect(hint.nextElementSibling).toContainElement(link);
+  });
+
+  it("is offered for 'Something else' too, where a source is also required", async () => {
+    await openDialog("other");
+
+    expect(screen.getByRole("link", { name: /no link\?/i })).toHaveAttribute(
+      "href",
+      expect.stringContaining("about=Smith%20%26%20Sons")
+    );
   });
 });

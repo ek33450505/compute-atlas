@@ -299,8 +299,9 @@ test.describe("microsoft-becker-mn empty fields", () => {
 
     // FieldGapPrompt has two return paths and both had to be covered:
     // `capacityOperationalMw` above is in CORRECTABLE_KEYS and renders a
-    // correction trigger; `investmentUsd` is not, and renders the lead-form
-    // link instead. A fallback added to only one branch prints half the sheet.
+    // correction trigger; `investmentUsd` is not, and renders the "Know a
+    // source for …" tip trigger instead. A fallback added to only one branch
+    // prints half the sheet.
     const investment = page
       .locator("section[aria-labelledby^='civic-impact'] dl > div")
       .filter({ hasText: "Investment" });
