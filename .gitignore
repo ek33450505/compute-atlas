@@ -67,6 +67,11 @@ docs/media/banner.svg
 # scripts/copy-maplibre-worker.mjs on prebuild/predev — generated, never edited
 /public/maplibre/
 
+# Static dataset downloads for /data, generated from data/facilities.json by
+# scripts/build-data-exports.ts on prebuild — generated, never edited
+/public/data/facilities.csv
+/public/data/facilities.json
+
 # Wave scratch artifacts — research working dirs, not part of the app
 wave-*/
 
