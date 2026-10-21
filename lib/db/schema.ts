@@ -120,6 +120,8 @@ export const submissionsTable = pgTable(
   },
   (table) => [
     index("submissions_status_idx").on(table.status),
+    // Serves the lead -> submission link filter in lib/leads.ts (provenance->>'discoveredBy' IN (...)).
+    index("submissions_discovered_by_idx").on(sql`(${table.provenance} ->> 'discoveredBy')`),
     check(
       "submissions_status_check",
       sql`${table.status} IN ('pending', 'approved', 'rejected')`
