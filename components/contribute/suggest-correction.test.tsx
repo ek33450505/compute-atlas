@@ -8,6 +8,7 @@ import { CORRECTABLE_FIELD_META, type CorrectableKey } from "@/lib/contribute-fi
 import {
   SuggestCorrection,
   buildCorrectionPayload,
+  buildLeadTipPayload,
   currentValueFor,
   validateCorrection,
   type CorrectionFormState,
@@ -1204,5 +1205,611 @@ describe("SuggestCorrection — source link", () => {
       await screen.findByText("Paste the full link, starting with https://")
     ).toBeInTheDocument();
     expect(screen.queryByText("Invalid URL")).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// "Something else" — free text, sent to /api/leads as a source-cited tip.
+// ---------------------------------------------------------------------------
+
+describe("buildLeadTipPayload", () => {
+  const base: CorrectionFormState = {
+    field: "other",
+    value: "  the build was cancelled  ",
+    sourceUrl: "example.com/a",
+    attribution: "",
+    note: "ignored: the textarea replaces the note",
+    website: "",
+  };
+
+  it("prefixes the note with the facility, and normalises the link", () => {
+    expect(buildLeadTipPayload("Test DC", base)).toEqual({
+      url: "https://example.com/a",
+      note: "Test DC: the build was cancelled",
+      website: "",
+    });
+  });
+
+  it("adds the topic after an em dash when there is one", () => {
+    expect(buildLeadTipPayload("Test DC", base, "the investment amount").note).toBe(
+      "Test DC — the investment amount: the build was cancelled"
+    );
+  });
+
+  it("includes a trimmed attribution, and omits a blank one", () => {
+    expect(buildLeadTipPayload("Test DC", { ...base, attribution: "  jdoe " }).attribution).toBe("jdoe");
+    expect(buildLeadTipPayload("Test DC", { ...base, attribution: "   " })).not.toHaveProperty(
+      "attribution"
+    );
+  });
+
+  it("carries the honeypot through", () => {
+    expect(buildLeadTipPayload("Test DC", { ...base, website: "spam.example" }).website).toBe(
+      "spam.example"
+    );
+  });
+
+  // "Facility \u2014 topic: " is held to 100 units so the person's 400 always fit.
+  describe("100-unit prefix", () => {
+    const userText = "t".repeat(400);
+    const note = (facility: string, topic?: string) =>
+      buildLeadTipPayload(facility, { ...base, value: userText }, topic).note as string;
+
+    it("shortens a 300-character facility name with an ellipsis and keeps all 400 of the person's characters", () => {
+      const result = note("N".repeat(300));
+      expect(result).toBe(`${"N".repeat(97)}\u2026: ${userText}`);
+      expect(result.length).toBe(500);
+    });
+
+    it("keeps the topic whole and shortens the facility name instead", () => {
+      const result = note("N".repeat(300), "the investment amount");
+      const prefix = result.slice(0, result.length - userText.length);
+      expect(prefix).toContain(" \u2014 the investment amount: ");
+      expect(prefix).toContain("\u2026 \u2014 the investment amount");
+      expect(prefix.length).toBeLessThanOrEqual(100);
+      expect(result.endsWith(userText)).toBe(true);
+    });
+
+    it("caps an over-long topic too, so the prefix still fits", () => {
+      const result = note("Test DC", "x".repeat(300));
+      const prefix = result.slice(0, result.length - userText.length);
+      expect(prefix.length).toBeLessThanOrEqual(100);
+      expect(prefix).toContain("\u2026");
+      expect(result.endsWith(userText)).toBe(true);
+      expect(result.length).toBeLessThanOrEqual(500);
+    });
+
+    it("leaves a short facility name and topic alone", () => {
+      expect(note("Test DC", "the investment amount")).toBe(
+        `Test DC \u2014 the investment amount: ${userText}`
+      );
+    });
+
+    it("never splits an emoji where the facility name is cut", () => {
+      const result = note("\u{1F600}".repeat(200));
+      expect(result.length).toBeLessThanOrEqual(500);
+      expect(result).not.toMatch(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/);
+      expect(result.endsWith(userText)).toBe(true);
+    });
+  });
+
+  // leadInputSchema caps the note at 500 UTF-16 units. "F: " is 3 of them.
+  describe("500-unit cap", () => {
+    const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/;
+    const tip = (value: string) => buildLeadTipPayload("F", { ...base, value }).note as string;
+
+    it("keeps an emoji that ends exactly at 500", () => {
+      const note = tip(`${"a".repeat(495)}\u{1F600}b`);
+      expect(note).toBe(`F: ${"a".repeat(495)}\u{1F600}`);
+      expect(note).toHaveLength(500);
+    });
+
+    // 3 + 496 + a 2-unit emoji is 500 code points but 501 UTF-16 units, which
+    // the schema rejects: counting code points alone is not enough.
+    it("drops an emoji that would cross 500 UTF-16 units, rather than splitting it", () => {
+      const note = tip(`${"a".repeat(496)}\u{1F600}`);
+      expect(note).toBe(`F: ${"a".repeat(496)}`);
+      expect(note.length).toBeLessThanOrEqual(500);
+      expect(note).not.toMatch(LONE_SURROGATE);
+    });
+
+    it("never exceeds 500 and never leaves half an emoji, whatever the length", () => {
+      for (let n = 480; n <= 505; n++) {
+        const note = tip("\u{1F600}".repeat(n));
+        expect(note.length).toBeLessThanOrEqual(500);
+        expect(note).not.toMatch(LONE_SURROGATE);
+      }
+    });
+
+    it("does not leave a trailing space where the cut lands", () => {
+      expect(tip(`${"a".repeat(496)} b`)).toBe(`F: ${"a".repeat(496)}`);
+    });
+
+    it("leaves a short note untouched", () => {
+      expect(tip("short")).toBe("F: short");
+    });
+  });
+
+  it("is a lead, so the correction builder refuses 'Something else'", () => {
+    expect(() => buildCorrectionPayload("f", base)).toThrow(/Something else/);
+  });
+});
+
+describe("validateCorrection — Something else", () => {
+  const base: CorrectionFormState = {
+    field: "other",
+    value: "the build was cancelled",
+    sourceUrl: "https://example.com/source",
+    attribution: "",
+    note: "",
+    website: "",
+  };
+
+  it("accepts text and a source", () => {
+    expect(validateCorrection(base)).toEqual({});
+  });
+
+  it.each([[""], ["   "]])("requires the text (%j)", (value) => {
+    expect(validateCorrection({ ...base, value })).toEqual({ value: "Tell us what to look into." });
+  });
+
+  it("still requires a source, with the usual rules", () => {
+    expect(validateCorrection({ ...base, sourceUrl: "" })).toEqual({
+      sourceUrl: "Add a link to a public source.",
+    });
+    expect(validateCorrection({ ...base, sourceUrl: "ftp://x.org/a" })).toEqual({
+      sourceUrl: "Paste the full link, starting with https://",
+    });
+  });
+});
+
+describe("SuggestCorrection — Something else", () => {
+  type User = ReturnType<typeof userEvent.setup>;
+
+  async function openDialog(user: User, props: Partial<React.ComponentProps<typeof SuggestCorrection>> = {}) {
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" {...props} />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction|know/i }));
+  }
+
+  function fetchCall() {
+    const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+    const [url, init] = mockFetch.mock.calls[0];
+    return { url, body: JSON.parse(init.body as string) as Record<string, unknown> };
+  }
+
+  async function fillTip(user: User, text = "the build was cancelled") {
+    await user.type(screen.getByLabelText(/what should we know/i), text);
+    await user.type(screen.getByLabelText(/source url/i), "example.com/x");
+  }
+
+  const send = (user: User) => user.click(screen.getByRole("button", { name: /send for review/i }));
+
+  it("is the last option in the field select", async () => {
+    const user = userEvent.setup();
+    await openDialog(user);
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    const options = await screen.findAllByRole("option");
+
+    expect(options[options.length - 1]).toHaveTextContent("Something else");
+  });
+
+  it("swaps the value field and the Currently line for a required textarea", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "name", currentValues: { name: "Colossus" } });
+    expect(screen.getByText("Currently: Colossus")).toBeInTheDocument();
+    expect(screen.getByLabelText(/new value/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Something else" }));
+
+    expect(screen.queryByLabelText(/new value/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/currently:/i)).not.toBeInTheDocument();
+    const textarea = screen.getByLabelText(/what should we know/i);
+    expect(textarea.tagName).toBe("TEXTAREA");
+    expect(textarea).toHaveAttribute("maxlength", "400");
+    expect(textarea).toBeRequired();
+    expect(screen.getByRole("button", { name: /send for review/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /submit correction/i })).not.toBeInTheDocument();
+  });
+
+  it("keeps Source URL and the name field, but drops the optional Note (the textarea replaces it)", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await user.click(screen.getByText("Add your name (optional)"));
+
+    expect(screen.getByLabelText(/source url/i)).toBeRequired();
+    expect(screen.getByLabelText(/name or handle/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^note/i)).not.toBeInTheDocument();
+  });
+
+  it("blocks empty text, says why, and puts focus on the textarea", async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as unknown as typeof fetch;
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/x");
+
+    await send(user);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Tell us what to look into.")).toHaveAttribute("role", "alert");
+    const textarea = screen.getByLabelText(/what should we know/i);
+    expect(textarea).toHaveAttribute("aria-invalid", "true");
+    expect(textarea).toHaveAccessibleDescription("Tell us what to look into.");
+    expect(textarea).toHaveFocus();
+  });
+
+  it("still requires a source, and posts nothing without one", async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as unknown as typeof fetch;
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await user.type(screen.getByLabelText(/what should we know/i), "the build was cancelled");
+
+    await send(user);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Add a link to a public source.")).toBeInTheDocument();
+    expect(screen.getByLabelText(/source url/i)).toHaveFocus();
+  });
+
+  it("posts a tip to /api/leads, not /api/contribute, with the lead body", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await fillTip(user);
+    await user.click(screen.getByText("Add your name (optional)"));
+    await user.type(screen.getByLabelText(/name or handle/i), "jdoe");
+
+    await send(user);
+
+    await screen.findByText(/we.ll look into it/i);
+    const { url, body } = fetchCall();
+    expect(url).toBe("/api/leads");
+    expect(body).toEqual({
+      url: "https://example.com/x",
+      note: "Test DC: the build was cancelled",
+      website: "",
+      attribution: "jdoe",
+    });
+  });
+
+  it("still posts an ordinary correction to /api/contribute", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "name" });
+    await user.type(screen.getByLabelText(/new value/i), "Colossus");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/x");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+    const { url, body } = fetchCall();
+    expect(url).toBe("/api/contribute");
+    expect(body.field).toBe("name");
+  });
+
+  it("shows the tip success view, moves focus to it, and closes on Done", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await fillTip(user);
+
+    await send(user);
+
+    const thanks = await screen.findByText(
+      /we.ll look into it\. tips are researched before anything is published\./i
+    );
+    expect(thanks).toHaveAttribute("role", "alert");
+    expect(thanks).toHaveFocus();
+    expect(screen.queryByText(/review queue/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /public activity feed/i })).toHaveAttribute(
+      "href",
+      "/activity"
+    );
+
+    await user.click(screen.getByRole("button", { name: "Done" }));
+    expect(screen.queryByText(/we.ll look into it/i)).not.toBeInTheDocument();
+  });
+
+  it("maps a 400 'url' issue to the source field, in friendly words", async () => {
+    mockFetchOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({
+        error: "Invalid lead",
+        issues: [{ path: ["url"], message: "Invalid URL" }],
+      }),
+    });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await fillTip(user);
+
+    await send(user);
+
+    expect(await screen.findByText("Paste the full link, starting with https://")).toBeInTheDocument();
+    expect(screen.getByLabelText(/source url/i)).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByText("Please fix the errors below.")).toBeInTheDocument();
+    expect(screen.queryByText("Invalid lead")).not.toBeInTheDocument();
+  });
+
+  it("maps a 400 'note' issue to the textarea", async () => {
+    mockFetchOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({
+        error: "Invalid lead",
+        issues: [{ path: ["note"], message: "Too long for a tip" }],
+      }),
+    });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await fillTip(user);
+
+    await send(user);
+
+    expect(await screen.findByText("Too long for a tip")).toBeInTheDocument();
+    expect(screen.getByLabelText(/what should we know/i)).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("shows the server's message on a 429", async () => {
+    mockFetchOnce({
+      ok: false,
+      status: 429,
+      json: async () => ({ error: "Too many submissions. Please try again later." }),
+    });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await fillTip(user);
+
+    await send(user);
+
+    expect(await screen.findByText("Too many submissions. Please try again later.")).toBeInTheDocument();
+  });
+
+  it("falls back to a generic message for any other failure", async () => {
+    mockFetchOnce({ ok: false, status: 503, json: async () => ({ error: "down" }) });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+    await fillTip(user);
+
+    await send(user);
+
+    expect(await screen.findByText("Something went wrong. Please try again.")).toBeInTheDocument();
+  });
+
+  it("uses the topic as the placeholder and in the note", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other", topic: "the investment amount" });
+    expect(screen.getByLabelText(/what should we know/i)).toHaveAttribute(
+      "placeholder",
+      "e.g. the investment amount, and where you saw it"
+    );
+    await fillTip(user, "about $2B");
+
+    await send(user);
+
+    await screen.findByText(/we.ll look into it/i);
+    expect(fetchCall().body.note).toBe("Test DC — the investment amount: about $2B");
+  });
+
+  it("has no placeholder without a topic", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+
+    expect(screen.getByLabelText(/what should we know/i)).not.toHaveAttribute("placeholder");
+  });
+
+  it("titles the optional section for a name only, since the Note is gone", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+
+    expect(screen.getByText("Add your name (optional)")).toBeInTheDocument();
+    expect(screen.queryByText("Add a note or credit (optional)")).not.toBeInTheDocument();
+  });
+
+  it("keeps the note-or-credit title for an ordinary correction", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "name" });
+
+    expect(screen.getByText("Add a note or credit (optional)")).toBeInTheDocument();
+    expect(screen.queryByText("Add your name (optional)")).not.toBeInTheDocument();
+  });
+
+  it("carries a Note typed before switching into the textarea, and clears the Note", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "name" });
+    await user.click(screen.getByText("Add a note or credit (optional)"));
+    await user.type(screen.getByLabelText(/^note/i), "saw it in the county minutes");
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Something else" }));
+
+    expect(screen.getByLabelText(/what should we know/i)).toHaveValue("saw it in the county minutes");
+    expect(screen.queryByLabelText(/^note/i)).not.toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/x");
+    await send(user);
+    await screen.findByText(/we.ll look into it/i);
+    expect(fetchCall().body.note).toBe("Test DC: saw it in the county minutes");
+  });
+
+  it("leaves the textarea empty when no Note was typed", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "name" });
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Something else" }));
+
+    expect(screen.getByLabelText(/what should we know/i)).toHaveValue("");
+  });
+
+  it("does not bring a stale Note back when switching to a correctable field", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "name" });
+    await user.click(screen.getByText("Add a note or credit (optional)"));
+    await user.type(screen.getByLabelText(/^note/i), "a note");
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Something else" }));
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Operator" }));
+
+    expect(screen.getByLabelText(/^note/i)).toHaveValue("");
+  });
+
+  it("limits the source link to the server's 2000 characters", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, { defaultField: "other" });
+
+    expect(screen.getByLabelText(/source url/i)).toHaveAttribute("maxlength", "2000");
+  });
+});
+
+describe("SuggestCorrection — Enter in the source field", () => {
+  // Enter submits without blurring, so the submit itself must normalise the
+  // link. A 400 keeps the form on screen so the field can be read afterwards.
+  it("shows the https:// that was sent", async () => {
+    mockFetchOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({ error: "Please fix the errors below.", issues: [] }),
+    });
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+    await user.type(screen.getByLabelText(/new value/i), "Colossus");
+
+    await user.type(screen.getByLabelText(/source url/i), "example.com/x{Enter}");
+
+    await screen.findByText("Please fix the errors below.");
+    expect(screen.getByLabelText(/source url/i)).toHaveValue("https://example.com/x");
+    const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body as string).sourceUrl).toBe(
+      "https://example.com/x"
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Lengths the server enforces: nothing is ever cut silently.
+// ---------------------------------------------------------------------------
+
+describe("validateCorrection — lengths", () => {
+  const other: CorrectionFormState = {
+    field: "other",
+    value: "x",
+    sourceUrl: "https://example.com/source",
+    attribution: "",
+    note: "",
+    website: "",
+  };
+
+  it("accepts a tip of exactly 400 characters, ignoring surrounding spaces", () => {
+    expect(validateCorrection({ ...other, value: `  ${"x".repeat(400)}  ` })).toEqual({});
+  });
+
+  it("rejects a tip over 400 characters instead of cutting it", () => {
+    expect(validateCorrection({ ...other, value: "x".repeat(401) })).toEqual({
+      value: "Keep it under 400 characters.",
+    });
+  });
+
+  // "https://" is added, so a link that fits the input can cross 2000 after it.
+  it("rejects a link that is over 2000 characters once https:// is added", () => {
+    const bare = `example.com/${"a".repeat(1983)}`; // 1995 typed, 2003 sent
+    expect(bare).toHaveLength(1995);
+    expect(validateCorrection({ ...other, sourceUrl: bare })).toEqual({
+      sourceUrl: "That link is too long.",
+    });
+  });
+
+  it("accepts a link that comes to exactly 2000 once https:// is added", () => {
+    const bare = `example.com/${"a".repeat(1980)}`; // 1992 typed, 2000 sent
+    expect(validateCorrection({ ...other, sourceUrl: bare })).toEqual({});
+  });
+
+  it("rejects an over-long link on an ordinary correction too", () => {
+    expect(
+      validateCorrection({
+        ...other,
+        field: "name",
+        sourceUrl: `https://example.com/${"a".repeat(2000)}`,
+      })
+    ).toEqual({ sourceUrl: "That link is too long." });
+  });
+});
+
+describe("SuggestCorrection — lengths in the dialog", () => {
+  type User = ReturnType<typeof userEvent.setup>;
+
+  async function openDialog(user: User, defaultField: CorrectableKey | "other") {
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" defaultField={defaultField} />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+  }
+
+  it("carries a 2,000-character Note whole, then refuses it on submit rather than cutting it", async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as unknown as typeof fetch;
+    const user = userEvent.setup();
+    await openDialog(user, "name");
+    await user.click(screen.getByText("Add a note or credit (optional)"));
+    await user.click(screen.getByLabelText(/^note/i));
+    await user.paste("n".repeat(2000));
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Something else" }));
+
+    const textarea = screen.getByLabelText(/what should we know/i);
+    expect(textarea).toHaveValue("n".repeat(2000));
+
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/x");
+    await user.click(screen.getByRole("button", { name: /send for review/i }));
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Keep it under 400 characters.")).toBeInTheDocument();
+    expect(textarea).toHaveAttribute("aria-invalid", "true");
+    expect(textarea).toHaveFocus();
+  });
+
+  it("lets the person trim a carried Note and send it", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, "name");
+    await user.click(screen.getByText("Add a note or credit (optional)"));
+    await user.click(screen.getByLabelText(/^note/i));
+    await user.paste("n".repeat(500));
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Something else" }));
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/x");
+
+    await user.clear(screen.getByLabelText(/what should we know/i));
+    await user.type(screen.getByLabelText(/what should we know/i), "short and sourced");
+    await user.click(screen.getByRole("button", { name: /send for review/i }));
+
+    await screen.findByText(/we.ll look into it/i);
+    const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body as string).note).toBe(
+      "Test DC: short and sourced"
+    );
+  });
+
+  it("blocks a link that is too long once https:// is added, and focuses it", async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as unknown as typeof fetch;
+    const user = userEvent.setup();
+    await openDialog(user, "name");
+    await user.type(screen.getByLabelText(/new value/i), "Colossus");
+    await user.click(screen.getByLabelText(/source url/i));
+    await user.paste(`example.com/${"a".repeat(1983)}`); // 1995 typed
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("That link is too long.")).toBeInTheDocument();
+    expect(screen.getByLabelText(/source url/i)).toHaveFocus();
   });
 });

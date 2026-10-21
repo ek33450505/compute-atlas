@@ -247,6 +247,24 @@ describe("normalizeSourceUrl", () => {
     expect(normalizeSourceUrl(raw)).toBe(raw);
   });
 
+  it.each([
+    ["example.com@evil.com"],
+    ["example.com@evil.com/a"],
+    ["user@example.com"],
+  ])("leaves %j alone: an @ in the authority would change the host", (raw) => {
+    expect(normalizeSourceUrl(raw)).toBe(raw);
+    expect(isHttpUrl(normalizeSourceUrl(raw))).toBe(false);
+  });
+
+  it.each([
+    ["medium.com/@user/post", "https://medium.com/@user/post"],
+    ["mastodon.social/@name", "https://mastodon.social/@name"],
+    ["example.com/a?e=a@b.com", "https://example.com/a?e=a@b.com"],
+    ["example.com#frag@x", "https://example.com#frag@x"],
+  ])("still prefixes %j: its @ is past the host", (raw, expected) => {
+    expect(normalizeSourceUrl(raw)).toBe(expected);
+  });
+
   it("does not turn a user:password@host trick into an https link", () => {
     const normalized = normalizeSourceUrl("example.com:8080@evil.com/");
     expect(normalized).toBe("example.com:8080@evil.com/");
@@ -281,4 +299,139 @@ describe("isHttpUrl", () => {
       expect(isHttpUrl(value)).toBe(false);
     }
   );
+});
+
+// The boundary, stated as a property: a rewrite is offered only when the URL it
+// produces has no userinfo and a dotted hostname, and that host is the one the
+// person typed. Anything else comes back exactly as typed. Each past hole
+// (a.com@evil.com with or without leading slashes) broke this, so the next
+// variant will too, whatever pattern it uses.
+describe("normalizeSourceUrl — the output boundary", () => {
+  /** The host a person reads at the start of what they typed. */
+  const typedHost = (raw: string) => {
+    const rest = raw.trim().replace(/^[/\\]+/, "");
+    const bracketed = /^\[[^\]]*\]/.exec(rest); // an IPv6 literal has colons of its own
+    return (bracketed ? bracketed[0] : rest.split(/[/\\?#:]/, 1)[0]).toLowerCase();
+  };
+  const PLAIN_DOTTED = /^(?:[a-z0-9-]+\.)+[a-z0-9-]+\.?$/i;
+
+  /** Why `raw` breaks the boundary, or null if it holds. */
+  function violation(raw: string): string | null {
+    const out = normalizeSourceUrl(raw);
+    if (out === raw.trim()) return null; // unchanged is always allowed
+    let url: URL;
+    try {
+      url = new URL(out);
+    } catch {
+      return `${JSON.stringify(raw)} -> ${JSON.stringify(out)} is not a URL`;
+    }
+    if (!out.startsWith("https://")) return `${JSON.stringify(raw)} -> ${out} is not https`;
+    if (url.username || url.password) return `${JSON.stringify(raw)} -> ${out} has userinfo`;
+    if (!url.hostname.includes(".")) return `${JSON.stringify(raw)} -> ${out} has no dotted host`;
+    if (!PLAIN_DOTTED.test(url.hostname)) {
+      return `${JSON.stringify(raw)} -> ${out} has a host that is not a plain dotted name`;
+    }
+    if (url.hostname !== typedHost(raw)) {
+      return `${JSON.stringify(raw)} -> ${out} changed the host to ${url.hostname}`;
+    }
+    return null;
+  }
+
+  it.each([
+    ["//a.com@evil.com"],
+    ["/a.com@evil.com"],
+    ["///a.com@evil.com"],
+    ["//a.com:80@evil.com/x"],
+    ["example.com@evil.com"],
+    ["example.com:8080@evil.com/"],
+    ["@a.com"],
+    ["user:pw@example.com"],
+    ["a.com%40evil.com"],
+    ["a.com\\@evil.com"],
+    ["/path/file.pdf"], // host "path" has no dot
+    // The URL parser reads these as other hosts: 0.0.7.232, 127.0.0.1, 0.0.0.1,
+    // 1.0.0.5 and a.com. A rewrite would send people to a place they never named.
+    ["2024"],
+    ["1"],
+    ["1.5"],
+    ["2130706433"],
+    ["0x7f000001"],
+    ["0x7f.1"],
+    ["%61.com"],
+    ["a\uFF0Ecom"], // full-width dot
+    ["a\u3002com"], // ideographic full stop
+    ["b\u00fccher.de"], // IDN: must be typed with https://
+    ["a.com\u2215evil.com"], // division slash, not a slash
+    ["a_b.com"],
+    ["[::1]"],
+    ["[::1]:8080"],
+    ["nodots"],
+    ["localhost:3000"],
+    ["://x.com"],
+    ["mailto:1@x.com"],
+    ["javascript:0/a.b"],
+    ["javascript://x.org/%0aalert(1)"],
+    ["ftp:21/x.org"],
+    // A dotted scheme name: only the scheme guard stops these becoming
+    // "https://my.scheme://x.org".
+    ["my.scheme://x.org"],
+    ["web.dev://x.org/a"],
+    ["a.b:/x"],
+  ])("returns %j exactly as typed", (raw) => {
+    expect(normalizeSourceUrl(raw)).toBe(raw);
+    expect(violation(raw)).toBeNull();
+  });
+
+  it.each([
+    ["medium.com/@user/post", "https://medium.com/@user/post"],
+    ["a.com?x@y", "https://a.com?x@y"],
+    ["//example.com/a", "https://example.com/a"],
+    ["/example.com", "https://example.com"],
+    ["\\\\example.com/a", "https://example.com/a"], // leading backslashes read as slashes
+    ["127.0.0.1", "https://127.0.0.1"], // canonical IPv4 the parser leaves alone
+    ["a.com.", "https://a.com."], // trailing dot
+    ["example.com:8080/a", "https://example.com:8080/a"],
+    ["1.2.3.4/x", "https://1.2.3.4/x"],
+  ])("prefixes %j as %j, and it holds the boundary", (raw, expected) => {
+    expect(normalizeSourceUrl(raw)).toBe(expected);
+    expect(violation(raw)).toBeNull();
+  });
+
+  it("holds for every combination of slashes, userinfo, separator, host and tail", () => {
+    const leads = ["", "/", "//", "///"];
+    const users = ["", "a.com", "a.com:80", "user", "x:y", "a.com%40", "1.2.3.4"];
+    const separators = ["@", "%40", "\\@", ":@", "\\", "@@"];
+    const hosts = [
+      "evil.com", "evil", "1.2.3.4", "b.org:8080", "b.org.", "localhost",
+      // Hosts the URL parser rewrites into something else:
+      "1", "2024", "1.5", "2130706433", "0x7f.1", "0x7f000001", "%61.com",
+      "a\uFF0Ecom", "a\u3002com", "b\u00fccher.de", "a.com\u2215evil.com", "[::1]", "a_b.com",
+    ];
+    const tails = ["", "/", "/x", "?q=1", "#f", "/@y", ":80", "/a@b"];
+
+    const broken: string[] = [];
+    let checked = 0;
+    for (const lead of leads) {
+      for (const host of hosts) {
+        for (const tail of tails) {
+          // no userinfo at all
+          const plain = `${lead}${host}${tail}`;
+          checked++;
+          const bad = violation(plain);
+          if (bad) broken.push(bad);
+          for (const user of users) {
+            for (const sep of separators) {
+              const raw = `${lead}${user}${sep}${host}${tail}`;
+              checked++;
+              const v = violation(raw);
+              if (v) broken.push(v);
+            }
+          }
+        }
+      }
+    }
+
+    expect(checked).toBeGreaterThan(20000);
+    expect(broken).toEqual([]);
+  });
 });

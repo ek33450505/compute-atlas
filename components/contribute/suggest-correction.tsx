@@ -54,6 +54,37 @@ const CORRECTABLE_FIELD_ITEMS = CORRECTABLE_FIELD_META.map((m) => ({
 const STATE_ITEMS = STATE_OPTIONS.map((s) => ({ value: s.code, label: s.name }));
 
 // ---------------------------------------------------------------------------
+// "Something else" — the last choice in the field select. It is free text for
+// anything that isn't one of the correctable fields, so it is sent to
+// /api/leads as a tip (still source-cited), never to /api/contribute.
+// "other" is deliberately not a CorrectableKey: the server's correctable
+// fields (lib/contribute-fields.ts) stay exactly as they were.
+// ---------------------------------------------------------------------------
+
+const OTHER_FIELD = "other";
+const OTHER_LABEL = "Something else";
+export type CorrectionField = CorrectableKey | typeof OTHER_FIELD;
+
+const FIELD_ITEMS: { value: CorrectionField; label: string }[] = [
+  ...CORRECTABLE_FIELD_ITEMS,
+  { value: OTHER_FIELD, label: OTHER_LABEL },
+];
+
+// leadInputSchema's note cap (lib/leads.ts); Zod counts UTF-16 units.
+const LEAD_NOTE_MAX = 500;
+const OTHER_TEXT_MAX = 400;
+// httpUrlSchema's cap (lib/intake-fields.ts). The https:// we add counts, so a
+// pasted link near the limit can cross it only after normalising.
+const SOURCE_MAX = 2000;
+// "Facility \u2014 topic: " is held to this, so the person's own text (at most
+// OTHER_TEXT_MAX) always fits whole inside LEAD_NOTE_MAX.
+const LEAD_PREFIX_MAX = 100;
+const LEAD_TOPIC_MAX = 50;
+
+const TEXTAREA_CLASS =
+  "rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20";
+
+// ---------------------------------------------------------------------------
 // Intent framing — a gap prompt ("Know the capacity?") isn't reporting an
 // error, so it asks "What are you adding?" rather than "What's wrong?".
 // ---------------------------------------------------------------------------
@@ -73,7 +104,8 @@ const INTENT_COPY = {
 // ---------------------------------------------------------------------------
 
 export interface CorrectionFormState {
-  field: CorrectableKey;
+  field: CorrectionField;
+  /** The new value, or for "Something else" the free text to look into. */
   value: string;
   sourceUrl: string;
   attribution: string;
@@ -86,6 +118,8 @@ export function buildCorrectionPayload(
   facilityId: string,
   state: CorrectionFormState
 ): Record<string, unknown> {
+  // "Something else" is a lead, not a correction: see buildLeadTipPayload.
+  if (state.field === OTHER_FIELD) throw new Error("Cannot build a correction for 'Something else'");
   const def = CORRECTABLE_FIELD_META.find((m) => m.key === state.field);
   let value: string | number = state.value;
   if (def?.valueKind === "number") {
@@ -111,8 +145,59 @@ export function buildCorrectionPayload(
   return payload;
 }
 
+/**
+ * Cuts text to at most `max` UTF-16 units without splitting a code point. Zod's
+ * `.max()` counts UTF-16 units, so a cap by code points alone would let an
+ * emoji at the edge push the string to 501 and be rejected.
+ */
+function capUtf16(text: string, max: number): string {
+  let out = "";
+  for (const char of text) {
+    if (out.length + char.length > max) break;
+    out += char;
+  }
+  return out.trimEnd();
+}
+
+/** `text` cut to `max` UTF-16 units, ending in "\u2026" when anything was removed. */
+function ellipsize(text: string, max: number): string {
+  return text.length <= max ? text : `${capUtf16(text, max - 1)}\u2026`;
+}
+
+/**
+ * "Facility \u2014 topic: " in at most LEAD_PREFIX_MAX units. A long facility
+ * name is shortened with "\u2026" so the topic, and the person's text after it,
+ * are never the part that gets cut.
+ */
+function leadNotePrefix(facilityName: string, topic?: string): string {
+  const suffix = `${topic ? ` \u2014 ${ellipsize(topic, LEAD_TOPIC_MAX)}` : ""}: `;
+  return `${ellipsize(facilityName, LEAD_PREFIX_MAX - suffix.length)}${suffix}`;
+}
+
+/**
+ * The /api/leads body for a "Something else" tip. The facility (and the
+ * optional topic, e.g. "the investment amount") are folded into the note, since
+ * a lead carries only a URL and a note.
+ */
+export function buildLeadTipPayload(
+  facilityName: string,
+  state: CorrectionFormState,
+  topic?: string
+): Record<string, unknown> {
+  const payload: Record<string, unknown> = {
+    url: normalizeSourceUrl(state.sourceUrl),
+    note: capUtf16(`${leadNotePrefix(facilityName, topic)}${state.value.trim()}`, LEAD_NOTE_MAX),
+    website: state.website,
+  };
+
+  if (state.attribution.trim()) payload.attribution = state.attribution.trim();
+
+  return payload;
+}
+
 const SOURCE_REQUIRED = "Add a link to a public source.";
 const SOURCE_NOT_HTTP = "Paste the full link, starting with https://";
+const SOURCE_TOO_LONG = "That link is too long.";
 // Zod's bare message for a string that doesn't parse as a URL (zod 4.6).
 const ZOD_INVALID_URL = "Invalid URL";
 
@@ -126,7 +211,12 @@ export function validateCorrection(state: CorrectionFormState): FieldIssues {
   const def = CORRECTABLE_FIELD_META.find((m) => m.key === state.field);
   const issues: FieldIssues = {};
 
-  if (def?.valueKind === "number") {
+  if (state.field === OTHER_FIELD) {
+    const text = state.value.trim();
+    if (text === "") issues["value"] = "Tell us what to look into.";
+    // A carried-over Note can exceed the textarea's maxLength, which only stops typing.
+    else if (text.length > OTHER_TEXT_MAX) issues["value"] = "Keep it under 400 characters.";
+  } else if (def?.valueKind === "number") {
     const parsed = parseCorrectionNumber(state.value, state.field);
     if (!parsed.ok) issues["value"] = parsed.error;
   } else if (def?.valueKind === "enum") {
@@ -139,9 +229,17 @@ export function validateCorrection(state: CorrectionFormState): FieldIssues {
 
   const source = normalizeSourceUrl(state.sourceUrl);
   if (source === "") issues["sourceUrl"] = SOURCE_REQUIRED;
+  else if (source.length > SOURCE_MAX) issues["sourceUrl"] = SOURCE_TOO_LONG;
   else if (!isHttpUrl(source)) issues["sourceUrl"] = SOURCE_NOT_HTTP;
 
   return issues;
+}
+
+// The leads route reports `url` and `note`; this form's fields are `sourceUrl`
+// and (for "Something else") `value`, the textarea.
+function leadIssuesToFormIssues(issues: FieldIssues): FieldIssues {
+  const { url, note, ...rest } = issues;
+  return { ...rest, ...(url ? { sourceUrl: url } : {}), ...(note ? { value: note } : {}) };
 }
 
 /**
@@ -163,7 +261,7 @@ export function currentValueFor({
   currentValues: CorrectableDisplayValues | undefined;
   intent: SuggestCorrectionIntent;
   field: CorrectableKey;
-  defaultField: CorrectableKey | undefined;
+  defaultField: CorrectionField | undefined;
 }): string | null {
   if (currentValues) return currentValues[field] ?? NOT_RECORDED;
   if (intent === "add" && field === defaultField) return NOT_RECORDED;
@@ -203,7 +301,7 @@ function HoneypotField({
 
 /** Empty-state builder — a function (not a module-level constant) because the
  * default targeted field now depends on the `defaultField` prop. */
-function emptyState(defaultField?: CorrectableKey): CorrectionFormState {
+function emptyState(defaultField?: CorrectionField): CorrectionFormState {
   return {
     field: defaultField ?? CORRECTABLE_FIELD_META[0].key,
     value: "",
@@ -230,12 +328,14 @@ export function SuggestCorrection({
   showIntro = true,
   intent = "correct",
   currentValues,
+  topic,
 }: {
   facilityId: string;
   facilityName: string;
   /** Pre-selects "What's wrong?" to this field instead of the first option —
-   * used by FieldGapPrompt to deep-link the dialog at a specific gap. */
-  defaultField?: CorrectableKey;
+   * used by FieldGapPrompt to deep-link the dialog at a specific gap. May be
+   * "other" ("Something else"), which is sent as a lead. */
+  defaultField?: CorrectionField;
   /**
    * Custom trigger label. Passing this switches the trigger from the
    * default full-size "Suggest a correction" `<Button>` to a quiet
@@ -267,6 +367,10 @@ export function SuggestCorrection({
    * `intent="add"` dialog still on its `defaultField` says "not recorded" — a
    * gap prompt only opens on an empty field. */
   currentValues?: CorrectableDisplayValues;
+  /** Human copy for what a "Something else" tip is about, e.g. "the investment
+   * amount". Used only in that tip's note prefix and as the textarea's
+   * placeholder. */
+  topic?: string;
 }) {
   const uid = useId();
   const [open, setOpen] = useState(false);
@@ -288,26 +392,35 @@ export function SuggestCorrection({
     setOutcome("idle");
   }
 
-  const def = CORRECTABLE_FIELD_META.find((m) => m.key === state.field)!;
+  const isOther = state.field === OTHER_FIELD;
+  const def = state.field === OTHER_FIELD
+    ? undefined
+    : CORRECTABLE_FIELD_META.find((m) => m.key === state.field)!;
   const copy = INTENT_COPY[intent];
-  const currentValue = currentValueFor({
-    currentValues,
-    intent,
-    field: state.field,
-    defaultField,
-  });
+  const currentValue =
+    state.field === OTHER_FIELD
+      ? null
+      : currentValueFor({ currentValues, intent, field: state.field, defaultField });
   // Options for an enum-kind field come from THAT field's own values — the
   // server validates against `def.enumValues` (lib/contribute.ts), so any other
   // list (e.g. the status values) can never be submitted successfully.
-  const enumItems = (def.enumValues ?? []).map((v) => ({ value: v, label: def.enumLabels?.[v] ?? v }));
+  const enumItems = (def?.enumValues ?? []).map((v) => ({ value: v, label: def?.enumLabels?.[v] ?? v }));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submitting) return;
 
+    // Pressing Enter submits without blurring the link field, so normalise it
+    // here too: the field then shows what is sent.
+    const sourceUrl = normalizeSourceUrl(state.sourceUrl);
+    if (sourceUrl !== state.sourceUrl) {
+      setState((prev) => ({ ...prev, sourceUrl: normalizeSourceUrl(prev.sourceUrl) }));
+    }
+    const submission = { ...state, sourceUrl };
+
     // Catch what the server would reject, with friendlier copy, and put focus
     // on the first control to fix (the value comes before the source).
-    const clientIssues = validateCorrection(state);
+    const clientIssues = validateCorrection(submission);
     const firstInvalidId = clientIssues["value"]
       ? valueId
       : clientIssues["sourceUrl"]
@@ -326,11 +439,18 @@ export function SuggestCorrection({
     setErrors({});
     setSubmitting(true);
 
+    // "Something else" goes to the leads intake as a tip, not as a correction.
+    const asLead = submission.field === OTHER_FIELD;
+
     try {
-      const res = await fetch("/api/contribute", {
+      const res = await fetch(asLead ? "/api/leads" : "/api/contribute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildCorrectionPayload(facilityId, state)),
+        body: JSON.stringify(
+          asLead
+            ? buildLeadTipPayload(facilityName, submission, topic)
+            : buildCorrectionPayload(facilityId, submission)
+        ),
       });
 
       if (res.status === 201) {
@@ -347,10 +467,17 @@ export function SuggestCorrection({
 
       if ((res.status === 400 || res.status === 404 || res.status === 429) && json && typeof json === "object") {
         const body = json as { error?: string; issues?: unknown };
-        const issues = issuesToFieldMap(body.issues);
+        const issues = asLead
+          ? leadIssuesToFormIssues(issuesToFieldMap(body.issues))
+          : issuesToFieldMap(body.issues);
         if (issues["sourceUrl"] === ZOD_INVALID_URL) issues["sourceUrl"] = SOURCE_NOT_HTTP;
         setErrors(issues);
-        setFormError(body.error ?? "Please fix the errors below.");
+        // The leads route's bare "Invalid lead" says nothing the field errors don't.
+        setFormError(
+          asLead && res.status === 400
+            ? "Please fix the errors below."
+            : (body.error ?? "Please fix the errors below.")
+        );
         return;
       }
 
@@ -379,7 +506,10 @@ export function SuggestCorrection({
     .filter(Boolean)
     .join(" ");
 
-  const numberHint = def.valueKind === "number" ? correctionNumberHint(state.field) : undefined;
+  const numberHint =
+    state.field !== OTHER_FIELD && def?.valueKind === "number"
+      ? correctionNumberHint(state.field)
+      : undefined;
   const valueDescribedBy = [numberHint ? valueHintId : null, errors["value"] ? valueErrorId : null]
     .filter(Boolean)
     .join(" ");
@@ -434,11 +564,14 @@ export function SuggestCorrection({
                   tabIndex={-1}
                   className="text-base text-foreground outline-none"
                 >
-                  Thanks — your correction is in the review queue.
+                  {isOther
+                    ? "Thanks \u2014 we\u2019ll look into it. Tips are researched before anything is published."
+                    : "Thanks \u2014 your correction is in the review queue."}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Most submissions are reviewed within about a week. If it
-                  checks out, it will appear on the map and on the{" "}
+                  {isOther
+                    ? "If it checks out and leads to a change, it will appear on the "
+                    : "Most submissions are reviewed within about a week. If it checks out, it will appear on the map and on the "}
                   <Link
                     href="/activity"
                     className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
@@ -469,11 +602,22 @@ export function SuggestCorrection({
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor={fieldId}>{copy.fieldLabel}</Label>
                   <Select
-                    items={CORRECTABLE_FIELD_ITEMS}
+                    items={FIELD_ITEMS}
                     value={state.field}
                     onValueChange={(v) => {
                       if (v === null) return;
-                      setState((prev) => ({ ...prev, field: v as CorrectableKey, value: "" }));
+                      setState((prev) => {
+                        const next = { ...prev, field: v as CorrectionField, value: "" };
+                        // The Note field is hidden for "Something else" and its text is
+                        // never sent, so carry ALL of it into the textarea that replaces
+                        // it. If it is over the limit, validation says so on submit
+                        // rather than this cutting it silently.
+                        if (next.field === OTHER_FIELD && prev.note.trim() !== "") {
+                          next.value = prev.note;
+                          next.note = "";
+                        }
+                        return next;
+                      });
                     }}
                   >
                     <SelectTrigger
@@ -489,6 +633,7 @@ export function SuggestCorrection({
                           {m.label}
                         </SelectItem>
                       ))}
+                      <SelectItem value={OTHER_FIELD}>{OTHER_LABEL}</SelectItem>
                     </SelectContent>
                   </Select>
                   {currentValue !== null ? (
@@ -500,12 +645,28 @@ export function SuggestCorrection({
 
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor={valueId}>
-                    New value
+                    {isOther ? "What should we know?" : "New value"}
                     <span aria-hidden="true" className="text-destructive"> *</span>
                   </Label>
+                  {isOther && (
+                    <textarea
+                      id={valueId}
+                      name="correction-other"
+                      value={state.value}
+                      onChange={(e) => setState((prev) => ({ ...prev, value: e.target.value }))}
+                      rows={4}
+                      maxLength={OTHER_TEXT_MAX}
+                      placeholder={topic ? `e.g. ${topic}, and where you saw it` : undefined}
+                      required
+                      aria-required="true"
+                      aria-invalid={errors["value"] ? true : undefined}
+                      aria-describedby={valueDescribedBy || undefined}
+                      className={TEXTAREA_CLASS}
+                    />
+                  )}
                   {/* maxLength 200 is validateFieldValue's 1-200 text rule in
                       lib/contribute.ts; the 2000 in correctionSchema is only the outer cap. */}
-                  {def.valueKind === "text" && (
+                  {def?.valueKind === "text" && (
                     <Input
                       id={valueId}
                       name="correction-value"
@@ -519,7 +680,7 @@ export function SuggestCorrection({
                       aria-describedby={valueDescribedBy || undefined}
                     />
                   )}
-                  {def.valueKind === "number" && (
+                  {def?.valueKind === "number" && (
                     <>
                       {/* type="text": people type "1.2 GW" or "$12.5M", which a
                           number input would refuse; parseCorrectionNumber reads it. */}
@@ -542,7 +703,7 @@ export function SuggestCorrection({
                       ) : null}
                     </>
                   )}
-                  {def.valueKind === "enum" && (
+                  {def?.valueKind === "enum" && (
                     <Select
                       items={enumItems}
                       value={state.value || null}
@@ -568,7 +729,7 @@ export function SuggestCorrection({
                       </SelectContent>
                     </Select>
                   )}
-                  {def.valueKind === "state" && (
+                  {def?.valueKind === "state" && (
                     <Select
                       items={STATE_ITEMS}
                       value={state.value || null}
@@ -606,6 +767,7 @@ export function SuggestCorrection({
                     id={sourceId}
                     name="correction-source"
                     type="url"
+                    maxLength={SOURCE_MAX}
                     value={state.sourceUrl}
                     onChange={(e) => setState((prev) => ({ ...prev, sourceUrl: e.target.value }))}
                     onBlur={() =>
@@ -628,7 +790,7 @@ export function SuggestCorrection({
 
                 <details>
                   <summary className="cursor-pointer rounded-sm py-3 text-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                    Add a note or credit (optional)
+                    {isOther ? "Add your name (optional)" : "Add a note or credit (optional)"}
                   </summary>
                   <div className="mt-4 flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
@@ -647,18 +809,21 @@ export function SuggestCorrection({
                       </p>
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
-                      <Label htmlFor={noteId}>Note (optional)</Label>
-                      <textarea
-                        id={noteId}
-                        name="correction-note"
-                        value={state.note}
-                        onChange={(e) => setState((prev) => ({ ...prev, note: e.target.value }))}
-                        rows={3}
-                        maxLength={2000}
-                        className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20"
-                      />
-                    </div>
+                    {/* "Something else" has its own textarea, which replaces this note. */}
+                    {!isOther && (
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor={noteId}>Note (optional)</Label>
+                        <textarea
+                          id={noteId}
+                          name="correction-note"
+                          value={state.note}
+                          onChange={(e) => setState((prev) => ({ ...prev, note: e.target.value }))}
+                          rows={3}
+                          maxLength={2000}
+                          className={TEXTAREA_CLASS}
+                        />
+                      </div>
+                    )}
                   </div>
                 </details>
 
@@ -670,7 +835,7 @@ export function SuggestCorrection({
 
                 <div className="flex justify-end">
                   <Button type="submit" className="min-h-11" disabled={submitting}>
-                    {submitting ? "Submitting…" : "Submit correction"}
+                    {submitting ? "Submitting…" : isOther ? "Send for review" : "Submit correction"}
                   </Button>
                 </div>
               </form>

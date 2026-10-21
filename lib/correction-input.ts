@@ -113,22 +113,60 @@ const HAS_SCHEME_RE = /^[a-z][a-z0-9+.-]*:/i;
 // "example.com:8080/a": a dotted host and a numeric port, which HAS_SCHEME_RE
 // would otherwise read as a scheme. Requiring the dot keeps "mailto:1@x.com",
 // "javascript:0/a.b" and "ftp:21/x.org" out of it, so they stay unrewritten.
+// A plain ASCII dotted hostname: letters, digits and hyphens in dot-separated
+// labels, with an optional trailing dot. A typed "127.0.0.1" passes (the parser
+// leaves it alone); shorthand like "2024" or "0x7f.1" is caught by the
+// equality check against the parsed hostname instead.
+const PLAIN_DOTTED_HOST_RE = /^(?:[a-z0-9-]+\.)+[a-z0-9-]+\.?$/i;
 const HOST_PORT_RE = /^(?:[a-z0-9-]+\.)+[a-z0-9-]+:\d+(?:[/?#]|$)/i;
 
 /**
  * Trims a pasted source link and adds `https://` when it was left off
- * ("example.com/a", "//example.com", "example.com:8080/a"). A value that
- * already has a scheme is returned as is, so the dialog and the server can
- * still reject `ftp:` and `javascript:` instead of this quietly rewriting them.
+ * ("example.com/a", "//example.com", "example.com:8080/a").
+ *
+ * The boundary: rewrite only when the typed host is a plain ASCII dotted name
+ * and the parsed hostname is exactly that name; anything else is returned as
+ * typed, and `isHttpUrl` and the server decide. The rule is on the OUTPUT, not
+ * on patterns in the input, because every input-side rule left another way to
+ * make the real host something the user didn't type ("a.com@evil.com" with or
+ * without leading slashes; "2024", which the URL parser reads as 0.0.7.232).
+ *
+ * The cost, accepted: an internationalised host such as "b\u00fccher.de" (or one
+ * with an underscore) must be typed with its `https://`.
  */
 export function normalizeSourceUrl(raw: string): string {
   const trimmed = raw.trim();
-  if (trimmed === "") return trimmed;
-  const hasSpace = /\s/.test(trimmed);
-  if (!hasSpace && HOST_PORT_RE.test(trimmed)) return `https://${trimmed}`;
-  if (HAS_SCHEME_RE.test(trimmed)) return trimmed;
-  if (!hasSpace && trimmed.includes(".")) return `https://${trimmed.replace(/^\/+/, "")}`;
-  return trimmed;
+  if (trimmed === "" || /\s/.test(trimmed)) return trimmed;
+  // A real scheme (ftp:, javascript:, mailto:, https:) is never rewritten.
+  if (HAS_SCHEME_RE.test(trimmed) && !HOST_PORT_RE.test(trimmed)) return trimmed;
+
+  // Leading slashes (a protocol-relative link) go; so do backslashes, which a
+  // URL parser reads as slashes.
+  const candidate = `https://${trimmed.replace(/^[/\\]+/, "")}`;
+  // Never invent userinfo: an "@" before the path would make the text up to it
+  // a login and the real host whatever follows. This split ends at "/", "?" or
+  // "#", so it sees every "@" a URL parser would put in the authority; that is
+  // why the username check below and HOST_PORT_RE's trailing check can't fire
+  // on their own. They stay so a change to this line can't quietly reopen it.
+  const authority = candidate.slice("https://".length).split(/[/?#]/, 1)[0];
+  if (authority.includes("@")) return trimmed;
+
+  let url: URL;
+  try {
+    url = new URL(candidate);
+  } catch {
+    return trimmed;
+  }
+  if (url.username || url.password || !url.hostname.includes(".")) return trimmed;
+
+  // The URL parser also reads "2024", "0x7f.1" and "a%2Ecom" as hosts (0.0.7.232,
+  // 127.0.0.1, a.com), and maps full-width dots and non-ASCII letters. Rewrite
+  // only when it did nothing but lowercase what was typed.
+  const typedHost = authority.replace(/:\d*$/, "");
+  if (!PLAIN_DOTTED_HOST_RE.test(typedHost) || url.hostname !== typedHost.toLowerCase()) {
+    return trimmed;
+  }
+  return candidate;
 }
 
 /** True for an absolute http(s) URL, the only kind the server accepts. */
