@@ -9,6 +9,7 @@ import {
   SuggestCorrection,
   buildCorrectionPayload,
   currentValueFor,
+  validateCorrection,
   type CorrectionFormState,
 } from "./suggest-correction";
 
@@ -794,5 +795,414 @@ describe("currentValueFor", () => {
     ["an add dialog with no default field", "add", "jobs", undefined],
   ] as const)("says nothing without currentValues for %s", (_name, intent, field, defaultField) => {
     expect(currentValueFor({ currentValues: undefined, intent, field, defaultField })).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Input handling — people type "1.2 GW" and "example.com/a", and a typo should
+// be caught here, in plain words, rather than as a bare server 400.
+// ---------------------------------------------------------------------------
+
+describe("validateCorrection", () => {
+  const base: CorrectionFormState = {
+    field: "name",
+    value: "Colossus",
+    sourceUrl: "https://example.com/source",
+    attribution: "",
+    note: "",
+    website: "",
+  };
+
+  it("returns no issues for a complete, valid form", () => {
+    expect(validateCorrection(base)).toEqual({});
+  });
+
+  it.each([
+    ["a blank text value", { field: "name", value: "   " }, "Enter a new value."],
+    ["no enum option chosen", { field: "water", value: "" }, "Select a value."],
+    ["an enum value from another field", { field: "water", value: "operational" }, "Select a value."],
+    ["no state chosen", { field: "state", value: "" }, "Select a state."],
+    [
+      "an unparseable number",
+      { field: "capacityOperationalMw", value: "lots" },
+      "Enter a number in megawatts, like 300 or 1.2 GW.",
+    ],
+  ] as const)("flags %s", (_name, overrides, message) => {
+    expect(validateCorrection({ ...base, ...overrides })).toEqual({ value: message });
+  });
+
+  it("accepts a typed number with a unit", () => {
+    expect(validateCorrection({ ...base, field: "capacityOperationalMw", value: "1.2 GW" })).toEqual({});
+  });
+
+  it.each([
+    ["no source", "", "Add a link to a public source."],
+    ["only whitespace", "   ", "Add a link to a public source."],
+    ["a non-http scheme", "ftp://example.com/a", "Paste the full link, starting with https://"],
+    ["a javascript: link", "javascript:alert(1)", "Paste the full link, starting with https://"],
+    ["text that isn't a link", "not a url", "Paste the full link, starting with https://"],
+  ])("flags %s as a source problem", (_name, sourceUrl, message) => {
+    expect(validateCorrection({ ...base, sourceUrl })).toEqual({ sourceUrl: message });
+  });
+
+  it("accepts a source with the scheme left off (it is added on submit)", () => {
+    expect(validateCorrection({ ...base, sourceUrl: "example.com/a" })).toEqual({});
+  });
+
+  it("reports the value and the source together", () => {
+    expect(validateCorrection({ ...base, value: "", sourceUrl: "" })).toEqual({
+      value: "Enter a new value.",
+      sourceUrl: "Add a link to a public source.",
+    });
+  });
+});
+
+describe("buildCorrectionPayload — typed numbers and links", () => {
+  const base: CorrectionFormState = {
+    field: "capacityOperationalMw",
+    value: "1.2 GW",
+    sourceUrl: "example.com/a",
+    attribution: "",
+    note: "",
+    website: "",
+  };
+
+  it("sends a parsed number, not the typed text", () => {
+    expect(buildCorrectionPayload("f", base).value).toBe(1200);
+    expect(buildCorrectionPayload("f", { ...base, field: "subsidies", value: "$12.5M" }).value).toBe(
+      12_500_000
+    );
+  });
+
+  it("sends the link with https:// added", () => {
+    expect(buildCorrectionPayload("f", base).sourceUrl).toBe("https://example.com/a");
+  });
+
+  // validateCorrection gates the dialog, so this can't happen there. A caller
+  // that skips it must get an error, not a guess: Number("1e3") is 1000 and
+  // Number("0x10") is 16.
+  it.each([["1e3"], ["0x10"], ["lots"], [""]])("throws rather than guess at %j", (value) => {
+    expect(() => buildCorrectionPayload("f", { ...base, value })).toThrow(/capacityOperationalMw/);
+  });
+});
+
+describe("SuggestCorrection — validation before submit", () => {
+  function spyOnFetch() {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as unknown as typeof fetch;
+    return fetchSpy;
+  }
+
+  async function openDialog(
+    user: ReturnType<typeof userEvent.setup>,
+    defaultField?: CorrectableKey
+  ) {
+    render(
+      <SuggestCorrection facilityId="facility-1" facilityName="Test DC" defaultField={defaultField} />
+    );
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+  }
+
+  const submit = (user: ReturnType<typeof userEvent.setup>) =>
+    user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+  it("blocks an empty value, says why, and puts focus on it", async () => {
+    const fetchSpy = spyOnFetch();
+    const user = userEvent.setup();
+    await openDialog(user);
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+
+    await submit(user);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Enter a new value.")).toHaveAttribute("role", "alert");
+    expect(screen.getByText("Please fix the errors below.")).toBeInTheDocument();
+    const value = screen.getByLabelText(/new value/i);
+    expect(value).toHaveAttribute("aria-invalid", "true");
+    expect(value).toHaveAccessibleDescription("Enter a new value.");
+    expect(value).toHaveFocus();
+  });
+
+  it("blocks a missing source and puts focus on it when the value is fine", async () => {
+    const fetchSpy = spyOnFetch();
+    const user = userEvent.setup();
+    await openDialog(user);
+    await user.type(screen.getByLabelText(/new value/i), "Colossus");
+
+    await submit(user);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Add a link to a public source.")).toBeInTheDocument();
+    const source = screen.getByLabelText(/source url/i);
+    expect(source).toHaveAttribute("aria-invalid", "true");
+    expect(source).toHaveFocus();
+  });
+
+  it("shows both errors and focuses the value first when both are wrong", async () => {
+    const fetchSpy = spyOnFetch();
+    const user = userEvent.setup();
+    await openDialog(user);
+
+    await submit(user);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Enter a new value.")).toBeInTheDocument();
+    expect(screen.getByText("Add a link to a public source.")).toBeInTheDocument();
+    expect(screen.getByLabelText(/new value/i)).toHaveFocus();
+  });
+
+  it.each([
+    ["ftp://x.org/a"],
+    ["javascript:alert(1)"],
+    // Would become a valid https URL if normalising rewrote it.
+    ["javascript://x.org/%0aalert(1)"],
+    ["not a url"],
+  ])(
+    "blocks the source %j with a friendly message and no request",
+    async (source) => {
+      const fetchSpy = spyOnFetch();
+      const user = userEvent.setup();
+      await openDialog(user);
+      await user.type(screen.getByLabelText(/new value/i), "Colossus");
+      await user.type(screen.getByLabelText(/source url/i), source);
+
+      await submit(user);
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(screen.getByText("Paste the full link, starting with https://")).toBeInTheDocument();
+    }
+  );
+
+  it("blocks an enum field with nothing chosen and focuses its select", async () => {
+    const fetchSpy = spyOnFetch();
+    const user = userEvent.setup();
+    await openDialog(user, "water");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+
+    await submit(user);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Select a value.")).toBeInTheDocument();
+    const select = screen.getByRole("combobox", { name: /new value/i });
+    expect(select).toHaveAttribute("aria-invalid", "true");
+    expect(select).toHaveFocus();
+  });
+
+  it("blocks a state field with nothing chosen", async () => {
+    const fetchSpy = spyOnFetch();
+    const user = userEvent.setup();
+    await openDialog(user, "state");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+
+    await submit(user);
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Select a state.")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /new value/i })).toHaveAttribute("aria-invalid", "true");
+  });
+});
+
+describe("SuggestCorrection — number fields", () => {
+  async function openDialog(user: ReturnType<typeof userEvent.setup>, field: CorrectableKey) {
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" defaultField={field} />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+  }
+
+  function postedBody() {
+    const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+    return JSON.parse(mockFetch.mock.calls[0][1].body as string);
+  }
+
+  it("takes text, not a number spinner, so '1.2 GW' can be typed", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, "capacityOperationalMw");
+
+    const input = screen.getByLabelText(/new value/i);
+    expect(input).toHaveAttribute("type", "text");
+    expect(input).toHaveAttribute("inputmode", "decimal");
+    expect(input).not.toHaveAttribute("min");
+    expect(input).not.toHaveAttribute("step");
+  });
+
+  it("posts 1200 for '1.2 GW' on a capacity field", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, "capacityOperationalMw");
+    await user.type(screen.getByLabelText(/new value/i), "1.2 GW");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(postedBody().value).toBe(1200);
+    expect(postedBody().field).toBe("capacityOperationalMw");
+  });
+
+  it("posts 12500000 for '$12.5M' on subsidies", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, "subsidies");
+    await user.type(screen.getByLabelText(/new value/i), "$12.5M");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(postedBody().value).toBe(12_500_000);
+  });
+
+  it("posts 2500 for '2.5k' on jobs", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, "jobs");
+    await user.type(screen.getByLabelText(/new value/i), "2.5k");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(postedBody().value).toBe(2500);
+  });
+
+  it.each([
+    ["capacityOperationalMw", "abc", "Enter a number in megawatts, like 300 or 1.2 GW."],
+    ["capacityPlannedMw", "1.2M", "Enter a number in megawatts, like 300 or 1.2 GW."],
+    ["subsidies", "1.2 GW", "Enter a dollar amount, like 12,500,000 or 12.5M."],
+    ["jobs", "12.5", "Enter a whole number, like 1,200."],
+    ["jobs", "0", "Enter a number greater than 0."],
+  ] as const)("%s: %j shows that field's message and posts nothing", async (field, typed, message) => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as unknown as typeof fetch;
+    const user = userEvent.setup();
+    await openDialog(user, field);
+    await user.type(screen.getByLabelText(/new value/i), typed);
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(screen.getByText(message)).toBeInTheDocument();
+    expect(screen.getByLabelText(/new value/i)).toHaveFocus();
+  });
+
+  it.each([
+    ["capacityOperationalMw", "In megawatts. 1.2 GW works too."],
+    ["capacityPlannedMw", "In megawatts. 1.2 GW works too."],
+    ["subsidies", "In US dollars. 12.5M or 1.2B works too."],
+    ["jobs", "Permanent jobs only."],
+  ] as const)("%s describes itself with its hint", async (field, hint) => {
+    const user = userEvent.setup();
+    await openDialog(user, field);
+
+    expect(screen.getByText(hint)).toBeInTheDocument();
+    expect(screen.getByLabelText(/new value/i)).toHaveAccessibleDescription(hint);
+  });
+
+  it("describes the input by both the hint and the error once it is invalid", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, "capacityOperationalMw");
+    await user.type(screen.getByLabelText(/new value/i), "abc");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    const description = screen.getByLabelText(/new value/i).getAttribute("aria-describedby") ?? "";
+    expect(description.split(" ")).toHaveLength(2);
+    expect(screen.getByLabelText(/new value/i)).toHaveAccessibleDescription(
+      /In megawatts\. 1\.2 GW works too\..*Enter a number in megawatts/
+    );
+  });
+
+  // validateFieldValue (lib/contribute.ts) rejects text over 200 with "must be
+  // 1-200 characters"; the 2000 in correctionSchema is only the outer cap.
+  it("limits a text value to 200 characters, validateFieldValue's 1-200 rule", async () => {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+
+    expect(screen.getByLabelText(/new value/i)).toHaveAttribute("maxlength", "200");
+  });
+});
+
+describe("SuggestCorrection — source link", () => {
+  function postedBody() {
+    const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+    return JSON.parse(mockFetch.mock.calls[0][1].body as string);
+  }
+
+  async function openDialog(user: ReturnType<typeof userEvent.setup>) {
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+  }
+
+  it("posts a scheme-less link with https:// added", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user);
+    await user.type(screen.getByLabelText(/new value/i), "Colossus");
+    await user.type(screen.getByLabelText(/source url/i), "example.com/x");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(postedBody().sourceUrl).toBe("https://example.com/x");
+  });
+
+  it("posts a host:port link with https:// added", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user);
+    await user.type(screen.getByLabelText(/new value/i), "Colossus");
+    await user.type(screen.getByLabelText(/source url/i), "example.com:8080/a");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(postedBody().sourceUrl).toBe("https://example.com:8080/a");
+  });
+
+  it("shows the added https:// when the field loses focus", async () => {
+    const user = userEvent.setup();
+    await openDialog(user);
+    const source = screen.getByLabelText(/source url/i);
+    await user.type(source, "example.com/x");
+    expect(source).toHaveValue("example.com/x");
+
+    await user.tab();
+
+    expect(source).toHaveValue("https://example.com/x");
+  });
+
+  it("leaves a link that already has a scheme untouched on blur", async () => {
+    const user = userEvent.setup();
+    await openDialog(user);
+    const source = screen.getByLabelText(/source url/i);
+    await user.type(source, "HTTPS://Example.com/x");
+
+    await user.tab();
+
+    expect(source).toHaveValue("HTTPS://Example.com/x");
+  });
+
+  it("replaces the server's bare 'Invalid URL' with the friendly message", async () => {
+    mockFetchOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({
+        error: "Please fix the errors below.",
+        issues: [{ path: ["sourceUrl"], message: "Invalid URL" }],
+      }),
+    });
+    const user = userEvent.setup();
+    await openDialog(user);
+    await user.type(screen.getByLabelText(/new value/i), "Colossus");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/x");
+
+    await user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+    expect(
+      await screen.findByText("Paste the full link, starting with https://")
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Invalid URL")).not.toBeInTheDocument();
   });
 });

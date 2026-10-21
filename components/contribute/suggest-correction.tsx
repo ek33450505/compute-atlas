@@ -27,6 +27,12 @@ import {
   type CorrectableDisplayValues,
   type CorrectableKey,
 } from "@/lib/contribute-fields";
+import {
+  correctionNumberHint,
+  isHttpUrl,
+  normalizeSourceUrl,
+  parseCorrectionNumber,
+} from "@/lib/correction-input";
 import { US_STATE_NAMES } from "@/lib/us-states";
 
 // ---------------------------------------------------------------------------
@@ -81,7 +87,14 @@ export function buildCorrectionPayload(
   state: CorrectionFormState
 ): Record<string, unknown> {
   const def = CORRECTABLE_FIELD_META.find((m) => m.key === state.field);
-  const value = def?.valueKind === "number" ? Number(state.value) : state.value;
+  let value: string | number = state.value;
+  if (def?.valueKind === "number") {
+    const parsed = parseCorrectionNumber(state.value, state.field);
+    // `validateCorrection` gates the submit, so this is unreachable from the
+    // dialog. Guessing (Number("1e3") is 1000) would post a wrong figure.
+    if (!parsed.ok) throw new Error(`Cannot build a ${state.field} correction from "${state.value}"`);
+    value = parsed.value;
+  }
 
   const payload: Record<string, unknown> = {
     kind: "correction",
@@ -89,13 +102,46 @@ export function buildCorrectionPayload(
     targetFacilityId: facilityId,
     field: state.field,
     value,
-    sourceUrl: state.sourceUrl.trim(),
+    sourceUrl: normalizeSourceUrl(state.sourceUrl),
   };
 
   if (state.attribution.trim()) payload.attribution = state.attribution.trim();
   if (state.note.trim()) payload.note = state.note.trim();
 
   return payload;
+}
+
+const SOURCE_REQUIRED = "Add a link to a public source.";
+const SOURCE_NOT_HTTP = "Paste the full link, starting with https://";
+// Zod's bare message for a string that doesn't parse as a URL (zod 4.6).
+const ZOD_INVALID_URL = "Invalid URL";
+
+/**
+ * Field errors to show BEFORE posting, keyed like the server's issues
+ * (`value`, `sourceUrl`). Empty means the form can be submitted. Mirrors the
+ * server's rules (lib/contribute.ts) closely enough that a typo is caught here
+ * with a friendly message rather than as a 400.
+ */
+export function validateCorrection(state: CorrectionFormState): FieldIssues {
+  const def = CORRECTABLE_FIELD_META.find((m) => m.key === state.field);
+  const issues: FieldIssues = {};
+
+  if (def?.valueKind === "number") {
+    const parsed = parseCorrectionNumber(state.value, state.field);
+    if (!parsed.ok) issues["value"] = parsed.error;
+  } else if (def?.valueKind === "enum") {
+    if (!def.enumValues?.includes(state.value)) issues["value"] = "Select a value.";
+  } else if (def?.valueKind === "state") {
+    if (!state.value) issues["value"] = "Select a state.";
+  } else if (state.value.trim() === "") {
+    issues["value"] = "Enter a new value.";
+  }
+
+  const source = normalizeSourceUrl(state.sourceUrl);
+  if (source === "") issues["sourceUrl"] = SOURCE_REQUIRED;
+  else if (!isHttpUrl(source)) issues["sourceUrl"] = SOURCE_NOT_HTTP;
+
+  return issues;
 }
 
 /**
@@ -258,6 +304,24 @@ export function SuggestCorrection({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submitting) return;
+
+    // Catch what the server would reject, with friendlier copy, and put focus
+    // on the first control to fix (the value comes before the source).
+    const clientIssues = validateCorrection(state);
+    const firstInvalidId = clientIssues["value"]
+      ? valueId
+      : clientIssues["sourceUrl"]
+        ? sourceId
+        : null;
+    if (firstInvalidId) {
+      setErrors(clientIssues);
+      setFormError("Please fix the errors below.");
+      // By id, not a ref: the value control is an Input or a Select trigger
+      // depending on the field, so one lookup beats a ref per branch.
+      document.getElementById(firstInvalidId)?.focus();
+      return;
+    }
+
     setFormError(undefined);
     setErrors({});
     setSubmitting(true);
@@ -283,7 +347,9 @@ export function SuggestCorrection({
 
       if ((res.status === 400 || res.status === 404 || res.status === 429) && json && typeof json === "object") {
         const body = json as { error?: string; issues?: unknown };
-        setErrors(issuesToFieldMap(body.issues));
+        const issues = issuesToFieldMap(body.issues);
+        if (issues["sourceUrl"] === ZOD_INVALID_URL) issues["sourceUrl"] = SOURCE_NOT_HTTP;
+        setErrors(issues);
         setFormError(body.error ?? "Please fix the errors below.");
         return;
       }
@@ -299,6 +365,7 @@ export function SuggestCorrection({
   const fieldId = `${uid}-correction-field`;
   const currentId = `${uid}-correction-current`;
   const valueId = `${uid}-correction-value`;
+  const valueHintId = `${uid}-correction-value-hint`;
   const sourceId = `${uid}-correction-source`;
   const sourceHintId = `${uid}-correction-source-hint`;
   const attributionId = `${uid}-correction-attribution`;
@@ -309,6 +376,11 @@ export function SuggestCorrection({
   const sourceErrorId = `${uid}-correction-source-error`;
 
   const sourceDescribedBy = [sourceHintId, errors["sourceUrl"] ? sourceErrorId : null]
+    .filter(Boolean)
+    .join(" ");
+
+  const numberHint = def.valueKind === "number" ? correctionNumberHint(state.field) : undefined;
+  const valueDescribedBy = [numberHint ? valueHintId : null, errors["value"] ? valueErrorId : null]
     .filter(Boolean)
     .join(" ");
 
@@ -431,33 +503,44 @@ export function SuggestCorrection({
                     New value
                     <span aria-hidden="true" className="text-destructive"> *</span>
                   </Label>
+                  {/* maxLength 200 is validateFieldValue's 1-200 text rule in
+                      lib/contribute.ts; the 2000 in correctionSchema is only the outer cap. */}
                   {def.valueKind === "text" && (
                     <Input
                       id={valueId}
                       name="correction-value"
                       type="text"
+                      maxLength={200}
                       value={state.value}
                       onChange={(e) => setState((prev) => ({ ...prev, value: e.target.value }))}
                       required
                       aria-required="true"
                       aria-invalid={errors["value"] ? true : undefined}
-                      aria-describedby={errors["value"] ? valueErrorId : undefined}
+                      aria-describedby={valueDescribedBy || undefined}
                     />
                   )}
                   {def.valueKind === "number" && (
-                    <Input
-                      id={valueId}
-                      name="correction-value"
-                      type="number"
-                      step="any"
-                      min="0"
-                      value={state.value}
-                      onChange={(e) => setState((prev) => ({ ...prev, value: e.target.value }))}
-                      required
-                      aria-required="true"
-                      aria-invalid={errors["value"] ? true : undefined}
-                      aria-describedby={errors["value"] ? valueErrorId : undefined}
-                    />
+                    <>
+                      {/* type="text": people type "1.2 GW" or "$12.5M", which a
+                          number input would refuse; parseCorrectionNumber reads it. */}
+                      <Input
+                        id={valueId}
+                        name="correction-value"
+                        type="text"
+                        inputMode="decimal"
+                        value={state.value}
+                        onChange={(e) => setState((prev) => ({ ...prev, value: e.target.value }))}
+                        required
+                        aria-required="true"
+                        aria-invalid={errors["value"] ? true : undefined}
+                        aria-describedby={valueDescribedBy || undefined}
+                      />
+                      {numberHint ? (
+                        <p id={valueHintId} className="text-xs text-muted-foreground">
+                          {numberHint}
+                        </p>
+                      ) : null}
+                    </>
                   )}
                   {def.valueKind === "enum" && (
                     <Select
@@ -472,7 +555,7 @@ export function SuggestCorrection({
                         id={valueId}
                         className="w-full"
                         aria-invalid={errors["value"] ? true : undefined}
-                        aria-describedby={errors["value"] ? valueErrorId : undefined}
+                        aria-describedby={valueDescribedBy || undefined}
                       >
                         <SelectValue placeholder="Select a value" />
                       </SelectTrigger>
@@ -498,7 +581,7 @@ export function SuggestCorrection({
                         id={valueId}
                         className="w-full"
                         aria-invalid={errors["value"] ? true : undefined}
-                        aria-describedby={errors["value"] ? valueErrorId : undefined}
+                        aria-describedby={valueDescribedBy || undefined}
                       >
                         <SelectValue placeholder="Select a state" />
                       </SelectTrigger>
@@ -525,6 +608,13 @@ export function SuggestCorrection({
                     type="url"
                     value={state.sourceUrl}
                     onChange={(e) => setState((prev) => ({ ...prev, sourceUrl: e.target.value }))}
+                    onBlur={() =>
+                      // Show the https:// that was added, so what is sent is what is seen.
+                      setState((prev) => {
+                        const sourceUrl = normalizeSourceUrl(prev.sourceUrl);
+                        return sourceUrl === prev.sourceUrl ? prev : { ...prev, sourceUrl };
+                      })
+                    }
                     required
                     aria-required="true"
                     aria-invalid={errors["sourceUrl"] ? true : undefined}
