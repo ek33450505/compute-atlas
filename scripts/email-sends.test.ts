@@ -95,7 +95,7 @@ describe("runCli", () => {
   });
 
   it("reads the address from stdin for --email -, queries by its hash, and never prints it", async () => {
-    process.env.CONTRIBUTE_IP_SALT = "test-salt";
+    vi.stubEnv("CONTRIBUTE_IP_SALT", "test-salt");
     const { deps, out, err } = makeDeps();
     expect(await runCli(["--email", "-"], deps)).toBe(0);
     expect(deps.query).toHaveBeenCalledWith(
@@ -110,7 +110,7 @@ describe("runCli", () => {
   });
 
   it("never echoes an address passed as a flag value", async () => {
-    process.env.CONTRIBUTE_IP_SALT = "test-salt";
+    vi.stubEnv("CONTRIBUTE_IP_SALT", "test-salt");
     const { deps, out, err } = makeDeps();
     await runCli(["--email", ADDRESS], deps);
     expect([...out, ...err].join("\n").toLowerCase()).not.toContain("secret.reader");
@@ -146,7 +146,7 @@ describe("runCli", () => {
   });
 
   it("reports a query failure by code only", async () => {
-    process.env.CONTRIBUTE_IP_SALT = "test-salt";
+    vi.stubEnv("CONTRIBUTE_IP_SALT", "test-salt");
     const { deps, err } = makeDeps({
       query: vi.fn(async () => {
         throw Object.assign(new Error(`Failed query params: ${ADDRESS}`), { code: "57P01" });

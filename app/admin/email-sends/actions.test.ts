@@ -12,7 +12,10 @@ vi.mock("@/lib/admin-session", () => ({
   verifySessionCookie: mockVerifySessionCookie,
 }));
 vi.mock("@/lib/db/client", () => ({ getDb: () => ({}) }));
-vi.mock("@/lib/email-sends-query", () => ({ listEmailSends: mockList, ADDRESS_LOOKUP_LIMIT: 200 }));
+vi.mock("@/lib/email-sends-query", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/email-sends-query")>()),
+  listEmailSends: mockList,
+}));
 
 import { hashAddress } from "@/lib/email-sends";
 import { lookupEmailSendsAction } from "./actions";
@@ -29,7 +32,7 @@ function form(address: string): FormData {
 describe("lookupEmailSendsAction", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    process.env.CONTRIBUTE_IP_SALT = "test-salt";
+    vi.stubEnv("CONTRIBUTE_IP_SALT", "test-salt");
     mockGetCookie.mockReturnValue({ value: "cookie" });
     mockVerifySessionCookie.mockReturnValue(true);
   });
