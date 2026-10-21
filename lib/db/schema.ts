@@ -554,7 +554,8 @@ export type StateDigestRunRow = typeof stateDigestRunsTable.$inferSelect;
  *
  * `kind`: confirm | watch_started | facility_change | facility_digest |
  * state_digest | area_digest. `outcome`: attempted | sent | error |
- * skipped_no_key | skipped_suppressed | skipped_unconfirmed | skipped_capped.
+ * skipped_no_key | skipped_suppressed | skipped_check_failed |
+ * skipped_unconfirmed | skipped_capped.
  * Both are validated at the type level only (no CHECK constraint), so a new
  * value needs no migration.
  */

@@ -6,6 +6,7 @@ import { storableText } from "@/lib/intake-fields";
 import { emailSuppressionsTable, subscriptionsTable } from "@/lib/db/schema";
 import { redactedErrorCode } from "@/lib/db-error";
 import { generateToken } from "@/lib/email";
+import { normalizeEmail } from "@/lib/email-address";
 import { getFacilityById } from "@/lib/data";
 import { stateNameFromCode } from "@/lib/us-states";
 import { checkEmailSendCap, AUTO_CONFIRM_CAP_MAX, AUTO_CONFIRM_CAP_WINDOW_MS } from "@/lib/rate-limit";
@@ -38,8 +39,8 @@ export type SubscribeInput = z.infer<typeof subscribeInputSchema>;
 export type SubscribeResult =
   | {
       ok: true;
-      confirm?: { email: string; targetLabel: string; confirmToken: string };
-      notice?: { email: string; targetLabel: string; unsubscribeToken: string };
+      confirm?: { subscriptionId: string; email: string; targetLabel: string; confirmToken: string };
+      notice?: { subscriptionId: string; email: string; targetLabel: string; unsubscribeToken: string };
     }
   | { ok: false; status: number; error: string; issues?: unknown };
 
@@ -241,7 +242,7 @@ export async function subscribeToTarget(
     return { ok: true };
   }
 
-  const email = data.email.trim().toLowerCase();
+  const email = normalizeEmail(data.email);
 
   // Resolves and validates the target by type: a facility subscription needs
   // a real facility id (checked against the DB); a state subscription needs
@@ -347,7 +348,7 @@ export async function subscribeToTarget(
   const confirmToken = generateToken();
   const unsubscribeToken = generateToken();
   try {
-    await db.insert(subscriptionsTable).values({
+    const [inserted] = await db.insert(subscriptionsTable).values({
       email,
       targetType: data.targetType,
       targetId,
@@ -360,7 +361,8 @@ export async function subscribeToTarget(
       confirmToken: hashToken(confirmToken),
       unsubscribeToken,
       ...(autoConfirmEligible ? { confirmedAt: new Date() } : {}),
-    });
+    }).returning({ id: subscriptionsTable.id });
+    const subscriptionId = inserted.id;
 
     if (autoConfirmEligible) {
       // Live immediately — no confirm email to click. The one-shot "you're
@@ -368,7 +370,7 @@ export async function subscribeToTarget(
       // KNOWN LIMITATION just below, a failed send here strands nothing,
       // since the row is already confirmed whether or not the notice
       // arrives.
-      return { ok: true, notice: { email, targetLabel, unsubscribeToken } };
+      return { ok: true, notice: { subscriptionId, email, targetLabel, unsubscribeToken } };
     }
 
     // The confirm email is NOT sent here. The route sends it AFTER this
@@ -387,7 +389,7 @@ export async function subscribeToTarget(
     // clears. Accepted for MVP (rare + bounded). Future fix: roll back the
     // row on a genuine send error (distinguishing it from the env-gated
     // no-key no-op), or expire stale pending rows + allow resend.
-    return { ok: true, confirm: { email, targetLabel, confirmToken } };
+    return { ok: true, confirm: { subscriptionId, email, targetLabel, confirmToken } };
   } catch (err) {
     if (!isUniqueViolation(err)) {
       // A genuine DB failure (not the expected active-subscription dedup

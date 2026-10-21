@@ -12,7 +12,7 @@ import { hashNotifyEmail } from "@/lib/rate-limit";
  * Write path for the `email_sends` accountability log (see
  * `emailSendsTable`'s doc comment in lib/db/schema.ts). It records what was
  * mailed and how it ended; it is NOT a dedupe ledger and nothing here
- * decides whether to send. The caller (lib/email-gate.ts, to come) owns the
+ * decides whether to send. The caller (lib/email-gate.ts) owns the
  * fail-closed policy.
  */
 
@@ -30,6 +30,8 @@ export const EMAIL_SEND_SKIP_OUTCOMES = [
   "skipped_suppressed",
   "skipped_unconfirmed",
   "skipped_capped",
+  /** The suppression lookup errored ("unknown"): not sent, but NOT a suppression. `outcome` is a plain text column, so no migration. */
+  "skipped_check_failed",
 ] as const;
 export type EmailSendSkipOutcome = (typeof EMAIL_SEND_SKIP_OUTCOMES)[number];
 
@@ -121,6 +123,23 @@ export async function recordSkip(
 }
 
 /**
+ * Settles a claimed `attempted` row as a skip (the send gate claims before it
+ * counts, so an over-cap claim is converted here). NEVER throws: if the
+ * UPDATE fails the row stays `attempted`, which over-counts toward the cap
+ * (safe) and is logged, SQLSTATE only.
+ */
+export async function settleSkip(db: EmailSendsDb, id: string, outcome: EmailSendSkipOutcome): Promise<void> {
+  try {
+    await db
+      .update(emailSendsTable)
+      .set({ outcome, completedAt: new Date() })
+      .where(eq(emailSendsTable.id, id));
+  } catch (err) {
+    console.warn(`email_sends: could not settle skip (${redactedErrorCode(err)})`);
+  }
+}
+
+/**
  * Counts `confirm` rows for the address since `now - windowMs`, excluding
  * every `skipped_*` outcome, `skipped_no_key` included (a skipped send mailed nothing, so it must not spend
  * the budget). `attempted` and `error` DO count: a send that may have gone
@@ -128,7 +147,7 @@ export async function recordSkip(
  *
  * RACE: count-then-send is check-then-act, so concurrent confirms can each
  * read a count under the cap and all send, overshooting it. This reader
- * cannot close that. The send gate (lib/email-gate.ts, to come) claims first (inserts the `attempted` row, then
+ * cannot close that. The send gate (lib/email-gate.ts) claims first (inserts the `attempted` row, then
  * counts including it) so the count sees its own claim.
  */
 export async function countRecentConfirmSends(

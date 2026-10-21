@@ -35,7 +35,9 @@ import { eq } from "drizzle-orm";
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { subscribeAttemptsTable, subscriptionsTable } from "@/lib/db/schema";
+import { emailSendsTable, subscribeAttemptsTable, subscriptionsTable } from "@/lib/db/schema";
+import { CONFIRM_CAP_MAX } from "@/lib/email-sends";
+import { hashNotifyEmail } from "@/lib/rate-limit";
 import { EMAIL_SEND_CAP_MAX, hashIp, RATE_LIMIT_MAX } from "@/lib/rate-limit";
 import { CONSENT_COOKIE_NAME, createConsentValue } from "@/lib/subscribe-consent";
 import facilitiesRaw from "@/data/facilities.json";
@@ -756,5 +758,89 @@ describe("POST /api/subscribe — the generic success body is byte-identical acr
       expect(other.text).toBe(fresh.text);
     }
     expect(fresh.text).toBe('{"ok":true}');
+  });
+});
+
+// The send gate (lib/email-gate.ts) runs after the response, so no gate
+// outcome may change what the requester sees: byte-identical status and body.
+describe("POST /api/subscribe: gate outcomes are invisible to the requester", () => {
+  let n = 0;
+  async function call(email: string) {
+    n++;
+    const res = await POST(
+      req({ email, targetType: "state", targetId: "TN" }, { "x-real-ip": `198.51.100.${n}` })
+    );
+    const text = await res.text();
+    await flushAfter();
+    pendingAfter = undefined;
+    return { status: res.status, text };
+  }
+  const sends = () => tdb.db.select().from(emailSendsTable);
+
+  it("sent, capped, send-log down and Resend failing all answer the same bytes", async () => {
+    process.env.CONTRIBUTE_IP_SALT ??= "route-gate-test-salt";
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+
+    const sent = await call("sent@example.com");
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    expect((await sends()).map((r) => r.outcome)).toEqual(["sent"]);
+
+    resendSendMock.mockClear();
+    const capHash = hashNotifyEmail("capped@example.com");
+    for (let i = 0; i < CONFIRM_CAP_MAX; i++) {
+      await tdb.db.insert(emailSendsTable).values({ kind: "confirm", emailHash: capHash, outcome: "sent" });
+    }
+    const capped = await call("capped@example.com");
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect((await sends()).filter((r) => r.outcome === "skipped_capped")).toHaveLength(1);
+
+    resendSendMock.mockResolvedValue({ data: null, error: { name: "validation_error", message: "x" } });
+    const failing = await call("failing@example.com");
+    expect((await sends()).filter((r) => r.outcome === "error" && r.errorCode === "validation_error")).toHaveLength(1);
+
+    resendSendMock.mockClear();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await tdb.client.exec("alter table email_sends rename to email_sends_away");
+    let logDown;
+    try {
+      logDown = await call("logdown@example.com");
+    } finally {
+      await tdb.client.exec("alter table email_sends_away rename to email_sends");
+    }
+    expect(resendSendMock).not.toHaveBeenCalled();
+
+    for (const other of [capped, failing, logDown]) {
+      expect(other).toEqual(sent);
+    }
+    expect(sent).toEqual({ status: 201, text: '{"ok":true}' });
+  });
+
+  it("getDb() throwing inside the after() task escapes nowhere and logs a code only", async () => {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    const getDbMock = vi.mocked(dbClient.getDb);
+
+    // Baseline: how many getDb() calls one fresh subscribe makes, the last being the gated send's.
+    getDbMock.mockClear();
+    const baseline = await call("baseline@example.com");
+    const total = getDbMock.mock.calls.length;
+    resendSendMock.mockClear();
+
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    let calls = 0;
+    getDbMock.mockImplementation((() => {
+      calls++;
+      if (calls >= total) throw new Error("boom for victim@example.com");
+      return tdb.db;
+    }) as never);
+    try {
+      const res = await call("victim@example.com"); // call() awaits the after task: a rejection would fail here
+      expect(res).toEqual(baseline);
+    } finally {
+      getDbMock.mockReturnValue(tdb.db as never);
+    }
+    const logged = errSpy.mock.calls.flat().map(String).join(" ");
+    expect(logged).toContain("gated send failed (sqlstate: unknown)");
+    expect(logged).not.toContain("victim@example.com");
+    expect(resendSendMock).not.toHaveBeenCalled();
   });
 });

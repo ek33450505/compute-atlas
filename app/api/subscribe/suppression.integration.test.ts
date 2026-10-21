@@ -9,11 +9,19 @@ vi.mock("next/cache", () => ({
 vi.mock("@/lib/db/client");
 
 let pendingAfter: Promise<unknown> | undefined;
+// When set, `after()` tasks are parked instead of started, so a test can
+// measure the work done BEFORE the response separately from the gated send.
+let parkedAfter: (() => unknown) | undefined;
+let parkAfter = false;
 vi.mock("next/server", async (importOriginal) => {
   const actual = await importOriginal<typeof import("next/server")>();
   return {
     ...actual,
     after: (task: () => unknown) => {
+      if (parkAfter) {
+        parkedAfter = task;
+        return;
+      }
       pendingAfter = Promise.resolve().then(task);
     },
   };
@@ -224,7 +232,7 @@ describe("subscribe consults the suppression list", () => {
     expect(resendSendMock).not.toHaveBeenCalled();
   });
 
-  it("issues the same number of queries on the suppressed and the fresh path", async () => {
+  it("issues the same number of pre-response queries on the suppressed and the fresh path", async () => {
     const countSelects = async (email: string): Promise<number> => {
       const db = tdb.db as unknown as { select: (...a: unknown[]) => unknown; insert: (...a: unknown[]) => unknown };
       const sel = db.select.bind(tdb.db);
@@ -238,13 +246,21 @@ describe("subscribe consults the suppression list", () => {
         n++;
         return ins(...a);
       };
+      // Counted up to the response only: the gated send runs after it (in
+      // after()), so it cannot affect response timing, and its query count
+      // legitimately differs by path (a suppressed address gets a skip row,
+      // a fresh one an attempt row plus a settle).
+      parkAfter = true;
       try {
         await subscribePOST(subscribeReq({ email, targetType: "state", targetId: "TN" }));
-        await pendingAfter;
       } finally {
+        parkAfter = false;
         db.select = sel;
         db.insert = ins;
       }
+      const task = parkedAfter;
+      parkedAfter = undefined;
+      await task?.();
       return n;
     };
     await suppress(tdb.db, "blocked@example.com", { kind: "global" }, "unsubscribe_all");

@@ -8,6 +8,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { emailSendsTable, stateDigestRunsTable, subscriptionsTable } from "@/lib/db/schema";
 import {
   CONFIRM_CAP_MAX,
+  EMAIL_SEND_OUTCOMES,
   CONFIRM_CAP_WINDOW_MS,
   completeSend,
   countRecentConfirmSends,
@@ -54,6 +55,15 @@ async function only() {
   expect(rows).toHaveLength(1);
   return rows[0];
 }
+
+describe("schema doc comment", () => {
+  it("lists every outcome in EMAIL_SEND_OUTCOMES", () => {
+    const schema = readFileSync(join(process.cwd(), "lib/db/schema.ts"), "utf-8");
+    const doc = schema.slice(schema.indexOf("`outcome`:"), schema.indexOf("export const emailSendsTable"));
+    // Whole words: a future `skipped_check` must not pass via `skipped_check_failed`.
+    for (const outcome of EMAIL_SEND_OUTCOMES) expect(doc, outcome).toMatch(new RegExp(`\\b${outcome}\\b`));
+  });
+});
 
 describe("migration 0017", () => {
   it("applies cleanly a second time (idempotent) and keeps both FKs single", async () => {
@@ -188,7 +198,7 @@ describe("countRecentConfirmSends", () => {
 
   it("counts attempted, sent and error; ignores every skipped_* outcome", async () => {
     for (const outcome of ["attempted", "sent", "error"]) await seed({ outcome });
-    for (const outcome of ["skipped_no_key", "skipped_suppressed", "skipped_unconfirmed", "skipped_capped"])
+    for (const outcome of ["skipped_no_key", "skipped_suppressed", "skipped_check_failed", "skipped_unconfirmed", "skipped_capped"])
       await seed({ outcome });
     // skipped_no_key mailed nothing either, so it is excluded too.
     expect(await countRecentConfirmSends(db, EMAIL)).toBe(3);

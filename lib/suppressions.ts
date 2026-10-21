@@ -75,6 +75,15 @@ export function mayEmail(status: SuppressionStatus): boolean {
 }
 
 /**
+ * True when the status is "unknown" (the lookup itself failed). For callers
+ * that must RECORD an outage differently from an opt-out; it is never a
+ * send decision, which stays `mayEmail`'s alone.
+ */
+export function isLookupFailure(status: SuppressionStatus): boolean {
+  return status === "unknown";
+}
+
+/**
  * Whether mail to this address for this scope is blocked: a GLOBAL row, or
  * (for a target scope) the exact target row. A `{kind:"global"}` scope asks
  * only about the global row.
