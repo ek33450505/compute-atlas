@@ -1,10 +1,16 @@
 import { STATUS_META, STATUS_ORDER } from "@/lib/status"; // client-safe (only imports lucide icons)
-import { communityStatusEnum, energySourceEnum, waterCoolingTypeEnum } from "@/lib/schema";
+import {
+  communityStatusEnum,
+  energySourceEnum,
+  waterCoolingTypeEnum,
+  type Facility,
+} from "@/lib/schema";
 import {
   COMMUNITY_STATUS_LABELS,
   COOLING_TYPE_LABELS,
   ENERGY_SOURCE_LABELS,
 } from "@/lib/enum-labels";
+import { stateNameFromCode } from "@/lib/us-states"; // leaf: constant maps, no imports
 // lib/schema.ts is client-safe: it only imports zod + the client-safe
 // lib/status and lib/intake-fields leaves (no lib/db/client, lib/submissions,
 // lib/contribute, or lib/facility-write) and is already pulled into client
@@ -123,3 +129,60 @@ export const CORRECTABLE_FIELD_META: readonly CorrectableFieldMeta[] = [
     enumLabels: COMMUNITY_STATUS_LABELS,
   },
 ];
+
+/** Display string per correctable field, for the "Currently: …" line in the
+ *  correction dialog. A key is omitted when the facility has no value for it. */
+export type CorrectableDisplayValues = Partial<Record<CorrectableKey, string>>;
+
+/**
+ * The facility's current value for each correctable field, as a display
+ * string. Every field read here lives on the shared base shape, so this needs
+ * no per-`facilityType` narrowing.
+ *
+ * `subsidies` is a count, not a figure: a subsidies correction ADDS a new
+ * record (see the field's comment above), so "how many are recorded" is the
+ * honest "current" value.
+ *
+ * Numbers use a bare `toLocaleString()`, exactly as `formatCapacity` does
+ * (lib/format.ts), so the masthead figure and the "Currently" line cannot
+ * disagree about how the same number is written.
+ */
+export function correctableDisplayValues(f: Facility): CorrectableDisplayValues {
+  const out: CorrectableDisplayValues = {
+    name: f.name,
+    operator: f.operator,
+    status: STATUS_META[f.status].label,
+    state: stateNameFromCode(f.location.state) ?? f.location.state,
+  };
+  if (f.poweredBy) out.poweredBy = f.poweredBy;
+  if (f.capacityMw?.operational !== undefined) {
+    out.capacityOperationalMw = `${f.capacityMw.operational.toLocaleString()} MW`;
+  }
+  if (f.capacityMw?.planned !== undefined) {
+    out.capacityPlannedMw = `${f.capacityMw.planned.toLocaleString()} MW`;
+  }
+  if (f.subsidies?.length) out.subsidies = `${f.subsidies.length} recorded`;
+  if (f.jobs?.permanent !== undefined) out.jobs = f.jobs.permanent.toLocaleString();
+  if (f.water?.coolingType) out.water = COOLING_TYPE_LABELS[f.water.coolingType];
+  if (f.energy?.source) out.energy = ENERGY_SOURCE_LABELS[f.energy.source];
+  if (f.emissions?.permitNumber) out.emissions = f.emissions.permitNumber;
+  if (f.community?.status) out.community = COMMUNITY_STATUS_LABELS[f.community.status];
+  return out;
+}
+
+type CapacityField = "capacityOperationalMw" | "capacityPlannedMw";
+
+/** Which capacity field a "Know the capacity?" gap prompt should open on.
+ *  Only an operating site has an operational figure to fill; every other
+ *  status (cancelled included) publishes a planned one. /gaps uses this too,
+ *  so the two pages share one rule. */
+export function capacityGapField(status: Facility["status"]): CapacityField {
+  return status === "operational" ? "capacityOperationalMw" : "capacityPlannedMw";
+}
+
+/** Which capacity field the page is actually showing (mirrors `formatCapacity`
+ *  in lib/format.ts: operational when present, planned otherwise), so a "No,
+ *  that's wrong" on the shown figure targets the field it displays. */
+export function capacityShownField(f: Pick<Facility, "capacityMw">): CapacityField {
+  return f.capacityMw?.operational !== undefined ? "capacityOperationalMw" : "capacityPlannedMw";
+}

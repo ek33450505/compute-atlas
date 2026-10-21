@@ -22,7 +22,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { issuesToFieldMap, FieldError, type FieldIssues } from "@/components/contribute/field-primitives";
-import { CORRECTABLE_FIELD_META, type CorrectableKey } from "@/lib/contribute-fields";
+import {
+  CORRECTABLE_FIELD_META,
+  type CorrectableDisplayValues,
+  type CorrectableKey,
+} from "@/lib/contribute-fields";
 import { US_STATE_NAMES } from "@/lib/us-states";
 
 // ---------------------------------------------------------------------------
@@ -49,6 +53,8 @@ const STATE_ITEMS = STATE_OPTIONS.map((s) => ({ value: s.code, label: s.name }))
 // ---------------------------------------------------------------------------
 
 type SuggestCorrectionIntent = "add" | "correct";
+
+const NOT_RECORDED = "not recorded";
 
 const INTENT_COPY = {
   correct: { title: "Suggest a correction", fieldLabel: "What\u2019s wrong?" },
@@ -90,6 +96,32 @@ export function buildCorrectionPayload(
   if (state.note.trim()) payload.note = state.note.trim();
 
   return payload;
+}
+
+/**
+ * The "Currently: …" text for the targeted field, or null for no line at all.
+ * With facility data, a field it lacks is "not recorded". Without it, only a
+ * gap prompt (intent "add") still on its own default field is known to be
+ * empty; a switched-to field could hold anything, so it says nothing.
+ *
+ * That fallback is only true because every FieldGapPrompt call site renders
+ * for an ABSENT field. A gap gate broader than its field would print a false
+ * "not recorded" — pass `currentValues` there instead.
+ */
+export function currentValueFor({
+  currentValues,
+  intent,
+  field,
+  defaultField,
+}: {
+  currentValues: CorrectableDisplayValues | undefined;
+  intent: SuggestCorrectionIntent;
+  field: CorrectableKey;
+  defaultField: CorrectableKey | undefined;
+}): string | null {
+  if (currentValues) return currentValues[field] ?? NOT_RECORDED;
+  if (intent === "add" && field === defaultField) return NOT_RECORDED;
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -151,6 +183,7 @@ export function SuggestCorrection({
   triggerAriaLabel,
   showIntro = true,
   intent = "correct",
+  currentValues,
 }: {
   facilityId: string;
   facilityName: string;
@@ -183,6 +216,11 @@ export function SuggestCorrection({
   /** Dialog framing. `"correct"` (default) is for reporting an error;
    * `"add"` is for filling a known gap, where "What's wrong?" misleads. */
   intent?: SuggestCorrectionIntent;
+  /** The facility's current value per field (see `correctableDisplayValues`),
+   * shown as "Currently: …" under the field select. When omitted, only an
+   * `intent="add"` dialog still on its `defaultField` says "not recorded" — a
+   * gap prompt only opens on an empty field. */
+  currentValues?: CorrectableDisplayValues;
 }) {
   const uid = useId();
   const [open, setOpen] = useState(false);
@@ -206,6 +244,12 @@ export function SuggestCorrection({
 
   const def = CORRECTABLE_FIELD_META.find((m) => m.key === state.field)!;
   const copy = INTENT_COPY[intent];
+  const currentValue = currentValueFor({
+    currentValues,
+    intent,
+    field: state.field,
+    defaultField,
+  });
   // Options for an enum-kind field come from THAT field's own values — the
   // server validates against `def.enumValues` (lib/contribute.ts), so any other
   // list (e.g. the status values) can never be submitted successfully.
@@ -253,6 +297,7 @@ export function SuggestCorrection({
   }
 
   const fieldId = `${uid}-correction-field`;
+  const currentId = `${uid}-correction-current`;
   const valueId = `${uid}-correction-value`;
   const sourceId = `${uid}-correction-source`;
   const sourceHintId = `${uid}-correction-source-hint`;
@@ -359,7 +404,11 @@ export function SuggestCorrection({
                       setState((prev) => ({ ...prev, field: v as CorrectableKey, value: "" }));
                     }}
                   >
-                    <SelectTrigger id={fieldId} className="w-full">
+                    <SelectTrigger
+                      id={fieldId}
+                      className="w-full"
+                      aria-describedby={currentValue !== null ? currentId : undefined}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -370,6 +419,11 @@ export function SuggestCorrection({
                       ))}
                     </SelectContent>
                   </Select>
+                  {currentValue !== null ? (
+                    <p id={currentId} className="text-xs text-muted-foreground">
+                      Currently: {currentValue}
+                    </p>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-col gap-1.5">

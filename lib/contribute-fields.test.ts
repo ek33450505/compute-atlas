@@ -1,7 +1,15 @@
 import { describe, it, expect } from "vitest";
 
-import { CORRECTABLE_KEYS, CORRECTABLE_FIELD_META } from "@/lib/contribute-fields";
-import { STATUS_ORDER } from "@/lib/status";
+import {
+  CORRECTABLE_KEYS,
+  CORRECTABLE_FIELD_META,
+  capacityGapField,
+  capacityShownField,
+  correctableDisplayValues,
+} from "@/lib/contribute-fields";
+import { formatCapacity } from "@/lib/format";
+import type { DataCenterFacility } from "@/lib/schema";
+import { STATUS_ORDER, type Status } from "@/lib/status";
 
 // Regression guard for the CORRECTABLE_KEYS widening (2026-09-11, Ed's fresh
 // go-ahead): the original staged rollout (2026-09-10) shipped only subsidies
@@ -81,5 +89,190 @@ describe("enum-kind correctable fields carry display labels", () => {
   it("status enumValues equal STATUS_ORDER", () => {
     const meta = CORRECTABLE_FIELD_META.find((m) => m.key === "status");
     expect(meta?.enumValues).toEqual([...STATUS_ORDER]);
+  });
+});
+
+/** Minimal data-center Facility; every optional field is omitted unless overridden. */
+function makeFacility(overrides: Partial<DataCenterFacility> = {}): DataCenterFacility {
+  return {
+    id: "test-facility",
+    name: "Test Facility",
+    operator: "Test Operator",
+    status: "operational",
+    facilityType: "data_center",
+    aiClassification: "confirmed",
+    confidence: "confirmed",
+    location: { lat: 35.0, lon: -90.0, city: "Memphis", state: "TN", precision: "exact" },
+    statusHistory: [],
+    sources: [
+      { url: "https://example.com", label: "Source", retrievedAt: "2024-01-01", kind: "press" },
+    ],
+    lastUpdated: "2024-01-01",
+    ...overrides,
+  };
+}
+
+// The "Currently: …" line in the correction dialog reads from this. Display
+// strings, not raw values, and a key is OMITTED (never "" or "undefined")
+// when the facility has nothing for it.
+describe("correctableDisplayValues", () => {
+  it("renders every correctable field of a fully-populated facility as a display string", () => {
+    const facility = makeFacility({
+      name: "Colossus",
+      operator: "xAI",
+      status: "under_construction",
+      poweredBy: "Grid — TVA",
+      capacityMw: { operational: 1500, planned: 300000 },
+      subsidies: [{ program: "Sales tax exemption" }, { amountUsd: 5_000_000 }],
+      jobs: { permanent: 1200 },
+      water: { coolingType: "closed_loop" },
+      energy: { source: "on_site_gas" },
+      emissions: { permitNumber: "TCEQ-1234" },
+      community: { status: "contested" },
+    });
+
+    expect(correctableDisplayValues(facility)).toEqual({
+      name: "Colossus",
+      operator: "xAI",
+      poweredBy: "Grid — TVA",
+      status: "Under construction",
+      state: "Tennessee",
+      capacityOperationalMw: "1,500 MW",
+      capacityPlannedMw: "300,000 MW",
+      subsidies: "2 recorded",
+      jobs: "1,200",
+      water: "Closed-loop",
+      energy: "On-site gas",
+      emissions: "TCEQ-1234",
+      community: "Contested",
+    });
+  });
+
+  it("every correctable key has a display value", () => {
+    const full = correctableDisplayValues(
+      makeFacility({
+        poweredBy: "Grid",
+        capacityMw: { operational: 1, planned: 2 },
+        subsidies: [{}],
+        jobs: { permanent: 3 },
+        water: { coolingType: "air" },
+        energy: { source: "grid" },
+        emissions: { permitNumber: "P-1" },
+        community: { status: "supported" },
+      })
+    );
+    expect(Object.keys(full).sort()).toEqual([...CORRECTABLE_KEYS].sort());
+  });
+
+  it("returns only the always-present fields for a facility with no optional data", () => {
+    expect(correctableDisplayValues(makeFacility({ name: "Bare", operator: "Op" }))).toEqual({
+      name: "Bare",
+      operator: "Op",
+      status: "Operational",
+      state: "Tennessee",
+    });
+  });
+
+  it("omits a field whose parent object exists but whose own value is unset", () => {
+    const values = correctableDisplayValues(
+      makeFacility({
+        capacityMw: { planned: 400 },
+        jobs: { construction: 900 },
+        water: { reportedMgd: 1.2 },
+        energy: { utility: "TVA" },
+        community: { notes: "n/a" },
+      })
+    );
+    expect(values).not.toHaveProperty("capacityOperationalMw");
+    expect(values.capacityPlannedMw).toBe("400 MW");
+    expect(values).not.toHaveProperty("jobs");
+    expect(values).not.toHaveProperty("water");
+    expect(values).not.toHaveProperty("energy");
+    expect(values).not.toHaveProperty("community");
+  });
+
+  it("counts subsidies as records ('N recorded') and omits the key when there are none", () => {
+    const one = correctableDisplayValues(makeFacility({ subsidies: [{ program: "A" }] }));
+    expect(one.subsidies).toBe("1 recorded");
+
+    const three = correctableDisplayValues(makeFacility({ subsidies: [{}, {}, {}] }));
+    expect(three.subsidies).toBe("3 recorded");
+
+    expect(correctableDisplayValues(makeFacility({ subsidies: [] }))).not.toHaveProperty("subsidies");
+    expect(correctableDisplayValues(makeFacility())).not.toHaveProperty("subsidies");
+  });
+
+  it("names a territory, not just a state (Puerto Rico, not 'PR')", () => {
+    const values = correctableDisplayValues(
+      makeFacility({ location: { lat: 18.2, lon: -66.5, state: "PR", precision: "exact" } })
+    );
+    expect(values.state).toBe("Puerto Rico");
+  });
+
+  it("keeps a sourced zero: 0 permanent jobs is a recorded value, not an absent one", () => {
+    expect(correctableDisplayValues(makeFacility({ jobs: { permanent: 0 } })).jobs).toBe("0");
+  });
+
+  it("falls back to the raw code for a jurisdiction it has no name for", () => {
+    const values = correctableDisplayValues(
+      makeFacility({ location: { lat: 0, lon: 0, state: "ZZ", precision: "exact" } })
+    );
+    expect(values.state).toBe("ZZ");
+  });
+});
+
+describe("capacityGapField", () => {
+  // Typed as Record<Status, …> so a new status fails typecheck here until
+  // someone decides which capacity it publishes. Only an operating site has an
+  // operational figure to fill; every other status, cancelled included, is planned.
+  const EXPECTED: Record<Status, "capacityPlannedMw" | "capacityOperationalMw"> = {
+    operational: "capacityOperationalMw",
+    under_construction: "capacityPlannedMw",
+    permitted: "capacityPlannedMw",
+    proposed: "capacityPlannedMw",
+    cancelled: "capacityPlannedMw",
+  };
+
+  it.each(STATUS_ORDER.map((status) => [status, EXPECTED[status]] as const))(
+    "%s -> %s",
+    (status, field) => {
+      expect(capacityGapField(status)).toBe(field);
+    }
+  );
+});
+
+describe("capacityShownField", () => {
+  it("targets operational when operational capacity is recorded", () => {
+    expect(capacityShownField({ capacityMw: { operational: 150 } })).toBe("capacityOperationalMw");
+  });
+
+  it("targets operational when both are recorded (the figure shown is operational)", () => {
+    expect(capacityShownField({ capacityMw: { operational: 100, planned: 400 } })).toBe(
+      "capacityOperationalMw"
+    );
+  });
+
+  it("targets planned when only planned capacity is recorded", () => {
+    expect(capacityShownField({ capacityMw: { planned: 1200 } })).toBe("capacityPlannedMw");
+  });
+
+  it("targets planned when no capacity is recorded", () => {
+    expect(capacityShownField({ capacityMw: undefined })).toBe("capacityPlannedMw");
+  });
+
+  // The point of the helper: "No" must correct the figure the page SHOWED.
+  // Figures >= 1,000 on purpose: a thousands separator is where two formatters
+  // would disagree, and a sub-1,000 figure can never show it.
+  it.each([
+    ["operational only", { operational: 1500 }],
+    ["planned only", { planned: 12000 }],
+    ["both", { operational: 1500, planned: 24000 }],
+  ])("targets the field formatCapacity displays (%s)", (_name, capacityMw) => {
+    const facility = makeFacility({ capacityMw });
+    const field = capacityShownField(facility);
+    const shown = correctableDisplayValues(facility)[field];
+
+    expect(shown).toBeDefined();
+    expect(formatCapacity(facility)).toContain(shown);
   });
 });

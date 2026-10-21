@@ -253,6 +253,19 @@ describe("GapsPage", () => {
     }
   });
 
+  // /gaps shares capacityGapField with the facility page; this pins the field
+  // AND the label it renders for every status, so a rule change is deliberate.
+  it.each([
+    ["operational", "capacityOperationalMw", "the operational capacity"],
+    ["under_construction", "capacityPlannedMw", "the planned capacity"],
+    ["permitted", "capacityPlannedMw", "the planned capacity"],
+    ["proposed", "capacityPlannedMw", "the planned capacity"],
+    ["cancelled", "capacityPlannedMw", "the planned capacity"],
+  ] as const)("the capacity prompt for a %s facility is %s / %s", (status, field, label) => {
+    const capacity = GAP_SECTIONS.find((s) => s.key === "capacity")!;
+    expect(capacity.gapPromptFor({ status })).toEqual({ field, label });
+  });
+
   it("targets capacityOperationalMw for an operational example and capacityPlannedMw for an under_construction one", async () => {
     mockGetDatasetGaps.mockResolvedValue(makeGapCounts());
     mockGetGapExamples.mockImplementation((dim: GapDimension) => {

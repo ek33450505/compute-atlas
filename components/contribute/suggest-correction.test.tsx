@@ -8,6 +8,7 @@ import { CORRECTABLE_FIELD_META, type CorrectableKey } from "@/lib/contribute-fi
 import {
   SuggestCorrection,
   buildCorrectionPayload,
+  currentValueFor,
   type CorrectionFormState,
 } from "./suggest-correction";
 
@@ -614,5 +615,184 @@ describe("SuggestCorrection — form layout and copy", () => {
       screen.getByText("Where did you see it? A news story, permit, filing, or company page.")
     ).toBeInTheDocument();
     expect(screen.queryByText(/backs up this change/i)).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// "Currently: …" — the facility's present value under the field select, so
+// the submitter can see what they are correcting.
+// ---------------------------------------------------------------------------
+
+describe("SuggestCorrection — current value line", () => {
+  async function open(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(screen.getByRole("button", { name: /suggest a correction|know/i }));
+  }
+
+  it("shows the facility's current value for the targeted field", async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        defaultField="capacityOperationalMw"
+        currentValues={{ capacityOperationalMw: "300 MW" }}
+      />
+    );
+    await open(user);
+
+    expect(screen.getByText("Currently: 300 MW")).toBeInTheDocument();
+  });
+
+  it("says 'not recorded' when currentValues is given but lacks the targeted field", async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        defaultField="capacityOperationalMw"
+        currentValues={{ name: "Test DC" }}
+      />
+    );
+    await open(user);
+
+    expect(screen.getByText("Currently: not recorded")).toBeInTheDocument();
+  });
+
+  it('says "not recorded" for an intent="add" dialog still on its defaultField, even without currentValues', async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        defaultField="jobs"
+        intent="add"
+        triggerLabel="Know permanent jobs?"
+      />
+    );
+    await open(user);
+
+    expect(screen.getByText("Currently: not recorded")).toBeInTheDocument();
+  });
+
+  it("renders nothing when there are no currentValues and the dialog is not a gap prompt", async () => {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" defaultField="jobs" />);
+    await open(user);
+
+    expect(screen.queryByText(/currently:/i)).not.toBeInTheDocument();
+  });
+
+  it("renders nothing for an add dialog once the user switches off its defaultField (no currentValues)", async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        defaultField="jobs"
+        intent="add"
+        triggerLabel="Know permanent jobs?"
+      />
+    );
+    await open(user);
+    expect(screen.getByText("Currently: not recorded")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("combobox", { name: /what are you adding/i }));
+    await user.click(await screen.findByRole("option", { name: "Operator" }));
+
+    expect(screen.queryByText(/currently:/i)).not.toBeInTheDocument();
+  });
+
+  it("follows the field when the user switches it", async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        defaultField="name"
+        currentValues={{ name: "Colossus", operator: "xAI" }}
+      />
+    );
+    await open(user);
+    expect(screen.getByText("Currently: Colossus")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Operator" }));
+
+    expect(screen.getByText("Currently: xAI")).toBeInTheDocument();
+    expect(screen.queryByText("Currently: Colossus")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Powered by" }));
+
+    expect(screen.getByText("Currently: not recorded")).toBeInTheDocument();
+  });
+
+  it("describes the field select by the current-value line, for screen readers", async () => {
+    const user = userEvent.setup();
+    render(
+      <SuggestCorrection
+        facilityId="facility-1"
+        facilityName="Test DC"
+        defaultField="capacityOperationalMw"
+        currentValues={{ capacityOperationalMw: "300 MW" }}
+      />
+    );
+    await open(user);
+
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toHaveAccessibleDescription(
+      "Currently: 300 MW"
+    );
+  });
+
+  it("leaves the field select undescribed when there is no current-value line", async () => {
+    const user = userEvent.setup();
+    render(<SuggestCorrection facilityId="facility-1" facilityName="Test DC" />);
+    await open(user);
+
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).not.toHaveAttribute(
+      "aria-describedby"
+    );
+  });
+});
+
+// The pure rule behind the "Currently: …" line (the component tests above
+// exercise it through the dialog).
+describe("currentValueFor", () => {
+  it("returns the facility's value when currentValues has the field", () => {
+    expect(
+      currentValueFor({
+        currentValues: { jobs: "1,200" },
+        intent: "correct",
+        field: "jobs",
+        defaultField: undefined,
+      })
+    ).toBe("1,200");
+  });
+
+  it("says 'not recorded' when currentValues exists but lacks the field, whatever the intent", () => {
+    for (const intent of ["correct", "add"] as const) {
+      expect(
+        currentValueFor({
+          currentValues: { name: "Test DC" },
+          intent,
+          field: "jobs",
+          defaultField: "name",
+        })
+      ).toBe("not recorded");
+    }
+  });
+
+  it("says 'not recorded' without currentValues only for an add dialog still on its default field", () => {
+    expect(
+      currentValueFor({ currentValues: undefined, intent: "add", field: "jobs", defaultField: "jobs" })
+    ).toBe("not recorded");
+  });
+
+  it.each([
+    ["a correct dialog on its default field", "correct", "jobs", "jobs"],
+    ["an add dialog switched off its default field", "add", "operator", "jobs"],
+    ["an add dialog with no default field", "add", "jobs", undefined],
+  ] as const)("says nothing without currentValues for %s", (_name, intent, field, defaultField) => {
+    expect(currentValueFor({ currentValues: undefined, intent, field, defaultField })).toBeNull();
   });
 });

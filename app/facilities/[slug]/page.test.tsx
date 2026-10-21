@@ -1,5 +1,6 @@
 import { vi, describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import type { Facility } from "@/lib/schema";
 
@@ -330,6 +331,90 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
     expect(
       screen.queryByRole("link", { name: /know a source for the announcement date/i })
     ).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Correction dialogs on the page: each shows the facility's current value, and
+// the masthead Capacity row targets the capacity field that applies to the
+// facility (planned for every status but operational) or that the page
+// actually shows.
+// ---------------------------------------------------------------------------
+
+describe("FacilityPage — correction dialogs", () => {
+  async function renderPage(facility: Facility) {
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+    const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
+    render(page);
+  }
+
+  it("gives the 'Spot an error?' dialog the facility's current values", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ name: "Colossus" }));
+
+    await user.click(screen.getByRole("button", { name: /spot an error\?/i }));
+
+    expect(screen.getByText("Currently: Colossus")).toBeInTheDocument();
+  });
+
+  it("gives the bottom 'Suggest a correction' dialog the facility's current values", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ name: "Colossus" }));
+
+    await user.click(screen.getByRole("button", { name: /^suggest a correction$/i }));
+
+    expect(screen.getByText("Currently: Colossus")).toBeInTheDocument();
+  });
+
+  it.each([["proposed"], ["permitted"], ["under_construction"], ["cancelled"]] as const)(
+    "a %s facility with no capacity opens 'Know the capacity?' on planned capacity",
+    async (status) => {
+      const user = userEvent.setup();
+      await renderPage(makeFacility({ status }));
+
+      await user.click(screen.getByRole("button", { name: /know the capacity\?/i }));
+
+      expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
+        "Planned capacity (MW)"
+      );
+      expect(screen.getByText("Currently: not recorded")).toBeInTheDocument();
+    }
+  );
+
+  it("an operational facility with no capacity opens 'Know the capacity?' on operational capacity", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ status: "operational" }));
+
+    await user.click(screen.getByRole("button", { name: /know the capacity\?/i }));
+
+    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
+      "Operational capacity (MW)"
+    );
+  });
+
+  it("'No' on a planned-only capacity corrects planned capacity, and shows its current value", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ status: "proposed", capacityMw: { planned: 1200 } }));
+
+    expect(screen.getByText("1,200 MW planned")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "No, the capacity needs a correction" }));
+
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toHaveTextContent(
+      "Planned capacity (MW)"
+    );
+    expect(screen.getByText("Currently: 1,200 MW")).toBeInTheDocument();
+  });
+
+  it("'No' on an operational capacity corrects operational capacity, and shows its current value", async () => {
+    const user = userEvent.setup();
+    await renderPage(makeFacility({ capacityMw: { operational: 150 } }));
+
+    await user.click(screen.getByRole("button", { name: "No, the capacity needs a correction" }));
+
+    expect(screen.getByRole("combobox", { name: /what.s wrong/i })).toHaveTextContent(
+      "Operational capacity (MW)"
+    );
+    expect(screen.getByText("Currently: 150 MW")).toBeInTheDocument();
   });
 });
 

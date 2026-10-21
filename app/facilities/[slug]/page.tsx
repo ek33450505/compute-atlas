@@ -41,6 +41,11 @@ import { SuggestCorrection } from "@/components/contribute/suggest-correction";
 import { SourceCorrectionNote } from "@/components/contribute/source-correction-note";
 import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { ConfirmFactPrompt } from "@/components/contribute/confirm-fact-prompt";
+import {
+  capacityGapField,
+  capacityShownField,
+  correctableDisplayValues,
+} from "@/lib/contribute-fields";
 import { WatchButton } from "@/components/subscribe/watch-button";
 import { ShareButton } from "@/components/share-button";
 import { SupportCta } from "@/components/support-cta";
@@ -140,6 +145,10 @@ export default async function FacilityPage({
 
   const location = formatLocation(facility);
   const capacity = formatCapacity(facility);
+  // Shown as "Currently: …" in the page's correction dialogs (masthead, bottom
+  // CTA, ConfirmFactPrompt). FieldGapPrompt dialogs don't get it: they only
+  // render for an empty field and fall back to "not recorded".
+  const currentValues = correctableDisplayValues(facility);
   // Reuses the same canonical absolute URL the page's own JSON-LD already
   // builds (buildFacilityJsonLd's `url` field), rather than hand-
   // concatenating siteConfig.url + a path a second time.
@@ -247,6 +256,7 @@ export default async function FacilityPage({
         <SuggestCorrection
           facilityId={facility.id}
           facilityName={facility.name}
+          currentValues={currentValues}
           showIntro={false}
           triggerLabel={
             <>
@@ -340,7 +350,7 @@ export default async function FacilityPage({
           <MastheadFactRow label="Capacity" valueClassName="mt-1 text-sm font-mono tabular-nums">
             {capacity === "—" ? (
               <FieldGapPrompt
-                field="capacityOperationalMw"
+                field={capacityGapField(facility.status)}
                 facilityId={facility.id}
                 facilityName={facility.name}
                 label="the capacity"
@@ -350,11 +360,12 @@ export default async function FacilityPage({
                 {capacity}
                 <div className="mt-1">
                   <ConfirmFactPrompt
-                    field="capacityOperationalMw"
+                    field={capacityShownField(facility)}
                     facilityId={facility.id}
                     facilityName={facility.name}
                     label="the capacity"
                     vintage={facility.lastUpdated}
+                    currentValues={currentValues}
                   />
                 </div>
               </>
@@ -441,7 +452,11 @@ export default async function FacilityPage({
 
       {/* Correction — interactive CTA, not useful on a printed page */}
       <div className="print:hidden">
-        <SuggestCorrection facilityId={facility.id} facilityName={facility.name} />
+        <SuggestCorrection
+          facilityId={facility.id}
+          facilityName={facility.name}
+          currentValues={currentValues}
+        />
       </div>
 
       {/* Watch — interactive CTA, not useful on a printed page */}

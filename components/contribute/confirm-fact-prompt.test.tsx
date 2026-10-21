@@ -80,6 +80,43 @@ describe("ConfirmFactPrompt — correctable field", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("'No' passes currentValues through to the dialog's 'Currently:' line", async () => {
+    const user = userEvent.setup();
+    render(
+      <ConfirmFactPrompt
+        field="capacityOperationalMw"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="the capacity"
+        currentValues={{ capacityOperationalMw: "300 MW" }}
+      />
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "No, the capacity needs a correction" })
+    );
+
+    expect(screen.getByText("Currently: 300 MW")).toBeInTheDocument();
+  });
+
+  it("'No' shows no 'Currently:' line when no currentValues are passed", async () => {
+    const user = userEvent.setup();
+    render(
+      <ConfirmFactPrompt
+        field="capacityOperationalMw"
+        facilityId="facility-1"
+        facilityName="Test DC"
+        label="the capacity"
+      />
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "No, the capacity needs a correction" })
+    );
+
+    expect(screen.queryByText(/currently:/i)).not.toBeInTheDocument();
+  });
+
   it("'Yes' acknowledges locally and makes no network call", async () => {
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as unknown as typeof fetch;
