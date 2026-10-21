@@ -62,8 +62,18 @@ export interface EmailSendBase {
 }
 
 /** `hashNotifyEmail` needs a pre-normalised address; every hash here goes through this so case/padding variants of one address share one hash. */
-function hashAddress(email: string): string {
+export function hashAddress(email: string): string {
   return hashNotifyEmail(normalizeEmail(email));
+}
+
+/**
+ * False when `CONTRIBUTE_IP_SALT` is unset or empty. `hashAddress` then falls
+ * back to the repo-public default salt, so a lookup by hash would match
+ * nothing for a real production address and say nothing about why. Address
+ * lookups must check this and refuse rather than answer wrongly.
+ */
+export function addressLookupAvailable(): boolean {
+  return Boolean(process.env.CONTRIBUTE_IP_SALT);
 }
 
 function baseValues(base: EmailSendBase) {
