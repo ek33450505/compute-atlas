@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Flag } from "lucide-react";
 
+import { CorrectionNotifyProvider } from "@/components/contribute/correction-notify-context";
 import { applyPrefill } from "@/components/contact/contact-form";
 import { CORRECTABLE_FIELD_META, type CorrectableKey } from "@/lib/contribute-fields";
 
@@ -31,6 +32,7 @@ describe("buildCorrectionPayload", () => {
     sourceUrl: "https://example.com/press-release",
     attribution: "",
     note: "",
+    notifyEmail: "",
     website: "",
   };
 
@@ -812,6 +814,7 @@ describe("validateCorrection", () => {
     sourceUrl: "https://example.com/source",
     attribution: "",
     note: "",
+    notifyEmail: "",
     website: "",
   };
 
@@ -866,6 +869,7 @@ describe("buildCorrectionPayload — typed numbers and links", () => {
     sourceUrl: "example.com/a",
     attribution: "",
     note: "",
+    notifyEmail: "",
     website: "",
   };
 
@@ -1220,6 +1224,7 @@ describe("buildLeadTipPayload", () => {
     sourceUrl: "example.com/a",
     attribution: "",
     note: "ignored: the textarea replaces the note",
+    notifyEmail: "",
     website: "",
   };
 
@@ -1343,6 +1348,7 @@ describe("validateCorrection — Something else", () => {
     sourceUrl: "https://example.com/source",
     attribution: "",
     note: "",
+    notifyEmail: "",
     website: "",
   };
 
@@ -1706,6 +1712,7 @@ describe("validateCorrection — lengths", () => {
     sourceUrl: "https://example.com/source",
     attribution: "",
     note: "",
+    notifyEmail: "",
     website: "",
   };
 
@@ -1873,6 +1880,190 @@ describe("SuggestCorrection — no-link contact fallback", () => {
     expect(screen.getByRole("link", { name: /no link\?/i })).toHaveAttribute(
       "href",
       expect.stringContaining("about=Smith%20%26%20Sons")
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Notify email — optional, correction mode only, behind the server-read flag.
+// ---------------------------------------------------------------------------
+
+describe("notify email payload rules", () => {
+  const base: CorrectionFormState = {
+    field: "operator",
+    value: "New Operator LLC",
+    sourceUrl: "https://example.com/press-release",
+    attribution: "",
+    note: "",
+    notifyEmail: "  a@b.co  ",
+    website: "",
+  };
+
+  it("omits notifyEmail when the flag is off", () => {
+    expect(buildCorrectionPayload("f-1", base)).not.toHaveProperty("notifyEmail");
+    expect(buildCorrectionPayload("f-1", base, false)).not.toHaveProperty("notifyEmail");
+  });
+
+  it("sends the trimmed notifyEmail when the flag is on", () => {
+    expect(buildCorrectionPayload("f-1", base, true).notifyEmail).toBe("a@b.co");
+  });
+
+  it("omits a whitespace-only notifyEmail even when the flag is on", () => {
+    expect(buildCorrectionPayload("f-1", { ...base, notifyEmail: "   " }, true)).not.toHaveProperty(
+      "notifyEmail"
+    );
+  });
+
+  it("never puts notifyEmail in a lead tip", () => {
+    expect(buildLeadTipPayload("Test DC", { ...base, field: "other", value: "tip" })).not.toHaveProperty(
+      "notifyEmail"
+    );
+  });
+});
+
+describe("SuggestCorrection — notify email", () => {
+  type User = ReturnType<typeof userEvent.setup>;
+
+  async function openDialog(user: User, enabled?: boolean) {
+    const dialog = <SuggestCorrection facilityId="facility-1" facilityName="Test DC" />;
+    render(
+      enabled === undefined ? dialog : (
+        <CorrectionNotifyProvider enabled={enabled}>{dialog}</CorrectionNotifyProvider>
+      )
+    );
+    await user.click(screen.getByRole("button", { name: /suggest a correction/i }));
+  }
+
+  async function fillRequired(user: User) {
+    await user.type(screen.getByLabelText(/new value/i), "Acme Operator");
+    await user.type(screen.getByLabelText(/source url/i), "https://example.com/source");
+  }
+
+  function fetchCall() {
+    const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
+    const [url, init] = mockFetch.mock.calls[0];
+    return { url, body: JSON.parse(init.body as string) as Record<string, unknown> };
+  }
+
+  const submit = (user: User) => user.click(screen.getByRole("button", { name: /submit correction/i }));
+
+  it("shows no email field without a provider", async () => {
+    const user = userEvent.setup();
+    await openDialog(user);
+    await user.click(screen.getByText(/add a note or credit/i));
+    expect(screen.queryByLabelText(/your email/i)).not.toBeInTheDocument();
+  });
+
+  it("shows no email field when the provider is disabled", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, false);
+    expect(screen.queryByLabelText(/your email/i)).not.toBeInTheDocument();
+  });
+
+  it("shows a described email field, and a matching summary, when enabled", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, true);
+    expect(screen.getByText(/add a note, credit or email \(optional\)/i)).toBeInTheDocument();
+    const input = screen.getByLabelText(/your email \(optional\)/i);
+    expect(input).toHaveAttribute("type", "email");
+    expect(input).toHaveAccessibleDescription(/used once/i);
+  });
+
+  it("drops the field for Something else", async () => {
+    const user = userEvent.setup();
+    await openDialog(user, true);
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Something else" }));
+    expect(screen.queryByLabelText(/your email/i)).not.toBeInTheDocument();
+    expect(screen.getByText("Add your name (optional)")).toBeInTheDocument();
+  });
+
+  it("posts the trimmed email to /api/contribute", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, true);
+    await fillRequired(user);
+    await user.type(screen.getByLabelText(/your email/i), " a@b.co ");
+    await submit(user);
+    await screen.findByText(/your correction is in the review queue/i);
+    const { url, body } = fetchCall();
+    expect(url).toBe("/api/contribute");
+    expect(body.notifyEmail).toBe("a@b.co");
+  });
+
+  it("omits the key when no email was typed", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, true);
+    await fillRequired(user);
+    await submit(user);
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(fetchCall().body).not.toHaveProperty("notifyEmail");
+  });
+
+  it("does not send a previously typed email on a Something else submit", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, true);
+    await user.type(screen.getByLabelText(/your email/i), "a@b.co");
+    await user.click(screen.getByRole("combobox", { name: /what.s wrong/i }));
+    await user.click(await screen.findByRole("option", { name: "Something else" }));
+    await user.type(screen.getByLabelText(/what should we know/i), "the build was cancelled");
+    await user.type(screen.getByLabelText(/source url/i), "example.com/x");
+    await user.click(screen.getByRole("button", { name: /send for review/i }));
+    await screen.findByText(/we.ll look into it/i);
+    const { url, body } = fetchCall();
+    expect(url).toBe("/api/leads");
+    expect(body).not.toHaveProperty("notifyEmail");
+  });
+
+  it("opens the disclosure, softens the message and focuses the input on a 400 for the email", async () => {
+    mockFetchOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({
+        error: "Invalid notify email",
+        issues: [{ path: ["notifyEmail"], message: "Invalid email address" }],
+      }),
+    });
+    const user = userEvent.setup();
+    await openDialog(user, true);
+    await fillRequired(user);
+    await user.type(screen.getByLabelText(/your email/i), "nope");
+    const details = screen.getByText(/add a note, credit or email/i).closest("details");
+    expect(details).not.toHaveAttribute("open");
+    await submit(user);
+    expect(await screen.findByText("Check the email address, or leave it blank.")).toBeInTheDocument();
+    expect(details).toHaveAttribute("open");
+    expect(screen.getByLabelText(/your email/i)).toHaveFocus();
+    expect(screen.getByText("Please fix the errors below.")).toBeInTheDocument();
+    expect(screen.queryByText("Invalid notify email")).not.toBeInTheDocument();
+  });
+
+  it("drops the no-status sentence only when an email was sent", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, true);
+    await fillRequired(user);
+    await user.type(screen.getByLabelText(/your email/i), "a@b.co");
+    await submit(user);
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(screen.queryByText(/no status to track/i)).not.toBeInTheDocument();
+    const para = screen.getByRole("link", { name: /public activity feed/i }).closest("p")!;
+    expect(para.textContent!.replace(/\s+/g, " ").trim()).toMatch(/public activity feed\.$/);
+  });
+
+  it("keeps the no-status sentence when no email was sent", async () => {
+    mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });
+    const user = userEvent.setup();
+    await openDialog(user, true);
+    await fillRequired(user);
+    await submit(user);
+    await screen.findByText(/your correction is in the review queue/i);
+    expect(screen.getByText(/no status to track/i)).toBeInTheDocument();
+    const para = screen.getByText(/no status to track/i).closest("p")!;
+    expect(para.textContent!.replace(/\s+/g, " ").trim()).toMatch(
+      /public activity feed\. Submissions are anonymous, so there\u2019s no status to track this one\.$/
     );
   });
 });

@@ -8,12 +8,14 @@ import type { Facility } from "@/lib/schema";
 import { formatLocation } from "@/lib/format";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
+import { submissionNotifyEnabled } from "@/lib/submission-notify";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SectionHeading } from "@/components/section-heading";
 import { SurveyStatRow, type SurveyStat } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
 import { StatusBadge } from "@/components/status-badge";
+import { CorrectionNotifyProvider } from "@/components/contribute/correction-notify-context";
 import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
 
 export const revalidate = 86400;
@@ -222,7 +224,13 @@ export default async function GapsPage() {
     },
   ];
 
-  return (
+  // Read at render time, never at module scope. This page is ISR, so the
+  // value is fixed per regeneration; an env change needs a new deployment
+  // anyway, and that re-renders it. Passed down as a plain boolean; the
+  // correction dialog (a client component) never reads process.env itself.
+  const notifyEnabled = submissionNotifyEnabled();
+
+  const content = (
     <div
       data-content-width="4xl"
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
@@ -404,4 +412,5 @@ export default async function GapsPage() {
       </section>
     </div>
   );
+  return <CorrectionNotifyProvider enabled={notifyEnabled}>{content}</CorrectionNotifyProvider>;
 }

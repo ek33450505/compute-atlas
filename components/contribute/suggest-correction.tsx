@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCorrectionNotifyEnabled } from "@/components/contribute/correction-notify-context";
 import { issuesToFieldMap, FieldError, type FieldIssues } from "@/components/contribute/field-primitives";
 import {
   CORRECTABLE_FIELD_META,
@@ -113,13 +114,17 @@ export interface CorrectionFormState {
   sourceUrl: string;
   attribution: string;
   note: string;
+  /** "Email me when this is reviewed". Only rendered and sent when the notify
+   * flag is on, and only in correction mode (never for "Something else"). */
+  notifyEmail: string;
   /** Honeypot — real submitters never see or fill this. */
   website: string;
 }
 
 export function buildCorrectionPayload(
   facilityId: string,
-  state: CorrectionFormState
+  state: CorrectionFormState,
+  notifyEnabled = false
 ): Record<string, unknown> {
   // "Something else" is a lead, not a correction: see buildLeadTipPayload.
   if (state.field === OTHER_FIELD) throw new Error("Cannot build a correction for 'Something else'");
@@ -144,6 +149,8 @@ export function buildCorrectionPayload(
 
   if (state.attribution.trim()) payload.attribution = state.attribution.trim();
   if (state.note.trim()) payload.note = state.note.trim();
+  // state.notifyEmail can never leak into the request when the flag is off.
+  if (notifyEnabled && state.notifyEmail.trim()) payload.notifyEmail = state.notifyEmail.trim();
 
   return payload;
 }
@@ -311,6 +318,7 @@ function emptyState(defaultField?: CorrectionField): CorrectionFormState {
     sourceUrl: "",
     attribution: "",
     note: "",
+    notifyEmail: "",
     website: "",
   };
 }
@@ -382,7 +390,10 @@ export function SuggestCorrection({
   const [formError, setFormError] = useState<string | undefined>(undefined);
   const [errors, setErrors] = useState<FieldIssues>({});
   const [outcome, setOutcome] = useState<SubmitOutcome>("idle");
+  const [emailSent, setEmailSent] = useState(false);
+  const notifyEnabled = useCorrectionNotifyEnabled();
   const successRef = useRef<HTMLParagraphElement>(null);
+  const detailsRef = useRef<HTMLDetailsElement>(null);
 
   useEffect(() => {
     if (outcome === "success") successRef.current?.focus();
@@ -393,6 +404,7 @@ export function SuggestCorrection({
     setFormError(undefined);
     setErrors({});
     setOutcome("idle");
+    setEmailSent(false);
   }
 
   const isOther = state.field === OTHER_FIELD;
@@ -452,11 +464,12 @@ export function SuggestCorrection({
         body: JSON.stringify(
           asLead
             ? buildLeadTipPayload(facilityName, submission, topic)
-            : buildCorrectionPayload(facilityId, submission)
+            : buildCorrectionPayload(facilityId, submission, notifyEnabled)
         ),
       });
 
       if (res.status === 201) {
+        setEmailSent(notifyEnabled && !asLead && submission.notifyEmail.trim() !== "");
         setOutcome("success");
         return;
       }
@@ -474,7 +487,17 @@ export function SuggestCorrection({
           ? leadIssuesToFormIssues(issuesToFieldMap(body.issues))
           : issuesToFieldMap(body.issues);
         if (issues["sourceUrl"] === ZOD_INVALID_URL) issues["sourceUrl"] = SOURCE_NOT_HTTP;
+        const badNotifyEmail = !asLead && issues["notifyEmail"] !== undefined;
+        if (badNotifyEmail) issues["notifyEmail"] = "Check the email address, or leave it blank.";
         setErrors(issues);
+        if (badNotifyEmail) {
+          // The field lives in the closed disclosure: open it (synchronous in
+          // the DOM) so the error and focus target are visible.
+          if (detailsRef.current) detailsRef.current.open = true;
+          setFormError("Please fix the errors below.");
+          document.getElementById(notifyEmailId)?.focus();
+          return;
+        }
         // The leads route's bare "Invalid lead" says nothing the field errors don't.
         setFormError(
           asLead && res.status === 400
@@ -500,6 +523,13 @@ export function SuggestCorrection({
   const sourceHintId = `${uid}-correction-source-hint`;
   const attributionId = `${uid}-correction-attribution`;
   const attributionHintId = `${uid}-correction-attribution-hint`;
+  const notifyEmailId = `${uid}-correction-notify-email`;
+  const notifyEmailHintId = `${uid}-correction-notify-email-hint`;
+  const notifyEmailErrorId = `${uid}-correction-notify-email-error`;
+  const showNotifyEmail = notifyEnabled && !isOther;
+  const notifyEmailDescribedBy = [notifyEmailHintId, errors["notifyEmail"] ? notifyEmailErrorId : null]
+    .filter(Boolean)
+    .join(" ");
   const noteId = `${uid}-correction-note`;
   const websiteId = `${uid}-correction-website`;
   const valueErrorId = `${uid}-correction-value-error`;
@@ -581,8 +611,14 @@ export function SuggestCorrection({
                   >
                     public activity feed
                   </Link>
-                  . Submissions are anonymous, so there&rsquo;s no status to
-                  track this one.
+                  .
+                  {emailSent ? null : (
+                    <>
+                      {" "}
+                      Submissions are anonymous, so there&rsquo;s no status to
+                      track this one.
+                    </>
+                  )}
                 </p>
                 <Button
                   type="button"
@@ -801,9 +837,13 @@ export function SuggestCorrection({
                   <FieldError id={sourceErrorId} message={errors["sourceUrl"]} />
                 </div>
 
-                <details>
+                <details ref={detailsRef}>
                   <summary className="cursor-pointer rounded-sm py-3 text-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                    {isOther ? "Add your name (optional)" : "Add a note or credit (optional)"}
+                    {isOther
+                      ? "Add your name (optional)"
+                      : showNotifyEmail
+                        ? "Add a note, credit or email (optional)"
+                        : "Add a note or credit (optional)"}
                   </summary>
                   <div className="mt-4 flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
@@ -835,6 +875,27 @@ export function SuggestCorrection({
                           maxLength={2000}
                           className={TEXTAREA_CLASS}
                         />
+                      </div>
+                    )}
+
+                    {showNotifyEmail && (
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor={notifyEmailId}>Your email (optional)</Label>
+                        <Input
+                          id={notifyEmailId}
+                          name="correction-notify-email"
+                          type="email"
+                          autoComplete="email"
+                          value={state.notifyEmail}
+                          onChange={(e) => setState((prev) => ({ ...prev, notifyEmail: e.target.value }))}
+                          maxLength={254}
+                          aria-invalid={errors["notifyEmail"] ? true : undefined}
+                          aria-describedby={notifyEmailDescribedBy}
+                        />
+                        <p id={notifyEmailHintId} className="text-xs text-muted-foreground">
+                          Used once, to tell you whether this submission was published, then deleted. You won&rsquo;t hear from us for any other reason.
+                        </p>
+                        <FieldError id={notifyEmailErrorId} message={errors["notifyEmail"]} />
                       </div>
                     )}
                   </div>
