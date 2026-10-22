@@ -40,6 +40,7 @@
     "db:export": "tsx --env-file=.env.local scripts/export.ts",
     "retention:prune": "tsx --env-file=.env.local scripts/retention-prune.ts",
     "submissions": "tsx --env-file=.env.local scripts/submissions.ts",
+    "email-sends": "tsx --env-file=.env.local scripts/email-sends.ts",
     "check-sources": "tsx --env-file=.env.local scripts/discovery/check-sources.ts",
     "discovery:heartbeat": "tsx --env-file=.env.local scripts/discovery/publish-heartbeat.ts",
     "discovery:now": "launchctl kickstart gui/$(id -u)/com.compute-atlas.discovery",

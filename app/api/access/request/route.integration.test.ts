@@ -37,6 +37,8 @@ import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 import { apiAccessGrantsTable, intakeAttemptsTable } from "@/lib/db/schema";
 import { EMAIL_SEND_CAP_MAX, RATE_LIMIT_MAX, hashIp } from "@/lib/rate-limit";
+import { suppress } from "@/lib/suppressions";
+import { sql } from "drizzle-orm";
 
 // Imported after the mocks above so the mocked modules are in effect.
 import { POST } from "./route";
@@ -338,5 +340,76 @@ describe("POST /api/access/request — honeypot type symmetry (Finding 3)", () =
     const res = await POST(req({ email: "reader@example.com", website: "" }));
     expect(res.status).toBe(201);
     expect(await tdb.db.select().from(apiAccessGrantsTable)).toHaveLength(1);
+  });
+});
+
+describe("POST /api/access/request — global suppression gate", () => {
+  async function ask(email: string, ip: string) {
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    const res = await POST(req({ email }, { "x-real-ip": ip }));
+    const text = await res.text();
+    await flushAfter();
+    pendingAfter = undefined;
+    const headers = Object.fromEntries([...res.headers.entries()].filter(([k]) => k !== "date"));
+    return { status: res.status, text, headers };
+  }
+
+  it("a clear address still gets the confirm email and a pending grant", async () => {
+    await ask("clear@example.com", "203.0.113.1");
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+    expect(await tdb.db.select().from(apiAccessGrantsTable)).toHaveLength(1);
+  });
+
+  it("a globally stopped address gets NO email and NO grant, with a byte-identical response", async () => {
+    const clear = await ask("clear@example.com", "203.0.113.1");
+    resendSendMock.mockClear();
+    await suppress(tdb.db, "stopped@example.com", { kind: "global" }, "unsubscribe_all");
+
+    const stopped = await ask("stopped@example.com", "203.0.113.2");
+    expect(stopped).toEqual(clear);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    const grants = await tdb.db.select().from(apiAccessGrantsTable);
+    expect(grants.map((g) => g.email)).toEqual(["clear@example.com"]);
+  });
+
+  it("a target-only suppression does not block it", async () => {
+    await suppress(tdb.db, "target@example.com", { kind: "target", targetType: "state", targetId: "TN" }, "unsubscribe");
+    await ask("target@example.com", "203.0.113.3");
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("an unreadable suppression list (unknown) sends nothing, same response", async () => {
+    const clear = await ask("clear@example.com", "203.0.113.1");
+    resendSendMock.mockClear();
+    await tdb.db.execute(sql`alter table email_suppressions rename to email_suppressions_away`);
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const unk = await ask("unk@example.com", "203.0.113.4");
+      expect(unk).toEqual(clear);
+    } finally {
+      errSpy.mockRestore();
+      await tdb.db.execute(sql`alter table email_suppressions_away rename to email_suppressions`);
+    }
+    expect(resendSendMock).not.toHaveBeenCalled();
+  });
+
+  it("does the same number of queries for a stopped address as for a fresh one", async () => {
+    await suppress(tdb.db, "stopped@example.com", { kind: "global" }, "unsubscribe_all");
+    const count = async (email: string, ip: string) => {
+      const db = tdb.db as unknown as { select: (...a: unknown[]) => unknown; insert: (...a: unknown[]) => unknown };
+      const sel = db.select.bind(tdb.db);
+      const ins = db.insert.bind(tdb.db);
+      let n = 0;
+      db.select = (...a: unknown[]) => (n++, sel(...a));
+      db.insert = (...a: unknown[]) => (n++, ins(...a));
+      try {
+        await ask(email, ip);
+      } finally {
+        db.select = sel;
+        db.insert = ins;
+      }
+      return n;
+    };
+    expect(await count("stopped@example.com", "203.0.113.5")).toBe(await count("fresh@example.com", "203.0.113.6"));
   });
 });

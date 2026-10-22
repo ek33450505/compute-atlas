@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
-import { NO_STORE_HEADERS } from "@/lib/api-response";
+import { corsPreflight, NO_STORE_HEADERS } from "@/lib/api-response";
 import { extractTrustedClientIp } from "@/lib/rate-limit";
-import { confirmSubscription } from "@/lib/subscribe";
+import { redactedErrorCode } from "@/lib/db-error";
+import { confirmSubscription, peekConfirmToken } from "@/lib/subscribe";
 import {
   CONSENT_COOKIE_NAME,
   CONSENT_MAX_AGE_SECONDS,
@@ -23,22 +24,67 @@ import {
  */
 const RATE_BUCKET_PREFIX = "sub-confirm:";
 
+/** Same-origin redirect to a hardcoded path, never derived from user input. */
+function redirectTo(request: Request, path: string, status: 303 | 307): NextResponse {
+  return NextResponse.redirect(new URL(path, request.url), {
+    status,
+    headers: NO_STORE_HEADERS,
+  });
+}
+
 /**
- * Magic-link confirm target. Always redirects same-origin to a hardcoded
- * status page path — the redirect target is never derived from user input,
- * so there is no open-redirect surface here.
+ * Mints the address-bound consent proof that gates the auto-confirm shortcut
+ * in subscribeToTarget. `email` goes straight into an HMAC, never the URL, the
+ * body, or a log.
+ *
+ * `"already"` COUNTS as a confirm, deliberately. Both outcomes require
+ * possession of a token that was only ever delivered to that address's inbox,
+ * so both prove the same thing about the requester; `"already"` is merely
+ * replayable where `"confirmed"` fires once. Gating on `"confirmed"` alone
+ * would deny the cookie to anyone whose confirm was completed first (a second
+ * click, a second tab). The residual risk is bounded: a replayed old confirm
+ * URL yields a proof for the SAME address it was issued to, lasting
+ * CONSENT_MAX_AGE_SECONDS, and the shortcut it unlocks still requires
+ * canAutoConfirm's history conditions (an existing confirmed row, under the
+ * weekly cap, no prior unsubscribe from that target) — strictly less than what
+ * holding that token already grants its bearer. No cookie on `invalid`.
+ */
+function setConsentCookie(response: NextResponse, email: string | undefined): void {
+  if (!email) return;
+  const consent = createConsentValue(email);
+  if (consent) {
+    response.cookies.set(CONSENT_COOKIE_NAME, consent, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: CONSENT_MAX_AGE_SECONDS,
+    });
+  }
+}
+
+function tokenFrom(request: Request): string {
+  return new URL(request.url).searchParams.get("token") ?? "";
+}
+
+/**
+ * Magic-link confirm target. NEVER mutates: mail scanners prefetch every link
+ * in a message, so a GET that consumed the token would let a stranger's
+ * security gateway confirm a subscription nobody read. A GET only looks the
+ * token up and redirects: a pending token to the `/subscribe/confirm`
+ * interstitial (whose POST button confirms), an already-confirmed one to
+ * `/subscribe/confirmed` with the consent cookie (a second click or a
+ * scanner-first race still counts, see `setConsentCookie`), anything else to
+ * `/subscribe/invalid`. Redirect targets are hardcoded paths, so there is no
+ * open-redirect surface.
  *
  * UNCACHEABLE (measured on prod 2026-09-27): a Cloudflare cache rule makes
- * every non-`/admin` GET cache-eligible, and because this route sent no
- * directive of its own Cloudflare supplied `public, max-age=14400` — putting a
- * single-use token in a cache key and caching the *outcome* of consuming it
- * for 4 hours (observed going `MISS` → `EXPIRED`).
+ * every non-`/admin` GET cache-eligible, and without an origin directive
+ * Cloudflare supplied `public, max-age=14400`, putting a token in a cache key.
  *
  * RATE LIMITED with the in-memory burst limiter, deliberately not a DB-backed
  * one: this route costs 1-2 Neon queries per call (a garbage token costs two —
- * the legacy-raw fallback in `confirmSubscription` fires for anything that
- * isn't 64-hex), so a DB-backed counter would add the very queries the limit
- * exists to prevent.
+ * the legacy-raw fallback fires for anything that isn't 64-hex).
  */
 export async function GET(request: Request) {
   const rate = checkApiRateLimit(RATE_BUCKET_PREFIX + extractTrustedClientIp(request.headers));
@@ -46,49 +92,55 @@ export async function GET(request: Request) {
     return tooManyRequests(rate.retryAfter);
   }
 
-  const token = new URL(request.url).searchParams.get("token") ?? "";
-  const { status, email } = await confirmSubscription(token);
+  const token = tokenFrom(request);
+  let peeked: Awaited<ReturnType<typeof peekConfirmToken>>;
+  try {
+    peeked = await peekConfirmToken(token);
+  } catch (err) {
+    // The thrown error can embed the address (Drizzle); log the SQLSTATE only.
+    console.error(`confirm route failed (sqlstate: ${redactedErrorCode(err)})`);
+    return redirectTo(request, "/subscribe/invalid", 307);
+  }
+  const { status, email } = peeked;
 
-  const path = status === "invalid" ? "/subscribe/invalid" : "/subscribe/confirmed";
-  const response = NextResponse.redirect(new URL(path, request.url), {
-    headers: NO_STORE_HEADERS,
-  });
+  if (status === "pending") {
+    return redirectTo(request, `/subscribe/confirm?token=${encodeURIComponent(token)}`, 307);
+  }
+  if (status === "invalid") {
+    return redirectTo(request, "/subscribe/invalid", 307);
+  }
+  const response = redirectTo(request, "/subscribe/confirmed", 307);
+  setConsentCookie(response, email);
+  return response;
+}
 
-  // Mint the address-bound consent proof that gates the auto-confirm shortcut
-  // in subscribeToTarget. `email` is present on exactly the two non-`invalid`
-  // outcomes and goes straight into an HMAC — never the URL, the body, or a
-  // log.
-  //
-  // `"already"` COUNTS as a confirm, deliberately. Both outcomes require
-  // possession of a token that was only ever delivered to that address's
-  // inbox, so both prove the same thing about the requester; the difference is
-  // that `"already"` is replayable where `"confirmed"` fires once. That
-  // replayability is the price of avoiding a real failure mode: mail clients
-  // and link scanners PREFETCH URLs, which consumes the one-time `"confirmed"`
-  // outcome before the human ever clicks, leaving the genuine user's own click
-  // answering `"already"`. Gating on `"confirmed"` alone would deny the cookie
-  // to a large share of exactly the people this shortcut exists for. The
-  // residual risk is bounded: a replayed old confirm URL yields a proof for
-  // the SAME address it was issued to, lasting CONSENT_MAX_AGE_SECONDS, and
-  // the shortcut it unlocks still requires canAutoConfirm's history conditions
-  // (an existing confirmed row, under the weekly cap, no prior unsubscribe
-  // from that target) — strictly less than what holding that token already
-  // grants its bearer.
-  //
-  // No cookie on `invalid`, which leaks nothing new: the redirect path already
-  // says the token was rejected.
-  if (email) {
-    const consent = createConsentValue(email);
-    if (consent) {
-      response.cookies.set(CONSENT_COOKIE_NAME, consent, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        path: "/",
-        maxAge: CONSENT_MAX_AGE_SECONDS,
-      });
-    }
+/**
+ * The only path that confirms: the interstitial's form POST, token in the
+ * query string like unsubscribe's. Answers a 303 to a hardcoded status page; a
+ * DB failure redirects to `/subscribe/invalid` after a SQLSTATE-only log (the
+ * Drizzle error embeds the address). Every response is `no-store`.
+ */
+export async function POST(request: Request) {
+  const rate = checkApiRateLimit(RATE_BUCKET_PREFIX + extractTrustedClientIp(request.headers));
+  if (!rate.ok) {
+    return tooManyRequests(rate.retryAfter);
   }
 
-  return response;
+  try {
+    const { status, email } = await confirmSubscription(tokenFrom(request));
+    if (status === "invalid") {
+      return redirectTo(request, "/subscribe/invalid", 303);
+    }
+    const response = redirectTo(request, "/subscribe/confirmed", 303);
+    setConsentCookie(response, email);
+    return response;
+  } catch (err) {
+    console.error(`confirm route failed (sqlstate: ${redactedErrorCode(err)})`);
+    return redirectTo(request, "/subscribe/invalid", 303);
+  }
+}
+
+// `public-write`: GET and POST, both authorised by a token in the URL.
+export function OPTIONS() {
+  return corsPreflight("public-write");
 }

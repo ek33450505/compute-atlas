@@ -1,26 +1,52 @@
 import { and, eq, gte, inArray, lt } from "drizzle-orm";
-import { Resend } from "resend";
+
+import { canonicalCountyName, countySlug } from "@/lib/counties";
+import { formatCountyLabel, getMetroBySlug, metroCountyKey } from "@/lib/metros";
 
 import { getDb } from "@/lib/db/client";
+import { redactedErrorCode } from "@/lib/db-error";
 import { facilitiesTable, facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
-import { escapeHtml, sendChangeNotification } from "@/lib/email";
-import { siteConfig } from "@/lib/site";
+import { sendAreaDigestEmail, sendChangeDigestEmail, sendChangeNotification, type AreaDigestType } from "@/lib/email";
+import { sendGated } from "@/lib/email-gate";
 import { claimDigestWindow, completeDigestWindow } from "@/lib/state-digest-ledger";
 import { STATUS_META } from "@/lib/status";
+import { subscriptionSuppressedSql } from "@/lib/suppressions";
 import { stateNameFromCode } from "@/lib/us-states";
+import { WATCH_TARGET, watchAreasEnabled } from "@/lib/watch-target-types";
 import type { Facility } from "@/lib/schema";
+
+/**
+ * Drops recipient rows the suppression list blocks and logs how many, with no
+ * address. The send gate (lib/email-gate.ts) re-checks every row at send time,
+ * so this is the first of two checks, not the only one. A failed
+ * suppression subquery fails the whole recipient query instead, so an error
+ * means nobody is mailed.
+ */
+function dropOptedOut<T extends { optedOut: boolean }>(rows: T[]): Omit<T, "optedOut">[] {
+  const kept = rows.filter((r) => !r.optedOut);
+  if (kept.length < rows.length) {
+    console.warn(`notify: skipped ${rows.length - kept.length} suppressed recipient row(s)`);
+  }
+  return kept.map((row) => {
+    const { optedOut, ...rest } = row;
+    void optedOut;
+    return rest;
+  });
+}
 
 /**
  * One subscriber's view of one facility's change — the unit `groupChangesByRecipient`
  * groups by `email`. Deliberately flat and gather-agnostic: nothing here assumes
  * "changes for one facility in one publish run." Theme D's monthly state digest
- * (`buildStateDigestChanges` below) builds the same shape from a different
+ * (`buildAreaDigestChanges` below) builds the same shape from a different
  * query (a state WHERE clause, a calendar trigger instead of a publish
  * trigger) and feeds it through this identical grouping + send path — but see
  * `origin` below: the SHAPE is shared, the COPY is not, because the two
  * origins carry different truths about why the recipient is being emailed.
  */
 interface RecipientChangeBase {
+  /** The subscription row this change was selected for; the send gate re-reads it by id. */
+  subscriptionId: string;
   email: string;
   unsubscribeToken: string;
   facilityName: string;
@@ -41,35 +67,47 @@ interface RecipientChangeBase {
  * an optional field is not an error. Making `origin` required turns that
  * mistake into a compile error instead: there is no way to construct a
  * `RecipientFacilityChange` without choosing a branch, and the
- * `"state-digest"` branch cannot be constructed without `stateName` either.
+ * `"area-digest"` branch cannot be constructed without `areaType`, `areaId`
+ * and `areaName` either (they replaced `stateName` when county and metro
+ * digests were added, A-3 unit 8b).
  *
  * - `"facility-watch"`: the original per-facility-watch framing
  *   (byte-identical, unchanged) — the recipient explicitly watched this
- *   record. `stateName` does not exist on this branch.
- * - `"state-digest"`: built ONLY by `buildStateDigestChanges` (Theme D's
- *   monthly state digest) — routes to `sendStateDigestEmail`, which must
- *   name the state, state the monthly cadence, and — critically — render
- *   exactly ONE unsubscribe link per email even when several facilities in
- *   that state changed. That last point is not cosmetic: a state-digest
- *   recipient has exactly ONE subscription row (one email + one state), so
+ *   record. The area fields do not exist on this branch.
+ * - `"area-digest"`: built ONLY by `buildAreaDigestChanges` (Theme D's
+ *   monthly digest for a state, county or metro) — routes to
+ *   `sendAreaDigestEmail`, which must name the area, state the monthly
+ *   cadence, and — critically — render exactly ONE unsubscribe link per
+ *   email even when several facilities in that area changed. That last
+ *   point is not cosmetic: an area-digest recipient has exactly ONE
+ *   subscription row (one email + one area), so
  *   every change in their group carries that SAME row's `unsubscribeToken`
  *   — unlike a facility-watch group, where each change is a DIFFERENT
  *   subscription row with its own token. Rendering N identical links each
  *   labelled "unsubscribe from this one" (correct for facility-watch, since
  *   its N changes really are N distinct subscriptions) would be false for a
  *   state digest: every one of those N links would silently unsubscribe the
- *   recipient from the WHOLE state, not "this one" facility. `stateName` is
- *   REQUIRED on this branch for the same reason `origin` itself is required
- *   — so the wrong copy can never be built by omission.
+ *   recipient from the WHOLE area, not "this one" facility. `areaType`,
+ *   `areaId` and `areaName` are REQUIRED on this branch for the same reason
+ *   `origin` itself is required — so the wrong copy (a county named as a
+ *   state, a metro mislabelled) can never be built by omission. `areaId`
+ *   exists for the mixed-group guard: two counties both produce
+ *   `origin: "area-digest"` with `areaType: "county"`, and only the id tells
+ *   them apart.
  */
 export type RecipientFacilityChange =
   | ({ origin: "facility-watch" } & RecipientChangeBase)
-  | ({ origin: "state-digest"; stateName: string } & RecipientChangeBase);
+  | ({
+      origin: "area-digest";
+      areaType: AreaDigestType;
+      areaId: string;
+      areaName: string;
+    } & RecipientChangeBase);
 
 /**
  * `Omit<UnionType, K>` does NOT distribute over a discriminated union's
  * branches — TypeScript's built-in `Omit` collapses to the union's COMMON
- * keys, which would silently drop `stateName` (present on only one branch)
+ * keys, which would silently drop `areaName` (present on only one branch)
  * from the result. This distributes the omission per-branch instead, so
  * `RecipientChangeGroup["changes"]` stays a proper discriminated union.
  */
@@ -92,7 +130,7 @@ export interface RecipientChangeGroup {
  * (Theme A's original point), regardless of which distinct facilities
  * changed.
  *
- * Theme D's monthly state digest overrides `keyFn` to `email + state` (see
+ * Theme D's monthly area digest overrides `keyFn` to `email + areaType + areaId` (see
  * `notifyStateSubscribersMonthly`), because a recipient can hold subscriptions
  * to MULTIPLE states — grouping those together under `email` alone would
  * merge two states' facilities into one email under a single, arbitrarily-
@@ -100,7 +138,7 @@ export interface RecipientChangeGroup {
  * Theme D review, round 2): the label would misname half the content, and
  * the one link rendered would silently kill whichever of the reader's several
  * subscriptions happened to sort first, not the one they think they're
- * leaving. Keying by `email + state` instead gives each subscription its own
+ * leaving. Keying by `email + areaType + areaId` instead gives each subscription its own
  * group, so each email is self-consistent — one state, one label, one token.
  */
 export function groupChangesByRecipient(
@@ -125,9 +163,9 @@ export function groupChangesByRecipient(
  * Sends one email per recipient group, selecting the template by ORIGIN
  * first, then by count:
  *
- * 1. A state-digest group (`origin === "state-digest"` on its changes — see
+ * 1. An area-digest group (`origin === "area-digest"` on its changes — see
  *    the `RecipientFacilityChange` union's doc comment) always goes to
- *    `sendStateDigestEmail`, REGARDLESS of how many changes it has. A
+ *    `sendAreaDigestEmail`, REGARDLESS of how many changes it has. A
  *    single-change state digest must still say "your monthly Virginia
  *    digest," never the facility-watch template's "the record you're
  *    watching changed" — that recipient never watched a record, they
@@ -164,8 +202,10 @@ export function groupChangesByRecipient(
  * one" link would silently unsubscribe the reader from a whole state.
  */
 export async function sendGroupedChangeNotifications(
-  groups: RecipientChangeGroup[]
+  groups: RecipientChangeGroup[],
+  runId?: string
 ): Promise<number> {
+  const db = getDb();
   let sentCount = 0;
   for (const group of groups) {
     const first = group.changes[0];
@@ -174,188 +214,90 @@ export async function sendGroupedChangeNotifications(
     // re-indexing `group.changes[0]` (possibly stale/undefined) below.
     if (!first) continue;
 
-    if (first.origin === "state-digest") {
-      const stateName = first.stateName;
-      // Defense-in-depth, purely additive: `origin` now guarantees every
-      // change in this branch IS a state digest (the type system enforces
-      // that at construction time) — what it can't guarantee is that they
-      // all name the SAME state, since two different states both produce
-      // `origin: "state-digest"` values. The (email, state) grouping key
-      // `notifyStateSubscribersMonthly` passes guarantees that today (see
-      // groupChangesByRecipient's doc comment). If a future caller ever
-      // groups state-digest changes by email alone again (the exact
-      // regression this guard exists to catch), refuse to send rather than
-      // silently mailing a merged, mislabelled digest — no email address
-      // logged, per this file's existing convention.
-      if (group.changes.some((c) => c.origin !== "state-digest" || c.stateName !== stateName)) {
+    if (first.origin === "area-digest") {
+      const { areaType, areaId, areaName } = first;
+      // Defense-in-depth, purely additive: `origin` guarantees every change
+      // in this branch IS an area digest (the type system enforces that at
+      // construction time) — what it can't guarantee is that they all name
+      // the SAME area, since two different areas both produce
+      // `origin: "area-digest"` values. The (email, areaType, areaId)
+      // grouping key `notifyStateSubscribersMonthly` passes guarantees that
+      // today (see groupChangesByRecipient's doc comment). If a future
+      // caller ever groups area-digest changes by email alone again (the
+      // exact regression this guard exists to catch), refuse to send rather
+      // than silently mailing a merged, mislabelled digest — no email
+      // address logged, per this file's existing convention.
+      if (
+        group.changes.some(
+          (c) =>
+            c.origin !== "area-digest" ||
+            c.areaType !== areaType ||
+            c.areaId !== areaId ||
+            c.areaName !== areaName
+        )
+      ) {
         console.error(
-          "sendGroupedChangeNotifications: a group mixed multiple states — refusing to send a mislabelled digest"
+          "sendGroupedChangeNotifications: a group mixed multiple areas — refusing to send a mislabelled digest"
         );
         continue;
       }
-      const { sent } = await sendStateDigestEmail(group.email, stateName, group.changes);
+      // Every area-digest email is attributed to the run that claimed its
+      // window; without one there is nothing to attribute it to.
+      if (!runId) {
+        console.error("sendGroupedChangeNotifications: an area digest needs a run id — refusing to send");
+        continue;
+      }
+      // An area-digest group is exactly one subscription row (see above).
+      // State keeps its original ledger kind; county and metro are
+      // `area_digest`.
+      const { sent } = await sendGated(
+        db,
+        {
+          kind: areaType === "state" ? "state_digest" : "area_digest",
+          subscriptionId: first.subscriptionId,
+          email: group.email,
+          runId,
+        },
+        () => sendAreaDigestEmail(group.email, { type: areaType, name: areaName }, group.changes)
+      );
       if (sent) sentCount++;
     } else if (group.changes.length === 1) {
-      const { sent } = await sendChangeNotification({
-        email: group.email,
-        facilityName: first.facilityName,
-        facilitySlug: first.facilitySlug,
-        changeLabel: first.changeLabel,
-        status: first.status,
-        unsubscribeToken: first.unsubscribeToken,
-      });
+      const { sent } = await sendGated(
+        db,
+        { kind: "facility_change", subscriptionId: first.subscriptionId, email: group.email },
+        () =>
+          sendChangeNotification({
+            email: group.email,
+            facilityName: first.facilityName,
+            facilitySlug: first.facilitySlug,
+            changeLabel: first.changeLabel,
+            status: first.status,
+            unsubscribeToken: first.unsubscribeToken,
+          })
+      );
       if (sent) sentCount++;
     } else {
-      const { sent } = await sendChangeDigestEmail(group.email, group.changes);
+      // One email lists N distinct watch rows: the gate checks every one of
+      // them. The ANCHOR is the row whose token the digest's stop-all link and
+      // List-Unsubscribe header carry (sendChangeDigestEmail reads
+      // `changes[0]`), so it is both the gate's `subscriptionId` and the
+      // first element passed to the sender.
+      const [anchor, ...rest] = group.changes;
+      const ordered = [anchor, ...rest];
+      const { sent } = await sendGated(
+        db,
+        {
+          kind: "facility_digest",
+          subscriptionId: anchor.subscriptionId,
+          email: group.email,
+          coveredSubscriptionIds: ordered.map((c) => c.subscriptionId),
+        },
+        () => sendChangeDigestEmail(group.email, ordered)
+      );
       if (sent) sentCount++;
     }
   }
   return sentCount;
-}
-
-/**
- * Composes and sends the multi-facility digest email for a recipient with
- * more than one change in a single run. Kept local to this file rather than
- * added to `lib/email.ts`. `escapeHtml` IS shared — it is exported from
- * lib/email.ts and imported above, so the XSS defense has exactly one
- * definition. The remaining send plumbing below (address resolution, Resend
- * client construction) is still a deliberate, minimal duplication of
- * lib/email.ts's private `fromAddress` / `getResend`. Theme D's monthly
- * digest needs the same sender, and hoisting a shared send primitive is
- * tracked as a fast-follow for that theme.
- *
- * Never throws — same contract as `sendChangeNotification` — so a failed
- * digest send can never turn a successful publish into an error.
- */
-async function sendChangeDigestEmail(
-  email: string,
-  changes: RecipientChangeGroup["changes"]
-): Promise<{ sent: boolean }> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    console.warn("RESEND_API_KEY not set — skipping change digest email send");
-    return { sent: false };
-  }
-
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? siteConfig.url;
-  const from = process.env.EMAIL_FROM ?? "Compute Atlas <alerts@compute-atlas.com>";
-  const subject = `${changes.length} updates on facilities you're watching — Compute Atlas`;
-
-  // Each change here is a DISTINCT facility-watch subscription row, so each
-  // carries its OWN unsubscribeToken — every list item gets its own
-  // unsubscribe link, and unsubscribing from one watch never silently
-  // touches the recipient's other watches. This invariant holds because a
-  // facility-watch group is N rows (one per facility). Contrast
-  // `sendStateDigestEmail` below: a state-digest group is exactly ONE row
-  // (one email + one state) shared across every change, which is why it
-  // renders a single unsubscribe link instead of one per item.
-  const textItems = changes.map((c) => {
-    const url = `${base}/facilities/${c.facilitySlug}`;
-    const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
-    return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url} (unsubscribe from this one: ${unsubUrl})`;
-  });
-  const text = `${changes.length} records you're watching changed on Compute Atlas:\n\n${textItems.join("\n")}`;
-
-  const htmlItems = changes
-    .map((c) => {
-      const url = `${base}/facilities/${c.facilitySlug}`;
-      const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
-      return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a> · <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this one</a></li>`;
-    })
-    .join("");
-  const html = `<p>${changes.length} records you're watching changed on Compute Atlas:</p><ul>${htmlItems}</ul>`;
-
-  try {
-    const resend = new Resend(key);
-    const result = await resend.emails.send({ from, to: email, subject, text, html });
-    if (result.error) {
-      console.error("sendChangeDigestEmail failed:", result.error?.name ?? "unknown");
-      return { sent: false };
-    }
-    return { sent: true };
-  } catch (error) {
-    console.error("sendChangeDigestEmail failed:", error instanceof Error ? error.name : "unknown");
-    return { sent: false };
-  }
-}
-
-/**
- * Composes and sends the monthly state-digest email (Theme D, D3a) — the
- * state-digest counterpart to `sendChangeDigestEmail` above, deliberately NOT
- * a copy-paste of it. The two are the same SHAPE (a recipient, a list of
- * facility changes) but different TRUTHS: a facility-watch recipient asked to
- * be told about specific records; a state-digest recipient asked to be told
- * about a state. This copy:
- *   - names the state and states the monthly cadence, instead of implying a
- *     per-facility watch the recipient never set up;
- *   - renders exactly ONE unsubscribe link, not one per change — a
- *     state-digest recipient has exactly ONE subscription row (one email +
- *     one state), so every `changes` entry here carries that SAME row's
- *     `unsubscribeToken`. Taking it once (from the first change) and never
- *     labelling it "unsubscribe from this one" avoids the false claim that
- *     clicking it only mutes one facility, when it actually unsubscribes the
- *     recipient from the whole state.
- *
- * Never throws — same contract as `sendChangeDigestEmail`.
- */
-async function sendStateDigestEmail(
-  email: string,
-  stateName: string,
-  changes: RecipientChangeGroup["changes"]
-): Promise<{ sent: boolean }> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    console.warn("RESEND_API_KEY not set — skipping state digest email send");
-    return { sent: false };
-  }
-
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? siteConfig.url;
-  const from = process.env.EMAIL_FROM ?? "Compute Atlas <alerts@compute-atlas.com>";
-  const facilityWord = changes.length === 1 ? "facility" : "facilities";
-  const subject = `${changes.length} ${facilityWord} changed in ${stateName} — Compute Atlas monthly digest`;
-
-  // Every change in a state-digest group shares ONE subscription row (one
-  // email + one state), so its unsubscribeToken is identical across all of
-  // them — take it once rather than repeating an identical link per item.
-  const unsubscribeToken = changes[0].unsubscribeToken;
-  const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`;
-
-  const textItems = changes.map((c) => {
-    const url = `${base}/facilities/${c.facilitySlug}`;
-    return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url}`;
-  });
-  const text = `Your monthly Compute Atlas digest for ${stateName}: ${changes.length} tracked ${facilityWord} changed this period.\n\n${textItems.join("\n")}\n\nYou're receiving this because you subscribed to a monthly digest for ${stateName} on Compute Atlas. Unsubscribe from this state's digest: ${unsubUrl}`;
-
-  const htmlItems = changes
-    .map((c) => {
-      const url = `${base}/facilities/${c.facilitySlug}`;
-      return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a></li>`;
-    })
-    .join("");
-  const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this state's digest</a></p>`;
-
-  try {
-    const resend = new Resend(key);
-    const result = await resend.emails.send({
-      from,
-      to: email,
-      subject,
-      text,
-      html,
-      headers: {
-        "List-Unsubscribe": `<${unsubUrl}>`,
-        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-      },
-    });
-    if (result.error) {
-      console.error("sendStateDigestEmail failed:", result.error?.name ?? "unknown");
-      return { sent: false };
-    }
-    return { sent: true };
-  } catch (error) {
-    console.error("sendStateDigestEmail failed:", error instanceof Error ? error.name : "unknown");
-    return { sent: false };
-  }
 }
 
 /**
@@ -387,22 +329,26 @@ export async function notifySubscribersOfChange(
 
     const rows = await db
       .select({
+        subscriptionId: subscriptionsTable.id,
         email: subscriptionsTable.email,
         unsubscribeToken: subscriptionsTable.unsubscribeToken,
+        optedOut: subscriptionSuppressedSql(),
       })
       .from(subscriptionsTable)
       .where(
         and(
           eq(subscriptionsTable.status, "confirmed"),
-          eq(subscriptionsTable.targetType, "facility"),
+          eq(subscriptionsTable.targetType, WATCH_TARGET.facility),
           eq(subscriptionsTable.targetId, facility.id)
         )
-      );
+      )
+      .then(dropOptedOut);
 
     const statusLabel = STATUS_META[facility.status].label;
 
     const recipientChanges: RecipientFacilityChange[] = rows.map((row) => ({
       origin: "facility-watch",
+      subscriptionId: row.subscriptionId,
       email: row.email,
       unsubscribeToken: row.unsubscribeToken,
       facilityName: facility.name,
@@ -413,10 +359,10 @@ export async function notifySubscribersOfChange(
 
     await sendGroupedChangeNotifications(groupChangesByRecipient(recipientChanges));
   } catch (err) {
-    // Log the error's NAME only — never the raw error object (a Drizzle/Neon
-    // query error embeds its bound params in .message) and never email
-    // addresses or tokens.
-    console.error("notifySubscribersOfChange failed:", err instanceof Error ? err.name : "unknown");
+    // Log the error's NAME and SQLSTATE only (redactedErrorCode) — never the
+    // raw error object (a Drizzle/Neon query error embeds its bound params in
+    // .message) and never email addresses or tokens.
+    console.error(`notifySubscribersOfChange failed: ${err instanceof Error ? err.name : "unknown"} (sqlstate: ${redactedErrorCode(err)})`);
   }
 }
 
@@ -448,18 +394,21 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
 
     const rows = await db
       .select({
+        subscriptionId: subscriptionsTable.id,
         email: subscriptionsTable.email,
         unsubscribeToken: subscriptionsTable.unsubscribeToken,
         targetId: subscriptionsTable.targetId,
+        optedOut: subscriptionSuppressedSql(),
       })
       .from(subscriptionsTable)
       .where(
         and(
           eq(subscriptionsTable.status, "confirmed"),
-          eq(subscriptionsTable.targetType, "facility"),
+          eq(subscriptionsTable.targetType, WATCH_TARGET.facility),
           inArray(subscriptionsTable.targetId, [...facilityById.keys()])
         )
-      );
+      )
+      .then(dropOptedOut);
 
     const recipientChanges: RecipientFacilityChange[] = [];
     for (const row of rows) {
@@ -470,6 +419,7 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
 
       recipientChanges.push({
         origin: "facility-watch",
+        subscriptionId: row.subscriptionId,
         email: row.email,
         unsubscribeToken: row.unsubscribeToken,
         facilityName: facility.name,
@@ -481,29 +431,45 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
 
     await sendGroupedChangeNotifications(groupChangesByRecipient(recipientChanges));
   } catch (err) {
-    // Log the error's NAME only — never the raw error object (a Drizzle/Neon
-    // query error embeds its bound params in .message) and never email
-    // addresses or tokens.
-    console.error("notifySubscribersOfChanges failed:", err instanceof Error ? err.name : "unknown");
+    // Log the error's NAME and SQLSTATE only (redactedErrorCode) — never the
+    // raw error object (a Drizzle/Neon query error embeds its bound params in
+    // .message) and never email addresses or tokens.
+    console.error(`notifySubscribersOfChanges failed: ${err instanceof Error ? err.name : "unknown"} (sqlstate: ${redactedErrorCode(err)})`);
   }
 }
 
 /**
- * Builds the flat (recipient, change) pairs for the monthly state digest:
- * every CONFIRMED state-target subscriber, crossed with every facility in
- * their state that changed (created or updated) since `since`. Pure query +
- * shape assembly — no sending — so it's independently testable from
+ * Builds the flat (recipient, change) pairs for the monthly area digest:
+ * every CONFIRMED, non-suppressed area-target subscriber (state, county or
+ * metro — the registry's "area" family), crossed with every facility in their
+ * area that changed (created or updated) since `since`. Pure query + shape
+ * assembly — no sending — so it's independently testable from
  * `notifyStateSubscribersMonthly` below.
+ *
+ * County and metro rows are read only while `watchAreasEnabled()` is true
+ * (D9, Ed 2026-10-21); with the kill switch off, ONLY state rows are read and
+ * county/metro rows are left untouched.
+ *
+ * ONE history query covers every area: the union of the states those
+ * subscriptions need (the state itself, a county's state, a metro's
+ * `states`). Each subscription then filters that result in JS:
+ *   - state:  `facility.state === id`;
+ *   - county: `countySlug(doc.location.county, facility.state) === id`; a
+ *             record with no county never matches;
+ *   - metro:  `metroCountyKey(state, county)` is in the metro's county set.
+ * A metro subscription whose slug no longer resolves matches nothing and is
+ * skipped.
  *
  * Joins facility_history to facilities on facilityId to recover each
  * change's current name/state/status, so a facility DELETED since `since`
  * is NOT represented here — its facilities row is gone, so there is nothing
  * to join against. Same loose-coupling tradeoff facilityHistoryTable's own
  * schema comment documents for facilityId (no FK). For the same reason,
- * changeType is restricted to create|update: a delete's pre-deletion
- * name/state can't be recovered without a facilities row either. A facility
- * that changed more than once in the period is deduped to its single most
- * recent change, so a recipient sees one line per facility, not one per edit.
+ * changeType is restricted to create|update (which also keeps editorial
+ * rows out): a delete's pre-deletion name/state can't be recovered without a
+ * facilities row either. A facility that changed more than once in the
+ * period is deduped to its single most recent change, so a recipient sees
+ * one line per facility, not one per edit.
  *
  * The period is HALF-OPEN: `since` inclusive (`>=`), `until` exclusive (`<`).
  * `until` is optional and, when omitted, the query is unbounded above exactly
@@ -513,22 +479,101 @@ export async function notifySubscribersOfChanges(changes: FacilityChange[]): Pro
  * hours, and next month's run sweeps those same hours again, putting the same
  * facility in two consecutive digests.
  */
-async function buildStateDigestChanges(since: Date, until?: Date): Promise<RecipientFacilityChange[]> {
+async function buildAreaDigestChanges(since: Date, until?: Date): Promise<RecipientFacilityChange[]> {
   const db = getDb();
+
+  const areasEnabled = watchAreasEnabled();
+  if (!areasEnabled) {
+    console.info("area digest: WATCH_AREAS_ENABLED=false; county and metro subscriptions not read this run");
+  }
+  const targetTypes = areasEnabled
+    ? [WATCH_TARGET.state, WATCH_TARGET.county, WATCH_TARGET.metro]
+    : [WATCH_TARGET.state];
 
   const subs = await db
     .select({
+      subscriptionId: subscriptionsTable.id,
       email: subscriptionsTable.email,
       unsubscribeToken: subscriptionsTable.unsubscribeToken,
-      state: subscriptionsTable.targetId,
+      targetType: subscriptionsTable.targetType,
+      targetId: subscriptionsTable.targetId,
+      optedOut: subscriptionSuppressedSql(),
     })
     .from(subscriptionsTable)
-    .where(and(eq(subscriptionsTable.status, "confirmed"), eq(subscriptionsTable.targetType, "state")));
+    .where(and(eq(subscriptionsTable.status, "confirmed"), inArray(subscriptionsTable.targetType, targetTypes)))
+    .then(dropOptedOut);
 
-  if (subs.length === 0) return [];
+  // Resolve each subscription to its area once: the label, the states it
+  // needs from the history query, and its per-facility match.
+  type FacilityLoc = { state: string; county: string | undefined };
+  type ResolvedSub = {
+    sub: (typeof subs)[number];
+    areaType: AreaDigestType;
+    areaId: string;
+    /** null for a county: its label comes from the matching records, see below. */
+    areaName: string | null;
+    states: string[];
+    matches: (loc: FacilityLoc) => boolean;
+  };
+  const resolved: ResolvedSub[] = [];
+  // Registry ids only (never an email or subscription id), logged once per run.
+  let skippedMetroCount = 0;
+  const skippedMetroSlugs = new Set<string>();
+  for (const sub of subs) {
+    const id = sub.targetId;
+    if (!id) continue;
+    if (sub.targetType === WATCH_TARGET.state) {
+      // The id is always a validated, uppercased code by construction
+      // (subscribeToTarget normalizes it via stateNameFromCode before
+      // storing) — the `?? id` fallback is defense-in-depth only, never
+      // expected to trigger.
+      resolved.push({
+        sub,
+        areaType: "state",
+        areaId: id,
+        areaName: stateNameFromCode(id) ?? id,
+        states: [id],
+        matches: (loc) => loc.state === id,
+      });
+    } else if (sub.targetType === WATCH_TARGET.county) {
+      // Stored id is `countySlug(county, state)`, e.g. `loudoun-va`; the
+      // state is its last segment.
+      resolved.push({
+        sub,
+        areaType: "county",
+        areaId: id,
+        areaName: null,
+        states: [id.slice(id.lastIndexOf("-") + 1).toUpperCase()],
+        matches: (loc) => loc.county !== undefined && countySlug(loc.county, loc.state) === id,
+      });
+    } else if (sub.targetType === WATCH_TARGET.metro) {
+      const metro = getMetroBySlug(id);
+      if (!metro) {
+        skippedMetroCount++;
+        skippedMetroSlugs.add(id);
+        continue;
+      }
+      const keys = new Set(metro.counties.map(([st, c]) => metroCountyKey(st, c)));
+      resolved.push({
+        sub,
+        areaType: "metro",
+        areaId: id,
+        areaName: metro.name,
+        states: metro.states,
+        matches: (loc) => loc.county !== undefined && keys.has(metroCountyKey(loc.state, loc.county)),
+      });
+    }
+  }
 
-  const states = [...new Set(subs.map((s) => s.state).filter((s): s is string => s !== null))];
-  if (states.length === 0) return [];
+  if (skippedMetroCount > 0) {
+    console.warn(
+      `area digest: skipped ${skippedMetroCount} subscription(s) for unknown metro(s): ${[...skippedMetroSlugs].sort().join(", ")}`
+    );
+  }
+
+  if (resolved.length === 0) return [];
+
+  const states = [...new Set(resolved.flatMap((r) => r.states))];
 
   const historyRows = await db
     .select({
@@ -560,35 +605,34 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
     }
   }
 
-  const changesByState = new Map<string, Array<Omit<RecipientChangeBase, "email" | "unsubscribeToken">>>();
-  for (const row of latestByFacility.values()) {
-    const list = changesByState.get(row.facilityState) ?? [];
-    list.push({
-      facilityName: row.facilityName,
-      facilitySlug: row.facilityId,
-      changeLabel: row.changeType === "create" ? "added to the atlas" : "record updated",
-      status: STATUS_META[row.facilityDoc.status].label,
-    });
-    changesByState.set(row.facilityState, list);
-  }
-
   const recipientChanges: RecipientFacilityChange[] = [];
-  for (const sub of subs) {
-    if (!sub.state) continue;
-    const changes = changesByState.get(sub.state);
-    if (!changes) continue;
-    // sub.state is always a validated, uppercased code by construction
-    // (subscribeToTarget normalizes it via stateNameFromCode before
-    // storing) — the `?? sub.state` fallback is defense-in-depth only, never
-    // expected to trigger.
-    const stateName = stateNameFromCode(sub.state) ?? sub.state;
-    for (const change of changes) {
+  for (const r of resolved) {
+    const matched = [...latestByFacility.values()].filter((row) =>
+      r.matches({ state: row.facilityState, county: row.facilityDoc.location.county?.trim() || undefined })
+    );
+    if (matched.length === 0) continue;
+    // A county's stored id is a slug and cannot be un-slugged, so its label
+    // comes from the matching records' own county spelling (deterministic
+    // when they disagree, e.g. MO's "St. Louis city" / "St. Louis City").
+    const areaName =
+      r.areaName ??
+      `${formatCountyLabel(
+        canonicalCountyName(matched.map((row) => row.facilityDoc.location.county!.trim())),
+        matched[0].facilityState
+      )}, ${matched[0].facilityState.toUpperCase()}`;
+    for (const row of matched) {
       recipientChanges.push({
-        origin: "state-digest",
-        email: sub.email,
-        unsubscribeToken: sub.unsubscribeToken,
-        stateName,
-        ...change,
+        origin: "area-digest",
+        subscriptionId: r.sub.subscriptionId,
+        email: r.sub.email,
+        unsubscribeToken: r.sub.unsubscribeToken,
+        areaType: r.areaType,
+        areaId: r.areaId,
+        areaName,
+        facilityName: row.facilityName,
+        facilitySlug: row.facilityId,
+        changeLabel: row.changeType === "create" ? "added to the atlas" : "record updated",
+        status: STATUS_META[row.facilityDoc.status].label,
       });
     }
   }
@@ -597,9 +641,18 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
 }
 
 /**
- * Monthly state-digest entry point (Theme D, D3a). Builds the same
- * `RecipientFacilityChange` shape the per-facility path above builds, from a
- * state-scoped `facility_history` query (`buildStateDigestChanges`), then
+ * Monthly area-digest entry point (Theme D, D3a). Mails EVERY area
+ * subscription: state, and — since D9 (Ed, 2026-10-21) — county and metro.
+ * The name `notifyStateSubscribersMonthly` is kept to avoid churn in the cron
+ * route and docs. ONE `claimDigestWindow` claim per window covers every area
+ * type, and `changes`/`groups`/`recipients` below count all of them. Each
+ * subscription gets its own labelled digest, with no dedupe across a person's
+ * subscriptions (D5). `WATCH_AREAS_ENABLED=false` skips county and metro rows
+ * (state is never gated by it).
+ *
+ * Builds the same `RecipientFacilityChange` shape the per-facility path above
+ * builds, from an area-scoped `facility_history` query
+ * (`buildAreaDigestChanges`), then
  * feeds it through the IDENTICAL `groupChangesByRecipient` +
  * `sendGroupedChangeNotifications` path — no second grouping or send
  * implementation, per this file's `RecipientFacilityChange` header comment,
@@ -609,7 +662,8 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
  * exact UTC calendar month so consecutive runs tile without overlap or gap.
  * Omitting `until` keeps the original unbounded-above behaviour.
  *
- * Only `status='confirmed' AND targetType='state'` rows are ever read —
+ * Only confirmed, non-suppressed `state` (and, unless killed, `county` and
+ * `metro`) rows are ever read —
  * pending and unsubscribed rows are excluded identically to
  * `notifySubscribersOfChange(s)` above. Every recipient email still embeds
  * their OWN raw `unsubscribeToken` via the shared send path, so every digest
@@ -620,7 +674,7 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
  * that used to hold it off are flipped: `vercel.json` carries a `crons` entry
  * on `0 9 1 * *`, and `STATE_DIGEST_ENABLED=true` is set in the Vercel
  * project env. This function therefore SENDS REAL MAIL on a schedule now —
- * treat any edit to it, to `buildStateDigestChanges`, or to the shared
+ * treat any edit to it, to `buildAreaDigestChanges`, or to the shared
  * `groupChangesByRecipient`/`sendGroupedChangeNotifications` path below as
  * outward-facing rather than internal.
  *
@@ -630,7 +684,10 @@ async function buildStateDigestChanges(since: Date, until?: Date): Promise<Recip
  * `status='confirmed'` only, so they are not a silent list waiting to be
  * woken. ⚠️ Do not widen that audience as a side effect of other work; a
  * backfill of pending rows, a new `targetType`, or a catch-up over months
- * that were never sent is a NEW reactivation decision, not this one.
+ * that were never sent is a NEW reactivation decision, not this one. (D9, Ed
+ * 2026-10-21, is that decision for `county` and `metro`, delivered by the area
+ * digest of unit 8b and gated by `WATCH_AREAS_ENABLED`; it does not extend to
+ * anything else.)
  *
  * Best-effort and never throws — same contract as `notifySubscribersOfChange`.
  * Returns counts rather than `void` so a caller can tell a FAILED run from a
@@ -645,7 +702,7 @@ export interface StateDigestResult {
   /** `RecipientFacilityChange` rows built — (subscriber × facility) pairs, not emails. */
   changes: number;
   /**
-   * Emails that WOULD be sent: one per (email, state) group. The denominator
+   * Emails that WOULD be sent: one per (email, area) group. The denominator
    * for `recipients`.
    */
   groups: number;
@@ -692,18 +749,17 @@ export async function notifyStateSubscribersMonthly(
       return { ok: true, changes: 0, groups: 0, recipients: 0, alreadyRun: claim.priorRun };
     }
 
-    const changes = await buildStateDigestChanges(since, until);
-    // Grouped by (email, state), NOT email alone — a recipient can hold
-    // subscriptions to multiple states, and each must get its own,
+    const changes = await buildAreaDigestChanges(since, until);
+    // Grouped by (email, areaType, areaId), NOT email alone — a recipient can
+    // hold subscriptions to several areas, and each must get its own,
     // self-consistent email (see groupChangesByRecipient's doc comment).
-    // `buildStateDigestChanges` only ever emits `origin: "state-digest"`
-    // changes, but the key function is typed against the full union, so
-    // `stateName` is only readable once narrowed by `origin`.
-    const groups = groupChangesByRecipient(
-      changes,
-      (c) => `${c.email}::${c.origin === "state-digest" ? c.stateName : ""}`
+    // `buildAreaDigestChanges` only ever emits `origin: "area-digest"`
+    // changes, but the key function is typed against the full union, so the
+    // area fields are only readable once narrowed by `origin`.
+    const groups = groupChangesByRecipient(changes, (c) =>
+      c.origin === "area-digest" ? `${c.email}::${c.areaType}::${c.areaId}` : c.email
     );
-    const recipients = await sendGroupedChangeNotifications(groups);
+    const recipients = await sendGroupedChangeNotifications(groups, claim.runId);
     await completeDigestWindow(since, until, {
       changes: changes.length,
       groups: groups.length,
@@ -724,9 +780,9 @@ export async function notifyStateSubscribersMonthly(
     // comment (lib/db/schema.ts) for why that silent-under-delivery direction
     // is the accepted failure mode here, and why a deliberate resend requires
     // deleting the row rather than a bypass flag.
+    // Name and SQLSTATE only (redactedErrorCode), never the raw error object.
     console.error(
-      "notifyStateSubscribersMonthly failed:",
-      err instanceof Error ? err.name : "unknown"
+      `notifyStateSubscribersMonthly failed: ${err instanceof Error ? err.name : "unknown"} (sqlstate: ${redactedErrorCode(err)})`
     );
     return { ok: false, changes: 0, groups: 0, recipients: 0 };
   }

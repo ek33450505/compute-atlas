@@ -18,10 +18,12 @@ import {
   submissionsTable,
   submissionNotifyRequestsTable,
   submissionNotifySendsTable,
+  emailSendsTable,
   subscribeAttemptsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
-import { runRetentionPrune } from "./retention-prune";
+import { CONFIRM_CAP_WINDOW_MS } from "../lib/email-sends";
+import { EMAIL_SENDS_RETENTION_DAYS, runRetentionPrune } from "./retention-prune";
 
 let tdb: TestDbHandle;
 let tmpBase: string;
@@ -512,5 +514,32 @@ describe("runRetentionPrune — backup failure is back-up-or-abort", () => {
     // The row survives — the mutation was never attempted.
     const remaining = await tdb.db.select().from(contactMessagesTable);
     expect(remaining.map((r) => r.id)).toEqual([contactOld.id]);
+  });
+});
+
+describe("runRetentionPrune — email_sends (outbound send log)", () => {
+  it("a 200-day-old row is a candidate; a 170-day-old row is not", async () => {
+    const [oldId] = await tdb.db
+      .insert(emailSendsTable)
+      .values({ kind: "confirm", emailHash: "hash-old", createdAt: daysBefore(200) })
+      .returning({ id: emailSendsTable.id });
+    const [freshId] = await tdb.db
+      .insert(emailSendsTable)
+      .values({ kind: "confirm", emailHash: "hash-fresh", createdAt: daysBefore(170) })
+      .returning({ id: emailSendsTable.id });
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    const outcome = summary.tables.find((t) => t.table === "email_sends")!;
+    expect(outcome).toMatchObject({ candidates: 1, applied: 1, action: "delete" });
+
+    const remaining = await tdb.db.select().from(emailSendsTable);
+    expect(remaining.map((r) => r.id)).toEqual([freshId.id]);
+    expect(readBackupLines().map((l) => l.row.id)).toEqual([oldId.id]);
+  });
+
+  it("retention is at least 3x the confirm-cap window, so pruning can never shorten the cap", () => {
+    expect(EMAIL_SENDS_RETENTION_DAYS * 86_400_000).toBeGreaterThanOrEqual(3 * CONFIRM_CAP_WINDOW_MS);
   });
 });

@@ -113,6 +113,27 @@
       "when": 1790559858423,
       "tag": "0015_fluffy_galactus",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1792597673924,
+      "tag": "0016_quiet_ledger",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792605421668,
+      "tag": "0017_email_send_ledger",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792620024490,
+      "tag": "0018_submissions_discovered_by_idx",
+      "breakpoints": true
     }
   ]
 }

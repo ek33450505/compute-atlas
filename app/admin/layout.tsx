@@ -52,6 +52,12 @@ export default function AdminLayout({
             >
               Contact
             </Link>
+            <Link
+              href="/admin/email-sends"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Email sends
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-2">

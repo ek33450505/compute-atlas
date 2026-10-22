@@ -1,5 +1,7 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
+import { normalizeEmail } from "@/lib/email-address";
+
 /**
  * Cookie name for the subscribe auto-confirm consent proof. Deliberately
  * unrelated to `admin_session` (`lib/admin-session.ts`): different audience,
@@ -85,16 +87,6 @@ function resolveConsentKey(): string | undefined {
 }
 
 /**
- * Normalized exactly as `subscribeToTarget` normalizes the submitted address
- * (`trim().toLowerCase()`) and as `subscriptions.email` is stored, so the
- * issuing side (a DB row) and the verifying side (a request body) always
- * agree on the same input.
- */
-function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase();
-}
-
-/**
  * Keyed tag binding a cookie to ONE address. Keyed, not a bare sha256, for
  * one reason: a bare digest of an email address is trivially reversible by
  * dictionary, so a cookie captured from a browser would disclose whose it is.
@@ -162,36 +154,48 @@ export function createConsentValue(email: string): string | undefined {
  * note at its call site.
  */
 export function verifyConsentCookie(cookieValue: string | undefined, email: string): boolean {
+  return verifyConsentCookieIssuedAt(cookieValue, email) !== null;
+}
+
+/**
+ * Same checks as `verifyConsentCookie`, but returns the authenticated
+ * `issuedAtMs` on success and `null` on any failure. For callers that must
+ * know whether the cookie predates some other event.
+ */
+export function verifyConsentCookieIssuedAt(
+  cookieValue: string | undefined,
+  email: string
+): number | null {
   const key = resolveConsentKey();
   if (!key) {
-    return false; // fail closed — no key, no auto-confirm
+    return null; // fail closed — no key, no auto-confirm
   }
   if (!cookieValue) {
-    return false;
+    return null;
   }
   if (!cookieValue.startsWith(`${CONSENT_VERSION}.`)) {
-    return false;
+    return null;
   }
 
   const parts = cookieValue.split(".");
   if (parts.length !== 5) {
-    return false;
+    return null;
   }
   const [version, issuedAtRaw, nonce, presentedTag, presentedHmacHex] = parts;
   if (version !== CONSENT_VERSION) {
-    return false;
+    return null;
   }
   if (!ISSUED_AT_PATTERN.test(issuedAtRaw)) {
-    return false;
+    return null;
   }
   if (!NONCE_HEX_PATTERN.test(nonce)) {
-    return false;
+    return null;
   }
   if (!TAG_HEX_PATTERN.test(presentedTag)) {
-    return false;
+    return null;
   }
   if (!HMAC_HEX_PATTERN.test(presentedHmacHex)) {
-    return false;
+    return null;
   }
 
   // Number()/parseInt on an over-long digit string can overflow past
@@ -199,24 +203,24 @@ export function verifyConsentCookie(cookieValue: string | undefined, email: stri
   // isSafeInteger rejects both rather than silently truncating precision.
   const issuedAtMs = Number(issuedAtRaw);
   if (!Number.isSafeInteger(issuedAtMs)) {
-    return false;
+    return null;
   }
 
   const expectedHmac = Buffer.from(signParts(issuedAtMs, nonce, presentedTag, key), "hex");
   const presentedHmac = Buffer.from(presentedHmacHex, "hex");
   if (presentedHmac.length !== expectedHmac.length) {
-    return false;
+    return null;
   }
   if (!timingSafeEqual(presentedHmac, expectedHmac)) {
-    return false;
+    return null;
   }
 
   const now = Date.now();
   if (issuedAtMs > now + CLOCK_SKEW_TOLERANCE_MS) {
-    return false; // future-dated beyond tolerance — not a value we issued
+    return null; // future-dated beyond tolerance — not a value we issued
   }
   if (now - issuedAtMs > CONSENT_MAX_AGE_MS) {
-    return false; // server-side expiry
+    return null; // server-side expiry
   }
 
   // Address binding, checked LAST because it is only meaningful once the tag
@@ -228,7 +232,9 @@ export function verifyConsentCookie(cookieValue: string | undefined, email: stri
   // refinement.
   const expectedTag = Buffer.from(emailTag(email, key), "hex");
   const tag = Buffer.from(presentedTag, "hex");
-  return tag.length === expectedTag.length && timingSafeEqual(tag, expectedTag);
+  return (tag.length === expectedTag.length && timingSafeEqual(tag, expectedTag))
+    ? issuedAtMs
+    : null;
 }
 
 /**

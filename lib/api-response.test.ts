@@ -84,6 +84,7 @@ const EXPECTED_ROUTE_SCOPES: Record<string, CorsScope> = {
   "app/api/submissions/[id]/approve/route.ts": "admin",
   "app/api/submissions/[id]/reject/route.ts": "admin",
   "app/api/submissions/route.ts": "admin", // bearer GET (admin) + bearer POST (admin|intake)
+  "app/api/subscribe/confirm/route.ts": "public-write",
   "app/api/subscribe/route.ts": "public-write",
   "app/api/subscribe/unsubscribe/route.ts": "public-write",
 };

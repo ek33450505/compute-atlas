@@ -16,11 +16,13 @@ import {
 import { notifySubscribersOfChange } from "@/lib/notify";
 import { checkSubmissionNotifySendCap, recordSubmissionNotifySend } from "@/lib/rate-limit";
 import type { Facility } from "@/lib/schema";
+import { isSuppressed, mayEmail } from "@/lib/suppressions";
 import {
   deleteSubmissionNotifyRequest,
   getSubmissionNotifyRequest,
   submissionNotifyEnabled,
 } from "@/lib/submission-notify";
+import { WATCH_TARGET } from "@/lib/watch-target-types";
 
 const provenanceSchema = z.object({
   sources: z.array(z.string()).min(1), // ≥1 source — nothing stages uncited
@@ -126,7 +128,7 @@ export async function confirmedWatcherCounts(
     .where(
       and(
         eq(subscriptionsTable.status, "confirmed"),
-        eq(subscriptionsTable.targetType, "facility"),
+        eq(subscriptionsTable.targetType, WATCH_TARGET.facility),
         inArray(subscriptionsTable.targetId, ids)
       )
     )
@@ -416,7 +418,28 @@ async function notifySubmitterOfReview(
   }
   if (!notifyRequest) return;
 
-  if (submissionNotifyEnabled()) {
+  // "Stop all email" is literal: a globally stopped address (or one whose
+  // lookup failed, "unknown") gets no review email either. Checked BEFORE the
+  // send cap so a skipped send spends none of it, and logged with no address.
+  // The request row is still deleted below, exactly as for any other skip.
+  let mayNotify = submissionNotifyEnabled();
+  if (mayNotify) {
+    try {
+      if (!mayEmail(await isSuppressed(getDb(), notifyRequest.email, { kind: "global" }))) {
+        mayNotify = false;
+        console.warn(
+          "notifySubmitterOfReview: skipped (address suppressed or suppression lookup failed)"
+        );
+      }
+    } catch (err) {
+      // `isSuppressed` itself never throws, but `getDb()` can (no database
+      // URL): a throw here must not skip the request-row delete below.
+      mayNotify = false;
+      console.error(`notifySubmitterOfReview: suppression gate failed (sqlstate: ${redactedErrorCode(err)})`);
+    }
+  }
+
+  if (mayNotify) {
     let underSendCap = false;
     try {
       underSendCap = (await checkSubmissionNotifySendCap(notifyRequest.email)).ok;

@@ -38,6 +38,7 @@ import {
   submissionsTable,
   submissionNotifyRequestsTable,
   submissionNotifySendsTable,
+  emailSendsTable,
   subscribeAttemptsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
@@ -55,6 +56,7 @@ export const SUBSCRIBE_ATTEMPTS_RETENTION_DAYS = 2; // subscribe_attempts: delet
 export const INTAKE_ATTEMPTS_RETENTION_DAYS = 2; // intake_attempts: same as subscribe_attempts above (same 1h cap window, same salted-IP-hash-only payload) — deliberately the same number, not an independent knob
 export const SUBMISSION_NOTIFY_RETENTION_DAYS = 90; // submission_notify_requests: delete rows whose submission was never reviewed — otherwise a submission that never gets reviewed leaves its address sitting forever
 export const SUBMISSION_NOTIFY_SENDS_RETENTION_DAYS = 60; // submission_notify_sends: delete rows older than this many days (by createdAt) — comfortably beyond the 30-day SUBMISSION_NOTIFY_SEND_WINDOW_MS cap window (lib/rate-limit.ts), so pruning can never shorten the cap
+export const EMAIL_SENDS_RETENTION_DAYS = 180; // email_sends: delete rows older than this many days (by createdAt) — at least 3x the 30-day CONFIRM_CAP_WINDOW_MS (lib/email-sends.ts, pinned by a test), so pruning can never shorten the confirm cap
 export const API_ACCESS_GRANTS_RETENTION_DAYS = 90; // api_access_grants: delete revoked-or-expired rows older than this many days (by revokedAt/expiresAt)
 export const API_DAILY_USAGE_RETENTION_DAYS = 35; // api_daily_usage: delete daily per-IP counters older than this many days (by the `day` text column)
 
@@ -207,6 +209,9 @@ function buildSteps(now: Date): RetentionStep[] {
   const submissionNotifySendsPredicate = () =>
     lt(submissionNotifySendsTable.createdAt, submissionNotifySendsCutoff);
 
+  const emailSendsCutoff = daysAgo(now, EMAIL_SENDS_RETENTION_DAYS);
+  const emailSendsPredicate = () => lt(emailSendsTable.createdAt, emailSendsCutoff);
+
   const apiAccessGrantsCutoff = daysAgo(now, API_ACCESS_GRANTS_RETENTION_DAYS);
   const apiAccessGrantsPredicate = () =>
     or(
@@ -292,6 +297,16 @@ function buildSteps(now: Date): RetentionStep[] {
         getDb().select().from(submissionNotifySendsTable).where(submissionNotifySendsPredicate()),
       mutate: () =>
         getDb().delete(submissionNotifySendsTable).where(submissionNotifySendsPredicate()).returning(),
+    },
+    {
+      // Outbound-send accountability log (see emailSendsTable's doc comment
+      // in lib/db/schema.ts). Retained well past the 30-day confirm-cap
+      // window (EMAIL_SENDS_RETENTION_DAYS = 180) so pruning can never
+      // shorten the cap. Salted hashes only, so the backup line holds no address.
+      table: "email_sends",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(emailSendsTable).where(emailSendsPredicate()),
+      mutate: () => getDb().delete(emailSendsTable).where(emailSendsPredicate()).returning(),
     },
     {
       table: "api_access_grants",

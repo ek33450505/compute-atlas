@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import type { Facility } from "@/lib/schema";
@@ -252,5 +252,29 @@ describe("CountyPage — agent-quotable contribution note", () => {
     expect(
       screen.getByText(/source-cited, publicly correctable dataset/i)
     ).toBeInTheDocument();
+  });
+});
+
+describe("CountyPage — watch button (WATCH_AREAS_ENABLED kill switch)", () => {
+  const original = process.env.WATCH_AREAS_ENABLED;
+  afterEach(() => {
+    if (original === undefined) delete process.env.WATCH_AREAS_ENABLED;
+    else process.env.WATCH_AREAS_ENABLED = original;
+  });
+
+  it("renders the monthly watch button by default (ships ON)", async () => {
+    delete process.env.WATCH_AREAS_ENABLED;
+    mockGetCountyBySlug.mockResolvedValue(makeCounty());
+    mockGetFacilitiesByCounty.mockResolvedValue([makeFacility()]);
+    render(await CountyPage({ params: Promise.resolve({ county: "loudoun-va" }) }));
+    expect(screen.getByRole("button", { name: /Watch this county/ })).toBeInTheDocument();
+  });
+
+  it("omits the button when WATCH_AREAS_ENABLED=false", async () => {
+    process.env.WATCH_AREAS_ENABLED = "false";
+    mockGetCountyBySlug.mockResolvedValue(makeCounty());
+    mockGetFacilitiesByCounty.mockResolvedValue([makeFacility()]);
+    render(await CountyPage({ params: Promise.resolve({ county: "loudoun-va" }) }));
+    expect(screen.queryByRole("button", { name: /Watch this county/ })).not.toBeInTheDocument();
   });
 });

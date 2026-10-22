@@ -15,7 +15,7 @@ export function generateToken(): string {
   return randomBytes(32).toString("base64url");
 }
 
-function fromAddress(): string {
+export function fromAddress(): string {
   return process.env.EMAIL_FROM ?? "Compute Atlas <alerts@compute-atlas.com>";
 }
 
@@ -43,36 +43,69 @@ export function escapeHtml(value: string): string {
 }
 
 /**
- * Shared send path for every outbound email below: resolves the Resend
- * client (skipping with `skipLogMessage` if `RESEND_API_KEY` is unset), sends
- * `payload`, and logs any failure under `logLabel`. Each public sender still
- * composes its own subject/text/html (and any sender-specific guard, e.g.
- * sendContactEmail's CONTACT_TO_EMAIL check) before calling this.
+ * Outcome of one send attempt. `resendId` and `errorCode` are shaped to be
+ * persisted: `errorCode` is always an identifier (see `safeErrorCode`), never
+ * free text, an address, or a message.
+ */
+export type SendResult =
+  | { sent: true; resendId: string | null }
+  | { sent: false; errorCode: string; skipped?: "no_key" };
+
+/**
+ * What the public senders return: a `SendResult`, or a bare `{ sent: false }`
+ * from the two senders' pre-send guards (CONTACT_TO_EMAIL unset, EMAIL_FROM
+ * refused), where no send was attempted and there is no code to record.
+ */
+export type SendOutcome = SendResult | { sent: false };
+
+const ERROR_CODE_PATTERN = /^[A-Za-z0-9_]{1,64}$/;
+
+/**
+ * Returns `name` only if identifier-shaped, else "unknown". A SHAPE check, not
+ * an allowlist: acceptable because Resend error names are library-controlled,
+ * and it bounds anything persisted to identifier shape.
+ */
+export function safeErrorCode(name: unknown): string {
+  return typeof name === "string" && ERROR_CODE_PATTERN.test(name) ? name : "unknown";
+}
+
+/**
+ * Shared send path for every outbound email. Module-private on purpose: a
+ * public sender is the only way to mail, so the gate guard can see every use.
+ * Resolves the Resend client (skipping with `skipLogMessage` if
+ * `RESEND_API_KEY` is unset), sends `payload`, and logs any failure under
+ * `logLabel`. Each sender still composes its own subject/text/html (and any
+ * sender-specific guard, e.g. sendContactEmail's CONTACT_TO_EMAIL check)
+ * before calling this. Never throws.
  */
 async function sendViaResend(
   logLabel: string,
   skipLogMessage: string,
   payload: Parameters<Resend["emails"]["send"]>[0],
-): Promise<{ sent: boolean }> {
-  const resend = getResend();
-  if (!resend) {
-    console.warn(skipLogMessage);
-    return { sent: false };
-  }
-
+): Promise<SendResult> {
   try {
+    // Client construction is inside the try so a constructor throw is a
+    // failed send, not an exception — the "never throws" contract.
+    const resend = getResend();
+    if (!resend) {
+      console.warn(skipLogMessage);
+      return { sent: false, errorCode: "no_key", skipped: "no_key" };
+    }
+
     const result = await resend.emails.send(payload);
     if (result.error) {
       // Log only the error type, not the raw Resend error object — it can
       // echo the recipient address back on a validation failure (caught in
       // a prior security review).
-      console.error(`${logLabel} failed:`, result.error?.name ?? "unknown");
-      return { sent: false };
+      const errorCode = safeErrorCode(result.error?.name);
+      console.error(`${logLabel} failed:`, errorCode);
+      return { sent: false, errorCode };
     }
-    return { sent: true };
+    return { sent: true, resendId: result.data?.id ?? null };
   } catch (error) {
-    console.error(`${logLabel} failed:`, error instanceof Error ? error.name : "unknown");
-    return { sent: false };
+    const errorCode = safeErrorCode(error instanceof Error ? error.name : undefined);
+    console.error(`${logLabel} failed:`, errorCode);
+    return { sent: false, errorCode };
   }
 }
 
@@ -80,7 +113,7 @@ export async function sendConfirmEmail(input: {
   email: string;
   targetLabel: string;
   confirmToken: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const confirmUrl = `${linkBase()}/api/subscribe/confirm?token=${encodeURIComponent(input.confirmToken)}`;
   const subject = "Confirm your Compute Atlas alerts";
   const text = `You asked to be notified when ${input.targetLabel} changes on Compute Atlas. Confirm to start receiving updates: ${confirmUrl}. If this wasn't you, ignore this email — nothing is sent unless you confirm.`;
@@ -96,7 +129,7 @@ export async function sendConfirmEmail(input: {
 export async function sendBulkAccessEmail(input: {
   email: string;
   confirmToken: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const confirmUrl = `${linkBase()}/api/access/confirm?token=${encodeURIComponent(input.confirmToken)}`;
   const subject = "Your Compute Atlas bulk API access link";
   const why =
@@ -118,7 +151,7 @@ export async function sendContactEmail(input: {
   email: string;
   topic: string;
   message: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const to = process.env.CONTACT_TO_EMAIL;
   if (!to) {
     // The message is already durably stored (the route inserts the row
@@ -154,7 +187,7 @@ export async function sendContactReply(input: {
   to: string;
   originalMessage: string;
   replyBody: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   // A reply to a member of the public must never go out under a personal From
   // (e.g. a misconfigured EMAIL_FROM); fail closed rather than expose it.
   const rawFrom = fromAddress();
@@ -186,12 +219,12 @@ export async function sendChangeNotification(input: {
   changeLabel: string;
   status: string;
   unsubscribeToken: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const facilityUrl = `${linkBase()}/facilities/${input.facilitySlug}`;
   const unsubUrl = `${linkBase()}/api/subscribe/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
   const subject = `${input.facilityName} — record updated on Compute Atlas`;
-  const text = `The record you're watching changed: ${input.facilityName} — ${input.changeLabel} (now ${input.status}). View it: ${facilityUrl}.\n\nYou're receiving this because you asked to be notified when this record changes on Compute Atlas. Unsubscribe: ${unsubUrl}`;
-  const html = `<p>The record you're watching changed: <strong>${escapeHtml(input.facilityName)}</strong> — ${escapeHtml(input.changeLabel)} (now ${escapeHtml(input.status)}).</p><p><a href="${escapeHtml(facilityUrl)}">View it</a></p><p style="color:#666;font-size:0.85em;">You're receiving this because you asked to be notified when this record changes on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe</a></p>`;
+  const text = `The record you're watching changed: ${input.facilityName} — ${input.changeLabel} (now ${input.status}). View it: ${facilityUrl}.\n\nYou're receiving this because you asked to be notified when this record changes on Compute Atlas. Unsubscribe from this record: ${unsubUrl}\nStop all automated email from Compute Atlas: ${unsubUrl}&scope=all`;
+  const html = `<p>The record you're watching changed: <strong>${escapeHtml(input.facilityName)}</strong> — ${escapeHtml(input.changeLabel)} (now ${escapeHtml(input.status)}).</p><p><a href="${escapeHtml(facilityUrl)}">View it</a></p><p style="color:#666;font-size:0.85em;">You're receiving this because you asked to be notified when this record changes on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this record</a> · <a href="${escapeHtml(unsubUrl + "&scope=all")}">Stop all automated email from Compute Atlas</a></p>`;
 
   return sendViaResend(
     "sendChangeNotification",
@@ -223,11 +256,11 @@ export async function sendWatchStartedEmail(input: {
   email: string;
   targetLabel: string;
   unsubscribeToken: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   const unsubUrl = `${linkBase()}/api/subscribe/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
   const subject = `You're now watching ${input.targetLabel} — Compute Atlas`;
-  const text = `You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching ${input.targetLabel} and will get an email whenever it changes.\n\nIf this wasn't you, unsubscribe: ${unsubUrl}`;
-  const html = `<p>You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching <strong>${escapeHtml(input.targetLabel)}</strong> and will get an email whenever it changes.</p><p style="color:#666;font-size:0.85em;">If this wasn't you, <a href="${escapeHtml(unsubUrl)}">unsubscribe</a>.</p>`;
+  const text = `You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching ${input.targetLabel} and will get an email whenever it changes.\n\nIf this wasn't you, unsubscribe from this one: ${unsubUrl}\nStop all automated email from Compute Atlas: ${unsubUrl}&scope=all`;
+  const html = `<p>You're already a confirmed Compute Atlas subscriber, so this new subscription needed no confirmation: you're now watching <strong>${escapeHtml(input.targetLabel)}</strong> and will get an email whenever it changes.</p><p style="color:#666;font-size:0.85em;">If this wasn't you, <a href="${escapeHtml(unsubUrl)}">unsubscribe from this one</a> · <a href="${escapeHtml(unsubUrl + "&scope=all")}">Stop all automated email from Compute Atlas</a>.</p>`;
 
   return sendViaResend(
     "sendWatchStartedEmail",
@@ -271,7 +304,7 @@ export async function sendSubmissionReviewedEmail(input: {
   decision: "approved" | "rejected";
   facilityName: string;
   facilitySlug?: string; // present on approval — links to the live /facilities/<slug> page
-}): Promise<{ sent: boolean }> {
+}): Promise<SendOutcome> {
   if (input.decision === "approved") {
     const facilityUrl = `${linkBase()}/facilities/${input.facilitySlug}`;
     const subject = `${input.facilityName} is now live on Compute Atlas`;
@@ -300,5 +333,165 @@ export async function sendSubmissionReviewedEmail(input: {
     "sendSubmissionReviewedEmail",
     "RESEND_API_KEY not set — skipping submission-reviewed email send",
     { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+/** One facility change as a digest email lists it (structurally a subset of lib/notify.ts's change rows). */
+export interface DigestChange {
+  facilityName: string;
+  facilitySlug: string;
+  changeLabel: string;
+  status: string;
+  unsubscribeToken: string;
+}
+
+/**
+ * Composes and sends the multi-facility digest email for a recipient with
+ * more than one change in a single run. Lives here so `sendViaResend` can stay
+ * module-private: the only way to mail is a public sender, and every
+ * subscription sender is guarded to run inside `sendGated`.
+ *
+ * Never throws — same contract as `sendChangeNotification` — so a failed
+ * digest send can never turn a successful publish into an error.
+ */
+export async function sendChangeDigestEmail(
+  email: string,
+  changes: DigestChange[],
+): Promise<SendResult> {
+  const base = linkBase();
+  const subject = `${changes.length} updates on facilities you're watching — Compute Atlas`;
+
+  // Each change here is a DISTINCT facility-watch subscription row, so each
+  // carries its OWN unsubscribeToken — every list item gets its own
+  // unsubscribe link, and unsubscribing from one watch never silently
+  // touches the recipient's other watches. This invariant holds because a
+  // facility-watch group is N rows (one per facility). Contrast
+  // `sendAreaDigestEmail` below: a state-digest group is exactly ONE row
+  // (one email + one state) shared across every change, which is why it
+  // renders a single unsubscribe link instead of one per item.
+  const textItems = changes.map((c) => {
+    const url = `${base}/facilities/${c.facilitySlug}`;
+    const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
+    return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url} (unsubscribe from this one: ${unsubUrl})`;
+  });
+  // The stop-all link rides the first change's token: any of the recipient's
+  // tokens proves the same address.
+  //
+  // A digest covers MORE THAN ONE watch (the single-change case goes through
+  // `sendChangeNotification`), so the mailbox "Unsubscribe" button cannot
+  // honestly mean "this one watch": a client shows it as "stop email from this
+  // sender". The header therefore carries the stop-all link, and the footer
+  // says so.
+  const stopAllUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(changes[0].unsubscribeToken)}&scope=all`;
+  const mailboxNote =
+    "Your mail program's Unsubscribe button stops all automated email from Compute Atlas. To stop just one watch, use the link beside it.";
+  const text = `${changes.length} records you're watching changed on Compute Atlas:\n\n${textItems.join("\n")}\n\nStop all automated email from Compute Atlas: ${stopAllUrl}\n${mailboxNote}`;
+
+  const htmlItems = changes
+    .map((c) => {
+      const url = `${base}/facilities/${c.facilitySlug}`;
+      const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(c.unsubscribeToken)}`;
+      return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a> · <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this one</a></li>`;
+    })
+    .join("");
+  const html = `<p>${changes.length} records you're watching changed on Compute Atlas:</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;"><a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a><br>${escapeHtml(mailboxNote)}</p>`;
+
+  return sendViaResend(
+    "sendChangeDigestEmail",
+    "RESEND_API_KEY not set — skipping change digest email send",
+    {
+      from: fromAddress(),
+      to: email,
+      subject,
+      text,
+      html,
+      headers: {
+        "List-Unsubscribe": `<${stopAllUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    },
+  );
+}
+
+/**
+ * Composes and sends the monthly area-digest email (Theme D, D3a; county and metro added by A-3 unit 8b) — the
+ * state-digest counterpart to `sendChangeDigestEmail` above, deliberately NOT
+ * a copy-paste of it. The two are the same SHAPE (a recipient, a list of
+ * facility changes) but different TRUTHS: a facility-watch recipient asked to
+ * be told about specific records; a state-digest recipient asked to be told
+ * about a state. This copy:
+ *   - names the state and states the monthly cadence, instead of implying a
+ *     per-facility watch the recipient never set up;
+ *   - renders exactly ONE unsubscribe link, not one per change — a
+ *     state-digest recipient has exactly ONE subscription row (one email +
+ *     one state), so every `changes` entry here carries that SAME row's
+ *     `unsubscribeToken`. Taking it once (from the first change) and never
+ *     labelling it "unsubscribe from this one" avoids the false claim that
+ *     clicking it only mutes one facility, when it actually unsubscribes the
+ *     recipient from the whole state.
+ *
+ * One sender for state, county and metro: only the NAME and the noun in the
+ * unsubscribe label vary ("this state's" / "this county's" / "this metro
+ * area's"). The state output is pinned byte-for-byte by a golden test in
+ * lib/notify.test.ts.
+ *
+ * Never throws — same contract as `sendChangeDigestEmail`.
+ */
+export type AreaDigestType = "state" | "county" | "metro";
+
+const AREA_NOUN: Record<AreaDigestType, string> = {
+  state: "state",
+  county: "county",
+  metro: "metro area",
+};
+
+export async function sendAreaDigestEmail(
+  email: string,
+  area: { type: AreaDigestType; name: string },
+  changes: DigestChange[],
+): Promise<SendResult> {
+  // Collapse C0 controls (and DEL) so a name can never inject a header line
+  // into the subject or break the text body.
+  const stateName = area.name.replace(/[\u0000-\u001f\u007f]+/g, " ").trim();
+  const noun = AREA_NOUN[area.type];
+  const base = linkBase();
+  const facilityWord = changes.length === 1 ? "facility" : "facilities";
+  const subject = `${changes.length} ${facilityWord} changed in ${stateName} — Compute Atlas monthly digest`;
+
+  // Every change in a state-digest group shares ONE subscription row (one
+  // email + one state), so its unsubscribeToken is identical across all of
+  // them — take it once rather than repeating an identical link per item.
+  const unsubscribeToken = changes[0].unsubscribeToken;
+  const unsubUrl = `${base}/api/subscribe/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`;
+  const stopAllUrl = `${unsubUrl}&scope=all`;
+
+  const textItems = changes.map((c) => {
+    const url = `${base}/facilities/${c.facilitySlug}`;
+    return `- ${c.facilityName} — ${c.changeLabel} (now ${c.status}): ${url}`;
+  });
+  const text = `Your monthly Compute Atlas digest for ${stateName}: ${changes.length} tracked ${facilityWord} changed this period.\n\n${textItems.join("\n")}\n\nYou're receiving this because you subscribed to a monthly digest for ${stateName} on Compute Atlas. Unsubscribe from this ${noun}'s digest: ${unsubUrl}\nStop all automated email from Compute Atlas: ${stopAllUrl}`;
+
+  const htmlItems = changes
+    .map((c) => {
+      const url = `${base}/facilities/${c.facilitySlug}`;
+      return `<li><strong>${escapeHtml(c.facilityName)}</strong> — ${escapeHtml(c.changeLabel)} (now ${escapeHtml(c.status)}). <a href="${escapeHtml(url)}">View it</a></li>`;
+    })
+    .join("");
+  const html = `<p>Your monthly Compute Atlas digest for <strong>${escapeHtml(stateName)}</strong>: ${changes.length} tracked ${facilityWord} changed this period.</p><ul>${htmlItems}</ul><p style="color:#666;font-size:0.85em;">You're receiving this because you subscribed to a monthly digest for ${escapeHtml(stateName)} on Compute Atlas. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from this ${noun}'s digest</a> · <a href="${escapeHtml(stopAllUrl)}">Stop all automated email from Compute Atlas</a></p>`;
+
+  return sendViaResend(
+    "sendAreaDigestEmail",
+    "RESEND_API_KEY not set — skipping area digest email send",
+    {
+      from: fromAddress(),
+      to: email,
+      subject,
+      text,
+      html,
+      headers: {
+        "List-Unsubscribe": `<${unsubUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    },
   );
 }

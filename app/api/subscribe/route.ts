@@ -1,7 +1,9 @@
 import { after } from "next/server";
 
 import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { getDb } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
+import { sendGated } from "@/lib/email-gate";
 import { sendConfirmEmail, sendWatchStartedEmail } from "@/lib/email";
 import {
   checkSubscribeRateLimit,
@@ -12,6 +14,16 @@ import {
 } from "@/lib/rate-limit";
 import { subscribeToTarget } from "@/lib/subscribe";
 import { readConsentCookie } from "@/lib/subscribe-consent";
+
+/**
+ * Logging tail for the gated sends scheduled in `after()`. `sendGated` reports
+ * its own DB errors as a result, so this only catches what escapes it (e.g.
+ * `getDb()` throwing, which runs inside the task's try); an uncaught throw
+ * would reach Next's after-context log with the raw error object. SQLSTATE only.
+ */
+function logGatedSendFailure(err: unknown): void {
+  console.error(`subscribe: gated send failed (sqlstate: ${redactedErrorCode(err)})`);
+}
 
 export async function POST(request: Request) {
   // The IP hash is derived FIRST, before the body is even parsed, so that the
@@ -130,12 +142,32 @@ export async function POST(request: Request) {
   // rationale.
   const confirm = result.confirm;
   if (confirm) {
-    after(() => sendConfirmEmail(confirm));
+    after(async () => {
+      try {
+        await sendGated(
+          getDb(),
+          { kind: "confirm", subscriptionId: confirm.subscriptionId, email: confirm.email },
+          () => sendConfirmEmail(confirm)
+        );
+      } catch (err) {
+        logGatedSendFailure(err);
+      }
+    });
   }
 
   const notice = result.notice;
   if (notice) {
-    after(() => sendWatchStartedEmail(notice));
+    after(async () => {
+      try {
+        await sendGated(
+          getDb(),
+          { kind: "watch_started", subscriptionId: notice.subscriptionId, email: notice.email },
+          () => sendWatchStartedEmail(notice)
+        );
+      } catch (err) {
+        logGatedSendFailure(err);
+      }
+    });
   }
 
   return jsonResponse({ ok: true }, { status: 201 });

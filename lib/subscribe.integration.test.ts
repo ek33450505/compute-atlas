@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { beforeAll, beforeEach, afterAll, describe, it, expect, vi } from "vitest";
+import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } from "vitest";
 import { eq } from "drizzle-orm";
 
 vi.mock("next/cache", () => ({
@@ -15,6 +15,7 @@ import { subscriptionsTable } from "@/lib/db/schema";
 import { EMAIL_SEND_CAP_MAX, AUTO_CONFIRM_CAP_MAX, AUTO_CONFIRM_CAP_WINDOW_MS } from "@/lib/rate-limit";
 import { hashToken, isHashedToken } from "@/lib/token-hash";
 import facilitiesRaw from "@/data/facilities.json";
+import { countySlug } from "@/lib/counties";
 import type { Facility } from "@/lib/schema";
 
 // Imported after the mock above so its transitive import of lib/db/client
@@ -183,6 +184,113 @@ describe("subscribeToTarget", () => {
       expect(result.error).toBe("Unknown state");
     }
     expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(0);
+  });
+
+  it("creates a pending metro subscription with the canonical lowercase id and the metro name as label", async () => {
+    const result = await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "metro",
+      targetId: " Northern-Virginia ",
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.confirm).toEqual(
+        expect.objectContaining({ targetLabel: "Northern Virginia", confirmToken: expect.any(String) })
+      );
+    }
+    const rows = await tdb.db.select().from(subscriptionsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].targetType).toBe("metro");
+    expect(rows[0].targetId).toBe("northern-virginia");
+    expect(rows[0].status).toBe("pending");
+  });
+
+  it("creates a pending county subscription keyed by the canonical slug, labelled for display", async () => {
+    await seedFacility(tdb.db, seedDoc);
+    const slug = countySlug(seedDoc.location.county!, seedDoc.location.state);
+
+    const result = await subscribeToTarget({
+      email: "reader@example.com",
+      targetType: "county",
+      targetId: slug.toUpperCase(),
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.confirm?.targetLabel).toBe(`${seedDoc.location.county} County, ${seedDoc.location.state}`);
+    }
+    const rows = await tdb.db.select().from(subscriptionsTable);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].targetType).toBe("county");
+    expect(rows[0].targetId).toBe(slug);
+  });
+
+  it("rejects unknown metro and county ids with their own 400 strings", async () => {
+    const metro = await subscribeToTarget({ email: "reader@example.com", targetType: "metro", targetId: "atlantis" });
+    const county = await subscribeToTarget({ email: "reader@example.com", targetType: "county", targetId: "nowhere-zz" });
+    expect(metro).toMatchObject({ ok: false, status: 400, error: "Unknown metro" });
+    expect(county).toMatchObject({ ok: false, status: 400, error: "Unknown county" });
+    expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(0);
+  });
+
+  describe("400 issue messages keep their pre-kill-switch static text", () => {
+    const base = { email: "a@b.com", targetType: "state", targetId: "TX" };
+    const cases: [string, unknown, string[], string][] = [
+      ["invalid email", { ...base, email: "bad" }, ["email"], "Invalid email address"],
+      ["email too long", { ...base, email: "a".repeat(260) + "@x.com" }, ["email"], "Too big: expected string to have <=254 characters"],
+      ["missing email", { targetType: "state", targetId: "TX" }, ["email"], "Invalid input: expected string, received undefined"],
+      ["missing targetId", { ...base, targetId: undefined }, ["targetId"], "targetId is required"],
+      ["targetId too long", { ...base, targetId: "x".repeat(130) }, ["targetId"], "Too big: expected string to have <=120 characters"],
+      ["unstorable targetId", { ...base, targetId: "a\u0000b" }, ["targetId"], "Remove unsupported characters."],
+      ["bad honeypot type", { ...base, website: 5 }, ["website"], "Invalid input: expected string, received number"],
+      ["unknown targetType", { ...base, targetType: "zzz" }, ["targetType"], "Invalid value"],
+    ];
+    it.each(cases)("%s", async (_name, input, path, message) => {
+      const result = await subscribeToTarget(input);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.issues).toEqual([expect.objectContaining({ path, message })]);
+        expect(JSON.stringify(result.issues)).not.toMatch(/values|options|received["\s]*:/);
+      }
+    });
+  });
+
+  describe("WATCH_AREAS_ENABLED=false kill switch", () => {
+    const original = process.env.WATCH_AREAS_ENABLED;
+    beforeEach(() => {
+      process.env.WATCH_AREAS_ENABLED = "false";
+    });
+    afterEach(() => {
+      if (original === undefined) delete process.env.WATCH_AREAS_ENABLED;
+      else process.env.WATCH_AREAS_ENABLED = original;
+    });
+
+    it("answers county/metro exactly like an unknown targetType, and inserts nothing", async () => {
+      const unknownType = await subscribeToTarget({ email: "reader@example.com", targetType: "bogus", targetId: "x" });
+      for (const targetType of ["metro", "county"]) {
+        const result = await subscribeToTarget({ email: "reader@example.com", targetType, targetId: "northern-virginia" });
+        expect(result).toMatchObject({ ok: false, status: 400, error: "Invalid subscription" });
+        expect(unknownType.ok).toBe(false);
+        expect(result.ok).toBe(false);
+        if (!result.ok && !unknownType.ok) {
+          expect(result.issues).toEqual(unknownType.issues);
+          expect(result.issues).toEqual([
+            { code: "invalid_value", path: ["targetType"], message: "Invalid value" },
+          ]);
+        }
+      }
+      expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(0);
+    });
+
+    it("leaves state and facility untouched", async () => {
+      await seedFacility(tdb.db, seedDoc);
+      const state = await subscribeToTarget({ email: "a@example.com", targetType: "state", targetId: "tx" });
+      const facility = await subscribeToTarget({ email: "b@example.com", targetType: "facility", targetId: seedDoc.id });
+      expect(state.ok).toBe(true);
+      expect(facility.ok).toBe(true);
+      expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(2);
+    });
   });
 
   it("rejects the 'all' target with a 400 (targetType is facility-only now)", async () => {
@@ -693,12 +801,14 @@ describe("canAutoConfirm — fails safe when the lookup itself throws (H2)", () 
   // (with `default` placeholders for ones not set), so breaking any single
   // column at the DDL level takes the insert down with it too, and this test
   // needs the insert to still succeed. Instead this patches `tdb.db.select`
-  // to throw on exactly the SECOND `.select()` call made while resolving a
-  // "state" target (the FIRST is checkEmailSendCap's own read, which must
-  // keep working normally; a "state" target is used specifically so
-  // getFacilityById never makes a third DB read). This is order-dependent on
-  // subscribeToTarget's current sequencing (checkEmailSendCap, then
-  // canAutoConfirm) — the same sequencing the security review asked to keep
+  // to throw on exactly the THIRD `.select()` call made while resolving a
+  // "state" target: the FIRST is the suppression lookup, the SECOND is
+  // checkEmailSendCap's own read (which must keep working normally), and the
+  // THIRD is canAutoConfirm's. A "state" target is used specifically so
+  // getFacilityById makes no DB read of its own and the numbering holds. This
+  // is order-dependent on subscribeToTarget's current sequencing
+  // (isSuppressed, checkEmailSendCap, then canAutoConfirm) — the same
+  // sequencing the security review asked to keep
   // unconditional and in place.
   it("a thrown lookup falls through to the ordinary pending/confirm path — never notice, never a throw — and logs no email address", async () => {
     const email = "flaky-lookup@example.com";
@@ -708,7 +818,7 @@ describe("canAutoConfirm — fails safe when the lookup itself throws (H2)", () 
     let selectCalls = 0;
     db.select = (...args: unknown[]) => {
       selectCalls += 1;
-      if (selectCalls === 2) {
+      if (selectCalls === 3) {
         // A realistic transient-error shape (Postgres connection_failure),
         // not a bare Error — exercises redactedErrorCode's real-code path,
         // not just its "unknown" fallback.

@@ -43,7 +43,7 @@ function isUniqueViolation(err: unknown): boolean {
 }
 
 export type DigestClaim =
-  | { claimed: true }
+  | { claimed: true; runId: string }
   | {
       claimed: false;
       priorRun: { startedAt: Date; completedAt: Date | null; recipients: number | null };
@@ -53,7 +53,9 @@ export type DigestClaim =
  * Attempts to CLAIM a `(since, until)` window by inserting its row BEFORE any
  * change is built or any mail is sent — see the `stateDigestRunsTable` doc
  * comment in lib/db/schema.ts for why the claim must precede the send, not
- * follow it. Returns `{claimed:true}` on success (the caller may proceed) or,
+ * follow it. Returns `{claimed:true, runId}` on success (the caller may
+ * proceed; `runId` is the new row's id, recorded on each `email_sends` row
+ * the run produces) or,
  * on a unique-index violation — this window was already claimed, either by a
  * completed run or a crashed one — `{claimed:false, priorRun}` describing the
  * existing row so the caller can tell the two apart.
@@ -71,8 +73,11 @@ export type DigestClaim =
 export async function claimDigestWindow(since: Date, until: Date): Promise<DigestClaim> {
   const db = getDb();
   try {
-    await db.insert(stateDigestRunsTable).values({ since, until });
-    return { claimed: true };
+    const [row] = await db
+      .insert(stateDigestRunsTable)
+      .values({ since, until })
+      .returning({ id: stateDigestRunsTable.id });
+    return { claimed: true, runId: row.id };
   } catch (err) {
     if (!isUniqueViolation(err)) {
       throw err;

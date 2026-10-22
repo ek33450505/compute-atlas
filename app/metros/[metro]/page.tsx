@@ -7,6 +7,8 @@ import { getMetroBySlug, METROS, type Metro } from "@/lib/metros";
 import { statesPhrase } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
+import { WatchButton } from "@/components/subscribe/watch-button";
+import { watchAreasEnabled } from "@/lib/watch-target-types";
 
 export const revalidate = 86400;
 
@@ -144,6 +146,16 @@ export default async function MetroPage({
           </p>
           {capacityLine && <p>{capacityLine}</p>}
           {operatorLine && <p>{operatorLine}</p>}
+          {watchAreasEnabled() && (
+            <div className="print:hidden">
+              <WatchButton
+                targetType="metro"
+                targetId={metro.slug}
+                label="Watch this metro — monthly digest"
+                description={`Get a monthly email summarizing what changed for tracked facilities in ${metro.name}. One click to unsubscribe, anytime.`}
+              />
+            </div>
+          )}
         </>
       }
       crumbs={[

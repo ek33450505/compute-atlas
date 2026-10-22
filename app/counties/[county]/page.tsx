@@ -9,6 +9,8 @@ import { formatCountyLabel } from "@/lib/metros";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
 import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
+import { WatchButton } from "@/components/subscribe/watch-button";
+import { watchAreasEnabled } from "@/lib/watch-target-types";
 import { SourceCorrectionNote } from "@/components/contribute/source-correction-note";
 
 export const revalidate = 86400;
@@ -177,6 +179,16 @@ export default async function CountyPage({
               Inherits text-base/muted-foreground from CollectionPage's intro
               wrapper; see components/contribute/source-correction-note.tsx. */}
           <SourceCorrectionNote />
+          {watchAreasEnabled() && (
+            <div className="print:hidden">
+              <WatchButton
+                targetType="county"
+                targetId={county.slug}
+                label="Watch this county — monthly digest"
+                description={`Get a monthly email summarizing what changed for tracked facilities in ${qualifiedLabel}. One click to unsubscribe, anytime.`}
+              />
+            </div>
+          )}
         </>
       }
       crumbs={[

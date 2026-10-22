@@ -20,7 +20,7 @@ vi.mock("resend", () => ({
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
-import { facilityHistoryTable, stateDigestRunsTable, subscriptionsTable } from "@/lib/db/schema";
+import { emailSendsTable, facilityHistoryTable, stateDigestRunsTable, subscriptionsTable } from "@/lib/db/schema";
 import { generateToken, sendChangeNotification } from "@/lib/email";
 import { stateNameFromCode } from "@/lib/us-states";
 import facilitiesRaw from "@/data/facilities.json";
@@ -73,6 +73,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   vi.unstubAllEnvs();
+  vi.restoreAllMocks();
 });
 
 afterAll(async () => {
@@ -127,6 +128,7 @@ describe("groupChangesByRecipient", () => {
       {
         origin: "facility-watch",
         email: "a@example.com",
+        subscriptionId: "s1",
         unsubscribeToken: "t1",
         facilityName: "Facility A",
         facilitySlug: "a",
@@ -136,6 +138,7 @@ describe("groupChangesByRecipient", () => {
       {
         origin: "facility-watch",
         email: "a@example.com",
+        subscriptionId: "s2",
         unsubscribeToken: "t2",
         facilityName: "Facility B",
         facilitySlug: "b",
@@ -157,6 +160,7 @@ describe("groupChangesByRecipient", () => {
       {
         origin: "facility-watch",
         email: "a@example.com",
+        subscriptionId: "s1",
         unsubscribeToken: "t1",
         facilityName: "Facility A",
         facilitySlug: "a",
@@ -166,6 +170,7 @@ describe("groupChangesByRecipient", () => {
       {
         origin: "facility-watch",
         email: "b@example.com",
+        subscriptionId: "s2",
         unsubscribeToken: "t2",
         facilityName: "Facility A",
         facilitySlug: "a",
@@ -204,21 +209,21 @@ describe("groupChangesByRecipient", () => {
 /**
  * ⚠️ These two assert at COMPILE time, not run time. The `expect(...)` calls
  * below are deliberately vacuous — `npm test` alone can NEVER fail them. The
- * real gate is `npm run typecheck`: if `stateName` ever becomes optional
+ * real gate is `npm run typecheck`: if the area fields ever become optional
  * again (or `origin` stops being required), the `@ts-expect-error` directives
  * become UNUSED and tsc errors on them. Verified by mutation: reverting
- * `stateName` to optional produces "Unused '@ts-expect-error' directive" on
- * both, plus a genuine error where `sendStateDigestEmail` receives a possibly
- * -undefined `stateName`. Do not "fix" these into runtime assertions — the
+ * the area fields to optional produces "Unused '@ts-expect-error' directive" on
+ * both, plus a genuine error where `sendAreaDigestEmail` receives a possibly
+ * -undefined area field. Do not "fix" these into runtime assertions — the
  * constraint they pin is not observable at run time.
  */
 describe("RecipientFacilityChange origin discriminator (type-level)", () => {
-  it("rejects an origin: 'state-digest' change missing stateName at compile time", () => {
-    // @ts-expect-error — origin: "state-digest" requires stateName; omitting
+  it("rejects an origin: 'area-digest' change missing its area fields at compile time", () => {
+    // @ts-expect-error — origin: "area-digest" requires areaType/areaId/areaName; omitting
     // it is the exact mistake the required `origin` discriminator exists to
     // make impossible to construct silently.
     const invalid: RecipientFacilityChange = {
-      origin: "state-digest",
+      origin: "area-digest",
       email: "x@example.com",
       unsubscribeToken: "t",
       facilityName: "F",
@@ -229,7 +234,7 @@ describe("RecipientFacilityChange origin discriminator (type-level)", () => {
     expect(invalid).toBeDefined();
   });
 
-  it("rejects an origin: 'facility-watch' change that carries stateName at compile time", () => {
+  it("rejects an origin: 'facility-watch' change that carries area fields at compile time", () => {
     const invalid: RecipientFacilityChange = {
       origin: "facility-watch",
       email: "x@example.com",
@@ -238,10 +243,10 @@ describe("RecipientFacilityChange origin discriminator (type-level)", () => {
       facilitySlug: "f",
       changeLabel: "record updated",
       status: "Operational",
-      // @ts-expect-error — stateName does not exist on the facility-watch
-      // branch; a facility-watch change must never carry state-digest-only
+      // @ts-expect-error — areaName does not exist on the facility-watch
+      // branch; a facility-watch change must never carry area-digest-only
       // data.
-      stateName: "Tennessee",
+      areaName: "Tennessee",
     };
     expect(invalid).toBeDefined();
   });
@@ -329,6 +334,42 @@ describe("notifySubscribersOfChanges (batched, multi-facility)", () => {
     expect(args.html).toContain(facilityB.name);
     expect(args.text).toContain(facilityA.name);
     expect(args.text).toContain(facilityB.name);
+  });
+
+  it("sends the digest through the shared path with sender and one-click unsubscribe headers", async () => {
+    // Hermetic: fromAddress() falls back to the default only when unset.
+    vi.stubEnv("EMAIL_FROM", undefined);
+    const sub = await insertSubscription({ targetType: "facility", targetId: facilityA.id });
+    await insertSubscription({ email: sub.email, targetType: "facility", targetId: facilityB.id });
+
+    await notifySubscribersOfChanges([
+      { facility: facilityA, changeLabel: "added to the atlas" },
+      { facility: facilityB, changeLabel: "record updated" },
+    ]);
+
+    const args = resendSendMock.mock.calls[0][0];
+    expect(args.from).toBe("Compute Atlas <alerts@compute-atlas.com>");
+    expect(args.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
+    expect(args.headers["List-Unsubscribe"]).toMatch(/^<.*\/api\/subscribe\/unsubscribe\?token=.*&scope=all>$/);
+  });
+
+  it("pins the change digest log labels and no-key warning", async () => {
+    const sub = await insertSubscription({ targetType: "facility", targetId: facilityA.id });
+    await insertSubscription({ email: sub.email, targetType: "facility", targetId: facilityB.id });
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const changes = [
+      { facility: facilityA, changeLabel: "added to the atlas" },
+      { facility: facilityB, changeLabel: "record updated" },
+    ];
+
+    resendSendMock.mockRejectedValueOnce(new TypeError("boom"));
+    await notifySubscribersOfChanges(changes);
+    expect(errSpy).toHaveBeenCalledWith("sendChangeDigestEmail failed:", "TypeError");
+
+    vi.stubEnv("RESEND_API_KEY", "");
+    await notifySubscribersOfChanges(changes);
+    expect(warnSpy).toHaveBeenCalledWith("RESEND_API_KEY not set — skipping change digest email send");
   });
 
   it("gives each of multiple recipients their own single email", async () => {
@@ -584,6 +625,37 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
   const withinPeriod = new Date("2026-01-15T00:00:00Z");
   const beforePeriod = new Date("2025-12-01T00:00:00Z");
 
+  async function seedStateDigestRecipient() {
+    await seedFacility(tdb.db, facilityTnA);
+    await insertHistoryRow(facilityTnA.id, "update", withinPeriod);
+    await insertSubscription({
+      email: "confirmed@example.com",
+      targetType: "state",
+      targetId: facilityTnA.location.state,
+      status: "confirmed",
+    });
+  }
+
+  it("pins the state digest failure log label", async () => {
+    await seedStateDigestRecipient();
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    resendSendMock.mockRejectedValueOnce(new TypeError("boom"));
+
+    await notifyStateSubscribersMonthly(since, until);
+
+    expect(errSpy).toHaveBeenCalledWith("sendAreaDigestEmail failed:", "TypeError");
+  });
+
+  it("pins the state digest no-key warning text", async () => {
+    await seedStateDigestRecipient();
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.stubEnv("RESEND_API_KEY", "");
+
+    await notifyStateSubscribersMonthly(since, until);
+
+    expect(warnSpy).toHaveBeenCalledWith("RESEND_API_KEY not set — skipping area digest email send");
+  });
+
   it("notifies only a confirmed state subscriber — not pending, not unsubscribed, not 'all'", async () => {
     await seedFacility(tdb.db, facilityTnA);
     await insertHistoryRow(facilityTnA.id, "update", withinPeriod);
@@ -729,7 +801,7 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
       targetId: facilityTnA.location.state,
       status: "confirmed",
     });
-    // A state digest (even a single-change one) sends via sendStateDigestEmail
+    // A state digest (even a single-change one) sends via sendAreaDigestEmail
     // -> resendSendMock, never sendChangeNotification — see the "state-digest
     // copy" describe block below.
     resendSendMock.mockRejectedValueOnce(new Error("send failed"));
@@ -835,11 +907,12 @@ describe("notifyStateSubscribersMonthly — state-digest copy correctness", () =
     expect(args.html).toContain(tnStateName);
     expect(args.subject).toContain(tnStateName);
 
-    // Exactly one unsubscribe link in each of html and text — not one per
+    // Exactly one PER-TARGET unsubscribe link (the regex excludes the separate
+    // `&scope=all` stop-all link) in each of html and text — not one per
     // changed facility (contrast the facility-watch digest test below, which
     // pins the OPPOSITE: one link per item).
-    const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=/g) ?? []).length;
-    const textUnsubCount = (args.text.match(/\/api\/subscribe\/unsubscribe\?token=/g) ?? []).length;
+    const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=[^&"\s]*(?=["\s]|$)/g) ?? []).length;
+    const textUnsubCount = (args.text.match(/\/api\/subscribe\/unsubscribe\?token=[^&"\s]*(?=["\s]|$)/g) ?? []).length;
     expect(htmlUnsubCount).toBe(1);
     expect(textUnsubCount).toBe(1);
     expect(args.html).toContain(`token=${encodeURIComponent(sub.unsubscribeToken)}`);
@@ -859,7 +932,7 @@ describe("notifyStateSubscribersMonthly — state-digest copy correctness", () =
 
     const args = resendSendMock.mock.calls[0][0];
     expect(args.subject).toBe("2 updates on facilities you're watching — Compute Atlas");
-    const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=/g) ?? []).length;
+    const htmlUnsubCount = (args.html.match(/\/api\/subscribe\/unsubscribe\?token=[^&"\s]*(?=["\s]|$)/g) ?? []).length;
     expect(htmlUnsubCount).toBe(2); // one per facility, unlike the state digest's one-total
     expect(args.html).toContain("Unsubscribe from this one");
   });
@@ -965,14 +1038,14 @@ describe("notifyStateSubscribersMonthly — idempotency (D3)", () => {
 
   it("leaves the window claimed with completedAt still null when the completion write throws after a successful claim and send", async () => {
     await seedOneChangeOneSubscriber();
-    // getDb() is called 3 times on the success path — claimDigestWindow,
-    // buildStateDigestChanges, completeDigestWindow, in that order (sending
-    // itself never touches the DB — it goes through the mocked Resend
-    // client). Let the first two through to the real PGlite instance and
-    // make only the THIRD (the completion write) throw, so the claim and the
-    // send both genuinely happen and only the completion record is what
-    // fails.
+    // getDb() is called 4 times on the success path — claimDigestWindow,
+    // buildStateDigestChanges, sendGroupedChangeNotifications (the send
+    // gate's email_sends writes), completeDigestWindow, in that order. Let
+    // the first three through to the real PGlite instance and make only the
+    // FOURTH (the completion write) throw, so the claim and the send both
+    // genuinely happen and only the completion record is what fails.
     vi.mocked(dbClient.getDb)
+      .mockReturnValueOnce(tdb.db as never)
       .mockReturnValueOnce(tdb.db as never)
       .mockReturnValueOnce(tdb.db as never)
       .mockImplementationOnce(() => {
@@ -1020,8 +1093,11 @@ describe("sendGroupedChangeNotifications — mixed-state guard", () => {
     facility: Facility
   ): RecipientChangeGroup["changes"][number] {
     return {
-      origin: "state-digest",
-      stateName,
+      origin: "area-digest",
+      areaType: "state",
+      areaId: stateName,
+      areaName: stateName,
+      subscriptionId: "s1",
       unsubscribeToken: "unsub-token-sentinel",
       facilityName: facility.name,
       facilitySlug: facility.id,
@@ -1055,17 +1131,198 @@ describe("sendGroupedChangeNotifications — mixed-state guard", () => {
   it("positive control: the identical group with ONE state DOES send", async () => {
     // Without this, "zero sends" above could be an artifact of the fixture
     // rather than proof the guard fired.
+    const [row] = await tdb.db
+      .insert(subscriptionsTable)
+      .values({
+        email: "reader@example.com",
+        targetType: "state",
+        targetId: facilityTnA.location.state,
+        status: "confirmed",
+        confirmToken: generateToken(),
+        unsubscribeToken: "unsub-token-sentinel",
+      })
+      .returning();
     const group: RecipientChangeGroup = {
       email: "reader@example.com",
       changes: [
-        stateDigestChange(tnStateName, facilityTnA),
-        stateDigestChange(tnStateName, facilityTnB),
+        { ...stateDigestChange(tnStateName, facilityTnA), subscriptionId: row.id },
+        { ...stateDigestChange(tnStateName, facilityTnB), subscriptionId: row.id },
       ],
     };
 
-    const sent = await sendGroupedChangeNotifications([group]);
+    const claim = await claimDigestWindow(new Date("2026-03-01T00:00:00Z"), new Date("2026-04-01T00:00:00Z"));
+    if (!claim.claimed) throw new Error("fixture window already claimed");
+    const sent = await sendGroupedChangeNotifications([group], claim.runId);
 
     expect(sent).toBe(1);
     expect(resendSendMock).toHaveBeenCalledTimes(1);
   });
 });
+
+// A facility digest lists N distinct watch rows; the send gate must re-check
+// every one of them, or a watch the reader just left is still mailed.
+describe("sendGroupedChangeNotifications — facility digest covers every row", () => {
+  it("skips the WHOLE digest, recording one skipped row, when one covered row was unsubscribed after the recipient query", async () => {
+    const insert = async (facility: Facility, status: "confirmed" | "unsubscribed") => {
+      const [row] = await tdb.db
+        .insert(subscriptionsTable)
+        .values({
+          email: "many@example.com",
+          targetType: "facility",
+          targetId: facility.id,
+          status,
+          confirmToken: generateToken(),
+          unsubscribeToken: generateToken(),
+        })
+        .returning();
+      return row;
+    };
+    const rowA = await insert(facilityA, "confirmed");
+    const rowB = await insert(facilityB, "unsubscribed");
+    const change = (row: typeof rowA, facility: Facility): RecipientFacilityChange => ({
+      origin: "facility-watch",
+      subscriptionId: row.id,
+      email: "many@example.com",
+      unsubscribeToken: row.unsubscribeToken,
+      facilityName: facility.name,
+      facilitySlug: facility.id,
+      changeLabel: "record updated",
+      status: "Operational",
+    });
+
+    const sent = await sendGroupedChangeNotifications(
+      groupChangesByRecipient([change(rowA, facilityA), change(rowB, facilityB)])
+    );
+
+    expect(sent).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    const all = await tdb.db.select().from(emailSendsTable);
+    expect(all).toHaveLength(1);
+    expect(all[0]).toMatchObject({ kind: "facility_digest", outcome: "skipped_unconfirmed" });
+  });
+});
+
+describe("sendGroupedChangeNotifications — state digest needs a run id", () => {
+  it("refuses a state-digest group without a runId: logs a fixed message, sends nothing, writes no row", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [
+        {
+          origin: "area-digest",
+          areaType: "state",
+          areaId: facilityTnA.location.state,
+          areaName: tnStateName,
+          subscriptionId: "s1",
+          unsubscribeToken: "tok",
+          facilityName: facilityTnA.name,
+          facilitySlug: facilityTnA.id,
+          changeLabel: "record updated",
+          status: "Operational",
+        },
+      ],
+    };
+    expect(await sendGroupedChangeNotifications([group])).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(await tdb.db.select().from(emailSendsTable)).toHaveLength(0);
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain("reader@example.com");
+    consoleError.mockRestore();
+  });
+});
+
+describe("sendGroupedChangeNotifications — digest anchor token", () => {
+  it("the facility digest's List-Unsubscribe token is the anchor (first) row's token", async () => {
+    const insert = async (facility: Facility, token: string) => {
+      const [row] = await tdb.db
+        .insert(subscriptionsTable)
+        .values({
+          email: "many@example.com",
+          targetType: "facility",
+          targetId: facility.id,
+          status: "confirmed",
+          confirmToken: generateToken(),
+          unsubscribeToken: token,
+        })
+        .returning();
+      return row;
+    };
+    const rowA = await insert(facilityA, "anchor-token");
+    const rowB = await insert(facilityB, "second-token");
+    const change = (row: typeof rowA, facility: Facility): RecipientFacilityChange => ({
+      origin: "facility-watch",
+      subscriptionId: row.id,
+      email: "many@example.com",
+      unsubscribeToken: row.unsubscribeToken,
+      facilityName: facility.name,
+      facilitySlug: facility.id,
+      changeLabel: "record updated",
+      status: "Operational",
+    });
+    vi.stubEnv("RESEND_API_KEY", "test-key");
+    resendSendMock.mockResolvedValue({ data: { id: "m-1" }, error: null });
+    await sendGroupedChangeNotifications(groupChangesByRecipient([change(rowA, facilityA), change(rowB, facilityB)]));
+    const header = resendSendMock.mock.calls[0][0].headers["List-Unsubscribe"] as string;
+    expect(header).toContain("token=anchor-token");
+    expect(header).not.toContain("second-token");
+    const [send] = await tdb.db.select().from(emailSendsTable);
+    expect(send.subscriptionId).toBe(rowA.id);
+    vi.unstubAllEnvs();
+  });
+});
+
+// A-3 unit 8b: the mixed-group guard generalised to areaType + areaId.
+describe("area digest — mixed-group guard and run id", () => {
+  const change = (areaType: "county" | "metro", areaId: string, areaName: string) => ({
+    origin: "area-digest" as const,
+    areaType,
+    areaId,
+    areaName,
+    subscriptionId: "s1",
+    unsubscribeToken: "unsub-token-sentinel",
+    facilityName: "F",
+    facilitySlug: "f",
+    changeLabel: "record updated",
+    status: "Operational",
+  });
+
+  it("refuses a group mixing two counties (same areaType, different areaId), logging no address or token", async () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const claim = await claimDigestWindow(new Date("2026-01-01T00:00:00Z"), new Date("2026-02-01T00:00:00Z"));
+    if (!claim.claimed) throw new Error("fixture");
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [change("county", "loudoun-va", "Loudoun County, VA"), change("county", "fairfax-va", "Fairfax County, VA")],
+    };
+    expect(await sendGroupedChangeNotifications([group], claim.runId)).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    const logged = JSON.stringify(err.mock.calls);
+    expect(logged).toContain("mixed multiple areas");
+    expect(logged).not.toContain("reader@example.com");
+    expect(logged).not.toContain("unsub-token-sentinel");
+  });
+
+  it("refuses a group whose changes share areaType and areaName and differ only in areaId", async () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const claim = await claimDigestWindow(new Date("2026-01-01T00:00:00Z"), new Date("2026-02-01T00:00:00Z"));
+    if (!claim.claimed) throw new Error("fixture");
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [change("county", "washington-va", "Washington County"), change("county", "washington-nj", "Washington County")],
+    };
+    expect(await sendGroupedChangeNotifications([group], claim.runId)).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(JSON.stringify(err.mock.calls)).toContain("mixed multiple areas");
+  });
+
+  it("refuses a county group without a run id", async () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const group: RecipientChangeGroup = {
+      email: "reader@example.com",
+      changes: [change("county", "loudoun-va", "Loudoun County, VA")],
+    };
+    expect(await sendGroupedChangeNotifications([group])).toBe(0);
+    expect(resendSendMock).not.toHaveBeenCalled();
+    expect(JSON.stringify(err.mock.calls)).toContain("needs a run id");
+  });
+});
+

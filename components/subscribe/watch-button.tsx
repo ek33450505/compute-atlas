@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn, QUIET_ACTION_CLASS } from "@/lib/utils";
+import type { WatchTargetType } from "@/lib/watch-target-types";
 
-export type WatchTargetType = "facility" | "state";
+export type { WatchTargetType };
 
 export interface WatchButtonProps {
   targetType: WatchTargetType;
-  /** Facility id, or (for targetType="state") a 2-letter state code. */
+  /** Facility id, or (for targetType="state") a 2-letter state code, or (for "county"/"metro") the hub slug. */
   targetId: string;
   /** Trigger button copy, e.g. "Watch this facility". */
   label: string;

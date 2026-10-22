@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import type { Facility } from "@/lib/schema";
 
@@ -134,5 +134,27 @@ describe("MetroPage — DC-aware 'spanning' phrasing", () => {
     render(page);
 
     expect(screen.queryByText(/spanning/)).not.toBeInTheDocument();
+  });
+});
+
+describe("MetroPage — watch button (WATCH_AREAS_ENABLED kill switch)", () => {
+  const original = process.env.WATCH_AREAS_ENABLED;
+  afterEach(() => {
+    if (original === undefined) delete process.env.WATCH_AREAS_ENABLED;
+    else process.env.WATCH_AREAS_ENABLED = original;
+  });
+
+  it("renders the monthly watch button by default (ships ON)", async () => {
+    delete process.env.WATCH_AREAS_ENABLED;
+    mockGetFacilitiesByMetro.mockResolvedValue([makeFacility()]);
+    render(await MetroPage({ params: Promise.resolve({ metro: "northern-virginia" }) }));
+    expect(screen.getByRole("button", { name: /Watch this metro/ })).toBeInTheDocument();
+  });
+
+  it("omits the button when WATCH_AREAS_ENABLED=false", async () => {
+    process.env.WATCH_AREAS_ENABLED = "false";
+    mockGetFacilitiesByMetro.mockResolvedValue([makeFacility()]);
+    render(await MetroPage({ params: Promise.resolve({ metro: "northern-virginia" }) }));
+    expect(screen.queryByRole("button", { name: /Watch this metro/ })).not.toBeInTheDocument();
   });
 });
