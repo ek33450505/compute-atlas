@@ -159928,8 +159928,8 @@
     "status": "operational",
     "confidence": "confirmed",
     "location": {
-      "lat": 34.984394,
-      "lon": -90.042296,
+      "lat": 34.983361,
+      "lon": -90.039869,
       "city": "Southaven",
       "county": "DeSoto",
       "state": "MS",
@@ -159996,10 +159996,31 @@
         "publisher": "The Mississippi Monitor",
         "retrievedAt": "2026-09-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.mississippifreepress.org/as-musks-xai-data-centers-encroach-on-southaven-north-mississippi-residents-push-back/",
+        "label": "As Musk's xAI Data Centers Encroach on Southaven, North Mississippi Residents Push Back",
+        "publisher": "Mississippi Free Press",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.desototimes.com/news/xai-buys-building-and-additional-land-in-southaven-for-data-center/article_99b4eb95-e5b1-4cd0-8f36-9ab0021b9cb5.html",
+        "label": "xAI buys building and additional land in Southaven for data center",
+        "publisher": "DeSoto Times",
+        "retrievedAt": "2026-10-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://frs-public.epa.gov/ords/frs_public2/fii_query_detail.disp_program_facility?p_registry_id=110017408679",
+        "label": "Facility Registry Service record, 2875 Stanton Road, Southaven (registry ID 110017408679)",
+        "publisher": "U.S. Environmental Protection Agency",
+        "retrievedAt": "2026-10-21",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-14",
-    "notes": "Former Duke Energy site on Stanton Rd, Southaven. 69 temporary gas turbines, being removed August 2026 → July 2027 and replaced by a permanent 1.2 GW / 41-turbine plant under construction; 11 turbines were powered down as of 2026-08-31. The permanent 41 are the MDEQ PSD 0680-00119 fleet (see generation.notes — this resolves the \"two 41s\" ambiguity rather than leaving it open). ⚠ capacityMw.operational (495) derives from the July 2026 reporting and PREDATES the August power-downs; it is not restated by any source after removal began, so treat it as the last sourced figure rather than a current one. Distinct facility from the separately tracked xAI Southaven data center (Colossus). ⚠ Several outlets now style the operator \"SpaceXAI\", reporting that SpaceX acquired xAI. That is secondary-source only and would touch `operator` on 11 records, so it is deliberately NOT applied here — verify against a filing first.",
+    "lastUpdated": "2026-10-21",
+    "notes": "Former Duke Energy site on Stanton Rd, Southaven. 69 temporary gas turbines, being removed August 2026 → July 2027 and replaced by a permanent 1.2 GW / 41-turbine plant under construction; 11 turbines were powered down as of 2026-08-31. The permanent 41 are the fleet authorised by MDEQ PSD permit 0680-00119 (see the generation notes). The operational capacity of 495 MW comes from July 2026 reporting and predates the August power-downs; no source restates it after removal began, so it is the last sourced figure rather than a current one. A separate facility from the MACROHARDRR (xAI Southaven) data center. Several outlets now style the operator \"SpaceXAI\", reporting that SpaceX acquired xAI; that is secondary-source only, so the operator stays recorded as xAI until a filing confirms it. Location: the EPA Facility Registry point for 2875 Stanton Road, the address on the MDEQ permit; the separate TVA Southaven Combined Cycle plant on Stateline Road West is about 1 km north.",
     "energy": {
       "source": "on_site_gas",
       "notes": "Gas-turbine generation dedicated to xAI's Colossus 2 compute; MDEQ authorised 41 permanent turbines in March 2026 while 27 turbines were operating in Southaven without an air permit at the time of the April 2026 suit. No utility interconnection is claimed."
@@ -160015,7 +160036,7 @@
       "permitType": "psd",
       "issuingAgency": "Mississippi Department of Environmental Quality",
       "issuedDate": "2026-03-11",
-      "notes": "Permitted CEILINGS from MDEQ PSD Air Construction Permit 0680-00119 (permittee MZX Tech LLC, an xAI affiliate; AI 12592), not measured emissions. Every per-group tonnage is PER TURBINE on a 12-month rolling total basis — they are limits on each individual machine and must never be summed or multiplied by the unit count to state a facility total; the permit itself states no facility-wide tonnage for NOx, CO, VOC, SO2, PM10, PM2.5, NH3 or formaldehyde. SCOPE CAVEAT: this permit authorises the 41 PERMANENT turbines, which reporting confirms are the 1.2 GW replacement plant now under construction. This record's generation.unitCount of 69 is a different fleet: the TEMPORARY turbines on site, being removed August 2026 → July 2027, which include machines operating outside this permit and are the subject of NAACP/SELC/Earthjustice litigation filed 2026-04-14. The two counts measure different things and must not be reconciled by editing either. GHG: the permit sets CO2 as a rate only — BACT of 120 lb/MMBtu, short-term and long-term — with NO annual tonnage cap, so co2e is deliberately left undefined; a missing co2e here does not mean the facility has no GHG limit. HAPs: the only facility-wide caps in the permit are 24.0 tpy total combined HAPs and 9.50 tpy for any individual HAP (Condition 3.3, \"For the entire facility\"); the schema records the combined figure, and the per-individual cap has no field. The permit prints formaldehyde as \"CH2O\"; PM10 and PM2.5 are stated as filterable + condensable.",
+      "notes": "Permitted ceilings from MDEQ PSD Air Construction Permit 0680-00119 (permittee MZX Tech LLC, an xAI affiliate; AI 12592), not measured emissions. Every per-group tonnage is per turbine on a 12-month rolling total basis: each is a limit on one machine, and summing them or multiplying by the unit count does not give a facility total; the permit states no facility-wide tonnage for NOx, CO, VOC, SO2, PM10, PM2.5, NH3 or formaldehyde. Scope: this permit authorises the 41 permanent turbines, which reporting confirms are the 1.2 GW replacement plant now under construction. The unit count of 69 is a different fleet: the temporary turbines on site, being removed August 2026 → July 2027, which include machines operating outside this permit and are the subject of NAACP/SELC/Earthjustice litigation filed 2026-04-14. The two counts measure different things. GHG: the permit sets CO2 as a rate only — BACT of 120 lb/MMBtu, short-term and long-term — with no annual tonnage cap, so no CO2e figure is recorded; a missing CO2e figure here does not mean the facility has no GHG limit. HAPs: the only facility-wide caps in the permit are 24.0 tpy total combined HAPs and 9.50 tpy for any individual HAP (Condition 3.3, \"For the entire facility\"); the combined figure is recorded, and the per-HAP cap is not. The permit prints formaldehyde as \"CH2O\"; PM10 and PM2.5 are stated as filterable + condensable.",
       "sourceIndex": 3,
       "unitGroups": [
         {
@@ -160067,7 +160088,7 @@
     },
     "community": {
       "status": "litigation",
-      "notes": "The NAACP, represented by the Southern Environmental Law Center and Earthjustice, sued xAI and its subsidiary MZX Tech in the U.S. District Court for the Northern District of Mississippi in April 2026 over unpermitted turbine operation, after a February notice letter. Hundreds of residents attended the MDEQ permit hearing.",
+      "notes": "The NAACP, represented by the Southern Environmental Law Center and Earthjustice, sued xAI and its subsidiary MZX Tech in the U.S. District Court for the Northern District of Mississippi in April 2026 over unpermitted turbine operation, after a February notice letter. Hundreds of residents attended the MDEQ permit hearing. About 700 Southaven residents signed a Safe and Sound Coalition petition objecting to the site's operations, left with the Board of Aldermen on 6 January 2026 (Mississippi Free Press). Nearby residents have complained of constant turbine noise (DeSoto Times). Mayor Darren Musselwhite acknowledged that sound levels are oftentimes \"unacceptable\" and said xAI had pledged a $12.8 million berm; he said a $7 million noise barrier the company built along the property's east side lowered the noise, which a resident disputes (Mississippi Free Press).",
       "sourceIndex": 4
     },
     "facilityType": "power_generation",
@@ -160075,7 +160096,7 @@
       "technology": "natural_gas",
       "offtaker": "xAI (Colossus data center)",
       "unitCount": 69,
-      "notes": "69 TEMPORARY turbines on the Stanton Rd site. Under an agreement reported 2026-07-31, removal began August 2026 and must be complete by July 2027; 11 had been powered down as of 2026-08-31, leaving 58 running. They are being replaced by a PERMANENT 1.2 GW plant of 41 turbines, under construction. ⭐ The permanent 41 ARE the fleet authorised by MDEQ PSD permit 0680-00119 (issued 2026-03-11, cited at sources[3], which itemises exactly 41 machines: 17 Solar Titan PGM-130 + 16 Solar Titan 350 + 8 ProEnergy 6000PE). An earlier note in this repo warned the permitted 41 and the replacement 41 were \"probably NOT the same 41\" — that was a reasonable caution but the reporting resolves it the other way, and this record now says so explicitly so the question is not reopened. Permitting remains contested: NAACP/Earthjustice/SELC litigation filed 2026-04-14 concerns turbines operating outside that permit."
+      "notes": "69 temporary turbines on the Stanton Rd site. Under an agreement reported 2026-07-31, removal began August 2026 and must be complete by July 2027; 11 had been powered down as of 2026-08-31, leaving 58 running. They are being replaced by a permanent 1.2 GW plant of 41 turbines, under construction. Reporting confirms the permanent 41 are the fleet authorised by MDEQ PSD permit 0680-00119 (issued 2026-03-11), which itemises exactly 41 machines: 17 Solar Titan PGM-130 + 16 Solar Titan 350 + 8 ProEnergy 6000PE. Permitting remains contested: NAACP/Earthjustice/SELC litigation filed 2026-04-14 concerns turbines operating outside that permit."
     }
   },
   {
@@ -160190,25 +160211,31 @@
   },
   {
     "id": "xai-macrohardrr-southaven-ms",
-    "name": "MACROHARDRR (xAI Southaven Data Center III)",
+    "name": "MACROHARDRR (xAI Southaven)",
     "operator": "xAI",
-    "status": "proposed",
+    "status": "under_construction",
     "confidence": "confirmed",
     "location": {
-      "lat": 34.991886,
-      "lon": -90.034358,
+      "lat": 34.9935,
+      "lon": -90.0342,
       "city": "Southaven",
       "county": "DeSoto",
-      "street": "2400 Stateline Road West",
+      "street": "2400 Stateline Road",
       "state": "MS",
-      "precision": "approximate"
+      "precision": "exact"
     },
-    "announcedDate": "2026-01-08",
+    "announcedDate": "2025-12-30",
     "statusHistory": [
       {
         "status": "proposed",
+        "date": "2025-12",
+        "note": "The DeSoto Times reported that Musk broke the news on X on Dec. 30 that the company had acquired an 810,000 square foot warehouse at 2400 Stateline Road: \"xAI has bought a third building called MACROHARDRR\".",
+        "sourceIndex": 1
+      },
+      {
+        "status": "under_construction",
         "date": "2026-01",
-        "note": "The Governor's office announced the Southaven data center and said xAI \"expects to begin data center operations in Southaven in February 2026.\"",
+        "note": "The Governor's office said xAI \"has purchased and is retrofitting a building to house the new data center operations.\"",
         "sourceIndex": 0
       }
     ],
@@ -160233,10 +160260,57 @@
         "publisher": "Baxtel",
         "retrievedAt": "2026-09-13",
         "kind": "other"
+      },
+      {
+        "url": "https://www.mississippifreepress.org/as-musks-xai-data-centers-encroach-on-southaven-north-mississippi-residents-push-back/",
+        "label": "As Musk's xAI Data Centers Encroach on Southaven, North Mississippi Residents Push Back",
+        "publisher": "Mississippi Free Press",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/xai-confirms-new-data-center-in-mississippi-elon-musk-pledges-20bn-investment-in-state/",
+        "label": "xAI confirms new data center in Mississippi, Elon Musk pledges $20bn investment",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://southaven.org/Blog.aspx?IID=227",
+        "label": "Mayor's Report — xAI SOUTHAVEN (Continued Expansion)…, January 7, 2026",
+        "publisher": "City of Southaven, Mississippi",
+        "retrievedAt": "2026-09-09",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/1077131079",
+        "label": "OSM building 'xAI Macrohardrr' (way 1077131079), Stateline Road West",
+        "publisher": "OpenStreetMap contributors",
+        "retrievedAt": "2026-10-21",
+        "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-10-16",
-    "notes": "xAI's third Southaven/DeSoto County site, distinct from xAI's power station at 2875 Stanton Road (xai-colossus-2-power-station-southaven-ms). MACROHARDRR retrofits an 810,000 sq ft former warehouse at 2400 Stateline Road West. Elon Musk announced the building purchase via X on 2025-12-30; Gov. Tate Reeves' office announced the '>$20 billion' investment and 'hundreds of permanent jobs throughout DeSoto County' on 2026-01-08, citing Mississippi's Data Center Incentive Program (sales/use tax exemptions on computing equipment and software) plus City of Southaven and DeSoto County fee-in-lieu agreements. xAI separately purchased two adjacent parcels (47 and 58 acres) near its power plant at 2875 Stanton Road; that acreage is not clearly attributable to this building's own site, so landAcres is omitted here rather than guessed. Musk's public claim that MACROHARDRR takes combined xAI Memphis-area training compute to '~2GW' describes the whole multi-site cluster, not this building's own capacity, so capacityMw is also omitted. The Governor's office gave February 2026 as the expected start of operations; no xAI or state source reports construction under way or the building operating, so it is recorded as proposed (Baxtel, an aggregator, listed it as operational in September 2026).",
+    "lastUpdated": "2026-10-21",
+    "notes": "The City of Southaven's Mayor's Report of 2026-01-07 says this building \"will become the home of their 3rd data center in the metropolitan area and the 2nd facility in Mississippi along with the renovated power plant at 2875 Stanton Road.\" It is distinct from xAI's power plant at 2875 Stanton Road (per the DeSoto Times and the Mayor's Report). MACROHARDRR retrofits an 810,000 sq ft former warehouse at 2400 Stateline Road. The Mayor's Report identifies it as the building formerly used by GXO; the DeSoto Times and Mississippi Free Press give the same 810,000 sq ft figure. The pin is the centroid of the OpenStreetMap building named \"xAI Macrohardrr\" on Stateline Road West, whose mapped outline measures roughly 810,000 sq ft (derived from the mapped OSM outline), matching the reported size; OpenStreetMap tags it with a Memphis, Tennessee address, which conflicts with the Mississippi address in every source. The DeSoto Times reports that Elon Musk broke the news of the building purchase on X on Dec. 30 (2025). Gov. Tate Reeves' office announced on 2026-01-08 a corporate investment \"exceeding $20 billion\" that \"will create hundreds of permanent jobs throughout DeSoto County\". The Governor's release announcing this data center says the Mississippi Development Authority \"has approved xAI for its Data Center Incentive\" (a sales and use tax exemption \"for all computing and equipment software used by companies certified as data centers by the agency\") and that the City of Southaven and DeSoto County \"are also supporting xAI's projects through fee-in-lieu agreements\". The Mississippi Free Press reports the data center \"will initially employ 145 people\"; the Governor's release says \"hundreds of permanent jobs throughout DeSoto County\". The release ties the exceeding-$20-billion investment to the Southaven project without breaking it down, so investmentUsd is not assigned to this building. The DeSoto Times reports that xAI purchased two pieces of property (47 and 58 acres) near its power plant at 2875 Stanton Road; that acreage is not clearly attributable to this building's own site, so landAcres is omitted here rather than guessed. The Governor's release says that upon completion \"the Southaven data center will increase the company's computing power to nearly 2 gigawatts\", which is a company-wide total, and Musk's post (DeSoto Times) refers to xAI's training compute (\"Will take @xAI training compute to almost 2GW.\"). Neither gives this building's own capacity, so capacityMw is omitted. The Governor's release says the company \"expects to begin data center operations in Southaven in February 2026.\" The January 2026 release also says xAI \"has purchased and is retrofitting a building to house the new data center operations\", so the record is under construction. No primary source reports the building operating, so operational is not claimed. The Baxtel aggregator page shows both Under Construction and Operational status badges and the text \"Fully operational with expansion in progress\"; this record follows the Governor's primary-source statement instead. Earlier versions of this site listed this building twice; those entries are now combined here.",
+    "energy": {
+      "notes": "xAI's power plant is at 2875 Stanton Road (per the DeSoto Times and the Mayor's Report). The Mississippi Free Press reports the warehouse xAI purchased is \"less than a quarter mile from the power plant\". The Governor's office places this building \"in proximity to xAI's newly acquired power plant site in Southaven\"; no source specifies the building's own power supply."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "The City of Southaven's Mayor's Report, in its discussion of the Southaven development, addresses water supply but not the heat-rejection method: it says xAI will use water as a paying customer with strict capacity management, and that its needs will ultimately be met by its own solutions and cost with recycling options. None of the sources we could read identifies evaporative, closed-loop or dry cooling, so coolingType stays unknown."
+    },
+    "subsidies": [
+      {
+        "program": "Data Center Incentive (sales and use tax exemption for computing equipment and software used by companies certified as data centers)",
+        "jurisdiction": "Mississippi (approved by the Mississippi Development Authority)",
+        "sourceIndex": 0
+      },
+      {
+        "program": "Fee-in-lieu agreements",
+        "jurisdiction": "City of Southaven / DeSoto County",
+        "sourceIndex": 0
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -160273,116 +160347,6 @@
     "lastUpdated": "2026-09-13",
     "notes": "Checked against existing-TN.txt before finishing: this is NOT a renamed/duplicate variant of xai-colossus-2-memphis-tn. That record is the original ~1M sq ft converted warehouse purchase (Whitehaven, operational per the existing roster). Minihard is a separate, NEW-CONSTRUCTION building on the same broader Tulane Road campus -- Baxtel (fetched) explicitly distinguishes the 'existing warehouse' (Colossus 2) from 'an additional planned facility' under 'a $659 million building permit for a new 312,000-square-foot facility,' and Wikipedia (fetched) independently names it 'a denser Minihard building under construction at ~5414 Tulane Road,' as distinct from both Colossus 2 and from the Southaven, MS 'Macrohardrr' site (out of state, excluded). Status also differs: Colossus 2 is operational; Minihard is under_construction. Press reporting (not independently fetched this run) puts the building at 4 stories / 75 ft on a 79-acre permit parcel with ~220,000 GB300 GPUs; those figures are omitted pending a directly-fetched primary source. Coordinates are an OSM ADDRESS POINT for 5414 Tulane Road (Nominatim returns category=place / type=house at 34.9994934,-90.0429461), NOT a mapped building footprint -- corrected 2026-09-13 after an earlier note in this record overclaimed it as a building way. precision is therefore approximate, not exact: the point locates the street address, not this building. Note the sibling record xai-colossus-2-memphis-tn carries the same class of address-point pin ~20m away, which is why the two appear near-identical; a separate review found an OSM building way tagged for Colossus 2 some 760m from that pin, so the campus buildings are NOT where either address point sits.",
     "investmentUsd": 659000000,
-    "facilityType": "data_center",
-    "aiClassification": "confirmed"
-  },
-  {
-    "id": "xai-southaven-ms",
-    "name": "xAI Southaven",
-    "operator": "xAI",
-    "status": "proposed",
-    "confidence": "confirmed",
-    "location": {
-      "lat": 34.993,
-      "lon": -89.974,
-      "city": "Southaven",
-      "county": "DeSoto",
-      "state": "MS",
-      "precision": "exact"
-    },
-    "announcedDate": "2026-01",
-    "statusHistory": [
-      {
-        "status": "proposed",
-        "date": "2026-01",
-        "note": "Governor Reeves and xAI announce $20B+ Southaven data center investment; described as largest private-sector investment in Mississippi history",
-        "sourceIndex": 0
-      },
-      {
-        "status": "proposed",
-        "date": "2026-01",
-        "note": "The City of Southaven reported that xAI bought the former GXO building (810,000 sq ft) at 2400 Stateline Road, which \"will become the home of their 3rd data center in the metropolitan area.\"",
-        "sourceIndex": 5
-      }
-    ],
-    "sources": [
-      {
-        "url": "https://governorreeves.ms.gov/tech-leader-xai-investing-more-than-20-billion-in-southaven/",
-        "label": "Tech leader xAI investing more than $20 billion in Southaven",
-        "publisher": "Office of the Governor, Mississippi",
-        "retrievedAt": "2026-08-16",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.mississippifreepress.org/as-musks-xai-data-centers-encroach-on-southaven-north-mississippi-residents-push-back/",
-        "label": "As Musk's xAI Data Centers Encroach on Southaven, North Mississippi Residents Push Back",
-        "publisher": "Mississippi Free Press",
-        "retrievedAt": "2026-07-06",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.datacenterdynamics.com/en/news/xai-confirms-new-data-center-in-mississippi-elon-musk-pledges-20bn-investment-in-state/",
-        "label": "xAI confirms new data center in Mississippi, Elon Musk pledges $20bn investment",
-        "publisher": "Data Center Dynamics",
-        "retrievedAt": "2026-07-06",
-        "kind": "press"
-      },
-      {
-        "url": "https://www.localmemphis.com/article/news/local/mississippi-state-officials-approve-permit-for-41-gas-turbines-at-collosus-2-in-southaven/522-c73075d2-d460-46e8-9f5b-c810d47bb0c2",
-        "label": "Mississippi Today: state officials approve permit for 41 gas turbines at xAI's Southaven data center",
-        "retrievedAt": "2026-07-24",
-        "kind": "press"
-      },
-      {
-        "url": "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus",
-        "label": "Earthjustice: Illegal Pollution from Data Center Power Plants — xAI case page",
-        "retrievedAt": "2026-07-24",
-        "kind": "other"
-      },
-      {
-        "url": "https://southaven.org/Blog.aspx?IID=227",
-        "label": "Mayor's Report — xAI SOUTHAVEN (Continued Expansion)…, January 7, 2026",
-        "publisher": "City of Southaven, Mississippi",
-        "retrievedAt": "2026-09-09",
-        "kind": "press"
-      }
-    ],
-    "lastUpdated": "2026-10-16",
-    "notes": "Address: 2400 Stateline Road, Southaven, MS 38671 (near the Tennessee border); coordinates are approximate for that address. The Governor's office said in January 2026 that xAI \"expects to begin data center operations in Southaven in February 2026\"; no source reports construction under way or the building operating. The $20B investment figure covers total xAI Mississippi commitments, including the power plant site at 2875 Stanton Road, not only this building. The Governor's office says the Southaven data center \"will increase the company's computing power to nearly 2 gigawatts\": that is xAI's combined Colossus training compute, not a capacity for this building, and no source gives one. The 145 permanent-jobs figure is reported by Mississippi Free Press; the Governor's release says only \"hundreds of permanent jobs.\"",
-    "energy": {
-      "notes": "xAI's gas-turbine power plant at 2875 Stanton Road, less than a quarter mile away, is tracked separately as xai-colossus-2-power-station-southaven-ms. The Governor's office places this building \"in proximity to xAI's newly acquired power plant site in Southaven\"; no source states how the building itself is powered."
-    },
-    "water": {
-      "coolingType": "unknown",
-      "notes": "The City of Southaven addresses water supply but not the heat-rejection method: xAI is described as a metered municipal customer under \"strict capacity management\" with its own recycling solutions planned. No source identifies evaporative, closed-loop or dry cooling, so coolingType stays unknown rather than being inferred from the liquid-cooled GB300 racks (rack-level cooling is heat CAPTURE, not heat rejection)."
-    },
-    "subsidies": [
-      {
-        "program": "Mississippi Data Center Incentive (sales and use tax exemption on computing equipment and software)",
-        "jurisdiction": "Mississippi / City of Southaven / DeSoto County",
-        "year": "2026",
-        "sourceIndex": 0
-      }
-    ],
-    "jobs": {
-      "permanent": 145,
-      "sourceIndex": 1
-    },
-    "community": {
-      "status": "contested",
-      "notes": "Safe and Sound Coalition (lifelong residents) cited lack of transparency; NAACP raised environmental concerns about pollution affecting Southaven and neighboring Memphis communities; residents allege public was not consulted prior to expansion.",
-      "sourceIndex": 1
-    },
-    "stakeholders": [
-      {
-        "name": "Elon Musk",
-        "role": "founder",
-        "via": "xAI",
-        "note": "Founder of xAI, the company building this data center; named as such in the Mississippi Governor's Office announcement of the Southaven investment.",
-        "sourceIndex": 0,
-        "asOf": "2026-08-26"
-      }
-    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },

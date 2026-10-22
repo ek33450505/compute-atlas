@@ -938,3 +938,35 @@ describe("CivicImpactSection — Air permit, empty emissions object", () => {
     ).not.toBeInTheDocument();
   });
 });
+
+describe("CivicImpactSection — notRecorded", () => {
+  it("renders 'Not recorded' with the reason for a marked energy/water field", () => {
+    const facility = makeFacility({
+      notRecorded: { "energy.utility": "The utility is not named in any public filing." },
+    });
+    render(<CivicImpactSection facility={facility} />);
+    expect(
+      screen.getByText(/Not recorded — The utility is not named in any public filing\./)
+    ).toBeInTheDocument();
+  });
+});
+
+describe("CivicImpactSection — notRecorded as the only data", () => {
+  const headings = (container: HTMLElement) =>
+    Array.from(container.querySelectorAll("h2, h3")).map((h) => h.textContent);
+
+  it("renders the same groups as a record with a single real energy data point", () => {
+    const marked = render(
+      <CivicImpactSection
+        facility={makeFacility({ notRecorded: { "energy.utility": "The utility is not named in any public filing." } })}
+      />
+    );
+    const markedHeadings = headings(marked.container);
+    marked.unmount();
+    const real = render(
+      <CivicImpactSection facility={makeFacility({ energy: { source: "grid" } })} />
+    );
+    expect(markedHeadings.length).toBeGreaterThan(0);
+    expect(markedHeadings).toEqual(headings(real.container));
+  });
+});

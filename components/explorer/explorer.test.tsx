@@ -129,6 +129,30 @@ describe("Explorer — result count", () => {
 // View toggle aria-pressed
 // ---------------------------------------------------------------------------
 
+describe("Explorer — table controls", () => {
+  it("formats large counts with separators", () => {
+    const many = Array.from({ length: 1234 }, (_, i) => ({ ...toTableRow(facilityA), id: `f-${i}` }));
+    render(
+      <NuqsTestingAdapter searchParams={{ view: "table" }}>
+        <Explorer facilities={many} snapshot={SNAPSHOT} />
+      </NuqsTestingAdapter>
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 1,234 of 1,234 facilities");
+  });
+
+  it("renders the export message region after the Copy link button", () => {
+    const { container } = render(
+      <NuqsTestingAdapter searchParams={{ view: "table" }}>
+        <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
+      </NuqsTestingAdapter>
+    );
+    const copy = screen.getByRole("button", { name: /shareable link/i });
+    const region = container.querySelector('p[aria-live="polite"][aria-atomic="true"]');
+    expect(region).toBeInTheDocument();
+    expect(copy.compareDocumentPosition(region!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+});
+
 describe("Explorer — view toggle", () => {
   it("Map view button has aria-pressed=false in table view", () => {
     renderExplorer({ view: "table" });

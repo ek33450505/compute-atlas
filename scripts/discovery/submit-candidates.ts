@@ -228,21 +228,26 @@ export interface RunSubmitSummary {
  * cost of being wrong here is one omitted curated field, versus staging a
  * model-invented name attached to a parcel.
  *
+ * `notRecorded` is stripped for the same reason: it is a maintainer judgement
+ * that a value was deliberately left out, and a model must not be able to
+ * suppress a field on its own say-so.
+ *
  * Applied to the RAW doc (before `facilitySchema.safeParse`) rather than the
  * validated `Facility`, because `Facility` is a discriminated union on
  * `facilityType` and rebuilding one field-wise needs the per-branch dance in
  * `applyDocSourceStrip`. Returns the input unchanged when there is nothing to
  * strip, so the overwhelmingly common case allocates nothing.
  */
-export function stripStakeholders(doc: unknown): unknown {
+export function stripCuratedFields(doc: unknown): unknown {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) {
     return doc;
   }
-  if (!("stakeholders" in doc)) {
+  if (!("stakeholders" in doc) && !("notRecorded" in doc)) {
     return doc;
   }
   const rest = { ...(doc as Record<string, unknown>) };
   delete rest.stakeholders;
+  delete rest.notRecorded;
   return rest;
 }
 
@@ -276,11 +281,11 @@ export function normalizeCandidates(raw: unknown[]): NormalizedCandidate[] {
       const wrapped = entry as { facility: unknown; provenance?: CandidateProvenance };
       return {
         type: "facility",
-        doc: stripStakeholders(wrapped.facility),
+        doc: stripCuratedFields(wrapped.facility),
         provenance: wrapped.provenance ?? {},
       };
     }
-    return { type: "facility", doc: stripStakeholders(entry), provenance: {} };
+    return { type: "facility", doc: stripCuratedFields(entry), provenance: {} };
   });
 }
 
@@ -598,7 +603,7 @@ function applyDocSourceStrip(doc: Facility, sources: Source[], remapped: Map<str
     return idx === undefined ? s : { ...s, sourceIndex: idx };
   });
   // Unreachable in THIS lane — `normalizeCandidates` strips `stakeholders`
-  // before validation (see `stripStakeholders`) — but kept so this function
+  // before validation (see `stripCuratedFields`) — but kept so this function
   // stays correct for any `Facility`: silently leaving a stale sourceIndex
   // behind would mis-cite a named person, which is worse than a no-op branch.
   const stakeholders = doc.stakeholders?.map((s, i) => ({
@@ -1053,7 +1058,7 @@ export async function runSubmit(
     // skip the candidate. stakeholders[].sourceIndex is required by its schema,
     // so a guard there would be dead code — it pushes unconditionally on
     // purpose. (`doc.stakeholders` is always undefined here: the field is
-    // stripped in `normalizeCandidates` — see `stripStakeholders` — so this
+    // stripped in `normalizeCandidates` — see `stripCuratedFields` — so this
     // loop is belt-and-braces for a doc that reached validation with one.)
     const docSourceRefs: SourceIndexRef[] = [];
     doc.statusHistory.forEach((event, i) => {

@@ -2639,3 +2639,19 @@ describe("runExtract — checkpoint (crash durability)", () => {
     expect(readdirSync(dir)).toEqual(["out.json"]);
   });
 });
+
+describe("selectGaps and notRecorded", () => {
+  const REASON = "Only backup-generator nameplate is published, not IT load.";
+
+  it("does not treat a marked field as a gap", () => {
+    const f = { ...makeFacility(), notRecorded: { "capacityMw.operational": REASON } } as Facility;
+    expect(selectGaps([f], ["capacityMw.operational"])).toEqual([]);
+  });
+
+  it("still reports an unmarked undefined field on the same facility", () => {
+    const f = { ...makeFacility(), notRecorded: { "capacityMw.operational": REASON } } as Facility;
+    expect(selectGaps([f], ["capacityMw.operational", "energy.source"])).toEqual([
+      { facility: f, field: "energy.source" },
+    ]);
+  });
+});

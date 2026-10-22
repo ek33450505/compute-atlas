@@ -75,6 +75,14 @@ describe("HistoryPanel", () => {
     expect(screen.getByText("Deleted")).toBeInTheDocument();
   });
 
+  it("labels an editorial row as notes-only", async () => {
+    setHistoryRows([makeHistoryRow({ id: "hist-5", changeType: "editorial", diff: [] })]);
+
+    render(await HistoryPanel({ facilityId: "facility-a" }));
+
+    expect(screen.getByText("Editorial (notes only)")).toBeInTheDocument();
+  });
+
   it("falls back to the raw changeType string for an unrecognized value", async () => {
     setHistoryRows([makeHistoryRow({ id: "hist-4", changeType: "restore", diff: [] })]);
 

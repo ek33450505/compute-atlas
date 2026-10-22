@@ -271,6 +271,18 @@ const RETIRED_FACILITY_REDIRECTS = [
     destination: "/facilities/stargate-abilene-tx",
     permanent: true,
   },
+  {
+    // Retired 2026-10-21: xai-southaven-ms duplicated
+    // xai-macrohardrr-southaven-ms. Both described the same xAI data center
+    // in Southaven, MS, which the Mississippi Governor's release names
+    // MACROHARDRR. Before retirement its sources and status history were
+    // merged into the survivor, which now carries status under_construction
+    // ("is retrofitting", per that release); the duplicate's Neon row was
+    // deleted on 2026-10-21 after a backup.
+    source: "/facilities/xai-southaven-ms",
+    destination: "/facilities/xai-macrohardrr-southaven-ms",
+    permanent: true,
+  },
 ];
 
 /**

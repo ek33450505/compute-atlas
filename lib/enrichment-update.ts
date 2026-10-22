@@ -7,7 +7,7 @@ import {
   communityStatusEnum,
   aiClassificationEnum,
 } from "@/lib/schema";
-import type { Facility, Source } from "@/lib/schema";
+import type { Facility, NotRecordableField, Source } from "@/lib/schema";
 
 /**
  * Append-only enrichment core.
@@ -149,21 +149,28 @@ export type EnrichableFamily = (typeof ENRICHABLE_FAMILIES)[number];
 export function missingEnrichableFamilies(facility: Facility): EnrichableFamily[] {
   const missing: EnrichableFamily[] = [];
 
-  if (facility.capacityMw?.planned === undefined || facility.capacityMw?.operational === undefined) {
+  // A sub-field a maintainer marked `notRecorded` counts as present, per FIELD:
+  // a family is missing only while it still has an unmarked, undefined
+  // sub-field. Otherwise the prompt would invite a fill that approval rejects.
+  const gap = (value: unknown, field?: NotRecordableField): boolean =>
+    value === undefined && (field === undefined || facility.notRecorded?.[field] === undefined);
+
+  if (
+    gap(facility.capacityMw?.planned, "capacityMw.planned") ||
+    gap(facility.capacityMw?.operational, "capacityMw.operational")
+  ) {
     missing.push("capacityMw");
   }
   if (
-    facility.energy === undefined ||
-    facility.energy.source === undefined ||
-    facility.energy.utility === undefined ||
-    facility.energy.onSiteGenerationMw === undefined
+    gap(facility.energy?.source, "energy.source") ||
+    gap(facility.energy?.utility, "energy.utility") ||
+    gap(facility.energy?.onSiteGenerationMw, "energy.onSiteGenerationMw")
   ) {
     missing.push("energy");
   }
   if (
-    facility.water === undefined ||
-    facility.water.coolingType === undefined ||
-    facility.water.reportedMgd === undefined
+    gap(facility.water?.coolingType, "water.coolingType") ||
+    gap(facility.water?.reportedMgd)
   ) {
     missing.push("water");
   }

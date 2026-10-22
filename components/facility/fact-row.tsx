@@ -135,3 +135,16 @@ export function MetaLine({ parts }: { parts: string[] }) {
     </div>
   );
 }
+
+// --- "Not recorded" marker (maintainer-curated `facility.notRecorded`) ---
+// Real text, not a tooltip: the reason is public prose saying why the value
+// was deliberately left out.
+// `label` names the sub-field when a recorded sibling sits beside it (e.g.
+// "Operational" next to a planned figure), so the reason is unambiguous.
+export function NotRecordedText({ reason, label }: { reason: string; label?: string }) {
+  return (
+    <span className="text-muted-foreground">
+      {label ? `${label}: ` : ""}Not recorded — {reason}
+    </span>
+  );
+}

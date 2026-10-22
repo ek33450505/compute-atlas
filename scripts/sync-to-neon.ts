@@ -70,6 +70,7 @@ import { getDb } from "../lib/db/client";
 import { docToRow } from "../lib/db/serialize";
 import { computeDocDiff, type DiffEntry } from "../lib/doc-diff";
 import { insertFacilityHistoryRow } from "../lib/facility-history";
+import { isEditorialOnlyChange } from "../lib/editorial-change";
 import { canonicalize, canonicalStringify, changedTopLevelKeys } from "../lib/canonical-json";
 import { tagsForFacility, isValidCacheTag, MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
 import { notifySubscribersOfChanges } from "../lib/notify";
@@ -333,7 +334,18 @@ export async function applySync(
 
       result.updated.push(change);
       const diff = canonicalDocDiff(change.prevDoc ?? null, change.doc);
-      if (!(await recordHistory(change.id, "update", diff, source))) {
+      // A notes-only update (internal narration rewritten, no fact changed) is
+      // recorded as `editorial`: kept in facility_history but excluded by every
+      // public reader (/activity, feed, credits, quarterly summary, state
+      // digest), which filter on create|update. Applied ONLY on this maintainer
+      // bulk path, not lib/facility-write.ts: a community submission that fixes
+      // notes is a contribution and must keep counting. Notification is NOT
+      // inferred from this: watchers are still mailed unless `--skip-notify`.
+      const changeType =
+        change.prevDoc && isEditorialOnlyChange(change.prevDoc, change.doc)
+          ? "editorial"
+          : "update";
+      if (!(await recordHistory(change.id, changeType, diff, source))) {
         result.historyFailures.push(change.id);
       }
     } catch (err) {
@@ -403,7 +415,7 @@ export async function applySync(
  */
 async function recordHistory(
   facilityId: string,
-  changeType: "create" | "update",
+  changeType: "create" | "update" | "editorial",
   diff: DiffEntry[],
   source: string
 ): Promise<boolean> {
@@ -613,7 +625,7 @@ function describeChange(change: PlannedChange): string {
   return `  ~ ${doc.id}  →  ${change.changedKeys.join(", ")}`;
 }
 
-function printPlan(plan: SyncPlan, jsonCount: number, neonCount: number, basisDesc: string): void {
+export function printPlan(plan: SyncPlan, jsonCount: number, neonCount: number, basisDesc: string): void {
   console.log(`JSON: ${jsonCount} facilities · Neon: ${neonCount} facilities`);
   console.log(`Basis (data/facilities.meta.json): ${basisDesc}`);
   console.log(
@@ -623,7 +635,10 @@ function printPlan(plan: SyncPlan, jsonCount: number, neonCount: number, basisDe
   console.log(`CREATE ${plan.creates.length}`);
   for (const change of plan.creates) console.log(describeChange(change));
 
-  console.log(`\nUPDATE ${plan.updates.length}`);
+  const editorialCount = plan.updates.filter(
+    (c) => c.prevDoc && isEditorialOnlyChange(c.prevDoc, c.doc)
+  ).length;
+  console.log(`\nUPDATE ${plan.updates.length} (${editorialCount} editorial)`);
   for (const change of plan.updates) console.log(describeChange(change));
 
   console.log(`\nUNCHANGED ${plan.unchangedCount}`);

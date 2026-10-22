@@ -403,6 +403,29 @@ const jurisdictionCodeSchema = z
     message: "not a known US state, DC or territory code",
   });
 
+// Field paths a maintainer may mark "deliberately not recorded". This is the
+// single list: scripts/discovery/extract-fields.ts derives EXTRACTABLE_FIELDS
+// from it, so the extraction lane can never fill a field the schema lets you
+// mark and vice versa.
+export const NOT_RECORDABLE_FIELDS = [
+  "capacityMw.planned",
+  "capacityMw.operational",
+  "energy.onSiteGenerationMw",
+  "energy.source",
+  "energy.utility",
+  "water.coolingType",
+] as const;
+
+export const notRecordableFieldEnum = z.enum(NOT_RECORDABLE_FIELDS);
+export type NotRecordableField = z.infer<typeof notRecordableFieldEnum>;
+
+// Maintainer-curated, like `stakeholders`: excluded from public intake and
+// discovery enrichment. Each reason is public prose shown on the facility page.
+const notRecordedSchema = z.partialRecord(
+  notRecordableFieldEnum,
+  z.string().trim().min(10).max(400)
+);
+
 // Shared fields common to every facility, regardless of type.
 // Both discriminated-union branches spread this shape and add their own
 // `facilityType` literal plus type-specific fields.
@@ -412,6 +435,7 @@ const baseFacilityShape = {
     .regex(/^[a-z0-9-]+$/, "id must be a lowercase kebab slug"),
   name: z.string().min(1),
   operator: z.string().min(1),
+  notRecorded: notRecordedSchema.optional(),
   status: statusEnum,
   confidence: confidenceEnum,
   location: z.object({
@@ -602,13 +626,44 @@ function checkSourceIndexBounds(
   checkIndex(data.emissions?.sourceIndex, ["emissions", "sourceIndex"]);
 }
 
+// A field may not be both set and marked "not recorded". Shared by every
+// union branch, like checkSourceIndexBounds.
+function checkNotRecordedConsistency(
+  data: {
+    capacityMw?: { planned?: number; operational?: number };
+    energy?: { onSiteGenerationMw?: number; source?: string; utility?: string };
+    water?: { coolingType?: string };
+    notRecorded?: Partial<Record<NotRecordableField, string>>;
+  },
+  ctx: z.RefinementCtx
+) {
+  const valueOf: Record<NotRecordableField, unknown> = {
+    "capacityMw.planned": data.capacityMw?.planned,
+    "capacityMw.operational": data.capacityMw?.operational,
+    "energy.onSiteGenerationMw": data.energy?.onSiteGenerationMw,
+    "energy.source": data.energy?.source,
+    "energy.utility": data.energy?.utility,
+    "water.coolingType": data.water?.coolingType,
+  };
+  for (const field of NOT_RECORDABLE_FIELDS) {
+    if (data.notRecorded?.[field] !== undefined && valueOf[field] !== undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message: `${field} has a recorded value, so it cannot also be marked not recorded`,
+        path: ["notRecorded", field],
+      });
+    }
+  }
+}
+
 export const facilitySchema = z
   .discriminatedUnion("facilityType", [
     dataCenterFacilitySchema,
     cryptoMiningFacilitySchema,
     powerGenerationFacilitySchema,
   ])
-  .superRefine(checkSourceIndexBounds);
+  .superRefine(checkSourceIndexBounds)
+  .superRefine(checkNotRecordedConsistency);
 
 export const facilitiesSchema = z.array(facilitySchema);
 

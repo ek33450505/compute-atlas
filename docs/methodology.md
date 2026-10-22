@@ -413,6 +413,20 @@ cooling water circuit at all. Operators frequently market a closed-loop design
 as "air-cooled," so the marketing phrase alone does not decide the value — the
 presence of a recirculating water circuit does.
 
+## Fields left out on purpose
+
+A record can carry a `notRecorded` marker for a field that was deliberately
+left out, with a public reason, for example a figure that describes a whole
+company rather than this site. The facility page shows "Not recorded" and the
+reason for a marked field, including beside a recorded sibling capacity figure.
+A field cannot be both recorded and marked: validation rejects the record, so an
+approved submission that fills a marked field fails until a maintainer removes
+the mark. The field-extraction lane never selects a marked field as a gap, and
+the list of missing fields given to the discovery prompt counts a marked field
+as present. The marker covers planned and operational capacity, on-site
+generation, energy source, utility and cooling type. Only a maintainer sets it;
+public intake and discovery staging drop it.
+
 ## Scope and known limitations
 
 Compute Atlas is a curated dataset, not a census. What follows is the honest

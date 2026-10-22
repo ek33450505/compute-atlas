@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { TableRow } from "@/lib/facility-slim";
@@ -31,7 +31,28 @@ function triggerDownload(content: string, filename: string, mime: string) {
 }
 
 function plural(n: number): string {
-  return n === 1 ? "1 facility" : `${n} facilities`;
+  return n === 1 ? "1 facility" : `${n.toLocaleString("en-US")} facilities`;
+}
+
+/**
+ * Every "Downloaded …" message. The two common outcomes are kept to ~112
+ * characters for 5-digit counts so they fit the live region's two-line
+ * reservation. With `unreadable` entries among the missing ones the note is
+ * rarer and may run longer, as may the nothing-downloaded messages.
+ */
+export function exportedMessage(
+  found: number,
+  wanted: number,
+  snapshotLabel: string,
+  unreadable = 0
+): string {
+  const missing = wanted - found;
+  if (missing > 0 && unreadable > 0) {
+    return `Downloaded ${plural(found)} (${snapshotLabel}; later edits aren't in it). ${missing.toLocaleString("en-US")} of ${plural(wanted)} ${missing === 1 ? "has" : "have"} no readable entry in the downloadable snapshot, which also had ${entries(unreadable)}, and ${missing === 1 ? "was" : "were"} left out.`;
+  }
+  return missing === 0
+    ? `Downloaded ${plural(found)} (${snapshotLabel}; later edits aren't in it).`
+    : `Downloaded ${found.toLocaleString("en-US")} of ${plural(wanted)} (${snapshotLabel}; newer ones and later edits aren't in it).`;
 }
 
 function snapshotUrl(snapshot: ExportSnapshot): string {
@@ -61,15 +82,18 @@ async function fetchSnapshot(
 }
 
 function entries(n: number): string {
-  return n === 1 ? "1 unreadable entry" : `${n} unreadable entries`;
+  return n === 1 ? "1 unreadable entry" : `${n.toLocaleString("en-US")} unreadable entries`;
 }
 
 export function ExportButtons({
   facilities,
   snapshot,
+  children,
 }: {
   facilities: TableRow[];
   snapshot: ExportSnapshot;
+  /** Rendered beside the export group, outside it, so the message below spans them all. */
+  children?: ReactNode;
 }) {
   const empty = facilities.length === 0;
   const [pending, setPending] = useState(false);
@@ -99,7 +123,8 @@ export function ExportButtons({
   useEffect(() => () => abortRef.current?.abort(), []);
 
   const asOf = formatAsOfDate(snapshot.asOf);
-  const snapshotName = asOf ? `the snapshot as of ${asOf}` : "the deployed snapshot";
+  const asOfShort = formatAsOfDate(snapshot.asOf, "short");
+  const snapshotName = asOfShort ? `JSON snapshot, ${asOfShort}` : "deployed JSON snapshot";
   const jsonLabel = `Download ${plural(facilities.length)} as JSON (${
     asOf ? `snapshot as of ${asOf}` : "deployed snapshot"
   })`;
@@ -130,31 +155,19 @@ export function ExportButtons({
         const record = byId.get(id);
         if (record) found.push(record);
       }
-      const missing = wanted.length - found.length;
       if (found.length === 0) {
         setMessage(
           unreadable > 0
             ? `Nothing was downloaded: the downloadable snapshot had ${entries(unreadable)} and has no readable entry for ${wanted.length === 1 ? "that facility" : "these facilities"}.`
             : wanted.length === 1
               ? "That facility isn't in the downloadable snapshot yet, so nothing was downloaded."
-              : `None of the ${wanted.length} facilities are in the downloadable snapshot yet, so nothing was downloaded.`
+              : `None of the ${wanted.length.toLocaleString("en-US")} facilities are in the downloadable snapshot yet, so nothing was downloaded.`
         );
         return;
       }
       // Same pretty-printing as facilitiesToJson, but over snapshot records as-is.
       triggerDownload(JSON.stringify(found, null, 2), "compute-atlas-facilities.json", "application/json");
-      let omitted = "";
-      if (missing > 0) {
-        omitted =
-          unreadable > 0
-            ? ` ${missing} of ${wanted.length} facilities ${missing === 1 ? "has" : "have"} no readable entry in the downloadable snapshot, which also had ${entries(unreadable)}, and ${missing === 1 ? "was" : "were"} left out.`
-            : missing === 1
-              ? ` 1 of ${wanted.length} facilities isn't in the downloadable snapshot (it may have been added since the last deploy) and was left out.`
-              : ` ${missing} of ${wanted.length} facilities aren't in the downloadable snapshot (they may have been added since the last deploy) and were left out.`;
-      }
-      setMessage(
-        `Downloaded ${plural(found.length)} as JSON from ${snapshotName}. Values edited since then may differ from the table.${omitted}`
-      );
+      setMessage(exportedMessage(found.length, wanted.length, snapshotName, unreadable));
     } catch {
       if (controller.signal.aborted) return;
       setMessage("Could not download the JSON snapshot. Nothing was downloaded; try again.");
@@ -166,38 +179,42 @@ export function ExportButtons({
   }
 
   return (
-    <div className="flex flex-col gap-1 sm:min-w-[22rem]">
-      <div role="group" aria-label="Export facilities" className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          aria-disabled={empty || undefined}
-          aria-label={`Download ${plural(facilities.length)} as CSV`}
-          className="aria-disabled:opacity-50"
-          onClick={downloadCsv}
-        >
-          <Download className="size-4" aria-hidden="true" /> CSV
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          aria-disabled={empty || pending || undefined}
-          aria-label={jsonLabel}
-          className="aria-disabled:opacity-50"
-          onClick={downloadJson}
-        >
-          <Download className="size-4" aria-hidden="true" /> JSON
-        </Button>
+    <div className="flex w-full flex-col gap-1 sm:w-auto sm:min-w-[22rem]">
+      <div className="flex flex-wrap items-center gap-2">
+        <div role="group" aria-label="Export facilities" className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            aria-disabled={empty || undefined}
+            aria-label={`Download ${plural(facilities.length)} as CSV`}
+            className="aria-disabled:opacity-50"
+            onClick={downloadCsv}
+          >
+            <Download className="size-4" aria-hidden="true" /> CSV
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            aria-disabled={empty || pending || undefined}
+            aria-label={jsonLabel}
+            className="aria-disabled:opacity-50"
+            onClick={downloadJson}
+          >
+            <Download className="size-4" aria-hidden="true" /> JSON
+          </Button>
+        </div>
+        {children}
       </div>
-      {/* The message sits on its own line under the controls. The block always
-          holds one line (min-h) and is never display:none or sr-only, so it is
-          in the accessibility tree before its first message and filling it
-          moves nothing above it. w-0 min-w-full: its text wraps inside the
+      {/* The message sits on its own line under the whole control row. The block
+          always reserves two lines (the common success messages, at any width)
+          and is never display:none or sr-only, so it is in the
+          accessibility tree before its first message and filling it moves
+          nothing below it. w-0 min-w-full: its text wraps inside the
           row's width instead of widening it. */}
       <p
         aria-live="polite"
         aria-atomic="true"
-        className="min-h-4 w-0 min-w-full text-xs leading-4 text-muted-foreground"
+        className="min-h-8 w-0 min-w-full text-xs leading-4 text-muted-foreground"
       >
         {message}
       </p>

@@ -224,6 +224,37 @@ describe("approveSubmission (kind: status_update)", () => {
   });
 });
 
+describe("approveSubmission (notRecorded)", () => {
+  it("returns a 400 with a usable issue and leaves the submission pending when it fills a marked field", async () => {
+    const seedDoc = {
+      ...makeSeedDoc(),
+      notRecorded: { "energy.source": "The energy source is not stated in any public filing." },
+    };
+    await seedFacility(tdb.db, seedDoc);
+    const id = await insertSubmission({
+      kind: "enrichment_update",
+      targetFacilityId: seedDoc.id,
+      payload: {
+        date: "2026-07-16",
+        sources: [makeSource("enrichment")],
+        fields: { energy: { source: "grid" } },
+      },
+    });
+
+    const result = await approveSubmission(id);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(400);
+    expect(JSON.stringify(result.issues)).toContain("cannot also be marked not recorded");
+
+    const submissionRows = await tdb.db
+      .select()
+      .from(submissionsTable)
+      .where(eq(submissionsTable.id, id));
+    expect(submissionRows[0].status).toBe("pending");
+  });
+});
+
 describe("approveSubmission (kind: enrichment_update)", () => {
   it("promotes a pending enrichment_update submission: fills a missing field and marks the submission approved", async () => {
     const seedDoc = makeSeedDoc();

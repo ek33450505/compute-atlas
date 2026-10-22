@@ -15,7 +15,7 @@ import {
   hasSubsidies,
 } from "@/lib/facility-gaps";
 
-import { FactGroup, FactRow, MetaLine, SourceLink } from "./fact-row";
+import { FactGroup, FactRow, MetaLine, NotRecordedText, SourceLink } from "./fact-row";
 
 // Shape of `facility.emissions.permittedTpy`, derived (not cast) from the
 // schema so the pollutant table below stays in sync with `lib/schema.ts`.
@@ -161,6 +161,7 @@ export function hasCivicImpact(facility: Facility): boolean {
   return !!(
     facility.energy ||
     facility.water ||
+    hasEnergyWaterNotRecorded(facility) ||
     facility.emissions ||
     (facility.subsidies && facility.subsidies.length > 0) ||
     facility.investmentUsd ||
@@ -239,10 +240,22 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
   );
 }
 
+// A marked energy/water field must still render its "Not recorded" row even
+// when the facility has no energy or water object at all.
+function hasEnergyWaterNotRecorded(facility: Facility): boolean {
+  const marked = facility.notRecorded;
+  return !!marked && (
+    marked["energy.onSiteGenerationMw"] !== undefined ||
+    marked["energy.source"] !== undefined ||
+    marked["energy.utility"] !== undefined ||
+    marked["water.coolingType"] !== undefined
+  );
+}
+
 // --- Sub-section: Energy & water ---
 function EnergyWaterGroup({ facility }: { facility: Facility }) {
-  const { energy, water, id: facilityId, name: facilityName } = facility;
-  if (!hasEnergyWater(facility)) {
+  const { energy, water, notRecorded, id: facilityId, name: facilityName } = facility;
+  if (!hasEnergyWater(facility) && !hasEnergyWaterNotRecorded(facility)) {
     return (
       <SectionGapPrompt facilityId={facilityId} facilityName={facilityName} label="energy or water data" />
     );
@@ -259,11 +272,27 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
   return (
     <div>
       <FactGroup title="Energy & water">
-        {energySourceLabel && <FactRow label="Energy source">{energySourceLabel}</FactRow>}
-        {energy?.utility && <FactRow label="Utility">{energy.utility}</FactRow>}
+        {energySourceLabel ? (
+          <FactRow label="Energy source">{energySourceLabel}</FactRow>
+        ) : notRecorded?.["energy.source"] ? (
+          <FactRow label="Energy source">
+            <NotRecordedText reason={notRecorded["energy.source"]} />
+          </FactRow>
+        ) : null}
+        {energy?.utility ? (
+          <FactRow label="Utility">{energy.utility}</FactRow>
+        ) : notRecorded?.["energy.utility"] ? (
+          <FactRow label="Utility">
+            <NotRecordedText reason={notRecorded["energy.utility"]} />
+          </FactRow>
+        ) : null}
         {energy?.onSiteGenerationMw !== undefined ? (
           <FactRow label="On-site generation">
             {energy.onSiteGenerationMw.toLocaleString()} MW
+          </FactRow>
+        ) : notRecorded?.["energy.onSiteGenerationMw"] ? (
+          <FactRow label="On-site generation">
+            <NotRecordedText reason={notRecorded["energy.onSiteGenerationMw"]} />
           </FactRow>
         ) : (
           <FactRow label="On-site generation">
@@ -275,7 +304,13 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
             />
           </FactRow>
         )}
-        {coolingLabel && <FactRow label="Cooling">{coolingLabel}</FactRow>}
+        {coolingLabel ? (
+          <FactRow label="Cooling">{coolingLabel}</FactRow>
+        ) : notRecorded?.["water.coolingType"] ? (
+          <FactRow label="Cooling">
+            <NotRecordedText reason={notRecorded["water.coolingType"]} />
+          </FactRow>
+        ) : null}
         {water?.reportedMgd !== undefined ? (
           <FactRow label="Water use">{water.reportedMgd.toLocaleString()} MGD</FactRow>
         ) : (
@@ -620,7 +655,8 @@ export function CivicImpactSection({ facility }: { facility: Facility }) {
   // sub-group already carries its own SectionGapPrompt/FieldGapPrompt for
   // its slice — replacing this one too would stack a prompt on top of
   // prompts already rendered by the sub-groups whenever *any* one of them
-  // has data, and would put a prompt on every sparse facility page when
+  // has data (a `notRecorded` energy/water field counts as data for its own
+  // group), and would put a prompt on every sparse facility page when
   // *none* of them do. See civic-impact.test.tsx's "renders nothing when
   // hasCivicImpact is false" for the behavior this preserves.
   if (!hasCivicImpact(facility)) return null;

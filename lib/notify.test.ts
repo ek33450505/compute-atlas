@@ -106,7 +106,7 @@ async function insertSubscription(
 /** Inserts a facility_history row directly, for Theme D digest-query tests. */
 async function insertHistoryRow(
   facilityId: string,
-  changeType: "create" | "update" | "delete",
+  changeType: "create" | "update" | "delete" | "editorial",
   changedAt: Date = new Date()
 ): Promise<void> {
   await tdb.db.insert(facilityHistoryTable).values({
@@ -756,6 +756,24 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
       recipients: 0,
     });
     expect(sendChangeNotification).not.toHaveBeenCalled();
+    expect(resendSendMock).not.toHaveBeenCalled();
+  });
+
+  it("excludes an 'editorial' (notes-only) history row from the digest", async () => {
+    await seedFacility(tdb.db, facilityTnA);
+    await insertHistoryRow(facilityTnA.id, "editorial", withinPeriod);
+    await insertSubscription({
+      targetType: "state",
+      targetId: facilityTnA.location.state,
+      status: "confirmed",
+    });
+
+    await expect(notifyStateSubscribersMonthly(since, until)).resolves.toEqual({
+      ok: true,
+      changes: 0,
+      groups: 0,
+      recipients: 0,
+    });
     expect(resendSendMock).not.toHaveBeenCalled();
   });
 });

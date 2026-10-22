@@ -30,6 +30,7 @@ import {
   bustTags,
   readBasis,
   parseCliArgs,
+  printPlan,
   tagsForChanges,
   BASIS_CLOCK_SKEW_MARGIN_MS,
   SYNC_HISTORY_SOURCE,
@@ -319,6 +320,67 @@ describe("applySync", () => {
     expect(notifySubscribersOfChanges).toHaveBeenCalledTimes(1);
     const [changes] = vi.mocked(notifySubscribersOfChanges).mock.calls[0];
     expect(changes.map((c) => c.facility.id)).toEqual(["notify-default"]);
+  });
+
+  describe("editorial (notes-only) updates", () => {
+    async function seedAndPlan(before: DataCenterFacility, after: DataCenterFacility) {
+      await seedFacility(tdb.db, before);
+      await setUpdatedAt(before.id, OLD);
+      return planSync([after], await snapshot(), { basis: BASIS });
+    }
+
+    it("writes change_type 'editorial' when only notes differ", async () => {
+      const before = makeDoc({ id: "ed-only", notes: "old narration" });
+      const plan = await seedAndPlan(before, { ...before, notes: "rewritten" });
+      await applySync(plan, { skipNotify: true });
+
+      const history = await historyFor("ed-only");
+      expect(history.map((h) => h.changeType)).toContain("editorial");
+      expect(history.map((h) => h.changeType)).not.toContain("update");
+    });
+
+    it("writes change_type 'update' when a fact changes alongside notes", async () => {
+      const before = makeDoc({ id: "ed-mixed", notes: "old" });
+      const plan = await seedAndPlan(before, { ...before, notes: "new", status: "operational" });
+      await applySync(plan, { skipNotify: true });
+
+      const types = (await historyFor("ed-mixed")).map((h) => h.changeType);
+      expect(types).toContain("update");
+      expect(types).not.toContain("editorial");
+    });
+
+    it("reports the editorial count in the plan summary", async () => {
+      const a = makeDoc({ id: "ed-plan-a", notes: "old" });
+      const b = makeDoc({ id: "ed-plan-b", notes: "old" });
+      await seedFacility(tdb.db, a);
+      await seedFacility(tdb.db, b);
+      await setUpdatedAt(a.id, OLD);
+      await setUpdatedAt(b.id, OLD);
+      const plan = planSync(
+        [{ ...a, notes: "new" }, { ...b, notes: "new", status: "operational" }],
+        await snapshot(),
+        { basis: BASIS }
+      );
+      const log = vi.spyOn(console, "log").mockImplementation(() => {});
+      try {
+        printPlan(plan, 2, 2, "test");
+        const lines = log.mock.calls.map((c) => String(c[0]));
+        expect(lines.some((l) => l.includes("UPDATE 2 (1 editorial)"))).toBe(true);
+      } finally {
+        log.mockRestore();
+      }
+    });
+
+    it("still notifies facility watchers for an editorial update without --skip-notify", async () => {
+      vi.mocked(notifySubscribersOfChanges).mockClear();
+      const before = makeDoc({ id: "ed-notify", notes: "old" });
+      const plan = await seedAndPlan(before, { ...before, notes: "new" });
+      await applySync(plan);
+
+      expect(notifySubscribersOfChanges).toHaveBeenCalledTimes(1);
+      const [changes] = vi.mocked(notifySubscribersOfChanges).mock.calls[0];
+      expect(changes.map((c) => c.facility.id)).toEqual(["ed-notify"]);
+    });
   });
 
   it("sends NOTHING when skipNotify is set, while still applying the write", async () => {

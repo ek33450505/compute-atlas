@@ -68,6 +68,9 @@ opening a PR.
   everywhere data enters the system. Optional fields like `stakeholders` (named
   people with a documented stake in a specific site) are site-level curated,
   excluded from public intake and discovery enrichment.
+  `notRecorded` marks a field deliberately left out, with a public reason; validation rejects a field that
+  is both set and marked; and the field-extraction lane skips marked fields. It is maintainer-curated
+  and stripped from public intake and discovery staging like `stakeholders`.
 - **Map:** MapLibre GL (`components/map/*`), globe projection + vector/satellite
   basemaps. Optional overlays (waterways, transmission lines, drought, baseline
   water stress, groundwater decline, principal aquifers) are tinted,
@@ -305,7 +308,7 @@ drift (`check:drift`, the `neon-sync` workflow) to be detected and repaired
 afterwards. Syncing first makes drift structurally impossible instead, and
 `check:drift` becomes a true invariant that should always pass.
 
-`db:sync` writes `facility_history` for every change (so `/activity` sees it) and busts the cache tags for affected scopes (`facility:<id>`, `state:<XX>`, `operator:<slug>`, ±`power-generation`), plus unconditionally adds the `"facilities"` tag to keep aggregate pages fresh. It cannot reach the untagged search index (86400s timer only). `db:seed --force` does neither — it is bootstrap-only, kept for filling an empty database.
+`db:sync` writes `facility_history` for every change (so `/activity` sees it) and busts the cache tags for affected scopes (`facility:<id>`, `state:<XX>`, `operator:<slug>`, ±`power-generation`), plus unconditionally adds the `"facilities"` tag to keep aggregate pages fresh. A notes-only update (only `notes`/`note` text differs, at any depth) is recorded as `editorial`, which /activity, its feed, contributor credits, the quarterly summary and the state digest all exclude; facility watchers are still notified unless `--skip-notify` is passed. It cannot reach the untagged search index (86400s timer only). `db:seed --force` does neither — it is bootstrap-only, kept for filling an empty database.
 
 ⚠️ **`--skip-notify` for metadata-only publishes.** A wave that touches many records without changing a single asserted fact (source URL dedupe, coordinate precision corrections, etc.) may use `db:sync -- --apply --skip-notify` to suppress notification. It is **deliberately opt-in and never inferred** — "did this change matter to a human" is a judgement you make, not a heuristic. The flag affects only facility subscribers (`targetType='facility'`); state subscribers never receive transactional mail from `db:sync`, only a monthly digest, so the flag has no effect on them either way. Check `docs/maintainers.md` for the decision criteria.
 

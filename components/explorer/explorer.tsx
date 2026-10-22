@@ -244,15 +244,16 @@ export function Explorer(props: ExplorerProps) {
             aria-live="polite"
             className="font-mono text-xs uppercase tracking-wider text-muted-foreground"
           >
-            Showing {filtered.rows.length} of {facilities.length} facilities
+            Showing {filtered.rows.length.toLocaleString("en-US")} of {facilities.length.toLocaleString("en-US")} facilities
           </p>
-          <div className="flex items-center gap-2">
-            {/* `props.mode !== "map"` only narrows the prop union for TypeScript. */}
-            {props.mode !== "map" && (
-              <ExportButtons facilities={filtered.rows} snapshot={props.snapshot} />
-            )}
+          {/* `props.mode !== "map"` only narrows the prop union for TypeScript. */}
+          {props.mode !== "map" ? (
+            <ExportButtons facilities={filtered.rows} snapshot={props.snapshot}>
+              <ShareLinkButton />
+            </ExportButtons>
+          ) : (
             <ShareLinkButton />
-          </div>
+          )}
         </div>
         <section aria-label="Facilities data table">
           <FacilityTable facilities={filtered.rows} />
@@ -279,17 +280,16 @@ export function Explorer(props: ExplorerProps) {
           aria-live="polite"
           className="text-sm text-muted-foreground"
         >
-          Showing {filtered.rows.length} of {facilities.length} facilities
+          Showing {filtered.rows.length.toLocaleString("en-US")} of {facilities.length.toLocaleString("en-US")} facilities
         </p>
-        {view === "table" && (
-          <div className="flex items-center gap-2">
-            {/* `props.mode !== "map"` only narrows the prop union for TypeScript. */}
-            {props.mode !== "map" && (
-              <ExportButtons facilities={filtered.rows} snapshot={props.snapshot} />
-            )}
+        {view === "table" &&
+          (props.mode !== "map" ? (
+            <ExportButtons facilities={filtered.rows} snapshot={props.snapshot}>
+              <ShareLinkButton />
+            </ExportButtons>
+          ) : (
             <ShareLinkButton />
-          </div>
-        )}
+          ))}
       </div>
 
       {/* View toggle */}

@@ -308,6 +308,78 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
     expect(screen.queryByText("—")).not.toBeInTheDocument();
   });
 
+  it("renders 'Not recorded' with the reason instead of a prompt for a marked capacity", async () => {
+    mockGetFacilityByIdCached.mockResolvedValue(
+      makeFacility({
+        notRecorded: { "capacityMw.operational": "The 107 MW figure is company-wide, not this site." },
+      })
+    );
+    const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
+    render(page);
+    expect(
+      screen.getByText(/Not recorded — The 107 MW figure is company-wide, not this site\./)
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /know the capacity\?/i })).not.toBeInTheDocument();
+  });
+
+  it("shows the reason for a marked operational capacity beside a recorded planned figure", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const reason = "The 107 MW figure is company-wide, not this site.";
+    mockGetFacilityByIdCached.mockResolvedValue(
+      makeFacility({
+        status: "under_construction",
+        capacityMw: { planned: 300 },
+        notRecorded: { "capacityMw.operational": reason },
+      })
+    );
+    const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
+    render(page);
+    expect(screen.getByText(/300 MW/)).toBeInTheDocument();
+    expect(screen.getByText(/Operational: Not recorded — The 107 MW figure is company-wide/)).toBeInTheDocument();
+    errSpy.mockRestore();
+  });
+
+  it("keeps the operational fill prompt when only the planned capacity is marked", async () => {
+    mockGetFacilityByIdCached.mockResolvedValue(
+      makeFacility({
+        status: "operational",
+        notRecorded: { "capacityMw.planned": "No expansion capacity has been published." },
+      })
+    );
+    const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
+    render(page);
+    expect(screen.getByRole("button", { name: /know the capacity\?/i })).toBeInTheDocument();
+    expect(screen.getByText(/Planned: Not recorded — No expansion capacity/)).toBeInTheDocument();
+  });
+
+  it("shows no fill prompt for the capacity field that is itself marked", async () => {
+    mockGetFacilityByIdCached.mockResolvedValue(
+      makeFacility({
+        status: "operational",
+        notRecorded: { "capacityMw.operational": "The 107 MW figure is company-wide, not this site." },
+      })
+    );
+    const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
+    render(page);
+    expect(screen.queryByRole("button", { name: /know the capacity\?/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/Operational: Not recorded — The 107 MW figure/)).toBeInTheDocument();
+  });
+
+  it("renders two marked capacity fields with identical reasons without a duplicate-key warning", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const reason = "No public filing states a capacity for this site.";
+    mockGetFacilityByIdCached.mockResolvedValue(
+      makeFacility({
+        notRecorded: { "capacityMw.operational": reason, "capacityMw.planned": reason },
+      })
+    );
+    const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
+    render(page);
+    expect(screen.getAllByText(/Not recorded — No public filing/)).toHaveLength(2);
+    expect(errSpy).not.toHaveBeenCalled();
+    errSpy.mockRestore();
+  });
+
   it("renders the populated value with no prompt when capacity, powered-by, and announced date are all present", async () => {
     const facility = makeFacility({
       name: "Fullville Data Center",

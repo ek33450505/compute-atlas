@@ -955,3 +955,52 @@ describe("sourceSchema — retrievedAt format", () => {
     },
   );
 });
+
+describe("notRecorded marker", () => {
+  const REASON = "Only backup-generator nameplate is published, not IT load.";
+
+  it("accepts a valid marker", () => {
+    const r = facilitySchema.safeParse({ ...baseFacility, notRecorded: { "capacityMw.operational": REASON } });
+    expect(r.success).toBe(true);
+  });
+
+  it("rejects an unknown field key", () => {
+    const r = facilitySchema.safeParse({ ...baseFacility, notRecorded: { "capacityMw.bogus": REASON } });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejects a reason under 10 characters", () => {
+    const r = facilitySchema.safeParse({ ...baseFacility, notRecorded: { "energy.utility": "too short" } });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejects a field that is both set and marked, on the notRecorded path", () => {
+    const r = facilitySchema.safeParse({
+      ...baseFacility,
+      capacityMw: { operational: 100 },
+      notRecorded: { "capacityMw.operational": REASON },
+    });
+    expect(r.success).toBe(false);
+    if (!r.success) {
+      expect(r.error.issues.map((i) => i.path.join("."))).toContain("notRecorded.capacityMw.operational");
+    }
+  });
+
+  it("enforces set+marked on the other facility types too", () => {
+    const r = facilitySchema.safeParse({
+      ...baseCryptoMiningFacility,
+      water: { coolingType: "air" },
+      notRecorded: { "water.coolingType": REASON },
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("allows marking one capacity sub-field while the other is set", () => {
+    const r = facilitySchema.safeParse({
+      ...baseFacility,
+      capacityMw: { planned: 300 },
+      notRecorded: { "capacityMw.operational": REASON },
+    });
+    expect(r.success).toBe(true);
+  });
+});

@@ -32,7 +32,7 @@ import type { DiffEntry } from "@/lib/doc-diff";
  */
 export async function insertFacilityHistoryRow(
   facilityId: string,
-  changeType: "create" | "update" | "delete",
+  changeType: "create" | "update" | "delete" | "editorial",
   diff: DiffEntry[],
   source: string
 ): Promise<boolean> {

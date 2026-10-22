@@ -7,6 +7,10 @@ describe("formatAsOfDate", () => {
     expect(formatAsOfDate("2026-10-21T00:00:01Z")).toBe("October 21, 2026");
   });
 
+  it("can abbreviate the month", () => {
+    expect(formatAsOfDate("2026-10-21T00:00:01Z", "short")).toBe("Oct 21, 2026");
+  });
+
   it("returns null for unknown and unparseable values", () => {
     expect(formatAsOfDate("unknown")).toBeNull();
     expect(formatAsOfDate("not a date")).toBeNull();

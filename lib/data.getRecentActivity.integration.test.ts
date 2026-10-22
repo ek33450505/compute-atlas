@@ -106,6 +106,23 @@ describe("getRecentActivity — attribution LEFT JOIN (PGlite)", () => {
   });
 });
 
+describe("getRecentActivity — editorial rows (PGlite)", () => {
+  it("excludes a notes-only 'editorial' history row but keeps a real update", async () => {
+    const edit = makeDoc("editorial-only-facility");
+    const real = makeDoc("real-update-facility");
+    await seedFacility(tdb.db, edit);
+    await seedFacility(tdb.db, real);
+    await tdb.db.insert(facilityHistoryTable).values([
+      { facilityId: edit.id, changeType: "editorial", diff: [], source: "db:sync" },
+      { facilityId: real.id, changeType: "update", diff: [], source: "db:sync" },
+    ]);
+
+    const ids = (await getRecentActivity(10)).map((e) => e.facilityId);
+    expect(ids).toContain(real.id);
+    expect(ids).not.toContain(edit.id);
+  });
+});
+
 describe("getRecentActivity — community flag (PGlite)", () => {
   async function entryFor(id: string, discoveredBy: string | null) {
     const doc = makeDoc(id);

@@ -9,7 +9,7 @@ import {
   runSubmitAndLog,
   normalizeCandidates,
   parseCandidatesJson,
-  stripStakeholders,
+  stripCuratedFields,
   submissionToken,
   verificationEnabled,
   exitCodeForSummary,
@@ -1405,7 +1405,7 @@ describe("runSubmitAndLog", () => {
 // it, so these tests pin a CLOSED path rather than a broken one: CLAUDE.md
 // says the field is excluded from discovery, and this is what makes the code
 // agree instead of relying on no prompt ever asking.
-describe("stripStakeholders", () => {
+describe("stripCuratedFields", () => {
   const STAKEHOLDER = {
     name: "A Private Person",
     role: "landowner",
@@ -1414,24 +1414,24 @@ describe("stripStakeholders", () => {
   };
 
   it("removes the field from a raw doc", () => {
-    const stripped = stripStakeholders({ id: "x", stakeholders: [STAKEHOLDER] }) as Record<string, unknown>;
+    const stripped = stripCuratedFields({ id: "x", stakeholders: [STAKEHOLDER] }) as Record<string, unknown>;
     expect("stakeholders" in stripped).toBe(false);
     expect(stripped.id).toBe("x");
   });
 
   it("leaves a doc without the field untouched (same reference)", () => {
     const doc = { id: "x" };
-    expect(stripStakeholders(doc)).toBe(doc);
+    expect(stripCuratedFields(doc)).toBe(doc);
   });
 
   it("does not mutate its input", () => {
     const doc = { id: "x", stakeholders: [STAKEHOLDER] };
-    stripStakeholders(doc);
+    stripCuratedFields(doc);
     expect(doc.stakeholders).toEqual([STAKEHOLDER]);
   });
 
   it.each([[null], [undefined], ["a string"], [42], [[1, 2]]])("passes through non-objects: %j", (value) => {
-    expect(stripStakeholders(value)).toEqual(value);
+    expect(stripCuratedFields(value)).toEqual(value);
   });
 });
 
@@ -1734,5 +1734,16 @@ describe("main — aborts on a stale facility index", () => {
       else process.env.VERIFY_SOURCES_ENABLED = originalVerify;
       rmSync(logDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("stripCuratedFields also strips notRecorded", () => {
+  it("removes a model-supplied notRecorded from a raw candidate doc", () => {
+    const stripped = stripCuratedFields({
+      id: "x",
+      notRecorded: { "capacityMw.operational": "Model-supplied reason text." },
+    }) as Record<string, unknown>;
+    expect("notRecorded" in stripped).toBe(false);
+    expect(stripped.id).toBe("x");
   });
 });

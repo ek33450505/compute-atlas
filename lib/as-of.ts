@@ -8,13 +8,13 @@
  * Lives apart from lib/dataset-edition.ts so client components can import it
  * without bundling data/facilities.meta.json.
  */
-export function formatAsOfDate(asOf: string): string | null {
+export function formatAsOfDate(asOf: string, month: "long" | "short" = "long"): string | null {
   if (asOf === "unknown") return null;
   const date = new Date(asOf);
   if (Number.isNaN(date.getTime())) return null;
   return date.toLocaleDateString("en-US", {
     year: "numeric",
-    month: "long",
+    month,
     day: "numeric",
     timeZone: "UTC",
   });
