@@ -1199,6 +1199,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "ainet-wdc11-laurel-md": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "air-products-cetronia-road-upper-macungie-pa": {
     "nearestWater": {
       "name": "Iron Run",
@@ -1828,6 +1842,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "alliance-bitiki-waverly-union-ky": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     },
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
@@ -7419,6 +7443,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "cardinal-oystercatcher-energy-storage-harford-md": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "cartier-energy-center-dover-de": {
     "nearestWater": {
       "name": "Puncheon Run",
@@ -8092,6 +8126,20 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "chalk-point-storage-aquasco-md": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "charter-spectrum-charlotte-national-data-center-nc": {
     "nearestWater": {
       "name": "Sugar Creek",
@@ -8109,6 +8157,20 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "cherrywood-solar-goldsboro-md": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "chestnut-river-holyoke-ma": {
@@ -10939,6 +11001,20 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "constellation-perryman-ngea-gas-aberdeen-md": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "construction-partners-dothan-al": {
     "nearestWater": {
       "name": "Rocky Branch",
@@ -12035,6 +12111,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "cpv-backbone-solar-kitzmiller-md": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "cpv-jugfork-solar-lee-union-ms": {
     "nearestWater": {
       "name": "Camp Creek",
@@ -12211,6 +12297,20 @@
     "aquifer": {
       "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
+    }
+  },
+  "crockett-solar-cordova-md": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "crofton-bluffs-wind-knox-ne": {
@@ -15300,6 +15400,12 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "dickinson-scarborough-technology-park-me": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "dickson-city-development-bell-mountain-lackawanna-pa": {
@@ -23233,6 +23339,20 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "gi-partners-sandy-farms-severn-md": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "gibson-county-data-center-in": {
     "nearestWater": {
       "name": "Pigeon Creek",
@@ -26194,6 +26314,16 @@
       "label": "Medium - High (2-4 cm/y)"
     }
   },
+  "hopkinsville-electric-energynet-datacenter-christian-ky": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "horseshoe-solar-grantsville-ut": {
     "nearestWater": {
       "name": "Delle Springs",
@@ -27701,6 +27831,16 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "jade-meadow-iii-solar-barton-md": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "jailhouse-studios-chattanooga-tn": {
     "nearestWater": {
       "name": "Tennessee River",
@@ -27859,6 +27999,20 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "johns-hopkins-bayview-research-data-center-baltimore-md": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "joliet-technology-center-il": {
@@ -28178,6 +28332,26 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "kentucky-industrial-alliance-cave-point-gas-plant-barren-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "kentucky-power-big-sandy-combined-cycle-lawrence-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "kilby-power-plant-energy-forge-one-reeves-county-tx": {
@@ -30913,6 +31087,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "meade-county-joe-prather-highway-data-center-ky": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "menlo-digital-chicago-exchange-il": {
     "nearestWater": {
       "name": "Chicago Sanitary and Ship Canal",
@@ -31842,6 +32026,20 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "microsoft-annapolis-junction-campus-md": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "microsoft-becker-mn": {
@@ -40565,6 +40763,12 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "quad-state-internet-pah1-paducah-mccracken-ky": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "quail-ranch-solar-storage-bernalillo-county-nm": {
     "nearestWater": {
       "name": "Arroyo de los Montoyas",
@@ -41938,6 +42142,12 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "russellville-epb-smartnet-logan-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
     }
   },
   "russo-600-commerce-boulevard-carlstadt-nj": {
@@ -49924,6 +50134,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "us-wind-maryland-offshore-wind-md": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Northern Atlantic Coastal Plain Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "usaf-eielson-ai-data-center-eul-ak": {
     "nearestTransmission": {
       "voltageKv": 230,
@@ -51894,6 +52114,16 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "wku-bgmu-lost-river-data-center-bowling-green-ky": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "wolf-summit-energy-harrison-county-wv": {
