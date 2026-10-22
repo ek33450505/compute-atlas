@@ -67,6 +67,7 @@ import {
   computeDatasetGaps,
   getGapExamples,
   computeGapExamples,
+  computeStateSummary,
   type GapDimension,
 } from "@/lib/data";
 import {
@@ -1047,6 +1048,31 @@ describe("getStateSummaryCached", () => {
 
   it("returns null for a state with zero facilities", async () => {
     expect(await getStateSummaryCached("ZZ")).toBeNull();
+  });
+});
+
+describe("computeStateSummary — input order", () => {
+  // Id order a, b, c sums 0.05 + 0.3 + 0.7 = 1.0499999999999998, which roundMw
+  // takes to 1.0. The reverse order sums to exactly 1.05, which rounds to 1.1,
+  // so the id sort is what makes the result order-independent.
+  const make = (id: string, mw: number) =>
+    makeFacility({ id, capacityMw: { operational: mw, planned: mw } });
+  const a = make("a", 0.05);
+  const b = make("b", 0.3);
+  const c = make("c", 0.7);
+
+  it("yields identical MW sums whatever order the facilities arrive in", () => {
+    const forward = computeStateSummary("IL", [a, b, c]);
+    const reversed = computeStateSummary("IL", [c, b, a]);
+    // Catches removing the id sort: reversed input would round to 1.1.
+    expect(reversed).toEqual(forward);
+  });
+
+  it("rounds the sums to 0.1 MW, taking the id-sorted order's total", () => {
+    const summary = computeStateSummary("IL", [c, b, a]);
+    // Catches removing roundMw: the raw id-sorted sum is 1.0499999999999998.
+    expect(summary?.operationalMw).toBe(1);
+    expect(summary?.plannedMw).toBe(1);
   });
 });
 

@@ -446,14 +446,16 @@ const baseFacilityShape = {
     street: z.string().min(1).optional(),
     postalCode: z.string().min(1).optional(),
     state: jurisdictionCodeSchema,
-    // "exact": lat/lon is this facility's real footprint (default — every
-    // pre-existing record without this field is "exact").
+    // "exact": lat/lon is this facility's real footprint; it must be asserted
+    // explicitly, never produced by omission (a 2026-07-29 snapshot exported
+    // 272 omitted values as "exact"). Records that do not say default to
+    // "approximate".
     // "approximate": best-effort geocode (e.g. a street address, not a
     // parcel-confirmed point).
     // "representative_multi_site": the facility has NO single fixed
     // location (e.g. a distributed fleet of mobile/modular sites) — lat/lon
     // is an illustrative point only; see `multiSite` for the real footprint.
-    precision: z.enum(["exact", "approximate", "representative_multi_site"]).optional().default("exact"),
+    precision: z.enum(["exact", "approximate", "representative_multi_site"]).optional().default("approximate"),
     multiSite: z
       .object({
         states: z.array(jurisdictionCodeSchema).min(1),

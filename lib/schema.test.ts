@@ -352,8 +352,19 @@ describe("facilitySchema — location.precision", () => {
     }
   });
 
-  it("defaults location.precision to exact when omitted", () => {
+  it("defaults location.precision to approximate when omitted", () => {
     const result = facilitySchema.safeParse(baseFacility);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.location.precision).toBe("approximate");
+    }
+  });
+
+  it("keeps an explicit exact precision", () => {
+    const result = facilitySchema.safeParse({
+      ...baseFacility,
+      location: { ...baseFacility.location, precision: "exact" as const },
+    });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.location.precision).toBe("exact");

@@ -90,7 +90,7 @@ describe("emptyFacilityFormState", () => {
     expect(state.jobs).toEqual({});
     expect(state.community).toEqual({});
     expect(state.location.multiSite.enabled).toBe(false);
-    expect(state.location.precision).toBe("exact");
+    expect(state.location.precision).toBe("approximate");
   });
 });
 

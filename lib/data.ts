@@ -1607,26 +1607,30 @@ export interface StateSummary {
  * `loadFacilities()` global or the scoped direct DB/JSON read
  * respectively) and just need the same rollup math applied. Mirrors
  * `getStats`' capacity math (excludes cancelled for operational/planned)
- * and `getTopOperators`' tie-break for `topOperators`.
+ * and `getTopOperators`' tie-break for `topOperators`. Exported so tests can
+ * feed it the same facilities in different orders.
  */
-function computeStateSummary(upper: string, stateFacilities: Facility[]): StateSummary | null {
+export function computeStateSummary(upper: string, stateFacilities: Facility[]): StateSummary | null {
   const count = stateFacilities.length;
   if (count === 0) {
     return null;
   }
 
-  const active = stateFacilities.filter((f) => f.status !== "cancelled");
-  const operationalMw = active.reduce(
-    (sum, f) => sum + (f.capacityMw?.operational ?? 0),
-    0
+  // Float addition is order-dependent and the two callers read the state's
+  // facilities in different orders, so sum over an id-sorted copy.
+  const sorted = [...stateFacilities].sort((a, b) => a.id.localeCompare(b.id));
+  const active = sorted.filter((f) => f.status !== "cancelled");
+  const operationalMw = roundMw(
+    active.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0)
   );
-  const plannedMw = active.reduce(
-    (sum, f) => sum + (f.capacityMw?.planned ?? 0),
-    0
+  const plannedMw = roundMw(
+    active.reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
   );
-  const underConstructionMw = stateFacilities
-    .filter((f) => f.status === "under_construction")
-    .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
+  const underConstructionMw = roundMw(
+    sorted
+      .filter((f) => f.status === "under_construction")
+      .reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0)
+  );
 
   const byType = Object.fromEntries(
     FACILITY_TYPE_ORDER.map((k) => [k, 0])

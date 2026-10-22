@@ -100,7 +100,7 @@ export function emptyFacilityFormState(): FacilityFormState {
       city: "",
       county: "",
       state: "",
-      precision: "exact",
+      precision: "approximate",
       multiSite: { enabled: false, states: "", siteCountNote: "" },
     },
     capacityMw: { planned: "", operational: "" },
@@ -138,7 +138,7 @@ export function facilityToFormState(facility: Facility): FacilityFormState {
       city: facility.location.city ?? "",
       county: facility.location.county ?? "",
       state: facility.location.state,
-      precision: facility.location.precision ?? "exact",
+      precision: facility.location.precision ?? "approximate",
       multiSite: facility.location.multiSite
         ? {
             enabled: true,
