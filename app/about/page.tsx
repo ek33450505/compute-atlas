@@ -501,15 +501,16 @@ export default async function AboutPage() {
           <div>
             <dt className="font-medium text-foreground">Exact</dt>
             <dd className="text-muted-foreground">
-              Lat/lon is the facility&rsquo;s real footprint. The default —
-              every record without an explicit precision value is exact.
+              Lat/lon is the facility&rsquo;s real footprint. Set only when a
+              source places the facility there; it is never assumed.
             </dd>
           </div>
           <div>
             <dt className="font-medium text-foreground">Approximate</dt>
             <dd className="text-muted-foreground">
               A best-effort geocode, e.g. from a street address, not
-              parcel-confirmed.
+              parcel-confirmed. The default for any record that does not state a
+              precision.
             </dd>
           </div>
           <div>

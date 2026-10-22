@@ -88,4 +88,13 @@ describe("facility-form-state module boundary (regression)", () => {
     expect(loaded.id).toBe("abc-123");
     expect(loaded.name).toBe("Test Facility");
   });
+
+  it("falls back to approximate precision when the location has none", () => {
+    const location: Partial<Facility["location"]> = { ...makeFacility().location };
+    delete location.precision;
+    const state = facilityToFormState(
+      makeFacility({ location: location as Facility["location"] })
+    );
+    expect(state.location.precision).toBe("approximate");
+  });
 });

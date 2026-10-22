@@ -105,7 +105,7 @@ describe("toMapFacility", () => {
       {
         ...BASE,
         facilityType: "data_center",
-        location: { lat: 1, lon: 2, state: "TX" },
+        location: { lat: 1, lon: 2, state: "TX", precision: "exact" },
         capacityMw: undefined,
       },
     ]);
