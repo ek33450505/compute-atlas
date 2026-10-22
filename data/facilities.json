@@ -3391,6 +3391,35 @@
     "facilityType": "data_center"
   },
   {
+    "id": "ainet-wdc11-laurel-md",
+    "name": "AiNET WDC11 (Laurel)",
+    "operator": "AiNET",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.101379,
+      "lon": -76.847997,
+      "city": "Laurel",
+      "street": "312 Laurel Ave",
+      "postalCode": "20707",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/fac/6537",
+        "label": "AiNET WDC11 (PeeringDB facility 6537)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "An AiNET facility at 312 Laurel Ave, also listed by directories as 'AiNET Laurel SCIF' / 'Coloco #8'. It is distinct from AiNET's tracked Beltsville WDC-1, CyberNAP Glen Burnie and One Market Center Baltimore sites. Capacity claims in directories conflict (2 MW UPS vs 40 MW) and are not recorded.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "air-products-cetronia-road-upper-macungie-pa",
     "name": "Cetronia Road Data Center (former Air Products site)",
     "operator": "Air Products",
@@ -4448,9 +4477,16 @@
         "publisher": "Aligned Data Centers",
         "retrievedAt": "2026-08-26",
         "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/news/aligned-tops-out-new-maryland-data-center",
+        "label": "Aligned tops out new Maryland data center",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-10-22",
     "notes": "Two-story, 450,000 sq ft, 72 MW building — the second of four planned on Aligned's 75-acre, roughly 264 MW campus inside Quantum Frederick. About 345 skilled workers were on site at topping out with more than 80,000 craft hours logged.",
     "water": {
       "coolingType": "hybrid",
@@ -5633,6 +5669,93 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "alliance-bitiki-waverly-union-ky",
+    "name": "Bitiki-KY Bitcoin Mining Facility (Waverly)",
+    "operator": "Bitiki KY, LLC (Alliance Resource Partners)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.7097652,
+      "lon": -87.8127986,
+      "city": "Waverly",
+      "county": "Union",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 13
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-12-31",
+        "note": "ARLP's FY2025 10-K reports that Bitiki mines bitcoin and hosts third-party miners, with 3,702 active miners and 1,056 hosted machines as of Dec 31, 2025. The 10-K does not name the site location.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wkms.org/energy/2023-08-08/ky-utility-regulators-approve-discounted-power-for-25m-cryptomining-facility",
+        "label": "KY utility regulators approve discounted power for $25M cryptomining facility",
+        "publisher": "WKMS",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://linknky.com/news/2023/08/10/incentives-for-bitcoin-mining-operation-run-by-kentuckys-largest-coal-producer-gets-regulators-ok/",
+        "label": "Incentives for bitcoin mining operation run by Kentucky's largest coal producer gets regulators' OK",
+        "publisher": "LINK nky",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1086600/000110465926020468/arlp-20251231x10k.htm",
+        "label": "Alliance Resource Partners FY2025 Form 10-K (Bitiki crypto-mining disclosure)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Waverly%2C+Union+County%2C+Kentucky&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim place point for Waverly, Union County, KY",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-22",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "The mine sits on a former coal mine site in Waverly, Union County. Coordinates are the Waverly town point. The 10-K confirms active mining but does not state the site location, so tying the 2025 miner counts to Waverly is an inference.",
+    "energy": {
+      "source": "grid",
+      "utility": "Kentucky Utilities (LG&E and KU)",
+      "notes": "10-year KU Economic Development Rider contract approved by the Kentucky PSC on Aug 7, 2023 (Case No. 2022-00371). About 10 MW of usage was reported in 2023, up to 13 MW under the contract."
+    },
+    "subsidies": [
+      {
+        "program": "Kentucky Utilities Economic Development Rider electricity discount (first five years of a 10-year contract)",
+        "jurisdiction": "KY",
+        "year": "2023",
+        "sourceIndex": 0
+      },
+      {
+        "program": "State tax benefits",
+        "amountUsd": 250000,
+        "jurisdiction": "KY",
+        "year": "2022",
+        "sourceIndex": 1
+      }
+    ],
+    "investmentUsd": 25000000,
+    "jobs": {
+      "permanent": 5,
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "grid"
+    }
   },
   {
     "id": "alliant-burlington-rice-ia",
@@ -22737,9 +22860,23 @@
         "publisher": "NextEra Energy / Brookfield (newsroom release, July 29, 2026)",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://www.rigzone.com/news/doe_private_partners_launch_100b_data_center_project_in_kentucky-31-jul-2026-184268-article/",
+        "label": "DOE, Private Partners Launch $100B Data Center Project in Kentucky",
+        "publisher": "Rigzone",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.eenews.net/articles/100b-data-center-campus-coming-to-doe-land-in-kentucky/",
+        "label": "$100B data center campus coming to DOE land in Kentucky",
+        "publisher": "E&E News",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-22",
     "notes": "Announced 2026-07-29 on part of DOE's former Paducah Gaseous Diffusion Plant (a Superfund site). Brookfield develops/operates the AI/HPC campus; NextEra builds dedicated adjacent generation (see the linked power-generation record, NextEra Paducah Site Dedicated Generation). First components could come online as soon as 2028; construction expected complete 2031. Investment reported as 'more than $100 billion' — recorded as $100,000,000,000.",
     "energy": {
       "source": "mixed",
@@ -23811,6 +23948,74 @@
     "generation": {
       "technology": "solar",
       "notes": "About 197,000 modules on roughly 560 acres near Port Allen; DEPCOM Power provided EPC and O&M."
+    }
+  },
+  {
+    "id": "cardinal-oystercatcher-energy-storage-harford-md",
+    "name": "Oystercatcher Energy Storage",
+    "operator": "Cardinal Energy Storage East, LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.7047,
+      "lon": -76.5347,
+      "county": "Harford",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 500
+    },
+    "announcedDate": "2026-03-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-01",
+        "note": "Not selected for a Round 1 Energy Storage Capacity Credit award because of its lower ranking and cost-effectiveness and ratepayer concerns. The PSC invited it to apply in Round 2, and the project's separate approval process can continue.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://psc.maryland.gov/news/2026/maryland-psc-receives-5-transmission-connected-energy-storage-applications-under-the-next-generation-energy-act/",
+        "label": "Maryland PSC Receives 5 Transmission-Connected Energy Storage Applications Under the Next Generation Energy Act",
+        "publisher": "Maryland Public Service Commission",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://psc.maryland.gov/news/2026/maryland-public-service-commission-announces-first-round-energy-storage-awards/",
+        "label": "Maryland Public Service Commission Announces First-Round Energy Storage Awards",
+        "publisher": "Maryland Public Service Commission",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://hoodline.com/2026/07/harford-battery-plan-puts-deer-creek-state-energy-goals-at-odds/",
+        "label": "Harford battery plan puts Deer Creek, state energy goals at odds",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wmar2news.com/news/region/harford-county/controversial-harford-county-battery-storage-project-denied-state-financial-credits",
+        "label": "Controversial Harford County battery storage project denied state financial credits",
+        "publisher": "WMAR-2 News",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "A 500 MW / 6-hour lithium-ion storage project in northwest Harford County, next to BGE's Conastone Substation near Norrisville Road and Deer Creek (White Hall area). The pin is the Norrisville place point (approximate).",
+    "community": {
+      "status": "opposed",
+      "notes": "Residents cite lithium-ion fire risk and water quality at the top of the Deer Creek watershed. Harford County opposes the project, has intervened in the PSC proceedings and has explored legal action.",
+      "sourceIndex": 3
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "battery",
+      "notes": "500 MW / 3,000 MWh (6-hour) per the PSC application listing; BGE is the interconnecting utility."
     }
   },
   {
@@ -25731,6 +25936,65 @@
     }
   },
   {
+    "id": "chalk-point-storage-aquasco-md",
+    "name": "Chalk Point Storage Project",
+    "operator": "Chalk Point Reliability Storage LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.543881,
+      "lon": -76.685958,
+      "city": "Aquasco",
+      "county": "Prince George's",
+      "street": "25100 Chalk Point Rd",
+      "postalCode": "20608",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 400
+    },
+    "announcedDate": "2026-03-03",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-01",
+        "note": "Maryland PSC conditionally selected the 400 MW, 4-hour transmission-connected storage project for a Round 1 Energy Storage Capacity Credit award under the Next Generation Energy Act. The applicant's late offer to upsize to 535 MW was denied for Round 1.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://psc.maryland.gov/news/2026/maryland-public-service-commission-announces-first-round-energy-storage-awards/",
+        "label": "Maryland Public Service Commission Announces First-Round Energy Storage Awards",
+        "publisher": "Maryland Public Service Commission",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://psc.maryland.gov/news/2026/maryland-psc-receives-5-transmission-connected-energy-storage-applications-under-the-next-generation-energy-act/",
+        "label": "Maryland PSC Receives 5 Transmission-Connected Energy Storage Applications Under the Next Generation Energy Act",
+        "publisher": "Maryland Public Service Commission",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.gem.wiki/Chalk_Point_Generating_Station",
+        "label": "Chalk Point Generating Station",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "A battery storage project at the existing Chalk Point Generating Station site. Its coordinates are the station's coordinates from Global Energy Monitor. It applied by March 2, 2026 and was conditionally selected on Oct. 1, 2026. A capacity-credit award is not a CPCN: construction approval is still required.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "battery",
+      "notes": "400 MW / 1,600 MWh (4-hour) per the PSC application listing. The award term is a flat 15 years. The applicant may resubmit the expanded 535 MW proposal in Round 2."
+    }
+  },
+  {
     "id": "charter-spectrum-charlotte-national-data-center-nc",
     "name": "Spectrum Charlotte National Data Center",
     "operator": "Charter Communications",
@@ -25777,6 +26041,50 @@
     "notes": "Originally built by Time Warner Cable; now operated by Charter Communications (Spectrum) following the TWC acquisition — the source is authoritative about who BUILT it, and current operation is attributed to Charter on that basis. 178,000 sq ft data center plus a 103,500 sq ft administrative building.",
     "investmentUsd": 82000000,
     "facilityType": "data_center"
+  },
+  {
+    "id": "cherrywood-solar-goldsboro-md",
+    "name": "Cherrywood Solar",
+    "operator": "Open Road Renewables (CPCN applicant; current owner not verified)",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.0355,
+      "lon": -75.7871,
+      "county": "Caroline",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 202
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2019-04-16",
+        "note": "The order granting the CPCN (PSC Case 9477) became final on April 16, 2019.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dnr.maryland.gov/pprp/Documents/Archived-Projects-10-8-26.pdf",
+        "label": "Archived Projects (last updated 10-8-26): Open Road Renewables - Cherrywood Solar (PSC Case 9477)",
+        "publisher": "Maryland DNR Power Plant Research Program",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "A 202 MW solar array spanning several parcels near Goldsboro and Greensboro, with a footprint of about 1,085 acres per PPRP. The pin is Goldsboro's town center (approximate). Construction and operation status was not verified from a primary source this session; aggregators suggest a 2026 commercial operation date. The current owner may differ from the applicant of record.",
+    "energy": {
+      "source": "solar"
+    },
+    "landAcres": 1085,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
+    }
   },
   {
     "id": "chestnut-river-holyoke-ma",
@@ -34068,6 +34376,63 @@
     }
   },
   {
+    "id": "constellation-perryman-ngea-gas-aberdeen-md",
+    "name": "Constellation Perryman-Area Gas Generation (NGEA Projects 1 & 2)",
+    "operator": "Constellation Energy Generation, LLC",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.442836,
+      "lon": -76.221761,
+      "city": "Aberdeen",
+      "county": "Harford",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 714
+    },
+    "announcedDate": "2025-10-31",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-12-30",
+        "note": "PSC Order No. 92112 approved Constellation's two gas proposals (150 MW and 564 MW) for the expedited CPCN process under the Next Generation Energy Act. Project 2 is conditioned on hydrogen/biofuel conversion assurances. Selection does not guarantee a CPCN.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://marylandmatters.org/wp-content/uploads/2025/12/Order_NGEA-Proposals-PC74.pdf",
+        "label": "PSC Order No. 92112, Order on Proposals for Dispatchable Energy Generation and Large Capacity Energy Resources (PC 74)",
+        "publisher": "Maryland Public Service Commission",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.powermag.com/maryland-regulators-support-fast-tracking-new-gas-fired-plants/",
+        "label": "Maryland Regulators Support Fast-Tracking New Gas-Fired Plants",
+        "publisher": "POWER Magazine",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.power-eng.com/gas/constellation-targets-harford-county-for-new-gas-plant-but-pipeline-costs-could-get-in-the-way/",
+        "label": "Constellation targets Harford County for new gas plant, but pipeline costs could get in the way",
+        "publisher": "Power Engineering (via Maryland Matters)",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "Two proposed gas-fired plants on Constellation-owned land in the Perryman area near Aberdeen, next to the existing Perryman Generating Station. The pin is that station's coordinates from GEM, and the sources do not say which plant goes where. Project 1 is a 150 MW peaker built from redeployed combustion turbines that can run on up to 100% hydrogen. Project 2 adds 564 MW from redeployed, air-cooled turbines capable of 50% hydrogen. Constellation's CEO cited a roughly $800M internal estimate for gas pipeline interconnection. No CPCN application filing was confirmed this session.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Combined about 714 MW per Order 92112. A separate Constellation BESS of up to 800 MW (Project 3) did not qualify for expedited CPCN and is not part of this record."
+    }
+  },
+  {
     "id": "construction-partners-dothan-al",
     "name": "Construction Partners Corporate Headquarters and Data Processing Center",
     "operator": "Construction Partners, Inc.",
@@ -34844,9 +35209,16 @@
         "publisher": "DataCenterMap",
         "retrievedAt": "2026-08-03",
         "kind": "other"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1839341/000162828026013305/core-20251231.htm",
+        "label": "Core Scientific FY2025 Form 10-K (utility power table)",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-08-03",
+    "lastUpdated": "2026-10-22",
     "energy": {
       "source": "grid",
       "utility": "TVA / Jackson Purchase Energy",
@@ -37187,6 +37559,86 @@
     }
   },
   {
+    "id": "cpv-backbone-solar-kitzmiller-md",
+    "name": "CPV Backbone Solar",
+    "operator": "Competitive Power Ventures (CPV Renewable Power) / Harrison Street",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.3894,
+      "lon": -79.1833,
+      "city": "Kitzmiller",
+      "county": "Garrett",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 175,
+      "operational": 160
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2022-01-11",
+        "note": "Maryland PSC granted the CPCN for Backbone Solar on former Vindex/Arch Coal mining land north of Kitzmiller.",
+        "sourceIndex": 3
+      },
+      {
+        "status": "operational",
+        "date": "2025-12",
+        "note": "CPV reports commercial operations of the 160 MW first phase in December 2025; a second phase under construction would bring the total to 175 MW.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://cpv.com/wp-content/uploads/2025/12/CPV-Backbone-Solar-Project-Fact-Sheet-December-2025.pdf",
+        "label": "CPV Backbone Solar Project Fact Sheet (December 2025)",
+        "publisher": "Competitive Power Ventures",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      },
+      {
+        "url": "https://cleantechnica.com/2025/12/30/marylands-largest-solar-project-launches-on-old-coal-mine/",
+        "label": "Maryland's Largest Solar Project Launches, On Old Coal Mine",
+        "publisher": "CleanTechnica",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.industrialinfo.com/news/article/solar-plant-at-former-maryland-coal-mine-to-supply-power-to-amazon--325602",
+        "label": "Solar Plant at Former Maryland Coal Mine to Supply Power to Amazon",
+        "publisher": "Industrial Info Resources",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cpv.com/2022/01/31/cpv-awarded-state-approval-for-200-mwdc-solar-farm-on-former-coal-mine-in-garrett-county-maryland",
+        "label": "CPV Awarded State Approval for 200 MWdc Solar Farm on Former Coal Mine in Garrett County, Maryland",
+        "publisher": "Competitive Power Ventures",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "Located on a former coal strip mine north of Kitzmiller; the pin is Kitzmiller's town center (approximate). The fact sheet's $200M investment and 'over 200' construction jobs are recorded as stated; the 2022 approval release gave $210M-$290M and 150+ jobs. The CPCN covers about 1,170 acres.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 200000000,
+    "landAcres": 1170,
+    "jobs": {
+      "construction": 200,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Amazon",
+      "notes": "Industrial Info (Nov. 2023) reports an Amazon PPA supporting Amazon's regional data centers and fulfillment centers. Volume, term and price are undisclosed."
+    }
+  },
+  {
     "id": "cpv-jugfork-solar-lee-union-ms",
     "name": "CPV Jugfork Solar",
     "operator": "Competitive Power Ventures (CPV Jugfork Solar, LLC)",
@@ -37936,6 +38388,60 @@
       "sourceIndex": 0
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "crockett-solar-cordova-md",
+    "name": "Crockett Solar Project",
+    "operator": "Crockett Solar I, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.8777,
+      "lon": -75.991,
+      "city": "Cordova",
+      "county": "Talbot",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 61.2
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-01-17",
+        "note": "The order granting the CPCN (PSC Case 9723) became final on Jan. 17, 2025.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dnr.maryland.gov/pprp/Documents/Archived-Projects-10-8-26.pdf",
+        "label": "Archived Projects (last updated 10-8-26): Crocket Solar (PSC Case 9723)",
+        "publisher": "Maryland DNR Power Plant Research Program",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://dnr.maryland.gov/pprp/Documents/Case-9723-Project-Case-Summary.pdf",
+        "label": "Crockett Solar Project, PSC Case #9723, Project Case Summary",
+        "publisher": "Maryland DNR Power Plant Research Program",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "A 61.20 MW AC single-axis-tracking solar array with a 20 MWh battery storage system, off Route 404 east of the Route 50 corridor. The site covers six parcels totaling 1,387 acres. The case summary gives a ~534-acre limit of disturbance, while PPRP's archive lists a ~348-acre footprint. The pin is Cordova's town center (approximate).",
+    "energy": {
+      "source": "solar",
+      "utility": "Delmarva Power & Light",
+      "notes": "Interconnects via a tap on DPL's Easton-Steele 138 kV circuit, with a new 138 kV ring-bus substation next to the BESS."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Includes a 20 MWh BESS (up to 7 containerized units) and 17 power stations."
+    }
   },
   {
     "id": "crofton-bluffs-wind-knox-ne",
@@ -46968,6 +47474,68 @@
       "unitCount": 6,
       "notes": "Fuel cell (Bloom Energy). Repowering supported by Southern Power's investment, per its 2021 fact sheet."
     }
+  },
+  {
+    "id": "dickinson-scarborough-technology-park-me",
+    "name": "Scarborough Technology Park (Scarborough High Technology Industrial Park) Data Center",
+    "operator": "Daniel Dickinson (landowner/developer)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.5899737,
+      "lon": -70.3346065,
+      "city": "Scarborough",
+      "county": "Cumberland",
+      "state": "ME",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-20",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.mainepublic.org/climate/2026-05-06/scarborough-considers-data-center-pause-after-development-proposal",
+        "label": "Scarborough considers data center pause after development proposal",
+        "publisher": "Maine Public",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.pressherald.com/?p=7653330",
+        "label": "Scarborough to vote on data center moratorium",
+        "publisher": "Portland Press Herald",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://spectrumnewsnecn.com/necn/maine/news/2026/06/08/brunswick--scarborough-enact-data-center-moratoriums",
+        "label": "Brunswick, Scarborough enact data center moratoriums",
+        "publisher": "Spectrum News / NECN",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "About 52 acres just west of the Maine Turnpike, owned by Daniel Dickinson since 2022. The master plan proposes a two-story building for contracted data processing. No street address, MW, or investment figure has been published. The pin is the Scarborough town centroid (OSM relation 12166255), not the parcel, so precision is approximate. The town manager says the application is not considered pending. A third-party tracker lists it as cancelled, but no withdrawal by the developer was found.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "The master plan proposes natural gas-fed solid oxide fuel cells for power (Maine Public, 2026-05-06)."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "The master plan proposes a closed-loop water cooling system (Maine Public, 2026-05-06)."
+    },
+    "landAcres": 52,
+    "community": {
+      "status": "contested",
+      "notes": "The town planning office rejected the April 20, 2026 master plan as incomplete. It cited missing aquifer and historic-site information, proof of utility service, and noise, odor and traffic commitments. The Town Council then took up a 180-day data center moratorium, retroactive to applications filed on or after April 1, which the developer says unfairly targets the project. The moratorium was enacted in June 2026.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "dickson-city-development-bell-mountain-lackawanna-pa",
@@ -56453,7 +57021,7 @@
         "url": "https://www.electric.coop/ekpcs-new-gas-plant-shows-strong-investment-in-rural-kentucky-community",
         "label": "EKPC Breaks Ground on New 214-MW Natural Gas Plant",
         "publisher": "America's Electric Cooperatives (NRECA)",
-        "retrievedAt": "2026-09-22",
+        "retrievedAt": "2026-10-22",
         "kind": "press"
       },
       {
@@ -56464,11 +57032,21 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-22",
     "notes": "Groundbreaking 2026-05-20; $500 million; 214 MW across 12 units; at least 23 permanent skilled positions plus construction-phase jobs. Coordinates are anchored on the city of Liberty (Casey County seat) because the only location detail published is 'off of KY 49 in Casey County' - the parcel is not disclosed, so precision is approximate, not a geocoded site. Built for general load growth and reliability across EKPC's member systems; no source ties it to a specific data center, so no offtaker is recorded.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "12 natural gas-fueled engine/generator sets supplied by an interstate pipeline. Ultra-low-sulfur diesel backup in two onsite tanks allows up to 72 hours at full capacity. Targeted online by end of 2028."
+    },
     "investmentUsd": 500000000,
+    "landAcres": 100,
     "jobs": {
       "permanent": 23,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "supported",
+      "notes": "Dozens of local officials attended the May 2026 groundbreaking. The Casey County Schools superintendent, who chairs the industrial development board, called it a 'strong investment,' and a local bank CEO called it 'a gift to Casey County.'",
       "sourceIndex": 0
     },
     "facilityType": "power_generation",
@@ -68780,6 +69358,57 @@
     "aiClassification": "likely"
   },
   {
+    "id": "gi-partners-sandy-farms-severn-md",
+    "name": "Sandy Farms Data Center (Severn)",
+    "operator": "GI Partners (owner; single unnamed tenant)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.1328,
+      "lon": -76.694,
+      "city": "Severn",
+      "county": "Anne Arundel",
+      "street": "7659-7667 Sandy Farm Rd",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-03-04",
+        "note": "GI Partners completed its acquisition of the 100%-leased Severn data center (one of two Baltimore-area sites bought from Harrison Street).",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.thebanner.com/politics-power/local-government/data-center-moratorium-ban-energy-water-defense-P2VUK3R45VH6XP5XY4AYFXXM3M/",
+        "label": "Anne Arundel County opts for 15-month data center moratorium over outright ban",
+        "publisher": "The Baltimore Banner",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gipartners.com/news/gi-partners-acquires-two-baltimore-area-data-centers",
+        "label": "GI Partners Acquires Two Baltimore-Area Data Centers",
+        "publisher": "GI Partners",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacentres.com/sales/18",
+        "label": "Sale record: 7659-7667 Sandy Farm Rd, Severn, MD",
+        "publisher": "datacentres.com",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "The Banner describes an existing 109,455 sq ft 'Sandy Farms Data Center' south of BWI in Severn, whose expansion is exempt from Anne Arundel's moratorium. A sale record gives the address, a 2023 build year and 49.61 acres, and lists a Dec. 2025 sale from Harrison Street to GI Partners. The tenant is unnamed; the sale listing titles it 'Amazon Data Center', but that is unconfirmed. Treating the Banner's facility and GI Partners' Severn acquisition as one site relies on the sale record. The pin is the Severn CDP point (approximate).",
+    "landAcres": 49.61,
+    "facilityType": "data_center"
+  },
+  {
     "id": "gibson-county-data-center-in",
     "name": "Gibson County Data Center",
     "operator": "Undisclosed",
@@ -79688,6 +80317,35 @@
     "facilityType": "data_center"
   },
   {
+    "id": "hopkinsville-electric-energynet-datacenter-christian-ky",
+    "name": "Energynet Datacenter",
+    "operator": "Hopkinsville Electric System",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.847841,
+      "lon": -87.465157,
+      "city": "Hopkinsville",
+      "county": "Christian",
+      "street": "1820 E 9th St",
+      "postalCode": "42240-4459",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/13628",
+        "label": "PeeringDB facility 13628: Energynet Datacenter (Hopkinsville Electric System)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "facilityType": "data_center"
+  },
+  {
     "id": "horseshoe-solar-grantsville-ut",
     "name": "Horseshoe Solar",
     "operator": "Horseshoe Solar, LLC",
@@ -84224,6 +84882,72 @@
     "facilityType": "data_center"
   },
   {
+    "id": "jade-meadow-iii-solar-barton-md",
+    "name": "Jade Meadow III Solar Project",
+    "operator": "Jade Meadow III, LLC",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.5322,
+      "lon": -79.0172,
+      "county": "Garrett",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-11-21",
+        "note": "The order granting the CPCN for the 300 MW solar array (PSC Case 9769) became final on Nov. 21, 2025.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://dnr.maryland.gov/pprp/Documents/Archived-Projects-10-8-26.pdf",
+        "label": "Archived Projects (last updated 10-8-26): Jade Meadows III, LLC (PSC Case 9769)",
+        "publisher": "Maryland DNR Power Plant Research Program",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://governor.maryland.gov/news/press-releases/maryland-announces-landmark-solar-energy-agreement-expected-save-300-million-while-advancing-cle",
+        "label": "Maryland Announces Landmark Solar Energy Agreement Expected to Save $300 Million",
+        "publisher": "Office of Governor Wes Moore",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://psc.maryland.gov/news/2026/maryland-public-service-commission-announces-first-round-energy-storage-awards/",
+        "label": "Maryland Public Service Commission Announces First-Round Energy Storage Awards",
+        "publisher": "Maryland Public Service Commission",
+        "retrievedAt": "2026-10-22",
+        "kind": "filing"
+      },
+      {
+        "url": "https://thedailyrecord.com/2026/08/20/solar-garrett-coal-maryland/",
+        "label": "Solar on a former Garrett County coal field (Aug. 20, 2026)",
+        "publisher": "The Daily Record",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "300 MW solar on a reclaimed coal-mining site in the Georges Creek area near Barton and Westernport. The pin is Barton's town center (approximate). PPRP gives the facility footprint as about 1,852 acres. On Aug. 19, 2026 the state announced a 20-year power purchase agreement with REV Renewables for roughly half the output, starting in 2028. The PJM queue entry AG1-363 lists a proposed completion date of March 31, 2028.",
+    "energy": {
+      "source": "solar"
+    },
+    "landAcres": 1852,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "A separate co-located 40 MW / 4-hour battery (Jade Meadow III Battery Storage, 1700 Russell Road, Barton) was conditionally selected for a Round 1 Energy Storage Capacity Credit award on Oct. 1, 2026. PJM queue AG1-363 lists the project as battery + solar."
+    }
+  },
+  {
     "id": "jailhouse-studios-chattanooga-tn",
     "name": "Jailhouse Studios (former Hamilton County Jail)",
     "operator": "Urban Story Ventures",
@@ -84641,6 +85365,58 @@
     "lastUpdated": "2026-09-09",
     "notes": "1.4 million sq ft of data center and utility substation use on 83 acres south of Leesburg, on the west side of Sycolin Road bounded by Shreve Mill Road and the Dulles Greenway; property owned by Chuck Kuhn through JK Land Holdings. Originally proposed at 2.1 million sq ft; scaled back after opposition at a September 2024 public hearing. Approval limits power draw to 300MW for five years and building height to 55 feet, and requires upgraded generators, added screening and noise limits, stormwater mitigation, water-use restrictions, and three years of energy-use monitoring and reporting.",
     "landAcres": 83,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "johns-hopkins-bayview-research-data-center-baltimore-md",
+    "name": "Johns Hopkins Bayview Research Computing Data Center",
+    "operator": "Johns Hopkins University",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.2929,
+      "lon": -76.5513,
+      "city": "Baltimore",
+      "county": "Baltimore City",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-06",
+        "note": "The Maryland Board of Public Works approved a $9 million state grant for the new data center at Hopkins' Bayview campus.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.thebanner.com/economy/data-center-moratorium-johns-hopkins-baltimore-F3Q2CUPMX5EBPAM2IBEV2UQHD4/",
+        "label": "Johns Hopkins gets $9M for new data center as Baltimore debates a pause",
+        "publisher": "The Baltimore Banner",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.baltimoresun.com/2026/05/07/hopkins-bayview-data-center/",
+        "label": "Johns Hopkins advances $192M data center as Baltimore debates moratorium",
+        "publisher": "The Baltimore Sun",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "A 25,000 sq ft data science and computing center on the Bayview campus in East Baltimore. It expands the research computing operation (Maryland Advanced Research Computing Center, opened 2015). The university says it will draw under 10 MW, below the 10 MW threshold of Baltimore's proposed moratorium. The $192M figure is from the Baltimore Sun headline; the Banner did not give a total project cost. The pin is the Bayview Medical Center point (approximate).",
+    "subsidies": [
+      {
+        "program": "Maryland Board of Public Works capital grant",
+        "amountUsd": 9000000,
+        "jurisdiction": "MD",
+        "year": "2026",
+        "sourceIndex": 0
+      }
+    ],
+    "investmentUsd": 192000000,
     "facilityType": "data_center"
   },
   {
@@ -85590,6 +86366,7 @@
       "lon": -85.9562169,
       "city": "Cave City",
       "county": "Barren",
+      "street": "Doyle Avenue",
       "state": "KY",
       "precision": "approximate"
     },
@@ -85618,13 +86395,35 @@
         "publisher": "Bowling Green Daily News",
         "retrievedAt": "2026-09-13",
         "kind": "press"
+      },
+      {
+        "url": "https://techstrong.it/featured/ai-developer-sues-kentucky-town-that-tried-to-stop-data-center-project/",
+        "label": "AI developer sues Kentucky town that tried to stop data center project",
+        "publisher": "Techstrong IT",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.wsmv.com/2026/06/09/developer-sues-cave-city-over-data-center-zoning-moratorium/",
+        "label": "Developer sues Cave City over data center zoning moratorium",
+        "publisher": "WSMV / WBKO",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-22",
     "notes": "Proposed multi-building hyperscale campus (10 buildings x ~200,000 sq ft, ~2M sq ft total) at the Cave City Industrial Park spanning Cave City and unincorporated Barren County. Combined critical capacity reported as 'about 1,200 megawatts.' Jobs figure of 360 is direct jobs at full build-out (300 data-center operations + 60 power generation, per the source, implying an on-site generation component that, as of September 2026, was not independently confirmed, itemized or listed separately, since no source found stated its own capacity or technology). An additional ~569 indirect/induced jobs were estimated (total ~929) but only the direct figure is recorded here. Developer/operator name is the plaintiff of record in the zoning lawsuit (Kentucky Industrial Alliance LLC), which the coverage also identifies as the current landowner; no separate development-company name was disclosed in the sources checked. Exact parcel location within the industrial park not confirmed -- coordinates are a Cave City town-center pin.",
-    "water": {
-      "coolingType": "closed_loop"
+    "energy": {
+      "source": "mixed",
+      "utility": "Farmers Rural Electric Cooperative Corporation (via East Kentucky Power Cooperative)",
+      "notes": "About half the power would come from an adjacent off-grid natural gas-fired plant and the remaining 600 MW from Farmers RECC through EKPC. New transmission lines and substations would be required."
     },
+    "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.3,
+      "notes": "The developer plans a closed-loop, non-evaporative system with no continuous discharge and spent water trucked off-site. It estimates about 300,000 gallons per day."
+    },
+    "investmentUsd": 4800000000,
     "landAcres": 600,
     "jobs": {
       "permanent": 360,
@@ -85636,6 +86435,117 @@
       "sourceIndex": 1
     },
     "facilityType": "data_center"
+  },
+  {
+    "id": "kentucky-industrial-alliance-cave-point-gas-plant-barren-ky",
+    "name": "Cave Point Commerce Center Adjacent Off-Grid Gas Plant",
+    "operator": "Kentucky Industrial Alliance LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.1367544,
+      "lon": -85.9562169,
+      "city": "Cave City",
+      "county": "Barren",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://techstrong.it/featured/ai-developer-sues-kentucky-town-that-tried-to-stop-data-center-project/",
+        "label": "AI developer sues Kentucky town that tried to stop data center project",
+        "publisher": "Techstrong IT",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Cave+City%2C+Barren+County%2C+Kentucky&format=json&limit=2",
+        "label": "OpenStreetMap/Nominatim place point for Cave City, Barren County, KY (town centroid)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-22",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "The developer says about half the power for the 1.2 GW Cave Point Commerce Center would come from an adjacent off-grid natural gas-fired plant, with the remaining 600 MW from Farmers RECC via EKPC. The plant's own MW rating is not stated. Coordinates are the Cave City town point, not the plant site.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "Kentucky Industrial Alliance (Cave Point Commerce Center)",
+      "poweredFacilityIds": [
+        "kentucky-industrial-alliance-cave-point-cave-city-ky"
+      ],
+      "notes": "Proposal only. The campus faces Cave City's 12-month data center moratorium and two developer lawsuits."
+    }
+  },
+  {
+    "id": "kentucky-power-big-sandy-combined-cycle-lawrence-ky",
+    "name": "Big Sandy Combined-Cycle Plant",
+    "operator": "Kentucky Power Company (AEP)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.17222,
+      "lon": -82.6175,
+      "city": "Louisa",
+      "county": "Lawrence",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 760
+    },
+    "announcedDate": "2026-10-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-05",
+        "note": "Kentucky Power announced an amended agreement with TeraWulf that doubles the Muskie campus's contracted demand to 1 GW. Kentucky Power plans a 760 MW combined-cycle generating facility at Big Sandy, and TeraWulf agreed to pay its estimated construction financing costs. Kentucky PSC approval is still required.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://finviz.com/news/398664/kentucky-power-terawulf-finalize-expanded-agreement-providing-for-100-million-in-customer-benefits",
+        "label": "Kentucky Power, TeraWulf Finalize Expanded Agreement Providing for $100 Million in Customer Benefits",
+        "publisher": "Kentucky Power (PR Newswire via Finviz)",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://constructionreviewonline.com/terawulfs-muskie-data-center-secures-1-gw-of-power-in-kentucky/",
+        "label": "TeraWulf's Muskie Data Center Secures 1 GW of Power in Kentucky",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.weku.org/the-commonwealth/2026-10-19/ky-power-will-build-new-infrastructure-to-support-terawulf-data-center-project",
+        "label": "KY Power will build new infrastructure to support TeraWulf data center project",
+        "publisher": "WEKU",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Big_Sandy_Power_Plant",
+        "label": "Big Sandy Power Plant (existing plant site coordinates, Lawrence County near Louisa)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "The new 760 MW natural-gas combined-cycle unit planned at Kentucky Power's existing Big Sandy plant site in Lawrence County. TeraWulf agreed to pay its estimated financing costs under the amended Muskie Data Campus electric service agreement. Coordinates are those of the existing Big Sandy plant, not the specific footprint of the new unit.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "TeraWulf",
+      "poweredFacilityIds": [
+        "terawulf-muskie-eastpark-ky"
+      ],
+      "notes": "Subject to Kentucky Public Service Commission approval; Kentucky Power planned to file the amended contract and seek related approvals later in 2026."
+    }
   },
   {
     "id": "kilby-power-plant-energy-forge-one-reeves-county-tx",
@@ -87421,7 +88331,7 @@
         "url": "https://natureforward.org/brightseat-tech-park/",
         "label": "Brightseat Tech Park, Prince George's County, MD: Maryland Data Center Series, Pt. 4",
         "publisher": "Nature Forward",
-        "retrievedAt": "2026-08-26",
+        "retrievedAt": "2026-10-22",
         "kind": "press"
       },
       {
@@ -87439,7 +88349,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-22",
     "notes": "2101 Brightseat Road, Landover MD. Project has final plan approvals but is politically frozen pending task force report. Five buildings on 87 acres of former mall site. As a permitted-but-frozen project, no facility-specific water design, subsidy award, or committed job figures have been disclosed; job figures circulating in press are Maryland Tech Council sector benchmarks, not Brightseat commitments. As of 2026-09-10, status remains permitted (the status vocabulary has no value for 'construction paused by opposition/moratorium'). Groundbreaking has not occurred; community opposition (23,000+ petition signatures) and PG County Council ordinances CB-019-2026/CB-020-2026 (introduced March 2026 to repeal the qualified-data-center site-plan-review exemption) continue to threaten the timeline. Subsidies: as of September 2026, only a general-program reference was found (MD/PG County 2020 sales-and-use tax exemption for qualified data centers, Tax-General Article Sec.11-239(a)(5)(i)) with no site-specific dollar figure for this project, so no subsidy is recorded; the exemption is a program-level fact only. As of September 2026, no street address had been independently sourced; the status history cites 2101 Brightseat Road from an earlier source.",
     "energy": {
       "source": "grid",
@@ -87621,7 +88531,7 @@
         "url": "https://lge-ku.com/newsroom/press-releases/2025/10/30/lge-and-ku-receive-approval-plans-meet-kentuckys-growing-energy",
         "label": "LG&E and KU receive approval on plans to meet Kentucky's growing energy needs",
         "publisher": "LG&E and KU",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-22",
         "kind": "press"
       },
       {
@@ -87667,8 +88577,12 @@
         "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-22",
     "notes": "Tracked here because the unit's approval is explicitly tied to data center load: in the CPCN application LG&E/KU projected at least 1.8 GW of additional load from large-scale, high-load-factor data centers, testimony described over 8 GW of economic development load under pursuit of which more than 6,000 MW relates to data centers, and the PSC conditioned approval on the commitment not to build if that load does not materialize. It is a utility grid-connected plant, not behind-the-meter dedicated generation for a single named campus, so no offtaker or powered facility is asserted. Coordinates are the OpenStreetMap feature for the existing Mill Creek Generating Station, where the unit would be sited; the new unit's own footprint is not mapped.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "A 645-MW natural gas combined-cycle unit, expected available in 2031."
+    },
     "water": {
       "coolingType": "evaporative",
       "notes": "The MC6 project design basis filed with the Kentucky PSC includes 'one 10-cell mechanical draft cooling tower' - a wet, evaporative heat-rejection design. No withdrawal or consumption volume is stated in the filing, so no water-use figure is recorded."
@@ -92754,10 +93668,36 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.wvxu.org/local-news/2026-10-15/meta-facebook-data-center-maysville-mason-county-kentucky",
+        "label": "Meta to build data center outside Maysville, Kentucky",
+        "publisher": "WVXU",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox19.com/2026/10/16/meta-revealed-partner-2000-acre-nky-data-center-residents-pushback/",
+        "label": "Meta revealed as partner in 2,000-acre NKY data center as residents push back",
+        "publisher": "FOX19",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-22",
     "notes": "Reported campus of six data center buildings plus three substations, office space and parking on land rezoned outside Maysville. The end user has not been publicly named; outlets describe it variously as a Fortune 100 and a Fortune 50 US technology company. Capacity figures conflict across sources: the Kentucky Lantern project tracker reports 1.2 GW (recorded here) while WVXU reports 2.2 GW — this is not settled. Construction-jobs figures also conflict (WCPO reports 1,000, LEX18 reports more than 1,500), so only the 400 permanent positions both report are recorded. LEX18 names Eastern Kentucky Power as the utility and WVXU references a Duke Energy Woodsdale substation expansion; because those two accounts are inconsistent, no energy record is asserted. Coordinates are a geocode of Big Pond Pike (reported as the site road, near KY-3056) and are approximate — the parcel boundaries are not published.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop cooling. Officials say annual water use would be about that of a golf course, with the system refilled roughly once a decade. The deal funds about $45M for a new Maysville water treatment facility."
+    },
+    "subsidies": [
+      {
+        "program": "40-year local property-tax exemption via industrial revenue bond lease-back with payments in lieu of taxes ($5M/yr to local government and $2M/yr to schools per phase; $30M and $12M/yr at full build-out)",
+        "jurisdiction": "Mason County, KY",
+        "year": "2026",
+        "sourceIndex": 8
+      }
+    ],
     "investmentUsd": 1000000000,
     "landAcres": 2000,
     "jobs": {
@@ -93084,6 +94024,60 @@
     ],
     "lastUpdated": "2026-09-12",
     "notes": "Second San Diego facility, on University Avenue in the North Park / University Heights area. Capacity/square footage not disclosed on the operator's page — omitted rather than guessed.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "meade-county-joe-prather-highway-data-center-ky",
+    "name": "Meade County Data Center (Joe Prather Highway)",
+    "operator": "Undisclosed applicant",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.8250181,
+      "lon": -86.0198152,
+      "county": "Meade",
+      "street": "25025 Joe Prather Hwy",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025-10-14",
+        "note": "The Meade County Planning Commission unanimously declined to send a favorable recommendation on rezoning about 135 acres off Joe Prather Highway from Agriculture-2/Residential-1 to Light Industrial for an 'IT infrastructure facility.' The fiscal court unanimously blocked it the same evening.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.wdrbwave.com/2025/10/14/meade-county-zoning-commission-votes-against-data-center",
+        "label": "Meade County zoning commission votes against data center",
+        "publisher": "WDRB/WAVE",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/meade-county-data-center",
+        "label": "Meade County Data Center (25025 Joe Prather Hwy), listed as withdrawn",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Joe+Prather+Highway%2C+Meade+County%2C+Kentucky&format=json&limit=3",
+        "label": "OpenStreetMap/Nominatim point for Joe Prather Highway, Meade County, KY",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-22",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "landAcres": 135,
+    "community": {
+      "status": "opposed",
+      "notes": "More than 150 people signed up to speak, nearly all opposed. A Change.org petition drew 2,500+ signatures. Concerns cited utility costs, well water, health and property values.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -97305,6 +98299,55 @@
       "notes": "City of San José approved-project list (CP23-016): cooling uses non-potable treated recycled water and does not use significant amounts of potable water; heat-rejection method not specified."
     },
     "landAcres": 65,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "microsoft-annapolis-junction-campus-md",
+    "name": "Microsoft Annapolis Junction Data Center Campus",
+    "operator": "Microsoft",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.12389,
+      "lon": -76.79194,
+      "city": "Annapolis Junction",
+      "county": "Anne Arundel",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-09-22",
+        "note": "Microsoft told the Anne Arundel County Council it started building the campus in the Annapolis Junction Business Park in 2020 and has remaining phases to develop. The amended moratorium (Bill 63-26) allows future phases of existing data centers to continue.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.thebanner.com/politics-power/local-government/data-center-moratorium-ban-energy-water-defense-P2VUK3R45VH6XP5XY4AYFXXM3M/",
+        "label": "Anne Arundel County opts for 15-month data center moratorium over outright ban",
+        "publisher": "The Baltimore Banner",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.govtech.com/policy/maryland-county-downgrades-potential-data-center-ban-to-pause",
+        "label": "Maryland County Downgrades Potential Data Center Ban to Pause",
+        "publisher": "GovTech (Capital Gazette / Tribune Content Agency)",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kadoa.com/datacenter/state/maryland",
+        "label": "Maryland Data Centers: 26 Sites Tracked (2026)",
+        "publisher": "Kadoa",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "Microsoft bought the Annapolis Junction Business Park site in 2020. Microsoft's director of government affairs described 'remaining phases of this project', and the Banner says the campus has generated millions in county tax dollars. An aggregator lists 8201, 8211, 8221 and 8321 Dorsey Run Road; that is not verified from a primary source. The pin is the Annapolis Junction place point (approximate). Some buildings may already be operating; the status reflects ongoing phased construction.",
     "facilityType": "data_center"
   },
   {
@@ -103632,7 +104675,7 @@
         "url": "https://www.yahoo.com/news/us/articles/bell-county-passed-data-center-093027684.html",
         "label": "Bell County passed a data center moratorium. Residents worry that work continues.",
         "publisher": "Kentucky Lantern (via Yahoo News)",
-        "retrievedAt": "2026-09-15",
+        "retrievedAt": "2026-10-22",
         "kind": "press"
       },
       {
@@ -103655,9 +104698,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.wkyt.com/2026/07/09/wkyt-investigates-bell-county-family-fights-proposed-data-center/",
+        "label": "WKYT Investigates: Bell County family fights proposed data center",
+        "publisher": "WKYT",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-22",
     "notes": "Lexington-based Murray Industries proposes a hyperscale data center on land along the Bell–Knox county line that its owner bought three years ago to mine coal and that retains electrical infrastructure from that use. The owner describes the investment as 'billions of dollars' (no specific figure published) and says newer closed-loop cooling would use far less water than older designs. Status is recorded as proposed, not under construction: the utilities' PSC filing reports substation construction at the site, but the data center itself is subject to a two-year county moratorium. The exact parcel has not been publicly identified, so coordinates are the Pineville (county seat) centroid and are approximate only — the site may be several kilometres from this pin.",
     "energy": {
       "source": "grid",
@@ -103666,6 +104716,10 @@
     },
     "water": {
       "coolingType": "closed_loop"
+    },
+    "jobs": {
+      "permanent": 100,
+      "sourceIndex": 5
     },
     "community": {
       "status": "opposed",
@@ -106659,9 +107713,16 @@
         "publisher": "NextEra Energy / Brookfield (newsroom release, July 29, 2026)",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://www.rigzone.com/news/doe_private_partners_launch_100b_data_center_project_in_kentucky-31-jul-2026-184268-article/",
+        "label": "DOE, Private Partners Launch $100B Data Center Project in Kentucky",
+        "publisher": "Rigzone",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-22",
+    "lastUpdated": "2026-10-22",
     "notes": "Investment figure ($100B+) is for the combined Paducah Site partnership (campus + generation), reported as 'more than $100 billion' by DOE; not separately broken out for the generation component alone.",
     "energy": {
       "source": "on_site_gas",
@@ -107762,9 +108823,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://theenergymag.com/news/2026-07-31/sphere-kentucky-data-center",
+        "label": "Sphere 3D Plans 50 MW Kentucky Data Center as City Weighs Zoning Rules",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-22",
     "notes": "A proposed second Hopkinsville facility, separate from the operator's existing ~15 MW bitcoin mine at the Holland Substation. The location, footprint, construction cost and development schedule have not been disclosed, so the coordinates are the Hopkinsville city centroid and are approximate only — the actual site is unknown. A draft Hopkinsville zoning amendment developed after this proposal surfaced would prohibit 'hyper-scale' facilities of 75 MW or more and set setbacks by size class; a special-called public hearing was held July 27, 2026.",
     "energy": {
       "source": "grid",
@@ -107772,7 +108840,8 @@
       "notes": "The company says it would cover the estimated $8–10 million cost of a new 65 MW HES substation, with roughly 15 MW of that capacity available to other HES customers."
     },
     "water": {
-      "coolingType": "closed_loop"
+      "coolingType": "closed_loop",
+      "notes": "North Campbell's attorney said the new facility would use closed-loop cooling that recirculates water."
     },
     "facilityType": "data_center"
   },
@@ -107823,13 +108892,21 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://theenergymag.com/news/2026-07-31/sphere-kentucky-data-center",
+        "label": "Sphere 3D Plans 50 MW Kentucky Data Center as City Weighs Zoning Rules",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-22",
     "notes": "Approximately 22 modular computing units at Hopkinsville Electric System's Holland Substation on North Campbell Street, operating for about three years as of July 2026. The facility's existence became public during city hearings on data center regulation. Sphere 3D describes potential conversion of the roughly 15 MW facility to AI and high-performance-computing workloads; the same quarterly update notes an additional 5 MW under contract in Hopkinsville. Coordinates are a geocode of North Campbell Street and are approximate — the substation itself is not mapped as a named feature in OpenStreetMap.",
     "energy": {
       "source": "grid",
-      "utility": "Hopkinsville Electric System (HES)"
+      "utility": "Hopkinsville Electric System (HES)",
+      "notes": "Located at HES's Holland Substation and running about 22 modular computing units for roughly three years. It takes part in a flexible-load program allowing curtailment when TVA's system is under heavy demand."
     },
     "water": {
       "coolingType": "closed_loop"
@@ -124717,6 +125794,36 @@
     "facilityType": "data_center"
   },
   {
+    "id": "quad-state-internet-pah1-paducah-mccracken-ky",
+    "name": "Quad State Internet PAH1 Colocation",
+    "operator": "Quad State Internet LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.09402,
+      "lon": -88.634104,
+      "city": "Paducah",
+      "county": "McCracken",
+      "street": "1212 Helen St",
+      "postalCode": "42001-2200",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/13029",
+        "label": "PeeringDB facility 13029: Quad State Internet PAH1 Colocation",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "Quad State Internet also runs the Paducah Internet Exchange (paducahix.net).",
+    "facilityType": "data_center"
+  },
+  {
     "id": "quail-ranch-solar-storage-bernalillo-county-nm",
     "name": "Quail Ranch Solar and Storage",
     "operator": "Clēnera",
@@ -124934,11 +126041,33 @@
         "publisher": "Nature Forward",
         "retrievedAt": "2026-09-10",
         "kind": "other"
+      },
+      {
+        "url": "https://hoodline.com/2026/09/frederick-county-squeezes-110m-from-data-center-giant-but-locks-in-its-zoning/",
+        "label": "Frederick County $110M Data Center Deal in Adamstown, MD",
+        "publisher": "Hoodline",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      },
+      {
+        "url": "https://foxbaltimore.com/news/local/frederick-county-residents-push-referendum-data-center-zoning-plan-passes",
+        "label": "Frederick County residents push for referendum after data center zoning plan passes",
+        "publisher": "FOX45 News",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-13",
+    "lastUpdated": "2026-10-22",
     "notes": "This record is the master-planned 2,100-acre park itself (the former Alcoa Eastalco Works site), not a duplicate of any single tenant building. The individual tenant campuses tracked separately in this dataset as of September 2026 -- Aligned Data Centers IAD-04 Frederick and IAD-06 Frederick, and Rowan Digital Infrastructure Frederick Campus (Bauxite I), Bauxite II and Bauxite III -- sit on parcels within this same park and should not be re-summed against this record's acreage. Original developer Quantum Loophole, Inc. was removed from active management/development of the project in a December 2024 dispute settlement with its financial partner TPG Real Estate; TPG now serves as Manager and its affiliate Catellus Development Corporation as Developer, per Catellus's own statement ('TPG Real Estate and Quantum Loophole, Inc. have resolved their dispute over management and development of the 2,100-acre data center campus... Quantum Loophole will no longer have any active involvement in managing or developing the Project.'). The Frederick County Council separately created a Critical Digital Infrastructure Overlay Zone in January 2026 that expanded the area eligible for data-center development around this site by nearly 1,000 acres, but that is a zoning designation, not confirmed additional owned/developed acreage, so it is not included in the recorded acreage. Catellus's own statement and Quantum Loophole's own statement are both dated 2024-12-23; the settlement included a mutual dismissal of the litigation between TPG and Quantum Loophole. As of 2026-09-13, no further operator or ownership change was found; TPG Real Estate / Catellus Development Corporation remain the manager/developer of record, and no new litigation was found.",
+    "water": {
+      "notes": "Under a draft agreement announced Sept. 1, 2026, Catellus agreed to cut the site's daily potable water use by almost 80%. It also agreed to shrink the planned data center footprint from 18.3M to 15M sq ft and set aside 433 acres as a nature reserve."
+    },
     "landAcres": 2100,
+    "community": {
+      "status": "contested",
+      "notes": "In a draft agreement open for comment in September 2026, Catellus offered about $110M in community benefits in exchange for a zoning freeze. Separately, residents and groups including the Sugarloaf Alliance sought a referendum on the council's December 2025 data-center zoning map, which covers about 2,600 acres near Adamstown; public hearings drew significant opposition.",
+      "sourceIndex": 4
+    },
     "facilityType": "data_center"
   },
   {
@@ -128641,7 +129770,7 @@
         "url": "https://www.yahoo.com/news/amazon-identified-tenant-bauxite-data-231600787.html",
         "label": "Amazon identified as tenant of Bauxite data center",
         "publisher": "Yahoo News",
-        "retrievedAt": "2026-08-08",
+        "retrievedAt": "2026-10-22",
         "kind": "press"
       },
       {
@@ -129082,6 +130211,35 @@
       "notes": "The City of Russell passed a six-month moratorium on the construction and operation of data centers within city limits in June 2026. Rubix answered a city due-diligence questionnaire and scheduled a public meeting with county officials and residents.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "russellville-epb-smartnet-logan-ky",
+    "name": "Russellville EPB Smartnet",
+    "operator": "Russellville Electric Plant Board",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.846023,
+      "lon": -86.88624,
+      "city": "Russellville",
+      "county": "Logan",
+      "street": "165 East Fourth Street",
+      "postalCode": "42276",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/13664",
+        "label": "PeeringDB facility 13664: Russellvile EPB Smartnet (Russellville Electric Plant Board)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
     "facilityType": "data_center"
   },
   {
@@ -132529,9 +133687,16 @@
         "publisher": "FOX45 Baltimore",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.patch.com/maryland/towson/woodlawn-data-center-proposal-meets-pushback-over-power-water-concerns",
+        "label": "Woodlawn data center proposal meets pushback over power, water concerns",
+        "publisher": "Patch",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-22",
     "notes": "Redevelopment of the 42-acre former Social Security Administration headquarters campus in Woodlawn, plus an adjacent Rodeway Inn parcel. Construction had been targeted for June/July 2026 before Baltimore County's permit moratorium. As of 2026-09-10 the status remains proposed, consistent with 'no development plan submitted as of mid-2026' elsewhere in the record. Baltimore County's yearlong data-center permit moratorium (in effect since mid-2026) is set to end January 2027, which is why the June/July 2026 construction target slipped. No further investment, water, AI-classification, or subsidy figures were found.",
     "energy": {
       "source": "grid",
@@ -146813,6 +147978,13 @@
         "publisher": "TeraWulf Inc. via GlobeNewswire",
         "retrievedAt": "2026-09-22",
         "kind": "press"
+      },
+      {
+        "url": "https://www.weku.org/the-commonwealth/2026-08-21/ky-utility-regulator-oks-electricity-contract-for-terawulfs-hancock-county-data-center-project",
+        "label": "KY utility regulator OKs electricity contract for TeraWulf's Hancock County data center project",
+        "publisher": "WEKU",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
     "lastUpdated": "2026-10-22",
@@ -153774,6 +154946,49 @@
     "facilityType": "data_center"
   },
   {
+    "id": "us-wind-maryland-offshore-wind-md",
+    "name": "US Wind Maryland Offshore Wind Project",
+    "operator": "US Wind",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.3914,
+      "lon": -75.0697,
+      "county": "Worcester",
+      "state": "MD",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1710
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-12",
+        "note": "BOEM approved the construction and operations plan in December 2024. On Oct. 13, 2026 DOJ asked the U.S. District Court for the District of Maryland to remand the approval to Interior without vacatur; the approval stays in force pending that review.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.offshorewind.biz/2026/10/21/us-govt-seeks-new-review-of-us-winds-maryland-project",
+        "label": "US Gov't Seeks New Review of US Wind's Maryland Project",
+        "publisher": "offshoreWIND.biz",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "Offshore wind in federal waters off Maryland. The lat/lon is Ocean City's town point, used only as an onshore reference; the turbines are offshore. The Maryland PSC awarded ORECs in 2017 and 2021 and in January 2025 approved US Wind's application to sell 6,966,836 MWh/yr. It faces litigation from Ocean City and a federal remand motion.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind"
+    }
+  },
+  {
     "id": "usaf-eielson-ai-data-center-eul-ak",
     "name": "Eielson Air Force Base AI Data Center Enhanced Use Lease Site",
     "operator": "U.S. Department of the Air Force (lessor; developer not selected)",
@@ -158124,7 +159339,7 @@
     "id": "western-hospitality-partners-commerce-parkway-oldham-ky",
     "name": "Western Hospitality Partners Commerce Parkway Data Center",
     "operator": "Western Hospitality Partners",
-    "status": "proposed",
+    "status": "cancelled",
     "confidence": "reported",
     "location": {
       "lat": 38.3939431,
@@ -158136,7 +159351,14 @@
       "state": "KY",
       "precision": "approximate"
     },
-    "statusHistory": [],
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-10-22",
+        "note": "On July 3, 2025, Western Hospitality Partners said it was withdrawing its application to build on Commerce Parkway (the Sauerbeck Drive-In property): 'the project will be withdrawn and will not proceed.' WHP said it has no current plans for a data center in Oldham County.",
+        "sourceIndex": 4
+      }
+    ],
     "sources": [
       {
         "url": "https://www.yahoo.com/news/oldham-county-data-center-replace-160523680.html",
@@ -158165,9 +159387,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-09-15",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.wdrbwave.com/2025/07/03/plans-oldham-county-data-center-project-withdrawn/",
+        "label": "Plans for Oldham County data center project withdrawn",
+        "publisher": "WDRB/WAVE",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-15",
+    "lastUpdated": "2026-10-22",
     "notes": "The relocated, downsized successor to the developer's 267-acre 'Project Lincoln' proposal off Highway 53, which, as of September 2026, is tracked separately as cancelled. The new site is the roughly 88-acre Sauerbeck Family Drive-In property on D.W. Griffith Lane off Commerce Parkway; the drive-in's owner has said he would try to relocate his business within Oldham County if the sale proceeds, and the sale is not assured. The Kentucky Energy Planning and Inventory Commission's report and the Kentucky Lantern project tracker both still list the Oldham County project as planned as of mid-2026. Capacity, building count, square footage and investment for this new site are not established by the sources cited here and are deliberately omitted. Coordinates are the OpenStreetMap record for the drive-in property.",
     "landAcres": 88,
     "facilityType": "data_center"
@@ -159445,6 +160674,43 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "wku-bgmu-lost-river-data-center-bowling-green-ky",
+    "name": "Lost River Data Center",
+    "operator": "WKU Research Foundation / Bowling Green Municipal Utilities (joint venture)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.962312,
+      "lon": -86.470939,
+      "city": "Bowling Green",
+      "county": "Warren",
+      "street": "2413 Nashville Rd",
+      "postalCode": "42101",
+      "state": "KY",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/13629",
+        "label": "PeeringDB facility 13629: Lost River Data Center (Western Kentucky University)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-22",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.lightwaveonline.com/data-center/article/55268994/accelecom-expands-services-with-new-presence-at-lost-river-data-center",
+        "label": "Accelecom expands services with new presence at Lost River Data Center",
+        "publisher": "Lightwave",
+        "retrievedAt": "2026-10-22",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "Colocation facility run as a joint venture of the WKU Research Foundation and BGMU. Accelecom announced a presence there on Feb 18, 2025.",
+    "facilityType": "data_center"
   },
   {
     "id": "wolf-summit-energy-harrison-county-wv",
