@@ -1200,6 +1200,15 @@
     }
   },
   "ainet-wdc11-laurel-md": {
+    "nearestWater": {
+      "name": "Patuxent River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -1849,6 +1858,15 @@
     }
   },
   "alliance-bitiki-waverly-union-ky": {
+    "nearestWater": {
+      "name": "Casey Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -7444,6 +7462,15 @@
     }
   },
   "cardinal-oystercatcher-energy-storage-harford-md": {
+    "nearestWater": {
+      "name": "Island Branch",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8127,6 +8154,15 @@
     }
   },
   "chalk-point-storage-aquasco-md": {
+    "nearestWater": {
+      "name": "Swanson Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -8160,6 +8196,15 @@
     }
   },
   "cherrywood-solar-goldsboro-md": {
+    "nearestWater": {
+      "name": "Broadway Branch",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11002,6 +11047,15 @@
     }
   },
   "constellation-perryman-ngea-gas-aberdeen-md": {
+    "nearestWater": {
+      "name": "Sod Run",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -12112,6 +12166,15 @@
     }
   },
   "cpv-backbone-solar-kitzmiller-md": {
+    "nearestWater": {
+      "name": "North Branch Potomac River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 12.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -12300,6 +12363,15 @@
     }
   },
   "crockett-solar-cordova-md": {
+    "nearestWater": {
+      "name": "Skipton Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15403,6 +15475,15 @@
     }
   },
   "dickinson-scarborough-technology-park-me": {
+    "nearestWater": {
+      "name": "Mill Brook",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -23340,6 +23421,15 @@
     }
   },
   "gi-partners-sandy-farms-severn-md": {
+    "nearestWater": {
+      "name": "Sawmill Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -26315,6 +26405,15 @@
     }
   },
   "hopkinsville-electric-energynet-datacenter-christian-ky": {
+    "nearestWater": {
+      "name": "South Fork Little River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 19.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -27832,6 +27931,15 @@
     }
   },
   "jade-meadow-iii-solar-barton-md": {
+    "nearestWater": {
+      "name": "Georges Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -28002,6 +28110,15 @@
     }
   },
   "johns-hopkins-bayview-research-data-center-baltimore-md": {
+    "nearestWater": {
+      "name": "Herring Run",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -28335,6 +28452,15 @@
     }
   },
   "kentucky-industrial-alliance-cave-point-gas-plant-barren-ky": {
+    "nearestWater": {
+      "name": "Creacy Lake",
+      "kind": "lake",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 34.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -28345,6 +28471,15 @@
     }
   },
   "kentucky-power-big-sandy-combined-cycle-lawrence-ky": {
+    "nearestWater": {
+      "name": "Tabor Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -31088,6 +31223,15 @@
     }
   },
   "meade-county-joe-prather-highway-data-center-ky": {
+    "nearestWater": {
+      "name": "Otter Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -32029,6 +32173,15 @@
     }
   },
   "microsoft-annapolis-junction-campus-md": {
+    "nearestWater": {
+      "name": "Dorsey Run",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -40764,6 +40917,15 @@
     }
   },
   "quad-state-internet-pah1-paducah-mccracken-ky": {
+    "nearestWater": {
+      "name": "Perkins Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 4.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -42145,6 +42307,15 @@
     }
   },
   "russellville-epb-smartnet-logan-ky": {
+    "nearestWater": {
+      "name": "Town Branch",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -50135,6 +50306,15 @@
     }
   },
   "us-wind-maryland-offshore-wind-md": {
+    "nearestWater": {
+      "name": "Saint Martin River",
+      "kind": "river",
+      "distanceMi": 2.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 15.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -52117,6 +52297,15 @@
     }
   },
   "wku-bgmu-lost-river-data-center-bowling-green-ky": {
+    "nearestWater": {
+      "name": "Jennings Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 32.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
