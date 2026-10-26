@@ -39411,6 +39411,115 @@
     "facilityType": "data_center"
   },
   {
+    "id": "csquare-bos1-waltham-ma",
+    "name": "Csquare BOS1 (Waltham)",
+    "operator": "Csquare (formerly Centersquare)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.396785,
+      "lon": -71.267452,
+      "city": "Waltham",
+      "county": "Middlesex",
+      "street": "580 Winter Street",
+      "postalCode": "02451",
+      "state": "MA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-24",
+        "note": "Marketed as a live colocation facility on the operator's 2026 spec sheet and listed on PeeringDB.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/hubfs/Centersquare%20website/docs/Csquare-BOS-SpecSheet.pdf",
+        "label": "Csquare Boston Market spec sheet (BOS1 / BOS4)",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-10-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/4049",
+        "label": "PeeringDB facility 4049: Centersquare Boston (BOS1-A)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.csquare.com/data-centers/boston",
+        "label": "Csquare Boston data centers page",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-10-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-24",
+    "notes": "Colocation facility of 50,150 sq ft in Waltham on the Route 128 corridor. The operator lists a second building at 115 2nd Avenue, Waltham, as part of BOS1.",
+    "energy": {
+      "source": "grid",
+      "notes": "The operator spec sheet lists utility capacity of 38.2 MW, UPS capacity of 6.1 MW and generator capacity of 11 MW. These are utility and UPS figures, not IT load. BOS1 has two buildings, 580 Winter Street and 115 2nd Avenue, both in Waltham."
+    },
+    "water": {
+      "notes": "The operator spec sheet lists 'chilled water' cooling. The heat-rejection method is not stated."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "csquare-bos4-watertown-ma",
+    "name": "Csquare BOS4 (Watertown)",
+    "operator": "Csquare (formerly Centersquare)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 42.365768,
+      "lon": -71.158084,
+      "city": "Watertown",
+      "county": "Middlesex",
+      "street": "486 Arsenal Way",
+      "postalCode": "02472",
+      "state": "MA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-24",
+        "note": "Marketed as a live colocation facility on the operator's 2026 spec sheet and listed on PeeringDB.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.csquare.com/hubfs/Centersquare%20website/docs/Csquare-BOS-SpecSheet.pdf",
+        "label": "Csquare Boston Market spec sheet (BOS1 / BOS4)",
+        "publisher": "Csquare",
+        "retrievedAt": "2026-10-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/api/fac/6678",
+        "label": "PeeringDB facility 6678: Centersquare Boston (BOS4-A)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-24",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-24",
+    "notes": "Colocation facility of 38,977 sq ft in Watertown.",
+    "energy": {
+      "source": "grid",
+      "notes": "The operator spec sheet lists utility capacity of 19.1 MW, UPS capacity of 4 MW and generator capacity of 14 MW. These are utility and UPS figures, not IT load."
+    },
+    "water": {
+      "notes": "The operator spec sheet lists 'chilled water' cooling. The heat-rejection method is not stated."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "csquare-sfo1-ca",
     "name": "Csquare SFO1",
     "operator": "Csquare",
@@ -53396,6 +53505,59 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "eagle-rock-big-woods-technology-park-jefferson-davis-ms",
+    "name": "Big Woods Technology Park",
+    "operator": "Eagle Rock Partners",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 31.5966,
+      "lon": -89.8687,
+      "county": "Jefferson Davis",
+      "state": "MS",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-30",
+        "note": "Eagle Rock Partners held an informational meeting on a three-building campus of about 2 million sq ft. The company says it is in the design stage and working on permit submissions, and construction could begin as early as 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.djournal.com/mississippi-today/6b-data-center-planned-for-jefferson-davis-one-of-the-poorest-counties-in-the-country/article_0ce91979-5c29-4eaf-a2bc-993b602c8752.html",
+        "label": "$6B data center planned for Jefferson Davis, one of the poorest counties in the country (Mississippi Today, via Daily Journal)",
+        "publisher": "Mississippi Today / Northeast Mississippi Daily Journal",
+        "retrievedAt": "2026-10-24",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-24",
+    "notes": "The exact site has not been disclosed; the source describes only private property in an isolated part of Jefferson Davis County. The coordinates are the county seat, Prentiss, used as a county-level placeholder. The end user and MW are not disclosed.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Developer plans on-site natural gas generation, which needs Mississippi Department of Environmental Quality approval before it can operate."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer says it will use a closed-loop cooling system to keep water use low."
+    },
+    "investmentUsd": 6000000000,
+    "jobs": {
+      "construction": 1000,
+      "permanent": 200,
+      "sourceIndex": 0
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "At an informational meeting, residents raised concerns about water use, utility rates, noise and odor. County economic-development officials and a local official supported the project, citing jobs and tax base. The developer says it will not seek abatements or incentives, and the county has no zoning.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "eagle-rock-meridian-technology-park-taylorville-il",
@@ -111315,6 +111477,339 @@
     "facilityType": "data_center"
   },
   {
+    "id": "nydig-dfm-altuve-pad-richland-mt",
+    "name": "NYDIG DFM Altuve Pad",
+    "operator": "NYDIG DFM, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.96799,
+      "lon": -104.0596,
+      "city": "Fairview vicinity (unincorporated)",
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2022-03-30",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2022-03-30",
+        "note": "MAQP #5268-00 issued to Crusoe; transferred to NYDIG in 2025 (MAQP #5268-02/03)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5268-03.pdf",
+        "label": "Final and Effective Montana Air Quality Permit #5268-03, NYDIG DFM, LLC Altuve Pad",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "Flare-gas well-pad site about 7.9 miles north of Fairview (Sec. 35, T26N, R59E). Per MAQP #5268-03 (final Nov 6, 2025), NYDIG owns and operates multiple Waukesha 9394 GSI gas engines, capped at a combined 25,000 bhp and at most ten engines. They burn gas that would otherwise be flared at an existing oil and gas facility, generating electricity 'for small data centers'. The permit was originally issued to Crusoe on March 30, 2022 and transferred to NYDIG in July 2025. The bitcoin-mining classification rests on NYDIG's 2025 acquisition of Crusoe's bitcoin-mining business. Capacity is given in engine horsepower and is not converted to MW here.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Waukesha 9394 GSI natural-gas generator engines, combined limit 25,000 bhp (MAQP #5268-03), fueled by field gas that would otherwise be flared."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-breaks-cdp-richland-mt",
+    "name": "NYDIG DFM Breaks CDP Facility",
+    "operator": "NYDIG DFM, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.95329,
+      "lon": -104.32595,
+      "city": "Fairview vicinity (unincorporated)",
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-02-26",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025-02-26",
+        "note": "MAQP #5328-00 issued final to Crusoe Energy Systems; transferred to NYDIG (MAQP #5328-01 final Nov 13, 2025)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5328-01.pdf",
+        "label": "Final and Effective Montana Air Quality Permit #5328-01, NYDIG DFM, LLC Breaks CDP Facility",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "About 14.5 miles northwest of Fairview (Sec. 2, T25N, R57E). MAQP #5328-01 permits up to ten 2,500 bhp Waukesha 9394 GSI engines. The engines 'will utilize' field gas otherwise sent to a process flare, generating electricity to power a local data center. The permit was originally issued to Crusoe Energy Systems on Feb 26, 2025.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Up to ten 2,500 bhp gas engines (MAQP #5328-01), fueled by flare-destined field gas."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-felix-lucero-roosevelt-mt",
+    "name": "NYDIG DFM Felix-Lucero Facility",
+    "operator": "NYDIG DFM, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 48.112725,
+      "lon": -104.36175,
+      "city": "Bainville vicinity (unincorporated)",
+      "county": "Roosevelt",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-12-11",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-12-11",
+        "note": "MAQP #5318-00 issued to Crusoe; transferred to NYDIG (MAQP #5318-02 final Nov 7, 2025)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5318-02.pdf",
+        "label": "Final and Effective Montana Air Quality Permit #5318-02, NYDIG DFM, LLC Felix Lucero Site",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "About 6.7 miles west of Bainville (Sec. 9, T27N, R57E), Roosevelt County. The permit gives two inconsistent coordinate pairs: 47.98112,-104.17407 in Section I, and 48.112725,-104.36175 in the analysis. The analysis pair matches '6.7 miles west of Bainville' and Roosevelt County, so it is used here. Combined engine limit is 10,000 bhp. The analysis says NYDIG 'proposes to install up to four' 2,500 bhp engines, burning flare-destined field gas to power local data centers.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Gas engines, combined limit 10,000 bhp (MAQP #5318-02), fueled by flare-destined field gas."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-holly-powers-roosevelt-mt",
+    "name": "NYDIG DFM Holly Powers Site",
+    "operator": "NYDIG DFM, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 48.170558,
+      "lon": -104.118501,
+      "city": "Bainville vicinity (unincorporated)",
+      "county": "Roosevelt",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5321-02.pdf",
+        "label": "Montana Air Quality Permit #5321-02, NYDIG DFM, LLC Holly Powers Site",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "About 5 miles east-northeast of Bainville (Sec. 20, T28N, R59E), Roosevelt County. Crusoe applied Oct 17, 2024 for up to six 2,500 bhp Waukesha 9394 GSI engines burning flare-destined field gas from multiple well pads to power a data center. The permit was transferred to NYDIG; MAQP #5321-02 (final Nov 6, 2025) sets a combined 15,000 bhp limit. The analysis reads 'proposes to install and operate'.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Up to six 2,500 bhp gas engines, combined limit 15,000 bhp (MAQP #5321-02), fueled by flare-destined field gas."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-judith-warren-richland-mt",
+    "name": "NYDIG DFM Judith Warren Site",
+    "operator": "NYDIG DFM, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.926691,
+      "lon": -104.081752,
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5323-02.pdf",
+        "label": "Montana Air Quality Permit #5323-02, NYDIG DFM, LLC Judith Warren Site",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "Sec. 10, T25N, R59E, Richland County, at 47.926691,-104.081752. The permit's town reference ('5 miles north-northwest' / 'east northeast of Bainville') does not match its coordinates, so the coordinates are used. Crusoe applied Oct 17, 2024 for up to six 2,500 bhp Waukesha 9394 GSI engines burning flare-destined field gas from multiple well pads to power a data center. The permit was transferred to NYDIG in 2025 (MAQP #5323-02, final Nov 2025; combined limit 15,000 bhp). The analysis still reads 'proposes to install and operate'.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Up to six 2,500 bhp gas engines, combined limit 15,000 bhp (MAQP #5323-02), fueled by flare-destined field gas."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-kai-pad-richland-mt",
+    "name": "NYDIG DFM Kai Pad",
+    "operator": "NYDIG DFM, LLC",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.99716,
+      "lon": -104.1072,
+      "city": "Bainville vicinity (unincorporated)",
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2021-12-24",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2021-12-24",
+        "note": "MAQP #5265-00 issued to Crusoe; transferred to NYDIG (MAQP #5265-02 final Aug 19, 2025)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5265-02.pdf",
+        "label": "Final and Effective Montana Air Quality Permit #5265-02, NYDIG DFM, LLC Kai Pad",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "About 11.3 miles southeast of Bainville (Sec. 21, T26N, R59E). MAQP #5265-02 allows up to ten 2,500 bhp Waukesha 9394 GSI engines that burn well gas otherwise flared, generating electricity to 'power local data farms'. The permit's wording on operation is mixed ('proposes to operate' / 'operates'), so this is held at permitted. A 2022 DEQ amendment corrected an erroneous 'Kraken Central Site' reference in this permit to 'Kai Pad'. Kai Pad is a different section from the tracked Kraken Central Site.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Up to ten 2,500 bhp gas engines (MAQP #5265-02), fueled by flare-destined well gas."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-kennedy-pad-richland-mt",
+    "name": "NYDIG DFM Kennedy Pad",
+    "operator": "NYDIG DFM, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.927019,
+      "lon": -104.239333,
+      "city": "Fairview vicinity (unincorporated)",
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-06-11",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-06-11",
+        "note": "MAQP #5301-00 issued final to Crusoe; transferred to NYDIG (MAQP #5301-01, final Aug 12, 2025)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5301-01.pdf",
+        "label": "Final and Effective Montana Air Quality Permit #5301-01, NYDIG DFM, LLC Kennedy Pad",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "Well-pad site about 10.4 miles northwest of Fairview (Sec. 9, T25N, R58E). Per MAQP #5301-01, NYDIG owns and operates multiple Waukesha 9394 GSI engines, capped at a combined 7,500 bhp. They burn gas that would otherwise be flared, generating electricity for small data centers. The permit was originally issued to Crusoe (MAQP #5301-00, June 11, 2024). The bitcoin-mining classification rests on NYDIG's acquisition of Crusoe's bitcoin-mining business.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Waukesha 9394 GSI gas engines, combined limit 7,500 bhp (MAQP #5301-01), fueled by field gas that would otherwise be flared."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
     "id": "nydig-dfm-kraken-richland-mt",
     "name": "NYDIG DFM Kraken Central Site",
     "operator": "NYDIG DFM",
@@ -111372,6 +111867,155 @@
     "energy": {
       "source": "on_site_gas",
       "notes": "MAQP #5262-05 describes a natural-gas generator station that powers small data centers on site. It permits seven rich-burn natural-gas generator engines of up to 2,500 bhp each, plus diesel backup: five 500-kW engines and one 1,099-kW engine. Location: Section 8, T25N, R59E, about 15 miles northeast of Sidney."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-meldahl-richland-mt",
+    "name": "NYDIG DFM Meldahl Facility",
+    "operator": "NYDIG DFM, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.99953,
+      "lon": -104.13075,
+      "city": "Snowden vicinity (unincorporated)",
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-12-04",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-12-04",
+        "note": "MAQP #5316-00 issued to Crusoe Energy Systems; transferred to NYDIG (MAQP #5316-02 final Nov 14, 2025)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5316-02.pdf",
+        "label": "Montana Air Quality Permit #5316-02, NYDIG DFM, LLC Meldahl Facility",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "About 2.8 miles southeast of Snowden. The permit gives two differing legal descriptions (Sec. 17, T26N, R59E and Sec. 18, T25N, R58E), but the coordinates are consistent across both. Per MAQP #5316-02, NYDIG operates up to six 2,500 bhp Waukesha 9394 GSI engines, with a combined limit of 15,000 bhp. They burn field gas otherwise sent to a process flare, generating electricity for a local data center. The permit was originally issued to Crusoe on Dec 4, 2024.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Up to six 2,500 bhp gas engines, combined limit 15,000 bhp (MAQP #5316-02), fueled by flare-destined field gas."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-nate-facility-richland-mt",
+    "name": "NYDIG DFM Nate Facility",
+    "operator": "NYDIG DFM, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.86615,
+      "lon": -104.19508,
+      "city": "Fairview vicinity (unincorporated)",
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-12-06",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-12-06",
+        "note": "MAQP #5314-00 issued final to Crusoe; transferred to NYDIG in 2025 (MAQP #5314-02 final Nov 14, 2025)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5314-02.pdf",
+        "label": "Final and Effective Montana Air Quality Permit #5314-02, NYDIG DFM, LLC Nate Facility",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "About 6.9 miles west of Fairview (Sec. 6, T24N, R59E). Per MAQP #5314-02, NYDIG owns and operates up to six 2,500 bhp Waukesha 9394 GSI engines, with a combined limit of 15,000 bhp. They burn field gas that would otherwise be flared, generating electricity for data centers. The permit was originally issued to Crusoe (MAQP #5314-00, Dec 6, 2024).",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Up to six 2,500 bhp gas engines, combined limit 15,000 bhp (MAQP #5314-02), fueled by flare-destined field gas."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-dfm-piano-man-richland-mt",
+    "name": "NYDIG DFM Piano Man Site",
+    "operator": "NYDIG DFM, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.92216,
+      "lon": -104.27816,
+      "county": "Richland",
+      "state": "MT",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024-11-05",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-11-05",
+        "note": "MAQP #5313-00 issued final to Crusoe; transferred to NYDIG in 2025 (MAQP #5313-02 final Nov 11, 2025)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://deq.mt.gov/files/Air/AirQuality/Documents/ARMpermits/5313-02.pdf",
+        "label": "Final and Effective Montana Air Quality Permit #5313-02, NYDIG DFM, LLC Piano Man Site",
+        "publisher": "Montana DEQ",
+        "retrievedAt": "2026-10-26",
+        "kind": "permit"
+      },
+      {
+        "url": "https://theenergymag.com/news/2025-03-26/nydig-crusoe-bitcoin-mining/",
+        "label": "NYDIG Set to Expand Hashrate after Acquiring Crusoe's Bitcoin Mining Assets",
+        "publisher": "The Energy Mag",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-26",
+    "notes": "Sec. 18, T25N, R58E, Richland County. The permit text also says '7.9 miles north of Fairview', which duplicates the Altuve Pad wording, so the coordinates are used instead. Per MAQP #5313-02, NYDIG operates up to four Waukesha 9394 GSI engines rated at 2,500 bhp or less each. They burn field gas from multiple well pads that would otherwise be flared, generating electricity to power a data center. The permit was originally issued to Crusoe (MAQP #5313-00, Nov 5, 2024).",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Up to four 2,500 bhp Waukesha 9394 GSI gas engines (MAQP #5313-02), fueled by flare-destined field gas."
     },
     "facilityType": "crypto_mining",
     "mining": {
@@ -125943,14 +126587,38 @@
         "publisher": "KPAX",
         "retrievedAt": "2026-10-08",
         "kind": "press"
+      },
+      {
+        "url": "https://montanafreepress.org/2026/02/12/as-ai-investors-eye-montana-for-new-data-centers-communities-brace-for-water-impacts/",
+        "label": "As AI investors eye Montana for new data centers, communities brace for water impacts",
+        "publisher": "Montana Free Press",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://nbcmontana.com/news/local/deq-seeks-public-comment-on-well-proposal-for-new-data-center-in-yellowstone-co",
+        "label": "DEQ seeks public comment on well proposal for new data center in Yellowstone Co.",
+        "publisher": "NBC Montana",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kulr8.com/news/quantica-files-power-request-for-yellowstone-county-data-center/article_65961adc-7dd3-4bfd-82b8-cbe6fe72f72a.html",
+        "label": "Quantica files power request for Yellowstone County data center",
+        "publisher": "KULR-8",
+        "retrievedAt": "2026-10-26",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-10-26",
     "notes": "5,100-acre site in Yellowstone County between Broadview and Billings ('north of Billings'). Shovel-ready powered land; grid power expected 2027. Interconnection application filed May 2026 for 1,100 MW. Backed by EnCap Investments (~$2.7B under management). Construction planned to begin 2026. Coordinates approximate between Billings and Broadview.",
     "energy": {
       "source": "mixed",
       "utility": "NorthWestern Energy",
       "notes": "Phase 1: 500 MW renewable + battery storage by 2030. Phase 2: additional 500 MW by 2031. 40,000 acres under lease for solar, wind, battery development. Grid power from NorthWestern Energy."
+    },
+    "water": {
+      "notes": "DNRC says the company holds no water rights. Quantica says it is evaluating air cooling, deep aquifer wells, treated greywater and direct-to-chip liquid cooling (MTFP, Feb 2026). DEQ took public comment through Oct 29, 2026 on a proposed Madison Aquifer well. The well would draw about 150,000 gallons per day during construction, falling to about 20,000 gallons per day once complete (NBC Montana, Sep 30, 2026)."
     },
     "landAcres": 5000,
     "community": {

@@ -12657,6 +12657,18 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "csquare-bos1-waltham-ma": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "csquare-bos4-watertown-ma": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
   "csquare-sfo1-ca": {
     "nearestWater": {
       "name": "Saratoga Creek",
@@ -17670,6 +17682,20 @@
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "eagle-rock-big-woods-technology-park-jefferson-davis-ms": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Coastal Lowlands Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "eagle-rock-meridian-technology-park-taylorville-il": {
@@ -36263,6 +36289,76 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "nydig-dfm-altuve-pad-richland-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-breaks-cdp-richland-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-felix-lucero-roosevelt-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-holly-powers-roosevelt-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-judith-warren-richland-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-kai-pad-richland-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-kennedy-pad-richland-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "nydig-dfm-kraken-richland-mt": {
     "nearestWater": {
       "name": "Charbonneau Creek",
@@ -36273,6 +36369,36 @@
       "voltageKv": 230,
       "distanceMi": 12.7
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-meldahl-richland-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-nate-facility-richland-mt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Tertiary Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "nydig-dfm-piano-man-richland-mt": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
