@@ -169,3 +169,56 @@ export async function callOllama<T>(opts: CallOllamaOptions): Promise<CallOllama
     clearTimeout(timer);
   }
 }
+
+export interface ProbeOllamaOptions {
+  baseUrl?: string;
+  model?: string;
+  /** Abort timeout, ms. Short by design: a probe that hangs is itself the answer. */
+  timeoutMs: number;
+  fetchImpl: typeof fetch;
+}
+
+export type ProbeOllamaResult = { ok: true } | { ok: false; reason: string };
+
+/**
+ * Cheap health check: GET `/api/tags` and confirm the verify model is pulled.
+ * Resolves `baseUrl`/`model` exactly as `callOllama` does. Never throws.
+ *
+ * Used by the submit gate to tell "one slow model call" (Ollama answers here)
+ * from "Ollama is down or the model is gone" after a per-call timeout.
+ */
+export async function probeOllama(opts: ProbeOllamaOptions): Promise<ProbeOllamaResult> {
+  const baseUrl = opts.baseUrl ?? process.env.OLLAMA_BASE_URL ?? DEFAULT_BASE_URL;
+  const model = opts.model ?? process.env.OLLAMA_VERIFY_MODEL ?? DEFAULT_MODEL;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), opts.timeoutMs);
+  try {
+    let res: Response;
+    try {
+      res = await opts.fetchImpl(`${baseUrl}/api/tags`, { method: "GET", signal: controller.signal });
+    } catch {
+      return controller.signal.aborted ? { ok: false, reason: "timeout" } : { ok: false, reason: "network_error" };
+    }
+    if (!res.ok) return { ok: false, reason: `http_error_${res.status}` };
+
+    let body: unknown;
+    try {
+      body = await res.json();
+    } catch {
+      return controller.signal.aborted ? { ok: false, reason: "timeout" } : { ok: false, reason: "invalid_response" };
+    }
+    const models = (body as { models?: unknown } | null)?.models;
+    if (!Array.isArray(models)) return { ok: false, reason: "invalid_response" };
+    // An untagged configured model resolves to `:latest` in Ollama; a tagged
+    // one must match exactly (`gpt-oss:20b` never matches `gpt-oss:120b`).
+    const wanted = model.includes(":") ? model : `${model}:latest`;
+    const present = models.some((m) => {
+      const name = (m as { name?: unknown } | null)?.name;
+      return name === model || name === wanted;
+    });
+    return present ? { ok: true } : { ok: false, reason: "model_not_pulled" };
+  } finally {
+    clearTimeout(timer);
+  }
+}

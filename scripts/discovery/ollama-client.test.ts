@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 
-import { callOllama } from "./ollama-client";
+import { callOllama, probeOllama } from "./ollama-client";
 
 function makeFetch(responseBody: unknown, status = 200) {
   return vi.fn<typeof fetch>(async () => {
@@ -334,5 +334,76 @@ describe("callOllama", () => {
         setTimeoutSpy.mockRestore();
       }
     });
+  });
+});
+
+describe("probeOllama", () => {
+  const tags = (names: string[]) => ({ models: names.map((name) => ({ name })) });
+
+  it("is healthy when /api/tags answers and lists the model", async () => {
+    const fetchImpl = makeFetch(tags(["other:1b", "gpt-oss:20b"]));
+    const result = await probeOllama({ baseUrl: "http://h:1", model: "gpt-oss:20b", timeoutMs: 5000, fetchImpl });
+    expect(result).toEqual({ ok: true });
+    expect(fetchImpl.mock.calls[0][0]).toBe("http://h:1/api/tags");
+  });
+
+  it("matches an untagged configured model against name:latest", async () => {
+    const fetchImpl = makeFetch(tags(["gpt-oss:latest"]));
+    const result = await probeOllama({ baseUrl: "http://h:1", model: "gpt-oss", timeoutMs: 5000, fetchImpl });
+    expect(result).toEqual({ ok: true });
+  });
+
+  it("does not match an untagged configured model against a different tag", async () => {
+    const fetchImpl = makeFetch(tags(["gpt-oss:20b"]));
+    const result = await probeOllama({ baseUrl: "http://h:1", model: "gpt-oss", timeoutMs: 5000, fetchImpl });
+    expect(result).toEqual({ ok: false, reason: "model_not_pulled" });
+  });
+
+  it("matches a tagged configured model exactly (20b does not match 120b or latest)", async () => {
+    const fetchImpl = makeFetch(tags(["gpt-oss:120b", "gpt-oss:latest"]));
+    const result = await probeOllama({ baseUrl: "http://h:1", model: "gpt-oss:20b", timeoutMs: 5000, fetchImpl });
+    expect(result).toEqual({ ok: false, reason: "model_not_pulled" });
+  });
+
+  it("is unhealthy when the model is not pulled", async () => {
+    const fetchImpl = makeFetch(tags(["other:1b"]));
+    const result = await probeOllama({ baseUrl: "http://h:1", model: "gpt-oss:20b", timeoutMs: 5000, fetchImpl });
+    expect(result).toEqual({ ok: false, reason: "model_not_pulled" });
+  });
+
+  it("is unhealthy on a non-2xx response", async () => {
+    const fetchImpl = makeFetch({}, 500);
+    const result = await probeOllama({ baseUrl: "http://h:1", model: "m", timeoutMs: 5000, fetchImpl });
+    expect(result).toEqual({ ok: false, reason: "http_error_500" });
+  });
+
+  it("is unhealthy when the connection is refused", async () => {
+    const fetchImpl = vi.fn<typeof fetch>(async () => {
+      throw new Error("ECONNREFUSED");
+    });
+    const result = await probeOllama({ baseUrl: "http://h:1", model: "m", timeoutMs: 5000, fetchImpl });
+    expect(result).toEqual({ ok: false, reason: "network_error" });
+  });
+
+  it("is unhealthy on a probe timeout", async () => {
+    vi.useFakeTimers();
+    try {
+      const fetchImpl = vi.fn<typeof fetch>((_i, init) => {
+        return new Promise<Response>((_res, reject) => {
+          (init as RequestInit).signal?.addEventListener("abort", () => reject(new Error("aborted")));
+        });
+      });
+      const p = probeOllama({ baseUrl: "http://h:1", model: "m", timeoutMs: 5000, fetchImpl });
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(await p).toEqual({ ok: false, reason: "timeout" });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("is unhealthy on an unparseable body", async () => {
+    const fetchImpl = makeFetch({ nope: true });
+    const result = await probeOllama({ baseUrl: "http://h:1", model: "m", timeoutMs: 5000, fetchImpl });
+    expect(result).toEqual({ ok: false, reason: "invalid_response" });
   });
 });

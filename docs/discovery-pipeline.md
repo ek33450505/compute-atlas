@@ -177,6 +177,20 @@ caught a dozen fabrications. A `http_error_404` reason is the likeliest
 real-world trigger — the model is not pulled (fresh machine, pruned model, or a
 typo in `OLLAMA_VERIFY_MODEL`).
 
+One exception: a single model call that hits the per-call timeout
+(`OLLAMA_TIMEOUT_MS`) is flagged `modelTimedOut` on its result. The submit gate
+then probes Ollama (`GET /api/tags` within 5 s, verify model present). If the
+probe is healthy, that source does not verify and the remaining sources are
+still checked: if another source verified the candidate stages normally; if
+another escalated it stages with an escalation note that also names the
+timed-out URL; if none did, the candidate is held for manual review (counted in
+`skippedUnverified`, logged as `skip unverified: <id> — verification call timed
+out while Ollama was healthy …`) and the run continues. If the probe fails, the
+run aborts as above (a probe that throws counts as failed). At most 3 such
+timeouts are tolerated per `runSubmit` invocation; the 4th aborts, because Ollama is then degraded. Any other
+`unavailable` cause (network error, non-2xx, malformed or empty content) aborts
+immediately with no probe.
+
 ### Performance
 
 Measured with `gpt-oss:20b` on Ollama 0.32.7, Apple Silicon:
@@ -280,8 +294,9 @@ request list, an RTO's generation queue) rather than the aggregator.
   and mechanically checked against the claim before staging (see the gate
   above). If the local Ollama model is unreachable or not pulled, the check
   returns `unavailable` and the run **aborts** — it never falls back to
-  submitting unverified candidates. `unavailable` means "we could not check",
-  not "the source is bad"; the two are deliberately kept distinct so an Ollama
+  submitting unverified candidates (a lone per-call timeout with a healthy Ollama
+  holds that one candidate instead; see "When Ollama is unreachable").
+  `unavailable` means "we could not check", not "the source is bad"; the two are deliberately kept distinct so an Ollama
   outage can't look like a run that caught fabrications. The only opt-out is an
   explicit `VERIFY_SOURCES_ENABLED=false`.
 - **No silent drops:** every skipped candidate (invalid schema, missing

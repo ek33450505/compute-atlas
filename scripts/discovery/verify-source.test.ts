@@ -807,6 +807,45 @@ describe("verifySource", () => {
       expect(callOllamaImpl).toHaveBeenCalledTimes(1);
     });
 
+    it("sets modelTimedOut on the normal path only when the model call reason is exactly 'timeout'", async () => {
+      const pageText = "Ridgeline Data Center is a facility with an undisclosed capacity.";
+      const run = (reason: string) =>
+        verifySource(
+          "https://example.com/page",
+          CLAIM,
+          makeDeps({
+            fetchPageTextImpl: vi.fn(async () => pageOk(pageText)),
+            callOllamaImpl: vi.fn(async () => modelUnavailable(reason)),
+          })
+        );
+
+      const timedOut = await run("timeout");
+      expect(timedOut.verdict).toBe("unavailable");
+      expect(timedOut.reason).toBe("model call failed: timeout");
+      expect(timedOut.modelTimedOut).toBe(true);
+
+      for (const reason of ["network_error", "http_error_404", "timeout_after_10000ms"]) {
+        expect((await run(reason)).modelTimedOut).toBeUndefined();
+      }
+    });
+
+    it("sets modelTimedOut on the Wayback path too", async () => {
+      const archivedText = "Ridgeline Data Center plans a total capacity of 1200 MW once complete.";
+      const snapshotUrl = "https://web.archive.org/web/20240101000000/https://example.com/page";
+      const deps = makeDeps({
+        fetchPageTextImpl: sequencedFetchPageText(pageFail("http_error", 403), pageOk(archivedText, snapshotUrl)),
+        callOllamaImpl: vi.fn(async () => modelUnavailable("timeout")),
+        fetchImpl: waybackAvailable(snapshotUrl),
+      });
+
+      const result = await verifySource("https://example.com/page", CLAIM, deps);
+
+      expect(result.verdict).toBe("unavailable");
+      expect(result.viaWayback).toBe(true);
+      expect(result.reason).toContain("Wayback snapshot check — model call failed: timeout");
+      expect(result.modelTimedOut).toBe(true);
+    });
+
     it("keeps 'unavailable' and 'rejected' distinguishable: a genuine not_mentioned verdict from a WORKING model call is still 'rejected'", async () => {
       const pageText = "Ridgeline Data Center is a facility with an undisclosed capacity.";
       const infraFailureDeps = makeDeps({
