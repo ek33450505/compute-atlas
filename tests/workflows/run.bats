@@ -970,8 +970,9 @@ assert_rejected() {
 	assert_one_line
 }
 
-# EXPECTED TO FAIL until the reviewed draft of nhd-backfill.yml is installed:
-# the committed workflow still carries the inline GNU-date / branch-name version.
+# Guards nhd-backfill.yml's defer step against regressing to the inline GNU-date /
+# bare-branch-name version: it must pipe the owner-namespaced pulls query into
+# scripts/classify-sync-prs.sh.
 @test "classify-sync-prs: nhd-backfill.yml's defer step pipes the owner-namespaced pulls query into the script" {
 	local code
 	# Comments and the step's error text also name the script and the old query, so
@@ -1120,4 +1121,133 @@ drift_prs() {
 		echo "drift-alert.yml still queries by bare branch name (gh pr list --head automated/neon-sync)"
 		return 1
 	fi
+}
+
+REBASE_STEP="Rebase generated changes onto live main"
+PR_USES_RE='^        uses: peter-evans/create-pull-request@'
+
+# Echoes the line numbers of every step named $REBASE_STEP in workflow $1.
+rebase_step_lines() {
+	awk -v step="      - name: $REBASE_STEP" '$0 == step { print NR }' "$WORKFLOWS_DIR/$1"
+}
+
+# Echoes the line numbers of the create-pull-request `uses:` lines in workflow $1.
+pr_uses_lines() {
+	awk -v re="$PR_USES_RE" '$0 ~ re { print NR }' "$WORKFLOWS_DIR/$1"
+}
+
+# Echoes the step-level `if:` line of the rebase step in workflow $1.
+rebase_step_if() {
+	awk -v step="      - name: $REBASE_STEP" '
+		$0 == step { s = 1; next }
+		s && /^      - name:/ { exit }
+		s && /^        if:/ { print; exit }
+	' "$WORKFLOWS_DIR/$1"
+}
+
+# Echoes the step-level `if:` line of the step holding the create-pull-request `uses:`.
+pr_step_if() {
+	awk -v re="$PR_USES_RE" '
+		/^      - name:/ { cur = "" }
+		/^        if:/ { cur = $0 }
+		$0 ~ re { print cur; exit }
+	' "$WORKFLOWS_DIR/$1"
+}
+
+# Echoes the non-comment lines of the rebase step's `run:` block in workflow $1.
+rebase_step_run() {
+	awk -v step="      - name: $REBASE_STEP" '
+		$0 == step { s = 1; next }
+		s && /^      - name:/ { exit }
+		s && /^        run: \|$/ { f = 1; next }
+		f && !/^[[:space:]]*#/ { print }
+	' "$WORKFLOWS_DIR/$1"
+}
+
+@test "rebase step: exists exactly once and sits before create-pull-request in neon-sync.yml and nhd-backfill.yml" {
+	local wf rebase pr
+	for wf in neon-sync.yml nhd-backfill.yml; do
+		rebase="$(rebase_step_lines "$wf")"
+		pr="$(pr_uses_lines "$wf")"
+		[[ "$rebase" =~ ^[0-9]+$ ]] || { echo "$wf: rebase step count/line not a single integer: '$rebase'"; return 1; }
+		[[ "$pr" =~ ^[0-9]+$ ]] || { echo "$wf: create-pull-request line not a single integer: '$pr'"; return 1; }
+		[ "$rebase" -lt "$pr" ] || { echo "$wf: rebase step ($rebase) is not before create-pull-request ($pr)"; return 1; }
+	done
+}
+
+@test "rebase step: its if: is byte-identical to the create-pull-request step's if:" {
+	local wf a b
+	for wf in neon-sync.yml nhd-backfill.yml; do
+		a="$(rebase_step_if "$wf")"
+		b="$(pr_step_if "$wf")"
+		[ -n "$a" ] || { echo "$wf: rebase step has no if:"; return 1; }
+		[ -n "$b" ] || { echo "$wf: create-pull-request step has no if:"; return 1; }
+		[ "$a" = "$b" ] || { echo "$wf: if: differs: '$a' vs '$b'"; return 1; }
+	done
+}
+
+@test "rebase step: run block is fail-closed and fetches, rebases onto and re-applies against live main" {
+	local wf run
+	for wf in neon-sync.yml nhd-backfill.yml; do
+		run="$(rebase_step_run "$wf")"
+		[ -n "$run" ] || { echo "$wf: rebase step has no run block"; return 1; }
+		grep -qE '^[[:space:]]*set -euo pipefail$' <<<"$run" || { echo "$wf: missing set -euo pipefail"; return 1; }
+		grep -qE 'git fetch .*\+refs/heads/main:refs/remotes/origin/main' <<<"$run" || { echo "$wf: missing git fetch of main"; return 1; }
+		grep -qE 'git apply' <<<"$run" || { echo "$wf: missing git apply"; return 1; }
+		grep -qE 'git checkout -B main refs/remotes/origin/main' <<<"$run" || { echo "$wf: missing git checkout -B main"; return 1; }
+		if grep -qF '|| true' <<<"$run"; then
+			echo "$wf: rebase step swallows a failure with '|| true'"
+			return 1
+		fi
+	done
+}
+
+@test "rebase step: no add-paths entry starts with .github/ (workflow files never enter the PR commit)" {
+	local wf paths
+	for wf in neon-sync.yml nhd-backfill.yml; do
+		paths="$(addpaths_list "$wf")"
+		[ -n "$paths" ] || { echo "$wf: add-paths list is empty"; return 1; }
+		if grep -qE '^\.github/' <<<"$paths"; then
+			echo "$wf: add-paths includes a .github/ path"
+			return 1
+		fi
+	done
+}
+
+# Echoes the line number (in workflow $1) of the first non-comment line inside the
+# rebase step that contains the fixed string $2.
+rebase_step_lineno() {
+	awk -v step="      - name: $REBASE_STEP" -v pat="$2" '
+		$0 == step { s = 1; next }
+		s && /^      - name:/ { exit }
+		s && !/^[[:space:]]*#/ && index($0, pat) { print NR; exit }
+	' "$WORKFLOWS_DIR/$1"
+}
+
+# Echoes "exit 1" if, in the rebase step, the `"$rc" -eq 1` branch runs `exit 1`
+# before the next elif/else/fi; echoes nothing otherwise.
+rebase_rc1_exits_1() {
+	awk -v step="      - name: $REBASE_STEP" '
+		$0 == step { s = 1; next }
+		s && /^      - name:/ { exit }
+		s && /^[[:space:]]*#/ { next }
+		s && /"\$rc" -eq 1/ { b = 1; next }
+		b && /^[[:space:]]*(elif|else|fi)/ { exit }
+		b && /^[[:space:]]*exit 1$/ { print "exit 1"; exit }
+	' "$WORKFLOWS_DIR/$1"
+}
+
+@test "rebase step: the changed-file guard is present, fails closed, and runs before the worktree restore" {
+	local wf guard restore z
+	for wf in neon-sync.yml nhd-backfill.yml; do
+		guard="$(rebase_step_lineno "$wf" 'git --literal-pathspecs diff --quiet "$base" refs/remotes/origin/main')"
+		restore="$(rebase_step_lineno "$wf" 'git restore --worktree')"
+		z="$(rebase_step_lineno "$wf" 'git diff -z --no-renames --name-only HEAD')"
+		[[ "$guard" =~ ^[0-9]+$ ]] || { echo "$wf: literal-pathspecs guard line not found: '$guard'"; return 1; }
+		[[ "$restore" =~ ^[0-9]+$ ]] || { echo "$wf: worktree restore line not found: '$restore'"; return 1; }
+		[[ "$z" =~ ^[0-9]+$ ]] || { echo "$wf: git diff -z --no-renames --name-only HEAD not found: '$z'"; return 1; }
+		[ "$z" -lt "$guard" ] || { echo "$wf: file list ($z) is not before guard ($guard)"; return 1; }
+		[ "$guard" -lt "$restore" ] || { echo "$wf: guard ($guard) is not before the restore ($restore)"; return 1; }
+		[ "$(rebase_rc1_exits_1 "$wf")" = "exit 1" ] || { echo "$wf: rc -eq 1 branch does not exit 1"; return 1; }
+	done
 }

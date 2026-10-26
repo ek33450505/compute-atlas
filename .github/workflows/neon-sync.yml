@@ -47,9 +47,12 @@
 # Requires: DATABASE_URL as a repo secret (Settings → Secrets and variables → Actions).
 # If it is missing, the credential guard fails the run (closed) rather than skipping.
 #
-# NEON_SYNC_PAT (REQUIRED, added 2026-09-03): a fine-grained PAT scoped to this
-# repo only, owned by the maintainer, with THREE permissions — Contents,
-# Pull requests, AND Workflows, all read/write. It is used as the PR-creation
+# NEON_SYNC_PAT (REQUIRED; used since 2026-09-03): a fine-grained PAT scoped to
+# ek33450505/compute-atlas only, owned by the maintainer. The current token,
+# "Compute-atlas-neon-sync", was created 2026-09-04. Repository permissions:
+# Contents read/write, Pull requests read/write, Metadata read. It has NO Workflows
+# permission (checked 2026-10-26). It expires 2026-12-04; regenerate it with the
+# same permissions. It is used as the PR-creation
 # token instead of the default GITHUB_TOKEN, which changes real behavior:
 # GitHub does not trigger `pull_request`-scoped workflows (ci.yml) off a
 # GITHUB_TOKEN-authored PR (loop-prevention), but WILL trigger them off a
@@ -57,20 +60,24 @@
 # `gh pr merge --auto` waits for those checks to pass before merging — it does
 # not bypass branch protection, it satisfies it normally.
 #
-# ⛔ Workflows:read/write is NOT optional — this was mis-stated until 2026-09-05.
-# Because `delete-branch: true` recreates `automated/neon-sync` from scratch on
-# every run, each push creates a BRAND-NEW ref, and GitHub re-evaluates every
-# commit reachable from a new ref as new to it. Any commit under .github/workflows/
-# in main's history therefore trips the workflow-scope check on every single run.
-# Observed 2026-09-04 01:39, on the ordinary path, ten hours after drift-alert.yml
-# had already merged to main:
-#     ! [remote rejected] automated/neon-sync -> automated/neon-sync (refusing
-#       to allow a GitHub App to create or update workflow
-#       `.github/workflows/drift-alert.yml` without `workflows` permission)
-# So without a PAT carrying Workflows, the push is rejected and NO PR OPENS AT
-# ALL — the sync silently stops publishing rather than degrading to manual merge.
-# The credential guard below fails the run closed when the PAT is missing, so no
-# fallback is needed; all three permissions are required on the PAT.
+# WORKFLOW FILES AND THIS PAT (2026-10-26; the PAT is deliberately NOT granted
+# Workflows).
+#   - Run 133 (dispatched 19:39Z) checked out main at 7407ed8. Dependabot PR #479
+#     (f2617d0) changed .github/workflows/codeql.yml on main at 19:40:01Z. The
+#     run's PR commit was parented on 7407ed8 and changed only data files, so it
+#     carried 7407ed8's codeql.yml, and the push was refused: "refusing to allow a
+#     Personal Access Token to create or update workflow
+#     `.github/workflows/codeql.yml` without `workflow` scope".
+#   - Run 134 (19:50Z, same PAT, on f2617d0) pushed a new automated/neon-sync ref
+#     whose history contains workflow commits, and succeeded, as had the daily runs
+#     before it. Observed: workflow commits in main's history do not trip the
+#     check; one pushed commit whose workflow file differed from main's did.
+#   - The 2026-09-04 refusal formerly quoted here named a GitHub App token
+#     (GITHUB_TOKEN), not this PAT.
+# The step "Rebase generated changes onto live main" builds the PR commit on the
+# freshest main it can fetch. Workflows stays ungranted on purpose: a token that
+# can write workflow files could rewrite CI to exfiltrate the secrets this job
+# holds. The credential guard below fails the run closed when the PAT is missing.
 
 name: Neon→JSON Sync
 
@@ -136,9 +143,8 @@ jobs:
       # `workflow_dispatch` only — there is no `pull_request` trigger, so no
       # fork-PR case where secrets are legitimately unavailable. Re-check that
       # before adding a trigger. NEON_SYNC_PAT is treated as equally fatal: Create PR
-      # uses it with no github.token fallback (github.token could not push this branch
-      # anyway — it lacks Workflows permission — and this job's GITHUB_TOKEN is now
-      # read-only).
+      # uses it with no github.token fallback (a GITHUB_TOKEN-authored PR would not
+      # trigger CI, see the header, and this job's GITHUB_TOKEN is now read-only).
       #
       # All four paths exercised under `bash -e` before merge: both-true exits 0,
       # each 'false' and an unrenderable value each exit 1 naming the cause.
@@ -188,11 +194,10 @@ jobs:
       # operation that failed, not a proxy for one. `--dry-run` stops before
       # sending any objects, so the scratch ref is never actually created.
       #
-      # HONEST LIMIT: this proves Contents:write only. It canNOT prove the
-      # Workflows permission — see the `workflows` note in the header. A
-      # preflight that pushes an already-present commit cannot reproduce that
-      # rejection, so a token missing Workflows still passes this step and
-      # still fails the real push.
+      # HONEST LIMIT: this proves Contents:write only. A preflight that pushes an
+      # already-present commit cannot reproduce run 133's refusal (a pushed commit
+      # whose workflow file differed from main's; see the header), so it passes and
+      # the real push can still fail.
       #
       # NEON_SYNC_PAT is a registered Actions secret, so its value is masked in
       # any git error line that echoes the remote URL back into the log.
@@ -207,7 +212,7 @@ jobs:
             "HEAD:refs/heads/neon-sync-write-preflight"; then
             echo "NEON_SYNC_PAT can write to ${GITHUB_REPOSITORY}."
           else
-            echo "::error::NEON_SYNC_PAT cannot push to ${GITHUB_REPOSITORY}, so this sync cannot open its PR. Regenerate the fine-grained PAT scoped to this repo with Contents: read and write, Pull requests: read and write, and Workflows: read and write, then update the NEON_SYNC_PAT secret. Until it is fixed, prod approvals stay unpublished in data/facilities.json and every newly approved facility renders with no Siting context panel."
+            echo "::error::NEON_SYNC_PAT cannot push to ${GITHUB_REPOSITORY}, so this sync cannot open its PR. Regenerate the fine-grained PAT scoped to this repo with Contents: read and write and Pull requests: read and write (no Workflows permission; the PAT expires 2026-12-04), then update the NEON_SYNC_PAT secret. Until it is fixed, prod approvals stay unpublished in data/facilities.json and every newly approved facility renders with no Siting context panel."
             exit 1
           fi
 
@@ -453,6 +458,52 @@ jobs:
             fi
             echo "MAPNOTE_EOF"
           } >> "$GITHUB_OUTPUT"
+
+      # REBASE ONTO LIVE MAIN before the PR is built (added 2026-10-26, run 133).
+      # create-pull-request commits on this checkout's HEAD, then resets its working
+      # base to the LOCAL origin/main. The checkout is pinned to the commit the job
+      # started on (fetch-depth defaults to 1), so a merge that lands during the
+      # rebuild leaves the PR commit parented on a stale main, carrying the pre-merge
+      # copies of that merge's files; when those include .github/workflows/ the push
+      # is refused (run 133). Here the generated changes are saved as a patch, HEAD
+      # moves to fresh main, and the patch is re-applied. That narrows the window to
+      # the seconds between this fetch and the push; it does not close it.
+      # If main changed any file the patch touches, the job fails closed rather than
+      # merging the two: the additive and debt guards above only saw the pre-rebase
+      # files. The generated changes are discarded and the next run regenerates them.
+      - name: Rebase generated changes onto live main
+        if: steps.check-drift.outputs.drift == 'true'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+          base="$(git rev-parse HEAD)"
+          if [ "$base" = "$(git rev-parse refs/remotes/origin/main)" ]; then
+            echo "HEAD is already origin/main; nothing to rebase."
+            exit 0
+          fi
+          # -z lists paths verbatim (no quoting) and --literal-pathspecs stops glob
+          # characters in a name from matching other paths; either slip would make
+          # the comparison below read "unchanged". Untracked outputs are not listed:
+          # they stay in place, and if main now tracks one, `checkout -B` refuses.
+          git diff -z --no-renames --name-only HEAD > "$RUNNER_TEMP/changed.z"
+          mapfile -d '' -t files < "$RUNNER_TEMP/changed.z"
+          if [ "${#files[@]}" -gt 0 ]; then
+            rc=0
+            git --literal-pathspecs diff --quiet "$base" refs/remotes/origin/main -- "${files[@]}" || rc=$?
+            if [ "$rc" -eq 1 ]; then
+              echo "::error::main changed a generated file since this job checked out $base. Failing closed rather than merging; the next run regenerates the files."
+              exit 1
+            elif [ "$rc" -ne 0 ]; then
+              echo "::error::git diff failed (exit $rc) comparing $base to main."
+              exit 1
+            fi
+          fi
+          git diff --binary HEAD > "$RUNNER_TEMP/generated.patch"
+          git restore --worktree -- .
+          git checkout -B main refs/remotes/origin/main
+          if [ -s "$RUNNER_TEMP/generated.patch" ]; then
+            git apply "$RUNNER_TEMP/generated.patch"
+          fi
 
       - name: Create PR if drift detected
         if: steps.check-drift.outputs.drift == 'true'
