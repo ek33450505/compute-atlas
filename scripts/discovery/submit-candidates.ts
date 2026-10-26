@@ -40,7 +40,7 @@ import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../..
 import { isRestrictedSourceUrl } from "../../lib/restricted-sources";
 import { verifySource, type VerifyClaim, type VerificationResult } from "./verify-source";
 import { fetchPageText } from "./fetch-page-text";
-import { callOllama } from "./ollama-client";
+import { callOllama, probeOllama, type ProbeOllamaResult } from "./ollama-client";
 import { loadFacilities } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
 
@@ -173,6 +173,18 @@ export interface RunSubmitDeps {
    * mutate what it is given.
    */
   onSummaryInit?: (summary: RunSubmitSummary) => void;
+  /**
+   * Ollama health probe, consulted ONLY after a source's verification call hit
+   * its per-call timeout (`VerificationResult.modelTimedOut`). Healthy (answers
+   * quickly, verify model present) means one slow page: that candidate is held
+   * for manual review and the run continues. Unhealthy aborts as before. When
+   * absent, a timeout aborts exactly like any other "unavailable". Like
+   * `verifyImpl`, `main()` builds the real one lazily (`buildRealProbe()`).
+   */
+  probeOllama?: () => Promise<ProbeOllamaResult>;
+  /** Max healthy-probe timeouts tolerated per `runSubmit` call; the next one
+   * aborts. Default `DEFAULT_TIMEOUT_BUDGET` (3). */
+  timeoutBudget?: number;
 }
 
 export interface RunSubmitSummary {
@@ -367,6 +379,18 @@ export class VerificationGateUnavailableError extends Error {
   }
 }
 
+/** Healthy-probe timeouts tolerated per `runSubmit` call (see `verifyCandidateSources`). */
+const DEFAULT_TIMEOUT_BUDGET = 3;
+
+/** Probe timeout, ms: a healthy Ollama answers `/api/tags` in milliseconds. */
+const PROBE_TIMEOUT_MS = 5_000;
+
+/** Per-`runSubmit` state for the timeout rule, shared across all candidates. */
+interface TimeoutGuard {
+  probe?: () => Promise<ProbeOllamaResult>;
+  remaining: number;
+}
+
 /**
  * One-line summary of why a single source's verification was not "verified",
  * for the "skip unverified" log line and `rejectionDetail`. Distinguishes a
@@ -396,6 +420,17 @@ function describeRejectedSource(result: VerificationResult): string {
  *   immediately, stopping BEFORE checking the candidate's remaining sources —
  *   if the model is unreachable for one URL it is unreachable for all of
  *   them, so there is nothing to gain by continuing to ask.
+ *   ONE exception: an `"unavailable"` flagged `modelTimedOut` (a single model
+ *   call hit its per-call timeout) first consults `guard.probe`. If Ollama
+ *   answers and the verify model is present, that source simply does not
+ *   verify (the remaining sources are still checked). Outcome: if another
+ *   source verified, the candidate stages normally; if none verified but
+ *   another escalated, it stages with an `escalationNote` that also names the
+ *   timed-out URL(s); if none verified and none escalated, it is held with a
+ *   `rejectionDetail` saying the call timed out while Ollama was healthy. An
+ *   unhealthy or throwing probe, no probe, or an exhausted `guard.remaining`
+ *   budget (a degraded Ollama) throws as above.
+ *   A non-timeout "unavailable" never reaches the probe.
  * - >=1 `"verified"` source -> survives, no escalation note.
  * - 0 `"verified"` but >=1 `"escalate"` -> survives, with an escalation note
  *   summarizing the escalated URL(s)/reason(s) for the human reviewer (an
@@ -415,13 +450,40 @@ function describeRejectedSource(result: VerificationResult): string {
 async function verifyCandidateSources(
   sources: string[],
   claim: VerifyClaim,
-  verifyImpl: (url: string, claim: VerifyClaim) => Promise<VerificationResult>
+  verifyImpl: (url: string, claim: VerifyClaim) => Promise<VerificationResult>,
+  guard: TimeoutGuard
 ): Promise<{ survives: boolean; escalationNote?: string; rejectionDetail?: string }> {
   const results: VerificationResult[] = [];
+  const timedOutUrls: string[] = [];
   for (const url of sources) {
     const result = await verifyImpl(url, claim);
     if (result.verdict === "unavailable") {
-      throw new VerificationGateUnavailableError(url, result.reason);
+      if (!result.modelTimedOut || !guard.probe) {
+        throw new VerificationGateUnavailableError(url, result.reason);
+      }
+      let probe: ProbeOllamaResult;
+      try {
+        probe = await guard.probe();
+      } catch (err) {
+        // A probe that throws proves nothing about health: treat as unhealthy.
+        probe = { ok: false, reason: `probe threw: ${err instanceof Error ? err.message : String(err)}` };
+      }
+      if (!probe.ok) {
+        throw new VerificationGateUnavailableError(
+          url,
+          `${result.reason}; health probe also failed (${probe.reason})`
+        );
+      }
+      if (guard.remaining <= 0) {
+        throw new VerificationGateUnavailableError(
+          url,
+          `${result.reason}; the per-run timeout budget is exhausted (Ollama answers its health probe but ` +
+            `model calls keep timing out, so it is degraded)`
+        );
+      }
+      guard.remaining--;
+      timedOutUrls.push(url);
+      continue;
     }
     results.push(result);
   }
@@ -432,20 +494,32 @@ async function verifyCandidateSources(
 
   const escalated = results.filter((r) => r.verdict === "escalate");
   if (escalated.length > 0) {
+    const timeoutNote =
+      timedOutUrls.length > 0
+        ? `; verification timed out while Ollama was healthy for: ${timedOutUrls.join(", ")}`
+        : "";
     return {
       survives: true,
       escalationNote: `Escalated for human review — source(s) could not be mechanically verified: ${escalated
         .map((r) => `${r.sourceUrl} (${r.reason})`)
-        .join("; ")}`,
+        .join("; ")}${timeoutNote}`,
     };
   }
 
+  const timeoutDetail =
+    timedOutUrls.length > 0
+      ? `verification call timed out while Ollama was healthy, so held for manual review: ${timedOutUrls.join(", ")}`
+      : undefined;
+  const rejectedDetail = results.map(describeRejectedSource).join("; ");
   return {
     survives: false,
-    rejectionDetail:
-      results.length === 0
+    rejectionDetail: timeoutDetail
+      ? rejectedDetail
+        ? `${timeoutDetail}; ${rejectedDetail}`
+        : timeoutDetail
+      : results.length === 0
         ? "no sources were cited, so there was nothing to verify"
-        : results.map(describeRejectedSource).join("; "),
+        : rejectedDetail,
   };
 }
 
@@ -709,6 +783,11 @@ export async function runSubmit(
   // the run got if it aborts (see `RunSubmitDeps.onSummaryInit`).
   deps.onSummaryInit?.(summary);
 
+  const timeoutGuard: TimeoutGuard = {
+    probe: deps.probeOllama,
+    remaining: deps.timeoutBudget ?? DEFAULT_TIMEOUT_BUDGET,
+  };
+
   if (!opts.dryRun && !deps.verifyImpl) {
     console.warn(
       "WARN: source verification gate is not wired (deps.verifyImpl is absent) — candidates will be " +
@@ -771,7 +850,8 @@ export async function runSubmit(
         const gate = await verifyCandidateSources(
           candidate.provenance.sources ?? [],
           { entityName },
-          deps.verifyImpl
+          deps.verifyImpl,
+          timeoutGuard
         );
         if (!gate.survives) {
           console.log(`skip unverified: ${targetFacilityId} — ${gate.rejectionDetail}`);
@@ -912,7 +992,8 @@ export async function runSubmit(
         const gate = await verifyCandidateSources(
           candidate.provenance.sources ?? [],
           { entityName },
-          deps.verifyImpl
+          deps.verifyImpl,
+          timeoutGuard
         );
         if (!gate.survives) {
           console.log(`skip unverified: ${targetFacilityId} — ${gate.rejectionDetail}`);
@@ -1021,7 +1102,7 @@ export async function runSubmit(
 
     let escalationNote: string | undefined;
     if (!opts.dryRun && deps.verifyImpl) {
-      const gate = await verifyCandidateSources(sources, { entityName: doc.name }, deps.verifyImpl);
+      const gate = await verifyCandidateSources(sources, { entityName: doc.name }, deps.verifyImpl, timeoutGuard);
       if (!gate.survives) {
         console.log(`skip unverified: ${doc.id} — ${gate.rejectionDetail}`);
         summary.skippedUnverified++;
@@ -1305,6 +1386,12 @@ function buildRealVerifyImpl(): (url: string, claim: VerifyClaim) => Promise<Ver
     });
 }
 
+/** Real health probe for `RunSubmitDeps.probeOllama`. Built only from `main()`,
+ * like `buildRealVerifyImpl()`, so importing this module opens no sockets. */
+function buildRealProbe(): () => Promise<ProbeOllamaResult> {
+  return () => probeOllama({ timeoutMs: PROBE_TIMEOUT_MS, fetchImpl: fetch });
+}
+
 /**
  * The process exit code for a completed run: nonzero iff work was LOST.
  *
@@ -1443,7 +1530,7 @@ export async function main(): Promise<void> {
       state: args.state,
       discoveredAt: new Date().toISOString(),
     },
-    { fetchImpl: fetch, existingFacilities, verifyImpl }
+    { fetchImpl: fetch, existingFacilities, verifyImpl, probeOllama: verifyImpl ? buildRealProbe() : undefined }
   );
 
   // Print the summary FIRST, then exit on it: the JSON is the diagnosis, and it

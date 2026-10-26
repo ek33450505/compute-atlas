@@ -467,6 +467,166 @@ describe("runSubmit — verification gate (facility seam)", () => {
   });
 });
 
+describe("runSubmit — verification gate: per-call model timeout", () => {
+  const SLOW_URL = "https://example.com/slow";
+
+  function timeoutImpl() {
+    return makeVerifyImpl((url) =>
+      url === SLOW_URL
+        ? { verdict: "unavailable", reason: "model call failed: timeout", modelTimedOut: true }
+        : { verdict: "verified" }
+    );
+  }
+
+  function slowThenGood() {
+    return [
+      { facility: makeCandidate({ id: "slow-1" }), provenance: { sources: [SLOW_URL] } },
+      { facility: makeCandidate({ id: "good-2" }), provenance: { sources: ["https://example.com/good"] } },
+    ];
+  }
+
+  it("skips a timed-out candidate when the probe is healthy, and still stages the next one", async () => {
+    const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+    const probeOllama = vi.fn(async () => ({ ok: true as const }));
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    const summary = await runSubmit(slowThenGood(), baseOpts(), {
+      fetchImpl,
+      existingFacilities: [],
+      verifyImpl: timeoutImpl(),
+      probeOllama,
+    });
+
+    const lines = logSpy.mock.calls.map((c) => String(c[0]));
+    logSpy.mockRestore();
+    expect(probeOllama).toHaveBeenCalledTimes(1);
+    expect(summary.skippedUnverified).toBe(1);
+    expect(summary.submittedIds).toEqual(["good-2"]);
+    const skipLine = lines.find((l) => l.startsWith("skip unverified: slow-1"));
+    expect(skipLine).toMatch(/timed out while Ollama was healthy/);
+    expect(skipLine).toContain(SLOW_URL);
+  });
+
+  it("throws VerificationGateUnavailableError when the probe is unhealthy, processing no later candidate", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const verifyImpl = timeoutImpl();
+    const probeOllama = vi.fn(async () => ({ ok: false as const, reason: "network_error" }));
+
+    await expect(
+      runSubmit(slowThenGood(), baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl, probeOllama })
+    ).rejects.toThrow(VerificationGateUnavailableError);
+
+    expect(verifyImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("throws when a timeout is flagged but no probe is wired (never skips without a health check)", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    await expect(
+      runSubmit(slowThenGood(), baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl: timeoutImpl() })
+    ).rejects.toThrow(VerificationGateUnavailableError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("throws immediately for a non-timeout unavailable verdict, without calling the probe", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const probeOllama = vi.fn(async () => ({ ok: true as const }));
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "unavailable", reason: "model call failed: network_error" }));
+
+    await expect(
+      runSubmit(slowThenGood(), baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl, probeOllama })
+    ).rejects.toThrow(/network_error/);
+
+    expect(probeOllama).not.toHaveBeenCalled();
+    expect(verifyImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws on the 4th healthy-probe timeout (default budget 3)", async () => {
+    const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+    const probeOllama = vi.fn(async () => ({ ok: true as const }));
+    const verifyImpl = makeVerifyImpl(() => ({
+      verdict: "unavailable",
+      reason: "model call failed: timeout",
+      modelTimedOut: true,
+    }));
+    const four = [1, 2, 3, 4].map((n) => ({
+      facility: makeCandidate({ id: `slow-${n}` }),
+      provenance: { sources: [`https://example.com/slow-${n}`] },
+    }));
+    const partial: RunSubmitSummary[] = [];
+
+    await expect(
+      runSubmit(four, baseOpts(), {
+        fetchImpl,
+        existingFacilities: [],
+        verifyImpl,
+        probeOllama,
+        onSummaryInit: (s) => partial.push(s),
+      })
+    ).rejects.toThrow(/timeout budget/);
+
+    expect(verifyImpl).toHaveBeenCalledTimes(4);
+    expect(partial[0].skippedUnverified).toBe(3);
+  });
+
+  it("honours an explicit timeoutBudget", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const probeOllama = vi.fn(async () => ({ ok: true as const }));
+    await expect(
+      runSubmit(slowThenGood(), baseOpts(), {
+        fetchImpl,
+        existingFacilities: [],
+        verifyImpl: timeoutImpl(),
+        probeOllama,
+        timeoutBudget: 0,
+      })
+    ).rejects.toThrow(/timeout budget/);
+  });
+
+  it("stages with a note naming the timed-out URL when a sibling source escalates", async () => {
+    const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+    const probeOllama = vi.fn(async () => ({ ok: true as const }));
+    const verifyImpl = makeVerifyImpl((url) =>
+      url === SLOW_URL
+        ? { verdict: "unavailable", reason: "model call failed: timeout", modelTimedOut: true }
+        : { verdict: "escalate", reason: "page too large" }
+    );
+    const summary = await runSubmit(
+      [{ facility: makeCandidate({ id: "esc-1" }), provenance: { sources: [SLOW_URL, "https://example.com/big"] } }],
+      baseOpts(),
+      { fetchImpl, existingFacilities: [], verifyImpl, probeOllama }
+    );
+    expect(summary.submittedIds).toEqual(["esc-1"]);
+    const body = JSON.parse(String((fetchImpl.mock.calls[0][1] as RequestInit).body));
+    const text = JSON.stringify(body);
+    expect(text).toContain("https://example.com/big");
+    expect(text).toMatch(/timed out while Ollama was healthy for: https:\/\/example\.com\/slow/);
+  });
+
+  it("treats a probe that throws as unhealthy and aborts", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const probeOllama = vi.fn(async () => {
+      throw new Error("boom");
+    });
+    await expect(
+      runSubmit(slowThenGood(), baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl: timeoutImpl(), probeOllama })
+    ).rejects.toThrow(VerificationGateUnavailableError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("still verifies via another source when one source of the same candidate timed out", async () => {
+    const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
+    const probeOllama = vi.fn(async () => ({ ok: true as const }));
+    const summary = await runSubmit(
+      [{ facility: makeCandidate({ id: "mixed-1" }), provenance: { sources: [SLOW_URL, "https://example.com/good"] } }],
+      baseOpts(),
+      { fetchImpl, existingFacilities: [], verifyImpl: timeoutImpl(), probeOllama }
+    );
+    expect(summary.submittedIds).toEqual(["mixed-1"]);
+    expect(summary.skippedUnverified).toBe(0);
+  });
+});
+
 describe("runSubmit — status_update intents", () => {
   function makeStatusUpdate(overrides: Record<string, unknown> = {}) {
     return {

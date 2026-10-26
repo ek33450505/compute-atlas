@@ -120,6 +120,18 @@ export interface VerificationResult {
    * callers that switch on `verdict` are unaffected.
    */
   transportFailure?: { reason: Extract<FetchPageTextResult, { ok: false }>["reason"]; httpStatus?: number };
+  /**
+   * Set (to `true`) only on an `"unavailable"` verdict whose underlying
+   * `callOllama` failure reason was exactly `"timeout"` — one model call hit
+   * its per-call abort timer (`OLLAMA_TIMEOUT_MS`), on the direct path or the
+   * Wayback path. It is a structural flag, never derived by matching `reason`
+   * text. It does not change the verdict: a timeout is still "we could not
+   * check". It lets the submit gate ask "is Ollama otherwise healthy?" before
+   * deciding between holding that one candidate for manual review and
+   * aborting the batch (see `verifyCandidateSources`). Absent for every other
+   * unavailable cause (network_error, http_error_*, malformed/empty content).
+   */
+  modelTimedOut?: true;
 }
 
 /** The model's own output shape — deliberately narrow (never the
@@ -515,6 +527,8 @@ function unrecoverableVerdict(reason: Extract<FetchPageTextResult, { ok: false }
 interface CheckOutcome {
   outcome: "verified" | "rejected" | "unavailable" | "escalate";
   reasonDetail: string;
+  /** Mirrors `VerificationResult.modelTimedOut`. */
+  modelTimedOut?: true;
 }
 
 /**
@@ -558,7 +572,11 @@ async function checkPageAgainstClaim(pageText: string, claim: VerifyClaim, deps:
     // all. This is "we could not check," not "we checked and it did not
     // hold up" — see design rule 6 and the `VerificationResult` doc-comment.
     // Reported as "unavailable", NEVER downgraded to "rejected".
-    return { outcome: "unavailable", reasonDetail: `model call failed: ${modelResult.reason}` };
+    return {
+      outcome: "unavailable",
+      reasonDetail: `model call failed: ${modelResult.reason}`,
+      ...(modelResult.reason === "timeout" ? { modelTimedOut: true as const } : {}),
+    };
   }
 
   if (!isModelVerdict(modelResult.data)) {
@@ -624,7 +642,12 @@ export async function verifySource(url: string, claim: VerifyClaim, deps: Verify
 
   if (fetchResult.ok) {
     const outcome = await checkPageAgainstClaim(fetchResult.text, claim, deps);
-    return { verdict: outcome.outcome, reason: outcome.reasonDetail, sourceUrl: url };
+    return {
+      verdict: outcome.outcome,
+      reason: outcome.reasonDetail,
+      sourceUrl: url,
+      ...(outcome.modelTimedOut ? { modelTimedOut: true as const } : {}),
+    };
   }
 
   // Direct fetch failed. This is what separates a bot-walled real source
@@ -695,5 +718,6 @@ export async function verifySource(url: string, claim: VerifyClaim, deps: Verify
     reason: `original fetch failed (${originalFailure}); Wayback snapshot check — ${outcome.reasonDetail}`,
     viaWayback: true,
     sourceUrl: url,
+    ...(outcome.modelTimedOut ? { modelTimedOut: true as const } : {}),
   };
 }
