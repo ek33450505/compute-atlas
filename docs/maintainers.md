@@ -241,16 +241,21 @@ is done, `submit-candidates.ts` no longer reads `API_ADMIN_TOKEN` and the pipeli
 not part of this rotation — rotate `API_INTAKE_TOKEN` there instead, and the in-flight-run caveat
 moves with it.
 
-**3. `NEON_SYNC_PAT`.** Needs `Workflows: RW`. Two workflows use it and both run
-`gh pr merge --squash --auto`: `neon-sync.yml` (on dispatch) and `nhd-backfill.yml` (every night at
-04:23 UTC, unattended: credential guard, write preflight, Create PR, auto-merge). A leaked value can
-rewrite CI *and* auto-merge to `main` → production. Mint a new **fine-grained**
-PAT (this repo only, Contents/PRs/Workflows RW, with an expiry) → update the secret →
+**3. `NEON_SYNC_PAT`.** Contents and Pull requests RW only. Do **not** grant `Workflows` (decided
+2026-10-26). The current token, "Compute-atlas-neon-sync", **expires 2026-12-04**. Two workflows use
+it and both run `gh pr merge --squash --auto`: `neon-sync.yml` (daily and on dispatch) and
+`nhd-backfill.yml` (every night at 04:23 UTC, unattended: credential guard, write preflight, Create
+PR, auto-merge). A leaked value can push a branch and auto-merge it to `main` → production; without
+`Workflows`, GitHub refuses its pushes that change `.github/workflows/`. Mint a new **fine-grained**
+PAT (this repo only, Contents RW + Pull requests RW, with an expiry) → update the secret →
 `gh workflow run neon-sync.yml` **and** `gh workflow run nhd-backfill.yml` → watch the "Preflight —
 verify the PR token can still write" step in each. (At NHD debt 0 the backfill is a no-op, but it
 still runs the credential guard and that preflight, so a dispatch is enough to exercise the new token.)
-⚠️ That preflight proves `Contents: write` only and **cannot** prove `Workflows` — a token missing that
-scope passes preflight and fails at the real push. Revoke the old PAT after one green run of each.
+⚠️ That preflight proves `Contents: write` only. A push whose `.github/workflows/` differs from
+`main`'s is refused for this token (neon-sync run 133, 2026-10-26: a Dependabot workflow bump merged
+mid-run); the "Rebase generated changes onto live main" step now prevents that. If a run fails with
+"refusing to allow a Personal Access Token to create or update workflow", re-dispatch it on current
+`main`; do not grant `Workflows`. Revoke the old PAT after one green run of each.
 
 **4. `RESEND_API_KEY`.** Can send as `alerts@compute-atlas.com` (reputational, not data — the key is
 verified send-only: Resend answers `401 restricted_api_key` to key/domain/email reads). New
