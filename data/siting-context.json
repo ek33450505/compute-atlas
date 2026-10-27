@@ -646,6 +646,12 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "acciona-tatanka-wind-mcpherson-county-sd": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "acd-net-metroix-lansing-mi": {
     "nearestWater": {
       "name": "Grand River",
@@ -4088,6 +4094,18 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "avangrid-buffalo-ridge-i-wind-brookings-county-sd": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
+  "avangrid-minndakota-wind-brookings-county-sd": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "aventus-715-marshfield-wi": {
@@ -10031,6 +10049,20 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "cogent-fairfax-allendale-county-sc": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "cogent-hollywood-pembroke-park-fl": {
@@ -19339,6 +19371,16 @@
       "label": "Low (<10%)"
     }
   },
+  "elora-solar-lincoln-county-tn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "elysian-partners-fairview-crossroads-fairview-township-york-pa": {
     "nearestWater": {
       "name": "Fishing Creek",
@@ -19718,6 +19760,12 @@
     "aquifer": {
       "name": "Southeastern Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "engie-dakota-range-iii-wind-grant-county-sd": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
     }
   },
   "engie-north-bend-wind-hyde-county-sd": {
@@ -23660,6 +23708,12 @@
     "aquifer": {
       "name": "Snake River Plain Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "geronimo-crocker-wind-clark-county-sd": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "geronimo-harmony-energy-park-cass-county-nd": {
@@ -31573,6 +31627,20 @@
       "rock": "Sandstone"
     }
   },
+  "mckellar-solar-madison-county-tn": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
+    }
+  },
   "mcni-concord-township-hancock-county-ia": {
     "nearestWater": {
       "name": "East Branch Iowa River",
@@ -34651,6 +34719,12 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "national-grid-renewables-wild-springs-solar-pennington-county-sd": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "nautilus-cryptomine-building-1-pa": {
     "nearestWater": {
       "name": "Walker Run",
@@ -35399,6 +35473,18 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "nextera-crowned-ridge-i-wind-codington-county-sd": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
+  "nextera-day-county-wind-day-county-sd": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "nextera-east-riverside-energy-center-fayette-pa": {
     "nearestWater": {
       "name": "Kelley Run",
@@ -35585,6 +35671,12 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "nextera-south-dakota-wind-energy-center-hyde-county-sd": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "nextera-stuttgart-solar-arkansas-county-ar": {
     "nearestWater": {
       "name": "Bennett Reservoir",
@@ -35606,6 +35698,12 @@
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "nextera-wessington-springs-wind-jerauld-county-sd": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "nextera-wildwood-solar-tallahatchie-ms": {
@@ -36086,6 +36184,12 @@
     "aquifer": {
       "name": "Mississippi River Valley Alluvial Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "northwestern-beethoven-wind-bon-homme-county-sd": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "northwestern-hub-city-energy-park-aberdeen-sd": {
@@ -42854,6 +42958,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "ross-stores-rock-hill-sc": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "roswell-information-park-chaves-county-nm": {
     "nearestWater": {
       "name": "Rio Hondo",
@@ -44410,6 +44524,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "sdcl-project-midspan-bradley-county-tn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "security-land-woodlawn-baltimore-county-md": {
     "nearestWater": {
       "name": "Dead Run",
@@ -45010,6 +45134,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "silicon-ranch-orangeburg-county-solar-cordova-sc": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Surficial Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "silicon-ranch-sr-trinity-solar-lowndes-ms": {
     "nearestWater": {
       "name": "Moore Creek",
@@ -45332,6 +45470,20 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "skyhawk-solar-obion-county-tn": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "skylink-data-centers-naples-fl": {
@@ -52631,6 +52783,18 @@
       "rock": "Carbonate-rock"
     }
   },
+  "wec-coyote-ridge-wind-brookings-county-sd": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
+  "wec-tatanka-ridge-wind-deuel-county-sd": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "wells-draw-energy-duchesne-county-ut": {
     "nearestWater": {
       "name": "Duchesne River",
@@ -53529,6 +53693,12 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "xcel-dakota-range-i-ii-wind-codington-county-sd": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
   "yeehaw-junction-us-development-osceola-fl": {
     "nearestWater": {
       "name": "Saint Johns Marsh",
@@ -53588,6 +53758,20 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "yum-yum-solar-fayette-county-tn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi Embayment Aquifer System",
+      "rock": "Semiconsolidated sand"
     }
   },
   "zafra-plattsburgh-ny": {
