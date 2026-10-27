@@ -366,9 +366,30 @@ timestamp in `data/facilities.meta.json` so consumers can track data currency.
 re-checked when its trigger fires. Never run `npm audit fix --force`. Bumps follow the 14-day
 publish-age floor (`npm update <pkg> --before=<today minus 14 days>`).
 
-| Advisory | Reported as | Why it is accepted | Re-check when | Accepted |
-|---|---|---|---|---|
-| [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm): `braces` ≤3.0.3, stack exhaustion on deeply nested patterns | 9 "high" findings: `braces`, `micromatch`, `fast-glob`, `@ts-morph/common`, `ts-morph`, `@shadcn/registry`, `@next/eslint-plugin-next`, `shadcn`, `eslint-config-next` | No patched version exists; 3.0.3 is the newest release. The chain is devDependencies only (the `shadcn` CLI and `eslint-config-next`). `npm ls --omit=dev` lists none of these packages, so nothing ships to production, and `braces` only ever sees maintainer-written lint and CLI globs. `npm audit fix` would major-downgrade `shadcn` to 1.0.0 and `eslint-config-next` to 14.2.35. | A patched `braces` release, or any `shadcn` / `eslint-config-next` bump | 2026-10-21 (Ed) |
+No advisory is currently accepted: `npm audit` reports 0 vulnerabilities (2026-10-26).
+
+Resolved: [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) (`braces` ≤3.0.3,
+dev-only, accepted 2026-10-21) was withdrawn by GitHub on 2026-10-23, so `npm audit` no longer
+reports it. `braces` is still 3.0.3.
+
+### Publish-age floor exceptions
+
+Versions taken below the 14-day floor, with the reason. Each one is moot once it turns 14 days old.
+
+| Version | Published | Age when merged | Why | Merged in | Accepted |
+|---|---|---|---|---|---|
+| `next` 16.4.3 | 2026-10-23 | 3 days | Two critical RCE advisories plus a high DoS (Dependabot #68, #69, #71; fixed in 16.4.1). Neither RCE path is used here (no `"use cache"`, no `next/image`). | #480 | 2026-10-26 (Ed) |
+| `fast-uri` 3.1.9 | 2026-10-19 | 7 days | Dev-only; four advisories (#74–#77). Came with #480. | #480 | 2026-10-26 (Ed) |
+| `undici` 7.30.1 | 2026-10-15 | 11 days | One high, two moderate advisories (#78–#80); imported only by `scripts/discovery/net-guard.ts`. | #482 | 2026-10-26 (Ed) |
+| `vitest` / `@vitest/mocker` 4.1.12 | 2026-10-15 | 11 days | Dev-only; two moderate advisories (#66, #67). | #482 | 2026-10-26 (Ed) |
+| `body-parser` 2.4.0 | 2026-10-22 | 4 days | Dev-only (via the `shadcn` CLI); high DoS (GHSA-27r3-jxmh-p828). From `npm audit fix`. | #482 | 2026-10-26 (Ed) |
+| `ip-address` 10.7.5 | 2026-10-25 | 1 day | Dev-only (via the `shadcn` CLI and `socks`); moderate (GHSA-rxp7-6hxx-x8q5). From `npm audit fix`. | #482 | 2026-10-26 (Ed) |
+
+The floor was not checked before these merged; the exception was recorded afterwards. Checked on
+2026-10-26: `npm audit signatures --include-attestations` verified registry signatures for all
+877 installed packages, and each version above carries a provenance attestation (built and
+published by its project's own GitHub Actions). That covers a hijacked maintainer account
+publishing by hand, but not a compromised CI pipeline.
 
 ## Builds are gated, production included
 
