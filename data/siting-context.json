@@ -2689,6 +2689,15 @@
     }
   },
   "apex-soul-city-solar-hinds-ms": {
+    "nearestWater": {
+      "name": "Bakers Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -2919,6 +2928,15 @@
     }
   },
   "applied-digital-ellendale-hosting-nd": {
+    "nearestWater": {
+      "name": "Sewer Branch",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -5273,6 +5291,15 @@
     }
   },
   "base-electron-center-gas-plant-oliver-county-nd": {
+    "nearestWater": {
+      "name": "Square Butte Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -7026,6 +7053,15 @@
     }
   },
   "brightstar-lottery-west-greenwich-ri": {
+    "nearestWater": {
+      "name": "Mishnock Swamp",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -9918,6 +9954,15 @@
     }
   },
   "cogent-boston-waltham-ma": {
+    "nearestWater": {
+      "name": "Cambridge Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -10113,6 +10158,15 @@
     }
   },
   "cogent-springfield-ma": {
+    "nearestWater": {
+      "name": "Van Horn Ponds",
+      "kind": "lake",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -10783,6 +10837,15 @@
     }
   },
   "commonwealth-springfield-data-center-ma": {
+    "nearestWater": {
+      "name": "Connecticut River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -12417,6 +12480,15 @@
     }
   },
   "critical-data-house-fighting-pike-williston-nd": {
+    "nearestWater": {
+      "name": "Little Muddy River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -12499,6 +12571,15 @@
     }
   },
   "crown-castle-fiber-nh1-manchester-nh": {
+    "nearestWater": {
+      "name": "Merrimack River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -12728,12 +12809,30 @@
     }
   },
   "csquare-bos1-waltham-ma": {
+    "nearestWater": {
+      "name": "Cambridge Reservoir",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
     }
   },
   "csquare-bos4-watertown-ma": {
+    "nearestWater": {
+      "name": "Charles River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -15313,6 +15412,15 @@
     }
   },
   "deepgreen-western-passage-eastport-me": {
+    "nearestWater": {
+      "name": "Little River",
+      "kind": "river",
+      "distanceMi": 4.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 23
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -17761,6 +17869,15 @@
     }
   },
   "eagle-rock-big-woods-technology-park-jefferson-davis-ms": {
+    "nearestWater": {
+      "name": "White Sand Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 34.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -17935,6 +18052,15 @@
     }
   },
   "echelon-data-centres-meridian-lauderdale-ms": {
+    "nearestWater": {
+      "name": "Sowashee Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -18158,6 +18284,15 @@
     }
   },
   "edgeconnex-edcbos01-billerica-ma": {
+    "nearestWater": {
+      "name": "McKee Brook",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -20578,6 +20713,15 @@
     }
   },
   "equinix-ny13-elmsford-ny": {
+    "nearestWater": {
+      "name": "Rum Brook",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -23519,6 +23663,15 @@
     }
   },
   "geronimo-harmony-energy-park-cass-county-nd": {
+    "nearestWater": {
+      "name": "Maple River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -23677,6 +23830,15 @@
     }
   },
   "global-ai-endicott-ny": {
+    "nearestWater": {
+      "name": "Susquehanna River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -25469,6 +25631,15 @@
     }
   },
   "grenergy-shubuta-creek-solar-jasper-ms": {
+    "nearestWater": {
+      "name": "Pachuta Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -27927,6 +28098,15 @@
     }
   },
   "irongate-the-bunker-warren-mi": {
+    "nearestWater": {
+      "name": "McCoy Drain",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -28125,6 +28305,15 @@
     }
   },
   "jde-holdings-towner-nd": {
+    "nearestWater": {
+      "name": "Souris River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 17.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -28683,6 +28872,15 @@
     }
   },
   "klever-technology-center-inkster-mi": {
+    "nearestWater": {
+      "name": "Lower River Rouge",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -30194,6 +30392,15 @@
     }
   },
   "lumen-garden-city-1-ny": {
+    "nearestWater": {
+      "name": "Mill River",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -30618,6 +30825,15 @@
     }
   },
   "lumen-providence-375-promenade-ri": {
+    "nearestWater": {
+      "name": "Woonasquatucket River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.5
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -31267,6 +31483,15 @@
     }
   },
   "mass-general-brigham-marlborough-ma": {
+    "nearestWater": {
+      "name": "Williams Lake",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -32307,6 +32532,15 @@
     }
   },
   "metrobloks-phl-mb01-gibbstown-nj": {
+    "nearestWater": {
+      "name": "Clonmell Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -35071,6 +35305,15 @@
     }
   },
   "nexcess-southfield-melrose-mi": {
+    "nearestWater": {
+      "name": "River Rouge",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -35252,6 +35495,15 @@
     }
   },
   "nextera-okolona-solar-chickasaw-ms": {
+    "nearestWater": {
+      "name": "Mattubby Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 22.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -35277,6 +35529,15 @@
     }
   },
   "nextera-related-project-star-power-encinal-la-salle-tx": {
+    "nearestWater": {
+      "name": "Chucareto Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 16.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -36506,6 +36767,15 @@
     }
   },
   "nydig-dfm-altuve-pad-richland-mt": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 12
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36516,6 +36786,15 @@
     }
   },
   "nydig-dfm-breaks-cdp-richland-mt": {
+    "nearestWater": {
+      "name": "South Fork Cherry Creek",
+      "kind": "river",
+      "distanceMi": 3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 14.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36526,6 +36805,15 @@
     }
   },
   "nydig-dfm-felix-lucero-roosevelt-mt": {
+    "nearestWater": {
+      "name": "Clover Creek",
+      "kind": "river",
+      "distanceMi": 1.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36536,6 +36824,15 @@
     }
   },
   "nydig-dfm-holly-powers-roosevelt-mt": {
+    "nearestWater": {
+      "name": "Red Bank Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36546,6 +36843,15 @@
     }
   },
   "nydig-dfm-judith-warren-richland-mt": {
+    "nearestWater": {
+      "name": "Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 15
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36556,6 +36862,15 @@
     }
   },
   "nydig-dfm-kai-pad-richland-mt": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 10.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36566,6 +36881,15 @@
     }
   },
   "nydig-dfm-kennedy-pad-richland-mt": {
+    "nearestWater": {
+      "name": "Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 15.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36595,6 +36919,15 @@
     }
   },
   "nydig-dfm-meldahl-richland-mt": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 9.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36605,6 +36938,15 @@
     }
   },
   "nydig-dfm-nate-facility-richland-mt": {
+    "nearestWater": {
+      "name": "North Fork First Hay Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 19.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36615,6 +36957,15 @@
     }
   },
   "nydig-dfm-piano-man-richland-mt": {
+    "nearestWater": {
+      "name": "Fourmile Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 16.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -37342,6 +37693,15 @@
     }
   },
   "origis-hope-solar-storage-clay-ms": {
+    "nearestWater": {
+      "name": "Town Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -38305,6 +38665,15 @@
     }
   },
   "phillips-exeter-academy-data-center-exeter-nh": {
+    "nearestWater": {
+      "name": "Norris Brook",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -40253,6 +40622,15 @@
     }
   },
   "provdotnet-1155-westminster-providence-ri": {
+    "nearestWater": {
+      "name": "Mashapaug Pond",
+      "kind": "lake",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -41679,6 +42057,15 @@
     }
   },
   "rainbow-energy-coal-creek-data-center-park-nd": {
+    "nearestWater": {
+      "name": "Weller Slough",
+      "kind": "lake",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -42001,6 +42388,15 @@
     }
   },
   "related-digital-project-star-encinal-la-salle-tx": {
+    "nearestWater": {
+      "name": "Chucareto Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 16.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -43871,6 +44267,15 @@
     }
   },
   "sb-energy-cosmos-technology-campus-austin-tx": {
+    "nearestWater": {
+      "name": "Bull Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 15.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -44606,6 +45011,15 @@
     }
   },
   "silicon-ranch-sr-trinity-solar-lowndes-ms": {
+    "nearestWater": {
+      "name": "Moore Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -45545,6 +45959,15 @@
     }
   },
   "sr-rose-hill-solar-chickasaw-ms": {
+    "nearestWater": {
+      "name": "Bray Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 25
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -46106,6 +46529,15 @@
     }
   },
   "stalwart-earth-station-76-logan-nj": {
+    "nearestWater": {
+      "name": "Grand Sprute Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -47922,6 +48354,15 @@
     }
   },
   "tachyon9-nixxy-nakota-ai-data-campus-williams-county-nd": {
+    "nearestWater": {
+      "name": "East Fork Little Muddy River",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -48248,6 +48689,15 @@
     }
   },
   "telesystem-dc2-monroe-mi": {
+    "nearestWater": {
+      "name": "Mason Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -48663,6 +49113,15 @@
     }
   },
   "teton-digital-project-trinity-tioga-nd": {
+    "nearestWater": {
+      "name": "Dry Fork Creek",
+      "kind": "river",
+      "distanceMi": 2.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -50138,6 +50597,15 @@
     }
   },
   "trifecta-red-hills-i-solar-choctaw-ms": {
+    "nearestWater": {
+      "name": "Yockanookany River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.3
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -50421,6 +50889,15 @@
     }
   },
   "unh-data-center-durham-nh": {
+    "nearestWater": {
+      "name": "College Brook",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -52296,6 +52773,15 @@
     }
   },
   "westelcom-plattsburgh-ny": {
+    "nearestWater": {
+      "name": "Saranac River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -52306,12 +52792,30 @@
     }
   },
   "westelcom-syracuse-ny": {
+    "nearestWater": {
+      "name": "Onondaga Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
     }
   },
   "westelcom-watertown-ny": {
+    "nearestWater": {
+      "name": "Black River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 21.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -53125,12 +53629,30 @@
     }
   },
   "zayo-providence-300-carpenter-ri": {
+    "nearestWater": {
+      "name": "Mashapaug Pond",
+      "kind": "lake",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
     }
   },
   "zayo-providence-ri1-235-promenade-ri": {
+    "nearestWater": {
+      "name": "Woonasquatucket River",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
