@@ -256,8 +256,29 @@ test("a11y: /about with the support banner — zero serious/critical violations"
   expect(
     await page.evaluate(() => sessionStorage.getItem("ca-support-banner:dismissed")),
   ).toBe("1");
-  await page.reload();
-  await page.waitForLoadState("networkidle");
+  // Positive hydration signal: the banner's mount effect deletes this legacy
+  // localStorage key before it reads the session flag, so its disappearance
+  // proves the effect ran. Without it, "hidden" also holds before hydration
+  // (the card renders nothing on the server) and the check below is vacuous.
+  await page.evaluate(() =>
+    window.localStorage.setItem("ca-support-banner:dismissed", "legacy"),
+  );
+  // `load`, not `networkidle`: after a reload the header's route prefetches
+  // can keep the network busy past the test timeout on a slow CI runner.
+  await page.reload({ waitUntil: "load" });
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() =>
+          window.localStorage.getItem("ca-support-banner:dismissed"),
+        ),
+      { timeout: 15_000 },
+    )
+    .toBeNull();
+  // The effect has run; let any state update it queued commit before asserting.
+  await page.evaluate(
+    () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
+  );
   await expect(banner).toBeHidden();
   expect(
     await page.evaluate(() =>
