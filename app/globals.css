@@ -1300,3 +1300,25 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
     line-height: 1.35;
   }
 }
+
+/* Space reserved by the fixed support banner (components/support-banner.tsx),
+   which sets --support-bar-h only while it is showing. Unset elsewhere (/map,
+   embeds, /admin, /support), so those routes are unaffected. Screen only: the
+   banner is print:hidden and print forces body height. The #main-content rule
+   hides the ring from programmatic focus after a keyboard dismiss. */
+@layer base {
+  @media screen {
+    html {
+      scroll-padding-bottom: var(--support-bar-h, 0px);
+    }
+    /* On the footer, not body: body padding would show as a blank band below
+       the footer's own background. The footer root has no padding of its own
+       (its py-10 lives on an inner wrapper), so this adds to nothing. */
+    [data-site-footer] {
+      padding-bottom: var(--support-bar-h, 0px);
+    }
+  }
+  #main-content[tabindex="-1"]:focus {
+    outline: none;
+  }
+}

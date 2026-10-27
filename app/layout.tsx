@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FooterGate, HeaderGate } from "@/components/footer-gate";
+import { SupportBanner } from "@/components/support-banner";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 import { siteJsonLdString } from "@/lib/seo";
 
@@ -97,7 +98,7 @@ export default function RootLayout({
             {/* Skip to main content — first focusable element */}
             <a
               href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:ring-2 focus:ring-ring"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:outline-2 focus:outline-offset-2 focus:outline-ring"
             >
               Skip to main content
             </a>
@@ -110,6 +111,7 @@ export default function RootLayout({
             <FooterGate>
               <SiteFooter />
             </FooterGate>
+            <SupportBanner />
             <Toaster />
           </TooltipProvider>
         </NuqsAdapter>

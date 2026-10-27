@@ -288,4 +288,12 @@ describe("revalidate: /data keeps its own timer; aggregate pages agree with each
       `revalidate values diverge across aggregate pages: ${JSON.stringify(values)}`
     ).toBe(1);
   });
+
+  it("links the support page after the citation heading", () => {
+    render(DataPage());
+    const link = screen.getByRole("link", { name: "support keeps it running" });
+    expect(link).toHaveAttribute("href", "/support");
+    const heading = screen.getByRole("heading", { name: "How to cite" });
+    expect(heading.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });

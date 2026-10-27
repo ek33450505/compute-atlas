@@ -4,12 +4,15 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SupportCta } from "@/components/support-cta";
+import { SupportersList } from "@/components/supporters-list";
+import { DATASET_DOI_URL } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
+import { SUPPORTERS } from "@/lib/supporters";
 
 export const metadata: Metadata = {
   title: "Support",
   description:
-    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a one-off tip or a sponsorship helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
+    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a one-off tip or a monthly membership helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
   alternates: { canonical: "/support" },
 };
 
@@ -56,6 +59,11 @@ const LINK_CLASS =
  *      stops being a stated view and becomes an uncited claim on a site whose
  *      entire premise is that claims carry sources.
  * Keep all three or drop the section.
+ *
+ * Section order: why -> who -> where support goes -> guarantee -> supporters
+ * (opt-in names; renders nothing while lib/supporters.ts is empty) -> where I
+ * stand -> free ways. The guarantee stays ahead of both the supporters list
+ * and the opinion.
  */
 export default function SupportPage() {
   return (
@@ -176,7 +184,7 @@ export default function SupportPage() {
           without a paywall, and the geospatial data the map draws on.
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Three things cost money every month. The database is the largest
+          Three things cost money every month. The first is the database
           &mdash; a managed Postgres instance (Neon) holding every facility,
           every citation, and the full revision history behind the change log;
           almost all of that is data moving between the database and the site
@@ -191,9 +199,19 @@ export default function SupportPage() {
         </p>
         <SupportCta />
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Ko-fi takes one-off tips without an account &mdash; guest checkout,
-          card or PayPal. GitHub Sponsors is the other path; it needs a GitHub
-          account, which is why it sits second here.
+          Ko-fi takes one-off tips with no account needed &mdash; card or
+          PayPal &mdash; and monthly memberships.
+        </p>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          If a university, lab, newsroom or organization relies on the data,
+          Ko-fi has an institution membership. A supporting organization can
+          be named on this page if it asks to be &mdash; for as long as its
+          membership runs, or for twelve months after a one-off institutional
+          contribution. Citing the dataset helps too:{" "}
+          <a href={DATASET_DOI_URL} className={LINK_CLASS}>
+            doi.org/10.5281/zenodo.22284476
+          </a>
+          .
         </p>
       </section>
 
@@ -206,7 +224,7 @@ export default function SupportPage() {
           What support does not change
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Nothing on this site is for sale. A tip or a sponsorship does not
+          Nothing on this site is for sale. A tip or a membership does not
           buy a record, an edit, a removal, or a place in a ranking &mdash;
           there is no tier that does, and there won&rsquo;t be. No page
           carries advertising.
@@ -228,6 +246,8 @@ export default function SupportPage() {
           .
         </p>
       </section>
+
+      <SupportersList supporters={SUPPORTERS} />
 
       {/* Where I stand — the one opinion on the site, fenced off on purpose */}
       <section aria-labelledby="stand-heading" className="space-y-4 border-t border-border pt-10">

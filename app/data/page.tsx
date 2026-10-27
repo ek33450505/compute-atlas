@@ -218,6 +218,14 @@ export default function DataPage() {
             {DATASET_DOI_URL}
           </a>
         </blockquote>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          The dataset is free. If it saved you time,{" "}
+          <Link href="/support" className={LINK_CLASS}>
+            support keeps it running
+          </Link>
+          . Institutions that rely on it can support it with a Ko-fi institution
+          membership, and can be named on the support page if they ask to be.
+        </p>
       </section>
 
       <section aria-labelledby="scope-heading" className="space-y-4 border-t border-border pt-10">

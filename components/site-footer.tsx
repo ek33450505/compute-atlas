@@ -13,16 +13,16 @@ const EXPLORE_LINKS = [
 ] as const;
 
 const NAV_LINK_CLASS =
-  "inline-flex min-h-11 items-center rounded-sm underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "inline-flex min-h-11 items-center rounded-sm underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 const EXTERNAL_NAV_LINK_CLASS =
-  "inline-flex min-h-11 items-center gap-1 rounded-sm underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "inline-flex min-h-11 items-center gap-1 rounded-sm underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 export function SiteFooter() {
   const edition = getDatasetEdition();
 
   return (
-    <footer className="print:hidden relative border-t border-border">
+    <footer data-site-footer className="print:hidden relative border-t border-border">
       {/* Faint graticule wash — atlas margin texture */}
       <div
         aria-hidden="true"
@@ -36,7 +36,7 @@ export function SiteFooter() {
             <Link
               href="/"
               aria-label={`${siteConfig.name}, home`}
-              className="inline-flex flex-col items-start gap-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex flex-col items-start gap-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               <Wordmark showTagline />
             </Link>
@@ -146,7 +146,7 @@ export function SiteFooter() {
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label="OpenStreetMap copyright and license (opens in new tab)"
-                  className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                  className="underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                 >
                   OpenStreetMap
                 </a>{" "}
