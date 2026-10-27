@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
+vi.mock("@/lib/supporters", () => ({
+  SUPPORTERS: [{ name: "Example University", kind: "institution" }],
+}));
+
 import SupportPage, { metadata } from "./page";
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency
@@ -31,14 +35,12 @@ describe("SupportPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders both funding links with distinct accessible names and correct hrefs", () => {
-    render(<SupportPage />);
+  it("renders the Ko-fi funding link and no GitHub Sponsors link", () => {
+    const { container } = render(<SupportPage />);
     expect(
-      screen.getByRole("link", { name: /Support Compute Atlas on Ko-fi/i })
+      screen.getByRole("link", { name: /Support on Ko-fi/i })
     ).toHaveAttribute("href", "https://ko-fi.com/L2T725R7FV");
-    expect(
-      screen.getByRole("link", { name: /Sponsor Compute Atlas on GitHub Sponsors/i })
-    ).toHaveAttribute("href", "https://github.com/sponsors/ek33450505");
+    expect(container.querySelectorAll('a[href*="github.com/sponsors"]')).toHaveLength(0);
   });
 
   it("renders the internal links to /contribute, /activity, and /about", () => {
@@ -162,13 +164,38 @@ describe("SupportPage — the personal sections", () => {
     expect(text).toMatch(/a person accepts or rejects each candidate by hand/);
   });
 
-  it("renders exactly one funding CTA, so its links keep unique accessible names", () => {
+  it("renders exactly one funding CTA, so its link keeps a unique accessible name", () => {
     const { container } = render(<SupportPage />);
     expect(
       container.querySelectorAll('a[href="https://ko-fi.com/L2T725R7FV"]')
     ).toHaveLength(1);
+  });
+
+  it("drops the cost ranking and keeps the discovery-pipeline guarantee", () => {
+    const { container } = render(<SupportPage />);
+    const text = container.textContent ?? "";
+    expect(text).not.toContain("largest");
+    expect(text).toContain("It has never published a record.");
+  });
+
+  it("explains the Ko-fi institution membership and links the dataset DOI", () => {
+    render(<SupportPage />);
     expect(
-      container.querySelectorAll('a[href="https://github.com/sponsors/ek33450505"]')
-    ).toHaveLength(1);
+      screen.getByText(/Ko-fi has an institution membership/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "doi.org/10.5281/zenodo.22284476" })
+    ).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.22284476");
+  });
+
+  it("orders the guarantee, then supporters, then where I stand", () => {
+    render(<SupportPage />);
+    const guarantee = screen.getByRole("heading", { name: "What support does not change" });
+    const supporters = screen.getByRole("heading", { name: "Supporters" });
+    const stand = screen.getByRole("heading", { name: "Where I stand" });
+    const follows = (a: HTMLElement, b: HTMLElement) =>
+      Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(follows(guarantee, supporters)).toBe(true);
+    expect(follows(supporters, stand)).toBe(true);
   });
 });

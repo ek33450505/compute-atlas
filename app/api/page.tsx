@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
 import { getDatasetEdition } from "@/lib/dataset-edition";
@@ -438,6 +439,17 @@ export default function ApiPage() {
             </dd>
           </div>
         </dl>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          The API is free with no key and no paid tier. If you build on it,{" "}
+          <Link
+            href="/support"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          >
+            support keeps it running
+          </Link>
+          . Institutions can support it with a Ko-fi institution membership,
+          and can be named on the support page if they ask to be.
+        </p>
       </section>
 
       <section aria-labelledby="examples-heading" className="space-y-4 border-t border-border pt-10">

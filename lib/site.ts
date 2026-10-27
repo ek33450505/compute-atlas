@@ -36,13 +36,11 @@ export const siteConfig = {
   url: "https://www.compute-atlas.com",
   repoUrl: "https://github.com/ek33450505/compute-atlas",
   /**
-   * Two funding paths, both live. Named individually rather than as one
-   * `sponsorUrl` so a new destination can never silently repoint an existing
-   * link. Ko-fi leads: guest checkout, no account needed — GitHub Sponsors
-   * requires a GitHub account, which is the exact barrier for this site's
-   * actual audience (residents, local journalists, county officials). GitHub
-   * Sponsors stays because it is 0%-fee on one-off gifts.
+   * The one on-site funding destination. Ko-fi takes guest checkout (no
+   * account), card or PayPal, one-off or monthly: the right barrier for this
+   * site's audience (residents, local journalists, county officials). GitHub
+   * Sponsors is kept only on the repository (.github/FUNDING.yml and the
+   * issue-template contact link), deliberately not here.
    */
   kofiUrl: "https://ko-fi.com/L2T725R7FV",
-  githubSponsorsUrl: "https://github.com/sponsors/ek33450505",
 } as const;

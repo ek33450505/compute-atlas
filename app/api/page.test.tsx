@@ -12,6 +12,22 @@ vi.mock("@/lib/dataset-edition", () => ({
   getDatasetEdition: mockGetDatasetEdition,
 }));
 
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+}));
+
 import ApiPage from "./page";
 
 describe("ApiPage — How to cite", () => {
@@ -237,5 +253,23 @@ describe("ApiPage — How to cite", () => {
     expect(text).toContain(
       "Data from Compute Atlas by Edward Kubiak (https://www.compute-atlas.com), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)."
     );
+  });
+
+  it("links the support page after the citation section", () => {
+    mockGetDatasetEdition.mockReturnValue({
+      version: "1.30.0",
+      asOf: "2026-09-01T16:58:23.496Z",
+      recordCount: 1309,
+      schemaVersion: 1,
+    });
+
+    render(<ApiPage />);
+
+    const link = screen.getByRole("link", { name: "support keeps it running" });
+    expect(link).toHaveAttribute("href", "/support");
+    const heading = document.getElementById("citation-heading")!;
+    expect(heading.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const next = document.getElementById("examples-heading")!;
+    expect(next.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
   });
 });

@@ -234,6 +234,14 @@ Participation is governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
+## Supporters
+
+People and organizations who support Compute Atlas and asked to be named are listed here and on [the support page](https://www.compute-atlas.com/support). Support never changes what the record says. To support the project, use [Ko-fi](https://ko-fi.com/L2T725R7FV) for a one-off tip, a monthly membership, or an institution membership. [GitHub Sponsors](https://github.com/sponsors/ek33450505) is also available for the repository.
+
+_None listed yet._
+
+---
+
 ## Development
 
 ```bash

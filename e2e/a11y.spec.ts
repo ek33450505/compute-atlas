@@ -217,3 +217,72 @@ for (const route of ROUTES) {
     ).toHaveLength(0);
   });
 }
+
+// The support banner is client-only and hidden for first-time visitors, so the
+// route scans above never render it. Seed a returning visit (>= 2) to scan the
+// banner itself, then confirm dismissal.
+test("a11y: /about with the support banner — zero serious/critical violations", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("ca-support-banner:visits", "2");
+  });
+  // Keep axe from scanning mid-fade of the banner's entrance animation.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/about");
+  await page.waitForLoadState("networkidle");
+
+  const banner = page.getByRole("region", { name: "Support Compute Atlas" });
+  await expect(banner).toBeVisible();
+
+  // No `.options()` here, so `.withTags()` is the only thing setting runOnly.
+  const results = await new AxeBuilder({ page }).withTags([...AXE_TAGS]).analyze();
+  expect(results.toolOptions.runOnly).toEqual({
+    type: "tag",
+    values: [...AXE_TAGS],
+  });
+  const seriousOrCritical = results.violations.filter(
+    (v) => v.impact === "serious" || v.impact === "critical",
+  );
+  expect(
+    seriousOrCritical,
+    `/about (banner): ${seriousOrCritical.map((v) => v.id).join(", ")}`,
+  ).toHaveLength(0);
+
+  await page.getByRole("button", { name: "Dismiss support message" }).click();
+  await expect(banner).toBeHidden();
+  // Session-scoped dismissal: a reload in the same session stays hidden. Assert
+  // the flag was written first so the post-reload check is not vacuous.
+  expect(
+    await page.evaluate(() => sessionStorage.getItem("ca-support-banner:dismissed")),
+  ).toBe("1");
+  // Positive hydration signal: the banner's mount effect deletes this legacy
+  // localStorage key before it reads the session flag, so its disappearance
+  // proves the effect ran. Without it, "hidden" also holds before hydration
+  // (the card renders nothing on the server) and the check below is vacuous.
+  await page.evaluate(() =>
+    window.localStorage.setItem("ca-support-banner:dismissed", "legacy"),
+  );
+  // `load`, not `networkidle`: after a reload the header's route prefetches
+  // can keep the network busy past the test timeout on a slow CI runner.
+  await page.reload({ waitUntil: "load" });
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() =>
+          window.localStorage.getItem("ca-support-banner:dismissed"),
+        ),
+      { timeout: 15_000 },
+    )
+    .toBeNull();
+  // The effect has run; let any state update it queued commit before asserting.
+  await page.evaluate(
+    () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
+  );
+  await expect(banner).toBeHidden();
+  expect(
+    await page.evaluate(() =>
+      document.documentElement.style.getPropertyValue("--support-bar-h"),
+    ),
+  ).toBe("");
+});
