@@ -96,7 +96,7 @@ See `.env.example`.
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | Neon Postgres pooled connection string |
+| `DATABASE_URL` | Neon Postgres connection string: the pooled one (`-pooler` host) on Vercel production; the direct one in `.env.local` and the GitHub Actions secret (as of 2026-10-27, matching what `.env.local` held before). The app's `neon-http` driver accepts either; `drizzle.config.ts` (`db:migrate`) reads the same variable |
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
 | `API_INTAKE_TOKEN` | Staging-only bearer, accepted by `POST /api/submissions` ALONE. For the discovery pipeline. Optional — unset, the pipeline falls back to `API_ADMIN_TOKEN` and nothing changes. **Must be an independent value**; see the activation steps below |
 | `CRON_SECRET` | Bearer secret authenticating Vercel Cron to `/api/cron/*`. **Set in production since 2026-09-14**, with the state digest; unset means every cron-path caller is rejected (fail-closed). **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
@@ -224,6 +224,7 @@ is usually a missing redeploy.
 | 2026-10-27 ~08:25 | `API_ADMIN_TOKEN` | rotated |
 | 2026-10-27 ~09:25 | `NEON_API_KEY` | revoked, not rotated (step 0) |
 | 2026-10-27 ~11:50 | `RESEND_API_KEY` | rotated |
+| 2026-10-27 ~17:30–17:52 | `DATABASE_URL` + `DATABASE_URL_UNPOOLED` (`neondb_owner`) | rotated (step 1); the one pre-reset Neon preview child branch deleted; verified by `check:drift` and a `drift-alert` dispatch |
 
 **0. `NEON_API_KEY` — revoke, do not rotate.** Nothing consumes it (zero references across
 `.github/`). It is a **control-plane** key: it can create/delete branches, reset role passwords and
@@ -239,12 +240,36 @@ considered and **deliberately deferred**: the least-privilege split's own failur
 than the attack it prevents, for a single-maintainer project. Revisit if a second person gains DB
 access or real personal data lands in the schema.
 To rotate the credential without the privilege split: reset `neondb_owner`'s password in Neon →
-update Vercel production → **redeploy** → update `.env.local` → update the GitHub `DATABASE_URL`
-secret → `npm run check:drift` to confirm the workflows still connect.
+update Vercel production `DATABASE_URL` and `DATABASE_URL_UNPOOLED` → **redeploy** → update
+`.env.local` → update the GitHub `DATABASE_URL` secret → delete any Neon child branch created before
+the reset (below) → `npm run check:drift` to confirm the workflows still connect.
 Breaks if you do it out of order: `db:sync`, `db:export`, `check:drift`, `drift-alert.yml`,
 `discovery-watchdog.yml`, `neon-sync.yml` and CI's DB test, all at once.
-⚠️ `DATABASE_URL_UNPOOLED` exists in all three Vercel environments and **no code reads it** (the Neon
-integration creates it). It is a second copy of the same credential — rotate it in lockstep or remove it.
+
+⚠️ **No code reads `DATABASE_URL_UNPOOLED`** (the Neon integration creates it). It is a second copy
+of the same credential — rotate it in lockstep or remove it. Being integration-managed, it refuses
+`vercel env update … --sensitive` ("You cannot change the type of an integration Environment Variable
+to Sensitive"); update it without `--sensitive`. A non-sensitive variable can be read back (dashboard,
+`vercel env pull`), which is one more reason to remove it if the integration allows that.
+
+⚠️ **Preview child branches keep the OLD password.** Neon password resets are branch-scoped. On
+2026-10-27 the Neon integration had created a child branch for a preview deployment (a copy of
+production data), with matching branch-scoped Preview variables in Vercel. That branch still accepted
+the old password after the reset. List the project's branches after every rotation and delete any
+child branch created before the reset. Deleting it also removed its Preview variables. Whether the
+integration recreates the branch on the next preview deploy was not observed.
+
+⚠️ **Clipboard trap:** copying a command in order to paste it replaces the connection string on the
+clipboard, so a `pbpaste > file` step saves the command instead. In a real terminal, paste the string
+into a hidden prompt instead. Run this once as written, `f=pooled` (the string for Vercel's
+`DATABASE_URL`), then again with the first assignment changed to `f=direct` (the string for Vercel's
+`DATABASE_URL_UNPOOLED`, `.env.local` and the GitHub secret; see the `DATABASE_URL` row in the env table):
+`(f=pooled; umask 077; mkdir -p -m 700 ~/.rot; read -rs c; printf '%s' "$c" > ~/.rot/$f; unset c)`
+(a subshell, so the umask doesn't stick; a folder outside the repo). Then check each file's shape
+without printing it, e.g. for `pooled`: `head -c 13 ~/.rot/pooled` shows `postgresql://`,
+`grep -c "[\"']" ~/.rot/pooled` shows `0` (no quotes of either kind; see the `.env.local` quoting gotcha in
+CLAUDE.md), and `grep -c -- -pooler ~/.rot/pooled` shows `1` (the same check on `~/.rot/direct` must
+show `0`). Delete `~/.rot` when done.
 
 **2. `API_ADMIN_TOKEN`.** Grants every admin write route, the admin UI, the cron recovery path, and
 — until the intake split is activated — discovery staging writes too. ⚠️ **Rotating it invalidates
