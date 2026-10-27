@@ -139827,7 +139827,7 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "solar",
-      "offtaker": "Central Electric Power Cooperative (energy); Meta (renewable energy credits)",
+      "offtaker": "Meta (renewable energy credits; energy sold to Central Electric Power Cooperative)",
       "poweredFacilityIds": [
         "meta-aiken-county-sc"
       ],
