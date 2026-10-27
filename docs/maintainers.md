@@ -193,19 +193,37 @@ third revokes anything:
    alone change nothing — `submissionToken()` prefers the intake token but the admin token is still
    sitting there.
 
-`scripts/discovery/run.sh` needs no edit. Verify by staging one candidate with the pipeline's
+Applying step 3 as written needs no `run.sh` edit. Verify by staging one candidate with the pipeline's
 `.env.local`, then confirming the same token is refused by `GET /api/submissions` (admin-only).
+
+⚠️ **Known defect (A-2 backlog): applying step 3 as written breaks two other tools that read this
+file.** `run.sh` reads the repo-root `.env.local` (`--env-file=.env.local`), and so do
+`npm run submissions` and `db:sync`. `npm run submissions` needs `API_ADMIN_TOKEN` for every
+subcommand (`scripts/submissions.ts:205-207`), so removing it breaks the whole CLI. `db:sync` needs
+it only with `--apply` and without `--skip-revalidate` (`scripts/sync-to-neon.ts:680`, refusal at
+`:692`), so a dry run still works and `--apply` refuses to write. The fix is for `run.sh` to read its
+own env file: a code change that needs review and must not land during a discovery run. Until then,
+do not apply step 3 as written.
 
 ## Secret rotation
 
-Nothing in this project had ever been rotated as of the 2026-09-27 security audit — every Vercel
-variable still had `createdAt == updatedAt`, oldest 76 days. This is the runbook; work **top to
-bottom**, because the order matters in two places.
+As of the 2026-09-27 security audit, nothing in this project had ever been rotated — every Vercel
+variable still had `createdAt == updatedAt`, oldest 76 days. Rotations have happened since; the log
+below is the current record. This is the runbook; work **top to bottom**, because the order matters
+in two places.
 
 ⚠️ **A new or changed Vercel env var is invisible to already-built deployments.** Vercel injects env
 at deploy time, so every rotation below needs
 `npx vercel redeploy --target production <url>` before it takes effect. A rotation that "didn't work"
 is usually a missing redeploy.
+
+**Rotation log** (names and dates only; secret values are never recorded here):
+
+| Date (EDT) | Secret | Note |
+|---|---|---|
+| 2026-10-27 ~08:25 | `API_ADMIN_TOKEN` | rotated |
+| 2026-10-27 ~09:25 | `NEON_API_KEY` | revoked, not rotated (step 0) |
+| 2026-10-27 ~11:50 | `RESEND_API_KEY` | rotated |
 
 **0. `NEON_API_KEY` — revoke, do not rotate.** Nothing consumes it (zero references across
 `.github/`). It is a **control-plane** key: it can create/delete branches, reset role passwords and
@@ -394,9 +412,10 @@ publishing by hand, but not a compromised CI pipeline.
 ## Builds are gated, production included
 
 `vercel.json` runs `scripts/vercel-ignore-build.sh` as Vercel's Ignored Build Step. Any
-deployment whose diff touches only `data/`, `docs/`, `.github/` or `*.md` is skipped —
-production too, because `db:sync` puts data live in Neon before the commit recording it
-is ever merged.
+deployment whose diff touches only `data/facilities.json`, `data/facilities.meta.json`, `docs/`,
+`.github/`, `*.md`, `LICENSE` or `LICENSE-DATA` is skipped — production too, because `db:sync`
+puts data live in Neon before the commit recording it is ever merged. Other `data/` files, such
+as `data/siting-context.json`, still build.
 
 The one thing a production build still refreshes on a data-only merge is the
 `withJsonFallback` snapshot bundled from `data/facilities.json`. That rides the next code

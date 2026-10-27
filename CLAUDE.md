@@ -396,9 +396,10 @@ tool, not part of the deployed app.
     with `tail -c1`, or append a leading `\n`.
 - **Builds are gated, production included.** `vercel.json` runs
   `scripts/vercel-ignore-build.sh` as Vercel's Ignored Build Step: **any**
-  deployment whose diff touches only `data/`, `docs/`, `.github/`, `*.md` is
-  skipped — production too, since `db:sync` puts data live in Neon before the
-  commit recording it is ever merged. The one thing a prod build still refreshes
+  deployment whose diff touches only `data/facilities.json`, `data/facilities.meta.json`, `docs/`,
+  `.github/`, `*.md` (or `LICENSE`, `LICENSE-DATA`) is skipped — production too, since `db:sync`
+  puts data live in Neon before the commit recording it is ever merged. Other `data/` files, such as
+  `data/siting-context.json`, still build. The one thing a prod build still refreshes
   on a data-only merge is the `withJsonFallback` snapshot bundled from
   `data/facilities.json`; that now rides the next code deploy (or
   `npx vercel redeploy --target production` on demand). Covered by
