@@ -39,7 +39,7 @@ Source lanes to work before concluding (name which lanes you worked in provenanc
 - Utility integrated resource plans (IRPs) and large-load interconnection filings.
 - State and local economic-development, tax-incentive, and abatement databases.
 - Local and trade press.
-- archive.org, including the CDX API, for pages that are dead or bot-walled at their live URL.
+- archive.org, including the CDX API, for pages that are dead or bot-walled at their live URL (fetch these with the shell fetch tool named in the system prompt, or WebFetch).
 
 Anti-duplication: check every candidate against the existing-facilities projection in
 Responsibility 2 below by SITE (operator + place), not by exact name string. The same site
