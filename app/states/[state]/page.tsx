@@ -303,7 +303,7 @@ export default async function StatePage({
             See the{" "}
             <Link
               href="/opposition"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               opposition tracker
             </Link>{" "}
@@ -313,7 +313,7 @@ export default async function StatePage({
                 , including{" "}
                 <Link
                   href={`/facilities/${stateOppositionCase.id}`}
-                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                 >
                   {stateOppositionCase.name}
                 </Link>
@@ -361,14 +361,14 @@ export default async function StatePage({
             See the{" "}
             <Link
               href="/ai"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               AI data center hub
             </Link>{" "}
             for national context, or browse the{" "}
             <Link
               href="#facilities-heading"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               full facility list for {stateName}
             </Link>{" "}
@@ -440,7 +440,7 @@ export default async function StatePage({
           Kubiak, E. (n.d.). Data centers in {stateName}. Compute Atlas.{" "}
           <a
             href={canonicalUrl}
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             {canonicalUrl}
           </a>
@@ -450,7 +450,7 @@ export default async function StatePage({
           identifier:{" "}
           <a
             href={DATASET_DOI_URL}
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             {DATASET_DOI_URL}
           </a>

@@ -38,7 +38,7 @@ export function CompassRose({ bearing, onResetNorth }: CompassRoseProps) {
         "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
         // Interaction
         "cursor-pointer transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
         // Activation: subtle primary ring when bearing is non-zero
         isRotated ? "ring-1 ring-primary/50" : "",
       ]

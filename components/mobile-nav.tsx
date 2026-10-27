@@ -20,7 +20,7 @@ interface MobileNavProps {
 }
 
 const LINK_CLASSNAME =
-  "flex min-h-11 w-full items-center gap-1 rounded-sm px-2 font-mono text-sm uppercase tracking-wider text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 aria-[current=page]:text-foreground";
+  "flex min-h-11 w-full items-center gap-1 rounded-sm px-2 font-mono text-sm uppercase tracking-wider text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-[current=page]:text-foreground";
 
 export function MobileNav({ groups }: MobileNavProps) {
   const [open, setOpen] = useState(false);
@@ -44,7 +44,7 @@ export function MobileNav({ groups }: MobileNavProps) {
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:hidden"
       >
         {open ? (
           <X aria-hidden className="size-5" />
@@ -72,7 +72,7 @@ export function MobileNav({ groups }: MobileNavProps) {
                 type="button"
                 aria-label="Close navigation menu"
                 onClick={close}
-                className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <X aria-hidden className="size-5" />
               </button>

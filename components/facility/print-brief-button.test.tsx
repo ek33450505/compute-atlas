@@ -34,10 +34,9 @@ describe("PrintBriefButton", () => {
     expect(
       screen.getByRole("button", { name: /print this brief/i })
     ).toHaveClass(
-      "focus-visible:outline-none",
-      "focus-visible:ring-2",
-      "focus-visible:ring-ring",
-      "focus-visible:ring-offset-2"
+      "focus-visible:outline-2",
+      "focus-visible:outline-offset-2",
+      "focus-visible:outline-ring"
     );
   });
 

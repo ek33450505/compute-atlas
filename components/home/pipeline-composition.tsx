@@ -12,7 +12,7 @@ export interface PipelineCompositionProps {
 // Copied verbatim from cost-ledger.tsx, so every homepage prose link shares
 // one appearance.
 const LINK_CLASS =
-  "underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 const { coverage, quarters, statuses } = pipelineHistory;
 

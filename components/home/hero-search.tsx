@@ -32,7 +32,7 @@ export function HeroSearch({ facilityCount, className }: HeroSearchProps) {
       }}
       aria-label={`${label} — opens a search dialog`}
       className={cn(
-        "group flex min-h-11 w-full items-center gap-2 rounded-sm border border-border bg-card px-4 text-left transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "group flex min-h-11 w-full items-center gap-2 rounded-sm border border-border bg-card px-4 text-left transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className
       )}
     >

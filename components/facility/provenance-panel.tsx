@@ -54,7 +54,7 @@ export function ProvenancePanel({ facility }: ProvenancePanelProps) {
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label={`${source.label} (opens in new tab)`}
-                className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded"
               >
                 <ExternalLink className="size-3 shrink-0" aria-hidden="true" />
                 {source.label}

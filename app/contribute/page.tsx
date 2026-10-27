@@ -57,7 +57,7 @@ export default function ContributePage() {
       <ContributeLeadForm />
 
       <details className="group border-t border-border pt-6">
-        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
           I know the full details
           <span
             aria-hidden="true"
@@ -85,7 +85,7 @@ export default function ContributePage() {
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           <Link
             href="/gaps"
-            className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             See where the dataset needs help
           </Link>{" "}
@@ -117,7 +117,7 @@ export default function ContributePage() {
         </p>
         <SupportCta />
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          <Link href="/support" className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
+          <Link href="/support" className="underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm">
             More on how Compute Atlas is funded
           </Link>{" "}
           &mdash; including what support does not buy.

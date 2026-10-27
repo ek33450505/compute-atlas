@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 const MAX_PER_GROUP = 6;
 
 const FOOTER_LINK_CLASSNAME =
-  "mt-4 inline-block text-sm text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "mt-4 inline-block text-sm text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 /**
  * One related-facility card. Mirrors the "Notable sites" card markup on the
@@ -22,7 +22,7 @@ function RelatedFacilityCard({ facility }: { facility: Facility }) {
   return (
     <Link
       href={`/facilities/${facility.id}`}
-      className="neatline group flex flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="neatline group flex flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <span className="font-display text-base leading-snug text-foreground group-hover:text-primary transition-colors motion-reduce:transition-none">
         {facility.name}

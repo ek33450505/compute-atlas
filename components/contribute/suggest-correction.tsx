@@ -83,7 +83,7 @@ const LEAD_PREFIX_MAX = 100;
 const LEAD_TOPIC_MAX = 50;
 
 const INLINE_LINK_CLASS =
-  "underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 const TEXTAREA_CLASS =
   "rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20";
@@ -838,7 +838,7 @@ export function SuggestCorrection({
                 </div>
 
                 <details ref={detailsRef}>
-                  <summary className="cursor-pointer rounded-sm py-3 text-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                  <summary className="cursor-pointer rounded-sm py-3 text-sm text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
                     {isOther
                       ? "Add your name (optional)"
                       : showNotifyEmail

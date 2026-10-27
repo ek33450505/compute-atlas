@@ -251,7 +251,7 @@ export function CommandPalette({ navLinks }: CommandPaletteProps) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Search (press Ctrl K or Command K)"
-        className="flex h-11 items-center gap-2 rounded-lg px-2 sm:px-3 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="flex h-11 items-center gap-2 rounded-lg px-2 sm:px-3 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <Search aria-hidden className="size-4" />
         <span className="hidden sm:inline font-mono text-xs">Search</span>

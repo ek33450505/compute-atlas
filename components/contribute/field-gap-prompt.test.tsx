@@ -171,7 +171,7 @@ describe("FieldGapPrompt — eligibility tracks CORRECTABLE_KEYS", () => {
 // treatment SECTION_LINK_CLASS already carries.
 // ---------------------------------------------------------------------------
 describe("FieldGapPrompt — keyboard focus visibility", () => {
-  it("renders the correction trigger button with focus-visible ring classes", () => {
+  it("renders the correction trigger button with focus-visible outline classes", () => {
     render(
       <FieldGapPrompt
         field="jobs"
@@ -184,14 +184,13 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
     const button = screen.getByRole("button", { name: /know permanent jobs\?/i });
     expect(button).toHaveClass("text-left"); // a wrapped <button> label stays left-aligned
     expect(button).toHaveClass(
-      "focus-visible:outline-none",
-      "focus-visible:ring-2",
-      "focus-visible:ring-ring",
-      "focus-visible:ring-offset-2"
+      "focus-visible:outline-2",
+      "focus-visible:outline-offset-2",
+      "focus-visible:outline-ring"
     );
   });
 
-  it("renders the tip trigger with focus-visible ring classes", () => {
+  it("renders the tip trigger with focus-visible outline classes", () => {
     render(
       <FieldGapPrompt
         field="stakeholders"
@@ -203,10 +202,9 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
 
     const link = screen.getByRole("button");
     expect(link).toHaveClass(
-      "focus-visible:outline-none",
-      "focus-visible:ring-2",
-      "focus-visible:ring-ring",
-      "focus-visible:ring-offset-2"
+      "focus-visible:outline-2",
+      "focus-visible:outline-offset-2",
+      "focus-visible:outline-ring"
     );
   });
 });

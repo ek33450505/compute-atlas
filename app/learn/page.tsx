@@ -74,7 +74,7 @@ export default function LearnIndexPage() {
             <li key={slug}>
               <Link
                 href={`/learn/${slug}`}
-                className="flex min-h-11 flex-col gap-1 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex min-h-11 flex-col gap-1 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <span className="text-sm text-foreground">{title}</span>
                 <span className="text-xs text-muted-foreground">{dek}</span>

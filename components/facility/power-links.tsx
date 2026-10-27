@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { MetaLine } from "./fact-row";
 
 const LINK_CLASSNAME =
-  "text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 // --- Predicate ---
 export async function hasPowerLinks(facility: Facility): Promise<boolean> {

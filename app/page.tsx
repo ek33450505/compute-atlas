@@ -437,7 +437,7 @@ export default async function HomePage() {
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="/map"
-              className="group inline-flex h-11 items-center gap-2.5 rounded-sm border border-primary bg-primary px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary-foreground shadow-sm transition-colors motion-reduce:transition-none hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="group inline-flex h-11 items-center gap-2.5 rounded-sm border border-primary bg-primary px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary-foreground shadow-sm transition-colors motion-reduce:transition-none hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               <Globe aria-hidden="true" className="size-4 shrink-0" />
               Explore the map
@@ -449,7 +449,7 @@ export default async function HomePage() {
 
             <Link
               href="/methodology"
-              className="inline-flex min-h-11 items-center rounded-sm bg-background/85 px-2 backdrop-blur-sm font-mono text-sm text-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 items-center rounded-sm bg-background/85 px-2 backdrop-blur-sm font-mono text-sm text-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               {/* min-h-11 (44px), not padding: the sibling map CTA is h-11, so
                   this matches its touch target and its baseline in the flex row
@@ -700,7 +700,7 @@ export default async function HomePage() {
               <Link
                 key={f.id}
                 href={`/facilities/${f.id}`}
-                className="neatline plate-hover group flex flex-col gap-2 rounded-sm border border-border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="neatline plate-hover group flex flex-col gap-2 rounded-sm border border-border p-4 transition-colors hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <span className="font-display text-base leading-snug text-foreground group-hover:text-primary transition-colors">
                   {f.name}

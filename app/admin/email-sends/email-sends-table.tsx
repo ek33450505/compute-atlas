@@ -22,7 +22,7 @@ export function EmailSendsTable({ rows, caption }: { rows: EmailSendsTableRow[];
       role="region"
       aria-label="Email sends table, scrolls horizontally"
       tabIndex={0}
-      className="overflow-x-auto rounded-lg border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="overflow-x-auto rounded-lg border border-border focus-visible:outline-2 focus-visible:outline-ring"
     >
       <table className="w-full text-left text-xs">
         <caption className="px-3 py-2 text-left text-sm text-muted-foreground">{caption}</caption>

@@ -374,7 +374,7 @@ export default async function PowerPage() {
               <li key={f.id}>
                 <Link
                   href={`/facilities/${f.id}`}
-                  className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                  className="flex min-h-11 flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                 >
                   <span className="flex flex-col gap-0.5 min-w-0">
                     <span className="text-sm text-foreground truncate">

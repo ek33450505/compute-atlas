@@ -24,7 +24,7 @@ export interface CostLedgerProps {
 // Copied verbatim from the in-prose link className just added to
 // contested-strip.tsx, so every homepage prose link shares one appearance.
 const LINK_CLASS =
-  "underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 /**
  * The six-band baseline-water-stress histogram already built into

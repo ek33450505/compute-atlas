@@ -165,7 +165,7 @@ export default async function CountiesIndexPage() {
                 {group.slug ? (
                   <Link
                     href={`/states/${group.slug}`}
-                    className="underline-offset-4 transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                    className="underline-offset-4 transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                   >
                     {group.name}
                   </Link>
@@ -183,7 +183,7 @@ export default async function CountiesIndexPage() {
                 <li key={county.slug}>
                   <Link
                     href={`/counties/${county.slug}`}
-                    className="flex min-h-11 items-baseline justify-between gap-2 rounded-sm border border-border px-4 py-3 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="flex min-h-11 items-baseline justify-between gap-2 rounded-sm border border-border px-4 py-3 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                   >
                     <span className="text-sm text-foreground truncate min-w-0">
                       {formatCountyLabel(county.name, county.state)}

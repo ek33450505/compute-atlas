@@ -37,7 +37,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
               ) : (
                 <Link
                   href={item.href}
-                  className="underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                  className="underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                 >
                   {item.label}
                 </Link>

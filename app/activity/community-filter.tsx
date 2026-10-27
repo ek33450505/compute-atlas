@@ -46,7 +46,6 @@ export function CommunityFilter({ total, communityCount, children }: CommunityFi
             "inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1.5",
             "font-mono text-xs uppercase tracking-wider cursor-pointer transition-colors",
             "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             communityOnly
               ? "border-primary bg-primary text-primary-foreground"
               : "border-border bg-popover text-foreground hover:border-primary",

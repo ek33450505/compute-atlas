@@ -148,7 +148,7 @@ export default async function AboutPage() {
             The record is not ambiguous about the shape of it. Of{" "}
             <Link
               href="/power"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               the generation being built specifically to serve compute
             </Link>
@@ -166,7 +166,7 @@ export default async function AboutPage() {
                 data on file sit where the WRI already rates{" "}
                 <Link
                   href="/learn/data-center-water-use"
-                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                 >
                   baseline water stress high or extremely high
                 </Link>
@@ -180,7 +180,7 @@ export default async function AboutPage() {
                 {frictionTotal.toLocaleString("en-US")} sites have drawn{" "}
                 <Link
                   href="/opposition"
-                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                 >
                   documented local opposition
                 </Link>
@@ -202,7 +202,7 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="View the source code and data on GitHub (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               The source code and data are public.
             </a>
@@ -455,7 +455,7 @@ export default async function AboutPage() {
           For the full sourcing standard &mdash; how facilities are found,
           verified, and deduplicated, and how to read the citations behind a
           record &mdash; see the{" "}
-          <Link href="/methodology" className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
+          <Link href="/methodology" className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm">
             methodology
           </Link>
           .
@@ -470,7 +470,7 @@ export default async function AboutPage() {
         <p className="text-sm leading-relaxed text-muted-foreground">
           <Link
             href="/contribute"
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             Community submissions
           </Link>{" "}
@@ -588,7 +588,7 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="OpenFreeMap map tiles (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               OpenFreeMap
             </a>
@@ -598,7 +598,7 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="Open Database License (ODbL) (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               Open Database License (ODbL)
             </a>
@@ -611,7 +611,7 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="Epoch AI datasets (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               Epoch AI
             </a>{" "}
@@ -621,7 +621,7 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               Creative Commons Attribution 4.0 (CC-BY)
             </a>{" "}
@@ -634,7 +634,7 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="MIT license (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               MIT license
             </a>{" "}
@@ -644,7 +644,7 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               Creative Commons Attribution 4.0 (CC-BY)
             </a>
@@ -654,14 +654,14 @@ export default async function AboutPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="View the Compute Atlas repository on GitHub (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               {siteConfig.repoUrl}
             </a>
             . When reusing the data, credit Compute Atlas as described in{" "}
             <Link
               href="/data#cite-heading"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               how to cite the data
             </Link>
@@ -696,7 +696,7 @@ export default async function AboutPage() {
         </p>
         <SupportCta />
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          <Link href="/support" className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm">
+          <Link href="/support" className="underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm">
             More on how Compute Atlas is funded
           </Link>{" "}
           &mdash; including what support does not buy.
@@ -723,7 +723,7 @@ export default async function AboutPage() {
         <Link
           href="/contribute"
           aria-label="Suggest a facility or correction using the in-app form"
-          className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="inline-flex h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-primary/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           Suggest a facility →
         </Link>
@@ -734,7 +734,7 @@ export default async function AboutPage() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label="Open an issue on GitHub to suggest a correction or new facility (opens in new tab)"
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             or open an issue on GitHub
           </a>

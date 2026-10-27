@@ -489,7 +489,7 @@ function AddressSearchField({
               <button
                 type="button"
                 onClick={() => handleResultSelect(result)}
-                className="w-full rounded px-2 py-1 text-left text-sm text-foreground hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full rounded px-2 py-1 text-left text-sm text-foreground hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {result.label}
               </button>
@@ -881,7 +881,7 @@ export function ContributeFacilityForm({
             out, it will appear on the map and on the{" "}
             <Link
               href="/activity"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               public activity feed
             </Link>
@@ -889,7 +889,7 @@ export function ContributeFacilityForm({
             this one. Contributors who gave a name are credited on the{" "}
             <Link
               href="/contributors"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               contributors page
             </Link>

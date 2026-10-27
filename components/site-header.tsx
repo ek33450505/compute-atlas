@@ -59,7 +59,7 @@ export function SiteHeader() {
         <Link
           href="/"
           aria-label={`${siteConfig.name}, home`}
-          className="flex shrink-0 whitespace-nowrap flex-col items-start gap-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          className="flex shrink-0 whitespace-nowrap flex-col items-start gap-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
         >
           <Wordmark showTagline />
         </Link>
@@ -76,7 +76,7 @@ export function SiteHeader() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label="View source on GitHub"
-            className="hidden md:flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="hidden md:flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <Code2 aria-hidden className="size-4" />
           </a>

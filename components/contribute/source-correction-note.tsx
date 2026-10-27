@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const LINK_CLASSNAME =
-  "underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 /**
  * One quotable, server-rendered sentence stating that Compute Atlas is a

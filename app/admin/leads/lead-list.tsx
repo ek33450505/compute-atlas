@@ -144,7 +144,7 @@ function TriagePanel({ triage, submittedUrl }: { triage: LeadTriage | null; subm
               target="_blank"
               rel="noreferrer noopener"
               aria-label={`${triage.finalUrl} (opens in new tab)`}
-              className="underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
             >
               {triage.finalUrl}
             </a>
@@ -284,7 +284,7 @@ function StageDialog({
           tabIndex={0}
           role="group"
           aria-label="Stage submission form"
-          className="flex max-h-[60vh] flex-col gap-3 overflow-y-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex max-h-[60vh] flex-col gap-3 overflow-y-auto focus-visible:outline-2 focus-visible:outline-ring"
         >
           <fieldset className="flex flex-col gap-1.5">
             <legend className="text-sm font-medium">Kind</legend>
@@ -294,7 +294,7 @@ function StageDialog({
                 name={`${idPrefix}-kind`}
                 checked={kind === "create"}
                 onChange={() => setKind("create")}
-                className="focus-visible:ring-2 focus-visible:ring-ring"
+                className="focus-visible:outline-2 focus-visible:outline-ring"
               />
               New facility
             </label>
@@ -304,7 +304,7 @@ function StageDialog({
                 name={`${idPrefix}-kind`}
                 checked={kind === "update"}
                 onChange={() => setKind("update")}
-                className="focus-visible:ring-2 focus-visible:ring-ring"
+                className="focus-visible:outline-2 focus-visible:outline-ring"
               />
               Update existing facility
             </label>
@@ -400,7 +400,7 @@ function StageDialog({
 }
 
 const LINK_CLASS =
-  "text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring";
 
 /** UTC calendar date, so the label is identical on the server, the client and CI. */
 function formatReviewDate(value: Date | string): string {
@@ -546,7 +546,7 @@ function LeadRowCard({
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label={`${lead.url} (opens in new tab)`}
-                className="text-sm font-medium break-all underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="text-sm font-medium break-all underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {lead.url}
               </a>
@@ -570,7 +570,7 @@ function LeadRowCard({
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label={`View existing facility ${id} (opens in new tab)`}
-                className="text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {id}
               </Link>
@@ -591,7 +591,7 @@ function LeadRowCard({
             Staged as submission{" "}
             <Link
               href="/admin/submissions"
-              className="text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
             >
               {lead.promotedSubmissionId}
             </Link>

@@ -229,7 +229,7 @@ export function Explorer(props: ExplorerProps) {
       <div className="space-y-4">
         <Link
           href={mapHref}
-          className="inline-flex items-center gap-1 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="inline-flex items-center gap-1 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           ← View map
         </Link>
@@ -302,7 +302,7 @@ export function Explorer(props: ExplorerProps) {
           type="button"
           aria-pressed={view === "map"}
           onClick={() => setView("map")}
-          className="px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-pressed:bg-foreground aria-pressed:text-background hover:bg-muted disabled:opacity-50"
+          className="px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring aria-pressed:bg-foreground aria-pressed:text-background hover:bg-muted disabled:opacity-50"
         >
           Map view
         </button>
@@ -310,7 +310,7 @@ export function Explorer(props: ExplorerProps) {
           type="button"
           aria-pressed={view === "table"}
           onClick={() => setView("table")}
-          className="px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-pressed:bg-foreground aria-pressed:text-background hover:bg-muted disabled:opacity-50 border-l border-border"
+          className="px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring aria-pressed:bg-foreground aria-pressed:text-background hover:bg-muted disabled:opacity-50 border-l border-border"
         >
           Table view
         </button>

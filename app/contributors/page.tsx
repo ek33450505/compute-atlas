@@ -124,7 +124,7 @@ export default async function ContributorsPage() {
             No public credits yet. Attribution is an optional field on{" "}
             <Link
               href="/contribute"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               every submission
             </Link>{" "}
@@ -166,7 +166,7 @@ export default async function ContributorsPage() {
               Want to be listed here?{" "}
               <Link
                 href="/contribute"
-                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
               >
                 Submit a correction or addition
               </Link>{" "}

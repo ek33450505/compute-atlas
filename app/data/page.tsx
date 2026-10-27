@@ -20,12 +20,12 @@ export const metadata: Metadata = {
 };
 
 const LINK_CLASS =
-  "underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 const DOWNLOAD_CLASS =
   "inline-flex h-8 items-center gap-1.5 rounded-sm border border-border bg-background px-3 " +
-  "text-sm font-medium hover:bg-muted focus-visible:outline-none focus-visible:ring-2 " +
-  "focus-visible:ring-ring focus-visible:ring-offset-2";
+  "text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 " +
+  "focus-visible:outline-ring";
 
 /**
  * /data — plain-language front door to the full dataset download. Built for
