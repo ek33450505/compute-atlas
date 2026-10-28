@@ -346,10 +346,10 @@ export default function SupportPage() {
               href={siteConfig.newsletterUrl}
               target="_blank"
               rel="noreferrer noopener"
-              aria-label="Subscribe to the monthly newsletter on Buttondown (opens in new tab)"
+              aria-label="Subscribe to the newsletter on Buttondown (opens in new tab)"
               className={LINK_CLASS}
             >
-              the monthly newsletter <span aria-hidden="true">↗</span>
+              the newsletter <span aria-hidden="true">↗</span>
             </a>{" "}
             or follow{" "}
             <a

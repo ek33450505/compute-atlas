@@ -38,15 +38,14 @@ export const siteConfig = {
   /**
    * The one on-site funding destination. Ko-fi takes guest checkout (no
    * account), card or PayPal, one-off or monthly: the right barrier for this
-   * site's audience (residents, local journalists, county officials). GitHub
-   * Sponsors is kept only on the repository (.github/FUNDING.yml and the
-   * issue-template contact link), deliberately not here.
+   * site's audience (residents, local journalists, county officials). It is
+   * the only funding path anywhere: GitHub Sponsors was disabled on 2026-10-28.
    */
   kofiUrl: "https://ko-fi.com/L2T725R7FV",
   /** Public Bluesky profile for the project. */
   blueskyUrl: "https://bsky.app/profile/compute-atlas.com",
   /**
-   * Monthly newsletter subscribe page. A link only (no embedded form, so no
+   * Newsletter subscribe page. A link only (no embedded form, so no
    * CSP `form-action`/`frame-src` change). The list is held by Buttondown; the
    * site's facility/state watch subscribers are NEVER imported into it (they
    * opted into alerts only).

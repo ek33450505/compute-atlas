@@ -103,7 +103,7 @@ describe("SiteFooter", () => {
   });
 
   it("renders every Data & project column link with the correct href", () => {
-    render(<SiteFooter />);
+    const { container } = render(<SiteFooter />);
     expect(
       screen.getByRole("link", { name: "About the project" })
     ).toHaveAttribute("href", "/about");
@@ -140,8 +140,9 @@ describe("SiteFooter", () => {
       screen.getByRole("link", { name: /Compute Atlas on Bluesky/i })
     ).toHaveAttribute("href", "https://bsky.app/profile/compute-atlas.com");
     expect(
-      screen.getByRole("link", { name: /Monthly newsletter on Buttondown/i })
+      screen.getByRole("link", { name: /^Newsletter on Buttondown/i })
     ).toHaveAttribute("href", "https://buttondown.com/compute-atlas");
+    expect(container.innerHTML).not.toMatch(/monthly newsletter/i);
   });
 
   it("marks external links with target=_blank and rel=noreferrer noopener", () => {

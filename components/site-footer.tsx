@@ -156,7 +156,7 @@ export function SiteFooter() {
                   href={siteConfig.newsletterUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label="Monthly newsletter on Buttondown (opens in new tab)"
+                  aria-label="Newsletter on Buttondown (opens in new tab)"
                   className={EXTERNAL_NAV_LINK_CLASS}
                 >
                   Newsletter

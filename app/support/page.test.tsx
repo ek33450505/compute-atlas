@@ -85,9 +85,10 @@ describe("SupportPage", () => {
   it("links the newsletter and Bluesky profile and states where the list is held", () => {
     const { container } = render(<SupportPage />);
     const newsletter = screen.getByRole("link", {
-      name: /Subscribe to the monthly newsletter on Buttondown/i,
+      name: /Subscribe to the newsletter on Buttondown/i,
     });
     expect(newsletter).toHaveAttribute("href", "https://buttondown.com/compute-atlas");
+    expect(container.innerHTML).not.toMatch(/monthly newsletter/i);
     expect(newsletter).toHaveAttribute("target", "_blank");
     expect(newsletter).toHaveAttribute("rel", "noreferrer noopener");
     const bluesky = screen.getByRole("link", {
