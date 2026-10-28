@@ -647,6 +647,15 @@
     }
   },
   "acciona-tatanka-wind-mcpherson-county-sd": {
+    "nearestWater": {
+      "name": "Rath Lake",
+      "kind": "lake",
+      "distanceMi": 5.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4097,12 +4106,30 @@
     }
   },
   "avangrid-buffalo-ridge-i-wind-brookings-county-sd": {
+    "nearestWater": {
+      "name": "Deer Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
     }
   },
   "avangrid-minndakota-wind-brookings-county-sd": {
+    "nearestWater": {
+      "name": "Medary Creek",
+      "kind": "river",
+      "distanceMi": 4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -10052,6 +10079,15 @@
     }
   },
   "cogent-fairfax-allendale-county-sc": {
+    "nearestWater": {
+      "name": "Caw Caw Swamp",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 11.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -19372,6 +19408,15 @@
     }
   },
   "elora-solar-lincoln-county-tn": {
+    "nearestWater": {
+      "name": "Little Huckleberry Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 15.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -19763,6 +19808,15 @@
     }
   },
   "engie-dakota-range-iii-wind-grant-county-sd": {
+    "nearestWater": {
+      "name": "Big Sioux River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -23711,6 +23765,15 @@
     }
   },
   "geronimo-crocker-wind-clark-county-sd": {
+    "nearestWater": {
+      "name": "Mallard Slough",
+      "kind": "lake",
+      "distanceMi": 2.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -31628,6 +31691,15 @@
     }
   },
   "mckellar-solar-madison-county-tn": {
+    "nearestWater": {
+      "name": "Cub Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 5.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -34720,6 +34792,15 @@
     }
   },
   "national-grid-renewables-wild-springs-solar-pennington-county-sd": {
+    "nearestWater": {
+      "name": "Boxelder Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -35474,12 +35555,30 @@
     }
   },
   "nextera-crowned-ridge-i-wind-codington-county-sd": {
+    "nearestWater": {
+      "name": "Mud Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 4.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
     }
   },
   "nextera-day-county-wind-day-county-sd": {
+    "nearestWater": {
+      "name": "Mud Creek",
+      "kind": "river",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -35672,6 +35771,15 @@
     }
   },
   "nextera-south-dakota-wind-energy-center-hyde-county-sd": {
+    "nearestWater": {
+      "name": "Chapelle Creek",
+      "kind": "river",
+      "distanceMi": 1.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -35701,6 +35809,15 @@
     }
   },
   "nextera-wessington-springs-wind-jerauld-county-sd": {
+    "nearestWater": {
+      "name": "East Fork Smith Creek",
+      "kind": "river",
+      "distanceMi": 3.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -36187,6 +36304,15 @@
     }
   },
   "northwestern-beethoven-wind-bon-homme-county-sd": {
+    "nearestWater": {
+      "name": "Emanuel Creek",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 10.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -42959,6 +43085,15 @@
     }
   },
   "ross-stores-rock-hill-sc": {
+    "nearestWater": {
+      "name": "Manchester Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -44525,6 +44660,15 @@
     }
   },
   "sdcl-project-midspan-bradley-county-tn": {
+    "nearestWater": {
+      "name": "Little South Mouse Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -45135,6 +45279,15 @@
     }
   },
   "silicon-ranch-orangeburg-county-solar-cordova-sc": {
+    "nearestWater": {
+      "name": "Anderson Branch",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -45473,6 +45626,15 @@
     }
   },
   "skyhawk-solar-obion-county-tn": {
+    "nearestWater": {
+      "name": "North Fork Obion River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 11.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -52784,12 +52946,30 @@
     }
   },
   "wec-coyote-ridge-wind-brookings-county-sd": {
+    "nearestWater": {
+      "name": "Deer Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
     }
   },
   "wec-tatanka-ridge-wind-deuel-county-sd": {
+    "nearestWater": {
+      "name": "Peg Munky Run",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -53694,6 +53874,15 @@
     }
   },
   "xcel-dakota-range-i-ii-wind-codington-county-sd": {
+    "nearestWater": {
+      "name": "Soo Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -53761,6 +53950,15 @@
     }
   },
   "yum-yum-solar-fayette-county-tn": {
+    "nearestWater": {
+      "name": "Laurel Creek Canal",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
