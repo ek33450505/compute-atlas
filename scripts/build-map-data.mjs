@@ -1648,10 +1648,20 @@ export async function computeSitingContext(
  * are ordered most-severe-first using each label's numeric `cat` (WRI
  * Aqueduct categories run low->high severity, with the "Arid and Low Water
  * Use" special case at cat -1 sorting last, as intended).
+ *
+ * Counts cover only facilities present in `data/facilities.json` (`liveIds`,
+ * a required Set of facility ids). The siting-context file legitimately keeps
+ * orphan entries for retired facilities — they survive `--skip-nhd` runs until
+ * a full or `--backfill-nhd` run prunes them — and counting them would
+ * over-count the map legend.
  */
-function computeDistribution(sitingContext, fieldName) {
+export function computeDistribution(sitingContext, fieldName, liveIds) {
+  if (!(liveIds instanceof Set)) {
+    throw new TypeError('computeDistribution: liveIds must be a Set of facility ids');
+  }
   const byLabel = new Map(); // label -> { count, cat }
-  for (const entry of Object.values(sitingContext)) {
+  for (const [id, entry] of Object.entries(sitingContext)) {
+    if (!liveIds.has(id)) continue;
     const field = entry?.[fieldName];
     if (!field || typeof field.label !== 'string') continue;
     const existing = byLabel.get(field.label);
@@ -1834,8 +1844,9 @@ async function main() {
   mkdirSync(dirname(SITING_CONTEXT_OUT), { recursive: true });
   writeFileSync(SITING_CONTEXT_OUT, JSON.stringify(sitingContext, null, 2), 'utf8');
 
-  const waterStressDist = computeDistribution(sitingContext, 'waterStress');
-  const groundwaterDist = computeDistribution(sitingContext, 'groundwaterDecline');
+  const liveIds = new Set(facilities.map((f) => f.id));
+  const waterStressDist = computeDistribution(sitingContext, 'waterStress', liveIds);
+  const groundwaterDist = computeDistribution(sitingContext, 'groundwaterDecline', liveIds);
 
   const manifest = {
     ...manifestBase,
