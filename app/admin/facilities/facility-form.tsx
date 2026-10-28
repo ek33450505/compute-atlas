@@ -67,6 +67,9 @@ export { emptyFacilityFormState, facilityToFormState, type FacilityFormState };
  * objects (never a partial/omitted-key patch) — required because
  * `updateFacility` does a shallow top-level merge; a partial nested object
  * would look "present" to the merge and silently blank sibling fields.
+ * `location` always carries lat, lon, state and precision, so
+ * `mergeFacilityPatch` replaces it rather than merging, and a blanked
+ * `city`/`county` (omitted here) is cleared instead of inherited.
  */
 export function buildFacilityPayload(state: FacilityFormState): Record<string, unknown> {
   const location: Record<string, unknown> = {

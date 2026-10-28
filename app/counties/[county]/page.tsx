@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 
 import { getCounties, getCountyBySlug, getFacilitiesByCounty } from "@/lib/data";
 import { previewSubset } from "@/lib/build-params";
+import { sumCapacityMw } from "@/lib/capacity-sums";
 import { formatPower } from "@/lib/format";
 import { formatCountyLabel } from "@/lib/metros";
 import { stateNameFromCode, stateSlugFromCode } from "@/lib/us-states";
@@ -14,14 +15,6 @@ import { watchAreasEnabled } from "@/lib/watch-target-types";
 import { SourceCorrectionNote } from "@/components/contribute/source-correction-note";
 
 export const revalidate = 86400;
-
-function sumOperationalMw(facilities: Facility[]): number {
-  return facilities.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0);
-}
-
-function sumPlannedMw(facilities: Facility[]): number {
-  return facilities.reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
-}
 
 /**
  * The most frequently occurring operators among a county's facilities, most
@@ -112,8 +105,8 @@ export default async function CountyPage({
   const label = formatCountyLabel(county.name, county.state);
   const stateName = stateNameFromCode(county.state) ?? county.state;
   const stateSlug = stateSlugFromCode(county.state);
-  const operationalMw = sumOperationalMw(facilities);
-  const plannedMw = sumPlannedMw(facilities);
+  const operationalMw = sumCapacityMw(facilities, "operational");
+  const plannedMw = sumCapacityMw(facilities, "planned");
   const topOperators = topOperatorsFor(facilities);
 
   // Second paragraph: an operational-vs-planned capacity read, phrased

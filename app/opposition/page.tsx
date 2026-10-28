@@ -4,10 +4,15 @@ import type { Metadata } from "next";
 import {
   getFacilitiesByCommunityStatus,
   getCommunityReceptionCounts,
+  getFrictionTotal,
   getNotableOppositionCases,
   getDefeatedProjects,
 } from "@/lib/data";
-import { COMMUNITY_RECEPTION_META, type CommunityReception } from "@/lib/community";
+import {
+  COMMUNITY_RECEPTION_META,
+  OPPOSITION_HEADLINE,
+  type CommunityReception,
+} from "@/lib/community";
 import { formatLocation } from "@/lib/format";
 import {
   FRICTION_CAUSES_FINDING,
@@ -55,7 +60,7 @@ export default async function OppositionPage() {
       facilities: await getFacilitiesByCommunityStatus(status),
     }))
   );
-  const total = FRICTION_ORDER.reduce((sum, status) => sum + counts[status], 0);
+  const total = getFrictionTotal(counts);
   const frictionStateCodes = new Set(
     groups.flatMap((g) => g.facilities.map((f) => f.location.state))
   );
@@ -97,7 +102,7 @@ export default async function OppositionPage() {
 
       <PageMasthead
         eyebrow="Community friction"
-        title="Data center opposition across the United States"
+        title={OPPOSITION_HEADLINE}
         dek="Where the buildout meets resistance."
       >
         <p className="max-w-2xl text-base text-muted-foreground">

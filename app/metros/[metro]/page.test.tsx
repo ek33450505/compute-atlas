@@ -51,7 +51,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import MetroPage, { generateMetadata } from "./page";
 
 beforeEach(() => {
@@ -156,5 +156,39 @@ describe("MetroPage — watch button (WATCH_AREAS_ENABLED kill switch)", () => {
     mockGetFacilitiesByMetro.mockResolvedValue([makeFacility()]);
     render(await MetroPage({ params: Promise.resolve({ metro: "northern-virginia" }) }));
     expect(screen.queryByRole("button", { name: /Watch this metro/ })).not.toBeInTheDocument();
+  });
+});
+
+/**
+ * The stat-row tile for a label. Scoped to the label span (uppercase,
+ * wide-tracked) so a bare figure that also appears on a facility card or in
+ * the intro prose cannot satisfy the assertion by accident.
+ */
+function statTile(label: string): HTMLElement {
+  const matches = screen
+    .getAllByText(label)
+    .filter((el) => el.tagName === "SPAN" && el.classList.contains("tracking-widest"));
+  if (matches.length !== 1) {
+    throw new Error(`expected exactly one stat tile labeled "${label}", found ${matches.length}`);
+  }
+  const tile = matches[0].closest("div");
+  if (!tile) throw new Error(`no tile wrapping label "${label}"`);
+  return tile;
+}
+
+describe("MetroPage — capacity stat row", () => {
+  it("sums each capacity tier across the loader's facilities, treating a missing figure as 0", async () => {
+    mockGetFacilitiesByMetro.mockResolvedValue([
+      makeFacility({ id: "a", capacityMw: { operational: 1200, planned: 300 } }),
+      makeFacility({ id: "b", capacityMw: { operational: 300 } }),
+      makeFacility({ id: "c", capacityMw: { planned: 100 } }),
+      makeFacility({ id: "d" }),
+    ]);
+
+    render(await MetroPage({ params: Promise.resolve({ metro: "northern-virginia" }) }));
+
+    expect(within(statTile("Facilities")).getByText("4")).toBeInTheDocument();
+    expect(within(statTile("Operational")).getByText("1.5 GW")).toBeInTheDocument();
+    expect(within(statTile("Planned")).getByText("400 MW")).toBeInTheDocument();
   });
 });

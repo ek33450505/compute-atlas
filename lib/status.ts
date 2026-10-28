@@ -66,6 +66,15 @@ export const STATUS_META: Record<Status, StatusMeta> = {
 };
 
 /**
+ * Narrows a URL segment to a Status, or undefined for anything that is not one
+ * of the five known values. Shared by the /status/[status] page and its share
+ * card so both resolve a slug identically.
+ */
+export function parseStatus(raw: string): Status | undefined {
+  return STATUS_ORDER.find((s) => s === raw);
+}
+
+/**
  * Returns the StatusMeta for a given status value.
  */
 export function getStatusMeta(s: Status): StatusMeta {

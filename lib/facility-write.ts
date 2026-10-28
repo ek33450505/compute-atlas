@@ -8,6 +8,7 @@ import { facilitiesTable, type FacilityRow } from "@/lib/db/schema";
 import { docToRow } from "@/lib/db/serialize";
 import { computeDocDiff, type DiffEntry } from "@/lib/doc-diff";
 import { insertFacilityHistoryRow } from "@/lib/facility-history";
+import { isPlainObject, mergeFacilityPatch } from "@/lib/facility-patch";
 import { statusUpdateIntentSchema, applyStatusUpdate } from "@/lib/status-update";
 import { enrichmentUpdateIntentSchema, applyEnrichmentUpdate } from "@/lib/enrichment-update";
 
@@ -145,9 +146,12 @@ export async function createFacility(
  * the whole merged object against `facilitySchema`. `id` is always forced
  * from the URL — a body carrying a different `id` can never move a record.
  *
- * PATCH replaces top-level fields wholesale (no deep merge): to change a
- * nested field like `location.city`, send the full `location` object. YAGNI —
- * a deep-merge patch format isn't needed yet.
+ * The merge itself is `mergeFacilityPatch` (lib/facility-patch.ts): top-level
+ * fields replace wholesale, except that a `location` patch restating none of
+ * lat, lon or state is merged, so a `city` edit can't downgrade an exact pin.
+ * The lead pre-validation, the public-correction pre-validation and the admin
+ * diff preview call the same function. A `patch` that is not a plain object
+ * (null, a string, an array) is a 400.
  *
  * `source` attributes the resulting audit-log row (see `createFacility`).
  */
@@ -156,13 +160,16 @@ export async function updateFacility(
   patch: unknown,
   source: string = "admin-direct"
 ): Promise<WriteResult> {
+  if (!isPlainObject(patch)) {
+    return { ok: false, status: 400, error: "Patch must be a JSON object" };
+  }
   const found = await fetchExistingRowOr404(id);
   if (!found.ok) {
     return found;
   }
   const existingRow = found.row;
 
-  const merged = { ...existingRow.doc, ...(patch as object), id };
+  const merged = { ...mergeFacilityPatch(existingRow.doc, patch), id };
   const parsed = facilitySchema.safeParse(merged);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };

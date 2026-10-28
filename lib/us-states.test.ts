@@ -31,6 +31,14 @@ describe("us-states", () => {
     }
   });
 
+  it("returns undefined for Object.prototype keys instead of inherited members", () => {
+    for (const key of ["__proto__", "constructor", "toString", "hasOwnProperty", "valueOf"]) {
+      expect(stateCodeFromSlug(key)).toBeUndefined();
+      expect(stateNameFromCode(key)).toBeUndefined();
+      expect(stateSlugFromCode(key)).toBeUndefined();
+    }
+  });
+
   it("round-trips every territory code through name, slug, and back", () => {
     for (const code of Object.keys(US_TERRITORY_NAMES)) {
       const name = stateNameFromCode(code);

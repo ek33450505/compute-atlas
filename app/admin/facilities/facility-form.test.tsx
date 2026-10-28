@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import { mergeFacilityPatch } from "@/lib/facility-patch";
 import type { Facility } from "@/lib/schema";
 
 // vi.mock calls are hoisted above imports by Vitest. A plain top-level
@@ -156,6 +157,19 @@ describe("buildFacilityPayload — shallow-merge safety", () => {
     expect(location.state).toBe("TX");
     expect(location.city).toBe("Austin");
     expect(location.precision).toBe("exact");
+  });
+
+  it("submits a location that replaces the stored one under the patch merge, so a blanked city and county are cleared", () => {
+    const stored = makeFacility({
+      location: { lat: 30, lon: -90, state: "TX", city: "Austin", county: "Travis", precision: "exact" },
+    });
+    const state = facilityToFormState(stored);
+    state.location.city = "";
+    state.location.county = "";
+
+    const merged = mergeFacilityPatch(stored, buildFacilityPayload(state));
+
+    expect(merged.location).toEqual({ lat: 30, lon: -90, state: "TX", precision: "exact" });
   });
 
   it("always submits capacityMw as a complete object even when only one sub-field is set", () => {

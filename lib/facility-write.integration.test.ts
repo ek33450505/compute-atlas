@@ -264,6 +264,112 @@ describe("updateFacility", () => {
     if (result.ok) return;
     expect(result.status).toBe(404);
   });
+
+  it("shallow-merges a partial location patch, keeping lat, lon and an exact precision", async () => {
+    const seedDoc = makeSeedDoc(); // location: { lat: 33.4, lon: -84.4, state: "GA", precision: "exact" }
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await updateFacility(seedDoc.id, { location: { city: "New" } });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.facility.location).toEqual({ ...seedDoc.location, city: "New" });
+    expect(result.facility.location.precision).toBe("exact");
+  });
+
+  it("stores a restated pin without precision as approximate, never exact by omission, and drops the old city and county", async () => {
+    const seedDoc = makeSeedDoc(); // precision "exact"
+    seedDoc.location = { ...seedDoc.location, city: "Atlanta", county: "Fulton" };
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await updateFacility(seedDoc.id, {
+      location: { lat: 35, lon: -80, state: "NC" },
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.facility.location).toEqual({ lat: 35, lon: -80, state: "NC", precision: "approximate" });
+  });
+
+  it("merges a precision-only patch, keeping the stored coordinates", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await updateFacility(seedDoc.id, { location: { precision: "approximate" } });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.facility.location).toEqual({ ...seedDoc.location, precision: "approximate" });
+  });
+
+  it("400s a state-only location patch, as it did before the merge existed", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await updateFacility(seedDoc.id, { location: { state: "SC" } });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(400);
+  });
+
+  it("replaces a complete location, so omitting an optional key clears it (the admin form's contract)", async () => {
+    const seedDoc = makeSeedDoc();
+    seedDoc.location = { ...seedDoc.location, city: "Atlanta", county: "Fulton" };
+    await seedFacility(tdb.db, seedDoc);
+
+    // The admin form drops `city`/`county` from the payload when the field is blanked.
+    const result = await updateFacility(seedDoc.id, {
+      location: { lat: 33.4, lon: -84.4, state: "GA", precision: "exact" },
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.facility.location).toEqual({ lat: 33.4, lon: -84.4, state: "GA", precision: "exact" });
+  });
+
+  it("still replaces top-level fields other than location wholesale", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+    const sources = [makeSource("only")];
+
+    const result = await updateFacility(seedDoc.id, {
+      sources,
+      statusHistory: [{ status: "permitted", date: "2025-06-01", sourceIndex: 0 }],
+      community: { status: "supported", sourceIndex: 0 },
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.facility.sources).toHaveLength(1);
+  });
+
+  it.each([
+    ["null", null],
+    ["a string", "abc"],
+    ["an array", [1, 2]],
+    ["a number", 7],
+  ])("400s when the whole patch is %s and leaves the stored doc untouched", async (_label, patch) => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+
+    // The admin PATCH route passes request.json() through unvalidated.
+    const result = await updateFacility(seedDoc.id, patch);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(400);
+
+    const [row] = await tdb.db.select().from(facilitiesTable).where(eq(facilitiesTable.id, seedDoc.id));
+    expect(row.doc).toEqual(seedDoc);
+  });
+
+  it.each([
+    ["null", null],
+    ["a string", "Atlanta"],
+    ["an array", [33.4, -84.4]],
+  ])("rejects a non-object location (%s) with a 400 instead of merging it", async (_label, location) => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await updateFacility(seedDoc.id, { location });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(400);
+  });
 });
 
 describe("deleteFacility", () => {

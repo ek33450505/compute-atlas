@@ -102,7 +102,7 @@ function slugify(name: string): string {
 }
 
 /** Precomputed slug -> code map (states, DC, and territories), built once at module scope for O(1) reverse lookup. */
-const SLUG_TO_CODE: Record<string, string> = Object.fromEntries(
+const SLUG_TO_CODE: ReadonlyMap<string, string> = new Map(
   Object.entries(ALL_JURISDICTION_NAMES).map(([code, name]) => [slugify(name), code])
 );
 
@@ -119,7 +119,7 @@ export function stateSlugFromCode(code: string): string | undefined {
 
 /** Returns the 2-letter jurisdiction code for a URL slug (case-insensitive), or undefined if unknown. */
 export function stateCodeFromSlug(slug: string): string | undefined {
-  return SLUG_TO_CODE[slug.toLowerCase()];
+  return SLUG_TO_CODE.get(slug.toLowerCase());
 }
 
 /** The District of Columbia's `location.state` code. It is a jurisdiction, not a state. */

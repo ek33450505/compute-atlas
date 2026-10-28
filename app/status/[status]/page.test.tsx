@@ -31,7 +31,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import StatusPage, { generateMetadata } from "./page";
 
 beforeEach(() => {
@@ -148,5 +148,57 @@ describe("StatusPage — DC-aware fact line", () => {
     render(page);
 
     expect(screen.getByText(/spanning 2 states\./)).toBeInTheDocument();
+  });
+});
+
+/**
+ * The stat-row tile for a label. Scoped to the label span (uppercase,
+ * wide-tracked) so a bare figure that also appears on a facility card or in
+ * the intro prose cannot satisfy the assertion by accident.
+ */
+function statTile(label: string): HTMLElement {
+  const matches = screen
+    .getAllByText(label)
+    .filter((el) => el.tagName === "SPAN" && el.classList.contains("tracking-widest"));
+  if (matches.length !== 1) {
+    throw new Error(`expected exactly one stat tile labeled "${label}", found ${matches.length}`);
+  }
+  const tile = matches[0].closest("div");
+  if (!tile) throw new Error(`no tile wrapping label "${label}"`);
+  return tile;
+}
+
+describe("StatusPage — capacity stat", () => {
+  const FACILITIES = [
+    makeFacility({ id: "a", capacityMw: { operational: 600, planned: 100 } }),
+    makeFacility({ id: "b", capacityMw: { operational: 900, planned: 1500 } }),
+    makeFacility({ id: "c" }),
+  ];
+
+  it("operational: shows the summed operational capacity under 'Operational capacity'", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(FACILITIES);
+
+    render(await StatusPage({ params: Promise.resolve({ status: "operational" }) }));
+
+    expect(within(statTile("Sites")).getByText("3")).toBeInTheDocument();
+    expect(within(statTile("Operational capacity")).getByText("1.5 GW")).toBeInTheDocument();
+  });
+
+  it("proposed: shows the summed planned capacity under 'Planned capacity'", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(FACILITIES);
+
+    render(await StatusPage({ params: Promise.resolve({ status: "proposed" }) }));
+
+    expect(within(statTile("Planned capacity")).getByText("1.6 GW")).toBeInTheDocument();
+  });
+
+  it("cancelled: shows the summed planned capacity under the cancelled label", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(FACILITIES);
+
+    render(await StatusPage({ params: Promise.resolve({ status: "cancelled" }) }));
+
+    expect(
+      within(statTile("Planned capacity (cancelled)")).getByText("1.6 GW")
+    ).toBeInTheDocument();
   });
 });

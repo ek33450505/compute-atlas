@@ -477,6 +477,21 @@ describe("stageLeadSubmission", () => {
     expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
   });
 
+  it("pre-validates an update with the same merge updateFacility performs (a partial location keeps its lat and lon)", async () => {
+    await seedFacility(tdb.db, makeDoc("existing-site"));
+    const leadId = await makeLead();
+
+    const result = await stageLeadSubmission(leadId, {
+      kind: "update",
+      targetFacilityId: "existing-site",
+      payload: { location: { city: "New" } },
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect((await getSubmission(result.submissionId)).payload).toEqual({ location: { city: "New" } });
+  });
+
   it("400s an update without a target and 404s an unknown target", async () => {
     const leadId = await makeLead();
     expect(await stageLeadSubmission(leadId, { kind: "update", payload: {} })).toMatchObject({

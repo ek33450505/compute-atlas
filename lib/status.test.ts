@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { STATUS_ORDER, STATUS_META, getStatusMeta, getStatusColor } from "./status";
+import { STATUS_ORDER, STATUS_META, getStatusMeta, getStatusColor, parseStatus } from "./status";
 
 describe("STATUS_ORDER", () => {
   it("has exactly 5 entries", () => {
@@ -62,4 +62,17 @@ describe("getStatusColor", () => {
     expect(getStatusColor("operational")).toBe("var(--status-operational)");
     expect(getStatusColor("cancelled")).toBe("var(--status-cancelled)");
   });
+});
+
+describe("parseStatus", () => {
+  it.each(STATUS_ORDER)("resolves the known status %s", (status) => {
+    expect(parseStatus(status)).toBe(status);
+  });
+
+  it.each(["bogus", "", "OPERATIONAL", "under-construction", "__proto__", "constructor"])(
+    "returns undefined for %j",
+    (raw) => {
+      expect(parseStatus(raw)).toBeUndefined();
+    }
+  );
 });
