@@ -159,16 +159,25 @@ export function facilityShard(id: string): number {
   return (h >>> 0) % FACILITY_CACHE_SHARDS;
 }
 
+/** gzip+base64 of a JSON-serializable value: the form every compressed cache entry is stored in. */
+function encodeGzipJson(value: unknown): string {
+  return gzipSync(Buffer.from(JSON.stringify(value), "utf8")).toString("base64");
+}
+
+/** Inverse of `encodeGzipJson`. */
+function decodeGzipJson<T>(blob: string): T {
+  return JSON.parse(gunzipSync(Buffer.from(blob, "base64")).toString("utf8")) as T;
+}
+
 /** gzip+base64 of the records belonging to `shard`. */
 export function encodeFacilityShard(facilities: Facility[], shard: number): string {
-  const mine = facilities.filter((f) => facilityShard(f.id) === shard);
-  return gzipSync(Buffer.from(JSON.stringify(mine), "utf8")).toString("base64");
+  return encodeGzipJson(facilities.filter((f) => facilityShard(f.id) === shard));
 }
 
 /** Inverse of `encodeFacilityShard` over every shard, in `loadFacilitiesUncached` order. */
 export function mergeFacilityShards(blobs: string[]): Facility[] {
   return blobs
-    .flatMap((blob) => JSON.parse(gunzipSync(Buffer.from(blob, "base64")).toString("utf8")) as Facility[])
+    .flatMap((blob) => decodeGzipJson<Facility[]>(blob))
     .sort((a, b) => a.id.localeCompare(b.id));
 }
 
@@ -507,6 +516,35 @@ async function loadPowerGenerationUncached(): Promise<PowerGenerationFacility[]>
 }
 
 /**
+ * gzip+base64 of the power_generation list. The plain-JSON entry reached
+ * 1,051,986 chars (UTF-16 units, not bytes) on 2026-10-28, past the 50% guard on Next's 2 MiB entry limit
+ * (see `FACILITY_CACHE_SHARDS`). Order is preserved; no sort.
+ */
+export function encodePowerGeneration(list: PowerGenerationFacility[]): string {
+  return encodeGzipJson(list);
+}
+
+/** Inverse of `encodePowerGeneration`. */
+export function decodePowerGeneration(blob: string): PowerGenerationFacility[] {
+  return decodeGzipJson<PowerGenerationFacility[]>(blob);
+}
+
+/**
+ * Single-slot memo for `decodePowerGeneration`, keyed on the blob's content
+ * (same reasoning as `createFacilityMergeMemo`: it cannot serve stale data, and
+ * callers must not mutate the shared array).
+ */
+export function createPowerGenerationDecodeMemo(): (blob: string) => PowerGenerationFacility[] {
+  let last: { blob: string; list: PowerGenerationFacility[] } | undefined;
+  return (blob) => {
+    if (last && last.blob === blob) return last.list;
+    const list = decodePowerGeneration(blob);
+    last = { blob, list };
+    return list;
+  };
+}
+
+/**
  * Tag-only cached power_generation-facility loader, decoupled from the
  * global `"facilities"` tag/timer so the facility detail page's "Powered
  * by" / "Powers" cross-reference (see `getPoweredCampuses` /
@@ -517,9 +555,19 @@ async function loadPowerGenerationUncached(): Promise<PowerGenerationFacility[]>
 export const loadPowerGenerationCached: () => Promise<PowerGenerationFacility[]> =
   process.env.VITEST
     ? loadPowerGenerationUncached
-    : unstable_cache(loadPowerGenerationUncached, ["power-generation"], {
-        tags: ["power-generation"],
-      });
+    : (() => {
+        const cached = unstable_cache(
+          async () => encodePowerGeneration(await loadPowerGenerationUncached()),
+          // "-gz" is deliberate: the entry used to be plain JSON under
+          // ["power-generation"], and a stale plain-JSON entry surviving a deploy
+          // must never be gunzipped. A new key part means old entries are simply
+          // never read.
+          ["power-generation-gz"],
+          { tags: ["power-generation"] }
+        );
+        const decode = createPowerGenerationDecodeMemo();
+        return async () => decode(await cached());
+      })();
 
 export async function getAllFacilities(): Promise<Facility[]> {
   return loadFacilities();
