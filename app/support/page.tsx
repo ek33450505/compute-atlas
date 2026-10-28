@@ -339,6 +339,31 @@ export default function SupportPage() {
             </a>
             .
           </li>
+          <li>
+            <strong className="font-medium text-foreground">Follow along.</strong>{" "}
+            Get{" "}
+            <a
+              href={siteConfig.newsletterUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="Subscribe to the monthly newsletter on Buttondown (opens in new tab)"
+              className={LINK_CLASS}
+            >
+              the monthly newsletter <span aria-hidden="true">↗</span>
+            </a>{" "}
+            or follow{" "}
+            <a
+              href={siteConfig.blueskyUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="Follow Compute Atlas on Bluesky (opens in new tab)"
+              className={LINK_CLASS}
+            >
+              Compute Atlas on Bluesky <span aria-hidden="true">↗</span>
+            </a>
+            . The newsletter list is held by Buttondown, not by this site, and is
+            separate from the facility and state alerts.
+          </li>
         </ul>
       </section>
     </div>

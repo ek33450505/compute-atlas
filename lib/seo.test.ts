@@ -384,9 +384,9 @@ describe("buildOrganizationJsonLd", () => {
     expect(ld.url).toBe(siteConfig.url);
   });
 
-  it("sets sameAs to the repo URL", () => {
+  it("sets sameAs to the repo and Bluesky URLs", () => {
     const ld = buildOrganizationJsonLd();
-    expect(ld.sameAs).toEqual([siteConfig.repoUrl]);
+    expect(ld.sameAs).toEqual([siteConfig.repoUrl, siteConfig.blueskyUrl]);
   });
 
   it("omits logo (no asset exists yet)", () => {

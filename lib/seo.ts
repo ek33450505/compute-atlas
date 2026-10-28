@@ -352,7 +352,7 @@ export function buildOrganizationJsonLd(): OrganizationJsonLd {
     "@type": "Organization",
     name: siteConfig.name,
     url: siteConfig.url,
-    sameAs: [siteConfig.repoUrl],
+    sameAs: [siteConfig.repoUrl, siteConfig.blueskyUrl],
   };
 }
 

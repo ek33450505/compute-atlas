@@ -43,4 +43,13 @@ export const siteConfig = {
    * issue-template contact link), deliberately not here.
    */
   kofiUrl: "https://ko-fi.com/L2T725R7FV",
+  /** Public Bluesky profile for the project. */
+  blueskyUrl: "https://bsky.app/profile/compute-atlas.com",
+  /**
+   * Monthly newsletter subscribe page. A link only (no embedded form, so no
+   * CSP `form-action`/`frame-src` change). The list is held by Buttondown; the
+   * site's facility/state watch subscribers are NEVER imported into it (they
+   * opted into alerts only).
+   */
+  newsletterUrl: "https://buttondown.com/compute-atlas",
 } as const;
