@@ -334,6 +334,119 @@ teardown() {
 	[ "$(ls -ld "$DISCOVERY_WORK_DIR" | cut -c1-10)" = "drwx------" ]
 }
 
+# 2026-10-28: once Bash was narrowed (#489) the model's `cat lib/schema.ts` was
+# denied, it guessed the candidate schema, and 98 of ~100 candidates were
+# rejected. Read/Glob/Grep are confined to the (empty) cwd, so run.sh stages ONLY
+# schema.ts into a dedicated dir and grants it with --add-dir.
+@test "the prompt points Read at the staged schema copy, not a repo path" {
+	export DISCOVERY_ENABLED=true
+	C="$HOME/.compute-atlas-discovery/contract"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -qF -- "schema in $C/schema.ts" "$CLAUDE_CALL_LOG"
+	grep -qF -- "STATUS_ORDER in $C/status.ts" "$CLAUDE_CALL_LOG"
+	run grep -qF -- "{{SCHEMA_FILE}}" "$CLAUDE_CALL_LOG"
+	[ "$status" -ne 0 ]
+	run grep -qF -- "{{STATUS_FILE}}" "$CLAUDE_CALL_LOG"
+	[ "$status" -ne 0 ]
+	run grep -qF -- "schema in lib/schema.ts" "$CLAUDE_CALL_LOG"
+	[ "$status" -ne 0 ]
+}
+
+@test "the contract dir is the only extra dir granted and holds fresh copies of schema.ts and status.ts" {
+	export DISCOVERY_ENABLED=true
+	C="$HOME/.compute-atlas-discovery/contract"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -qF -- "--add-dir $C --tools" "$CLAUDE_CALL_LOG"
+	[ "$(grep -o -- '--add-dir' "$CLAUDE_CALL_LOG" | wc -l | tr -d ' ')" = "1" ]
+	cmp "$REPO_ROOT/lib/schema.ts" "$C/schema.ts"
+	cmp "$REPO_ROOT/lib/status.ts" "$C/status.ts"
+	[ "$(ls -A "$C" | tr '\n' ' ')" = "schema.ts status.ts " ]
+	[ "$(_mode_of "$C")" = "drwx------" ]
+}
+
+@test "DISCOVERY_CONTRACT_DIR in the environment is ignored" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_CONTRACT_DIR="$TEST_TMP/elsewhere"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -e "$TEST_TMP/elsewhere" ]
+	grep -qF -- "--add-dir $HOME/.compute-atlas-discovery/contract --tools" "$CLAUDE_CALL_LOG"
+}
+
+@test "an unstageable contract dir: claude never starts, classified auth" {
+	export DISCOVERY_ENABLED=true
+	: > "$HOME/.compute-atlas-discovery"
+	run bash "$RUN_SH"
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" == *"cannot create contract dir"* ]]
+}
+
+@test "a missing lib/status.ts: claude never starts and no temp files remain" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$TEST_TMP/fakerepo/lib"
+	cp -R "$REPO_ROOT/scripts" "$TEST_TMP/fakerepo/scripts"
+	cp "$REPO_ROOT/lib/schema.ts" "$TEST_TMP/fakerepo/lib/schema.ts"
+	run bash "$TEST_TMP/fakerepo/scripts/discovery/run.sh"
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" == *"cannot stage the schema contract"* ]]
+	[ -z "$(find "$HOME/.compute-atlas-discovery/contract" -mindepth 1 \( -name '.schema.*' -o -name '.status.*' \) )" ]
+}
+
+@test "a symlinked contract dir is refused: claude never starts, target mode unchanged" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$TEST_TMP/target" "$HOME/.compute-atlas-discovery"
+	chmod 755 "$TEST_TMP/target"
+	ln -s "$TEST_TMP/target" "$HOME/.compute-atlas-discovery/contract"
+	run bash "$RUN_SH"
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" == *"is a symlink"* ]]
+	[ "$(_mode_of "$TEST_TMP/target")" = "drwxr-xr-x" ]
+	[ -z "$(ls -A "$TEST_TMP/target")" ]
+}
+
+@test "a symlinked contract parent dir is refused: claude never starts" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$TEST_TMP/target"
+	chmod 755 "$TEST_TMP/target"
+	ln -s "$TEST_TMP/target" "$HOME/.compute-atlas-discovery"
+	run bash "$RUN_SH"
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" == *"is a symlink"* ]]
+	[ -z "$(ls -A "$TEST_TMP/target")" ]
+}
+
+@test "a symlink with an allowlisted name in the contract dir is refused and left in place" {
+	export DISCOVERY_ENABLED=true
+	echo "secret" > "$TEST_TMP/secret.txt"
+	mkdir -p "$HOME/.compute-atlas-discovery/contract"
+	ln -s "$TEST_TMP/secret.txt" "$HOME/.compute-atlas-discovery/contract/.schema.evil"
+	run bash "$RUN_SH"
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" == *"non-regular entry"* ]]
+	[ -L "$HOME/.compute-atlas-discovery/contract/.schema.evil" ]
+}
+
+@test "a pre-existing 755 contract dir ends at 700" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$HOME/.compute-atlas-discovery/contract"
+	chmod 755 "$HOME/.compute-atlas-discovery/contract"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_mode_of "$HOME/.compute-atlas-discovery/contract")" = "drwx------" ]
+}
+
+@test "an unexpected entry in the contract dir is refused and left in place" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$HOME/.compute-atlas-discovery/contract"
+	: > "$HOME/.compute-atlas-discovery/contract/stray.txt"
+	run bash "$RUN_SH"
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" == *"unexpected entry"* ]]
+	[ -e "$HOME/.compute-atlas-discovery/contract/stray.txt" ]
+}
+
 @test "the default work dir lands under the isolated HOME" {
 	export DISCOVERY_ENABLED=true
 	unset DISCOVERY_WORK_DIR
@@ -350,6 +463,7 @@ teardown() {
 	# A fake repo under TEST_TMP, so nothing real is created or chmod'd.
 	mkdir -p "$TEST_TMP/fakerepo"
 	cp -R "$REPO_ROOT/scripts" "$TEST_TMP/fakerepo/scripts"
+	mkdir -p "$TEST_TMP/fakerepo/lib" && cp "$REPO_ROOT/lib/schema.ts" "$REPO_ROOT/lib/status.ts" "$TEST_TMP/fakerepo/lib/"
 	export DISCOVERY_WORK_DIR="$TEST_TMP/fakerepo/work"
 	run bash "$TEST_TMP/fakerepo/scripts/discovery/run.sh"
 	[ "$status" -eq 1 ]
@@ -381,6 +495,7 @@ _mode_of() { ls -ld "$1" | cut -c1-10; }
 	# A fake repo under TEST_TMP so REPO_ROOT resolves inside the work dir.
 	mkdir -p "$TEST_TMP/outer/repo"
 	cp -R "$REPO_ROOT/scripts" "$TEST_TMP/outer/repo/scripts"
+	mkdir -p "$TEST_TMP/outer/repo/lib" && cp "$REPO_ROOT/lib/schema.ts" "$REPO_ROOT/lib/status.ts" "$TEST_TMP/outer/repo/lib/"
 	export DISCOVERY_WORK_DIR="$TEST_TMP/outer"
 	run bash "$TEST_TMP/outer/repo/scripts/discovery/run.sh"
 	_assert_work_dir_refused
