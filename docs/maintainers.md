@@ -98,7 +98,7 @@ See `.env.example`.
 |---|---|
 | `DATABASE_URL` | Neon Postgres connection string: the pooled one (`-pooler` host) on Vercel production; the direct one in `.env.local` and the GitHub Actions secret (as of 2026-10-27, matching what `.env.local` held before). The app's `neon-http` driver accepts either; `drizzle.config.ts` (`db:migrate`) reads the same variable |
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
-| `API_INTAKE_TOKEN` | Staging-only bearer, accepted by `POST /api/submissions` ALONE. For the discovery pipeline. Optional — unset, the pipeline falls back to `API_ADMIN_TOKEN` and nothing changes. **Must be an independent value**; see the activation steps below |
+| `API_INTAKE_TOKEN` | Staging-only bearer; `POST /api/submissions` accepts it alongside `API_ADMIN_TOKEN`. Optional. Unset, the discovery pipeline submits with `API_ADMIN_TOKEN`. The pipeline's `.env.local` does not set it: the split was declined 2026-10-28 (see the `API_INTAKE_TOKEN` section below). **If set, it must be an independent value** |
 | `CRON_SECRET` | Bearer secret authenticating Vercel Cron to `/api/cron/*`. **Set in production since 2026-09-14**, with the state digest; unset means every cron-path caller is rejected (fail-closed). **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
 | `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Set to `"true"` in production since 2026-09-14.** Unsetting it (or any value but `"true"`) stops all digest mail, but only once a new deployment is live: Vercel applies env changes to new deployments only, so follow with `npx vercel redeploy --target production <url>` |
 | `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Set to `"true"` in production since 2026-09-14.** Same kill semantics (redeploy required), plus a Cloudflare purge for the form field: see "Turning it off" below |
@@ -175,35 +175,22 @@ by `scripts/retention-prune.ts` after 90 days for submissions nobody ever review
 ⚠️ **`.env.local` quoting.** `vercel env add` keeps surrounding quotes, and a quoted
 `DATABASE_URL` is invalid and fails *silently* — there is no fallback. Strip the quotes.
 
-### Activating `API_INTAKE_TOKEN` (the intake/admin split)
+### `API_INTAKE_TOKEN`: the intake/admin split (declined 2026-10-28)
 
 `POST /api/submissions` accepts either `API_INTAKE_TOKEN` or `API_ADMIN_TOKEN` (`requireIntake` in
-`lib/api-auth.ts`). Merging that was a behavioural no-op; the separation is only real once the
-discovery pipeline holds the intake token and **nothing else**. Three steps, in order — and only the
-third revokes anything:
+`lib/api-auth.ts`). The split is **not activated**. Ed declined it on 2026-10-28: the discovery
+pipeline runs every tool with `--env-file=.env.local`, and that file holds `DATABASE_URL` as the
+`neondb_owner` role, which can write any row, including a live facility. Removing the pipeline's
+admin token would narrow nothing that matters while the least-privilege DB split stays deferred (see
+"Secret rotation" step 1). `.env.local` has no `API_INTAKE_TOKEN`, so the pipeline submits with
+`API_ADMIN_TOKEN`.
 
-1. **Generate an independent value** and `vercel env add API_INTAKE_TOKEN production`. ⚠️ A value
-   equal to `API_ADMIN_TOKEN` gives no separation at all — the "intake" secret would still be the
-   live-write and cookie-signing secret.
-2. **`npx vercel redeploy --target production <url>`** — a new env var is invisible to an
-   already-built deployment, so until this the route cannot match the new token.
-3. **Put `API_INTAKE_TOKEN` in the discovery pipeline's `.env.local` AND REMOVE `API_ADMIN_TOKEN`
-   from it.** This is the step that does the work: it is what stops the pipeline being able to
-   publish a live facility, approve its own submissions, or forge an admin session cookie. Steps 1-2
-   alone change nothing — `submissionToken()` prefers the intake token but the admin token is still
-   sitting there.
+A revisit needs both: a scoped Neon role for the pipeline, and `run.sh` reading its own env file,
+because `.env.local` is shared with `npm run submissions` (which needs `API_ADMIN_TOKEN` for every
+subcommand) and with `db:sync --apply`'s tag bust.
 
-Applying step 3 as written needs no `run.sh` edit. Verify by staging one candidate with the pipeline's
-`.env.local`, then confirming the same token is refused by `GET /api/submissions` (admin-only).
-
-⚠️ **Known defect (A-2 backlog): applying step 3 as written breaks two other tools that read this
-file.** `run.sh` reads the repo-root `.env.local` (`--env-file=.env.local`), and so do
-`npm run submissions` and `db:sync`. `npm run submissions` needs `API_ADMIN_TOKEN` for every
-subcommand (`scripts/submissions.ts:205-207`), so removing it breaks the whole CLI. `db:sync` needs
-it only with `--apply` and without `--skip-revalidate` (`scripts/sync-to-neon.ts:680`, refusal at
-`:692`), so a dry run still works and `--apply` refuses to write. The fix is for `run.sh` to read its
-own env file: a code change that needs review and must not land during a discovery run. Until then,
-do not apply step 3 as written.
+⚠️ If `API_INTAKE_TOKEN` is ever set, it must be an independent value. Equal to `API_ADMIN_TOKEN`, it
+gives no separation at all.
 
 ## Secret rotation
 
@@ -240,9 +227,10 @@ considered and **deliberately deferred**: the least-privilege split's own failur
 than the attack it prevents, for a single-maintainer project. Revisit if a second person gains DB
 access or real personal data lands in the schema.
 To rotate the credential without the privilege split: reset `neondb_owner`'s password in Neon →
-update Vercel production `DATABASE_URL` and `DATABASE_URL_UNPOOLED` → **redeploy** → update
-`.env.local` → update the GitHub `DATABASE_URL` secret → delete any Neon child branch created before
-the reset (below) → `npm run check:drift` to confirm the workflows still connect.
+update Vercel production `DATABASE_URL` (the **pooled** string, `-pooler` host) and
+`DATABASE_URL_UNPOOLED` (the **direct** string) → **redeploy** → update `.env.local` (direct) → update
+the GitHub `DATABASE_URL` secret (direct) → delete any Neon child branch created before the reset
+(below) → `npm run check:drift` to confirm the workflows still connect.
 Breaks if you do it out of order: `db:sync`, `db:export`, `check:drift`, `drift-alert.yml`,
 `discovery-watchdog.yml`, `neon-sync.yml` and CI's DB test, all at once.
 
@@ -272,17 +260,15 @@ CLAUDE.md), and `grep -c -- -pooler ~/.rot/pooled` shows `1` (the same check on 
 show `0`). Delete `~/.rot` when done.
 
 **2. `API_ADMIN_TOKEN`.** Grants every admin write route, the admin UI, the cron recovery path, and
-— until the intake split is activated — discovery staging writes too. ⚠️ **Rotating it invalidates
+discovery staging writes too (the intake split was declined 2026-10-28). ⚠️ **Rotating it invalidates
 every live `admin_session` cookie**, because the cookie HMAC is keyed by the raw token
 (`lib/admin-session.ts`, `signV2Parts`). There is **no overlap window** — the code compares against
 exactly one value, so it is a hard cutover.
 Order: Vercel production → **redeploy** → `.env.local` (the `submissions` CLI, `sync-to-neon.ts` and
 `submit-candidates.ts` all read it) → log in to `/admin` again.
 Do it when **no nightly `run.sh` discovery run is in flight**.
-⚠️ **This entry assumes the pre-split arrangement.** Once step 3 of "Activating `API_INTAKE_TOKEN`"
-is done, `submit-candidates.ts` no longer reads `API_ADMIN_TOKEN` and the pipeline's `.env.local` is
-not part of this rotation — rotate `API_INTAKE_TOKEN` there instead, and the in-flight-run caveat
-moves with it.
+The discovery pipeline also submits with `API_ADMIN_TOKEN` (the intake split was declined 2026-10-28), so
+its `.env.local` is part of this rotation, and the in-flight-run caveat above applies.
 
 **3. `NEON_SYNC_PAT`.** Contents and Pull requests RW only. Do **not** grant `Workflows` (decided
 2026-10-26). The current token, "Compute-atlas-neon-sync", **expires 2026-12-04**. Two workflows use

@@ -68,14 +68,18 @@ export function requireAdmin(request: Request): Response | null {
  * - The nightly discovery pipeline needs exactly one capability — stage a
  *   `pending` row. `API_INTAKE_TOKEN` grants that and nothing else, so a
  *   leaked copy cannot publish a live facility, approve its own submission,
- *   or forge an admin session cookie. The core invariant (no unreviewed write
- *   becomes a live facility) stops being a one-secret gate.
+ *   or forge an admin session cookie. For the bearer-token path, the core
+ *   invariant (no unreviewed write becomes a live facility) stops being a
+ *   one-secret gate.
  * - `API_ADMIN_TOKEN` is still accepted so the admin UI and the `submissions`
  *   CLI keep working unchanged, and so the pipeline keeps running on the admin
  *   token while `API_INTAKE_TOKEN` is unset in production. The separation
  *   only takes effect once `API_INTAKE_TOKEN` is set AND the pipeline's copy
  *   of `API_ADMIN_TOKEN` is removed — until then this is an additive,
  *   backwards-compatible no-op.
+ * - Not activated: declined 2026-10-28. The pipeline also holds
+ *   `DATABASE_URL` as the owner role, so dropping its admin token would not
+ *   stop it writing a live facility directly. See `docs/maintainers.md`.
  *
  * ⚠️ Setting `API_INTAKE_TOKEN` to the same value as `API_ADMIN_TOKEN` gives
  * no separation at all: the intake secret would then also be the live-write

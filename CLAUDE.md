@@ -97,7 +97,8 @@ opening a PR.
 - **Collection pages:** `components/collection/collection-page.tsx` is the shared
   primitive for facility-list landing pages (masthead + stat row + card grid +
   BreadcrumbList/ItemList JSON-LD), with `show-more-list.tsx` for progressive
-  reveal of long lists. Used by the by-status and by-metro lenses.
+  reveal of long lists. Used by the by-status, by-metro and by-county hubs and the stakeholder
+  pages (`app/{status,metros,counties,stakeholders}/[…]/page.tsx`).
 - **Key routes:** `app/page.tsx` (home) · `app/map` · `app/table` · `app/explore/*`
   + lens pages (`states`/`operators`/`power`/`opposition`/`status`/`metros`/`counties`,
   incl. `[state]`/`[operator]`/`[status]`/`[metro]`/`[county]` hubs) ·
@@ -164,8 +165,9 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
   `WATCH_AREAS_ENABLED` (`lib/watch-target-types.ts`).
 - **Admin/pipeline writes** require a bearer token, but not all the same one.
   `POST /api/submissions` — staging only — accepts EITHER `API_INTAKE_TOKEN` or
-  `API_ADMIN_TOKEN` (`requireIntake`), so the discovery pipeline can stage a
-  `pending` row without holding a secret that could publish one. `GET
+  `API_ADMIN_TOKEN` (`requireIntake`). The intake split is not activated: it was
+  declined 2026-10-28 (see `docs/maintainers.md`) because the discovery pipeline
+  also holds the owner `DATABASE_URL`, so it submits with `API_ADMIN_TOKEN`. `GET
   /api/submissions` and approve/reject require `API_ADMIN_TOKEN`. Do not widen
   `requireIntake` past that one handler. The admin pages use a lightweight
   single-secret cookie gate — there is intentionally **no user-account system**
