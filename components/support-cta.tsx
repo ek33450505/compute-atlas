@@ -17,9 +17,8 @@ interface SupportCtaProps {
 
 /**
  * The single on-site ask: Ko-fi, which takes guest checkout (no account),
- * card or PayPal, as a one-off gift or a monthly membership. GitHub Sponsors
- * remains only on the repository (.github/FUNDING.yml and the issue-template
- * contact link), not on the site.
+ * card or PayPal, as a one-off gift or a monthly membership. It is the only
+ * funding path anywhere: GitHub Sponsors was disabled on 2026-10-28.
  *
  * WCAG 2.5.3 (label in name): the aria-label STARTS with the visible text, so
  * speech-input users who say what they see hit the right control. The

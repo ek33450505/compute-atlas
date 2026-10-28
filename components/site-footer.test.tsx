@@ -103,7 +103,7 @@ describe("SiteFooter", () => {
   });
 
   it("renders every Data & project column link with the correct href", () => {
-    render(<SiteFooter />);
+    const { container } = render(<SiteFooter />);
     expect(
       screen.getByRole("link", { name: "About the project" })
     ).toHaveAttribute("href", "/about");
@@ -136,14 +136,23 @@ describe("SiteFooter", () => {
     expect(
       screen.getByRole("link", { name: /Source on GitHub/i })
     ).toHaveAttribute("href", "https://github.com/ek33450505/compute-atlas");
+    expect(
+      screen.getByRole("link", { name: /Compute Atlas on Bluesky/i })
+    ).toHaveAttribute("href", "https://bsky.app/profile/compute-atlas.com");
+    expect(
+      screen.getByRole("link", { name: /^Newsletter on Buttondown/i })
+    ).toHaveAttribute("href", "https://buttondown.com/compute-atlas");
+    expect(container.innerHTML).not.toMatch(/monthly newsletter/i);
   });
 
   it("marks external links with target=_blank and rel=noreferrer noopener", () => {
     render(<SiteFooter />);
     const repo = screen.getByRole("link", { name: /Source on GitHub/i });
     const osm = screen.getByRole("link", { name: /OpenStreetMap/i });
+    const bluesky = screen.getByRole("link", { name: /on Bluesky/i });
+    const newsletter = screen.getByRole("link", { name: /newsletter on Buttondown/i });
 
-    for (const link of [repo, osm]) {
+    for (const link of [repo, osm, bluesky, newsletter]) {
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noreferrer noopener");
     }

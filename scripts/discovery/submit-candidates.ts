@@ -63,10 +63,10 @@ type EnvLike = Record<string, string | undefined>;
  * falls back to `API_ADMIN_TOKEN`, which the route still accepts. The fallback
  * is load-bearing, not tidiness: `API_INTAKE_TOKEN` does not exist in
  * production until it is set there, and without the fallback merging this
- * would break the nightly run. Once it IS set, remove `API_ADMIN_TOKEN` from
- * the pipeline's environment — that removal, not this preference, is what
- * actually drops the pipeline's ability to publish live facilities, approve
- * submissions, and forge an admin session cookie.
+ * would break the nightly run. The split itself was declined on 2026-10-28:
+ * the pipeline's `.env.local` also holds `DATABASE_URL` as the owner role, so
+ * removing its admin token would not stop it writing a live facility. The
+ * pipeline therefore submits with `API_ADMIN_TOKEN` (see docs/maintainers.md).
  *
  * Returns `undefined` (never the string "undefined") when neither is set, so
  * `main()`'s preflight can refuse to run rather than sending

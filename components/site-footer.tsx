@@ -139,6 +139,30 @@ export function SiteFooter() {
                   <span aria-hidden="true">↗</span>
                 </a>
               </li>
+              <li>
+                <a
+                  href={siteConfig.blueskyUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label="Compute Atlas on Bluesky (opens in new tab)"
+                  className={EXTERNAL_NAV_LINK_CLASS}
+                >
+                  Bluesky
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={siteConfig.newsletterUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label="Newsletter on Buttondown (opens in new tab)"
+                  className={EXTERNAL_NAV_LINK_CLASS}
+                >
+                  Newsletter
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </li>
               <li className="leading-relaxed">
                 Map data &copy;{" "}
                 <a

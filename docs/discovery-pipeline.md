@@ -24,11 +24,10 @@ run.sh (launchd, daily)
   `create`/`update`, caps how many it submits per run, and POSTs to
   `/api/submissions` with `Authorization: Bearer <token>`, where the token is
   `API_INTAKE_TOKEN || API_ADMIN_TOKEN` (`submissionToken()`). The intake token is
-  accepted by that one route and nothing else, so a pipeline holding only it
-  cannot publish a live facility, approve its own submissions, or forge an admin
-  session cookie. Giving the pipeline the admin token instead still works and is
-  the fallback while `API_INTAKE_TOKEN` is unset — see `docs/maintainers.md` for
-  activating the split.
+  accepted by that one route and nothing else. The pipeline holds the admin token:
+  the split was declined on 2026-10-28 because the pipeline also holds the owner
+  `DATABASE_URL` in `.env.local`. See the `API_INTAKE_TOKEN` section in
+  `docs/maintainers.md`.
 - `scripts/discovery/run.sh` — the scheduled harness. Owns the kill switch,
   the state-rotation cursor, the existing-facilities fetch, the single
   `claude -p` research call, and coordination with source-liveness checks.

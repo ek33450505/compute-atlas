@@ -82,6 +82,26 @@ describe("SupportPage", () => {
     expect(repoLink).toHaveAttribute("rel", "noreferrer noopener");
   });
 
+  it("links the newsletter and Bluesky profile and states where the list is held", () => {
+    const { container } = render(<SupportPage />);
+    const newsletter = screen.getByRole("link", {
+      name: /Subscribe to the newsletter on Buttondown/i,
+    });
+    expect(newsletter).toHaveAttribute("href", "https://buttondown.com/compute-atlas");
+    expect(container.innerHTML).not.toMatch(/monthly newsletter/i);
+    expect(newsletter).toHaveAttribute("target", "_blank");
+    expect(newsletter).toHaveAttribute("rel", "noreferrer noopener");
+    const bluesky = screen.getByRole("link", {
+      name: /Follow Compute Atlas on Bluesky/i,
+    });
+    expect(bluesky).toHaveAttribute("href", "https://bsky.app/profile/compute-atlas.com");
+    expect(bluesky).toHaveAttribute("target", "_blank");
+    expect(bluesky).toHaveAttribute("rel", "noreferrer noopener");
+    expect(container.textContent).toContain(
+      "The newsletter list is held by Buttondown, not by this site, and is separate from the facility and state alerts."
+    );
+  });
+
   it("renders real em dashes and curly apostrophes, never the literal HTML entity source", () => {
     const { container } = render(<SupportPage />);
     const text = container.textContent ?? "";

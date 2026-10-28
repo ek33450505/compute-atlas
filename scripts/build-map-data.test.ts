@@ -16,6 +16,7 @@ import {
   mergeSitingContextEntry,
   computeSitingContext,
   parseNHDFlags,
+  computeDistribution,
 } from "./build-map-data.mjs";
 import { point as turfPoint, lineString } from "@turf/helpers";
 
@@ -1272,5 +1273,32 @@ describe("parseNHDFlags", () => {
   it("neither flag parses cleanly", () => {
     const res = parseNHDFlags([]);
     expect(res).toEqual({ skipNHD: false, backfillNHD: false, error: null });
+  });
+});
+
+describe("computeDistribution", () => {
+  const ctx = {
+    live1: { waterStress: { label: "Low", cat: 0 } },
+    live2: { waterStress: { label: "Extremely High", cat: 4 } },
+    live3: { waterStress: { label: "Low", cat: 0 } },
+    retired: { waterStress: { label: "Low", cat: 0 } },
+  };
+  const liveIds = new Set(["live1", "live2", "live3"]);
+
+  it("does not count orphan siting entries; total equals the distribution sum", () => {
+    const { total, distribution } = computeDistribution(ctx, "waterStress", liveIds);
+    expect(distribution).toEqual({ "Extremely High": 1, Low: 2 });
+    expect(total).toBe(3);
+    expect(total).toBe(Object.values(distribution).reduce((a, b) => a + b, 0));
+  });
+
+  it("orders most-severe-first by cat", () => {
+    const { distribution } = computeDistribution(ctx, "waterStress", liveIds);
+    expect(Object.keys(distribution)).toEqual(["Extremely High", "Low"]);
+  });
+
+  it("throws when liveIds is not a Set", () => {
+    expect(() => computeDistribution(ctx, "waterStress")).toThrow(TypeError);
+    expect(() => computeDistribution(ctx, "waterStress", ["live1"])).toThrow(TypeError);
   });
 });

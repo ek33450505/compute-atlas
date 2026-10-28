@@ -10779,21 +10779,6 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
-  "colospace-bedford-nh": {
-    "nearestWater": {
-      "name": "Merrimack River",
-      "kind": "river",
-      "distanceMi": 0.5
-    },
-    "nearestTransmission": {
-      "voltageKv": 230,
-      "distanceMi": 0.4
-    },
-    "waterStress": {
-      "cat": 1,
-      "label": "Low - Medium (10-20%)"
-    }
-  },
   "colossus-bullock-spring-hill-ks": {
     "nearestWater": {
       "name": "Sweetwater Creek",
@@ -21801,6 +21786,12 @@
       "voltageKv": 345,
       "distanceMi": 5.3
     },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
+  "firstlight-bedford-nh": {
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -54122,6 +54113,21 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "colospace-bedford-nh": {
+    "nearestWater": {
+      "name": "Merrimack River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   }
 }

@@ -4,11 +4,14 @@ import facilitiesRaw from "@/data/facilities.json";
 import {
   FACILITY_CACHE_SHARDS,
   createFacilityMergeMemo,
+  createPowerGenerationDecodeMemo,
+  decodePowerGeneration,
   encodeFacilityShard,
+  encodePowerGeneration,
   facilityShard,
   mergeFacilityShards,
 } from "@/lib/data";
-import type { Facility } from "@/lib/schema";
+import type { Facility, PowerGenerationFacility } from "@/lib/schema";
 
 // Next refuses to store a data-cache entry over 2 MiB (2,097,152 bytes), envelope
 // included, and the failure is a console.warn, not an error — see the comment
@@ -50,14 +53,24 @@ describe("facility data-cache shards", () => {
     expect(merged).toEqual(expected);
   });
 
-  it("keeps the plain-JSON power_generation cache entry under half the 2 MiB entry limit", () => {
-    // `loadPowerGenerationCached` stores this list uncompressed in `unstable_cache`.
-    // ~870KB (42% of 2 MiB) on 2026-10-13; warn at 50% while there is room to gzip it.
-    // Measures facilities.json as a proxy for the DB-derived docs the cache stores.
-    const power = (facilitiesRaw as { facilityType: string }[]).filter(
-      (f) => f.facilityType === "power_generation"
+  it("keeps the gzip+base64 power_generation cache entry under half the 2 MiB entry limit", () => {
+    // `loadPowerGenerationCached` stores this list as gzip+base64 in `unstable_cache`.
+    // History: plain JSON was ~870KB (42% of 2 MiB) on 2026-10-13, warn at 50% while
+    // there is room to gzip it. 2026-10-28: 1,051,986 plain chars (UTF-16 units, not bytes) tripped the 50%
+    // guard; now gzip+base64. Measures facilities.json as a proxy for the DB-derived
+    // docs the cache stores.
+    const power = (facilitiesRaw as unknown as Facility[]).filter(
+      (f): f is PowerGenerationFacility => f.facilityType === "power_generation"
     );
-    expect(JSON.stringify(power).length).toBeLessThan(SHARD_BUDGET_BYTES);
+    const blob = encodePowerGeneration(power);
+    expect(blob.length).toBeLessThan(SHARD_BUDGET_BYTES);
+    expect(decodePowerGeneration(blob)).toEqual(power);
+    const decode = createPowerGenerationDecodeMemo();
+    const first = decode(blob);
+    expect(decode((" " + blob).slice(1))).toBe(first);
+    const miss = decode(encodePowerGeneration([]));
+    expect(miss).not.toBe(first);
+    expect(miss).toEqual([]);
   });
 });
 

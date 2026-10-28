@@ -1,5 +1,5 @@
 {
-  "ceiling": 0,
+  "ceiling": 1,
   "asOf": "2026-10-28",
-  "note": "nhd-backfill run 40673974232"
+  "note": "2026-10-28 research2 publish: full build:mapdata aborted at the NHD pre-flight (KS layer 4 timeout, layer 10 HTTP 502); fell back to --skip-nhd. firstlight-bedford-nh (the renamed ColoSpace Bedford record) awaits nearestWater from the nightly backfill."
 }
