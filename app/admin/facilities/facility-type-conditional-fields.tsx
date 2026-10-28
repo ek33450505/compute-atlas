@@ -711,7 +711,7 @@ function PoweredFacilitiesPicker({
                 <button
                   type="button"
                   onClick={() => removeFacility(f.id)}
-                  className="ml-1 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                  className="ml-1 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent"
                   aria-label={`Remove ${f.name} from powered facilities`}
                 >
                   ×
@@ -760,7 +760,7 @@ function PoweredFacilitiesPicker({
                     role="option"
                     aria-selected={false}
                     onClick={() => addFacility(f.id)}
-                    className="w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-muted focus-visible:bg-muted"
+                    className="w-full rounded-md px-2 py-1.5 text-left text-sm outline-none hover:bg-muted focus-visible:bg-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-ring"
                   >
                     {f.name}
                   </button>

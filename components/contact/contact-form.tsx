@@ -202,7 +202,7 @@ function MessageField({
         minLength={MESSAGE_MIN}
         maxLength={MESSAGE_MAX}
         rows={6}
-        className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20"
+        className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20"
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
       />
@@ -267,7 +267,7 @@ function TopicField({
         Those go through review on{" "}
         <Link
           href="/contribute"
-          className="underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          className="underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
         >
           /contribute
         </Link>{" "}
@@ -402,7 +402,7 @@ export function ContactForm() {
             Looking for the raw data instead of getting in touch?{" "}
             <Link
               href="/data"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               Get the data
             </Link>

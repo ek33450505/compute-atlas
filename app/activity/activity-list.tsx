@@ -36,7 +36,7 @@ export function ActivityList({ entries }: ActivityListProps) {
             {entry.facilityId ? (
               <Link
                 href={`/facilities/${entry.facilityId}`}
-                className="font-display text-base text-foreground underline underline-offset-4 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                className="font-display text-base text-foreground underline underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
               >
                 {entry.facilityName}
               </Link>

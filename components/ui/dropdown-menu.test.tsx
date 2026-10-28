@@ -179,4 +179,20 @@ describe("DropdownMenu", () => {
     );
     expect(content).toHaveClass("motion-reduce:animate-none!");
   });
+
+  // The popup is a programmatic focus target (tabindex -1) that keeps outline-none
+  // and had no focus cue at all. `outline-solid` is load-bearing: outline-none sets
+  // --tw-outline-style: none, which outline-2 would otherwise read. See button.tsx.
+  it("draws a real focus-visible outline on the popup alongside outline-none", async () => {
+    render(<BasicMenu defaultOpen />);
+    await screen.findByRole("menu");
+    expect(
+      document.querySelector('[data-slot="dropdown-menu-content"]')
+    ).toHaveClass(
+      "outline-none",
+      "focus-visible:outline-2",
+      "focus-visible:outline-solid",
+      "focus-visible:outline-ring"
+    );
+  });
 });

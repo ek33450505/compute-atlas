@@ -703,8 +703,8 @@
      conditional on the subtree being skipped — and paint containment clips
      every descendant to this element's padding box. Both sections this lands
      on hold edge-flush card grids whose links carry
-     `focus-visible:ring-2 ring-offset-2`, which Tailwind compiles to a
-     non-inset `box-shadow: 0 0 0 4px` — i.e. 4px OUTSIDE the card's border
+     `focus-visible:outline-2 focus-visible:outline-offset-2`, which Tailwind
+     compiles to a 2px outline at a 2px offset — i.e. 4px OUTSIDE the card's border
      box. With no padding the clip edge sits exactly on that border box and
      the outer column's focus indicator is cut off: a keyboard user loses the
      only signal of where they are, on the widest cards on the page. 8px, not

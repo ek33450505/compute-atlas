@@ -189,7 +189,7 @@ describe("ConfirmFactPrompt — eligibility tracks CORRECTABLE_KEYS", () => {
 });
 
 describe("ConfirmFactPrompt — keyboard focus visibility", () => {
-  it("renders both controls with focus-visible ring classes", () => {
+  it("renders both controls with focus-visible outline classes", () => {
     render(
       <ConfirmFactPrompt
         field="capacityOperationalMw"
@@ -205,11 +205,12 @@ describe("ConfirmFactPrompt — keyboard focus visibility", () => {
     ]) {
       const button = screen.getByRole("button", { name });
       expect(button).toHaveClass(
-        "focus-visible:outline-none",
-        "focus-visible:ring-2",
-        "focus-visible:ring-ring",
-        "focus-visible:ring-offset-2"
+        "focus-visible:outline-2",
+        "focus-visible:outline-offset-2",
+        "focus-visible:outline-ring"
       );
+      // outline-none beside outline-2 would force outline-style: none and hide the indicator
+      expect(button).not.toHaveClass("focus-visible:outline-none");
     }
   });
 });

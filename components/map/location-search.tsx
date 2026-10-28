@@ -165,13 +165,13 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
         "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
         // Focus indicator for the search input lives HERE, not on the input
         // itself: the input has no border/gap before this wrapper's own
-        // rounded-sm edge, so a ring drawn directly on the input would clip
+        // rounded-sm edge, so an outline drawn directly on the input would clip
         // against (or visually clash with) the wrapper's border/shadow and
         // the adjacent submit button. has-[#location-search-input:focus-visible]
         // scopes this to the input specifically — not the submit button,
-        // which already carries its own focus-visible ring below — so the
-        // two controls never double up a ring at once.
-        "has-[#location-search-input:focus-visible]:ring-2 has-[#location-search-input:focus-visible]:ring-ring has-[#location-search-input:focus-visible]:ring-offset-1",
+        // which already carries its own focus-visible outline below — so the
+        // two controls never double up an indicator at once.
+        "has-[#location-search-input:focus-visible]:outline-2 has-[#location-search-input:focus-visible]:outline-offset-1 has-[#location-search-input:focus-visible]:outline-ring",
         className,
       ]
         .filter(Boolean)
@@ -198,12 +198,12 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
           placeholder="Go to city or ZIP"
           autoComplete="off"
           className={[
-            // outline-none suppresses the browser's native ring on the input
+            // outline-none suppresses the browser's native outline on the input
             // itself — intentional here (not the missing-indicator bug this
             // replaces): the visible focus cue is the wrapper's
-            // has-[...]:ring-* above, not this element. Never remove
+            // has-[...]:outline-* above, not this element. Never remove
             // outline-none without also removing/replacing the wrapper's
-            // ring, or this input goes back to having NO focus indicator.
+            // outline, or this input goes back to having NO focus indicator.
             "h-11 w-48 sm:w-56 bg-transparent px-2 text-sm outline-none",
             "font-mono placeholder:text-muted-foreground/60",
           ].join(" ")}
@@ -217,7 +217,7 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
             "flex h-11 w-11 flex-shrink-0 items-center justify-center",
             "cursor-pointer transition-colors",
             "text-muted-foreground hover:text-foreground",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
             "disabled:opacity-50 disabled:cursor-not-allowed",
           ].join(" ")}
         >
@@ -258,7 +258,7 @@ export function LocationSearch({ onSelect, className }: LocationSearchProps) {
                 className={[
                   "w-full px-2 py-1.5 text-left text-sm font-mono",
                   "text-foreground hover:bg-muted/60 transition-colors",
-                  "focus-visible:outline-none focus-visible:bg-muted/60",
+                  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring focus-visible:bg-muted/60",
                   "truncate",
                 ].join(" ")}
               >

@@ -115,7 +115,7 @@ export default async function MetrosIndexPage() {
             <li key={m.slug}>
               <Link
                 href={`/metros/${m.slug}`}
-                className="flex min-h-11 items-baseline justify-between gap-2 rounded-sm border border-border px-4 py-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex min-h-11 items-baseline justify-between gap-2 rounded-sm border border-border px-4 py-4 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <span className="font-display text-lg text-foreground">
                   {m.name}

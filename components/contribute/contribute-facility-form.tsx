@@ -489,7 +489,7 @@ function AddressSearchField({
               <button
                 type="button"
                 onClick={() => handleResultSelect(result)}
-                className="w-full rounded px-2 py-1 text-left text-sm text-foreground hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full rounded px-2 py-1 text-left text-sm text-foreground hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {result.label}
               </button>
@@ -741,7 +741,7 @@ function NotesSection({
           onChange={(e) => setState((prev) => ({ ...prev, note: e.target.value }))}
           rows={4}
           maxLength={2000}
-          className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20"
+          className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20"
           aria-invalid={errors["note"] ? true : undefined}
           aria-describedby={errors["note"] ? errorId : undefined}
         />
@@ -881,7 +881,7 @@ export function ContributeFacilityForm({
             out, it will appear on the map and on the{" "}
             <Link
               href="/activity"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               public activity feed
             </Link>
@@ -889,7 +889,7 @@ export function ContributeFacilityForm({
             this one. Contributors who gave a name are credited on the{" "}
             <Link
               href="/contributors"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               contributors page
             </Link>

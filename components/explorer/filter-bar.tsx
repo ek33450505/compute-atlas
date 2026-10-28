@@ -197,7 +197,7 @@ function CapacityPopover({ value, onChange }: CapacityPopoverProps) {
                       onChange(Number(opt.value));
                       setOpen(false);
                     }}
-                    className="h-4 w-4 accent-[var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                    className="h-4 w-4 accent-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
                   />
                   <Label
                     htmlFor={id}
@@ -299,7 +299,10 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
                 onCheckedChange={() => toggleStatus(s)}
                 aria-label={STATUS_META[s].label}
                 className={cn(
-                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                  // ui/checkbox supplies outline-2 + outline-solid (its forced-colors
+                  // outline); here only the offset and colour change, and its ring-3
+                  // is cancelled so just the outline draws.
+                  "focus-visible:outline-offset-1 focus-visible:outline-ring focus-visible:ring-0"
                 )}
               />
               <Label

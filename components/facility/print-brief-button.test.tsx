@@ -34,11 +34,14 @@ describe("PrintBriefButton", () => {
     expect(
       screen.getByRole("button", { name: /print this brief/i })
     ).toHaveClass(
-      "focus-visible:outline-none",
-      "focus-visible:ring-2",
-      "focus-visible:ring-ring",
-      "focus-visible:ring-offset-2"
+      "focus-visible:outline-2",
+      "focus-visible:outline-offset-2",
+      "focus-visible:outline-ring"
     );
+    // outline-none beside outline-2 would force outline-style: none and hide the indicator
+    expect(
+      screen.getByRole("button", { name: /print this brief/i })
+    ).not.toHaveClass("focus-visible:outline-none");
   });
 
   it("preserves a 44px touch target despite the quiet text-scale styling", () => {

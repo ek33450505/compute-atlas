@@ -82,7 +82,7 @@ export function ContactReplyForm({
             onChange={(e) => setBody(e.target.value)}
             maxLength={REPLY_MAX}
             rows={6}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-ring motion-reduce:transition-none"
           />
           <p className="text-xs text-muted-foreground">
             Sent from Compute Atlas via Resend — your personal address is never shown.

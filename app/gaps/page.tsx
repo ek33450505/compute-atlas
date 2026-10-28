@@ -351,7 +351,7 @@ export default async function GapsPage() {
                     >
                       <Link
                         href={`/facilities/${f.id}`}
-                        className="group flex flex-col gap-1 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        className="group flex flex-col gap-1 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                       >
                         <span className="font-display text-base leading-snug text-foreground group-hover:text-primary transition-colors motion-reduce:transition-none">
                           {f.name}
@@ -405,7 +405,7 @@ export default async function GapsPage() {
         </p>
         <Link
           href="/contribute"
-          className="inline-flex min-h-11 items-center rounded-sm border border-primary/40 bg-primary/5 px-4 text-sm font-medium text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="inline-flex min-h-11 items-center rounded-sm border border-primary/40 bg-primary/5 px-4 text-sm font-medium text-primary transition-colors hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           Share a lead
         </Link>

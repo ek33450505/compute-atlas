@@ -104,6 +104,19 @@ describe("FacilityTable — headers", () => {
     expect(caption).toBeInTheDocument();
     expect(caption?.textContent).toMatch(/Data centers/i);
   });
+
+  it("insets the scroll region's focus outline so the overflow-hidden frame cannot clip it", () => {
+    render(<FacilityTable facilities={fixtures} />);
+    const region = screen.getByRole("region", { name: /data centers table/i });
+    expect(region.parentElement).toHaveClass("overflow-hidden");
+    expect(region).toHaveClass(
+      "focus-visible:outline-2",
+      "focus-visible:-outline-offset-2",
+      "focus-visible:outline-ring"
+    );
+    // A positive offset would put the whole outline outside the clip edge.
+    expect(region.className).not.toMatch(/(?:^|\s)focus-visible:outline-offset-/);
+  });
 });
 
 // ---------------------------------------------------------------------------

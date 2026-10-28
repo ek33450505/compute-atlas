@@ -367,7 +367,7 @@ function CoreFieldsSection({
             value={state.notes}
             onChange={(e) => setState((prev) => ({ ...prev, notes: e.target.value }))}
             rows={3}
-            className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent"
             aria-invalid={errors["notes"] ? true : undefined}
             aria-describedby={errors["notes"] ? "notes-error" : undefined}
           />

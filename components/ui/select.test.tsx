@@ -171,4 +171,15 @@ describe("Select", () => {
     const content = document.querySelector('[data-slot="select-content"]');
     expect(content).toHaveClass("motion-reduce:animate-none!");
   });
+
+  // Forced-colors outline fallback; see the Input test for why each class matters.
+  it("keeps a forced-colors focus outline on the trigger alongside outline-none", () => {
+    render(<Fixture />);
+    expect(screen.getByRole("combobox")).toHaveClass(
+      "outline-none",
+      "focus-visible:outline-2",
+      "focus-visible:outline-solid",
+      "focus-visible:outline-transparent"
+    );
+  });
 });

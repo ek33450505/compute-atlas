@@ -1070,30 +1070,33 @@ describe("HomePage modern-platform hooks", () => {
    * unconditionally — the containment is a property of the declaration, not of
    * whether the subtree is currently being skipped. Paint containment clips
    * every descendant to the element's padding box. Both deferred sections hold
-   * edge-flush card grids whose links carry `focus-visible:ring-2
-   * ring-offset-2`, which Tailwind compiles to a non-inset
-   * `box-shadow: 0 0 0 calc(2px + 2px)` — 4px OUTSIDE the card's border box.
-   * On the section, with no inline padding, the clip edge lands exactly on
-   * that border box and the outer column's focus indicator is cut off: a
-   * keyboard user loses the only signal of where they are.
+   * edge-flush card grids whose links carry `focus-visible:outline-2
+   * outline-offset-2` (a 2px outline at a 2px offset; before the forced-colors
+   * fix it was `focus-visible:ring-2 ring-offset-2`, a non-inset
+   * `box-shadow: 0 0 0 calc(2px + 2px)`). Either way the indicator paints 4px
+   * OUTSIDE the card's border box, and paint containment clips an outline
+   * exactly as it clips a box-shadow. On the section, with no inline padding,
+   * the clip edge lands exactly on that border box and the outer column's
+   * focus indicator is cut off: a keyboard user loses the only signal of where
+   * they are.
    *
    * ⚠️ WHAT THIS CAN AND CANNOT PROVE. jsdom computes no layout, applies no
-   * containment and paints nothing, so it cannot show a ring being clipped or
-   * not clipped — no assertion in this file can. What it pins is the
+   * containment and paints nothing, so it cannot show a focus indicator being
+   * clipped or not clipped — no assertion in this file can. What it pins is the
    * structural precondition that makes clipping impossible: the containment
    * boundary is at least as far outside every card's border box as the largest
-   * focus ring inside it, and the reserve is handed straight back as negative
-   * margin so it costs no layout. Move the class back onto the padding-less
-   * section, shrink the reserve, or grow a card's ring past it, and this
-   * fails. Whether the ring is actually visible at the viewport edge is a
-   * browser check (e2e/a11y), not this one.
+   * focus indicator (ring or outline) inside it, and the reserve is handed
+   * straight back as negative margin so it costs no layout. Move the class
+   * back onto the padding-less section, shrink the reserve, or grow a card's
+   * indicator past it, and this fails. Whether the indicator is actually
+   * visible at the viewport edge is a browser check (e2e/a11y), not this one.
    */
   it("keeps each deferred wrapper's paint clip outside the focus rings it contains", async () => {
     // ⚠️ SEEDED DELIBERATELY. The shared fixture resolves
     // `getNotableOppositionCases` to [], so the contested case grid — the exact
     // markup the clip was cutting — does not render at all by default. A first
     // version of this test measured only the section's two prose links and
-    // survived a mutation that grew a CARD's ring to `ring-offset-8`.
+    // survived a mutation that grew a CARD's focus offset to 8px.
     mockGetNotableOppositionCases.mockResolvedValue([
       {
         id: "contested-1",
@@ -1139,19 +1142,30 @@ describe("HomePage modern-platform hooks", () => {
 
       // ⚠️ The two scales are NOT the same unit and comparing them raw would
       // be a coincidence, not a check: `p-N` is N steps of Tailwind's spacing
-      // scale (0.25rem = 4px each), while `ring-N` / `ring-offset-N` are
-      // literal pixels. A ring paints at `box-shadow: 0 0 0 calc(N + offset)`
-      // outside the border box, so the demand is the SUM, derived per element
-      // from the rings actually inside this wrapper rather than assumed.
+      // scale (0.25rem = 4px each), while `ring-N` / `ring-offset-N` and
+      // `outline-N` / `outline-offset-N` are literal pixels. A ring paints at
+      // `box-shadow: 0 0 0 calc(N + offset)` and an outline N px wide at the
+      // given offset, both outside the border box, so the demand is the SUM of
+      // whichever pair the element uses, derived per element from the
+      // indicators actually inside this wrapper rather than assumed. The width
+      // patterns need digits straight after `ring-` / `outline-`, so
+      // `ring-offset-N`, `outline-offset-N`, `outline-ring`, `outline-solid`,
+      // `outline-transparent` and `ring-ring/50` never read as a width.
       const reservePx = Number(pad) * SPACING_STEP_PX;
+      const px = (cls: string, re: RegExp) => Number(re.exec(cls)?.[1] ?? "0");
       const demandsPx = [
-        ...wrapper.querySelectorAll('[class*="ring-offset-"]'),
+        // Any ring or outline token, not just ones with an offset: a width-only
+        // indicator (`outline-2` with no `outline-offset-N`) clips too.
+        ...wrapper.querySelectorAll('[class*="ring-"], [class*="outline-"]'),
       ].map((el) => {
         const cls = el.getAttribute("class") ?? "";
-        const width = /(?:^|[:\s])ring-(\d+)(?![\w-])/.exec(cls)?.[1] ?? "0";
-        const offset =
-          /(?:^|[:\s])ring-offset-(\d+)(?![\w-])/.exec(cls)?.[1] ?? "0";
-        return Number(width) + Number(offset);
+        const ring =
+          px(cls, /(?:^|[:\s])ring-(\d+)(?![\w-])/) +
+          px(cls, /(?:^|[:\s])ring-offset-(\d+)(?![\w-])/);
+        const outline =
+          px(cls, /(?:^|[:\s])outline-(\d+)(?![\w-])/) +
+          px(cls, /(?:^|[:\s])outline-offset-(\d+)(?![\w-])/);
+        return Math.max(ring, outline);
       });
       expect(demandsPx.length).toBeGreaterThan(0);
       expect(Math.max(...demandsPx)).toBeLessThanOrEqual(reservePx);

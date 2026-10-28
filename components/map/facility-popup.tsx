@@ -172,7 +172,7 @@ export function FacilityPopup({
           type="button"
           aria-label="Close"
           onClick={onClose}
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
         >
           <X className="size-3.5" aria-hidden="true" />
         </button>
@@ -287,7 +287,7 @@ export function FacilityPopup({
             target={linksOpenInNewTab ? "_blank" : undefined}
             rel={linksOpenInNewTab ? "noopener" : undefined}
             aria-label={linksOpenInNewTab ? "View details (opens in new tab)" : undefined}
-            className="text-xs text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded py-1.5"
+            className="text-xs text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded py-1.5"
           >
             View details →
           </Link>
@@ -297,7 +297,7 @@ export function FacilityPopup({
               target="_blank"
               rel="noreferrer noopener"
               aria-label={`${firstSource.label} (opens in new tab)`}
-              className="text-xs text-foreground/80 hover:text-foreground flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded py-1.5"
+              className="text-xs text-foreground/80 hover:text-foreground flex items-center gap-1 focus-visible:outline-2 focus-visible:outline-ring rounded py-1.5"
             >
               <ExternalLink className="size-3" aria-hidden="true" />
               Source

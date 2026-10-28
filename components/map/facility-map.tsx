@@ -1126,7 +1126,7 @@ export function FacilityMap({
               "rounded-sm bg-popover border border-border",
               "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
               "cursor-pointer transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+              "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
               showTools ? "ring-1 ring-primary/50" : "",
             ]
               .filter(Boolean)
@@ -1140,6 +1140,9 @@ export function FacilityMap({
             />
           </button>
 
+          {/* p-1 -m-1: this panel scrolls (overflow-y-auto clips to its padding
+              box), so the buttons' focus outlines need 4px of padding to paint
+              in; the negative margin hands it back so nothing moves. */}
           {showTools && (
             <div
               id={TOOLS_PANEL_ID}
@@ -1149,7 +1152,7 @@ export function FacilityMap({
                   ? { maxHeight: `${toolsPanelMaxHeight}px` }
                   : undefined
               }
-              className="flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain [&>*]:shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+              className="-m-1 flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain p-1 [&>*]:shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
             >
               <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
               <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
@@ -1172,7 +1175,7 @@ export function FacilityMap({
                   "rounded-sm bg-popover border border-border",
                   "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
                   "cursor-pointer transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
                   ringsEnabled ? "ring-1 ring-primary/50" : "",
                 ]
                   .filter(Boolean)
@@ -1217,7 +1220,7 @@ export function FacilityMap({
                   "rounded-sm bg-popover border border-border",
                   "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
                   "cursor-pointer transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
                   coordsLocked ? "ring-1 ring-primary/50" : "",
                 ]
                   .filter(Boolean)

@@ -127,7 +127,7 @@ export default async function EmbedStatePage({
           href={hubHref}
           target="_blank"
           rel="noopener"
-          className="font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          className="font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
         >
           Compute Atlas — data centers in {stateName}
         </a>

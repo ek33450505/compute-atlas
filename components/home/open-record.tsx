@@ -21,7 +21,7 @@ interface ProvenanceFact {
 // links in components/home/lens-gateway.tsx so the closing band reads as
 // part of the same visual language as the rest of the page.
 const TRAILING_LINK_CLASS =
-  "inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 /**
  * Closing band for the home page — the credibility/trust close. Provenance
@@ -128,7 +128,7 @@ export function OpenRecord({
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link
             href="/contribute"
-            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 py-2.5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors motion-reduce:transition-none hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-primary bg-primary/10 px-5 py-2.5 font-mono text-sm font-semibold uppercase tracking-wider text-primary transition-colors motion-reduce:transition-none hover:bg-primary/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Add a facility
             <span aria-hidden="true">→</span>

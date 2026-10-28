@@ -177,7 +177,7 @@ export function MapFilterSubheader({
         {/* "View as table →" cross-link — hidden on mobile to keep bar compact */}
         <Link
           href={tableHref}
-          className="hidden sm:block font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm shrink-0"
+          className="hidden sm:block font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm shrink-0"
         >
           View as table →
         </Link>
@@ -195,7 +195,7 @@ export function MapFilterSubheader({
             "flex h-11 w-11 items-center justify-center rounded-sm shrink-0",
             "text-muted-foreground",
             "hover:bg-muted hover:text-foreground",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
             "transition-colors",
           ].join(" ")}
         >

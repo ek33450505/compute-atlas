@@ -97,7 +97,7 @@ export default async function StatusIndexPage() {
           has received it. Reception is tracked separately, on the{" "}
           <Link
             href="/opposition"
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             opposition lens
           </Link>
@@ -114,7 +114,7 @@ export default async function StatusIndexPage() {
             <li key={status}>
               <Link
                 href={`/status/${status}`}
-                className="flex min-h-11 flex-col gap-1.5 rounded-sm border border-border px-4 py-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex min-h-11 flex-col gap-1.5 rounded-sm border border-border px-4 py-4 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <span className="flex items-baseline justify-between gap-2">
                   <span className="font-display text-lg text-foreground">

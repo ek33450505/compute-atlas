@@ -117,7 +117,7 @@ export default async function OperatorsIndexPage() {
             <li key={slug}>
               <Link
                 href={`/operators/${slug}`}
-                className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 <span className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-sm text-foreground truncate">
@@ -138,7 +138,7 @@ export default async function OperatorsIndexPage() {
 
       {undisclosed.length > 0 && (
         <details className="group border-t border-border pt-6">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
             Show {undisclosed.length} operators with no disclosed capacity
             <span
               aria-hidden="true"
@@ -152,7 +152,7 @@ export default async function OperatorsIndexPage() {
               <li key={slug}>
                 <Link
                   href={`/operators/${slug}`}
-                  className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   <span className="flex flex-col gap-0.5 min-w-0">
                     <span className="text-sm text-foreground truncate">

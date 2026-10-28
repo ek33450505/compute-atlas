@@ -62,7 +62,7 @@ export function ContestedStrip({
           argument about data centers in general. More on{" "}
           <Link
             href="/learn/why-do-communities-oppose-data-centers"
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             why communities oppose data centers
           </Link>
@@ -74,7 +74,7 @@ export function ContestedStrip({
               <li key={f.id}>
                 <Link
                   href={`/facilities/${f.id}`}
-                  className="neatline plate-hover group flex h-full flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="neatline plate-hover group flex h-full flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:border-primary/50 hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   <span className="font-display text-base leading-snug text-foreground transition-colors motion-reduce:transition-none group-hover:text-primary">
                     {f.name}
@@ -95,7 +95,7 @@ export function ContestedStrip({
         <div className="mt-6">
           <Link
             href="/opposition"
-            className="inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             See all contested sites →
           </Link>

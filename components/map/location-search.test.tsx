@@ -105,16 +105,19 @@ describe("LocationSearch", () => {
     expect(screen.getByLabelText("Go to city or ZIP")).toBeInTheDocument();
   });
 
-  it("gives the search input a focus indicator via the wrapper's has-[]:ring, not a native outline", () => {
+  it("gives the search input a focus indicator via the wrapper's has-[]:outline, not its own native outline", () => {
     const { container } = render(<LocationSearch onSelect={() => {}} />);
     const input = screen.getByLabelText("Go to city or ZIP");
-    // The input itself suppresses its native ring — the visible cue is on
+    // The input itself suppresses its native outline — the visible cue is on
     // the wrapper, scoped specifically to this input's id so the submit
-    // button (which has its own separate ring) never doubles up.
+    // button (which has its own separate outline) never doubles up.
     expect(input.className).toContain("outline-none");
     const wrapper = container.firstElementChild as HTMLElement;
     expect(wrapper.className).toContain(
-      "has-[#location-search-input:focus-visible]:ring-2"
+      "has-[#location-search-input:focus-visible]:outline-2"
+    );
+    expect(wrapper.className).not.toContain(
+      "has-[#location-search-input:focus-visible]:ring-"
     );
   });
 

@@ -17,7 +17,7 @@ export function SourceAnchor({ source }: { source: Source }) {
       target="_blank"
       rel="noreferrer noopener"
       aria-label={`${source.label} (opens in new tab)`}
-      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring rounded"
     >
       <ExternalLink className="size-3" aria-hidden="true" />
       {source.label}

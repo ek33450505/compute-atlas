@@ -27,7 +27,7 @@ const FACILITY_TYPE_HREF: Partial<Record<FacilityType, string>> = {
 };
 
 const rowLinkClass =
-  "flex min-h-11 items-center justify-between gap-4 py-2 text-sm transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "flex min-h-11 items-center justify-between gap-4 py-2 text-sm transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 const rowStaticClass = "flex min-h-11 items-center justify-between gap-4 py-2 text-sm";
 
 /** "N facility" / "N facilities" — shared by the visible count text and the `aria-label`s below so the two can never drift apart. */

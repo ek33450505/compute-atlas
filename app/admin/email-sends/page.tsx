@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 type Param = string | string[] | undefined;
 
 const selectClass =
-  "h-8 rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "h-8 rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-2 focus-visible:outline-ring";
 
 export default async function AdminEmailSendsPage({
   searchParams,
@@ -96,7 +96,7 @@ export default async function AdminEmailSendsPage({
         </div>
         <button
           type="submit"
-          className="h-8 rounded-md border border-input px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-8 rounded-md border border-input px-3 text-sm focus-visible:outline-2 focus-visible:outline-ring"
         >
           Apply filters
         </button>

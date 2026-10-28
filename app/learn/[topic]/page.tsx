@@ -282,7 +282,7 @@ export default async function LearnTopicPage({
             See{" "}
             <Link
               href={content.crossLink.href}
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               {content.crossLink.label}
             </Link>{" "}

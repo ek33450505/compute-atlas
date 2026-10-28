@@ -69,7 +69,7 @@ export function RecordSpecimen({ facility, count, className }: RecordSpecimenPro
       <h3 className="font-display text-2xl leading-snug text-foreground sm:text-3xl">
         <Link
           href={`/facilities/${facility.id}`}
-          className="transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+          className="transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
         >
           {facility.name}
         </Link>
@@ -111,7 +111,7 @@ export function RecordSpecimen({ facility, count, className }: RecordSpecimenPro
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label={`${source.label} (opens in new tab)`}
-                  className="inline-flex items-start gap-1.5 text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  className="inline-flex items-start gap-1.5 text-sm text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded"
                 >
                   <ExternalLink
                     className="size-3 shrink-0 translate-y-1"

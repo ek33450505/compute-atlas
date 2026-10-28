@@ -60,7 +60,7 @@ export const FacilityMarker = forwardRef<HTMLButtonElement, FacilityMarkerProps>
           "border shadow-sm",
           "bg-background/90",
           isSelected ? "border-current ring-2 ring-current/30" : "border-current/40",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+          "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
           "motion-safe:hover:scale-110 motion-safe:transition-transform",
         ]
           .filter(Boolean)

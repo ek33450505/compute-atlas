@@ -159,7 +159,7 @@ interface SectionGapPromptProps {
 // Full-opacity muted-foreground plus text-xs + italic still reads distinctly
 // quieter than LINK_CLASS (text-sm, non-italic) without sacrificing AA.
 const SECTION_LINK_CLASS =
-  "text-xs italic text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm";
+  "text-xs italic text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 /**
  * Whole-section/whole-group gap — an entire group has no data at all (e.g.

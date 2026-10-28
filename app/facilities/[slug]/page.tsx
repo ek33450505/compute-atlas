@@ -241,7 +241,7 @@ export default async function FacilityPage({
         <p className="text-base text-muted-foreground">
           <Link
             href={`/operators/${operatorSlug(facility.operator)}`}
-            className="underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             {facility.operator}
           </Link>
@@ -368,7 +368,7 @@ export default async function FacilityPage({
                 {" · "}
                 <Link
                   href={`/counties/${countySlug(facility.location.county, facility.location.state)}`}
-                  className="underline-offset-4 rounded-sm transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="underline-offset-4 rounded-sm transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   {formatCountyLabel(facility.location.county, facility.location.state)}
                 </Link>

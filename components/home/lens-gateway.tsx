@@ -143,7 +143,7 @@ export function LensGateway({ counts, className }: LensGatewayProps) {
           <li key={href}>
             <Link
               href={href}
-              className={`plate-hover group flex h-full min-h-11 flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2${
+              className={`plate-hover group flex h-full min-h-11 flex-col gap-2 rounded-sm border border-border p-4 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring${
                 lead ? " border-primary/40 bg-primary/5 hover:bg-primary/10" : ""
               }`}
             >
@@ -166,13 +166,13 @@ export function LensGateway({ counts, className }: LensGatewayProps) {
       <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
         <Link
           href="/explore"
-          className="inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           See every lens →
         </Link>
         <Link
           href="/stats"
-          className="inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="inline-flex min-h-11 items-center rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           View full statistics →
         </Link>

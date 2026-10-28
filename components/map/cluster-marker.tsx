@@ -39,7 +39,7 @@ export const ClusterMarker = forwardRef<HTMLButtonElement, ClusterMarkerProps>(
           "rounded-full border border-foreground/30 shadow-md",
           "bg-foreground/90 text-background",
           "text-xs font-semibold leading-none",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+          "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
           "motion-safe:hover:scale-110 motion-safe:transition-transform",
         ]
           .filter(Boolean)

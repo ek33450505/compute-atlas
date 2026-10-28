@@ -53,7 +53,7 @@ export default async function ActivityPage() {
         <p className="pt-1">
           <a
             href="/activity/feed.xml"
-            className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-primary underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-primary underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             <Rss aria-hidden="true" className="h-3.5 w-3.5" />
             Subscribe via RSS

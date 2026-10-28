@@ -65,7 +65,7 @@ function JurisdictionCard({ name, slug, summary }: JurisdictionEntry) {
   return (
     <Link
       href={`/states/${slug}`}
-      className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <span className="flex flex-col gap-0.5 min-w-0">
         <span className="text-sm text-foreground truncate">{name}</span>

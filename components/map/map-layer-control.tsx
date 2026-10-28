@@ -84,7 +84,7 @@ function LayerToggle({ id, label, checked, onChange, swatchColor, disabled, hint
           disabled={disabled}
           aria-disabled={disabled || undefined}
           aria-describedby={showHint ? hintId : undefined}
-          className="size-4 shrink-0 accent-primary rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:cursor-not-allowed"
+          className="size-4 shrink-0 accent-primary rounded-sm focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring disabled:cursor-not-allowed"
         />
         <span
           aria-hidden="true"
@@ -279,7 +279,7 @@ export function MapLayerControl({
           "rounded-sm bg-popover border border-border",
           "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
           "cursor-pointer transition-colors motion-reduce:transition-none",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+          "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
           anyOn ? "ring-1 ring-primary/50" : "",
         ]
           .filter(Boolean)

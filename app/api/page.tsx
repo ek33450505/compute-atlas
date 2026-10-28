@@ -182,7 +182,7 @@ export default function ApiPage() {
               target="_blank"
               rel="noreferrer noopener"
               aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               CC-BY
             </a>{" "}
@@ -209,7 +209,7 @@ export default function ApiPage() {
           The record shape is documented as a live{" "}
           <a
             href="/api/schema"
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             JSON Schema at /api/schema
           </a>
@@ -268,7 +268,7 @@ export default function ApiPage() {
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="Full facilities dataset as JSON on GitHub (opens in new tab)"
-                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
               >
                 data/facilities.json
               </a>
@@ -283,7 +283,7 @@ export default function ApiPage() {
               use the version-pinned URL in{" "}
               <a
                 href="#citation-heading"
-                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
               >
                 How to cite
               </a>{" "}
@@ -320,7 +320,7 @@ export default function ApiPage() {
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
-                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
               >
                 CC-BY-4.0
               </a>{" "}
@@ -423,7 +423,7 @@ export default function ApiPage() {
                   target="_blank"
                   rel="noreferrer noopener"
                   aria-label="Compute Atlas concept DOI on Zenodo (opens in new tab)"
-                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                  className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                 >
                   Zenodo
                 </a>
@@ -443,7 +443,7 @@ export default function ApiPage() {
           The API is free with no key and no paid tier. If you build on it,{" "}
           <Link
             href="/support"
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             support keeps it running
           </Link>

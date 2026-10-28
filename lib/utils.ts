@@ -14,4 +14,4 @@ export function cn(...inputs: ClassValue[]) {
  * `inline-flex items-center min-h-11` for a preserved 44px touch target.
  */
 export const QUIET_ACTION_CLASS =
-  "text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+  "text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
