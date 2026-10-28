@@ -337,43 +337,64 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
     CAFFEINATE_PREFIX=(caffeinate -i)
   fi
 
-  # Explicit tool grants for the headless session. As of the 2026-08-14 repro
-  # ~/.claude/settings.json only allowed WebFetch for github.com/
-  # raw.githubusercontent.com/api.github.com (but see the CORRECTION at the end of
-  # this comment); in `claude -p` there is no human to approve a permission
-  # prompt, so every
-  # other WebFetch domain auto-denies. 2026-08-14 repro of the real prompt
-  # produced 13 successful WebSearch calls but 3 denied WebFetch calls
-  # ("Claude requested permissions to use WebFetch, but you haven't granted it
-  # yet") plus a denied Read — crippling yield on a pipeline that is required
-  # to cite real fetched sources. Read-only network fetch is the pipeline's
-  # core need, and the same repro showed the model falling back to 14 `Bash`
-  # calls shelling out to `curl` to work around the denied WebFetch — a
-  # narrow `Bash(curl:*)` grant is added rather than blocking that, because
-  # `curl` also reaches several bot-walled source domains (e.g. archive.org's
-  # CDX API) that WebFetch cannot. NOTE this grant is NOT airtight: the
-  # permission system also allows `curl -o`/`-O`, i.e. arbitrary file writes,
-  # so an unattended run CAN write files despite `Write`/`Edit` being denied
-  # below — this is a knowingly accepted residual risk (decided 2026-08-14),
-  # accepted because curl is the only path to archive.org/CDX and thus to the
-  # bot-walled sources Responsibility 4 depends on (509 counted by the
-  # source-liveness check as of this decision). `Write`/`Edit`/`NotebookEdit`/
-  # `Agent`/`Task` stay denied so an unattended run structurally cannot use
-  # the file-editing tools directly, commit, or fan out sub-agents — the
-  # prompt only asks for that in prose today. Kept as a shared array (both
-  # invoke_claude branches below) so the two invocations can't drift,
-  # expanded via the same bash-3.2-safe idiom as CAFFEINATE_PREFIX.
-  # `Bash(curl:*)` contains a glob/parens and MUST stay a single array
-  # element — never re-split this into a bare string.
-  #
-  # CORRECTION (2026-10-04 security review): the premise above is STALE, and the
-  # curl-only allowlist below is NOT the effective control on Bash. The global
-  # ~/.claude/settings.json carries a bare `Bash` allow and
-  # `sandbox.autoAllowBashIfSandboxed=true`, so the headless session effectively
-  # gets SANDBOXED ARBITRARY Bash, not just curl. Whether to tighten that is an
-  # OPEN DECISION for the maintainer; this comment documents it, behaviour is
-  # deliberately unchanged here.
-  CLAUDE_TOOL_FLAGS=(--allowedTools "WebSearch WebFetch Read Glob Grep Bash(curl:*)" --disallowedTools "Write Edit NotebookEdit Agent Task")
+  # Tool grants for the headless session. Control validity MEASURED on Claude
+  # Code CLI 2.1.308 (2026-10-27); re-probe after CLI upgrades.
+  # `claude -p` has no human to approve a permission prompt, so anything not
+  # granted auto-denies; WebFetch/WebSearch/Read/Glob/Grep are granted for the
+  # pipeline's core need (fetch and cite real sources). Shell access exists for
+  # one reason: archive.org/CDX and other bot-walled sources WebFetch cannot
+  # reach (Responsibility 4). It is therefore limited to the one-URL GET-only
+  # wrapper fetch-url.sh, NOT `Bash(curl:*)`: a probe showed the allowlisted
+  # `curl -d @file` / `-F f=@file` uploaded files from outside the cwd even
+  # though Read/cat there were blocked. With the wrapper grant, raw curl needed
+  # approval (denied in -p). Overpass POSTs with `--data-urlencode` are no longer
+  # possible (a GET `?data=` form is UNVERIFIED).
+  # Compound commands are NOT blocked wholesale: each part is checked on its
+  # own. MEASURED 2026-10-27: read-only parts such as `echo` and `whoami`,
+  # including inside `$(...)` or backticks in the wrapper's argument, DID
+  # execute; `python3`, `env`, `printenv` required approval (denied); `$VAR`
+  # expansion, a standalone `ps eww -A` and `> file` redirection never executed (the session
+  # stalled on them until timeout). Consequence: claude's environment must hold
+  # NO secrets, and run.sh must never export one. The repo template
+  # scripts/discovery/com.compute-atlas.discovery.plist sets only PATH (the other
+  # two are commented out); the INSTALLED LaunchAgents plist (read with
+  # `plutil -p` on 2026-10-27) sets API_BASE_URL, DISCOVERY_ENABLED and PATH.
+  # Neither holds a secret.
+  # Boundary: the session can still run read-only commands that need no path
+  # argument (`whoami`, `date`, `uname` ...) inside `$(...)`, and their output can
+  # reach the GET URL. So no secret may live in claude's environment OR in any
+  # process's argv. MEASURED 2026-10-27: `$(ps -ef)` and `$(lsof -p 1)` inside the
+  # wrapper argument executed (that probe's GET did not reach the listener:
+  # fetch-url.sh exited 2 with its 'only a single http(s) URL' error); with
+  # Bash(ps/pgrep/lsof) in --disallowedTools, `$(ps -ef | ...)` and
+  # `$(pgrep -lf ...)` were denied immediately, which also avoids the headless
+  # stall. Those deny rules match the command NAME only: path-qualified or
+  # wrapped forms (`/bin/ps`, `command ps`, `\ps`) are UNMEASURED and may not be
+  # covered, so the deny list is defence in depth and the boundary is the
+  # no-secrets-in-env-or-argv invariant.
+  # Hardening layers:
+  #  - `--restricted`: per `claude --help` (2.1.308) it ignores user, project and
+  #    local settings files while managed settings still apply. Why it matters:
+  #    the 2026-10-27 transcript analysis showed the isolated CLAUDE_CONFIG_DIR
+  #    path (permissionMode default, non-curl Bash denied) does not load the user
+  #    settings.json but DID load the repo's gitignored .claude/settings.local.json,
+  #    which grants `npm run *`, `git *`, `gh pr *`, `npx vercel *` and more.
+  #    CAST's managed PreToolUse hook fired 80x in those transcripts.
+  #  - `--strict-mcp-config`: per `claude --help` (2.1.308), only MCP servers from
+  #    --mcp-config are used, and none is passed. `--tools` caps the toolset.
+  #  - claude runs with cwd = DISCOVERY_WORK_DIR, an EMPTY secret-free directory
+  #    outside the repo (see _prepare_work_dir), because the repo root holds
+  #    .env.local (DATABASE_URL owner, API_ADMIN_TOKEN, Resend key) and Read
+  #    and `curl -d @.env.local` both succeeded there with the old flags.
+  # `Write`/`Edit`/`NotebookEdit`/`Agent`/`Task` stay denied. Kept as a shared
+  # array (both invoke_claude branches) so the two invocations can't drift,
+  # expanded via the same bash-3.2-safe idiom as CAFFEINATE_PREFIX. The
+  # `Bash(...:*)` grant contains parens/glob and MUST stay a single array
+  # element - never re-split this into a bare string.
+  FETCH_URL_BIN="$REPO_ROOT/scripts/discovery/fetch-url.sh"
+  DISCOVERY_WORK_DIR="${DISCOVERY_WORK_DIR:-$HOME/.compute-atlas-discovery/work}"
+  BATCH_CONTRACT="$BATCH_CONTRACT To fetch a URL from the shell, run exactly: $FETCH_URL_BIN 'https://...' (one http or https URL, GET only); raw curl is not available; use exactly one plain URL argument."
+  CLAUDE_TOOL_FLAGS=(--restricted --strict-mcp-config --tools "WebSearch,WebFetch,Read,Glob,Grep,Bash" --allowedTools "WebSearch WebFetch Read Glob Grep Bash($FETCH_URL_BIN:*)" --disallowedTools "Write Edit NotebookEdit Agent Task Bash(ps:*) Bash(pgrep:*) Bash(lsof:*)")
 
   # Long-lived Claude Code token for this headless job. The CLI's own refreshable
   # login expired 4 times in 9 days (2026-09-26, 09-27, 10-03, 10-04), each time
@@ -475,11 +496,15 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # globals and assigns none, so the token-carrying call site can run it in a
   # subshell and lose nothing; its exit status is the claude pipeline's own
   # (timeout's 124/137 included) and must stay the last thing it returns.
+  # claude runs in a subshell that cd's to WORK_DIR_PHYS (a secret-free dir, see
+  # _prepare_work_dir) so run.sh's own cwd is untouched; the OUTFILE redirect is
+  # applied OUTSIDE the subshell so a relative LOG_DIR still resolves against
+  # REPO_ROOT. fd 3 (token branch) is inherited by the subshell.
   _run_claude() {
     if [[ -n "$TIMEOUT_BIN" ]]; then
-      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" "$TIMEOUT_BIN" -k "$DISCOVERY_KILL_AFTER_SECS" "$DISCOVERY_TIMEOUT_SECS" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE"
+      ( cd "$WORK_DIR_PHYS" && "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" "$TIMEOUT_BIN" -k "$DISCOVERY_KILL_AFTER_SECS" "$DISCOVERY_TIMEOUT_SECS" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null ) > "$OUTFILE"
     else
-      "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null > "$OUTFILE"
+      ( cd "$WORK_DIR_PHYS" && "${CAFFEINATE_PREFIX[@]+"${CAFFEINATE_PREFIX[@]}"}" claude -p "$PROMPT" --append-system-prompt "$BATCH_CONTRACT" "${CLAUDE_TOOL_FLAGS[@]+"${CLAUDE_TOOL_FLAGS[@]}"}" --output-format text < /dev/null ) > "$OUTFILE"
     fi
   }
 
@@ -492,6 +517,54 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # caller maps it to class `auth`: that class already means "credential setup
   # is broken, a retry cannot fix it" and carries the no-retry, batch-latch,
   # re-queue and heartbeat handling, so no new class is needed.
+  # Resolve and vet the secret-free cwd for claude. Sets WORK_DIR_PHYS; returns 1
+  # (claude is never started) unless the dir (a) is not REPO_ROOT or inside it,
+  # (b) does not contain REPO_ROOT (e.g. $HOME would cover .env.local), and
+  # (c) is EMPTY (a regular .DS_Store is tolerated: Finder creates it). Emptiness
+  # also covers .env*, dangling symlinks and an inherited noglob. Fails closed if
+  # find itself errors. Order matters: create, resolve, validate, and only then
+  # chmod 700 the ACCEPTED dir, so a refused pre-existing dir keeps its mode.
+  # Deletes nothing.
+  WORK_DIR_PHYS=""
+  _prepare_work_dir() {
+    local _w _r _first
+    if [[ ! -d "$DISCOVERY_WORK_DIR" ]] && ! mkdir -p "$DISCOVERY_WORK_DIR" 2>/dev/null; then
+      log "ERROR: discovery work dir $DISCOVERY_WORK_DIR cannot be created - refusing to start claude"
+      return 1
+    fi
+    _w="$(cd "$DISCOVERY_WORK_DIR" 2>/dev/null && pwd -P)" || _w=""
+    _r="$(cd "$REPO_ROOT" 2>/dev/null && pwd -P)" || _r=""
+    if [[ -z "$_w" || -z "$_r" ]]; then
+      log "ERROR: discovery work dir $DISCOVERY_WORK_DIR cannot be resolved - refusing to start claude"
+      return 1
+    fi
+    if [[ "$_w/" == "$_r/"* ]]; then
+      log "ERROR: discovery work dir $_w is the repo root or inside it ($_r) - refusing to start claude"
+      return 1
+    fi
+    if [[ "$_r/" == "$_w/"* ]]; then
+      log "ERROR: discovery work dir $_w contains the repo ($_r) - refusing to start claude"
+      return 1
+    fi
+    if ! _first="$(find "$_w" -mindepth 1 -maxdepth 1 ! -name .DS_Store -print 2>/dev/null)"; then
+      log "ERROR: discovery work dir $_w cannot be listed - refusing to start claude"
+      return 1
+    fi
+    if [[ -n "$_first" ]]; then
+      log "ERROR: discovery work dir $_w is not empty (first entry: ${_first%%$'\n'*}) - refusing to start claude"
+      return 1
+    fi
+    if [[ -L "$_w/.DS_Store" || ( -e "$_w/.DS_Store" && ! -f "$_w/.DS_Store" ) ]]; then
+      log "ERROR: discovery work dir $_w has a non-regular .DS_Store - refusing to start claude"
+      return 1
+    fi
+    if ! chmod 700 "$_w" 2>/dev/null; then
+      log "ERROR: discovery work dir $_w cannot be chmod 700 - refusing to start claude"
+      return 1
+    fi
+    WORK_DIR_PHYS="$_w"
+  }
+
   LAST_INVOKE_CONFIG_FAILED=0
   invoke_claude() {
     local _t0 _t1 _status=0 _xt=0
@@ -510,12 +583,12 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       # CLAUDE_CONFIG_DIR at a fresh empty dir and no token: "Not logged in";
       # same empty dir + a bogus token: 401 (the token IS honoured when no stored
       # login exists). So the token only takes effect under an isolated config
-      # dir, which is set below. Consequences: user-level ~/.claude settings,
-      # hooks and MCP should no longer load for the headless discovery call
-      # (INFERRED from CLAUDE_CONFIG_DIR semantics, NOT measured; tool
-      # permissions come from the explicit CLAUDE_TOOL_FLAGS, so nothing needed
-      # is lost). CAST hook telemetry therefore stops recording the discovery
-      # session. Upside: the user-level CLAUDE.md/memory no longer contaminates
+      # dir, which is set below. Consequences: the user settings.json does not
+      # load on this path (2026-10-27 transcript analysis), but CAST's managed
+      # PreToolUse hook DID fire (80x in discovery transcripts) and the repo's
+      # gitignored .claude/settings.local.json loaded unless --restricted (see
+      # CLAUDE_TOOL_FLAGS). Tool permissions come from the explicit flags.
+      # Upside: the user-level CLAUDE.md/memory no longer contaminates
       # the headless discovery prompt. And an invalid token now fails the run LOUDLY (classified
       # `auth` -> the batch short-circuits, the states are re-queued, the
       # watchdog goes red) even when the interactive login is fine. See
@@ -547,7 +620,10 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       # switched off across the one place the value is expanded.
       case $- in *x*) _xt=1 ;; esac
       { set +x; } 2>/dev/null
-      if ! { mkdir -p "$DISCOVERY_CLAUDE_CONFIG_DIR" && chmod 700 "$DISCOVERY_CLAUDE_CONFIG_DIR"; } 2>/dev/null; then
+      if ! _prepare_work_dir; then
+        _status=1
+        LAST_INVOKE_CONFIG_FAILED=1
+      elif ! { mkdir -p "$DISCOVERY_CLAUDE_CONFIG_DIR" && chmod 700 "$DISCOVERY_CLAUDE_CONFIG_DIR"; } 2>/dev/null; then
         log "ERROR: cannot create isolated Claude config dir $DISCOVERY_CLAUDE_CONFIG_DIR - refusing to fall back to the stored login"
         _status=1
         LAST_INVOKE_CONFIG_FAILED=1
@@ -557,6 +633,9 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       if [[ "$_xt" -eq 1 ]]; then
         set -x
       fi
+    elif ! _prepare_work_dir; then
+      _status=1
+      LAST_INVOKE_CONFIG_FAILED=1
     else
       _run_claude || _status=$?
     fi

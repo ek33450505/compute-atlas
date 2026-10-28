@@ -40,6 +40,9 @@ try {
 	LOG_DIR="$TEST_TMP/discovery-logs"
 	mkdir -p "$LOG_DIR"
 
+	# claude's secret-free cwd; never let a test create the real-home default.
+	export DISCOVERY_WORK_DIR="$TEST_TMP/work"
+
 	BIN_DIR="$TEST_TMP/bin"
 	mkdir -p "$BIN_DIR"
 
@@ -49,6 +52,7 @@ try {
 	cat >"$BIN_DIR/claude" <<'EOF'
 #!/usr/bin/env bash
 echo "claude $*" >> "$CLAUDE_CALL_LOG"
+echo "cwd=$(pwd -P)" >> "$CLAUDE_CALL_LOG"
 echo '[]'
 exit 0
 EOF
@@ -287,6 +291,179 @@ teardown() {
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 	grep -q -- "--model sonnet --effort xhigh" "$CLAUDE_CALL_LOG"
+}
+
+@test "claude is invoked with --restricted, --strict-mcp-config and a capped --tools list" {
+	export DISCOVERY_ENABLED=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q -- "--restricted" "$CLAUDE_CALL_LOG"
+	grep -q -- "--strict-mcp-config" "$CLAUDE_CALL_LOG"
+	grep -q -- "--tools WebSearch,WebFetch,Read,Glob,Grep,Bash" "$CLAUDE_CALL_LOG"
+}
+
+@test "disallowedTools denies process-listing commands (ps, pgrep, lsof)" {
+	export DISCOVERY_ENABLED=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -qF -- "--disallowedTools Write Edit NotebookEdit Agent Task Bash(ps:*) Bash(pgrep:*) Bash(lsof:*)" "$CLAUDE_CALL_LOG"
+}
+
+@test "the Bash grant is the fetch-url.sh wrapper, never raw curl" {
+	export DISCOVERY_ENABLED=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -qF -- "Bash($REPO_ROOT/scripts/discovery/fetch-url.sh:*)" "$CLAUDE_CALL_LOG"
+	! grep -qF -- "Bash(curl" "$CLAUDE_CALL_LOG"
+}
+
+@test "the batch contract names the absolute fetch-url.sh path" {
+	export DISCOVERY_ENABLED=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -qF -- "run exactly: $REPO_ROOT/scripts/discovery/fetch-url.sh 'https://" "$CLAUDE_CALL_LOG"
+}
+
+@test "claude runs with cwd = DISCOVERY_WORK_DIR, not the repo root" {
+	export DISCOVERY_ENABLED=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	want="$(cd "$DISCOVERY_WORK_DIR" && pwd -P)"
+	grep -qxF "cwd=$want" "$CLAUDE_CALL_LOG"
+	! grep -qxF "cwd=$(cd "$REPO_ROOT" && pwd -P)" "$CLAUDE_CALL_LOG"
+	[ "$(ls -ld "$DISCOVERY_WORK_DIR" | cut -c1-10)" = "drwx------" ]
+}
+
+@test "the default work dir lands under the isolated HOME" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_WORK_DIR
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ -d "$HOME/.compute-atlas-discovery/work" ]
+}
+
+@test "DISCOVERY_WORK_DIR inside the repo: claude never starts, classified auth" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# A fake repo under TEST_TMP, so nothing real is created or chmod'd.
+	mkdir -p "$TEST_TMP/fakerepo"
+	cp -R "$REPO_ROOT/scripts" "$TEST_TMP/fakerepo/scripts"
+	export DISCOVERY_WORK_DIR="$TEST_TMP/fakerepo/work"
+	run bash "$TEST_TMP/fakerepo/scripts/discovery/run.sh"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"ERROR: discovery work dir"*"inside it"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" == *"cause=auth"* ]]
+}
+
+# Work-dir guard helpers. Everything stays under $TEST_TMP: never aim
+# DISCOVERY_WORK_DIR (it gets mkdir'd, and chmod'd when accepted) at a real dir.
+_work_dir_refused_setup() {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	export STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+}
+
+_assert_work_dir_refused() {
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"ERROR: discovery work dir"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[[ "$output" == *"cause=auth"* ]]
+}
+
+_mode_of() { ls -ld "$1" | cut -c1-10; }
+
+@test "DISCOVERY_WORK_DIR that contains the repo: refused, claude never starts" {
+	_work_dir_refused_setup
+	# A fake repo under TEST_TMP so REPO_ROOT resolves inside the work dir.
+	mkdir -p "$TEST_TMP/outer/repo"
+	cp -R "$REPO_ROOT/scripts" "$TEST_TMP/outer/repo/scripts"
+	export DISCOVERY_WORK_DIR="$TEST_TMP/outer"
+	run bash "$TEST_TMP/outer/repo/scripts/discovery/run.sh"
+	_assert_work_dir_refused
+	[[ "$output" == *"contains the repo"* ]]
+}
+
+@test "DISCOVERY_WORK_DIR with a regular file in it: refused (not empty)" {
+	_work_dir_refused_setup
+	mkdir -p "$DISCOVERY_WORK_DIR"
+	: >"$DISCOVERY_WORK_DIR/notes.txt"
+	run bash "$RUN_SH"
+	_assert_work_dir_refused
+	[[ "$output" == *"not empty (first entry: "*"notes.txt"* ]]
+}
+
+@test "DISCOVERY_WORK_DIR holding .env.local: refused" {
+	_work_dir_refused_setup
+	mkdir -p "$DISCOVERY_WORK_DIR"
+	: >"$DISCOVERY_WORK_DIR/.env.local"
+	run bash "$RUN_SH"
+	_assert_work_dir_refused
+}
+
+@test "DISCOVERY_WORK_DIR holding a dangling .env symlink: refused" {
+	_work_dir_refused_setup
+	mkdir -p "$DISCOVERY_WORK_DIR"
+	ln -s "$TEST_TMP/does-not-exist" "$DISCOVERY_WORK_DIR/.env"
+	run bash "$RUN_SH"
+	_assert_work_dir_refused
+}
+
+@test "DISCOVERY_WORK_DIR holding .env.local is refused even with noglob inherited" {
+	_work_dir_refused_setup
+	mkdir -p "$DISCOVERY_WORK_DIR"
+	: >"$DISCOVERY_WORK_DIR/.env.local"
+	run env SHELLOPTS=noglob bash "$RUN_SH"
+	_assert_work_dir_refused
+}
+
+@test "a refused pre-existing work dir keeps its mode (chmod only after validation)" {
+	_work_dir_refused_setup
+	mkdir -p "$DISCOVERY_WORK_DIR"
+	: >"$DISCOVERY_WORK_DIR/notes.txt"
+	chmod 755 "$DISCOVERY_WORK_DIR"
+	run bash "$RUN_SH"
+	_assert_work_dir_refused
+	[ "$(_mode_of "$DISCOVERY_WORK_DIR")" = "drwxr-xr-x" ]
+}
+
+@test "an accepted pre-existing work dir ends at 700" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$DISCOVERY_WORK_DIR"
+	chmod 755 "$DISCOVERY_WORK_DIR"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ -s "$CLAUDE_CALL_LOG" ]
+	[ "$(_mode_of "$DISCOVERY_WORK_DIR")" = "drwx------" ]
+}
+
+@test "a regular .DS_Store in the work dir is accepted" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$DISCOVERY_WORK_DIR"
+	: >"$DISCOVERY_WORK_DIR/.DS_Store"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ -s "$CLAUDE_CALL_LOG" ]
+}
+
+@test "a .DS_Store symlink in the work dir is refused" {
+	_work_dir_refused_setup
+	mkdir -p "$DISCOVERY_WORK_DIR"
+	ln -s "$TEST_TMP/elsewhere" "$DISCOVERY_WORK_DIR/.DS_Store"
+	run bash "$RUN_SH"
+	_assert_work_dir_refused
+}
+
+@test "token branch also runs claude with cwd = DISCOVERY_WORK_DIR" {
+	export DISCOVERY_ENABLED=true
+	_install_security_with_token
+	_install_claude_recording_token
+	_run_no_fd3 bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(cat "$TEST_TMP/claude-cwd-seen")" = "$(cd "$DISCOVERY_WORK_DIR" && pwd -P)" ]
 }
 
 @test "invalid DISCOVERY_CLAUDE_EFFORT fails before claude is invoked" {
@@ -2224,6 +2401,7 @@ _install_claude_recording_token() {
 	cat >"$BIN_DIR/claude" <<SHIM
 #!/usr/bin/env bash
 echo "claude \$*" >> "$CLAUDE_CALL_LOG"
+pwd -P >"$TEST_TMP/claude-cwd-seen"
 if { true <&3; } 2>/dev/null; then cat <&3 >"$FD3_SEEN_FILE"; else echo FD3-CLOSED >"$FD3_SEEN_FILE"; fi
 echo "\${CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR:-UNSET}" >"$FDVAR_SEEN_FILE"
 echo "\${CLAUDE_CODE_OAUTH_TOKEN:-UNSET}" >"$TOKENENV_SEEN_FILE"
