@@ -1,6 +1,7 @@
 import { getFacilityById } from "@/lib/data";
 import type { SubmissionRow } from "@/lib/db/schema";
 import { computeDocDiff } from "@/lib/doc-diff";
+import { mergeFacilityPatch } from "@/lib/facility-patch";
 import { formatStatusLabel } from "@/lib/format";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { DocDiffView, stringifyValue } from "@/components/admin/doc-diff";
@@ -46,15 +47,19 @@ function CreateSummary({ payload }: { payload: Record<string, unknown> }) {
 
 /**
  * Renders a SHALLOW top-level before/after diff between the live facility
- * doc and an update-kind submission's patch. `updateFacility`'s own merge
- * (`{...existingRow.doc, ...patch, id}`) is shallow top-level, so a shallow
- * diff view is the correct fidelity here — do not deep-diff nested objects.
+ * doc and an update-kind submission's patch. The "after" doc comes from
+ * `mergeFacilityPatch`, the same merge `updateFacility` runs before it
+ * validates, so a `location` patch restating none of lat, lon or state shows
+ * as merged and one that restates any of them shows as replaced. It is the raw
+ * merge, not the stored result: the defaults `facilitySchema` fills in (a
+ * restated pin's omitted `precision` becomes "approximate"), stripped unknown
+ * keys and the pinned `id` only appear once approval writes. The merge is
+ * shallow top-level, so a shallow diff view is the correct fidelity here — do
+ * not deep-diff nested objects.
  *
  * Delegates to the shared `computeDocDiff` (`lib/doc-diff.ts`, also used by
  * the `facility_history` write path) and the shared `DocDiffView` render
- * component (`components/admin/doc-diff.tsx`). `computeDocDiff(current,
- * {...current, ...patch})` reproduces this component's prior inline
- * behavior exactly: spreading `patch` over `current` then diffing against
+ * component (`components/admin/doc-diff.tsx`). Diffing the merged doc against
  * `current` only ever flags `patch`'s own changed keys.
  */
 function UpdateDiff({
@@ -65,7 +70,7 @@ function UpdateDiff({
   patch: Record<string, unknown>;
 }) {
   const currentDoc = current ?? null;
-  const entries = computeDocDiff(currentDoc, { ...currentDoc, ...patch });
+  const entries = computeDocDiff(currentDoc, mergeFacilityPatch(currentDoc, patch));
   return <DocDiffView entries={entries} />;
 }
 

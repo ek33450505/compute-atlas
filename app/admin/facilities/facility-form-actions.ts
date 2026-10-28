@@ -36,10 +36,13 @@ export async function createFacilityAction(input: unknown): Promise<WriteResult>
 
 /**
  * Updates an existing facility by id. `updateFacility` does a SHALLOW
- * top-level merge onto the existing stored document — the caller must always
- * submit complete nested objects (`location`, `capacityMw`, `energy`,
- * `water`, `jobs`, `community`, etc.), never a partial patch, or sibling
- * fields inside that object are silently dropped by the merge.
+ * top-level merge onto the existing stored document (`mergeFacilityPatch`) —
+ * the caller must always submit complete nested objects (`capacityMw`,
+ * `energy`, `water`, `jobs`, `community`, etc.), never a partial patch, or
+ * sibling fields inside that object are silently dropped by the merge.
+ * `location` is the one exception: a patch restating none of lat, lon or
+ * state is merged over the stored one. A patch that restates any of them
+ * replaces the location wholesale, which is what this form's payload does.
  */
 export async function updateFacilityAction(id: string, input: unknown): Promise<WriteResult> {
   await assertAdminSession();

@@ -84,6 +84,50 @@ describe("SubmissionDetail — kind=update", () => {
     expect(screen.queryByText("operator")).not.toBeInTheDocument();
   });
 
+  it("previews a partial location patch as the merged location updateFacility will write", async () => {
+    mockGetFacilityById.mockResolvedValue({
+      id: "fac-1",
+      location: { lat: 33.4, lon: -84.4, state: "GA", precision: "exact" },
+    } as unknown as Facility);
+
+    const submission = makeSubmission({
+      kind: "update",
+      targetFacilityId: "fac-1",
+      payload: { location: { city: "New" } },
+    });
+
+    const { container } = render(await SubmissionDetail({ submission }));
+
+    // The After column is the whole merged location, not just the patched key:
+    // lat/lon/precision survive, so the reviewer sees no coordinate downgrade.
+    const after = container.querySelectorAll("dd")[1].textContent ?? "";
+    expect(JSON.parse(after)).toEqual({
+      lat: 33.4,
+      lon: -84.4,
+      state: "GA",
+      precision: "exact",
+      city: "New",
+    });
+  });
+
+  it("previews a restated pin as a replaced location, so the old city does not appear in the After column", async () => {
+    mockGetFacilityById.mockResolvedValue({
+      id: "fac-1",
+      location: { lat: 33.4, lon: -84.4, state: "GA", precision: "exact", city: "Atlanta" },
+    } as unknown as Facility);
+
+    const submission = makeSubmission({
+      kind: "update",
+      targetFacilityId: "fac-1",
+      payload: { location: { lat: 35, lon: -80, state: "NC" } },
+    });
+
+    const { container } = render(await SubmissionDetail({ submission }));
+
+    const after = container.querySelectorAll("dd")[1].textContent ?? "";
+    expect(JSON.parse(after)).toEqual({ lat: 35, lon: -80, state: "NC" });
+  });
+
   it("reports no changes when the patch value matches the live value", async () => {
     mockGetFacilityById.mockResolvedValue({
       id: "fac-1",

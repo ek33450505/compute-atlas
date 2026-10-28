@@ -210,12 +210,15 @@ export function formatRatio(numerator: number, denominator: number): string {
   return `${(numerator / denominator).toFixed(1)} : 1`;
 }
 
-/** Formats megawatts as MW, or GW at 1,000 MW and above. */
+/** Formats megawatts as MW, or GW once the figure rounds to 1,000 MW or more. */
 export function formatPower(mw: number): string {
-  if (mw >= 1000) {
-    return `${(mw / 1000).toFixed(1)} GW`;
+  // Round before the threshold so 999.6 reads "1.0 GW", never "1000 MW".
+  const wholeMw = Math.round(mw);
+  if (wholeMw >= 1000) {
+    // Integer rounding: toFixed(1) rounds on the binary value, so 1.45 (1.4499...) read "1.4".
+    return `${(Math.round(mw / 100) / 10).toFixed(1)} GW`;
   }
-  return `${Math.round(mw)} MW`;
+  return `${wholeMw} MW`;
 }
 
 /** Formats a million-gallons-per-day water figure. */

@@ -4,6 +4,7 @@ import { and, asc, eq, desc, inArray, ne, or, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { facilitiesTable, leadsTable, submissionsTable, type LeadRow } from "@/lib/db/schema";
 import { httpUrlSchema, sanitizeAttribution, storableText } from "@/lib/intake-fields";
+import { mergeFacilityPatch } from "@/lib/facility-patch";
 import { facilitySchema } from "@/lib/schema";
 import { createSubmission } from "@/lib/submissions";
 import {
@@ -342,8 +343,8 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
  * this never writes a live facility.
  *
  * The payload is validated against `facilitySchema` here (for an update, as the
- * shallow top-level merge `updateFacility` will perform) so a payload approve
- * would reject fails now rather than sitting in the queue. A create whose id
+ * merge `updateFacility` will perform, via `mergeFacilityPatch`) so a payload
+ * approve would reject fails now rather than sitting in the queue. A create whose id
  * already exists 409s: that is the duplicate guard.
  *
  * `provenance.discoveredBy` is `lead:<id>` — the convention the hand-promoted
@@ -422,7 +423,7 @@ export async function stageLeadSubmission(
     if (!existing) {
       return { ok: false, status: 404, error: "Facility not found" };
     }
-    const parsed = facilitySchema.safeParse({ ...existing.doc, ...patch, id: targetId });
+    const parsed = facilitySchema.safeParse({ ...mergeFacilityPatch(existing.doc, patch), id: targetId });
     if (!parsed.success) {
       return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };
     }

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createSubmission } from "@/lib/submissions";
+import { mergeFacilityPatch } from "@/lib/facility-patch";
 import { facilitySchema, type Facility } from "@/lib/schema";
 import { getFacilityById } from "@/lib/data";
 import {
@@ -497,7 +498,7 @@ export async function submitContribution(
   if ("error" in patchResult) {
     return { ok: false, status: 400, error: patchResult.error };
   }
-  const preview = { ...existing, ...patchResult.payload, id: existing.id };
+  const preview = { ...mergeFacilityPatch(existing, patchResult.payload), id: existing.id };
   const previewValidated = facilitySchema.safeParse(preview);
   if (!previewValidated.success) {
     return { ok: false, status: 400, error: "Invalid correction", issues: previewValidated.error.issues };

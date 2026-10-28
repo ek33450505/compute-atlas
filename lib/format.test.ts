@@ -188,6 +188,25 @@ describe("formatPower", () => {
   it("rounds a fractional MW value below the threshold", () => {
     expect(formatPower(12.4)).toBe("12 MW");
   });
+
+  it("rounds a GW tie up even when the binary float sits just below it", () => {
+    // 1450 / 1000 = 1.45, which is 1.4499999999999999556 in binary, so toFixed(1) gave "1.4".
+    expect(formatPower(1450)).toBe("1.5 GW");
+  });
+
+  it("rounds just under a GW tie down", () => {
+    expect(formatPower(1449)).toBe("1.4 GW");
+  });
+
+  it("rounds before the GW threshold, so a value that rounds to 1000 MW reads 1.0 GW, never 1000 MW", () => {
+    expect(formatPower(999.5)).toBe("1.0 GW");
+    expect(formatPower(999.6)).toBe("1.0 GW");
+    expect(formatPower(999.96)).toBe("1.0 GW");
+  });
+
+  it("keeps a value that rounds to 999 MW in MW", () => {
+    expect(formatPower(999.4)).toBe("999 MW");
+  });
 });
 
 // ---------------------------------------------------------------------------

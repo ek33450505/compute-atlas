@@ -6,11 +6,13 @@ import {
   isHoneypotTripped,
   buildCreatePayload,
   buildCorrectionPatch,
+  CORRECTABLE_FIELDS,
   contributeInputSchema,
   sanitizeAttribution,
   type CreateContributeInput,
   type CorrectionContributeInput,
 } from "@/lib/contribute";
+import { mergeFacilityPatch } from "@/lib/facility-patch";
 import { facilitySchema, type DataCenterFacility } from "@/lib/schema";
 
 const TODAY = "2026-07-14";
@@ -633,6 +635,83 @@ describe("contributeInputSchema name validation (non-empty slug base)", () => {
     const nameIssues = result.error!.issues.filter((i) => i.path.includes("name"));
     expect(nameIssues).toHaveLength(1);
     expect(nameIssues[0].message).not.toContain("at least one letter or number");
+  });
+});
+
+describe("public-correction pre-validation merge", () => {
+  // submitContribution previews an update with mergeFacilityPatch instead of the
+  // plain `{...existing, ...payload}` it used before. That swap is only safe
+  // while every patch buildCorrectionPatch can emit merges identically, which
+  // holds because `state` builds a COMPLETE location (it spreads the existing
+  // one, so lat, lon and state are all present and the helper replaces).
+  function validValue(def: (typeof CORRECTABLE_FIELDS)[number]): string | number {
+    switch (def.valueKind) {
+      case "number":
+        return 75;
+      case "enum":
+        return def.enumValues![0];
+      case "state":
+        return "sc";
+      default:
+        return "Corrected value";
+    }
+  }
+
+  it.each(CORRECTABLE_FIELDS.map((def) => [def.key, def] as const))(
+    "merges the %s correction patch exactly as a plain spread would",
+    (_key, def) => {
+      const existing = baseExistingFacility({
+        location: { lat: 38.0, lon: -77.0, state: "VA", precision: "exact", city: "Reston", county: "Fairfax" },
+      });
+      const result = buildCorrectionPatch(
+        existing,
+        {
+          kind: "correction",
+          targetFacilityId: existing.id,
+          field: def.key,
+          value: validValue(def),
+          sourceUrl: "https://example.com/correction",
+        },
+        TODAY
+      );
+      expect("payload" in result).toBe(true);
+      if (!("payload" in result)) return;
+
+      expect(mergeFacilityPatch(existing, result.payload)).toEqual({ ...existing, ...result.payload });
+    }
+  );
+
+  it("keeps an exact pin and its city when only the state is corrected", () => {
+    const existing = baseExistingFacility({
+      location: { lat: 38.0, lon: -77.0, state: "VA", precision: "exact", city: "Reston" },
+    });
+    const result = buildCorrectionPatch(
+      existing,
+      {
+        kind: "correction",
+        targetFacilityId: existing.id,
+        field: "state",
+        value: "nc",
+        sourceUrl: "https://example.com/correction",
+      },
+      TODAY
+    );
+    expect("payload" in result).toBe(true);
+    if (!("payload" in result)) return;
+
+    const parsed = facilitySchema.safeParse({
+      ...mergeFacilityPatch(existing, result.payload),
+      id: existing.id,
+    });
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.location).toEqual({
+      lat: 38.0,
+      lon: -77.0,
+      state: "NC",
+      precision: "exact",
+      city: "Reston",
+    });
   });
 });
 

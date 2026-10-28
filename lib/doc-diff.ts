@@ -3,11 +3,11 @@
  * write time rather than persisting two full before/after doc
  * columns — `facility_history.diff` stores the array this returns.
  *
- * Generalizes the shallow diff already inline in
- * `app/admin/submissions/submission-detail.tsx`'s `UpdateDiff` component:
- * `computeDocDiff(current, {...current, ...patch})` reproduces that
- * component's exact current behavior (spreading `patch` over `current` then
- * diffing against `current` only ever flags `patch`'s own changed keys).
+ * Generalizes the shallow diff that was inline in
+ * `app/admin/submissions/submission-detail.tsx`'s `UpdateDiff` component,
+ * which now calls `computeDocDiff(current, mergeFacilityPatch(current, patch))`
+ * (`lib/facility-patch.ts`). Diffing a merged doc against `current` only ever
+ * flags `patch`'s own changed keys.
  */
 
 export interface DiffEntry {
