@@ -394,7 +394,18 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   FETCH_URL_BIN="$REPO_ROOT/scripts/discovery/fetch-url.sh"
   DISCOVERY_WORK_DIR="${DISCOVERY_WORK_DIR:-$HOME/.compute-atlas-discovery/work}"
   BATCH_CONTRACT="$BATCH_CONTRACT To fetch a URL from the shell, run exactly: $FETCH_URL_BIN 'https://...' (one http or https URL, GET only); raw curl is not available; use exactly one plain URL argument."
-  CLAUDE_TOOL_FLAGS=(--restricted --strict-mcp-config --tools "WebSearch,WebFetch,Read,Glob,Grep,Bash" --allowedTools "WebSearch WebFetch Read Glob Grep Bash($FETCH_URL_BIN:*)" --disallowedTools "Write Edit NotebookEdit Agent Task Bash(ps:*) Bash(pgrep:*) Bash(lsof:*)")
+  # The model must read the candidate contract (lib/schema.ts) to emit valid
+  # facilities, but the work dir is empty and Read/Glob/Grep are confined to
+  # the cwd (measured 2026-10-28: a Read of a repo path is refused; with
+  # `--add-dir <dir>` it succeeds). Granting the repo or lib/ would expose more
+  # than the contract, so run.sh copies ONLY schema.ts and status.ts (STATUS_ORDER) into a dedicated dir
+  # (outside the repo and outside the work dir) and adds just that dir.
+  # 2026-10-28: without this the model's `cat lib/schema.ts` was denied once
+  # Bash was narrowed (#489) and it guessed the schema: 98 candidates rejected.
+  DISCOVERY_CONTRACT_DIR="$HOME/.compute-atlas-discovery/contract"
+  SCHEMA_CONTRACT_FILE="$DISCOVERY_CONTRACT_DIR/schema.ts"
+  STATUS_CONTRACT_FILE="$DISCOVERY_CONTRACT_DIR/status.ts"
+  CLAUDE_TOOL_FLAGS=(--restricted --strict-mcp-config --add-dir "$DISCOVERY_CONTRACT_DIR" --tools "WebSearch,WebFetch,Read,Glob,Grep,Bash" --allowedTools "WebSearch WebFetch Read Glob Grep Bash($FETCH_URL_BIN:*)" --disallowedTools "Write Edit NotebookEdit Agent Task Bash(ps:*) Bash(pgrep:*) Bash(lsof:*)")
 
   # Long-lived Claude Code token for this headless job. The CLI's own refreshable
   # login expired 4 times in 9 days (2026-09-26, 09-27, 10-03, 10-04), each time
@@ -566,9 +577,82 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   }
 
   LAST_INVOKE_CONFIG_FAILED=0
+  # Refresh the contract copy before every session (fail closed: a missing or
+  # stale contract is how the 2026-10-28 run guessed the schema).
+  # The path is hardcoded on purpose (no env override): it is granted to the
+  # session with --add-dir and chmod'd 700, so an override such as $HOME would
+  # hand over the whole home dir. Only schema.ts and status.ts are staged.
+  # intake-fields.ts (URL validator) and us-states.ts (state-code lookup) are
+  # deliberately NOT staged: the model never guessed those wrong, while the
+  # 2026-10-28 rejections were all vocabulary (source kind enum, lat/lon).
+  # Refuses (never deletes) a symlinked dir or parent, foreign ownership, a
+  # path that resolves elsewhere, any non-regular entry, and any entry other
+  # than the two files. Leftover .schema.XXXXXX temp files from a killed run are
+  # harmless schema copies and are not auto-deleted. The physical-path check is
+  # defence in depth: it is unreachable after the symlink checks above it.
+  _prepare_contract_dir() {
+    local _parent _phys _stray _tmp_s="" _tmp_t=""
+    _parent="$HOME/.compute-atlas-discovery"
+    if [[ -L "$_parent" || -L "$DISCOVERY_CONTRACT_DIR" ]]; then
+      log "ERROR: contract dir $DISCOVERY_CONTRACT_DIR or its parent is a symlink - refusing to start claude"
+      return 1
+    fi
+    if ! mkdir -p "$DISCOVERY_CONTRACT_DIR" 2>/dev/null; then
+      log "ERROR: cannot create contract dir $DISCOVERY_CONTRACT_DIR - refusing to start claude"
+      return 1
+    fi
+    if [[ -L "$DISCOVERY_CONTRACT_DIR" || ! -d "$DISCOVERY_CONTRACT_DIR" || ! -O "$DISCOVERY_CONTRACT_DIR" ]]; then
+      log "ERROR: contract dir $DISCOVERY_CONTRACT_DIR is a symlink or not owned by the current user - refusing to start claude"
+      return 1
+    fi
+    _phys="$(cd "$DISCOVERY_CONTRACT_DIR" 2>/dev/null && pwd -P)" || _phys=""
+    if [[ -z "$_phys" || "$_phys" != "$(cd "$_parent" 2>/dev/null && pwd -P)/contract" ]]; then
+      log "ERROR: contract dir $DISCOVERY_CONTRACT_DIR resolves to ${_phys:-nothing}, not under $_parent - refusing to start claude"
+      return 1
+    fi
+    if ! chmod 700 "$DISCOVERY_CONTRACT_DIR" 2>/dev/null; then
+      log "ERROR: contract dir $DISCOVERY_CONTRACT_DIR cannot be chmod 700 - refusing to start claude"
+      return 1
+    fi
+    # Type check first, whatever the name: a symlink named like a temp file
+    # (or schema.ts itself) would let --add-dir Read follow it to its target.
+    if ! _stray="$(find "$DISCOVERY_CONTRACT_DIR" -mindepth 1 -maxdepth 1 ! -type f -print 2>/dev/null)"; then
+      log "ERROR: contract dir $DISCOVERY_CONTRACT_DIR cannot be listed - refusing to start claude"
+      return 1
+    fi
+    if [[ -n "$_stray" ]]; then
+      log "ERROR: contract dir $DISCOVERY_CONTRACT_DIR has a non-regular entry (first: ${_stray%%$'\n'*}) - refusing to start claude"
+      return 1
+    fi
+    if ! _stray="$(find "$DISCOVERY_CONTRACT_DIR" -mindepth 1 -maxdepth 1 ! -name schema.ts ! -name status.ts ! -name '.schema.*' ! -name '.status.*' -print 2>/dev/null)"; then
+      log "ERROR: contract dir $DISCOVERY_CONTRACT_DIR cannot be listed - refusing to start claude"
+      return 1
+    fi
+    if [[ -n "$_stray" ]]; then
+      log "ERROR: contract dir $DISCOVERY_CONTRACT_DIR has an unexpected entry (first: ${_stray%%$'\n'*}) - refusing to start claude"
+      return 1
+    fi
+    if ! { _tmp_s="$(mktemp "$DISCOVERY_CONTRACT_DIR/.schema.XXXXXX")" \
+      && cp "$REPO_ROOT/lib/schema.ts" "$_tmp_s" \
+      && [[ -s "$_tmp_s" ]] \
+      && _tmp_t="$(mktemp "$DISCOVERY_CONTRACT_DIR/.status.XXXXXX")" \
+      && cp "$REPO_ROOT/lib/status.ts" "$_tmp_t" \
+      && [[ -s "$_tmp_t" ]] \
+      && mv -f "$_tmp_s" "$SCHEMA_CONTRACT_FILE" \
+      && mv -f "$_tmp_t" "$STATUS_CONTRACT_FILE"; } 2>/dev/null; then
+      rm -f "$_tmp_s" "$_tmp_t" 2>/dev/null || :
+      log "ERROR: cannot stage the schema contract into $DISCOVERY_CONTRACT_DIR - refusing to start claude"
+      return 1
+    fi
+  }
+
   invoke_claude() {
     local _t0 _t1 _status=0 _xt=0
     LAST_INVOKE_CONFIG_FAILED=0
+    if ! _prepare_contract_dir; then
+      LAST_INVOKE_CONFIG_FAILED=1
+      return 1
+    fi
     _t0="$(date '+%s')"
     if [[ -z "$TIMEOUT_BIN" ]]; then
       log "WARN: no timeout/gtimeout binary found — running claude without a wall-clock cap"
@@ -934,6 +1018,8 @@ r $EXISTING_FACILITIES_FILE
 d
 }")"
     rm -f "$EXISTING_FACILITIES_FILE"
+    PROMPT="${PROMPT//\{\{SCHEMA_FILE\}\}/$SCHEMA_CONTRACT_FILE}"
+    PROMPT="${PROMPT//\{\{STATUS_FILE\}\}/$STATUS_CONTRACT_FILE}"
 
     # Guarded: a nonzero exit here (e.g. "You've hit your session limit") must
     # not trip set -e and kill the whole batch — the submit step below is

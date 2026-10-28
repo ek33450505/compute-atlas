@@ -62,7 +62,7 @@ Guardrails:
 
 For each new facility you find:
 1. Research it using real web sources. Cite every source you use with a URL.
-2. Build a JSON object matching the Facility schema in lib/schema.ts -- see the
+2. Build a JSON object matching the Facility schema in {{SCHEMA_FILE}} (use the Read tool on that exact path first; do not guess field names or enum values; `status` values are STATUS_ORDER in {{STATUS_FILE}}) -- see the
    discriminated union on `facilityType` (data_center | crypto_mining | power_generation),
    the shared base fields (id, name, operator, status, confidence, location, sources, ...),
    and the type-specific fields for whichever facilityType applies.
