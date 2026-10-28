@@ -160,4 +160,27 @@ describe("Tabs", () => {
       "vertical"
     );
   });
+
+  // Base UI gives an open panel tabIndex 0, so it is a Tab stop; it keeps
+  // outline-none and had no focus cue at all. `outline-solid` is load-bearing:
+  // outline-none sets --tw-outline-style: none, which outline-2 would otherwise
+  // read. See button.tsx.
+  it("draws a real focus-visible outline on the open panel alongside outline-none", () => {
+    render(
+      <Tabs defaultValue="one">
+        <TabsList>
+          <TabsTrigger value="one">One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="one">Content one</TabsContent>
+      </Tabs>
+    );
+    const panel = screen.getByRole("tabpanel");
+    expect(panel).toHaveAttribute("tabindex", "0");
+    expect(panel).toHaveClass(
+      "outline-none",
+      "focus-visible:outline-2",
+      "focus-visible:outline-solid",
+      "focus-visible:outline-ring"
+    );
+  });
 });

@@ -184,6 +184,22 @@ describe("CommandPalette — open", () => {
 
     expect(await screen.findByRole("combobox")).toBeInTheDocument();
   });
+
+  it("carries the input's focus cue on its row, since the input itself is outline-none", async () => {
+    const user = userEvent.setup();
+    renderPalette();
+
+    await user.click(screen.getByRole("button", { name: /search/i }));
+
+    const input = await screen.findByRole("combobox");
+    expect(input).toHaveClass("outline-none");
+    // Inset: the dialog popup is overflow-hidden and the row is flush with its edges.
+    expect(input.parentElement).toHaveClass(
+      "has-[#cmdk-input:focus-visible]:outline-2",
+      "has-[#cmdk-input:focus-visible]:-outline-offset-2",
+      "has-[#cmdk-input:focus-visible]:outline-ring"
+    );
+  });
 });
 
 describe("CommandPalette — facilities via /api/search", () => {

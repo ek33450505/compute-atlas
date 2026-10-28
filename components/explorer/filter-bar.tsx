@@ -299,7 +299,10 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
                 onCheckedChange={() => toggleStatus(s)}
                 aria-label={STATUS_META[s].label}
                 className={cn(
-                  "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-ring focus-visible:ring-0"
+                  // ui/checkbox supplies outline-2 + outline-solid (its forced-colors
+                  // outline); here only the offset and colour change, and its ring-3
+                  // is cancelled so just the outline draws.
+                  "focus-visible:outline-offset-1 focus-visible:outline-ring focus-visible:ring-0"
                 )}
               />
               <Label

@@ -292,17 +292,18 @@ export function Explorer(props: ExplorerProps) {
           ))}
       </div>
 
-      {/* View toggle */}
+      {/* View toggle. No overflow-hidden: it would clip the buttons' focus
+          outlines, so the end buttons inherit the group's corner radius. */}
       <div
         role="group"
         aria-label="View"
-        className="inline-flex rounded-md border border-border overflow-hidden"
+        className="inline-flex rounded-md border border-border"
       >
         <button
           type="button"
           aria-pressed={view === "map"}
           onClick={() => setView("map")}
-          className="px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring aria-pressed:bg-foreground aria-pressed:text-background hover:bg-muted disabled:opacity-50"
+          className="rounded-l-[inherit] px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring aria-pressed:bg-foreground aria-pressed:text-background hover:bg-muted disabled:opacity-50"
         >
           Map view
         </button>
@@ -310,7 +311,7 @@ export function Explorer(props: ExplorerProps) {
           type="button"
           aria-pressed={view === "table"}
           onClick={() => setView("table")}
-          className="px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring aria-pressed:bg-foreground aria-pressed:text-background hover:bg-muted disabled:opacity-50 border-l border-border"
+          className="rounded-r-[inherit] px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring aria-pressed:bg-foreground aria-pressed:text-background hover:bg-muted disabled:opacity-50 border-l border-border"
         >
           Table view
         </button>

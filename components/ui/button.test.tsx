@@ -88,4 +88,15 @@ describe("Button", () => {
     expect(link).toHaveClass("bg-primary");
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
+
+  // Forced-colors outline fallback; see the Input test for why each class matters.
+  it("keeps a forced-colors focus outline alongside outline-none", () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole("button", { name: "Click me" })).toHaveClass(
+      "outline-none",
+      "focus-visible:outline-2",
+      "focus-visible:outline-solid",
+      "focus-visible:outline-transparent"
+    );
+  });
 });

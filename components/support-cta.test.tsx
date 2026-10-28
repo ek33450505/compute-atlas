@@ -54,6 +54,8 @@ describe("SupportCta", () => {
       "focus-visible:outline-ring",
     );
     expect(screen.getByRole("link")).not.toHaveClass("focus-visible:ring-2");
+    // outline-none beside outline-2 would force outline-style: none and hide the indicator
+    expect(screen.getByRole("link")).not.toHaveClass("focus-visible:outline-none");
   });
 
   it("keeps default sizing, and applies compact only on request", () => {

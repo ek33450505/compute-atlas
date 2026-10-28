@@ -95,4 +95,21 @@ describe("ScrollBar", () => {
     expect(thumb).toBeInTheDocument();
     expect(thumb).toHaveClass("bg-border");
   });
+
+  // Forced-colors outline fallback; see the Input test for why each class matters.
+  it("keeps a forced-colors focus outline on the viewport alongside outline-none", () => {
+    const { container } = render(
+      <ScrollArea>
+        <div>content</div>
+      </ScrollArea>
+    );
+    expect(
+      container.querySelector('[data-slot="scroll-area-viewport"]')
+    ).toHaveClass(
+      "outline-none",
+      "focus-visible:outline-2",
+      "focus-visible:outline-solid",
+      "focus-visible:outline-transparent"
+    );
+  });
 });

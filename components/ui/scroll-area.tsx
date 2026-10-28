@@ -21,9 +21,12 @@ function ScrollArea({
           consumer's `max-h-52`), so the Viewport grows to full content height and spills
           out of the card. Inheriting the Root's max-height gives it a definite cap so the
           list scrolls in place. */}
+      {/* Forced-colors outline fallback (the `focus-visible:outline-*` trio): the
+          old `focus-visible:outline-1` was inert because `outline-none` sets
+          --tw-outline-style: none. See components/ui/button.tsx. */}
       <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
-        className="size-full max-h-[inherit] rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
+        className="size-full max-h-[inherit] rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent"
       >
         {children}
       </ScrollAreaPrimitive.Viewport>

@@ -216,13 +216,15 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
 
   return (
     <div className="overflow-hidden rounded-sm border border-border">
+      {/* The scroll region is flush with this overflow-hidden frame, which would
+          clip an outline drawn outside it entirely, so the focus outline is inset. */}
       <Table
         containerProps={{
           role: "region",
           "aria-label": "Data centers table (scroll horizontally to see more columns)",
           tabIndex: 0,
         }}
-        containerClassName="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        containerClassName="focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
       >
       <TableCaption className="sr-only">
         Data centers — sortable table

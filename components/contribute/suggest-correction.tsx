@@ -86,7 +86,7 @@ const INLINE_LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 const TEXTAREA_CLASS =
-  "rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20";
+  "rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20";
 
 // ---------------------------------------------------------------------------
 // Intent framing — a gap prompt ("Know the capacity?") isn't reporting an

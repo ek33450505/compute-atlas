@@ -188,6 +188,8 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
       "focus-visible:outline-offset-2",
       "focus-visible:outline-ring"
     );
+    // outline-none beside outline-2 would force outline-style: none and hide the indicator
+    expect(button).not.toHaveClass("focus-visible:outline-none");
   });
 
   it("renders the tip trigger with focus-visible outline classes", () => {
@@ -206,6 +208,8 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
       "focus-visible:outline-offset-2",
       "focus-visible:outline-ring"
     );
+    // outline-none beside outline-2 would force outline-style: none and hide the indicator
+    expect(link).not.toHaveClass("focus-visible:outline-none");
   });
 });
 

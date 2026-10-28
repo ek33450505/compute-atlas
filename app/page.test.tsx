@@ -1149,14 +1149,14 @@ describe("HomePage modern-platform hooks", () => {
       // whichever pair the element uses, derived per element from the
       // indicators actually inside this wrapper rather than assumed. The width
       // patterns need digits straight after `ring-` / `outline-`, so
-      // `ring-offset-N`, `outline-offset-N` and `outline-ring` never read as a
-      // width.
+      // `ring-offset-N`, `outline-offset-N`, `outline-ring`, `outline-solid`,
+      // `outline-transparent` and `ring-ring/50` never read as a width.
       const reservePx = Number(pad) * SPACING_STEP_PX;
       const px = (cls: string, re: RegExp) => Number(re.exec(cls)?.[1] ?? "0");
       const demandsPx = [
-        ...wrapper.querySelectorAll(
-          '[class*="ring-offset-"], [class*="outline-offset-"]'
-        ),
+        // Any ring or outline token, not just ones with an offset: a width-only
+        // indicator (`outline-2` with no `outline-offset-N`) clips too.
+        ...wrapper.querySelectorAll('[class*="ring-"], [class*="outline-"]'),
       ].map((el) => {
         const cls = el.getAttribute("class") ?? "";
         const ring =

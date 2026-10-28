@@ -1140,6 +1140,9 @@ export function FacilityMap({
             />
           </button>
 
+          {/* p-1 -m-1: this panel scrolls (overflow-y-auto clips to its padding
+              box), so the buttons' focus outlines need 4px of padding to paint
+              in; the negative margin hands it back so nothing moves. */}
           {showTools && (
             <div
               id={TOOLS_PANEL_ID}
@@ -1149,7 +1152,7 @@ export function FacilityMap({
                   ? { maxHeight: `${toolsPanelMaxHeight}px` }
                   : undefined
               }
-              className="flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain [&>*]:shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+              className="-m-1 flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain p-1 [&>*]:shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
             >
               <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
               <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />

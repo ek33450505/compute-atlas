@@ -273,7 +273,9 @@ export function CommandPalette({ navLinks }: CommandPaletteProps) {
               the arrow keys to navigate results and Enter to select.
             </Dialog.Description>
 
-            <div className="flex items-center gap-2 border-b border-border px-3">
+            {/* The input keeps outline-none, so the focus cue lives on this row
+                (mirrors LocationSearch). Inset: the dialog panel clips outside. */}
+            <div className="flex items-center gap-2 border-b border-border px-3 has-[#cmdk-input:focus-visible]:outline-2 has-[#cmdk-input:focus-visible]:-outline-offset-2 has-[#cmdk-input:focus-visible]:outline-ring">
               <Search aria-hidden className="size-4 shrink-0 text-muted-foreground" />
               <label htmlFor="cmdk-input" className="sr-only">
                 Search facilities, operators, states, or pages

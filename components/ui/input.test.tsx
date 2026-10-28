@@ -70,4 +70,20 @@ describe("Input", () => {
       "my-custom-class"
     );
   });
+
+  // Forced colors (WCAG 2.4.7): this control sets `outline-none` and cues focus
+  // with a box-shadow ring, which forced-colors mode drops. The transparent solid
+  // outline is invisible normally and painted in a system colour there.
+  // `outline-solid` is load-bearing: `outline-none` sets --tw-outline-style:
+  // none, which `outline-2` would otherwise read, so without it nothing draws.
+  // jsdom applies no CSS, so the class contract is all that can be pinned here.
+  it("keeps a forced-colors focus outline alongside outline-none", () => {
+    render(<Input aria-label="Name" />);
+    expect(screen.getByRole("textbox", { name: "Name" })).toHaveClass(
+      "outline-none",
+      "focus-visible:outline-2",
+      "focus-visible:outline-solid",
+      "focus-visible:outline-transparent"
+    );
+  });
 });

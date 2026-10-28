@@ -88,4 +88,15 @@ describe("Checkbox", () => {
     expect(checkbox).toHaveClass("my-extra-class");
     expect(checkbox).toHaveClass("peer");
   });
+
+  // Forced-colors outline fallback; see the Input test for why each class matters.
+  it("keeps a forced-colors focus outline alongside outline-none", () => {
+    render(<Checkbox aria-label="Accept" />);
+    expect(screen.getByRole("checkbox", { name: "Accept" })).toHaveClass(
+      "outline-none",
+      "focus-visible:outline-2",
+      "focus-visible:outline-solid",
+      "focus-visible:outline-transparent"
+    );
+  });
 });

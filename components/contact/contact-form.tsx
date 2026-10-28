@@ -202,7 +202,7 @@ function MessageField({
         minLength={MESSAGE_MIN}
         maxLength={MESSAGE_MAX}
         rows={6}
-        className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20"
+        className="rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20"
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
       />
