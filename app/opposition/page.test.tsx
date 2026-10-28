@@ -16,11 +16,21 @@ const {
   mockGetDefeatedProjects: vi.fn(),
 }));
 
-vi.mock("@/lib/data", () => ({
+vi.mock("@/lib/data", async (importOriginal) => ({
+  // The real getFrictionTotal: pure arithmetic over the mocked counts, so the
+  // page's friction total is computed the way production computes it.
+  getFrictionTotal: (await importOriginal<typeof import("@/lib/data")>()).getFrictionTotal,
   getFacilitiesByCommunityStatus: mockGetFacilitiesByCommunityStatus,
   getCommunityReceptionCounts: mockGetCommunityReceptionCounts,
   getNotableOppositionCases: mockGetNotableOppositionCases,
   getDefeatedProjects: mockGetDefeatedProjects,
+}));
+
+// A sentinel in place of the real headline: a consumer that hard-codes the
+// string instead of importing OPPOSITION_HEADLINE cannot satisfy the assertion.
+vi.mock("@/lib/community", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/community")>()),
+  OPPOSITION_HEADLINE: "SENTINEL HEADLINE",
 }));
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency in jsdom
@@ -186,5 +196,25 @@ describe("OppositionPage — survey stat row", () => {
     }
     // No defeated projects in this fixture, so the row has exactly these 3 tiles.
     expect(tileByLabel("Friction sites").parentElement?.children).toHaveLength(tiles.length);
+  });
+});
+
+describe("OppositionPage — headline", () => {
+  it("renders OPPOSITION_HEADLINE as the H1", async () => {
+    mockGetCommunityReceptionCounts.mockResolvedValue({
+      supported: 0,
+      mixed: 0,
+      contested: 0,
+      opposed: 0,
+      litigation: 0,
+      unknown: 0,
+    });
+    mockGetFacilitiesByCommunityStatus.mockResolvedValue([]);
+
+    render(await OppositionPage());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "SENTINEL HEADLINE" })
+    ).toBeInTheDocument();
   });
 });

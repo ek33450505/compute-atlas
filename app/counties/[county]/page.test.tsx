@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 import type { Facility } from "@/lib/schema";
 import type { CountySummary } from "@/lib/data";
@@ -276,5 +276,40 @@ describe("CountyPage — watch button (WATCH_AREAS_ENABLED kill switch)", () => 
     mockGetFacilitiesByCounty.mockResolvedValue([makeFacility()]);
     render(await CountyPage({ params: Promise.resolve({ county: "loudoun-va" }) }));
     expect(screen.queryByRole("button", { name: /Watch this county/ })).not.toBeInTheDocument();
+  });
+});
+
+/**
+ * The stat-row tile for a label. Scoped to the label span (uppercase,
+ * wide-tracked) so a bare figure that also appears on a facility card or in
+ * the intro prose cannot satisfy the assertion by accident.
+ */
+function statTile(label: string): HTMLElement {
+  const matches = screen
+    .getAllByText(label)
+    .filter((el) => el.tagName === "SPAN" && el.classList.contains("tracking-widest"));
+  if (matches.length !== 1) {
+    throw new Error(`expected exactly one stat tile labeled "${label}", found ${matches.length}`);
+  }
+  const tile = matches[0].closest("div");
+  if (!tile) throw new Error(`no tile wrapping label "${label}"`);
+  return tile;
+}
+
+describe("CountyPage — capacity stat row", () => {
+  it("sums each capacity tier across the loader's facilities, treating a missing figure as 0", async () => {
+    mockGetCountyBySlug.mockResolvedValue(makeCounty());
+    mockGetFacilitiesByCounty.mockResolvedValue([
+      makeFacility({ id: "a", capacityMw: { operational: 1200, planned: 300 } }),
+      makeFacility({ id: "b", capacityMw: { operational: 300 } }),
+      makeFacility({ id: "c", capacityMw: { planned: 100 } }),
+      makeFacility({ id: "d" }),
+    ]);
+
+    render(await CountyPage({ params: Promise.resolve({ county: "loudoun-va" }) }));
+
+    expect(within(statTile("Facilities")).getByText("4")).toBeInTheDocument();
+    expect(within(statTile("Operational")).getByText("1.5 GW")).toBeInTheDocument();
+    expect(within(statTile("Planned")).getByText("400 MW")).toBeInTheDocument();
   });
 });

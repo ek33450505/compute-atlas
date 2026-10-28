@@ -2,34 +2,17 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { getFacilitiesByStatus } from "@/lib/data";
+import {
+  STATUS_CAPACITY_LABEL,
+  capacityTierForStatus,
+  sumCapacityMw,
+} from "@/lib/capacity-sums";
 import { formatPower } from "@/lib/format";
-import { STATUS_ORDER, STATUS_META, type Status } from "@/lib/status";
+import { STATUS_ORDER, STATUS_META, parseStatus, type Status } from "@/lib/status";
 import { statesPhrase } from "@/lib/us-states";
-import type { Facility } from "@/lib/schema";
 import { CollectionPage } from "@/components/collection/collection-page";
 
 export const revalidate = 86400;
-
-/**
- * The capacity figure shown in each status page's stat row: operational
- * capacity for the operational status, planned capacity for every other
- * (announced-but-not-yet-running) status — a cancelled project's "planned"
- * figure is the capacity that was announced before the cancellation.
- */
-function sumCapacityForStatus(facilities: Facility[], status: Status): number {
-  if (status === "operational") {
-    return facilities.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0);
-  }
-  return facilities.reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
-}
-
-const CAPACITY_STAT_LABEL: Record<Status, string> = {
-  operational: "Operational capacity",
-  under_construction: "Planned capacity",
-  permitted: "Planned capacity",
-  proposed: "Planned capacity",
-  cancelled: "Planned capacity (cancelled)",
-};
 
 /**
  * Per-status editorial copy — title (inherits the root layout's
@@ -78,10 +61,6 @@ const STATUS_PAGE_META: Record<
   },
 };
 
-function parseStatus(raw: string): Status | undefined {
-  return STATUS_ORDER.find((s) => s === raw);
-}
-
 export async function generateStaticParams() {
   return STATUS_ORDER.map((status) => ({ status }));
 }
@@ -128,7 +107,7 @@ export default async function StatusPage({
   const facilities = await getFacilitiesByStatus(status);
   const meta = STATUS_PAGE_META[status];
   const statusLabel = STATUS_META[status].label;
-  const capacityMw = sumCapacityForStatus(facilities, status);
+  const capacityMw = sumCapacityMw(facilities, capacityTierForStatus(status));
 
   // Dataset-derived fact line: distinct state count mirrors getStats()'s
   // `new Set(...).size` math. facilities.length is reused rather than a
@@ -159,7 +138,7 @@ export default async function StatusPage({
       ]}
       statRow={[
         { label: "Sites", value: String(facilities.length) },
-        { label: CAPACITY_STAT_LABEL[status], value: formatPower(capacityMw) },
+        { label: STATUS_CAPACITY_LABEL[status], value: formatPower(capacityMw) },
       ]}
       facilities={facilities}
       emptyMessage={`No ${statusLabel.toLowerCase()} facilities are on file yet.`}

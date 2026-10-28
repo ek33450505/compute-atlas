@@ -7,6 +7,13 @@
  * color (see app/stats/page.tsx community-reception section).
  */
 
+/**
+ * H1 of /opposition and the headline of its share card. One string, so the card
+ * and the page it unfurls cannot drift apart. (A page.tsx may not export
+ * arbitrary names, so it lives here.)
+ */
+export const OPPOSITION_HEADLINE = "Data center opposition across the United States";
+
 export const COMMUNITY_RECEPTION_ORDER = [
   "supported",
   "mixed",

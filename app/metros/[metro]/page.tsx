@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { getFacilitiesByMetro } from "@/lib/data";
+import { sumCapacityMw } from "@/lib/capacity-sums";
 import { formatPower } from "@/lib/format";
 import { getMetroBySlug, METROS, type Metro } from "@/lib/metros";
 import { statesPhrase } from "@/lib/us-states";
@@ -11,14 +12,6 @@ import { WatchButton } from "@/components/subscribe/watch-button";
 import { watchAreasEnabled } from "@/lib/watch-target-types";
 
 export const revalidate = 86400;
-
-function sumOperationalMw(facilities: Facility[]): number {
-  return facilities.reduce((sum, f) => sum + (f.capacityMw?.operational ?? 0), 0);
-}
-
-function sumPlannedMw(facilities: Facility[]): number {
-  return facilities.reduce((sum, f) => sum + (f.capacityMw?.planned ?? 0), 0);
-}
 
 /**
  * The most frequently occurring operators among a metro's facilities, most
@@ -102,8 +95,8 @@ export default async function MetroPage({
 
   const facilities = await getFacilitiesByMetro(slug);
   const countyList = countyListFor(metro);
-  const operationalMw = sumOperationalMw(facilities);
-  const plannedMw = sumPlannedMw(facilities);
+  const operationalMw = sumCapacityMw(facilities, "operational");
+  const plannedMw = sumCapacityMw(facilities, "planned");
   const topOperators = topOperatorsFor(facilities);
   const isMultiState = metro.states.length > 1;
 
