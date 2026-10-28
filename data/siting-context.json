@@ -3991,6 +3991,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "aurum-elk-data-center-central-city-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "avaio-appomattox-va": {
     "nearestWater": {
       "name": "Bent Creek",
@@ -5597,6 +5607,16 @@
       "rock": "Sandstone"
     }
   },
+  "bedington-energy-facility-solar-berkeley-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "behring-415-20th-street-oakland-ca": {
     "nearestWater": {
       "name": "Lake Merritt",
@@ -6289,6 +6309,16 @@
     },
     "aquifer": {
       "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "blake-solar-plant-jefferson-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
       "rock": "Sandstone and carbonate-rock"
     }
   },
@@ -6996,6 +7026,16 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "brandonville-solar-preston-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "breaker-street-data-center-jessup-lackawanna-pa": {
@@ -11176,6 +11216,12 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "consolidated-fidium-burlington-266-main-st-vt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "constellation-calvert-cliffs-new-nuclear-md": {
@@ -23304,6 +23350,16 @@
       "label": "Low (<10%)"
     }
   },
+  "franklintown-farm-solar-jefferson-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "freepoint-cedar-creek-solar-smyrna-de": {
     "nearestWater": {
       "name": "Cedar Swamp",
@@ -24205,6 +24261,16 @@
     "aquifer": {
       "name": "Columbia Plateau Basaltic-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "goldfinch-solar-washington-county-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "goodman-energy-park-vernon-ca": {
@@ -27646,6 +27712,16 @@
       "rock": "Sandstone"
     }
   },
+  "invenergy-olympus-solar-muscatine-ia": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "invenergy-prairie-hills-wind-custer-ne": {
     "nearestWater": {
       "name": "Mud Creek",
@@ -28880,6 +28956,12 @@
       "rock": "Carbonate-rock"
     }
   },
+  "karis-peosta-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "keel-scrubgrass-ai-campus-venango-pa": {
     "nearestWater": {
       "name": "Scrubgrass Creek",
@@ -29636,6 +29718,12 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "lightedge-boone-ia": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "lightedge-chaska-mn": {
@@ -31301,6 +31389,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "maquoketa-industrial-park-data-center-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "mara-findlay-oh": {
     "nearestWater": {
       "name": "Blanchard River",
@@ -31486,6 +31584,16 @@
     "aquifer": {
       "name": "Edwards-trinity Aquifer System",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "marion-energy-partners-morgantown-industrial-park-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Pennsylvanian Aquifers",
+      "rock": "Sandstone"
     }
   },
   "mark-iv-victory-district-gas-generation-fernley-nv": {
@@ -33726,6 +33834,12 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "microsoft-woodward-ia": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "midamerican-arbor-hill-solar-ia": {
     "nearestWater": {
       "name": "North Branch North River",
@@ -33754,6 +33868,16 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "midamerican-johnson-county-solar-triangle-ia": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
     }
   },
   "midamerican-knoxville-bess-ia": {
@@ -37302,6 +37426,16 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "octopus-investments-fort-madison-ia": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "odessa-partners-dafter-township-mi": {
     "nearestWater": {
       "name": "South Branch East Branch Waiska River",
@@ -38333,6 +38467,16 @@
     "aquifer": {
       "name": "Mississippi Embayment Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "parks-valley-energy-bess-hampshire-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "parkway-gravel-st-georges-de": {
@@ -42353,6 +42497,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "ranger-power-river-city-energy-solar-ia": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "rattlesnake-creek-wind-dixon-ne": {
     "nearestWater": {
       "name": "Middle Creek",
@@ -42883,6 +43037,16 @@
     "aquifer": {
       "name": "Texas Coastal Uplands Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "rippon-energy-facility-solar-jefferson-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "ritter-communications-data-technology-center-jonesboro-ar": {
@@ -45449,6 +45613,16 @@
     },
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "simple-mining-osage-mitchell-ia": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Upper Carbonate Aquifer",
       "rock": "Carbonate-rock"
     }
   },
@@ -52269,6 +52443,16 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "velco-rutland-pinnacle-ridge-vt": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "New York And New England Carbonate-rock Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "vermaland-la-osa-eloy-az": {
     "nearestWater": {
       "name": "Santa Cruz River",
@@ -53401,6 +53585,16 @@
     "aquifer": {
       "name": "Piedmont And Blue Ridge Crystalline-rock Aquifers",
       "rock": "Igneous and metamorphic-rock"
+    }
+  },
+  "wild-hill-solar-jefferson-county-wv": {
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Valley And Ridge Carbonate-rock Aquifers",
+      "rock": "Sandstone and carbonate-rock"
     }
   },
   "wildcat-ridge-archbald-lackawanna-county-pa": {
