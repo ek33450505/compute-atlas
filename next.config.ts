@@ -283,6 +283,18 @@ const RETIRED_FACILITY_REDIRECTS = [
     destination: "/facilities/xai-macrohardrr-southaven-ms",
     permanent: true,
   },
+  {
+    // Retired 2026-10-28: renamed. colospace-bedford-nh became
+    // firstlight-bedford-nh ("FirstLight Bedford Data Center (formerly
+    // ColoSpace)"), matching firstlight-rockland-ma: FirstLight Fiber acquired
+    // ColoSpace in 2019, and Baxtel lists "FirstLight Bedford" at the same
+    // address, 8 Commerce Drive. The record was re-added under the new id with
+    // the same facts via db:sync, and the old Neon row was deleted on
+    // 2026-10-28 after a snapshot. It had no watchers.
+    source: "/facilities/colospace-bedford-nh",
+    destination: "/facilities/firstlight-bedford-nh",
+    permanent: true,
+  },
 ];
 
 /**
