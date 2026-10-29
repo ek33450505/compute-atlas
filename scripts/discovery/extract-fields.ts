@@ -111,7 +111,7 @@
  *
  * Run via:
  *   npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
- *     --fields capacityMw.operational,water.coolingType --out <path> \
+ *     --fields water.coolingType --out <path> \
  *     [--limit N] [--facility <id>] [--run-id ID]
  *   (omit --out for a dry run: prints a summary, writes nothing)
  *
@@ -2274,7 +2274,7 @@ export function parseArgs(argv: string[]): CliArgs {
         `queue, and two of the six extractable fields failed the accuracy bench ` +
         `(capacityMw.planned P=75%, energy.onSiteGenerationMw P=50%) — they are not safe ` +
         `to sweep unattended. Pass the bench-pinned safe fields explicitly, e.g.:\n` +
-        `  --fields=capacityMw.operational,water.coolingType\n` +
+        `  --fields=water.coolingType\n` +
         `Valid fields are: ${EXTRACTABLE_FIELDS.join(", ")}.`
     );
   }

@@ -343,9 +343,10 @@ extractable fields failed the accuracy bench (`capacityMw.planned` P=75%,
 ⚠️ The shared `parseFieldsArg` helper it calls **does** still default to all six when `--fields` is
 omitted, and that default is deliberate: `verify-fields.ts` imports the same function and relies on
 it, being read-only and staging nothing. So the requirement is `extract-fields.ts`-specific, layered
-on top — do not "simplify" it into the shared helper. Both pinned fields
-are bench-measured: `capacityMw.operational` (P=100%/R=100%) and `water.coolingType` (P=95%/R=95%,
-measured 2026-09-01). `energy.source` and `energy.utility` remain extractable but are not pinned
+on top — do not "simplify" it into the shared helper. Since 2026-10-29 the nightly extract lane
+pins ONLY `water.coolingType` (P=95%/R=95%, measured 2026-09-01). `capacityMw.operational` was unpinned:
+its P=100%/R=100% measured a drifted prompt on a corpus with no distractors (`scripts/discovery/bench/README.md`).
+Nightly `verify-fields` still re-checks both. `energy.source` and `energy.utility` remain extractable but are not pinned
 (unmeasured). ⚠️ `water.coolingType`'s 95% belongs to the PROMPT, not the field — it is 53%
 without the decision rule, which `extract-fields.ts` carries verbatim from `docs/methodology.md#cooling-type`
 under a drift test. ⛔ `aiClassification` was benched the same way on 2026-09-12 and is NOT shippable as a
@@ -360,7 +361,7 @@ onto whichever values remain, so a narrower vocabulary needs its own run. Neithe
 `ExtractableField`; the lane cannot emit either. Read `scripts/discovery/bench/README.md` before
 re-proposing either. The scheduled invocation bakes that list in, and bounds each tool with
 `ENRICHMENT_LIMIT` (60) / `VERIFY_LIMIT` (40) — a full sweep is ~10 hours (rescaled from the
-measured 12h/2,525-gap figure now that the pinned list totals 2,190 gaps, measured 2026-09-01), and an unparseable
+measured 12h/2,525-gap figure; the 2,190-gap count is from 2026-09-01 on the old two-field list, and the one-field list is not re-measured), and an unparseable
 limit would otherwise disable the bound entirely, so `run.sh` validates both before use.
 The leads lane (`leads-lane.ts`: public URL tips → pending submissions) also runs nightly in
 `run.sh`, after the field-extraction lane, bounded by `LEADS_LIMIT` (default 10).

@@ -2162,7 +2162,13 @@ EOF
 	# this flag away — that silently re-enables both benched-unsafe fields.
 	extract_line="$(grep "extract-fields.ts" "$NPX_CALL_LOG" | head -1)"
 	[ -n "$extract_line" ]
-	[[ "$extract_line" == *"--fields=capacityMw.operational,water.coolingType"* ]]
+	[[ "$extract_line" == *"--fields=water.coolingType"* ]]
+
+	# capacityMw.operational was unpinned from the nightly extract lane on
+	# 2026-10-29 (Ed). The positive above is a substring match, so it cannot
+	# catch an appended field; this explicit return 1 also fails on bash 3.2,
+	# where a failed mid-test [[ ]] does not fail the test.
+	if [[ "$extract_line" == *"capacityMw.operational"* ]]; then return 1; fi
 
 	# The positive assertion above is a SUBSTRING match, so it cannot catch an
 	# APPENDED field — `...,water.coolingType,capacityMw.planned` still matches it.
@@ -2184,17 +2190,18 @@ EOF
 	[[ "$extract_line" != *"energy.utility"* ]]
 }
 
-@test "verify-fields.ts is invoked with the same explicit --fields allowlist" {
+@test "verify-fields.ts is invoked with its own explicit --fields allowlist" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=false
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
-	# NOT the same rationale as extract-fields.ts above: verify-fields is
+	# NOT the same list as extract-fields.ts above: verify-fields is
 	# read-only and stages nothing, so the ship-safety caveat cannot apply to
-	# it. This pins a SCOPE bound — the nightly check stays on the same two
-	# fields the fill lane populates, and the run stays inside its time
-	# budget. Widening it is a cost decision, not a safety regression.
+	# it. Since 2026-10-29 it is deliberately WIDER than the extract list: it
+	# keeps re-checking the capacityMw.operational values already recorded
+	# although the fill lane no longer stages new ones. This pins a SCOPE
+	# bound, not a safety one; widening it is a cost decision.
 	verify_line="$(grep "verify-fields.ts" "$NPX_CALL_LOG" | head -1)"
 	[ -n "$verify_line" ]
 	[[ "$verify_line" == *"--fields=capacityMw.operational,water.coolingType"* ]]
@@ -2216,7 +2223,7 @@ EOF
 	[[ "$verify_line" != *"energy.utility"* ]]
 }
 
-@test "package.json's extract-fields npm script pins the same safe --fields allowlist" {
+@test "package.json's extract-fields npm script pins the same safe --fields allowlist as run.sh's extract list" {
 	# run.sh's own invocation is pinned by the two tests above, but a maintainer
 	# is far more likely to type `npm run extract-fields` by hand than to read
 	# run.sh first. That script drifted to include the two unmeasured fields
@@ -2226,7 +2233,14 @@ EOF
 	# run.sh's pinned list exactly.
 	script_line="$(grep '"extract-fields":' "$REPO_ROOT/package.json")"
 	[ -n "$script_line" ]
-	[[ "$script_line" == *"--fields=capacityMw.operational,water.coolingType"* ]]
+	# Matches run.sh's EXTRACT list (water.coolingType only since 2026-10-29).
+	[[ "$script_line" == *"--fields=water.coolingType"* ]]
+
+	# capacityMw.operational was unpinned from the nightly extract lane on
+	# 2026-10-29 (Ed). The positive above is a substring match, so it cannot
+	# catch an appended field; this explicit return 1 also fails on bash 3.2,
+	# where a failed mid-test [[ ]] does not fail the test.
+	if [[ "$script_line" == *"capacityMw.operational"* ]]; then return 1; fi
 
 	# Same substring-match caveat as the run.sh tests above: a positive match
 	# alone cannot catch an APPENDED field, so these negative assertions do the

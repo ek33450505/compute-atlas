@@ -1300,7 +1300,9 @@ else
   # an unbounded run is roughly 10 hours (proportional rescale of the
   # previously measured 12h/2,525-gap figure to the current 2,190-gap total;
   # the gap COUNT above is freshly measured, the 10h DURATION is still a
-  # rescale, not a fresh timing measurement). Env-overridable so an operator
+  # rescale, not a fresh timing measurement). That figure is for the two-field
+  # list; since 2026-10-29 the extract list is one field, so the real horizon
+  # is smaller (not re-measured). Env-overridable so an operator
   # can widen the sweep by hand without editing this script.
   #
   # ⚠️ Dropping energy.source/energy.utility (F7, 2026-09-01 — see below) does
@@ -1328,9 +1330,18 @@ else
   # belt-and-braces rather than the only guard — do not remove it from the
   # extract-fields call to "simplify" it.
   #
-  # ⚠️ Every field pinned here IS bench-measured: capacityMw.operational
-  # (P=100%/R=100%) and water.coolingType (P=95%/R=95%, measured 2026-09-01
-  # over 69 pages). That was not true until 2026-09-01: energy.source (enum)
+  # ⚠️ Since 2026-10-29 the EXTRACT (staging) side pins only water.coolingType
+  # (P=95%/R=95%, measured 2026-09-01 over 69 pages). capacityMw.operational
+  # was unpinned that day (Ed): its old P=100%/R=100% measured a bench prompt
+  # that had drifted from the shipped one, on a corpus with no distractor
+  # pages. The 2026-10-29 distractor re-bench (scripts/discovery/bench/README.md,
+  # "capacityOperational after the IT-capacity-only rule") found the old prompt
+  # fabricating on 3 of 6 distractor pages and the new IT-capacity rule still
+  # taking a UPS figure (1 of 6); on 2026-10-28 the lane staged "available
+  # utility power" as IT capacity. Re-pin only after a re-bench under the
+  # crypto/UPS rulings holds up, with Ed's OK. The field stays in
+  # EXTRACTABLE_FIELDS for deliberate manual runs. Earlier, until 2026-09-01:
+  # energy.source (enum)
   # and energy.utility (free text) were pinned here too, unmeasured, for
   # months — no label in truth.json, no row in any result file — and were
   # dropped from this nightly list for exactly that reason (F7: "either bench
@@ -1348,26 +1359,27 @@ else
   # it. `hybrid` is in the prompt vocabulary but REFUSED at validation because
   # it has zero positive bench labels.
   #
-  # verify-fields takes the SAME list for a DIFFERENT reason — it is read-only
-  # and stages nothing, so the ship-safety caveat above does not apply to it
+  # verify-fields takes a WIDER list on purpose — it is read-only and stages
+  # nothing, so the ship-safety caveat above does not apply to it
   # (docs/discovery-runbook.md says so explicitly, which is why the `npm run
-  # verify-fields` wrapper deliberately bakes in no field list). Here the list
-  # is a SCOPE bound: it keeps the nightly check on the same two fields the
-  # fill lane populates, and keeps the run inside its time budget. Widening it
-  # for verify-fields is a cost question, not a safety one.
-  ENRICHMENT_FIELDS="capacityMw.operational,water.coolingType"
+  # verify-fields` wrapper deliberately bakes in no field list). It keeps
+  # re-checking the capacityMw.operational values already recorded even though
+  # the fill lane no longer stages new ones. The list is a scope/time bound,
+  # not a safety one: widening it for verify-fields is a cost question.
+  EXTRACT_FIELDS="water.coolingType"
+  VERIFY_FIELDS="capacityMw.operational,water.coolingType"
 
   if ! command -v pdftotext >/dev/null 2>&1; then
     log "WARN: pdftotext not on PATH (poppler not installed) — every PDF source in this lane will go unread; continuing degraded"
   fi
 
   ENRICHMENT_OUTFILE="$LOG_DIR/enrichment-${ENRICHMENT_RUN_ID}.json"
-  log "extracting fields (limit=${ENRICHMENT_LIMIT} fields=${ENRICHMENT_FIELDS})"
+  log "extracting fields (limit=${ENRICHMENT_LIMIT} fields=${EXTRACT_FIELDS})"
   EXTRACT_OK=true
   if ! npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
     --out "$ENRICHMENT_OUTFILE" \
     --limit="$ENRICHMENT_LIMIT" \
-    --fields="$ENRICHMENT_FIELDS" \
+    --fields="$EXTRACT_FIELDS" \
     --run-id="$ENRICHMENT_RUN_ID" \
     2>>"$LOG_DIR/extract-fields.err"; then
     log "WARN: extract-fields failed for $ENRICHMENT_RUN_ID — skipping submit (see extract-fields.err)"
@@ -1393,10 +1405,10 @@ else
   # this redirect; stdout is still sent to a log file here so a long run's
   # progress output doesn't scroll off the terminal/launchd log buffer.
   VERIFY_OUTFILE="$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.json"
-  log "verifying fields (limit=${VERIFY_LIMIT} fields=${ENRICHMENT_FIELDS})"
+  log "verifying fields (limit=${VERIFY_LIMIT} fields=${VERIFY_FIELDS})"
   if ! npx tsx --env-file=.env.local scripts/discovery/verify-fields.ts \
     --limit="$VERIFY_LIMIT" \
-    --fields="$ENRICHMENT_FIELDS" \
+    --fields="$VERIFY_FIELDS" \
     --out "$VERIFY_OUTFILE" \
     --run-id="$ENRICHMENT_RUN_ID" \
     >"$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.log" 2>>"$LOG_DIR/verify-fields.err"; then

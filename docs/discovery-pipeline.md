@@ -469,12 +469,13 @@ hand the same way. Two conditions the scheduled invocation has to keep meeting:
   and that default is deliberate and load-bearing: `verify-fields.ts` imports
   the same function and depends on it, being read-only and staging nothing. The
   requirement is layered on top for `extract-fields.ts` specifically — do not
-  move it down into the shared helper. `run.sh` pins two
-  fields, and `tests/discovery/run.bats` asserts the flag is present for both
-  tools (mutation-tested: deleting it fails the suite).
-  Both pinned fields are bench-measured: `capacityMw.operational`
-  (P=100%/R=100%) and `water.coolingType` (P=95%/R=95%, measured 2026-09-01).
-  `energy.source` and `energy.utility` remain extractable but are not pinned —
+  move it down into the shared helper. `run.sh` pins the extract lane to one
+  field (`EXTRACT_FIELDS="water.coolingType"`) and `tests/discovery/run.bats` asserts the
+  flag is present for both tools (mutation-tested: deleting it fails the suite).
+  The extract lane's pinned field is `water.coolingType` (P=95%/R=95%, measured 2026-09-01).
+  `capacityMw.operational` was unpinned on 2026-10-29: its P=100%/R=100% measured a drifted
+  prompt on a corpus with no distractors (see `scripts/discovery/bench/README.md`). Nightly
+  `verify-fields` (`VERIFY_FIELDS`) still re-checks both fields. `energy.source` and `energy.utility` remain extractable but are not pinned —
   they were unmeasured (the bench could not score non-numeric fields until 2026-09-01,
   and neither ever carried a label or appeared in a result file), so they do not
   run nightly. Re-add either only after measuring.
@@ -483,8 +484,9 @@ hand the same way. Two conditions the scheduled invocation has to keep meeting:
 
 Both tools are bounded by `ENRICHMENT_LIMIT` (default 60) and `VERIFY_LIMIT`
 (default 40), because an unbounded sweep over the current gap set is roughly 10
-hours (2,190 gaps across the two pinned fields, measured 2026-09-01; a proportional
-rescale of the previously measured 12h/2,525-gap figure, not a fresh timing run). Note these are validated in `run.sh` rather than trusted: an unparseable
+hours (2,190 gaps across the former two-field pin, measured 2026-09-01; a proportional
+rescale of the previously measured 12h/2,525-gap figure, not a fresh timing run; the one-field
+extract list is smaller and not re-measured). Note these are validated in `run.sh` rather than trusted: an unparseable
 `--limit` parses to `undefined` in both scripts, and an undefined limit **skips the
 bounding slice entirely** — so a malformed value would silently unbound the run
 instead of failing. That mattered little when a human ran it and watched; it
