@@ -352,7 +352,7 @@ const RETIRED_OPERATOR_REDIRECTS = [
   },
   {
     source: "/operators/cambrin-llc",
-    destination: "/operators/panattoni", // 2
+    destination: "/operators/panattoni", // 3
     permanent: true,
   },
   {
@@ -449,6 +449,11 @@ const RETIRED_OPERATOR_REDIRECTS = [
   {
     source: "/operators/pacifico-energy-data-center-tenant-unidentified",
     destination: "/operators/pacifico-energy", // 2
+    permanent: true,
+  },
+  {
+    source: "/operators/panattoni-development-co",
+    destination: "/operators/panattoni", // 3
     permanent: true,
   },
   {
