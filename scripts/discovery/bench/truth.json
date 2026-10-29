@@ -869,5 +869,29 @@
     "aiClassificationStated": "confirmed",
     "aiClassificationStatedNote": "Town of Windsor government page on the proposed 'Global AI Data Center.' States the project 'would reuse an existing industrial site to house computer servers and related cooling and electrical systems that support artificial intelligence and cloud computing' \u2014 a direct, facility-specific description of this site as an AI facility.",
     "aiClassificationConfirmed": "confirmed"
+  },
+  "centersquare-ewr5-secaucus-nj": {
+    "capacityOperational": null,
+    "note": "DISTRACTOR (s2026-10-29). Read the cached page: the EWR5 block states 'Utility power: 26.3MW', 'Utility capacity: 26.3MW', 'UPS capacity: 11.6MW', 'Generator capacity: 16MW' and no IT load/IT capacity. Matches the curated note. TRAPS: the page also states 127.2MW combined utility power for the metro and per-site figures for EWR2/EWR3 (45.7/20.7/31 and 54.8/8.1/14). null is correct under the IT-capacity-only ruling."
+  },
+  "h5-denver-greenwood-village-co": {
+    "capacityOperational": null,
+    "note": "DISTRACTOR. Read the cached denver-data-center.html text: states 2N UPS, N+1 generators, no MW figure for Denver at all. The only MW figure is '42 MW Ashburn Development' (a different site). The curated note's 'over 17.5 MWs' is on the colocation page, cached separately as h5-denver-greenwood-village-co-colocation. null."
+  },
+  "h5-denver-greenwood-village-co-colocation": {
+    "capacityOperational": null,
+    "note": "DISTRACTOR. Read the cached denver-colocation.html text: 'Xcel Energy provides the Denver colocation facility with over 17.5 MWs of reliable and affordable power' = utility supply, no IT capacity. Also '42 MW Ashburn Development' (different site). null."
+  },
+  "123net-dc2-southfield-mi": {
+    "capacityOperational": null,
+    "note": "DISTRACTOR. Read the cached www.123.net/data-center-colocation page (identical text for all three ids): states 'a dedicated 20 MW DTE substation' (a utility figure, company-wide for its Michigan facilities) and no IT capacity. The curated note's 1 / 1.5 / 1 MW 'available utility power' figures live only in per-building PDF spec sheets, which the bench fetcher cannot read, so that path is NOT exercised. null."
+  },
+  "123net-dc3-southfield-mi": {
+    "capacityOperational": null,
+    "note": "DISTRACTOR. Read the cached www.123.net/data-center-colocation page (identical text for all three ids): states 'a dedicated 20 MW DTE substation' (a utility figure, company-wide for its Michigan facilities) and no IT capacity. The curated note's 1 / 1.5 / 1 MW 'available utility power' figures live only in per-building PDF spec sheets, which the bench fetcher cannot read, so that path is NOT exercised. null."
+  },
+  "123net-dc4-byron-center-mi": {
+    "capacityOperational": null,
+    "note": "DISTRACTOR. Read the cached www.123.net/data-center-colocation page (identical text for all three ids): states 'a dedicated 20 MW DTE substation' (a utility figure, company-wide for its Michigan facilities) and no IT capacity. The curated note's 1 / 1.5 / 1 MW 'available utility power' figures live only in per-building PDF spec sheets, which the bench fetcher cannot read, so that path is NOT exercised. null."
   }
 }

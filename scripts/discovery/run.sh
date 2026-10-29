@@ -756,6 +756,29 @@ try {
   }
 fi
 
+# --- false-OK guard ----------------------------------------------------------
+# submit_summary_counts <runId>: print "<discovered> <skippedInvalid>" from the
+# run summary submit-candidates.ts writes to $LOG_DIR/run-<runId>.json, or
+# "bad" when the file is missing/unparseable or either field is not a
+# non-negative integer. Fail-closed: callers treat anything but two integers as
+# "summary unreadable", never as OK.
+submit_summary_counts() {
+  local _out
+  _out="$(node -e '
+try {
+  const s = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+  const ok = (n) => Number.isSafeInteger(n) && n >= 0;
+  console.log(ok(s.discovered) && ok(s.skippedInvalid) ? s.discovered + " " + s.skippedInvalid : "bad");
+} catch {
+  console.log("bad");
+}
+' "$LOG_DIR/run-$1.json" 2>/dev/null)" || _out="bad"
+  case "$_out" in
+    [0-9]*" "[0-9]*) echo "$_out" ;;
+    *) echo bad ;;
+  esac
+}
+
 # --- failure classification -------------------------------------------------
 # classify_candidates_failure <file>: WHY did this run produce no parseable
 # candidate array? Every such failure used to be reported as "no parseable
@@ -994,6 +1017,7 @@ for STATE in "${BATCH_STATES[@]}"; do
   CLAUDE_FAIL_CLASS="no_array"
   CLAUDE_FAIL_BYTES=0
   SUSPECT_SHORT=false
+  INVALID_MAJORITY=false
   CANDIDATES_SHAPE=bad
 
   if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
@@ -1117,13 +1141,29 @@ d
     log "skipping submit for $RUN_ID (suspect_short empty array — nothing to stage)"
   elif [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then
     log "submitting candidates from $OUTFILE"
-    if ! npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
+    if ! DISCOVERY_LOG_DIR="$LOG_DIR" npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
       --run-id="$RUN_ID" \
       --max="${MAX_CANDIDATES:-$CAP}" \
       --state="$STATE" \
       ${API_BASE_URL:+--base-url="$API_BASE_URL"}; then
       log "WARN: submit-candidates failed for $RUN_ID (state=$STATE) — continuing with remaining states"
       FAILURES+=("$STATE: submit failed")
+    elif [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
+      # false-OK guard: a state whose candidates mostly fail schema validation
+      # means the session could not read the schema/contract (2026-10-28: 93 of
+      # 98 skippedInvalid, run still printed OK). Degrade only — no rewind.
+      # Integer math: ratio > 0.5 is 2*invalid > discovered, floor of 5.
+      # Dry-run is exempt, like the suspect_short guard.
+      SUB_DISCOVERED="" SUB_INVALID=""
+      read -r SUB_DISCOVERED SUB_INVALID <<<"$(submit_summary_counts "$RUN_ID")" || true
+      if [[ -z "$SUB_INVALID" ]]; then
+        log "WARN: submit summary unreadable for $RUN_ID (state=$STATE) — cannot rule out a broken schema read"
+        FAILURES+=("$STATE: submit summary unreadable — cannot verify candidate validity")
+      elif (( SUB_DISCOVERED >= 5 && 2 * SUB_INVALID > SUB_DISCOVERED )); then
+        log "WARN: $STATE: ${SUB_INVALID}/${SUB_DISCOVERED} candidates rejected as invalid — check the session's schema/contract read first, then the facility index"
+        FAILURES+=("$STATE: ${SUB_INVALID}/${SUB_DISCOVERED} candidates rejected as invalid — check the session's schema/contract read first, then the facility index")
+        INVALID_MAJORITY=true
+      fi
     fi
   else
     CLAUDE_FAIL_REASON="$(classify_candidates_reason "$CLAUDE_FAIL_CLASS")"
@@ -1147,6 +1187,7 @@ d
     # never `claudeStatus`.
     HEARTBEAT_STATUS="$CLAUDE_FAIL_CLASS"
     [[ "$CLAUDE_ARRAY_OK" == "true" && "$SUSPECT_SHORT" != "true" ]] && HEARTBEAT_STATUS="ok"
+    [[ "$INVALID_MAJORITY" == "true" ]] && HEARTBEAT_STATUS="invalid_majority"
     HB_RUN_IDS+=("$RUN_ID")
     HB_STATES+=("$STATE")
     HB_STATUSES+=("$HEARTBEAT_STATUS")

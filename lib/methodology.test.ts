@@ -12,6 +12,7 @@ describe("METHODOLOGY_MARKDOWN", () => {
     expect(METHODOLOGY_MARKDOWN.length).toBeGreaterThan(0);
     expect(METHODOLOGY_MARKDOWN).toContain("# Methodology");
     expect(METHODOLOGY_MARKDOWN).toContain("## Cooling type");
+    expect(METHODOLOGY_MARKDOWN).toContain("## Operational capacity");
   });
 });
 
