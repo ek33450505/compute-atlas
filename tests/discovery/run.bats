@@ -58,6 +58,32 @@ exit 0
 EOF
 	chmod +x "$BIN_DIR/claude"
 
+	# --- fake submit-candidates: like the real script it leaves a
+	# run-<runId>.json summary for run.sh's false-OK guard. Counts come from
+	# the environment (default: nothing discovered);
+	# SUBMIT_COUNTS_<STATE>="<discovered> <skippedInvalid>" overrides per state;
+	# SUBMIT_SUMMARY_MODE=missing|garbage breaks the summary on purpose.
+	cat >"$BIN_DIR/fake-submit" <<'FAKE_SUBMIT_EOF'
+#!/usr/bin/env bash
+rid=""; st=""
+for a in "$@"; do
+	case "$a" in
+	--run-id=*) rid="${a#--run-id=}" ;;
+	--state=*) st="${a#--state=}" ;;
+	esac
+done
+var="SUBMIT_COUNTS_$st"
+counts="${!var:-${SUBMIT_COUNTS:-0 0}}"
+set -- $counts
+case "${SUBMIT_SUMMARY_MODE:-ok}" in
+missing) ;;
+garbage) echo "not json" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
+*) printf '{"runId":"%s","discovered":%s,"submitted":0,"skippedInvalid":%s}\n' "$rid" "$1" "$2" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
+esac
+exit 0
+FAKE_SUBMIT_EOF
+	chmod +x "$BIN_DIR/fake-submit"
+
 	# --- fake `npx`: intercepts the tsx helper invocations run.sh shells out
 	# to, so run.sh's own control flow is exercised without the real network
 	# calls the helpers would otherwise make (existing-facilities.ts hits the
@@ -83,7 +109,7 @@ case "\$*" in
 	exit 0
 	;;
 *submit-candidates.ts*)
-	exit 0
+	exec "$BIN_DIR/fake-submit" "\$@"
 	;;
 *check-sources.ts*)
 	# Healthy by default. A nonzero exit is a recorded FAILURES entry (see the
@@ -1657,6 +1683,95 @@ EOF
 	[ "$status" -eq 0 ]
 }
 
+# --- false-OK guard: a state whose candidates mostly get rejected as invalid ----
+# (2026-10-28: 93 of 98 skippedInvalid, run still printed OK). Rule: discovered
+# >= 5 AND skippedInvalid/discovered > 0.5 (strict) degrades the run.
+
+@test "false-OK guard: 10/10 invalid candidates degrade the run and name the state" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="10 10"
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	_assert_output_has ": 10/10 candidates rejected as invalid"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "false-OK guard: exactly 50% invalid (5/10) is NOT degraded" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="10 5"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	_assert_output_lacks "rejected as invalid"
+	grep -q '"status": "ok"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "false-OK guard: below the floor (4 discovered, 4 invalid) is NOT degraded" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="4 4"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	_assert_output_lacks "rejected as invalid"
+}
+
+@test "false-OK guard: at the floor and over half (3/5) is degraded" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="5 3"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	_assert_output_has "3/5 candidates rejected as invalid"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "false-OK guard: 0 discovered is no error and NOT degraded" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="0 0"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	_assert_output_lacks "division"
+	grep -q '"status": "ok"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "false-OK guard: a missing summary after a successful submit fails closed" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_SUMMARY_MODE=missing
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	_assert_output_has "submit summary unreadable"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "false-OK guard: an unparseable summary after a successful submit fails closed" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_SUMMARY_MODE=garbage
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	_assert_output_has "submit summary unreadable"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "false-OK guard: the 10-28 re-run shape (8 discovered, 0 invalid) is OK" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="8 0"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q '"status": "ok"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "false-OK guard: dry-run is unaffected (no summary check)" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true SUBMIT_COUNTS="10 10"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	_assert_output_lacks "rejected as invalid"
+}
+
+@test "false-OK guard: one tripping state degrades the batch, other states still submit, no rewind" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=2 SUBMIT_COUNTS_TX="10 9" SUBMIT_COUNTS_VA="6 0"
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	_assert_output_has "TX: 9/10 candidates rejected as invalid"
+	_assert_output_lacks "VA: 0/6 candidates rejected as invalid"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	grep -q '"claudeStatus": "invalid_majority"' "$LOG_DIR/heartbeat.json"
+	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
+	[ "$(grep -c -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG")" = "2" ]
+	# degrade only: the cursor is not rewound
+	_assert_output_lacks "re-queued"
+}
+
 @test "importing submit-candidates.ts via tsx -e attempts no connection to localhost:11434 (unparseable input)" {
 	cd "$REPO_ROOT"
 	CANDIDATES_FILE="$TEST_TMP/candidates-import-safety-bad.json"
@@ -2249,7 +2364,7 @@ case "\$*" in
 	exit 0
 	;;
 *submit-candidates.ts*)
-	exit 0
+	exec "$BIN_DIR/fake-submit" "\$@"
 	;;
 *check-sources.ts*)
 	exit 0
@@ -2289,7 +2404,7 @@ case "\$*" in
 	exit 0
 	;;
 *submit-candidates.ts*)
-	exit 0
+	exec "$BIN_DIR/fake-submit" "\$@"
 	;;
 *check-sources.ts*)
 	exit 0
@@ -2377,7 +2492,7 @@ case "\$*" in
 	exit 0
 	;;
 *submit-candidates.ts*)
-	exit 0
+	exec "$BIN_DIR/fake-submit" "\$@"
 	;;
 *check-sources.ts*)
 	exit 0
@@ -2416,7 +2531,7 @@ case "\$*" in
 	exit 0
 	;;
 *submit-candidates.ts*)
-	exit 0
+	exec "$BIN_DIR/fake-submit" "\$@"
 	;;
 *check-sources.ts*)
 	exit 0
@@ -3011,6 +3126,9 @@ case "\$*" in
 	echo ""
 	exit 0
 	;;
+*submit-candidates.ts*)
+	exec "$BIN_DIR/fake-submit" "\$@"
+	;;
 *check-sources.ts*)
 	exit 0
 	;;
@@ -3046,6 +3164,9 @@ case "\$*" in
 *existing-facilities.ts*)
 	echo ""
 	exit 0
+	;;
+*submit-candidates.ts*)
+	exec "$BIN_DIR/fake-submit" "\$@"
 	;;
 *check-sources.ts*)
 	exit 1
