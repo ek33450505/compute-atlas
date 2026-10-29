@@ -518,6 +518,29 @@ Measured 2026-10-29, `gpt-oss:20b`, `temperature: 0`, one run per prompt (no rep
 
 The earlier P=100%/R=100% measured the old prompt on a corpus with no distractors; here the prompt as it stood before this change hallucinates on half of them, so the distractors do catch it. The new rule removes two of the three fabrications but not the UPS one (`"UPS capacity: 11.6MW"`, quoted from a block that also says "Utility capacity" and "Generator capacity").
 
+> Superseded 2026-10-29 by the section "capacityOperational after rulings (a) crypto current draw and (b) UPS" below. The table above used the pre-relabel labels, and the three labels discussed in the next paragraph have since been re-adjudicated (bitfarms 60 → null, atlas-power 240 kept, aaim 15 → AMBIG), so its "have not been re-adjudicated" and "I did not relabel them" no longer hold.
+
 ⚠️ The recall drop may be a label question: the three missed labels (`bitfarms-panther-creek-nesquehoning-pa`, `atlas-power-williston-nd`, `aaim-data-centers-blue-earth-mn`) were set before the IT-capacity ruling and have not been re-adjudicated. Their labeled values are 60, 240 and 15 respectively. The model's `reasonIfNull` on each says the page gives a contracted-power, power-consumption ("currently consumes about 240 megawatts") or substation/building-size figure, not IT capacity. I did not relabel them (out of scope, and the bitfarms "60" is a table cell I have not adjudicated). If those three become null or AMBIG under the ruling, the new prompt scores 3 of 3 on positives with 1 hallucination. Flexential (`capacityOperational` 36, new-prompt quote "36-megawatt") and 1623 Farnam (`capacityOperational` 8, quote "around 8MW of capacity") are likewise unspecified "capacity" and were still answered. Re-adjudicate these labels before quoting a recall figure.
 
 Limits: the 123NET incident path (utility figures in per-building PDF spec sheets) is NOT benchable, because the fetcher excludes PDFs; those three ids test only the HTML page, which states a 20 MW substation and none of the 1 / 1.5 / 1 MW figures. Six distractors and six positives are small samples; one run per prompt. Result files: `result-gpt-oss_20b-capacityOperational-itrule.json` and `-oldprompt.json` (the old prompt was run through a temporary env-var override in `run.mjs`, since reverted).
+
+## capacityOperational after rulings (a) crypto current draw and (b) UPS
+
+Measured 2026-10-29 (~14:50 EDT), `gpt-oss:20b`, `temperature: 0`, ONE run, base `db13833` plus the uncommitted prompt carrying Ed's rulings (a) and (b). Scored by `node rescore.mjs` under the re-adjudicated labels.
+
+| prompt | P | R | ok / abst / miss / WRONG / HALLUC | scored (AMBIG excl.) |
+|---|---|---|---|---|
+| old prompt (`-oldprompt.json`) | 50% | 100% | 4 / 25 / 0 / 0 / 4 | 33 (4) |
+| IT-capacity rule, pre-(a)/(b) (`-itrule.json`) | 75% | 75% | 3 / 28 / 1 / 0 / 1 | 33 (4) |
+| IT rule + (a) crypto + (b) UPS (`-itrule-crypto-ups.json`) | 100% | 100% | 4 / 29 / 0 / 0 / 0 | 33 (4) |
+
+Relabels (2026-10-29): `bitfarms-panther-creek-nesquehoning-pa` 60 to null (the 10-K "Current Energized Capacity (MW)" column, footnoted "not under an ESA", is a supply figure, not a stated draw); `atlas-power-williston-nd` 240 confirmed ("currently consumes about 240 megawatts", a crypto current draw); `aaim-data-centers-blue-earth-mn` 15 to AMBIG (Ed).
+
+Positives 4/4: flexential 36 ("36-megawatt"), 1623 farnam 8, ark-data-centers-akron 1 ("Capacity 1,000 kW"), atlas-power 240. Distractors 6/6 null, including `centersquare-ewr5-secaucus-nj` (the UPS 11.6 fabrication is gone). On AMBIG (unscored) cells it answered qts-hillsboro-2 180 ("180 MW+"), big-watt-digital-onida-sd 12.5 (quote "expected to use 12.5 megawatts of electricity annually"), crane-pdx02 null, aaim null ("15 MW Substation").
+
+Limits:
+- One run, no repeat: run-to-run variance is unmeasured.
+- 4 positives and 6 distractors are a small sample.
+- The prompt carries no facilityType, so the crypto sentence is applied from page text.
+- There is NO negative control for a non-crypto page stating a current draw ("currently consumes X MW" at a data center should be null). The big-watt AMBIG answer suggests forward-looking draws may be taken too. Both are follow-ups, not measured.
+- The 123NET PDF path is still unbenchable (the fetcher excludes PDFs).

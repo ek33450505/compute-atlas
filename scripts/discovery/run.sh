@@ -1338,8 +1338,11 @@ else
   # "capacityOperational after the IT-capacity-only rule") found the old prompt
   # fabricating on 3 of 6 distractor pages and the new IT-capacity rule still
   # taking a UPS figure (1 of 6); on 2026-10-28 the lane staged "available
-  # utility power" as IT capacity. Re-pin only after a re-bench under the
-  # crypto/UPS rulings holds up, with Ed's OK. The field stays in
+  # utility power" as IT capacity. On 2026-10-29 the IT-capacity prompt found
+  # 3 of 6 positives against the pre-ruling labels; after three crypto labels
+  # were re-adjudicated the same run scores 3 of 4, and the prompt with
+  # rulings (a)/(b) (docs/methodology.md#operational-capacity) scored 4 of 4
+  # with no fabrications in one run (bench README). Re-pin only with Ed's OK. The field stays in
   # EXTRACTABLE_FIELDS for deliberate manual runs. Earlier, until 2026-09-01:
   # energy.source (enum)
   # and energy.utility (free text) were pinned here too, unmeasured, for

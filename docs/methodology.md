@@ -390,12 +390,15 @@ The `capacityMw.operational` field is defined as the IT capacity that is online
 now, in megawatts. Planned capacity is a separate field and is not affected.
 
 - **Counts:** IT capacity in service, which sources may also call IT load or
-  critical IT load.
-- **Does not count:** a utility feed, a power supply figure, building power, or
-  a generator figure. These describe how power reaches or backs up the site,
-  not how much computing it can run.
+  critical IT load. For a crypto-mining site, a stated current power draw also
+  counts, such as "currently consumes about 240 megawatts".
+- **Does not count:** a utility feed, a power supply figure, building power, a
+  UPS rating, or a generator figure. These describe how power reaches, backs up
+  or conditions the site, not how much computing it can run. For a
+  crypto-mining site, a contracted, interconnection, substation or building
+  figure does not count either.
 
-The rule: Operational capacity is IT capacity only. A utility feed, power supply, building power or generator figure is not IT capacity. If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is.
+The rule: Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. For a crypto-mining site, a stated current power draw counts as operational capacity; a contracted, interconnection, substation or building figure does not.
 
 A figure of that kind is not entered in the field just because it is the only
 number available. The record carries a "Not recorded" marker with a short public

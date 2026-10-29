@@ -214,8 +214,9 @@ describe("water.coolingType", () => {
 // description and docs/methodology.md#operational-capacity.
 describe("capacityMw.operational IT-capacity rule", () => {
   const RULE =
-    "Operational capacity is IT capacity only. A utility feed, power supply, building power or generator figure is not IT capacity. " +
-    "If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is.";
+    "Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. " +
+    "If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. " +
+    "For a crypto-mining site, a stated current power draw counts as operational capacity; a contracted, interconnection, substation or building figure does not.";
   const squash = (text: string) => text.replace(/\s+/g, " ");
 
   it("shipped description retains the rule verbatim and the null path", () => {

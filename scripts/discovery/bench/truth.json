@@ -222,7 +222,8 @@
   "bitfarms-panther-creek-nesquehoning-pa": {
     "capacityAny": 350,
     "capacityPlanned": 350,
-    "capacityOperational": 60,
+    "capacityOperational": null,
+    "capacityOperationalNote": "RE-ADJUDICATED 2026-10-29 under rulings 2 + (a): the 60 is the 10-K table's 'Current Energized Capacity (MW)' column ('Panther Creek | Pennsylvania | 60 *'), footnoted 'This capacity is not under an ESA'. An energized utility capacity is a supply figure, not a stated current draw, so the field is null.",
     "onSiteGenerationMw": "AMBIG",
     "note": "10-K: 'received a project feasibility report from PPL increasing the incremental power availability at Panther Creek from 250 MW to 350 MW ... resulting in 350 MW of contracted power capacity'. TRAP-RICH (12 distinct MW figures): 170 MW Quebec sites, 142 MW import / 165 MW generation (Stronghold at acquisition), 250 MW superseded. The DB's operational 60 is NOT in this document. onSite AMBIG: a waste-to-energy facility is described without a site-specific MW rating. CORRECTED s97: operational was wrongly labeled null. The 10-K carries a capacity TABLE - \"Panther Creek | Pennsylvania | 60 * | 350 | 350 | 150 | 500\" - so 60 (current) and 500 (Total Pipeline) are both real stated column values; capacityAny now accepts 350 or 500. My prose-window label aid could not render a pipe-delimited table, so I saw none of it. Matches the live DB's operational:60.",
     "acceptCapacityAny": [
@@ -254,6 +255,7 @@
     "capacityAny": 700,
     "capacityPlanned": 700,
     "capacityOperational": 240,
+    "capacityOperationalNote": "CONFIRMED 2026-10-29 under ruling (a): 'The Atlas facility currently consumes about 240 megawatts' is a stated current draw at a crypto-mining site.",
     "onSiteGenerationMw": null,
     "note": "BEST planned-vs-operational case: 'plans for a 700 MW capacity to be built in three phases. The Atlas facility currently consumes about 240 megawatts.' TRAP: 5MW/100MW (Applied Digital), 200MW (Bitzero), 0MW placeholder - all other operators' news items on the same page.",
     "coolingType": null,
@@ -281,7 +283,8 @@
   "aaim-data-centers-blue-earth-mn": {
     "capacityAny": 15,
     "capacityPlanned": "AMBIG",
-    "capacityOperational": 15,
+    "capacityOperational": "AMBIG",
+    "capacityOperationalNote": "RE-ADJUDICATED 2026-10-29 (Ed): the page's spec table reads 'Type: Building · Size: 15 MW · Substation: Privately own · In Service Date June 2025', plus 'our 15 MW facility'. 'Size: 15 MW' can be read as a building/site figure or as the site's capacity; neither is a stated current draw, and Ed ruled AMBIG (2026-10-29), which excludes it from scoring.",
     "onSiteGenerationMw": null,
     "note": "'Minnesota 1 ... Building Size 15 MW ... In Service Date June 2025' and 'our 15 MW facility' (present tense). TRAP: 80 MW appears in a staff biography ('secured more than 80 MW of hosting space'), not as this site's capacity. s97: capacityPlanned set AMBIG - the page says both \"our 15 MW facility\" (present) and \"nearing the completion of a significant 15 MW expansion\" (forward-looking), so 15 is defensible under either sub-field.",
     "coolingType": null,

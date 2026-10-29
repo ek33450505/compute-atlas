@@ -147,10 +147,12 @@ export function numericClose(a, b) {
 
 /** The capacityMw.operational prompt, shared by run.mjs (bench) and pinned
  * equal to extract-fields.ts FIELD_DESCRIPTIONS["capacityMw.operational"] by
- * fields.test.ts. The three rule sentences are verbatim from
- * docs/methodology.md#operational-capacity (Ed's ruling 2, 2026-10-29). */
+ * fields.test.ts. The four rule sentences are verbatim from
+ * docs/methodology.md#operational-capacity (Ed's ruling 2, research3, 2026-10-28,
+ * plus rulings (a) crypto current draw and (b) UPS, 2026-10-29). */
 export const CAPACITY_OPERATIONAL_DESCRIPTION =
   "the facility's CURRENTLY OPERATIONAL (already online) capacity, in megawatts (MW). " +
-  "Operational capacity is IT capacity only. A utility feed, power supply, building power or generator figure is not IT capacity. " +
+  "Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. " +
   "If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. " +
-  "A figure the page calls IT load, critical IT load or IT capacity counts. So if the page states only a utility, building, generator or power-supply figure, answer null and say in reasonIfNull what that figure measures.";
+  "For a crypto-mining site, a stated current power draw counts as operational capacity; a contracted, interconnection, substation or building figure does not. " +
+  "A figure the page calls IT load, critical IT load or IT capacity counts. So if the page states only a utility, building, generator, UPS or power-supply figure, answer null and say in reasonIfNull what that figure measures.";
