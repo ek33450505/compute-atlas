@@ -315,6 +315,12 @@ const RETIRED_FACILITY_REDIRECTS = [
  */
 const RETIRED_OPERATOR_REDIRECTS = [
   {
+    source:
+      "/operators/aligned-data-centers-in-partnership-with-u-s-paper-mill-llc-u-s-medical-glove-company",
+    destination: "/operators/aligned", // 1
+    permanent: true,
+  },
+  {
     source: "/operators/amazon-web-services-via-birchwood-power-partners",
     destination: "/operators/amazon-web-services", // 45
     permanent: true,
@@ -342,6 +348,17 @@ const RETIRED_OPERATOR_REDIRECTS = [
   {
     source: "/operators/bitdeer-via-subsidiary-whitetail-creek-llc",
     destination: "/operators/bitdeer", // 7
+    permanent: true,
+  },
+  {
+    source: "/operators/cambrin-llc",
+    destination: "/operators/panattoni", // 2
+    permanent: true,
+  },
+  {
+    source:
+      "/operators/capacity-llc-vantage-data-centers-named-as-prospective-developer",
+    destination: "/operators/capacity-llc", // 1
     permanent: true,
   },
   {
