@@ -14,7 +14,9 @@ import {
   textEquals,
   numericValue,
   numericClose,
+  CAPACITY_OPERATIONAL_DESCRIPTION,
 } from "./fields.mjs";
+import { FIELD_DESCRIPTIONS } from "../extract-fields";
 
 describe("fieldKind", () => {
   it("classifies the four existing capacity/generation fields as numeric", () => {
@@ -239,5 +241,13 @@ describe("accept<Field> alternates mechanism (equality primitive)", () => {
     const accepts = ["closed loop", "closed_loop"];
     const got = normalizeEnum("Closed-Loop");
     expect(accepts.some((a) => enumEquals(got, a))).toBe(true);
+  });
+});
+
+// The bench measures a prompt; if it differs from the shipped one the P/R
+// describes a different tool. Pin them equal for capacityMw.operational.
+describe("capacityOperational bench/shipped parity", () => {
+  it("bench prompt equals the shipped FIELD_DESCRIPTIONS entry", () => {
+    expect(CAPACITY_OPERATIONAL_DESCRIPTION).toBe(FIELD_DESCRIPTIONS["capacityMw.operational"]);
   });
 });

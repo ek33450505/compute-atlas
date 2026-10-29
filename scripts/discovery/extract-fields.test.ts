@@ -209,6 +209,32 @@ describe("water.coolingType", () => {
   });
 });
 
+// capacityMw.operational (ruling 2, Ed 2026-10-29): operational capacity is IT
+// capacity only. The rule sentences must appear verbatim in both the shipped
+// description and docs/methodology.md#operational-capacity.
+describe("capacityMw.operational IT-capacity rule", () => {
+  const RULE =
+    "Operational capacity is IT capacity only. A utility feed, power supply, building power or generator figure is not IT capacity. " +
+    "If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is.";
+  const squash = (text: string) => text.replace(/\s+/g, " ");
+
+  it("shipped description retains the rule verbatim and the null path", () => {
+    const description = FIELD_DESCRIPTIONS["capacityMw.operational"];
+    expect(description).toContain(RULE);
+    expect(description).toContain("answer null");
+    expect(description).toContain("critical IT load");
+    expect(description).toContain("reasonIfNull");
+  });
+
+  it("the rule appears verbatim in docs/methodology.md under ## Operational capacity", () => {
+    const doc = readFileSync(path.join(__dirname, "../../docs/methodology.md"), "utf-8");
+    const start = doc.indexOf("## Operational capacity");
+    expect(start).toBeGreaterThanOrEqual(0);
+    const end = doc.indexOf("\n## ", start + 1);
+    expect(squash(doc.slice(start, end))).toContain(RULE);
+  });
+});
+
 describe("prefilter", () => {
   it("matches kW, MW, and GW mentions for numeric fields", () => {
     expect(prefilter("Capacity: 500 kW total", "capacityMw.operational")).toBe(true);

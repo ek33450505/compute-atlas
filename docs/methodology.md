@@ -384,6 +384,24 @@ therefore not a finding, and `/ai` states its denominator rather than implying
 the unclassified records are non-AI. Closing that gap needs a fourth enum
 member, which has been considered and declined.
 
+## Operational capacity
+
+The `capacityMw.operational` field is defined as the IT capacity that is online
+now, in megawatts. Planned capacity is a separate field and is not affected.
+
+- **Counts:** IT capacity in service, which sources may also call IT load or
+  critical IT load.
+- **Does not count:** a utility feed, a power supply figure, building power, or
+  a generator figure. These describe how power reaches or backs up the site,
+  not how much computing it can run.
+
+The rule: Operational capacity is IT capacity only. A utility feed, power supply, building power or generator figure is not IT capacity. If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is.
+
+A figure of that kind is not entered in the field just because it is the only
+number available. The record carries a "Not recorded" marker with a short public
+reason, and the notes state the figure and what it measures, for example
+"available utility power".
+
 ## Cooling type
 
 An optional `water.coolingType` field classifies a data center's heat-rejection

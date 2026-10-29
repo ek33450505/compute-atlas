@@ -25,7 +25,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 // Field-kind map lives in fields.mjs -- shared with rescore.mjs -- so the
 // prompt and the scorer can't drift apart. Same rationale as quote.mjs.
-import { KIND, FIELD_KINDS, FIELD_ENUM_VALUES } from "./fields.mjs";
+import { KIND, FIELD_KINDS, FIELD_ENUM_VALUES, CAPACITY_OPERATIONAL_DESCRIPTION } from "./fields.mjs";
 
 const PAGES = JSON.parse(readFileSync(new URL("./pages.json", import.meta.url).pathname, "utf8"));
 const TRUTH = JSON.parse(readFileSync(new URL("./truth.json", import.meta.url).pathname, "utf8"));
@@ -36,7 +36,7 @@ if (!MODEL) { console.error("usage: run.mjs <model-tag> [field,field,...]"); pro
 const FIELDS = {
   capacityAny: "total electrical capacity in megawatts for this facility, whether already built or planned",
   capacityPlanned: "PLANNED, designed, entitled, or future electrical capacity in megawatts for this facility",
-  capacityOperational: "electrical capacity in megawatts ALREADY BUILT or currently in service at this facility",
+  capacityOperational: CAPACITY_OPERATIONAL_DESCRIPTION,
   onSiteGenerationMw: "capacity in megawatts of ON-SITE or behind-the-meter POWER GENERATION at this facility (not grid supply, and not standby/backup generators)",
   // coolingType is genuinely ambiguous in this dataset: waterSchema.coolingType
   // (the data-centre cooling system, scored here) and miningSchema.coolingType
