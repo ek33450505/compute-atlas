@@ -3992,6 +3992,15 @@
     }
   },
   "aurum-elk-data-center-central-city-ia": {
+    "nearestWater": {
+      "name": "Wapsipinicon River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -5608,6 +5617,15 @@
     }
   },
   "bedington-energy-facility-solar-berkeley-county-wv": {
+    "nearestWater": {
+      "name": "Opequon Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -6313,6 +6331,15 @@
     }
   },
   "blake-solar-plant-jefferson-county-wv": {
+    "nearestWater": {
+      "name": "Evitts Run",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -7029,6 +7056,15 @@
     }
   },
   "brandonville-solar-preston-county-wv": {
+    "nearestWater": {
+      "name": "Big Sandy Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.2
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -11219,6 +11255,15 @@
     }
   },
   "consolidated-fidium-burlington-266-main-st-vt": {
+    "nearestWater": {
+      "name": "Winooski River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 24
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -21838,6 +21883,15 @@
     }
   },
   "firstlight-bedford-nh": {
+    "nearestWater": {
+      "name": "Merrimack River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -23351,6 +23405,15 @@
     }
   },
   "franklintown-farm-solar-jefferson-county-wv": {
+    "nearestWater": {
+      "name": "Shenandoah River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -24264,6 +24327,15 @@
     }
   },
   "goldfinch-solar-washington-county-ia": {
+    "nearestWater": {
+      "name": "North Fork Long Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -27713,6 +27785,15 @@
     }
   },
   "invenergy-olympus-solar-muscatine-ia": {
+    "nearestWater": {
+      "name": "Chicken Creek",
+      "kind": "river",
+      "distanceMi": 1.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -28957,6 +29038,15 @@
     }
   },
   "karis-peosta-ia": {
+    "nearestWater": {
+      "name": "South Fork Catfish Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29721,6 +29811,15 @@
     }
   },
   "lightedge-boone-ia": {
+    "nearestWater": {
+      "name": "Honey Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.8
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -31390,6 +31489,15 @@
     }
   },
   "maquoketa-industrial-park-data-center-ia": {
+    "nearestWater": {
+      "name": "Prairie Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -31587,6 +31695,15 @@
     }
   },
   "marion-energy-partners-morgantown-industrial-park-wv": {
+    "nearestWater": {
+      "name": "Monongahela River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -33835,6 +33952,15 @@
     }
   },
   "microsoft-woodward-ia": {
+    "nearestWater": {
+      "name": "Preston Creek",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -33871,6 +33997,15 @@
     }
   },
   "midamerican-johnson-county-solar-triangle-ia": {
+    "nearestWater": {
+      "name": "Old Mans Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -37427,6 +37562,15 @@
     }
   },
   "octopus-investments-fort-madison-ia": {
+    "nearestWater": {
+      "name": "Fork Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 17.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -38470,6 +38614,15 @@
     }
   },
   "parks-valley-energy-bess-hampshire-county-wv": {
+    "nearestWater": {
+      "name": "Edwards Run",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.9
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -42498,6 +42651,15 @@
     }
   },
   "ranger-power-river-city-energy-solar-ia": {
+    "nearestWater": {
+      "name": "Beaverdam Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 41.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -43040,6 +43202,15 @@
     }
   },
   "rippon-energy-facility-solar-jefferson-county-wv": {
+    "nearestWater": {
+      "name": "Bullskin Run",
+      "kind": "river",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.4
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -45617,6 +45788,15 @@
     }
   },
   "simple-mining-osage-mitchell-ia": {
+    "nearestWater": {
+      "name": "Sugar Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 15.3
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -52444,6 +52624,15 @@
     }
   },
   "velco-rutland-pinnacle-ridge-vt": {
+    "nearestWater": {
+      "name": "East Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -53588,6 +53777,15 @@
     }
   },
   "wild-hill-solar-jefferson-county-wv": {
+    "nearestWater": {
+      "name": "Bullskin Run",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 2.8
+    },
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
@@ -54307,21 +54505,6 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
-    }
-  },
-  "colospace-bedford-nh": {
-    "nearestWater": {
-      "name": "Merrimack River",
-      "kind": "river",
-      "distanceMi": 0.5
-    },
-    "nearestTransmission": {
-      "voltageKv": 230,
-      "distanceMi": 0.4
-    },
-    "waterStress": {
-      "cat": 1,
-      "label": "Low - Medium (10-20%)"
     }
   }
 }
