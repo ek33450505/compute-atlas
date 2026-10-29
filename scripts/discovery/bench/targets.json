@@ -1678,5 +1678,132 @@
       "https://www.cpr.org/2026/08/07/weld-county-ai-data-center/",
       "https://www.windsorco.gov/1452/AI-Data-Center-Project-Information"
     ]
+  },
+  {
+    "id": "centersquare-ewr5-secaucus-nj",
+    "name": "Centersquare EWR5 (Secaucus)",
+    "city": "Secaucus",
+    "state": "NJ",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://www.csquare.com/data-centers/new-york-new-jersey"
+    ]
+  },
+  {
+    "id": "h5-denver-greenwood-village-co",
+    "name": "H5 Data Centers Denver (Denver Tech Center campus)",
+    "city": "Greenwood Village",
+    "state": "CO",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://h5datacenters.com/denver-data-center.html",
+      "https://h5datacenters.com/denver-colocation.html"
+    ]
+  },
+  {
+    "id": "123net-dc2-southfield-mi",
+    "name": "123NET Southfield DC2 (Southfield Data Center NW)",
+    "city": "Southfield",
+    "state": "MI",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://www.123.net/data-center-colocation/"
+    ]
+  },
+  {
+    "id": "123net-dc3-southfield-mi",
+    "name": "123NET Southfield DC3 (Southfield Data Center W)",
+    "city": "Southfield",
+    "state": "MI",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://www.123.net/data-center-colocation/"
+    ]
+  },
+  {
+    "id": "123net-dc4-byron-center-mi",
+    "name": "123NET DC4 Grand Rapids Data Center",
+    "city": "Byron Center",
+    "state": "MI",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://www.123.net/data-center-colocation/"
+    ]
+  },
+  {
+    "id": "h5-denver-greenwood-village-co-colocation",
+    "name": "H5 Data Centers Denver (Denver Tech Center campus)",
+    "city": "Greenwood Village",
+    "state": "CO",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://h5datacenters.com/denver-colocation.html"
+    ]
   }
 ]

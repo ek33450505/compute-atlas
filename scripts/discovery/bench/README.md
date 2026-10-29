@@ -505,3 +505,19 @@ outside the current 69, re-run this exact field, and only then consider adding
 extractor cannot express `mixed_use` or `likely` at all. That matches how the data model already
 treats absence as meaningful, but it means the lane would never populate the other two enum members
 — those stay hand-curated. Decide that deliberately rather than discovering it later.
+
+## capacityOperational after the IT-capacity-only rule, with distractor pages
+
+Measured 2026-10-29, `gpt-oss:20b`, `temperature: 0`, one run per prompt (no repeat run, so run-to-run variance is unmeasured), HEAD `dab327c`. Corpus change: six pages from five facilities (the two H5 pages are one facility), added by additive fetch (no `--refresh`), from real records whose curated capacity is null under the ruling because the source states only a utility, UPS or generator figure: `centersquare-ewr5-secaucus-nj` (EWR5: utility 26.3 MW, UPS 11.6 MW, generator 16 MW), `h5-denver-greenwood-village-co` and `-colocation` (the 17.5 MW Xcel supply is on the colocation page only; the first page's cached text has no Denver MW figure), and `123net-dc2/-dc3/-dc4` (all three share one cached page, which states a "dedicated 20 MW DTE substation"). All six are labeled `capacityOperational: null` after reading the cached text. Only that one field is labeled for them.
+
+| capacityOperational | old prompt (`ALREADY BUILT or currently in service`) | IT-capacity-only rule (HEAD) |
+|---|---|---|
+| overall (34 scored, 3 AMBIG excluded) | P=67% R=100%, 6 correct / 25 abstain / 0 miss / 3 HALLUC | P=75% R=50%, 3 correct / 27 abstain / 3 miss / 1 HALLUC |
+| distractors only (6 nulls) | 3 of 6 fabricated (26.3 utility, 20 DTE substation, 17.5 Xcel) | 1 of 6 fabricated (11.6, the UPS figure) |
+| positive controls only (6 numeric labels) | 6 of 6 | 3 of 6 |
+
+The earlier P=100%/R=100% measured the old prompt on a corpus with no distractors; here the prompt as it stood before this change hallucinates on half of them, so the distractors do catch it. The new rule removes two of the three fabrications but not the UPS one (`"UPS capacity: 11.6MW"`, quoted from a block that also says "Utility capacity" and "Generator capacity").
+
+⚠️ The recall drop may be a label question: the three missed labels (`bitfarms-panther-creek-nesquehoning-pa`, `atlas-power-williston-nd`, `aaim-data-centers-blue-earth-mn`) were set before the IT-capacity ruling and have not been re-adjudicated. Their labeled values are 60, 240 and 15 respectively. The model's `reasonIfNull` on each says the page gives a contracted-power, power-consumption ("currently consumes about 240 megawatts") or substation/building-size figure, not IT capacity. I did not relabel them (out of scope, and the bitfarms "60" is a table cell I have not adjudicated). If those three become null or AMBIG under the ruling, the new prompt scores 3 of 3 on positives with 1 hallucination. Flexential (`capacityOperational` 36, new-prompt quote "36-megawatt") and 1623 Farnam (`capacityOperational` 8, quote "around 8MW of capacity") are likewise unspecified "capacity" and were still answered. Re-adjudicate these labels before quoting a recall figure.
+
+Limits: the 123NET incident path (utility figures in per-building PDF spec sheets) is NOT benchable, because the fetcher excludes PDFs; those three ids test only the HTML page, which states a 20 MW substation and none of the 1 / 1.5 / 1 MW figures. Six distractors and six positives are small samples; one run per prompt. Result files: `result-gpt-oss_20b-capacityOperational-itrule.json` and `-oldprompt.json` (the old prompt was run through a temporary env-var override in `run.mjs`, since reverted).
