@@ -402,9 +402,10 @@ quote gate; a PDF's raw bytes are never regexed.
 > correct example invocation, rather than silently sweeping all six fields —
 > including the two the bench measured as NOT safe to ship (`capacityMw.planned`
 > P=75%, `energy.onSiteGenerationMw` P=50%; see the per-field table below). The
-> pinned list is `capacityMw.operational`,
-> `water.coolingType` — both bench-measured: `capacityMw.operational` (P=100%/R=100%)
-> and `water.coolingType` (P=95%/R=95%). `energy.source` and `energy.utility` remain
+> pinned list is `water.coolingType` ONLY (bench-measured: P=95%/R=95%). Since
+> 2026-10-29, `capacityMw.operational` is unpinned: its P=100%/R=100% measured a drifted
+> prompt on a corpus with no distractors (see `scripts/discovery/bench/README.md`).
+> Nightly `verify-fields` still re-checks both fields; it stages nothing. `energy.source` and `energy.utility` remain
 > **extractable but not pinned**: they were unmeasured (the bench could only score
 > numeric fields until 2026-09-01, and neither string field carried a label in
 > `truth.json`), so they do not run nightly; re-add them only after clearing the
@@ -425,13 +426,14 @@ Dry run (prints a summary, writes nothing) — the packaged form, with a curated
 field list already applied:
 
 ```bash
-npm run extract-fields                              # two bench-measured fields — see note below
+npm run extract-fields                              # one pinned field (water.coolingType) — see note below
 npm run extract-fields -- --facility=<facility-id>  # one facility
 ```
 
-The `extract-fields` **npm wrapper** and the **nightly unattended lane** (`ENRICHMENT_FIELDS` in
-`scripts/discovery/run.sh`) now pin the SAME two fields: `capacityMw.operational` and
-`water.coolingType` — the only two cleared by bench measurement. Both lists are guarded by BATS
+The `extract-fields` **npm wrapper** and the **nightly extract lane** (`EXTRACT_FIELDS` in
+`scripts/discovery/run.sh`) now pin the SAME single field: `water.coolingType`. `capacityMw.operational`
+was unpinned on 2026-10-29 (see the Usage box above) and stays in `EXTRACTABLE_FIELDS` for deliberate
+manual runs only, whose output still needs human approval. Both lists are guarded by BATS
 tests in `tests/discovery/run.bats`, each with negative assertions so an *appended* field is caught,
 not just a replaced list.
 
@@ -459,14 +461,14 @@ Equivalent long form, if you need a field list the wrapper doesn't cover:
 
 ```bash
 npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
-  --fields capacityMw.operational,water.coolingType
+  --fields water.coolingType
 ```
 
 Real run (stages candidates for review):
 
 ```bash
 npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
-  --out /tmp/candidates.json --fields capacityMw.operational,water.coolingType
+  --out /tmp/candidates.json --fields water.coolingType
 npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts /tmp/candidates.json
 npm run submissions -- list pending
 npm run submissions -- approve <id> "reviewed and verified"
@@ -503,7 +505,7 @@ fields (re-run scoring with `node scripts/discovery/bench/rescore.mjs`):
 
 | Field | Precision | Recall | Notes |
 |---|---|---|---|
-| `capacityMw.operational` | 100% | 100% | Strongest; safe to ship |
+| `capacityMw.operational` | 100% | 100% | Historical (pre-2026-10-29 prompt). **Unpinned 2026-10-29:** measured a drifted prompt on a corpus with no distractors; see `scripts/discovery/bench/README.md` |
 | `capacityMw.planned` | 75% | 67% | Weaker; review each |
 | `energy.onSiteGenerationMw` | 50% | 100% | Weak precision; review each |
 | `energy.source` | — | — | Enum (`grid`/`on_site_gas`/`nuclear`/…); extractable but not pinned (unmeasured) |

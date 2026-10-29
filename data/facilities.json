@@ -119292,7 +119292,7 @@
   {
     "id": "panattoni-project-shelby-canton-oh",
     "name": "Project Shelby",
-    "operator": "Panattoni Development Co.",
+    "operator": "Panattoni",
     "status": "proposed",
     "confidence": "confirmed",
     "location": {
@@ -119350,7 +119350,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-15",
+    "lastUpdated": "2026-10-29",
     "notes": "Operator is the developer (Panattoni); the end user is unnamed ('a major American technology company that provides digital services such as cloud computing'). Do NOT infer Amazon: WHBC only says Panattoni is 'most often associated with Amazon'. The lead's ~324 MW was not found in any source consulted as of October 2026; the Repository (Oct 9 2026) gives 320 MW, single-source. Property is 'nearly 91 acres' owned by A&J Urban Development (Repository Aug 13) — no land area is recorded because the figure is approximate and ownership/lease to Panattoni is not stated. Panattoni's page says it is 'completing engineering, environmental review, and permitting', ~30-month build. Coordinates: OSM intersection node of Marietta Ave NE and Georgetown St NE (Overpass node 199939548; sources say 'Georgetown Road NE'); the site is SE of that corner, between Marietta and Trump Aves off 8th St NE, so approximate (likely within ~0.5 km). Not a duplicate of Amazon Perry Township Data Center (Panattoni's other Stark project, Faircrest St SW, Perry Township, 240 MW) — the Repository lists both separately — nor of Midwest Digital Gateway (Central Avenue SE, Canton), in SE Canton. Site is the former Ford property in northeast Canton.",
     "facilityType": "data_center"
   },

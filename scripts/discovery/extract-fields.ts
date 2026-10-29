@@ -111,7 +111,7 @@
  *
  * Run via:
  *   npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
- *     --fields capacityMw.operational,water.coolingType --out <path> \
+ *     --fields water.coolingType --out <path> \
  *     [--limit N] [--facility <id>] [--run-id ID]
  *   (omit --out for a dry run: prints a summary, writes nothing)
  *
@@ -439,25 +439,29 @@ const SYSTEM_PROMPT =
 // docs/methodology.md#cooling-type and scripts/discovery/bench/run.mjs:60-73,
 // which this string is transcribed from verbatim. Do not paraphrase, trim, or
 // "clean up" this text — doing so silently reverts to the 53% version.
-// capacityMw.operational carries Ed's ruling 2 (research3, 2026-10-28), transcribed from
-// docs/methodology.md#operational-capacity: the three rule sentences are
-// verbatim, guarded by a drift test against that section. Born of the
+// capacityMw.operational carries Ed's ruling 2 (research3, 2026-10-28) plus his rulings
+// (a) crypto-mining current draw counts and (b) a UPS rating is not IT capacity (both
+// 2026-10-29), transcribed from docs/methodology.md#operational-capacity: the four rule
+// sentences are verbatim, guarded by a drift test against that section. Born of the
 // 2026-10-28 incident where "available utility power" (1 / 1.5 / 1 MW for
 // 123net DC2-DC4) was staged as operational IT capacity. The closing sentences
 // (IT load counts; otherwise answer null and state in reasonIfNull what the figure
 // measures, since the output schema has no notes channel) are extraction-specific
-// and not in the methodology. The bench
+// and not in the methodology. The prompt carries no facilityType, so the crypto
+// sentence relies on the page text. The bench
 // (scripts/discovery/bench/run.mjs) imports the identical string from
-// bench/fields.mjs; a parity test pins the two together. NOT yet re-benched:
-// the old P=100% measured a different, rule-less prompt.
+// bench/fields.mjs; a parity test pins the two together. Re-benched 2026-10-29
+// after rulings (a)/(b): one run, P=100%/R=100% over 33 scored cells, 0 fabrications.
+// Small sample (4 positives, 6 distractors); see the bench README section.
 export const FIELD_DESCRIPTIONS: Record<ExtractableField, string> = {
   "capacityMw.planned":
     "the facility's PLANNED total capacity, in megawatts (MW) — the capacity once fully built out, whether or not it is online yet.",
   "capacityMw.operational":
     "the facility's CURRENTLY OPERATIONAL (already online) capacity, in megawatts (MW). " +
-    "Operational capacity is IT capacity only. A utility feed, power supply, building power or generator figure is not IT capacity. " +
+    "Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. " +
     "If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. " +
-    "A figure the page calls IT load, critical IT load or IT capacity counts. So if the page states only a utility, building, generator or power-supply figure, answer null and say in reasonIfNull what that figure measures.",
+    "For a crypto-mining site, a stated current power draw counts as operational capacity; a contracted, interconnection, substation or building figure does not. " +
+    "A figure the page calls IT load, critical IT load or IT capacity counts. So if the page states only a utility, building, generator, UPS or power-supply figure, answer null and say in reasonIfNull what that figure measures.",
   "energy.onSiteGenerationMw":
     "the facility's on-site power generation capacity, in megawatts (MW) — power the facility itself generates on-site, not grid power it draws.",
   "energy.source": `the facility's primary energy source. Classify it as EXACTLY ONE of: ${ENERGY_SOURCE_VALUES.join(", ")}. Return this classification string, or null if the page does not state it.`,
@@ -2274,7 +2278,7 @@ export function parseArgs(argv: string[]): CliArgs {
         `queue, and two of the six extractable fields failed the accuracy bench ` +
         `(capacityMw.planned P=75%, energy.onSiteGenerationMw P=50%) — they are not safe ` +
         `to sweep unattended. Pass the bench-pinned safe fields explicitly, e.g.:\n` +
-        `  --fields=capacityMw.operational,water.coolingType\n` +
+        `  --fields=water.coolingType\n` +
         `Valid fields are: ${EXTRACTABLE_FIELDS.join(", ")}.`
     );
   }
