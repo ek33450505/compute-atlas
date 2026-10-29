@@ -4000,7 +4000,7 @@
   {
     "id": "aligned-chillicothe-ross-oh",
     "name": "Aligned HPC Campus at Former Pixelle Paper Mill (Chillicothe)",
-    "operator": "Aligned Data Centers (in partnership with U.S. Paper Mill LLC / U.S. Medical Glove Company)",
+    "operator": "Aligned",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -4045,7 +4045,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-09",
+    "lastUpdated": "2026-10-29",
     "notes": "Part of a multi-tenant redevelopment of the shuttered Pixelle paper mill (closed 2025) alongside Amphibian Aerospace Industries, U.S. Medical Glove Company, and U.S. Box Company. The $1.5B figure is the anticipated investment that the U.S. Paper Mill press release attaches to Aligned's high-performance computing campus (\"The project represents an anticipated $1.5 billion investment\", as quoted by WOSU Public Media), and the Athens County Independent reports a Ross County Chamber of Commerce press release saying that Aligned will invest $1.5 billion. WOSU's own summary instead gives $1.5 billion as the estimated investment across the whole multi-tenant buildout (Amphibian Aerospace Industries, U.S. Medical Glove Company, Aligned and U.S. Box Company), so the sources differ on whether the figure covers only the data-center campus. The developer is named only as \"Aligned\" in the press materials; on 2026-08-12 the Athens County Independent corrected its story, which had called the company Aligned Data Centers, to say \"The company involved is named Aligned, but is not Aligned Data Centers.\" As of October 2026, no cited source says which company this is, so the record carries the press release's name only. No street address specific to the data-center building has been reported; location uses the mill's mailing address as an approximate anchor.",
     "investmentUsd": 1500000000,
     "facilityType": "data_center",
@@ -24326,7 +24326,7 @@
   {
     "id": "cambrin-project-cornmaze-town-of-beloit-wi",
     "name": "Project Cornmaze Data Center (Town of Beloit)",
-    "operator": "Cambrin LLC",
+    "operator": "Panattoni",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -24376,7 +24376,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-10-29",
     "notes": "430 acres at an existing gravel pit on the northeast side of the Town of Beloit, along Town Line Road, South Prairie Avenue and East Philhower Road; property currently owned by Rock Road Companies Inc. Very preliminary — a sewer and water study is underway, no site plans or applications filed, land not yet purchased. The town's pre-development agreement is with Cambrin LLC, a Delaware entity; DNR filings share a contact name and email with Degas LLC, the entity Meta used for Beaver Dam, and as of August 2026 Meta has not confirmed involvement. WUWM reported in June 2026 that the Town of Beloit administrator learned in April that Panattoni had taken over the project, and Panattoni's Cornmaze page names Panattoni Development Company as the developer, so the operator is recorded as Panattoni Development Company. Coordinates geocode Town Line Road.",
     "landAcres": 430,
     "facilityType": "data_center"
@@ -118025,7 +118025,7 @@
   {
     "id": "oregon-industrial-park-data-center-lucas-oh",
     "name": "Oregon Industrial Park Data Center Campus",
-    "operator": "Capacity LLC (Vantage Data Centers named as prospective developer)",
+    "operator": "Capacity LLC",
     "status": "proposed",
     "confidence": "reported",
     "location": {
@@ -118057,7 +118057,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-10-29",
     "notes": "Proposed ~168-acre, up-to-8-building data-center campus at Wynn Rd & Corduroy Rd in the Oregon Industrial Park (Toledo area) — as of August 2026, Lucas County's first tracked site. The city assembled parcels for site developer Capacity LLC (~$2–3B, ~500 MW at build-out); in late July 2026 officials publicly named Vantage Data Centers as the prospective developer, but the city administrator said no decisions are finalized and a citizen group ('United Neighbors of Oregon') is petitioning for a November 2026 referendum. The record is marked reported because the prospective developer is not settled and the project is unbuilt; coordinates approximate.",
     "water": {
       "coolingType": "closed_loop"
