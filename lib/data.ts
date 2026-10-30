@@ -1763,6 +1763,8 @@ export async function getPowerGenerationFacilities(): Promise<PowerGenerationFac
  * Normalizes an offtaker string for grouping: strips a trailing
  * parenthetical, e.g. "Amazon (AWS)" -> "Amazon". Facilities recording the
  * same buyer under different spellings collapse into one group.
+ * Must stay in sync with OFFTAKER_LABEL_PATTERN (lib/schema.ts), which
+ * guarantees at most one parenthetical, at the end.
  */
 export function normalizeOfftaker(offtaker: string): string {
   return offtaker.replace(/\s*\([^)]*\)\s*$/, "").trim();

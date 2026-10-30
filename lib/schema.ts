@@ -31,6 +31,16 @@ import { stateNameFromCode } from "@/lib/us-states";
  */
 z.config({ jitless: true });
 
+/**
+ * An offtaker label may carry at most ONE parenthetical, and only at the end
+ * ("Meta (via Pacific Power)"), after a non-empty name that does not start
+ * with whitespace or a parenthesis (so it never normalizes to an unnamed
+ * group). normalizeOfftaker (lib/data.ts) strips only a trailing
+ * parenthetical to group /power by buyer, so a label with a parenthetical
+ * anywhere else would form its own group.
+ */
+export const OFFTAKER_LABEL_PATTERN = /^[^()\s][^()]*(?:\([^()]*\)\s*)?$/;
+
 export const statusEnum = z.enum(STATUS_ORDER);
 export const aiClassificationEnum = z.enum(["confirmed", "likely", "mixed_use"]);
 export const confidenceEnum = z.enum(["confirmed", "reported", "rumored"]);
@@ -571,7 +581,13 @@ const powerGenerationSchema = z
       ])
       .optional(),
     // The compute company buying the power — the link back to the buildout.
-    offtaker: z.string().optional(),
+    offtaker: z
+      .string()
+      .regex(
+        OFFTAKER_LABEL_PATTERN,
+        'offtaker: keep qualifiers in ONE trailing parenthetical, e.g. "Meta (via Pacific Power)"'
+      )
+      .optional(),
     // Facility ids of the specific compute campuses this plant powers — set
     // ONLY where a single named campus is sourced (grid-region / company-level
     // PPAs use `offtaker` alone). One-directional: the reciprocal "Powered by"
