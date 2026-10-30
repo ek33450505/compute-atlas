@@ -86769,7 +86769,7 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "solar",
-      "offtaker": "Meta (Facebook), via Pacific Power",
+      "offtaker": "Meta (via Pacific Power)",
       "notes": "Part of the 2018 Facebook/Pacific Power deal for two Invenergy solar projects near Prineville, announced as 55 MW Prineville and 45 MW Millican and expected online in late 2020. GEM lists Prineville Solar Energy at 40 MWac, commissioned 2021, operated by Invenergy, with CoBank as 100% owner."
     }
   },
