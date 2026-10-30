@@ -1805,5 +1805,131 @@
     "sources": [
       "https://h5datacenters.com/denver-colocation.html"
     ]
+  },
+  {
+    "id": "nsa-utah-data-center-bluffdale-ut",
+    "name": "NSA Utah Data Center (Bumblehive)",
+    "city": "Bluffdale",
+    "state": "UT",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": 65,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://clui.org/ludb/site/nsa-utah-data-center"
+    ]
+  },
+  {
+    "id": "google-lincoln-ne",
+    "name": "Google Lincoln Data Center",
+    "city": "Lincoln",
+    "state": "NE",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": 580,
+      "investmentUsd": 600000000,
+      "coolingType": null
+    },
+    "sources": [
+      "https://www.1011now.com/2026/09/30/more-questions-than-answers-about-lincolns-google-data-center-water-electricity-usage/"
+    ]
+  },
+  {
+    "id": "microsoft-columbia-quincy-wa",
+    "name": "Microsoft Columbia Data Center (Quincy)",
+    "city": "Quincy",
+    "state": "WA",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": "Grant County PUD",
+      "onSiteGenerationMw": null,
+      "landAcres": 270,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://en.wikipedia.org/wiki/Columbia_Data_Center"
+    ]
+  },
+  {
+    "id": "starkville-industrial-park-road-crypto-mine-ms",
+    "name": "Starkville Industrial Park Road Cryptocurrency Mining Facility",
+    "city": "Starkville",
+    "state": "MS",
+    "facilityType": "crypto_mining",
+    "status": "proposed",
+    "truth": {
+      "capacityMwPlanned": 30,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": "Starkville Utilities",
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": null
+    },
+    "sources": [
+      "https://www.wtva.com/2026/07/15/proposed-cryptocurrency-mining-facility-under-review-starkville/"
+    ]
+  },
+  {
+    "id": "nccs-massena-reynolds-ny",
+    "name": "North Country Collocation Services Massena Data Center (former Reynolds site)",
+    "city": "Massena",
+    "state": "NY",
+    "facilityType": "data_center",
+    "status": "proposed",
+    "truth": {
+      "capacityMwPlanned": 635,
+      "capacityMwOperational": null,
+      "energySource": null,
+      "energyUtility": null,
+      "onSiteGenerationMw": null,
+      "landAcres": null,
+      "investmentUsd": null,
+      "coolingType": "closed_loop"
+    },
+    "sources": [
+      "https://www.northcountrypublicradio.org/news/story/53469/20260522/massena-town-planning-board-takes-no-action-at-data-center-meeting"
+    ]
+  },
+  {
+    "id": "amazon-project-rainier-new-carlisle-in",
+    "name": "Amazon Project Rainier",
+    "city": "New Carlisle",
+    "state": "IN",
+    "facilityType": "data_center",
+    "status": "operational",
+    "truth": {
+      "capacityMwPlanned": null,
+      "capacityMwOperational": null,
+      "energySource": "grid",
+      "energyUtility": "Indiana Michigan Power (AEP)",
+      "onSiteGenerationMw": null,
+      "landAcres": 1200,
+      "investmentUsd": 11000000000,
+      "coolingType": "air"
+    },
+    "sources": [
+      "https://www.cnbc.com/2025/10/29/amazon-opens-11-billion-ai-data-center-project-rainier-in-indiana.html"
+    ]
   }
 ]
