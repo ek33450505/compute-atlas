@@ -155,5 +155,5 @@ export const CAPACITY_OPERATIONAL_DESCRIPTION =
   "the facility's CURRENTLY OPERATIONAL (already online) capacity, in megawatts (MW). " +
   "Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. " +
   "If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. " +
-  "For a crypto-mining site, a stated current power draw counts as operational capacity; a projected, expected or planned draw does not, and neither does a contracted, interconnection, substation or building figure. " +
+  "For a crypto-mining site, a stated current power draw (one in effect now, not projected, expected or planned) counts as operational capacity; a contracted, interconnection, substation or building figure does not. " +
   "A figure the page calls IT load, critical IT load or IT capacity counts. So if the page states only a utility, building, generator, UPS or power-supply figure, answer null and say in reasonIfNull what that figure measures.";

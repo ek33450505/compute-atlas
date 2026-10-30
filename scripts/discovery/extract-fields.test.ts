@@ -212,11 +212,16 @@ describe("water.coolingType", () => {
 // capacityMw.operational (ruling 2, Ed 2026-10-29): operational capacity is IT
 // capacity only. The rule sentences must appear verbatim in both the shipped
 // description and docs/methodology.md#operational-capacity.
+// The crypto sentence is the 2026-10-30 parenthetical wording ("V2"), benched
+// 2026-10-30 over 3 runs, worst P=80% R=100%; its one fabrication was
+// applied-digital-polaris-forge-1, a future lease the page calls "critical IT load".
+// An earlier separate-clause wording regressed data-center distractors (worst P=50%).
+// See scripts/discovery/bench/README.md "Wording variants".
 describe("capacityMw.operational IT-capacity rule", () => {
   const RULE =
     "Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. " +
     "If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. " +
-    "For a crypto-mining site, a stated current power draw counts as operational capacity; a projected, expected or planned draw does not, and neither does a contracted, interconnection, substation or building figure.";
+    "For a crypto-mining site, a stated current power draw (one in effect now, not projected, expected or planned) counts as operational capacity; a contracted, interconnection, substation or building figure does not.";
   const squash = (text: string) => text.replace(/\s+/g, " ");
 
   it("shipped description retains the rule verbatim and the null path", () => {

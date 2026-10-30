@@ -399,7 +399,7 @@ now, in megawatts. Planned capacity is a separate field and is not affected.
   crypto-mining site, a projected, expected or planned draw, and a contracted,
   interconnection, substation or building figure, do not count either.
 
-The rule: Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. For a crypto-mining site, a stated current power draw counts as operational capacity; a projected, expected or planned draw does not, and neither does a contracted, interconnection, substation or building figure.
+The rule: Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. For a crypto-mining site, a stated current power draw (one in effect now, not projected, expected or planned) counts as operational capacity; a contracted, interconnection, substation or building figure does not.
 
 A figure of that kind is not entered in the field just because it is the only
 number available. The record carries a "Not recorded" marker with a short public

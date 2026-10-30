@@ -442,8 +442,9 @@ const SYSTEM_PROMPT =
 // capacityMw.operational carries Ed's ruling 2 (research3, 2026-10-28) plus his rulings
 // (a) crypto-mining current draw counts and (b) a UPS rating is not IT capacity (both
 // 2026-10-29), plus the 2026-10-30 tightening (Ed: projected, expected or planned
-// crypto draws do not count), transcribed from docs/methodology.md#operational-capacity: the four rule
-// sentences are verbatim, guarded by a drift test against that section. Born of the
+// crypto draws do not count), worded as a parenthetical ("V2"). Transcribed from
+// docs/methodology.md#operational-capacity: the rule sentences are verbatim,
+// guarded by a drift test against that section. Born of the
 // 2026-10-28 incident where "available utility power" (1 / 1.5 / 1 MW for
 // 123net DC2-DC4) was staged as operational IT capacity. The closing sentences
 // (IT load counts; otherwise answer null and state in reasonIfNull what the figure
@@ -451,9 +452,10 @@ const SYSTEM_PROMPT =
 // and not in the methodology. The prompt carries no facilityType, so the crypto
 // sentence relies on the page text. The bench
 // (scripts/discovery/bench/run.mjs) imports the identical string from
-// bench/fields.mjs; a parity test pins the two together. The 2026-10-29
-// bench (P=100%/R=100%, one run) measured the PREVIOUS prompt; the 2026-10-30 prompt
-// is not yet re-benched. See the bench README section.
+// bench/fields.mjs; a parity test pins the two together. V2 was benched 2026-10-30
+// (3 runs, worst P=80% R=100%); its one fabrication was applied-digital-polaris-forge-1, a
+// future lease the page calls "critical IT load". An earlier separate-clause wording
+// regressed data-center distractors (worst P=50%). See bench/README.md "Wording variants".
 export const FIELD_DESCRIPTIONS: Record<ExtractableField, string> = {
   "capacityMw.planned":
     "the facility's PLANNED total capacity, in megawatts (MW) — the capacity once fully built out, whether or not it is online yet.",
@@ -461,7 +463,7 @@ export const FIELD_DESCRIPTIONS: Record<ExtractableField, string> = {
     "the facility's CURRENTLY OPERATIONAL (already online) capacity, in megawatts (MW). " +
     "Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. " +
     "If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. " +
-    "For a crypto-mining site, a stated current power draw counts as operational capacity; a projected, expected or planned draw does not, and neither does a contracted, interconnection, substation or building figure. " +
+    "For a crypto-mining site, a stated current power draw (one in effect now, not projected, expected or planned) counts as operational capacity; a contracted, interconnection, substation or building figure does not. " +
     "A figure the page calls IT load, critical IT load or IT capacity counts. So if the page states only a utility, building, generator, UPS or power-supply figure, answer null and say in reasonIfNull what that figure measures.",
   "energy.onSiteGenerationMw":
     "the facility's on-site power generation capacity, in megawatts (MW) — power the facility itself generates on-site, not grid power it draws.",
