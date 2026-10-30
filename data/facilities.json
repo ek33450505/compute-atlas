@@ -13434,6 +13434,80 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "avangrid-bluebird-solar-klickitat-wa",
+    "name": "Bluebird Solar",
+    "operator": "Avangrid",
+    "status": "permitted",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 46.001843,
+      "lon": -120.3128266,
+      "city": "Bickleton (vicinity)",
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "announcedDate": "2026-05-27",
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2026-07-28",
+        "note": "Columbia Gorge News reports the project is in Klickitat County's Energy Overlay Zone and received county approval before the Microsoft PPA was announced.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.energy-pedia.com/news/usa/avangrid-executes-ppa-with-microsoft-for-new-140-mw-solar-project-in-washington--u-s--contracts-now-exceed-500-mw-204098",
+        "label": "Avangrid executes PPA with Microsoft for new 140 MW solar project in Washington",
+        "publisher": "energy-pedia (Avangrid release)",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.columbiagorgenews.com/news/klickitat-s-wind-solar-energy-going-to-microsoft/article_7b9eb410-40ec-4690-8b5e-8ecedb9f68f9.html",
+        "label": "Klickitat's wind, solar energy going to Microsoft",
+        "publisher": "Columbia Gorge News",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.goldendalesentinel.com/news/avangrid-bags-contract-to-power-microsoft-in-county/article_5bca3c98-74d9-4b4e-8517-16a3b37495c3.html",
+        "label": "Avangrid bags contract to power Microsoft in county",
+        "publisher": "Goldendale Sentinel",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Bickleton,+Washington&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: Bickleton, WA (representative point)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-30",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Coordinates are the Bickleton locality point, used as a representative location. Sources place the project near Bickleton, about 26 miles east of Goldendale and just west of Juniper Canyon Wind. Not a parcel-level location.",
+    "energy": {
+      "source": "solar"
+    },
+    "investmentUsd": 300000000,
+    "landAcres": 670,
+    "jobs": {
+      "construction": 300,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Microsoft",
+      "notes": "140 MWdc / 100 MWac. Power purchase agreement with Microsoft announced May 2026. Commercial operation expected 2028. About $11M in lifetime local property taxes. 670 acres within a 1,728-acre private and state-leased area about 26 miles east of Goldendale."
+    }
+  },
+  {
     "id": "avangrid-buffalo-ridge-i-wind-brookings-county-sd",
     "name": "Buffalo Ridge I Wind Farm",
     "operator": "Avangrid Renewables",
@@ -13484,6 +13558,131 @@
     }
   },
   {
+    "id": "avangrid-juniper-canyon-wind-klickitat-wa",
+    "name": "Juniper Canyon Wind (repowering)",
+    "operator": "Avangrid",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.9215,
+      "lon": -120.2355,
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 151.2
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011-03",
+        "note": "EIA-860-derived listing: Juniper Canyon I Wind Project (EIA 57320) operating since March 2011.",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-07-28",
+        "note": "Turbines are being repowered, with the project expected to return to operation in 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://gridinfo.com/plant/juniper-canyon-i-wind-project/57320",
+        "label": "Juniper Canyon I Wind Project (EIA 57320)",
+        "publisher": "GridInfo (EIA-860 data)",
+        "retrievedAt": "2026-10-30",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.columbiagorgenews.com/news/klickitat-s-wind-solar-energy-going-to-microsoft/article_7b9eb410-40ec-4690-8b5e-8ecedb9f68f9.html",
+        "label": "Klickitat's wind, solar energy going to Microsoft",
+        "publisher": "Columbia Gorge News",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.goldendalesentinel.com/news/avangrid-bags-contract-to-power-microsoft-in-county/article_5bca3c98-74d9-4b4e-8517-16a3b37495c3.html",
+        "label": "Avangrid bags contract to power Microsoft in county",
+        "publisher": "Goldendale Sentinel",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Existing wind plant being repowered under a Microsoft contract. Coordinates are the EIA/WRI plant point.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "offtaker": "Microsoft",
+      "notes": "Avangrid lists Juniper Canyon Wind among its Microsoft contracts, expected to begin commercial operation in 2026. Goldendale Sentinel gives 151.2 MW. The EIA-derived listing shows a planned June 2026 repower to 136.4 MW nameplate. Connects to BPA Rock Creek Substation."
+    }
+  },
+  {
+    "id": "avangrid-leaning-juniper-iia-wind-gilliam-county-or",
+    "name": "Leaning Juniper IIA Wind Power Facility (Amazon Wind Farm Oregon – Leaning Juniper IIA)",
+    "operator": "Avangrid",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.5781,
+      "lon": -120.178,
+      "county": "Gilliam",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 98.4
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-30",
+        "note": "EFSC facility page lists status as Operating.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.oregon.gov/energy/facilities/Pages/LJA.aspx",
+        "label": "Oregon Department of Energy: Leaning Juniper IIA Wind Power Facility",
+        "publisher": "Oregon Department of Energy",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://datacentrereview.com/2024/02/aws-signs-wind-ppa-with-avangrid-in-oregon/",
+        "label": "Data Centre Review: AWS signs wind PPA with Avangrid in Oregon",
+        "publisher": "Data Centre Review",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Leaning_Juniper_II_wind_farm",
+        "label": "Global Energy Monitor: Leaning Juniper II wind farm",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "A separate EFSC-certificated facility from the tracked Leaning Juniper IIB. The 2013 amendment split components between LJIIA and LJIIB. The coordinates are GEM's shared point for Leaning Juniper II phases.",
+    "energy": {
+      "source": "wind"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "wind",
+      "offtaker": "Amazon Web Services",
+      "unitCount": 40,
+      "notes": "98.4 MW PPA with AWS, announced February 2024, supporting a repowering that extends the life of the existing farm. EFSC lists the facility as operating with a 6,404-acre site boundary. The page does not confirm whether the repowering is complete."
+    }
+  },
+  {
     "id": "avangrid-minndakota-wind-brookings-county-sd",
     "name": "MinnDakota Wind Farm (South Dakota portion)",
     "operator": "Avangrid Renewables",
@@ -13531,6 +13730,126 @@
     "facilityType": "power_generation",
     "generation": {
       "technology": "wind"
+    }
+  },
+  {
+    "id": "avangrid-oregon-trail-solar-gilliam-county-or",
+    "name": "Oregon Trail Solar Facility",
+    "operator": "Avangrid",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.608,
+      "lon": -120.2009,
+      "county": "Gilliam",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 41
+    },
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2025-08-30",
+        "note": "Partial construction start, per the EFSC facility page.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.oregon.gov/energy/facilities/Pages/OTS.aspx",
+        "label": "Oregon Department of Energy: Oregon Trail Solar Facility",
+        "publisher": "Oregon Department of Energy",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.oregon.gov/energy/facilities/Council%20Meetings/2026-09-18-EFSC-Item-B-Staff-Report-OTS-AMD2-Draft-Final-Order-Review.pdf",
+        "label": "EFSC staff report: Oregon Trail Solar RFA2 draft final order review (Sept. 18, 2026)",
+        "publisher": "Oregon Department of Energy",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.dailytidings.com/amazon-strikes-deal-to-power-oregon-data-centers-with-new-solar-project/",
+        "label": "Daily Tidings: Amazon strikes deal to power Oregon data centers with new solar project",
+        "publisher": "Daily Tidings",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "The EFSC staff report puts the site 7.5 miles south of Arlington. The coordinates are derived from that description and are approximate. The site boundary is 1,343 acres, with up to 400 acres of solar equipment. The facility was originally allocated components from the Montague Wind Power Facility certificate but is now a separate certificated solar facility.",
+    "energy": {
+      "source": "solar",
+      "notes": "Up to 41 MWac (about 57 MWdc). The original 20 MW battery component is being moved to a separate Shutler Battery Energy Storage Facility certificate (Shutler Energy Storage, LLC)."
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Amazon",
+      "notes": "Amazon PPA announced September 2025, with operation expected by 2027. Partial construction began Aug. 30, 2025, and must be complete by Aug. 30, 2028. Amendment 2 (final order Sept. 18, 2026) removed the wind components and split the site certificate."
+    }
+  },
+  {
+    "id": "avangrid-tower-solar-boardman-or",
+    "name": "Tower Solar",
+    "operator": "Avangrid",
+    "status": "under_construction",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.8156,
+      "lon": -119.8162,
+      "city": "Boardman",
+      "county": "Morrow",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 120
+    },
+    "announcedDate": "2024-12-02",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2026-03-09",
+        "note": "Mechanical installation complete; commercial operation expected by end of 2026.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://q.com/news/avangrid-and-portland-general-electric-collaborate-with-qts-and-meta-to-build-120-mwac-solar-project-in-oregon/",
+        "label": "QTS press release: Avangrid and PGE collaborate with QTS and Meta to build 120 MWac solar project in Oregon",
+        "publisher": "QTS Data Centers",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.solarpowerworldonline.com/2026/03/avangrid-completes-mechanical-install-of-166-mw-tower-solar-project-in-oregon/",
+        "label": "Solar Power World: Avangrid completes mechanical install of 166-MW Tower Solar project in Oregon",
+        "publisher": "Solar Power World",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "About 900 acres of industrially zoned Port of Morrow land just west of Boardman, near the Boardman Airport. The coordinates are the OSM Boardman Airport point and only approximate the site.",
+    "energy": {
+      "source": "solar",
+      "notes": "120 MWac / 166 MWdc. Power goes to Portland General Electric under a PPA through PGE's voluntary Green Future Impact program."
+    },
+    "landAcres": 900,
+    "jobs": {
+      "construction": 200,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Portland General Electric PPA, in collaboration with QTS and Meta (supports a QTS data center campus serving Meta)",
+      "notes": "Mechanical installation of more than 250,000 panels was complete by March 2026, and commercial operation was expected by the end of 2026. Avangrid projected more than 200 peak construction jobs and about $20M in combined PILOTs and property taxes."
     }
   },
   {
@@ -17232,7 +17551,7 @@
         "url": "https://www.tricitiesbusinessnews.com/articles/amazon-wallula-gap",
         "label": "Port of Walla Walla names Amazon Data Services as Wallula Gap buyer",
         "publisher": "Tri-Cities Area Journal of Business",
-        "retrievedAt": "2026-07-08",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -17268,9 +17587,16 @@
         "publisher": "Walla Walla County, Washington",
         "retrievedAt": "2026-09-14",
         "kind": "permit"
+      },
+      {
+        "url": "https://www.union-bulletin.com/news/local/governments/what-we-know-so-far-about-amazons-proposed-data-center-in-walla-walla-county/article_ed98d2b1-5111-4dca-8ce2-62c9340755f1.html",
+        "label": "What we know so far about Amazon's proposed data center in Walla Walla County",
+        "publisher": "Walla Walla Union-Bulletin",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-10-30",
     "notes": "~$4.8B campus near Wallula, Walla Walla County; operator reported (not officially confirmed) to be AWS, so the record was marked reported. Coordinates are the Wallula area centroid. Operator confirmed as Amazon Data Services when the Port of Walla Walla amended the buyer from Advance Phase LLC to Amazon Data Services (Feb 12, 2026 commission vote; >550 acres for >$36M land) — the record was then marked confirmed. The reported ~$4.8B (DCD) / ~$5B (local) campus figure is an estimate across ~4 phases, not a firm pledge, so no investment figure is recorded. Port projects ~720 direct+indirect jobs at full build-out of its four-phase, 16-building concept (projection), so no jobs figure is recorded; Amazon's FAQ for the three-building application projects 120-150 full-time positions. The application before Walla Walla County (the Amazon Attalia Data Center Campus) covers three buildings of about 220,000 sq ft each on a 134-acre parcel, smaller than the Port's concept, so the land area recorded is that parcel. As of October 2026 no cited source states a capacity figure for the campus, so no planned capacity is recorded. Eligible for Washington's rural-county server-equipment sales/use-tax exemption (RCW 82.08.986) but no DOR certificate is confirmed, so no subsidy is recorded. Amazon's August 2026 community materials describe the cooling as outside air about 93% of the year, with water-based cooling (water-soaked pads) for about 7%, and give the cooling-water source as a new non-potable Columbia River supply system being developed with the Port of Walla Walla, with potable groundwater from the utility as temporary cooling water for about a year while that system is built.",
     "energy": {
       "source": "grid",
@@ -17281,7 +17607,12 @@
       "coolingType": "hybrid",
       "notes": "Amazon's Aug 2026 community materials state the cooling system will use outside air ~93% of the year, with water-based cooling supplementing during the hottest ~7%."
     },
+    "investmentUsd": 5000000000,
     "landAcres": 134,
+    "jobs": {
+      "permanent": 180,
+      "sourceIndex": 7
+    },
     "community": {
       "status": "mixed",
       "notes": "Port of Walla Walla commissioners approved the amended land sale unanimously (Feb 12, 2026), calling the project transformative; documented concerns from the Confederated Tribes of the Umatilla Indian Reservation (sacred Snake/Columbia confluence), environmental and academic voices, and a commissioner over water and power. No litigation or moratorium; a SEPA environmental review with tribal and public comment is still pending.",
@@ -19429,7 +19760,7 @@
         "url": "https://www.gem.wiki/Big_Allis_Solar",
         "label": "Big Allis Solar",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -19440,7 +19771,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Up to 305 MW in southwestern Clay County, developed by Apex Clean Energy. Confidence is \"reported\" because the two sources disagree on liveness — GEM records the project as shelved as of October 2025 while the state's own inventory still carries it as under development. COORDINATES ARE APPROXIMATE: GEM's own approximate figure.",
     "energy": {
       "source": "solar"
@@ -19524,7 +19855,7 @@
         "url": "https://lightsourcebp.com/project/big-elk-solar/",
         "label": "Big Elk solar project in Nebraska",
         "publisher": "Lightsource bp",
-        "retrievedAt": "2026-09-04",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -19535,7 +19866,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-10-30",
     "notes": "Coordinates are the plant location published in EIA-860M. No compute offtaker is documented for this project; it is included as Nebraska generation in development, on the same basis as the untargeted wind and solar records already in the dataset, and a moderator may prefer to exclude it if the dataset's scope requires a named offtaker.",
     "energy": {
       "source": "solar",
@@ -20247,6 +20578,7 @@
       "lon": -120.209264,
       "city": "East Wenatchee",
       "county": "Douglas",
+      "street": "624 Urban Industrial Way",
       "state": "WA",
       "precision": "approximate"
     },
@@ -20288,14 +20620,29 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1899123/000121390026086938/ea030131301ex99-1.htm",
+        "label": "Bitdeer Q2 2026 results press release (Form 6-K Ex. 99.1)",
+        "publisher": "Bitdeer Technologies Group / SEC EDGAR",
+        "retrievedAt": "2026-10-30",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.wenatcheeworld.com/news/local/cryptocurrency-company-applying-for-ai-facility-near-pangborn/article_d1dd7b72-fe90-42fe-9eaa-8a035b82635e.html",
+        "label": "Cryptocurrency company applying for AI facility near Pangborn",
+        "publisher": "Wenatchee World",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-10-30",
     "notes": "Bitdeer's Washington datacenter, referred to as \"Pangborn, Washington\" in its SEC filings (Pangborn Memorial Airport is in Douglas County, East Wenatchee) and as \"Wenatchee, Washington\" by aggregators. Originally deployed for Bitcoin mining in May 2018; 13 MW electrical capacity in use as of March 31, 2026. Bitdeer is converting the site to AI cloud use: AI datacenter design documents and building-permit applications submitted, core equipment being delivered, planned to begin with an NVIDIA GB300 cluster; dismantling of the crypto mining datacenter began March 2026 with conversion completion targeted for Q4 2026. Classified as a data center (mid-conversion to AI), consistent with the tracked Bitdeer Knoxville TN conversion. Coordinates approximate (Pangborn area, Douglas County). Distinct from Bitdeer's tracked Ohio (Massillon/Clarington/Niles/Shalersville), Texas (Rockdale) and Tennessee (Knoxville) sites. Public-reception check (2026-09-10): Checked Bitdeer's own SEC 20-F annual report (2026-09-10); it mentions Wenatchee, WA only twice (as a mining-to-AI-datacenter conversion site, and as a single-supplier electricity contract location), with no discussion of community reception, hearings, or local reaction.",
     "energy": {
       "utility": "PUD No 1 of Douglas County"
     },
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "bitdeer-whitetail-creek-trumbull-county-oh",
@@ -22101,7 +22448,7 @@
         "url": "https://www.spokesman.com/stories/2026/aug/05/cle-elum-passed-a-data-center-ban-one-might-be-bui/",
         "label": "Cle Elum passed a data center ban. One might be built there anyway",
         "publisher": "The Spokesman-Review",
-        "retrievedAt": "2026-09-05",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -22110,9 +22457,16 @@
         "publisher": "Hoodline",
         "retrievedAt": "2026-10-12",
         "kind": "press"
+      },
+      {
+        "url": "https://komonews.com/news/local/cle-elum-adopts-emergency-moratorium-as-200m-ai-data-center-plan-stirs-concerns-computing-facilities-electricity-demand-water-supplies-community-increasing-rates",
+        "label": "Cle Elum adopts emergency moratorium as $200M AI data center plan stirs concerns",
+        "publisher": "KOMO News",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Roughly 100,000 sq ft near Interstate 90, inside a residential and commercial development already under construction in Cle Elum. Developer projects 20 to 40 full-time positions. Because the site is covered by a pre-existing development agreement with the city, it may proceed despite the moratorium. Single-source; coordinates are an approximate geocode of the described location.",
     "energy": {
       "source": "grid",
@@ -23201,7 +23555,7 @@
         "url": "https://americas.rwe.com/our-energy/onshore-wind/onshore-wind-projects-and-locations/brady-island-wind/",
         "label": "Brady Island Wind",
         "publisher": "RWE Clean Energy",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -23212,7 +23566,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "231 MW across a roughly 35,000-acre project area in Lincoln County, ~300 construction jobs plus 4–6 permanent operations positions, and $24 million in total tax revenue over the project's lifetime (RWE's figures). Proposed in a county that spent 2026 writing ten pages of data-center zoning regulation and rejecting a data-center moratorium. COORDINATES ARE APPROXIMATE: the pin is the village of Brady (OpenStreetMap/Nominatim); RWE notes most turbines would sit in the hills north of the Platte River, so the true centroid is north of this point.",
     "energy": {
       "source": "wind"
@@ -23734,7 +24088,7 @@
         "url": "https://www.gem.wiki/Broken_Bow_wind_farm",
         "label": "Broken Bow wind farm",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -23745,7 +24099,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Two phases in Custer County. Nebraska DWEE: Broken Bow I 77.6 MW (Dec 2012, NPPD/OPPD/Lincoln Electric System/Grand Island) and Broken Bow II 75 MW (Oct 2014, NPPD/OPPD) — 152.6 MW combined, the figure recorded here. Global Energy Monitor puts phase 1 at 80 MW (41.5075/-99.6109) and phase 2 at 75 MW (41.5184/-99.5533), 155 MW combined. Coordinates are phase 1's, hence approximate for the pair.",
     "energy": {
       "source": "wind"
@@ -32157,6 +32511,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "coffee-grounds-data-arevia-malcolm-lancaster-ne",
+    "name": "Coffee Grounds Data Site (northwest Lincoln, east of Malcolm)",
+    "operator": "Coffee Grounds Data LLC (Arevia Power)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.88,
+      "lon": -96.8,
+      "city": "Malcolm",
+      "county": "Lancaster",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-09",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-25",
+        "note": "Reports say Coffee Grounds Data LLC holds a four-year purchase option on about 560 acres northwest of Lincoln. The option names Ricardo Graf, Arevia Power's chief development officer. The company calls the work early-stage site diligence and says no development plan has been set.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://nebraskapublicmedia.org/en/news/news-articles/another-data-center-developer-is-eyeing-land-just-outside-of-lincoln/",
+        "label": "Another data center developer is eyeing land just outside of Lincoln",
+        "publisher": "Nebraska Public Media",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://klin.com/2026/09/25/developer-eyes-more-than-560-acres-northwest-of-lincoln-for-possible-data-center/",
+        "label": "Developer Eyes More Than 560 Acres Northwest of Lincoln for Possible Data Center",
+        "publisher": "KLIN",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.yahoo.com/news/us/articles/nebraska-county-weighs-rules-companies-230000852.html",
+        "label": "Nebraska county weighs new rules as companies eye rural land for large data centers",
+        "publisher": "Yahoo News (syndicated)",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "About 560 acres were optioned by landowner Larry Coffey. The site is just east of Malcolm, near U.S. 34 and Nebraska 79, and the agreement is recorded at about $3.46 million. The coordinates are an approximate placement from that description. Arevia Power is a utility-scale solar developer. Lancaster County currently requires industrial zoning for data centers and has set up a data center task force.",
+    "landAcres": 560,
+    "facilityType": "data_center"
+  },
+  {
     "id": "cogent-650-poydras-new-orleans-la",
     "name": "Cogent Communications New Orleans (650 Poydras)",
     "operator": "Cogent Communications",
@@ -34371,6 +34776,51 @@
     "lastUpdated": "2026-10-04",
     "notes": "Proposed M-1 General Industrial rezoning at the SE corner of 191st St & Renner Rd; the companies never explicitly confirmed a data center was the intended use, but Colossus Data Center Advisors' own specialty (site selection/owner's representation for data centers) and trade coverage describe it as a data-center proposal. Recorded as cancelled/never-built for completeness, parallel to the McLouth, KS cancelled crypto facility, already tracked as of October 2026. Single source read; as of October 2026, a DatacenterDynamics article on the same story could not be read, so is not cited.",
     "landAcres": 316,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "colossus-starbucks-center-sodo-seattle-wa",
+    "name": "Starbucks Center Data Center (2401 Utah Ave S, SoDo)",
+    "operator": "Colossus Data Center Advisors",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.5807667,
+      "lon": -122.3359179,
+      "city": "Seattle",
+      "county": "King",
+      "street": "2401 Utah Avenue South",
+      "postalCode": "98134",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-24",
+        "note": "Application materials filed with Seattle Department of Construction and Inspections to convert about 45,600 sq ft (former Amazon Fresh space) into a data center below Seattle's 20 MVA moratorium threshold.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.connectcre.com/stories/small-data-center-proposed-at-sodo-starbucks-hq-building/",
+        "label": "Small data center proposed at SODO Starbucks HQ building",
+        "publisher": "Connect CRE",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=2401+Utah+Avenue+South,+Seattle,+WA&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: Starbucks Center, 2401 Utah Ave S",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-30",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Would occupy about 20,000 sq ft of the six-story building and 25,600 sq ft of the nine-story main building at the Starbucks Center. Exterior power and cooling equipment would go in the west parking area. The owners describe it as a feasibility study with no tenant secured. No MW figure is given beyond staying under 20 MVA.",
     "facilityType": "data_center"
   },
   {
@@ -40001,7 +40451,7 @@
         "url": "https://www.gem.wiki/Crofton_Bluffs_wind_farm",
         "label": "Crofton Bluffs wind farm",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -40012,7 +40462,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Nebraska DWEE lists 40.6 MW with NPPD, OPPD, MEAN and Lincoln Electric System as offtakers; Global Energy Monitor lists 40 MW and records NPPD at 50% ownership alongside Clearway Energy Group. Second wind site in Knox County alongside Elkhorn Ridge — the two carry distinct coordinates and capacities.",
     "energy": {
       "source": "wind"
@@ -40576,9 +41026,16 @@
         "publisher": "OpenStreetMap / Nominatim",
         "retrievedAt": "2026-10-12",
         "kind": "osm"
+      },
+      {
+        "url": "https://nebraskapublicmedia.org/en/news/news-articles/hallam-village-board-unanimously-approves-monolith-data-center/",
+        "label": "Hallam Village Board unanimously approves Monolith data center",
+        "publisher": "Nebraska Public Media",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Phase 1 is modular, shipping-container-sized buildings on about 10 acres in the northeast part of Monolith's Olive Creek carbon-black campus (I-2 Heavy Industrial), 35 MW, 15 jobs. A larger Phase 2 parcel east of the campus would need a separate approval. Crusoe Technologies is named as the data center developer; Monolith signed a special permit with Crusoe in July 2026. No construction timeline has been released. This is distinct from the Sagebrush Hallam hyperscale campus and from NPPD's Sheldon and Princeton Road stations. Coordinates are the Monolith Olive Creek plant point from OSM, not the 10-acre parcel.",
     "water": {
       "notes": "Preliminary figures: 770,000 gallons per year or less. Version-one units would be air-cooled; a second version would use closed-loop cooling (Monolith). The method is not yet fixed."
@@ -40593,7 +41050,8 @@
       "notes": "More than 200 people attended a July 2026 town hall, raising concerns about private wells, noise and light. At the Oct 2026 vote, about half the room applauded and some residents were disappointed.",
       "sourceIndex": 2
     },
-    "facilityType": "data_center"
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "crusoe-nolan-county-tx",
@@ -41115,6 +41573,50 @@
     "water": {
       "notes": "The operator spec sheet lists 'chilled water' cooling. The heat-rejection method is not stated."
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "csquare-sea2-tukwila-wa",
+    "name": "Csquare (Centersquare) Seattle SEA2 – Tukwila",
+    "operator": "Centersquare (Csquare)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.4409177,
+      "lon": -122.2564593,
+      "city": "Tukwila",
+      "county": "King",
+      "street": "6101 South 180th Street",
+      "postalCode": "98188",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-30",
+        "note": "Listed as a fully operational facility; came to Cyxtera from CenturyLink in the 2017 57-data-center deal and is now part of Centersquare (Evoque plus Cyxtera assets under Brookfield).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/centersquare-seattle-sea2",
+        "label": "Centersquare: Seattle SEA2",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=6101+South+180th+Street,+Tukwila,+WA&format=json&limit=3",
+        "label": "OpenStreetMap Nominatim geocode: 6101 S 180th St, Tukwila",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-30",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "One-story building, 24-inch raised floor, utility Puget Sound Energy (per Baxtel). Separate from the tracked Centersquare Lynnwood SE1 and from Sabey's Intergate campuses on S 120th Pl and Tukwila International Blvd. MW not disclosed.",
     "facilityType": "data_center"
   },
   {
@@ -43709,7 +44211,7 @@
         "url": "https://www.goldendalesentinel.com/news/data-center-proposed-for-a-dallesport-site/article_64ef39a5-3f41-4d4d-be45-289ea6d4b17f.html",
         "label": "Goldendale Sentinel: Data center proposed for a Dallesport site (May 27, 2026)",
         "publisher": "The Goldendale Sentinel",
-        "retrievedAt": "2026-10-12",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -43725,13 +44227,26 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-10-12",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.columbiagorgenews.com/free_news/rural-klickitat-county-faces-surge-in-data-center-proposals/article_91218fee-16bc-4e95-8cde-85b7a8d712ed.html",
+        "label": "Rural Klickitat County faces surge in data center proposals",
+        "publisher": "Columbia Gorge News / Washington State Standard",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Parcel reported as 345.96 acres in the KPUD request and 296 acres in the broker listing (sources disagree). No developer, buyer, or end user has been selected per the landowner. KPUD said it had not seen a water plan.",
     "energy": {
+      "source": "grid",
       "utility": "Klickitat Public Utility District",
       "notes": "KPUD large-load interconnection request dated 2025-08-19 states initial data center load of 300-350 MW with additional expansion; requested network energization 2026-12-01 and radial load energization 2029-10-01. A since-removed Cushman & Wakefield ad described a potential 500 MW load supported by up to 1 GW of natural gas generation plus 50 MW solar."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "The Sentinel counted at least 15 social media posts opposing the project (water use, environment, job loss) versus two in support. Residents county-wide are petitioning for a moratorium.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -44809,6 +45324,124 @@
       "coolingType": "air",
       "notes": "Operator describes a fault-tolerant DX cooling system with 30+ Data Air DX CRAC units. Direct-expansion cooling has no cooling water circuit, so it is recorded as air-cooled."
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "data-center-3625-first-ave-s-sodo-seattle-wa",
+    "name": "Data Center at 3625 First Avenue South (SoDo)",
+    "operator": "Undisclosed developer",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 47.5698552,
+      "lon": -122.3361429,
+      "city": "Seattle",
+      "county": "King",
+      "street": "3625 1st Avenue South",
+      "postalCode": "98134",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-18",
+        "note": "KUOW reports data center drawings were submitted for 3625 First Avenue South before Seattle's moratorium.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kuow.org/stories/seattle-banned-new-data-centers-why-companies-want-them-here-anyway",
+        "label": "Seattle banned new data centers. Why companies want them here anyway",
+        "publisher": "KUOW",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=3625+1st+Avenue+South,+Seattle,+WA&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: 3625 1st Ave S, Seattle",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-30",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "The developer is not named in the source read. KUOW separately mentions a PacLand-filed multi-story data center just south of the Spokane Street Viaduct, which is probably the same site, but that link was not confirmed from a fetched page. No MW or size figures were taken from a read source.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "data-center-west-eugene-or",
+    "name": "Data Center West Eugene",
+    "operator": "Data Center West, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.05071,
+      "lon": -123.093116,
+      "city": "Eugene",
+      "county": "Lane",
+      "street": "800 Willamette Street",
+      "postalCode": "97401",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-30",
+        "note": "Active PeeringDB facility record.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?org_id=19441",
+        "label": "PeeringDB facility records: Data Center West, Inc.",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Regional colocation facility in downtown Eugene.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "data-center-west-medford-or",
+    "name": "Data Center West Medford",
+    "operator": "Data Center West, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.332451,
+      "lon": -122.880416,
+      "city": "Medford",
+      "county": "Jackson",
+      "street": "739 Welch Street",
+      "postalCode": "97501",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-30",
+        "note": "Active PeeringDB facility record.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac?org_id=19441",
+        "label": "PeeringDB facility records: Data Center West, Inc.",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Regional colocation facility in Medford.",
     "facilityType": "data_center"
   },
   {
@@ -50090,6 +50723,58 @@
     "facilityType": "data_center"
   },
   {
+    "id": "digital-realty-301-virginia-st-seattle-wa",
+    "name": "Digital Realty 301 Virginia Street Data Center (proposed)",
+    "operator": "Digital Realty",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 47.6123517,
+      "lon": -122.3404263,
+      "city": "Seattle",
+      "county": "King",
+      "street": "301 Virginia Street",
+      "postalCode": "98101",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-06-05",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-05",
+        "note": "Digital Realty filed plans with the City of Seattle for a six-story, approx. 58,000 sq ft facility to replace the former Bed Bath & Beyond retail building and garage; demolition and construction expected to begin in 2027.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/digital-realty-plans-new-data-center-in-seattle-washington",
+        "label": "Digital Realty Plans New Data Center in Seattle, Washington",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kuow.org/stories/seattle-banned-new-data-centers-why-companies-want-them-here-anyway",
+        "label": "Seattle banned new data centers. Why companies want them here anyway",
+        "publisher": "KUOW",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=301+Virginia+Street,+Seattle,+WA&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: 301 Virginia Street, Seattle",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-30",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Site is 301 Virginia St / 1930 3rd Ave (owned by Clise Properties; currently Cannonball Arts). Digital Realty spokesperson: 'a highly connected, network-dense facility, not an AI data center.' KUOW reports the land-use drawings were submitted before Seattle's moratorium, so the project is considered vested. Owner says due diligence is ongoing. No MW disclosed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "digital-realty-727-s-grand-ave-la-ca",
     "name": "Digital Realty 727 S. Grand Avenue (DTLA)",
     "operator": "Digital Realty",
@@ -53220,6 +53905,60 @@
     },
     "investmentUsd": 48800000,
     "landAcres": 5.4,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "digital-realty-wagon-hillsboro-or",
+    "name": "Digital Realty Wagon Data Center (6240 NE Wagon Drive, Hillsboro)",
+    "operator": "Digital Realty",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.5592668,
+      "lon": -122.900845,
+      "city": "Hillsboro",
+      "county": "Washington",
+      "street": "6240 NE Wagon Drive",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07-21",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-21",
+        "note": "Development review DR26-0030 (with a 10% height adjustment) was filed six days before Hillsboro's 120-day data center moratorium.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://katu.com/news/local/new-data-center-in-hillsboro-could-be-200-feet-away-from-high-school-portland-oregon-tech-controversy-environment-politics-local-community",
+        "label": "KATU: New data center in Hillsboro could be 200 feet away from high school",
+        "publisher": "KATU",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/digital-realty-hillsboro-wagon",
+        "label": "Baxtel: Digital Realty Hillsboro Wagon",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Preliminary plans call for a two-story building of about 496,540 sq ft. KATU puts the site at about 15.7 acres. Baxtel lists about 19.8 acres across four taxlots (6240 NE Wagon Dr; 5340 and 5450 NE Croeni Ave; 5225 NE Five Oaks Dr), held by Digital Beaver 2 LLC and Digital Beaver 3 LLC. The coordinates are a street-level geocode of NE Wagon Drive from OSM Nominatim. This is a separate site from the tracked Digital Realty 'Corny' site at Cornelius Pass Rd and NE Cornell Rd.",
+    "energy": {
+      "source": "grid",
+      "utility": "Portland General Electric"
+    },
+    "landAcres": 15.7,
+    "community": {
+      "status": "contested",
+      "notes": "The site sits across NE Wagon Drive from Liberty High School, with its closest point about 200 feet from the school, and residents have raised concerns. The school district said the city had not contacted it. Digital Realty asked to meet the district on Aug. 28, 2026.",
+      "sourceIndex": 0
+    },
     "facilityType": "data_center"
   },
   {
@@ -59593,7 +60332,7 @@
         "url": "https://www.gem.wiki/Elkhorn_Ridge_wind_farm",
         "label": "Elkhorn Ridge wind farm",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -59604,7 +60343,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "81 MW in both sources. Nebraska DWEE lists NPPD, OPPD, MEAN, Lincoln Electric System and the City of Grand Island as offtakers; GEM records NPPD as 100% owner with Edison Mission Group as operator. Ownership of operating Nebraska wind is frequently restructured — verify the current operator before relying on it.",
     "energy": {
       "source": "wind"
@@ -59813,11 +60552,11 @@
         "url": "https://www.gem.wiki/Emerick_wind_farm",
         "label": "Emerick wind farm",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Single-source (Global Energy Monitor), hence confidence \"reported\". 322 MW, Ørsted (developed originally by Lincoln Clean Energy), planned commissioning 2029. Madison County is one of the three counties (with Wayne and Pierce) a county commissioner named in mid-2026 as being scouted by renewable developers to serve data-center load; Madison County adopted special-permit requirements for data centers in May 2026. Not listed in Nebraska DWEE's wind inventory as of this retrieval — verify against a county zoning filing or an Ørsted release before raising confidence.",
     "energy": {
       "source": "wind"
@@ -60269,6 +61008,9 @@
       "state": "WA",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 1000
+    },
     "statusHistory": [
       {
         "status": "proposed",
@@ -60282,7 +61024,7 @@
         "url": "https://www.goldendalesentinel.com/news/more-data-centers-possible-for-county/article_b656c420-736c-4751-be22-209654a24211.html",
         "label": "Goldendale Sentinel: More data centers possible for county (Sep 2, 2026)",
         "publisher": "The Goldendale Sentinel",
-        "retrievedAt": "2026-10-12",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -60300,7 +61042,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "This is a queue position, not an award. Savion says preliminary feasibility work is underway.",
     "energy": {
       "notes": "BPA queue L0702, 1,000 MW, In Progress (Phase 1 scoping). Per application documents it would start at full capacity and need an external power source beyond Bonneville."
@@ -60672,6 +61414,43 @@
     "generation": {
       "technology": "solar",
       "offtaker": "Alabama Power"
+    }
+  },
+  {
+    "id": "enfinity-silver-maple-solar-sioux-ne",
+    "name": "Silver Maple Solar Project",
+    "operator": "Enfinity Global",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 42.49,
+      "lon": -103.76,
+      "county": "Sioux",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-01",
+        "note": "Enfinity Global presented to the county board. A final conditional use permit is to be submitted in the coming months, and site plan and permitting work is underway.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://siouxcountyne.gov/wp-content/uploads/sites/24/2026/06/april26min.pdf",
+        "label": "Sioux County Board of Commissioners minutes, April 1, 2026 (Silver Maple Solar Project presentation)",
+        "publisher": "Sioux County, NE",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "The capacity and exact site have not been disclosed. The coordinates are a county-level placement only.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar"
     }
   },
   {
@@ -70841,11 +71620,11 @@
         "url": "https://www.gem.wiki/Gage_Wind_Project",
         "label": "Gage Wind Project",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Single-source (Global Energy Monitor), hence confidence \"reported\". 124 MW at Pickrell, Gage County, recorded as cancelled; coordinates are GEM's own approximate figure. Gage County is also one of the four southeast-Nebraska counties where Tenaska has optioned land for the proposed Google campus, and its planning commission recommended an 18-month data-center moratorium in June 2026 — context worth keeping even for a dead generation project.",
     "energy": {
       "source": "wind"
@@ -73077,7 +73856,7 @@
         "url": "https://ryedevelopment.com/federal-energy-regulatory-commission-issues-40-year-license-to-the-goldendale-energy-storage-project.html",
         "label": "FERC Issues 40-Year License to the Goldendale Energy Storage Project",
         "publisher": "Rye Development",
-        "retrievedAt": "2026-09-05",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -73107,12 +73886,20 @@
         "publisher": "The Times (Waitsburg)",
         "retrievedAt": "2026-10-12",
         "kind": "press"
+      },
+      {
+        "url": "https://goldendaleenergystorage.com/project.html",
+        "label": "Project – Goldendale Energy Storage Project",
+        "publisher": "Goldendale Energy Storage",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Sited on the former Columbia Gorge Aluminum smelter grounds roughly eight miles southeast of Goldendale, adjacent to John Day Dam, and immediately adjacent to STACK Infrastructure's proposed Goldendale data center campus (tracked separately as of September 2026). Construction is expected to take four to five years and to generate more than $10 million a year for Klickitat County. Washington Department of Ecology has split the smelter cleanup into three phases; the first covers the storage project's lower pool, with excavation possibly starting as early as January 2027. Coordinates are an approximate geocode of the described smelter site.",
     "energy": {
-      "source": "hydro"
+      "source": "hydro",
+      "notes": "Closed-loop pumped storage hydro, 1,200 MW, up to 12 hours of storage. Construction start anticipated 2027, commercial operation 2031–2032."
     },
     "investmentUsd": 2000000000,
     "jobs": {
@@ -75080,9 +75867,23 @@
         "publisher": "1011 NOW (KOLN)",
         "retrievedAt": "2026-10-09",
         "kind": "press"
+      },
+      {
+        "url": "https://www.industrialinfo.com/iirenergy/industry-news/article/nebraska-to-get-new-data-centers-power-capacity--323234",
+        "label": "Nebraska to Get New Data Centers, Power Capacity",
+        "publisher": "Industrial Info Resources",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/news/work-begins-on-a-data-facility-in-lincoln-nebraska",
+        "label": "Work begins on a data facility in Lincoln, Nebraska",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-09",
+    "lastUpdated": "2026-10-30",
     "notes": "Google's fourth Nebraska site by official count and distinct from both Papillion (Sarpy Co.) and Omaha (Douglas Co.). It is also distinct from the separate proposed Google/Tenaska gas-plant mega-campus already tracked as Google Nebraska AI Campus (proposed). That one is a ~4-county, still-undeveloped 1,000-3,000MW proposal; this one is Google's confirmed third/fourth site in north Lincoln, operational with construction continuing on site per KLKN 2026-08-06. Google's own Nebraska locations page confirms Lincoln as a distinct site, 'development announced in 2023', part of a $1.2B investment announced that year across all three then-existing NE locations. A local TV station (KLKN) confirms the site is 'currently operational with ongoing construction phases' with roughly 200 on-site personnel, and that Google has committed to work with the city on water infrastructure; the city says it is not currently approving additional data centers beyond this one. Caveat: widely repeated secondary figures for this project (codename 'Agate', ~580 acres, ~$600M, sited northwest of N. 56th St & I-80) come from outlets that were blocked or paywalled on direct retrieval as of August 2026 (Lincoln Journal Star/tollbit, Nebraska Examiner). Those numbers were not independently verified then and are omitted from the structured fields (capacity, investment, acreage) rather than risk propagating an unverified figure. Coordinates mark the N. 56th Street / I-80 interchange, where 1011 NOW places the cooling system and KLKN (2019) places the land northwest of the 56th Street exit; the building footprint itself is not pinned. Community reception, as of 2026-09-10: Google's own data center locations page describes community partnerships/workforce programs in generic marketing terms but documents no specific public hearing, resident testimony, or independently reported local reaction.",
     "energy": {
       "notes": "1011 NOW (published 2026-09-30) reports that Agate LLC's filing to the Nebraska DWEE states 52.65 megawatts of electricity 'during peak electrical demand'. This is a self-reported peak demand figure, not energy consumed (MWh) and not a contracted or planned capacity; the article gives no reporting period and no source/utility."
@@ -75090,6 +75891,8 @@
     "water": {
       "notes": "Google is funding a $10 million, roughly three-mile dedicated line carrying non-contact cooling water from the data center's cooling system at 56th Street and Interstate 80 to Lincoln's Northeast Water Resource Recovery Facility at North 70th and McCormick Drive. The line is sized for 2,040 gallons per minute at peak — about 2.9 million gallons per day — and the water is dechlorinated and discharged to Salt Creek, bypassing standard wastewater treatment. Construction began June 2026 with completion expected January 2027. This is the discharge line's peak design capacity, NOT measured or reported facility water use; do not publish it as consumption. No cooling type is recorded: 'non-contact cooling water' does not map cleanly onto the evaporative/closed-loop/air distinction. Separately, 1011 NOW (published 2026-09-30) reports, from a filing by Agate LLC to the Nebraska Department of Water, Energy, and Environment (DWEE), that the site used 13.299 megagallons (about 13 million gallons) of water 'between cooling towers, evaporative systems and site operations in the last year'. The article does not name a calendar year for this figure, and the filing was reported on after its redacted text was recovered by copying; the figure is the operator's self-report, not an independent measurement. No daily water-use figure is recorded because no daily rate is stated."
     },
+    "investmentUsd": 600000000,
+    "landAcres": 580,
     "facilityType": "data_center"
   },
   {
@@ -78410,7 +79213,7 @@
         "url": "https://www.gem.wiki/Grande_Prairie_wind_farm",
         "label": "Grande Prairie wind farm",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -78421,7 +79224,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Nebraska's largest operating wind farm by nameplate capacity. Nebraska DWEE lists it at 400 MW in Holt County near O'Neill, owned by BHE Renewables, online 2016; Global Energy Monitor agrees on owner, capacity and year and supplies the coordinates.",
     "energy": {
       "source": "wind"
@@ -80894,6 +81697,7 @@
       "city": "La Vista",
       "county": "Sarpy",
       "street": "10917 Harry Watanabe Pkwy",
+      "postalCode": "68128",
       "state": "NE",
       "precision": "approximate"
     },
@@ -80906,7 +81710,7 @@
         "url": "https://h5datacenters.com/omaha-data-center.html",
         "label": "H5 Data Centers Omaha — 10917 Harry Watanabe Pkwy, La Vista NE; 234,500 SF on 32 acres; 17.3 MW N+1 critical capacity; Tier III design; N+1 chillers and cooling towers; up to 7 on-net carriers",
         "publisher": "H5 Data Centers",
-        "retrievedAt": "2026-08-14",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -80917,7 +81721,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-10-30",
     "notes": "234,500 sq ft colocation facility on 32 acres at 10917 Harry Watanabe Parkway in La Vista, Sarpy County, with 17.3 MW of N+1 critical capacity, Tier III design, N+1 chillers and N+1 cooling towers, up to 7 on-net carriers and cloud on-ramps to AWS and Azure. The structured figures come from H5's own facility page. The site is widely described in directories as the former Yahoo La Vista data center; H5 is the current operator and Yahoo the original builder. H5's page does not state the build history, so the Yahoo provenance is unconfirmed. Coordinates are a street-address approximation, not a parcel geocode. Classified as mixed use: general-purpose multi-tenant colocation, not a confirmed AI training site.",
     "water": {
       "coolingType": "evaporative",
@@ -81593,7 +82397,7 @@
         "url": "https://www.gem.wiki/Haystack_Wind_Project",
         "label": "Haystack Wind Project",
         "publisher": "Global Energy Monitor",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -81611,7 +82415,7 @@
         "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-10-30",
     "notes": "Nebraska DWEE lists 255 MW (51 5-megawatt turbines); Global Energy Monitor lists 298 MW, citing the EIA-860M generator inventory. The recorded operational capacity is the 298 MW nameplate capacity listed in EIA-860M's August 2026 inventory. DWEE and Global Energy Monitor agree on Ørsted as owner/operator, Wayne County (Carroll) as the location and 2022 as the commissioning year.",
     "energy": {
       "source": "wind"
@@ -82011,7 +82815,7 @@
         "url": "https://www.helionenergy.com/orion",
         "label": "Orion project page",
         "publisher": "Helion Energy",
-        "retrievedAt": "2026-08-04",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -82029,7 +82833,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-04",
+    "lastUpdated": "2026-10-30",
     "notes": "The world's first commercial fusion power plant, under construction in Malaga, WA to deliver at least 50 MW to Microsoft — the first fusion PPA ever signed. An additional, co-located power source for Microsoft's Malaga campus. Recorded under the fusion technology type.",
     "energy": {
       "source": "other",
@@ -82531,6 +83335,50 @@
     "notes": "Single-outlet lead: The Hillsboro Herald reports a ~20-acre data center 'placeholder application' (DR-032-25) at 10500 NE Walker Road, a property owned by Hines Global Income Trust (the 212,000 sq ft Wells Fargo Center, per Hines' 2022 SEC press-release exhibit), about 120 feet from the Beaverton Academy of Science and Engineering. The Herald itself notes the developer, use and size were not publicly confirmed at the time. No operator statement, MW figure or site plan has been published — treat as unconfirmed until the city posts the application.",
     "landAcres": 20,
     "facilityType": "data_center"
+  },
+  {
+    "id": "hitchcock-county-data-mining-sec23-t4n-r33w-ne",
+    "name": "Hitchcock County Data Mining Site (Sec. 23, T4N, R33W; CUP #2-2024)",
+    "operator": "Undisclosed data mining company (CUP applicant)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.3,
+      "lon": -101.03,
+      "county": "Hitchcock",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-01-16",
+        "note": "Conditional use application #2-2024 for a data mining structure (four shipping-container-size structures). The planning commission recommended denial, and the county board outcome was not found.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hitchcockcounty.ne.gov/posting_files/pdfs/zoning/minutes/2025/20250116_155249_zoning_minutes.pdf",
+        "label": "Hitchcock County Planning Commission minutes, Jan. 16, 2025 (CUP #2-2024 data mining structure)",
+        "publisher": "Hitchcock County, NE",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "The applicant is a private individual, so the operator is left as undisclosed. The county adopted a data center and crypto mining moratorium on Feb. 3, 2025. The coordinates are a rough PLSS-based placement.",
+    "energy": {
+      "source": "grid",
+      "utility": "Southwest Public Power District",
+      "notes": "Per the SWPPD general manager at the hearing, the site would be served from the Beverly substation on its own circuit. It would run October to May and stay off during peak load times. The power agreement was still being negotiated."
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "Several nearby residents opposed the application at the Jan. 16, 2025 planning commission hearing, citing noise, security, traffic and internet bandwidth. The commission voted to recommend denial for insufficient information.",
+      "sourceIndex": 0
+    },
+    "facilityType": "crypto_mining"
   },
   {
     "id": "hivelocity-tpa1-tampa-fl",
@@ -85838,7 +86686,7 @@
         "url": "https://prairiehillswind.invenergy.com/about-project",
         "label": "Prairie Hills Wind Energy Center — About the Project",
         "publisher": "Invenergy",
-        "retrievedAt": "2026-10-12",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       },
       {
@@ -85849,7 +86697,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Proposed 200 MW wind project in Custer County, located south of Mason City and extending west toward Highway 183. Invenergy acquired it from a previous developer and began developing it in 2023. Project phase is 'Engineering and Pre-Construction'. Up to 150 peak construction jobs and $700K+ a year in nameplate capacity tax (Invenergy). Distinct from NPPD's operating Broken Bow wind farms in the same county. The Dec 2027 operation target is from March 2025, and no construction start had been confirmed as of October 2026. Coordinates are Mason City, north of the project area.",
     "energy": {
       "source": "wind"
@@ -85863,6 +86711,66 @@
       "technology": "wind",
       "unitCount": 46,
       "notes": "46 turbines planned per the March 2025 county briefing; ~46,000 acres under a 10-year development lease. Offtaker not announced."
+    }
+  },
+  {
+    "id": "invenergy-prineville-solar-crook-county-or",
+    "name": "Prineville Solar Energy",
+    "operator": "Invenergy",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.268,
+      "lon": -120.878,
+      "city": "Prineville",
+      "county": "Crook",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 40
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2021",
+        "note": "Commissioned in 2021, per Global Energy Monitor.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.gem.wiki/Prineville_Solar_Energy",
+        "label": "Global Energy Monitor: Prineville Solar Energy",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://pv-magazine-usa.com/2018/07/20/facebook-and-pacific-power-plan-437-mw-of-solar-in-utah-oregon/",
+        "label": "pv magazine USA: Facebook and Pacific Power plan 437 MW of solar in Utah, Oregon",
+        "publisher": "pv magazine USA",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://bendbulletin.com/?p=685473",
+        "label": "The Bulletin: Facebook spurs 100 megawatts of solar in Prineville",
+        "publisher": "The Bulletin",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Sources disagree on capacity: 55 MW announced in 2018, 40 MWac per GEM. Distinct from the tracked Millican Solar Energy project, the second Invenergy array in the same deal.",
+    "energy": {
+      "source": "solar"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via Pacific Power)",
+      "notes": "Part of the 2018 Facebook/Pacific Power deal for two Invenergy solar projects near Prineville, announced as 55 MW Prineville and 45 MW Millican and expected online in late 2020. GEM lists Prineville Solar Energy at 40 MWac, commissioned 2021, operated by Invenergy, with CoBank as 100% owner."
     }
   },
   {
@@ -88430,14 +89338,16 @@
         "url": "https://flatwaterfreepress.org/a-nebraska-crypto-company-wants-to-get-bigger-landowners-decry-nppds-use-of-eminent-domain-that-will-help-it-grow/",
         "label": "A Nebraska crypto company wants to get bigger; landowners decry NPPD's use of eminent domain",
         "publisher": "Flatwater Free Press",
-        "retrievedAt": "2026-08-08",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-10-30",
     "notes": "Lincoln-based Jigowatt began installing shipping-container-housed mining rigs (a mix of air-cooled and immersion-cooled containers) on Stanton Public Power District's (SPPD) grid near Stanton starting in 2023; SPPD created a discounted \"interruptible\" large-load electric rate to recruit/retain the customer. Jigowatt is now Stanton County's largest electricity customer by far and is seeking to roughly triple its allowed load, backed by a ~$20M ratepayer-funded distribution upgrade and an NPPD transmission project that has drawn eminent-domain objections from area landowners (reported June/July 2025). Neighbors half a mile or more away (e.g., the Wortmanns) report a persistent low-frequency hum/vibration and resulting health/property concerns; one neighbor abandoned plans to build a new home nearby. Flatwater Free Press (June 27, 2025) puts Jigowatt's current load in Stanton County at 20 megawatts and reports that the company has sought to raise it to 70 megawatts, per CEO Michael Westhoff. That 70 megawatts is a requested load that would need a new transmission line, so no planned capacity is recorded. As of October 2026, no cited source gives an approved or firm planned capacity.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Stanton County Public Power District",
+      "notes": "About 20 MW current load with 70 MW requested. NPPD's roughly $20M project adds a 7.5-mile transmission line from a Norfolk substation plus substation upgrades, and Jigowatt posted about $5M in letters of credit."
     },
     "community": {
       "status": "opposed"
@@ -90461,9 +91371,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-10-12",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.columbiagorgenews.com/free_news/rural-klickitat-county-faces-surge-in-data-center-proposals/article_91218fee-16bc-4e95-8cde-85b7a8d712ed.html",
+        "label": "Rural Klickitat County faces surge in data center proposals",
+        "publisher": "Columbia Gorge News / Washington State Standard",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Seattle-based asphalt paving company; did not respond to requests for comment. Location is the Dallesport community point, not the parcel. Partner Avison Young named by the Spokesman-Review but not independently confirmed.",
     "energy": {
       "source": "grid",
@@ -90471,6 +91388,11 @@
       "notes": "KPUD submitted a 1,260 MW line-load connection request to the Bonneville Power Administration on behalf of Lakeside Industries in March; BPA declined to share details. Power application documents describe diesel emergency standby generators."
     },
     "landAcres": 434,
+    "community": {
+      "status": "contested",
+      "notes": "Dallesport residents have questioned the projects. A county-wide petition with nearly 800 signatures asks for a moratorium while the county finalizes a data center ordinance.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
   },
   {
@@ -91068,12 +91990,32 @@
         "publisher": "Global Energy Monitor",
         "retrievedAt": "2026-10-12",
         "kind": "other"
+      },
+      {
+        "url": "https://constructionreviewonline.com/news/avangrid-to-repower-leaning-juniper-iib-wind-project-to-extend-life-and-supply-100-mw-to-google-data-centers-in-the-dalles/",
+        "label": "Construction Review: Avangrid to repower Leaning Juniper IIB wind project to supply 100 MW to Google data centers in The Dalles",
+        "publisher": "Construction Review Online",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Site boundary is 7,962 acres in Gilliam County. Coordinates are GEM's single point for the Leaning Juniper II complex, not IIB specifically.",
     "energy": {
-      "source": "wind"
+      "source": "wind",
+      "notes": "74 turbines. A Google PPA for more than 100 MW (announced July 22, 2025) supports a repower, with power delivered to Google's The Dalles data centers through Northern Wasco County PUD."
+    },
+    "subsidies": [
+      {
+        "program": "Oregon Strategic Investment Program",
+        "jurisdiction": "Gilliam County, OR",
+        "sourceIndex": 4
+      }
+    ],
+    "investmentUsd": 200000000,
+    "jobs": {
+      "construction": 150,
+      "sourceIndex": 4
     },
     "facilityType": "power_generation",
     "generation": {
@@ -92639,6 +93581,52 @@
     }
   },
   {
+    "id": "lightsource-bp-golden-plains-solar-storage-perkins-ne",
+    "name": "Golden Plains Solar and Storage",
+    "operator": "Lightsource bp",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.84,
+      "lon": -101.72,
+      "county": "Perkins",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-30",
+        "note": "The developer lists the project as in development.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lightsourcebp.com/us/?p=467332",
+        "label": "Golden Plains Solar and Storage project page",
+        "publisher": "Lightsource bp",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "The developer cites about $350M in private investment, about 280 peak construction jobs and about $36M in lifetime tax revenue. The coordinates are placed near Grant, the county seat, and are approximate. A Perkins County conditional use permit was reportedly approved 2-1 in January 2026, but that article was bot-walled and is not cited.",
+    "investmentUsd": 350000000,
+    "jobs": {
+      "construction": 280,
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "The developer lists 150 MWdc of solar with 120 MWac of battery storage."
+    }
+  },
+  {
     "id": "lightwave-networks-needham-ma",
     "name": "LightWave Networks Needham Data Center",
     "operator": "LightWave Networks",
@@ -92673,6 +93661,34 @@
     ],
     "lastUpdated": "2026-09-15",
     "notes": "A separate Needham facility from the tracked Digital Realty BOS14 at 128 First Avenue - different operator, different address. Single-source record, hence \"reported\".",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "limitless-north-platte-hershey-lincoln-ne",
+    "name": "Limitless North Platte Data Center (near Hershey)",
+    "operator": "Limitless North Platte LLC",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 41.1192566,
+      "lon": -101.0024485,
+      "city": "Hershey",
+      "county": "Lincoln",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/limitless-north-platte-data-center-hershey-ne--5b41804f-bc44-43fe-86b0-ba9eeb8bfb15",
+        "label": "Limitless North Platte Data Center (Hershey), NE: tracker listing",
+        "publisher": "More Than Just Parks Data Center Tracker",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "The public tracker lists this as proposed, with capacity and footprint undisclosed. It attributes the listing to North Platte Telegraph reporting, which is paywalled and could not be fetched. The tracker says the details have not been verified against the source. The coordinates are the tracker's reference point.",
     "facilityType": "data_center"
   },
   {
@@ -95338,6 +96354,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "lumen-portland-1-northrup-portland-or",
+    "name": "Lumen Portland 1 (1335 NW Northrup St)",
+    "operator": "Lumen Technologies",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.531671,
+      "lon": -122.68496,
+      "city": "Portland",
+      "county": "Multnomah",
+      "street": "1335 NW Northrup St",
+      "postalCode": "97209-2807",
+      "state": "OR",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-30",
+        "note": "Active PeeringDB facility record (status ok, CLLI PTLGORIA).",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.peeringdb.com/api/fac/13512",
+        "label": "PeeringDB facility record: Lumen Portland",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Lumen carrier/colocation facility. Distinct from the Lumen Portland 2 presence at 707 SW Washington St.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "lumen-providence-375-promenade-ri",
     "name": "Lumen Providence (375 Promenade St)",
     "operator": "Lumen Technologies",
@@ -95823,6 +96876,50 @@
       "coolingType": "closed_loop"
     },
     "landAcres": 5,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "lunavi-bellingham-wa",
+    "name": "Lunavi Bellingham Data Center",
+    "operator": "Lunavi",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 48.7591358,
+      "lon": -122.5035003,
+      "city": "Bellingham",
+      "county": "Whatcom",
+      "street": "851 Coho Way, Suite 206",
+      "postalCode": "98225",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-30",
+        "note": "Operator page describes the facility in the present tense as 'the only enterprise-class data center in Whatcom County' and offers tours.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://lunavi.com/data-centers/bellingham",
+        "label": "Bellingham Data Center",
+        "publisher": "Lunavi",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=851+Coho+Way,+Bellingham,+WA&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: 851 Coho Way, Bellingham",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-30",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "N+1 UPS, diesel backup generators, 1.92–4.88 kW per cabinet standard. Formerly a Green House Data site. Small enterprise colocation facility; total MW not disclosed.",
     "facilityType": "data_center"
   },
   {
@@ -97488,6 +98585,55 @@
       "hardwareType": "asic",
       "powerArrangement": "grid"
     }
+  },
+  {
+    "id": "mb-club-data-center-trenton-hitchcock-ne",
+    "name": "MB Club / MB Computing Data Center & Crypto Mining Site (south of Trenton)",
+    "operator": "MB Club, LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.075,
+      "lon": -101.05,
+      "city": "Trenton",
+      "county": "Hitchcock",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-06",
+        "note": "The county board agenda lists the MB Club, LLC conditional use application for a data center on part of SE1/4 Section 4, T1N, R33W, with Resolution 25-19. The outcome was not found.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://hitchcockcounty.ne.gov/posting_files/pdfs/board/minutes/2025/20250203_152316_board_minutes.pdf",
+        "label": "Hitchcock County Board of Commissioners minutes, Feb. 3, 2025 (MB Computing cease-and-desist; Resolution 2025-7 data center/crypto moratorium)",
+        "publisher": "Hitchcock County, NE",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://hitchcockcounty.ne.gov/posting_files/pdfs/board/minutes/2025/20250721_124240_board_minutes.pdf",
+        "label": "Hitchcock County Board of Commissioners minutes, July 21, 2025 (update on MBC Club LLC conditional use application)",
+        "publisher": "Hitchcock County, NE",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://hitchcockcounty.ne.gov/posting_files/pdfs/board/agenda/2025/20251006_142328_board_agenda.pdf",
+        "label": "Hitchcock County Board of Commissioners agenda, Oct. 6, 2025 (MB Club, LLC data center CUP; Resolution 25-19)",
+        "publisher": "Hitchcock County, NE",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "In February 2025 the county reported a cease-and-desist action over 'the data center and crypto mining facility located south of Trenton' and correspondence with MB Computing. It also adopted a one-year moratorium on data centers and crypto mining in the AG-G and RCI districts. MB Club, LLC later sought a conditional use permit for a data center in SE1/4 Sec. 4, T1N, R33W. That MB Computing and MB Club are the same site is inferred, not confirmed. The coordinates are a rough PLSS-based placement.",
+    "facilityType": "crypto_mining"
   },
   {
     "id": "mca-technology-solutions-chattanooga-tn",
@@ -104520,7 +105666,7 @@
         "url": "https://www.cascadepbs.org/the-newsfeed-2/2026/08/washington-state-grapples-with-the-ai-data-center-boom/",
         "label": "Washington state grapples with the AI data center boom",
         "publisher": "Cascade PBS",
-        "retrievedAt": "2026-09-05",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -104531,7 +105677,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-10-30",
     "notes": "Three-building campus at 5375 Malaga Alcoa Highway; two additional buildings possible by 2027 on demand. As of July 2026, the 288 MW figure came from secondary aggregator Cleanview; as of October 2026, it also appears in Columbia Riverkeeper's February 2026 report, which lists Chelan County's data center capacity as 24 MW existing / 288 MW planned and says Chelan PUD agreed to supply up to 288 MW to Microsoft over a 15-year period, and in The Wenatchee World's report on the June 2025 power contract, which says the PUD's infrastructure will help provide up to 288 megawatts from 2026 to 2040; both describe it as power the PUD will supply. Primary sources (DCD, Microsoft) do not specify MW capacity. Construction of first building began June 2023 per Microsoft Local blog; the original status history incorrectly dated the under-construction status to 2024-05. Expected operational 2026. Coordinates approximate for Malaga area on Malaga Alcoa Highway. A Building-1 permit cites ~72 peak-shift staff (a single-building figure, not a facility employment total); no confirmed total campus capital-expenditure figure is public. As of 2026-08-08, no citable operational date exists. Microsoft's own Malaga project page gives a first-phase construction window concluding in early 2026 but states plainly that \"Completion of construction does not indicate datacenter operation/availability\", and publishes no energization or service date. Secondary reporting that the first building would be \"powered in August and fully operational by late 2026\" is forward-looking and does not change the status, which remains under construction. Microsoft's own Quincy/Central Washington community page states it \"operates datacenters in Quincy and is developing new datacenters in Malaga and East Wenatchee\" — positively confirming the site is not yet operational.",
     "energy": {
       "source": "hydro",
@@ -117956,11 +119102,11 @@
         "url": "https://www.oppdcommunityconnect.com/standing-bear-lake-station",
         "label": "Standing Bear Lake Station",
         "publisher": "Omaha Public Power District",
-        "retrievedAt": "2026-08-21",
+        "retrievedAt": "2026-10-30",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-21",
+    "lastUpdated": "2026-10-30",
     "energy": {
       "source": "on_site_gas",
       "utility": "Omaha Public Power District",
@@ -119927,7 +121073,7 @@
         "url": "https://www.1011now.com/2026/07/15/what-does-it-take-build-nebraskas-largest-solar-energy-facility/",
         "label": "What does it take to build Nebraska's largest solar energy facility?",
         "publisher": "1011 NOW (KOLN)",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -119936,14 +121082,23 @@
         "publisher": "Nebraska Department of Water, Energy and Environment",
         "retrievedAt": "2026-09-16",
         "kind": "other"
+      },
+      {
+        "url": "https://www.nexteraenergyresources.com/panama-energy-center.html",
+        "label": "Panama Energy Center",
+        "publisher": "NextEra Energy Resources",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Set to be Nebraska's largest solar facility, just east of the village of Hallam in southwest Lancaster County. Developer states 304 MW solar + 120 MW storage, approximately 1,100 acres, up to 250 construction jobs, and $42 million in community revenue over the first 30 years; 1011 NOW reported ~400 workers at peak and 4 permanent staff. No land area is recorded — the developer's page says approximately 1,100 acres while local coverage says 2,400 acres, and, as of September 2026, the two are not reconcilable from what was read. COORDINATES ARE APPROXIMATE: the pin is the village of Hallam (OpenStreetMap/Nominatim); the array lies east of it. Note this is a different Hallam-area project from the proposed Sagebrush hyperscale campus and from NPPD's Sheldon and Princeton Road stations.",
     "energy": {
       "source": "solar",
       "notes": "Up to 304 MW of photovoltaic solar paired with 120 MW of battery energy storage. Phase one — 202 MW of solar plus 80 MW of storage — was nearing completion in July 2026, with roughly half a million panels installed at 8,000–10,000 per day."
     },
+    "investmentUsd": 598600000,
+    "landAcres": 2400,
     "jobs": {
       "construction": 250,
       "sourceIndex": 0
@@ -122169,7 +123324,7 @@
         "url": "https://www.nexteraenergyresources.com/platte-wind/project-overview.html",
         "label": "Platte Wind — project overview",
         "publisher": "NextEra Energy Resources",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -122180,7 +123335,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Up to 250 GE turbines totalling approximately 800 MW across Keith, Garden and Deuel counties; up to 300 construction jobs; approximately $98.5 million in additional county revenue and approximately $180 million in payments to Deuel County landowners, both estimated over the first 30 years (developer figures, subject to change). Would be Nebraska's largest wind project by a wide margin. COORDINATES ARE APPROXIMATE: the project spans three counties and has no single published site point, so the pin is the Keith County seat (Ogallala), geocoded via OpenStreetMap/Nominatim — it is an index point, not a surveyed footprint.",
     "energy": {
       "source": "wind"
@@ -122588,7 +123743,7 @@
         "url": "https://www.spokesman.com/stories/2026/apr/26/ai-data-center-with-a-different-mission-being-cons/",
         "label": "AI data center with a different mission being considered in Tri-Cities",
         "publisher": "The Spokesman-Review",
-        "retrievedAt": "2026-10-12",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -122606,7 +123761,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Battelle, which operates PNNL for the Department of Energy, issued a request for information for an on-premises next-generation AI compute data center to train and operationalize large language models for scientific and national government missions. Roughly 2 MW at a possible 2028 launch, with potential future expansion to about 40 MW. This would be DOE-funded and DOE-operated, not a private operator building on federal land. No construction decision has been made — this is an RFI-stage proposal only. Coordinates are an approximate geocode of the PNNL campus in Richland. Public-reception check (2026-09-10): Checked The Spokesman-Review's coverage (2026-09-10) of this DOE Genesis Mission-linked project; it covers technical specs and funding, with no resident, community-group, or elected-official reaction documented.",
     "energy": {
       "notes": "The request for information sought vendor input on on-site power options if utility distribution is limited, containerized or modular structures, power purchase agreements, solar and nuclear supply, and heat reuse for industrial processes."
@@ -135558,7 +136713,7 @@
         "url": "https://www.nexteraenergyresources.com/rokeby-energy-center/community-benefits.html",
         "label": "Rokeby Energy Center — community benefits",
         "publisher": "NextEra Energy Resources",
-        "retrievedAt": "2026-09-16",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -135569,7 +136724,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Up to 226 MW of solar in Lancaster County with a 30-year operating life; the developer cites \"hundreds of construction jobs\" without a number, so jobs is left unset. Third distinct NextEra solar project proposed in Lancaster County alongside Panama Energy Center and separate from the Ranger Power Salt Creek site. COORDINATES ARE APPROXIMATE: the pin is the Rokeby locality south of Lincoln (OpenStreetMap/Nominatim), not a surveyed array footprint.",
     "energy": {
       "source": "solar"
@@ -142833,7 +143988,7 @@
     "id": "sioux-county-wind-sioux-ne",
     "name": "Sioux County Wind Farm",
     "operator": "NextEra Energy Resources",
-    "status": "proposed",
+    "status": "permitted",
     "confidence": "reported",
     "location": {
       "lat": 42.6873162,
@@ -142852,6 +144007,12 @@
         "date": "2026-09-16",
         "note": "Nebraska DWEE lists the project as under development with no target date.",
         "sourceIndex": 0
+      },
+      {
+        "status": "permitted",
+        "date": "2026-10-30",
+        "note": "On May 23, 2024 the Sioux County Board of Commissioners approved, 2-1, the conditional use permit for Sioux County Wind Farm, LLC, a 300 MW NextEra project, after the planning commission recommended approval.",
+        "sourceIndex": 2
       }
     ],
     "sources": [
@@ -142861,12 +144022,31 @@
         "publisher": "Nebraska Department of Water, Energy and Environment",
         "retrievedAt": "2026-09-16",
         "kind": "other"
+      },
+      {
+        "url": "https://siouxcountyne.gov/wp-content/uploads/sites/24/2026/03/boc-2024-minutes.pdf",
+        "label": "Sioux County Board of Commissioners 2024 minutes (May 1 hearing; May 23 approval)",
+        "publisher": "Sioux County, NE",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
+      },
+      {
+        "url": "https://siouxcountyne.gov/wp-content/uploads/sites/24/2026/03/boc-2024-minutes.pdf",
+        "label": "Sioux County Board of Commissioners 2024 minutes (May 23, 2024 special meeting: CUP approved)",
+        "publisher": "Sioux County, NE",
+        "retrievedAt": "2026-10-30",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-16",
+    "lastUpdated": "2026-10-30",
     "notes": "Single-source (Nebraska DWEE), hence confidence \"reported\". Sioux County board and planning-commission minutes appear to record a conditional-use-permit application by Sioux County Wind Farm, LLC for a 300 MW / ~107-turbine project, but the county's posted PDFs could not be read as of September 2026, so no permit detail is asserted here. Coordinates are approximate: the pin is the county seat (Harrison, via OpenStreetMap/Nominatim); DWEE places the project in eastern unincorporated Sioux County, so the true site lies east of this point.",
     "energy": {
       "source": "wind"
+    },
+    "community": {
+      "status": "contested",
+      "notes": "At the May 1, 2024 public hearing residents raised concerns about wildlife and eagle habitat, health effects, property values and decommissioning, and some called for a moratorium. Two participating landowners spoke in favor. The board approved the CUP 2-1.",
+      "sourceIndex": 1
     },
     "facilityType": "power_generation",
     "generation": {
@@ -146076,10 +147256,33 @@
         "publisher": "More Than Just Parks Data Center Tracker",
         "retrievedAt": "2026-08-22",
         "kind": "other"
+      },
+      {
+        "url": "https://www.columbiagorgenews.com/news/hyperscale-data-center-developer-confirmed/article_0a22bbde-0a31-4d72-9bd3-6cf5a5c50e65.html",
+        "label": "Hyperscale data center developer confirmed",
+        "publisher": "Columbia Gorge News",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.columbiagorgenews.com/free_news/rural-klickitat-county-faces-surge-in-data-center-proposals/article_91218fee-16bc-4e95-8cde-85b7a8d712ed.html",
+        "label": "Rural Klickitat County faces surge in data center proposals",
+        "publisher": "Columbia Gorge News / Washington State Standard",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-22",
+    "lastUpdated": "2026-10-30",
     "notes": "Identified via a 2022 Puget Sound Energy interconnection filing describing a 958MW STACK data center in 'study phase,' sited on a portion of a 700-acre former aluminum smelter (ex-Lockheed Martin) near the John Day Dam. STACK has not publicly confirmed its involvement.",
+    "energy": {
+      "source": "grid",
+      "utility": "Klickitat PUD",
+      "notes": "958 MW per the 2022 load connection request between Klickitat PUD and BPA, which names IPI and STACK. Build-out is expected in small increments. The only Klickitat request with a formal BPA agreement covers 160 MW of transmission capacity. No power source is lined up yet and the developer would pay for upgrades."
+    },
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Article says the data center would use 'air-cooled systems' (no recirculating-circuit detail given). Water would come from Klickitat PUD's grandfathered rights, about 5.08 billion gallons per year mostly from the Columbia River, shared with the pumped storage project."
+    },
     "community": {
       "status": "opposed",
       "notes": "Yakama Nation members and environmental groups protest the adjacent Goldendale pumped-storage project on the sacred site of Pushpum, which would supply up to 80% of its output to this data center.",
@@ -149883,7 +151086,7 @@
         "url": "https://pv-magazine-usa.com/2026/01/16/amazon-acquires-1-2-gw-sunstone-solar-project-from-bankrupt-pine-gate-renewables/",
         "label": "Amazon acquires 1.2 GW Sunstone solar project from bankrupt Pine Gate Renewables",
         "publisher": "pv magazine USA",
-        "retrievedAt": "2026-10-12",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       },
       {
@@ -149894,7 +151097,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-12",
+    "lastUpdated": "2026-10-30",
     "notes": "Located about 15 miles northeast of Lexington, Morrow County. Up to about 9,442 acres of the roughly 10,960-acre site. Coordinates come from Global Energy Monitor.",
     "energy": {
       "source": "solar",
@@ -159868,12 +161071,17 @@
         "url": "https://www.tricitiesbusinessnews.com/articles/west-richland-data-center",
         "label": "Company eyes West Richland for future data center",
         "publisher": "Tri-Cities Area Journal of Business",
-        "retrievedAt": "2026-08-22",
+        "retrievedAt": "2026-10-30",
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-22",
+    "lastUpdated": "2026-10-30",
     "notes": "Feasibility-stage proposal on part of the 7,600-acre Lewis & Clark Ranch; the mayor said the data center would be situated on 500 acres to start and grow to 1,000 acres in total; due diligence and a purchase-and-sale agreement with landowner Frank Tiegs LLC underway as of Dec 2025; no capacity or investment figure disclosed; BPA power availability cited as the open question.",
+    "energy": {
+      "source": "grid",
+      "utility": "Benton Rural Electric Association (Benton REA)",
+      "notes": "Benton REA serves West Richland and is working with BPA to assess transmission capacity and design the needed lines. Its deputy GM called power 'the biggest hurdle'. Its agreements are cost-recovery arrangements with upfront deposits."
+    },
     "landAcres": 500,
     "facilityType": "data_center"
   },
@@ -161526,6 +162734,35 @@
     ],
     "lastUpdated": "2026-10-12",
     "notes": "Downtown Lincoln carrier/colocation facility at 1440 M Street. Inflect lists the operator as Uniti; OSM still tags the building 'Windstream'. Separately, Baxtel reported that a Windstream facility in Lincoln had a Sept 2, 2023 transformer fire that cut 911 connectivity in southeast Nebraska counties, but that report gives no address, so it is not cited here as the same building. Size and power were not disclosed.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "uniti-omaha-1721-saint-marys-ne",
+    "name": "Uniti Omaha Data Center (1721 Saint Marys Avenue)",
+    "operator": "Uniti",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.254936,
+      "lon": -95.939421,
+      "city": "Omaha",
+      "county": "Douglas",
+      "street": "1721 Saint Marys Avenue",
+      "state": "NE",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://inflect.com/building/1721-saint-marys-avenue-omaha",
+        "label": "1721 Saint Marys Avenue, Omaha data center building (Uniti Omaha)",
+        "publisher": "Inflect",
+        "retrievedAt": "2026-10-30",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "The building listing names 'Uniti Omaha' as its data center, offering colocation, internet access, exchanges and private networking. It is a former Windstream facility; Uniti and Windstream merged.",
     "facilityType": "data_center"
   },
   {
@@ -164795,6 +166032,59 @@
       "unitCount": 2,
       "notes": "Two gas-fired reciprocating engines producing a combined 37 MW initially, with space reserved on the 48-acre site for future expansion. Cedar Falls Utilities general manager Susan Abernathy framed the plant as local backup generation: 'If push comes to shove with local generation, we can be islanded; we can take care of ourselves.' Iowa Public Radio reported load growth from data center development, alongside Iowa's over-60-percent renewable penetration, as the grid pressures behind the project. No named offtaker: this is municipal utility generation, not a contracted data center supply, so no offtaker is recorded."
     }
+  },
+  {
+    "id": "vines-rest-data-center-alderdale-klickitat-wa",
+    "name": "Vines Rest Data Center (BPA L0704)",
+    "operator": "Savion (Shell Energy subsidiary), per BPA application documents",
+    "status": "proposed",
+    "confidence": "rumored",
+    "location": {
+      "lat": 45.8349586,
+      "lon": -119.9208683,
+      "city": "Alderdale (vicinity)",
+      "county": "Klickitat",
+      "state": "WA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 1000
+    },
+    "announcedDate": "2026-07-27",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-27",
+        "note": "BPA load interconnection request L0704 (1,000 MW) received July 27, 2026; Phase 1 scoping.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.goldendalesentinel.com/news/more-data-centers-possible-for-county/article_b656c420-736c-4751-be22-209654a24211.html",
+        "label": "More data centers possible for county",
+        "publisher": "Goldendale Sentinel",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.columbiagorgenews.com/free_news/rural-klickitat-county-faces-surge-in-data-center-proposals/article_91218fee-16bc-4e95-8cde-85b7a8d712ed.html",
+        "label": "Rural Klickitat County faces surge in data center proposals",
+        "publisher": "Columbia Gorge News / Washington State Standard",
+        "retrievedAt": "2026-10-30",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=Alderdale,+Klickitat+County,+Washington&format=json&limit=2",
+        "label": "OpenStreetMap Nominatim geocode: Alderdale, WA (representative point)",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-10-30",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "The queue record places the site east of Alderdale, bounded by Columbia Ridge Road, Sonova Road and Highway 14, on land owned by Columbia Ridge Orchards LLC. It would interconnect on the McNary–John Day No. 1 and No. 2 500 kV lines. A Savion spokesperson said 'there is currently no defined Vines Rest project.' A queue position is not an approval. Coordinates are the Alderdale locality point.",
+    "facilityType": "data_center"
   },
   {
     "id": "vint-hill-corners-fauquier-va",

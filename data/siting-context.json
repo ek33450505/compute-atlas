@@ -4143,6 +4143,20 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "avangrid-bluebird-solar-klickitat-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "avangrid-buffalo-ridge-i-wind-brookings-county-sd": {
     "nearestWater": {
       "name": "Deer Creek",
@@ -4158,6 +4172,34 @@
       "label": "High (40-80%)"
     }
   },
+  "avangrid-juniper-canyon-wind-klickitat-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "avangrid-leaning-juniper-iia-wind-gilliam-county-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "avangrid-minndakota-wind-brookings-county-sd": {
     "nearestWater": {
       "name": "Medary Creek",
@@ -4171,6 +4213,34 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "avangrid-oregon-trail-solar-gilliam-county-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "avangrid-tower-solar-boardman-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
     }
   },
   "aventus-715-marshfield-wi": {
@@ -10066,6 +10136,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "coffee-grounds-data-arevia-malcolm-lancaster-ne": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Lower Cretaceous Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "cogent-650-poydras-new-orleans-la": {
     "nearestWater": {
       "name": "Mississippi River",
@@ -10940,6 +11020,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "colossus-starbucks-center-sodo-seattle-wa": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "colovore-reno-1-storey-county-nv": {
@@ -13054,6 +13144,16 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "csquare-sea2-tukwila-wa": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "csquare-sfo1-ca": {
     "nearestWater": {
       "name": "Saratoga Creek",
@@ -14298,6 +14398,36 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "data-center-3625-first-ave-s-sodo-seattle-wa": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "data-center-west-eugene-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "data-center-west-medford-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "data-city-energy-abundance-laredo-tx": {
@@ -16125,6 +16255,16 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "digital-realty-301-virginia-st-seattle-wa": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "digital-realty-727-s-grand-ave-la-ca": {
     "nearestWater": {
       "name": "Los Angeles River",
@@ -17423,6 +17563,16 @@
     },
     "aquifer": {
       "name": "California Coastal Basin Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "digital-realty-wagon-hillsboro-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Willamette Lowland Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -19991,6 +20141,20 @@
     "aquifer": {
       "name": "Southeastern Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "enfinity-silver-maple-solar-sioux-ne": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "engie-dakota-range-iii-wind-grant-county-sd": {
@@ -26857,6 +27021,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "hitchcock-county-data-mining-sec23-t4n-r33w-ne": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "hivelocity-tpa1-tampa-fl": {
     "nearestWater": {
       "name": "Sweetwater Creek",
@@ -27930,6 +28108,12 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "invenergy-prineville-solar-crook-county-or": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
     }
   },
   "invenergy-red-oak-ridge-energy-center-paris-wi": {
@@ -30105,6 +30289,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "lightsource-bp-golden-plains-solar-storage-perkins-ne": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "lightwave-networks-needham-ma": {
     "nearestWater": {
       "name": "Charles River",
@@ -30118,6 +30316,20 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "limitless-north-platte-hershey-lincoln-ne": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "lincoln-land-energy-center-pawnee-il": {
@@ -31229,6 +31441,16 @@
       "label": "Low (<10%)"
     }
   },
+  "lumen-portland-1-northrup-portland-or": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Pacific Northwest Basaltic-rock Aquifers",
+      "rock": "Igneous and metamorphic-rock"
+    }
+  },
   "lumen-providence-375-promenade-ri": {
     "nearestWater": {
       "name": "Woonasquatucket River",
@@ -31432,6 +31654,16 @@
     "aquifer": {
       "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
+    }
+  },
+  "lunavi-bellingham-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Puget Sound Aquifer System",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "lunavi-cheyenne-wy": {
@@ -31995,6 +32227,20 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "mb-club-data-center-trenton-hitchcock-ne": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "mca-technology-solutions-chattanooga-tn": {
@@ -51892,6 +52138,12 @@
       "rock": "Sandstone"
     }
   },
+  "uniti-omaha-1721-saint-marys-ne": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "university-of-alabama-hpc-tuscaloosa-al": {
     "nearestWater": {
       "name": "University Branch",
@@ -52989,6 +53241,20 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "vines-rest-data-center-alderdale-klickitat-wa": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Columbia Plateau Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "vint-hill-corners-fauquier-va": {
