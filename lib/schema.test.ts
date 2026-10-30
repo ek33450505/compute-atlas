@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { facilitySchema, sourceSchema, emissionsSchema } from "@/lib/schema";
+import { facilitySchema, sourceSchema, emissionsSchema, OFFTAKER_LABEL_PATTERN } from "@/lib/schema";
+import facilitiesRaw from "@/data/facilities.json";
 
 const baseSource = {
   url: "https://en.wikipedia.org/wiki/Test",
@@ -1013,5 +1014,54 @@ describe("notRecorded marker", () => {
       notRecorded: { "capacityMw.operational": REASON },
     });
     expect(r.success).toBe(true);
+  });
+});
+
+describe("generation.offtaker label shape", () => {
+  const parse = (offtaker: string) =>
+    facilitySchema.safeParse({
+      ...basePowerGenerationFacility,
+      generation: { offtaker },
+    });
+
+  const accepted = [
+    "Amazon (AWS)",
+    "Google (Project Tembo, via Jupiter Star Holdings)",
+    "Nine Mile Data, LLC",
+    "Meta (via Pacific Power)",
+    "Meta (renewable energy credits; energy sold to Central Electric Power Cooperative)",
+    "Meta",
+  ];
+
+  const rejected = [
+    "Meta (Facebook), via Pacific Power",
+    "Central Electric Power Cooperative (energy); Meta (renewable energy credits)",
+    "Foo (bar); We Energies acquisition pending",
+    "A (b (c))",
+    "Meta)",
+    "()",
+    "(via X)",
+    " (AWS)",
+    "",
+  ];
+
+  it.each(accepted)("accepts %j", (label) => {
+    expect(parse(label).success).toBe(true);
+  });
+
+  it.each(rejected)("rejects %j with an actionable message", (label) => {
+    const r = parse(label);
+    expect(r.success).toBe(false);
+    if (!r.success) {
+      expect(r.error.issues[0].message).toMatch(/ONE trailing parenthetical/);
+    }
+  });
+
+  it("every offtaker in data/facilities.json matches the pattern", () => {
+    const bad = (facilitiesRaw as unknown as Array<{ id: string; generation?: { offtaker?: string } }>)
+      .filter((f) => typeof f.generation?.offtaker === "string")
+      .filter((f) => !OFFTAKER_LABEL_PATTERN.test(f.generation!.offtaker!))
+      .map((f) => `${f.id}: ${f.generation!.offtaker}`);
+    expect(bad).toEqual([]);
   });
 });

@@ -544,3 +544,239 @@ Limits:
 - The prompt carries no facilityType, so the crypto sentence is applied from page text.
 - There is NO negative control for a non-crypto page stating a current draw ("currently consumes X MW" at a data center should be null). The big-watt AMBIG answer suggests forward-looking draws may be taken too. Both are follow-ups, not measured.
 - The 123NET PDF path is still unbenchable (the fetcher excludes PDFs).
+
+## capacityOperational follow-ups: variance, a non-crypto draw control and forward-looking draws
+
+Measured 2026-10-30, `gpt-oss:20b`, `temperature: 0`, HEAD `6131c9b` (the prompt is `CAPACITY_OPERATIONAL_DESCRIPTION` in `fields.mjs` as committed there, carrying rulings (a) and (b); no prompt change in this section). This closes the three follow-ups listed under the previous section's Limits.
+
+### 1. Variance: three runs of one prompt on one corpus
+
+Same prompt, same 75-page corpus (`pages.json`, `truth.json`, `run.mjs` and `fields.mjs` sha256-pinned before rep 2 and unchanged after it), same 37 labeled cells. Rep 1 is the existing `-itrule-crypto-ups.json`; reps 2 and 3 are `-rep2.json` and `-rep3.json`.
+
+| rep | P | R | ok / abst / miss / WRONG / HALLUC | scored (AMBIG excl.) |
+|---|---|---|---|---|
+| 1 (`-itrule-crypto-ups.json`, 2026-10-29) | 100% | 100% | 4 / 29 / 0 / 0 / 0 | 33 (4) |
+| 2 (`-rep2.json`) | 80% | 100% | 4 / 28 / 0 / 0 / 1 | 33 (4) |
+| 3 (`-rep3.json`) | 100% | 100% | 4 / 29 / 0 / 0 / 0 | 33 (4) |
+
+35 of 37 cells returned the same value in all three reps. The two that did not:
+
+| cell | label | rep 1 | rep 2 | rep 3 |
+|---|---|---|---|---|
+| `bitfarms-panther-creek-nesquehoning-pa` | null (scored) | null ("lists only the total energized capacity, not the IT load") | **60**, quote "Panther Creek Pennsylvania 60 *" (HALLUC) | null ("only provides utility contracted capacity") |
+| `crane-pdx02-forest-grove-or` | AMBIG (unscored) | null ("appears to be a planned capacity") | 48, quote "~48 MW" | 48, quote "~48 MW" |
+
+Quote-only differences (same value, different `verbatimQuote`) on three more cells: `qts-hillsboro-2-or` (180 each time; "180 MW+" vs "Critical campus capacity 180 MW+"), `aaim-data-centers-blue-earth-mn` (null each time; rep 1 also carried "15 MW Substation" as its quote) and `google-nebraska-ai-campus-proposed` (null each time; reps 2 and 3 carried "the data center itself, which could require 1,000 to 3,000 megawatts of power" as the quote for a null). No rep errored.
+
+⚠️ So `temperature: 0` is NOT deterministic on this setup, contrary to `run.mjs`'s header ("Deterministic: seed changes nothing"). Over three reps the one scored flip is the hardest distractor in the corpus: the 10-K table cell "Current Energized Capacity (MW) 60", which reads like a current figure at a crypto site and is null only because an energized utility capacity is a supply figure. Rep 1's P=100% was one draw from a distribution that also produces 80%. Across the three reps that is 1 hallucination in 87 scored null cells (3 × 29), and it fell on that one cell. Recall held at 4 of 4 positives in every rep, with the same values each time (flexential 36, 1623 farnam 8, ark-akron 1, atlas-power 240).
+
+### 2. Non-crypto current-draw negative control
+
+Corpus change, made only after rep 3 finished: six targets appended to `targets.json` (one cited HTML page each, `truth` set to the DB values as the hint, as `build-targets.mjs` does) and fetched additively. `npx tsx scripts/discovery/bench/fetch-pages.mjs` printed `preserved 75 · fetched 6/7 attempted · failed 1`; the failure is the pre-existing uncached target `9ldg-niagara-falls-ny` (HTTP 403), not a new one. The 75 existing entries were compared field by field against a pre-fetch copy: none changed, and the order is preserved. Only `capacityOperational` is labeled for the six new ids, each by reading the whole cached page. Every span quoted in their `truth.json` notes was checked verbatim against `pages.json`.
+
+Candidates were found by grepping record notes, source labels and `notRecorded` reasons for draw and consumption wording, then reading the fetched page. Pages for 37 candidate facilities were previewed through the bench's own `fetchOne`, called from a scratch script so `pages.json` was not written. Data-center pages that state a power draw without also stating an IT figure turned out to be rare. Most of the 37 stated no draw at all, stated a utility, substation or UPS figure (classes the existing distractors already cover), stated only a future draw, or also stated an IT load. Rejected on fetch: `harbor-farmz-full-circle-drive-kalamazoo-mi` (the record notes Second Wave's "about 1 MW drawn today"; Second Wave and Gander both returned 403, and an archive.org copy returned 429), `thor-equities-kingston-technology-hub-bartow-ga` (404) and `lex-developments-pocatello-id` (429).
+
+| id | type, status | page | the draw, verbatim | label |
+|---|---|---|---|---|
+| `nsa-utah-data-center-bluffdale-ut` | data_center, operational | CLUI Land Use Database | "consuming more than 65 megawatts to keep alive" | null |
+| `google-lincoln-ne` | data_center, operational | 1011 NOW (KOLN), 2026-09-30 | "Agate LLC is reporting 52.65 megawatts of electricity during peak electrical demand" | null |
+| `microsoft-columbia-quincy-wa` | data_center, operational | Wikipedia | "The data center consumed 30 to 50 megawatts in 2012" | null |
+
+Each figure is the only MW figure on its page, and none of the three pages states an IT load. The Quincy page dates its draw (2012) and uses the past tense, so it is the weakest of the three on the "current" axis. The NSA record's curated operational 65 names no source of its own, and the record cites this same CLUI page, so the DB value may be this draw entered as capacity. It is a hint, not this page's label, and the label is null either way.
+
+Result (one run, `-negctl.json`): **3 of 3 null**, each with a reason that names the figure as a draw, not IT capacity.
+
+| id | answer | model's `verbatimQuote` | model's `reasonIfNull` |
+|---|---|---|---|
+| `nsa-utah-data-center-bluffdale-ut` | null | "consuming more than 65 megawatts to keep alive." | "The page only provides a total power consumption figure, not specifically IT capacity." |
+| `google-lincoln-ne` | null | none | "The page only reports a utility electricity usage figure, not IT capacity." |
+| `microsoft-columbia-quincy-wa` | null | none | "The page only provides a 2012 consumption figure (30–50 MW) for the facility, not a current operational IT capacity." |
+
+### 3. Forward-looking draws
+
+| id | type, status | page | the draw, verbatim | label |
+|---|---|---|---|---|
+| `starkville-industrial-park-road-crypto-mine-ms` | crypto_mining, proposed | WTVA, 2026-07-14 | "The center would draw 30 megawatts of power; the city has a 50-megawatt capacity." | null |
+| `nccs-massena-reynolds-ny` | data_center, proposed | NCPR, 2026-05-22 | "The operation would consume 635 megawatts of power." | null |
+| `amazon-project-rainier-new-carlisle-in` | data_center, operational | CNBC, 2025-10-29 | "The full site will eventually span 30 buildings and draw more than 2.2 gigawatts of electricity" | null |
+
+Starkville is the case ruling (a) leaves open. It is a crypto-mining page, and ruling (a) covers a current draw only, so "would draw" at a facility still under review is not operational capacity. Rainier was picked as the hardest of the three by construction, because the site IS operating ("seven buildings are already online"). The page's only figure for the site is still the future full-site draw, and it states no current IT capacity. The existing corpus already held one forward-looking data-center draw: `google-nebraska-ai-campus-proposed` ("could require 1,000 to 3,000 megawatts of power", labeled null), which was null in all four runs. It also held one crypto future draw, `big-watt-digital-onida-sd` ("expected to use 12.5 megawatts of electricity annually"), which is AMBIG and so unscored. The model answered 12.5 there in all four runs.
+
+Result (one run, `-negctl.json`): **2 of 3 null; the crypto page was answered.**
+
+| id | answer | model's `verbatimQuote` | model's `reasonIfNull` |
+|---|---|---|---|
+| `starkville-industrial-park-road-crypto-mine-ms` | **30 (HALLUC)** | "The center would draw 30 megawatts of power" (grounded) | none |
+| `nccs-massena-reynolds-ny` | null | none | "The page only provides a proposed total power consumption figure, not the IT capacity." |
+| `amazon-project-rainier-new-carlisle-in` | null | none | "The page only provides total electricity draw (e.g., \"more than 2.2 gigawatts of electricity\"), not the IT capacity of the facility." |
+
+⚠️ **This reads as the rule as the model applies it, not as run-to-run noise, although Starkville itself was answered only once.** The quote it cites is the future-tense sentence itself, so it applied ruling (a) as "a stated draw at a crypto site counts" and dropped the word *current*. The unscored AMBIG crypto page shows the same pattern: `big-watt-digital-onida-sd` was answered 12.5 from "expected to use 12.5 megawatts of electricity annually." in all four runs (reps 1 to 3 and `-negctl`). That makes 2 of 2 crypto pages with a forward-looking draw answered with the draw. Every non-crypto forward-looking draw got null: `google-nebraska` in 4 of 4 runs, and NCCS and Rainier in their one run each. So the rule's "IT capacity only" holds for data centers, and the crypto exception leaks into future draws.
+
+### Run on the extended corpus
+
+One run, `result-gpt-oss_20b-capacityOperational-negctl.json`, scored by `node rescore.mjs` (43 labeled cells, 81 cached pages; `pages.json` and `truth.json` sha256-pinned before the run and unchanged after it).
+
+| run | P | R | ok / abst / miss / WRONG / HALLUC | scored (AMBIG excl.) |
+|---|---|---|---|---|
+| extended corpus (`-negctl.json`) | 80% | 100% | 4 / 34 / 0 / 0 / 1 | 39 (4) |
+| of which the 33 original scored cells | 100% | 100% | 4 / 29 / 0 / 0 / 0 | 33 |
+| of which the 6 new controls | n/a | n/a | 0 / 5 / 0 / 0 / 1 | 6 |
+
+Each cell is an independent request, built only from the prompt and that cell's own page. So the 37 original cells in this run are byte-identical requests to reps 1 to 3, and they serve as a fourth observation of those cells. Over the four, `bitfarms` was null, 60, null and null, and `crane-pdx02` (AMBIG) was null, 48, 48 and 48. The other 35 original cells returned the same value all four times, including all six utility, UPS and substation distractors (null in each run), all four positives, and `big-watt` (12.5 in each run). On the AMBIG cells this run answered qts-hillsboro-2 180 ("180 MW+"), crane-pdx02 48 ("~48 MW"), big-watt 12.5 and aaim null.
+
+### Limits
+
+- **Variance is measured on the original 37 cells only.** The six new controls were each answered ONCE, in the extended-corpus run, so their run-to-run stability is unmeasured. That covers the three clean non-crypto draw nulls and the Starkville hallucination alike. The variance result says a clean single answer on a cell does not make that cell stable.
+- **Four observations cannot estimate a flip rate.** `bitfarms` flipped in 1 of 4 (three reps plus the `-negctl` run's byte-identical request). Its true rate could plausibly be anywhere from rare to about half, and more runs could surface flips on cells that were stable in these four.
+- **The cause of the nondeterminism was not diagnosed.** Every rep used the same request (`temperature: 0`, `num_ctx: 16384`, same model digest `17052f91a42e`). GPU or batching nondeterminism in Ollama's llama.cpp runner is the likely cause, but this was not tested. No seed was set, and `run.mjs` claims a seed changes nothing; that was not re-tested either.
+- **Rep 1's prompt is assumed, not proven, identical to HEAD's.** Rep 1 ran on 2026-10-29 against base `db13833` with the rulings uncommitted. They shipped in #499 (`f16314f`), and `fields.mjs` has not changed since. The result file does not record the prompt, so byte equality with what rep 1 sent is not verifiable.
+- **Small samples.** There are 3 non-crypto draw controls (one of them dated 2012) and 3 new forward-looking controls plus the pre-existing `google-nebraska` page, so 4 scored forward-looking controls in all. Only Starkville among them is crypto (`big-watt` is crypto but AMBIG), so the crypto future-draw finding rests on one scored cell and one unscored one. There are still only 4 positives, so recall is a 4-cell number.
+- **The rule's wording is under test, not only the model.** The description's not-IT list names "a utility feed, power supply, building power, UPS or generator figure" and does not name a draw or consumption. That a non-crypto draw is null follows from "IT capacity only" plus a crypto-only exception, so the draw controls measure whether the model makes that inference.
+- **The prompt carries no facilityType.** The crypto sentence is applied from page text. Starkville's page says "cryptocurrency mining facility". NCCS's page never mentions crypto, although NCPR's other article calls NCCS one of NYDIG's "affiliate cryptocurrency operators", so a crypto reading of that facility would come only from outside the page.
+- **Bench harness, not the shipped lane.** `fields.test.ts` pins this field description equal to the shipped `FIELD_DESCRIPTIONS["capacityMw.operational"]`. Nothing here claims the rest of the request (`run.mjs`'s system prompt and full-page text, against `extract-fields.ts`'s own framing and windowing) is identical.
+- PDFs remain unbenchable, so the 123NET spec-sheet path is still not exercised.
+- **Exposure is counted, not measured.** In `data/facilities.json` at HEAD, 64 `crypto_mining` records in a non-operational status have no operational capacity recorded (proposed 19, permitted 17, under construction 7, cancelled 21). They are the pages most likely to state only a future draw. Whether the nightly lane would select them depends on its gap selection, which was not checked here.
+
+### What this supports for re-pinning
+
+What the evidence supports:
+- **Data-center pages.** Every utility, UPS and substation distractor was null in all four runs. All three non-crypto draw controls were null, with correct reasons, in their one run. All three non-crypto forward-looking draws were null: `google-nebraska` in 4 of 4 runs, NCCS and Rainier once each. On data-center pages the "IT capacity only" rule held in every scored observation.
+- **Recall.** 4 of 4 positives were answered with the same values in all four runs.
+
+What it does not support:
+- **The P=100% headline.** Two of the four runs scored P=80%: rep 2 on the original cells (`bitfarms`) and the extended run (`starkville`, a new cell). Each was one fabrication, and both were on crypto pages. `bitfarms` (a 10-K "Current Energized Capacity" supply figure) was answered in 1 of 4 runs and looks like noise around a hard cell. `starkville` (a future draw) was answered in its only run, and `big-watt` (a future draw, AMBIG) was answered in 4 of 4, which looks like a systematic reading of ruling (a).
+- **A single-run bench as the decision basis.** `temperature: 0` was shown to vary here, so a future re-bench needs at least three runs, and the worst run is the number to quote.
+
+**Recommendation (a recommendation only; the decision is Ed's):** do not re-pin `capacityMw.operational` with the prompt as it stands. The remaining defect is narrow and has a name. The crypto sentence counts a forward-looking draw at a crypto site ("would draw", "expected to use") as current, and the model's quote is the forward-looking sentence, which makes the fabrication look well sourced to a reviewer. The lane stages everything as `pending`, so the human-review invariant holds either way. The cost is reviewer load, and the risk is that a reviewer approves a grounded-looking but wrong number. There are two options, and both are Ed's call:
+1. Tighten the crypto sentence so that a projected, expected or proposed draw does not count, keeping "currently consumes" as the example. Then re-bench on this extended corpus with at least three runs, reading Starkville, `big-watt` and Atlas (the positive that a tightened sentence must not lose) in every run.
+2. Re-pin for non-crypto records only, if the lane can exclude `crypto_mining` facilities. Whether it can was not checked. The data-center evidence above is the better half of this bench, but it rests on single runs for the five new data-center pages.
+
+## capacityOperational after the projected-draw ruling (2026-10-30)
+
+Measured 2026-10-30, `gpt-oss:20b` (digest `17052f91a42e`), `temperature: 0`, THREE runs, one at a time, from 16:39 to 16:59 EDT. The corpus is the extended one from the previous section (81 cached pages, 43 labeled cells; `pages.json`, `truth.json` and `targets.json` unchanged since `-negctl.json`). The only change is the crypto sentence of `CAPACITY_OPERATIONAL_DESCRIPTION`, as committed in `0da6075`: "For a crypto-mining site, a stated current power draw counts as operational capacity; a projected, expected or planned draw does not, and neither does a contracted, interconnection, substation or building figure." It was previously "…counts as operational capacity; a contracted, interconnection, substation or building figure does not." Scored by `node rescore.mjs`. Result files: `result-gpt-oss_20b-capacityOperational-cryptofix-rep1.json`, `-rep2.json` and `-rep3.json`.
+
+Provenance: rep 1 started at 16:39:46 against the then-uncommitted file. `0da6075` landed at 16:41:29, mid-run, and changed only a doc comment in `fields.mjs`. The prompt line matched the pre-run diff byte for byte. `run.mjs` imports `fields.mjs` once, and Ollama logged rep 1's first request at 16:39:58, before the file was rewritten at 16:40:42. All six bench inputs (`pages.json`, `truth.json`, `run.mjs`, `fields.mjs`, `targets.json`, `rescore.mjs`) were sha256-pinned before rep 2 and were unchanged after rep 3. One model load (16:39:47, `OLLAMA_NUM_PARALLEL=1`) served all three reps and the control below. Ollama's log shows exactly 43 chat requests in each run's window and no other traffic.
+
+### Per-run result
+
+| run | P | R | ok / abst / miss / WRONG / HALLUC | scored (AMBIG excl.) |
+|---|---|---|---|---|
+| **rep 1 (`-cryptofix-rep1.json`), the worst run** | **50%** | **100%** | 4 / 31 / 0 / 0 / 4 | 39 (4) |
+| rep 2 (`-cryptofix-rep2.json`) | 57% | 100% | 4 / 32 / 0 / 0 / 3 | 39 (4) |
+| rep 3 (`-cryptofix-rep3.json`) | 57% | 100% | 4 / 32 / 0 / 0 / 3 | 39 (4) |
+| for comparison: previous prompt, `-negctl.json` (2026-10-30, earlier model load) | 80% | 100% | 4 / 34 / 0 / 0 / 1 | 39 (4) |
+| for comparison: previous prompt, same-load control (one run, not committed; see below) | 50% | 75% | 3 / 33 / 0 / 1 / 2 | 39 (4) |
+
+**Headline (worst of three): P=50% R=100%, 4 fabrications in 35 scored null cells.** Over the three runs that is 10 fabrications in 105 scored null cells, against 1 in 35 for `-negctl.json`. No run errored. Every scored answer was quote-grounded (8/8, 7/7, 7/7 per `rescore.mjs`).
+
+### The cells the ruling targeted
+
+| id | label | `-negctl` | rep 1 | rep 2 | rep 3 |
+|---|---|---|---|---|---|
+| `starkville-industrial-park-road-crypto-mine-ms` (crypto, "would draw 30 megawatts") | null | 30 (HALLUC) | null | null | null |
+| `big-watt-digital-onida-sd` (crypto, "expected to use 12.5 megawatts") | AMBIG | 12.5 | null | null | null |
+| `bitfarms-panther-creek-nesquehoning-pa` (crypto, 10-K "Current Energized Capacity" 60) | null | null | null | null | null |
+| `atlas-power-williston-nd` (crypto, "currently consumes about 240 megawatts"; the positive the fix must keep) | 240 | 240 | 240 | 240 | 240 |
+
+The fix does what it was written for. Starkville's `reasonIfNull` in all three runs is "The page only mentions a projected power draw, not an operational capacity." Big-watt's is "…a projected electricity consumption figure, not the current operational IT capacity." Atlas kept 240 with the same quote. Bitfarms was null in all three. That is only three observations of a cell the previous prompt answered 60 in 2 of 5, so it is not evidence that the fix helped there.
+
+### Cells that changed from `-negctl.json`
+
+| id | label | `-negctl` | rep 1 | rep 2 | rep 3 | model's quote when answered |
+|---|---|---|---|---|---|---|
+| `starkville-industrial-park-road-crypto-mine-ms` | null | 30 | null | null | null | (none) |
+| `big-watt-digital-onida-sd` | AMBIG | 12.5 | null | null | null | (none) |
+| `applied-digital-polaris-forge-1-ellendale-nd` | null | null | **250** | **250** | **250** | "250 megawatts (MW)", from "Applied Digital will deliver 250 megawatts (MW) of critical IT load", a future lease |
+| `centersquare-ewr5-secaucus-nj` | null | null | **11.6** | **11.6** | **11.6** | "UPS capacity: 11.6MW" |
+| `nsa-utah-data-center-bluffdale-ut` | null | null | **65** | **65** | **65** | "consuming more than 65 megawatts to keep alive." |
+| `creekstone-delta-ut` | null | null | **10000** | null | null | "10 gigawatts", from "what the company aims to establish as the world’s largest AI-optimized data center, with a capacity of 10 gigawatts", a stated aim |
+
+The other 37 cells returned the same value as `-negctl.json` in all three runs: all four positives (flexential 36, 1623 farnam 8, ark-akron 1, atlas-power 240), the other five distractor pages added with centersquare (H5 and 123NET), `google-lincoln-ne` and `microsoft-columbia-quincy-wa` (the other two draw controls), NCCS, Rainier and `google-nebraska`. On the AMBIG cells all three runs answered qts-hillsboro-2 180 and crane-pdx02 48, and aaim null. Quote-only differences, identical in all three runs: flexential "36-megawatt" became "36 megawatts capacity", qts-hillsboro-2 "180 MW+" became "Critical campus capacity 180 MW+", and `google-nebraska` dropped the quote it had carried for a null.
+
+⚠️ **The fix moved the fabrications from crypto pages onto data-center pages, and the move is systematic.** Three of the four new fabrications are on data-center distractors that were null in every earlier observation of the previous prompt. They were answered in 3 of 3 runs here.
+- `centersquare-ewr5-secaucus-nj` is the UPS case that ruling (b) was written to fix. It came back as 11.6, and the prompt still names UPS twice.
+- `nsa-utah-data-center-bluffdale-ut` is a non-crypto current-draw control. Under the previous prompt the model quoted the same sentence and answered null ("only provides a total power consumption figure"). Now it answers 65 from that quote.
+- `applied-digital-polaris-forge-1-ellendale-nd` is a future lease of "critical IT load". The previous prompt was null on it in 5 of 5 observations ("only mentions planned or future capacity").
+
+The fourth, `creekstone-delta-ut` (a planned 10 GW), was answered in 1 of 3 runs. The pre-change claim "on data-center pages the 'IT capacity only' rule held in every scored observation" does not hold for this prompt.
+
+### Same-load control: was it the prompt or the model load?
+
+Reps 1 to 3 ran on a different model load (16:39:47) from `-negctl.json` (16:05:21). After rep 3, on the same load, I ran the previous prompt once as a control. It used a scratch copy of the bench, with the current `run.mjs`, `quote.mjs`, `pages.json` and `truth.json`, and `fields.mjs` from `f16314f`. That copy differs from HEAD's `fields.mjs` only in the crypto sentence and its doc comment. No repo file was touched, and the result file is not committed.
+
+| id | label | previous prompt, same-load control | new prompt, reps 1 / 2 / 3 |
+|---|---|---|---|
+| `applied-digital-polaris-forge-1-ellendale-nd` | null | null | 250 / 250 / 250 |
+| `centersquare-ewr5-secaucus-nj` | null | null | 11.6 / 11.6 / 11.6 |
+| `nsa-utah-data-center-bluffdale-ut` | null | null (same quote, reason "only provides a total power consumption figure") | 65 / 65 / 65 |
+| `creekstone-delta-ut` | null | null | 10000 / null / null |
+| `starkville-industrial-park-road-crypto-mine-ms` | null | **30** ("would draw 30 megawatts") | null / null / null |
+| `big-watt-digital-onida-sd` | AMBIG | 12.5 | null / null / null |
+| `bitfarms-panther-creek-nesquehoning-pa` | null | **60** (the 10-K table cell) | null / null / null |
+| `ark-data-centers-akron-i-summit-county-oh` | 1 | **1000** (WRONG: quote "Capacity 1,000 kW", kW taken as MW) | 1 / 1 / 1 |
+
+So the data-center regressions follow the prompt, not the load. On the same load, the previous prompt was null on all four of those cells and reproduced its own crypto failures (Starkville 30, big-watt 12.5). The control also shows the previous prompt is noisier than its earlier runs suggested. It produced bitfarms 60, the second time in 5 previous-prompt observations of that cell. It also produced a first kW-as-MW unit error on ark-akron, which was 1 in the other 7 observations of that cell across both prompts. Its P=50% equals the new prompt's worst run, so **compare the prompts by cell, not by headline P.** The previous prompt's errors are on crypto pages plus one unit slip. The new prompt's are on data-center distractors, at 3 of 3.
+
+### Limits
+
+- **Three runs and one control, all on one model load.** The control is a single run. For the 37 original cells the previous prompt has 5 observations (rep 1 from 2026-10-29, reps 2 and 3, `-negctl`, the control). For the six controls added in the previous section it has 2 (`-negctl`, the control). "Null in every earlier observation" means 5 of 5 for applied-digital and centersquare, and 2 of 2 for nsa-utah.
+- **The mechanism was not diagnosed.** The answers are consistent with two readings, and neither was tested. (1) The longer crypto sentence, which now says twice what a "current" draw is, may be read as a general "a current draw counts" rule. The nsa-utah answer quotes a present-tense consumption figure. (2) applied-digital's figure is called "critical IT load", which the prompt's "A figure the page calls IT load, critical IT load or IT capacity counts" admits, and the model now weighs that sentence over the "CURRENTLY OPERATIONAL" framing. Neither explains centersquare's UPS answer.
+- **`creekstone` was answered once in three runs**, so its rate is unknown. A fourth run could also surface flips on cells that were stable in these three.
+- **Small samples.** There are 4 positives. Starkville is the only scored crypto future-draw cell, and big-watt is AMBIG. The crypto fix's success rests on those two cells, 3 of 3 each.
+- **Bench harness, not the shipped lane.** The string is identical to the shipped `FIELD_DESCRIPTIONS["capacityMw.operational"]` (parity test), but the rest of the request differs, as noted in the previous section.
+- **Shipped exposure.** `0da6075` is on `feat/offtaker-guard-bats-bench` only, not `main`. The nightly extract lane does not pin `capacityMw.operational`. But nightly `verify-fields` (`VERIFY_FIELDS="capacityMw.operational,water.coolingType"` in `run.sh`) builds its prompt through the same `extractField`/`FIELD_DESCRIPTIONS`. So once `0da6075` reaches `main`, the read-only verify lane would re-check recorded capacities with this description. It stages nothing. How its report would read these answers was not checked.
+- PDFs remain unbenchable, so the 123NET spec-sheet path is still not exercised.
+
+### What this supports for re-pinning
+
+What it supports:
+- **The targeted crypto behaviour.** Forward-looking crypto draws were null in 3 of 3 runs (Starkville scored, big-watt AMBIG), and the one crypto current-draw positive (Atlas 240) held in 3 of 3.
+- **Recall.** 4 of 4 positives, with the same values, in all three runs.
+
+What it does not support:
+- **Any re-pin of `capacityMw.operational` with this prompt.** The worst run is P=50%. Three data-center distractors were fabricated in every run, among them the UPS case ruling (b) fixed and a non-crypto draw control. Each fabrication carries a verbatim, grounded quote, which is the failure that looks well sourced to a reviewer.
+- **Reading the previous prompt as clean.** Its same-load control also scored P=50%, from crypto-page errors and a unit slip.
+
+**Recommendation (a recommendation only; the decision is Ed's):** do not re-pin, and do not treat `0da6075`'s wording as the finished rule. It fixes the crypto forward-draw leak and opens a larger data-center leak in its place. Options, all Ed's call:
+1. Keep Ed's ruling (only a draw in effect now counts) but reword the sentence so it does not restate "a current draw counts" in general terms. For example, state the exclusion as a separate sentence about crypto-mining sites, not as a clause appended to the sentence saying a current draw counts. This is untested. Then re-bench at least three runs plus a same-load control of the previous wording, reading every cell in the two tables above in every run.
+2. Revert the prompt line to the pre-`0da6075` wording and record the forward-draw leak as a known limit while the field stays unpinned. That restores the data-center behaviour measured in the previous section, but it does not fix Starkville or big-watt, and the previous prompt is not clean either (see the control).
+In either case, decide before `0da6075` reaches `main`, because nightly `verify-fields` would pick the description up there.
+
+### Wording variants
+
+Ed's ruling stands (a projected, expected or planned draw does not count), so the open question is wording only. Both variants start from the `f16314f` description (the previous prompt). Each was run three times on this corpus, from scratch copies of the bench, with no repo file edited and no result file committed. The runs were interleaved V1, V2, V1, V2, V1, V2, one at a time, from 17:11 to 17:52 EDT. They used the same model load (16:39:47) as the `0da6075` reps and the same-load control above. Ollama logged 258 chat requests in that window, which is 6 × 43, and no other traffic.
+
+- **V1 (separate sentence; crypto sentence restored to its `f16314f` text).** One sentence is inserted right after the crypto sentence: "For a crypto-mining site, a stated current power draw counts as operational capacity; a contracted, interconnection, substation or building figure does not. A projected, expected or planned draw is not operational capacity at any site." Everything else is the `f16314f` text.
+- **V2 (parenthetical inside the crypto sentence).** "For a crypto-mining site, a stated current power draw (one in effect now, not projected, expected or planned) counts as operational capacity; a contracted, interconnection, substation or building figure does not." Everything else is the `f16314f` text.
+
+| prompt | rep 1 | rep 2 | rep 3 | worst run |
+|---|---|---|---|---|
+| V1 | P=50% R=75% (3 / 33 / 0 / 1 / 2) | same | same | **P=50% R=75%** |
+| V2 | P=80% R=100% (4 / 34 / 0 / 0 / 1) | same | same | **P=80% R=100%** |
+| `0da6075` (for comparison) | P=50% R=100% | P=57% R=100% | P=57% R=100% | P=50% R=100% |
+| previous prompt, same-load control (one run) | P=50% R=75% | | | P=50% R=75% |
+
+Counts are ok / abst / miss / WRONG / HALLUC over 39 scored cells (4 AMBIG excluded). No run errored, and every scored answer was quote-grounded.
+
+| id | label | control (prev.) | `0da6075` reps 1/2/3 | V1 reps 1/2/3 | V2 reps 1/2/3 |
+|---|---|---|---|---|---|
+| `starkville-industrial-park-road-crypto-mine-ms` | null | 30 | null / null / null | null / null / null | null / null / null |
+| `big-watt-digital-onida-sd` | AMBIG | 12.5 | null / null / null | null / null / null | null / null / null |
+| `bitfarms-panther-creek-nesquehoning-pa` | null | 60 | null / null / null | **60 / 60 / 60** | null / null / null |
+| `atlas-power-williston-nd` | 240 | 240 | 240 / 240 / 240 | 240 / 240 / 240 | 240 / 240 / 240 |
+| `applied-digital-polaris-forge-1-ellendale-nd` | null | null | 250 / 250 / 250 | null / null / null | **250 / 250 / 250** |
+| `centersquare-ewr5-secaucus-nj` | null | null | 11.6 / 11.6 / 11.6 | null / null / null | null / null / null |
+| `nsa-utah-data-center-bluffdale-ut` | null | null | 65 / 65 / 65 | **65 / 65 / 65** | null / null / null |
+| `creekstone-delta-ut` | null | null | 10000 / null / null | null / null / null | null / null / null |
+| `ark-data-centers-akron-i-summit-county-oh` | 1 | 1000 (WRONG) | 1 / 1 / 1 | **1000 / 1000 / 1000** (WRONG, "1,000 kW") | 1 / 1 / 1 |
+
+No other cell moved. The other 34 cells returned the same value in all eleven runs compared (`-negctl`, the control, and three runs each of `0da6075`, V1 and V2). Each variant's three runs returned identical values on all 43 cells.
+
+**Neither variant wins.** The bar was: the four regressed cells null in 3 of 3, Starkville and big-watt null in 3 of 3, and Atlas 240.
+- **V1 fails on `nsa-utah`** (65 in 3 of 3). It also keeps the control's two errors: bitfarms 60 and the ark-akron kW-as-MW slip, both in 3 of 3, which drops recall to 75%. "At any site" fixed the future draws and the applied-digital lease, but left a present-tense draw at a data center counting.
+- **V2 fails on `applied-digital-polaris-forge-1-ellendale-nd`** (250 in 3 of 3, quote "250 megawatts (MW)", from "will deliver 250 megawatts (MW) of critical IT load"). It holds every other cell in the table, at P=80% R=100% in all three runs, the same score as `-negctl` with its one error moved from Starkville to applied-digital. That page's figure is called "critical IT load", which the prompt's "A figure the page calls IT load, critical IT load or IT capacity counts" admits whatever its tense. That reading is untested.
+- ⚠️ **V2's Starkville null is right for an unstated reason.** In all three runs its `reasonIfNull` is "The page only provides a total power draw figure, not specifically IT capacity." It names neither the future tense nor the crypto clause. The bench cannot tell whether V2 applied the parenthetical or declined the crypto exception on that page. Atlas (a current crypto draw) still held 240.
+
+Limits specific to this round: each variant had three runs on one model load. Its runs were value-identical, so this round saw no within-variant variance, but earlier rounds did see it on this same setup (bitfarms, creekstone). Starkville is still the only scored crypto future-draw cell. A V2 wording that also scopes "critical IT load" to figures in effect now was not benched.
+
+**Decision (Ed, 2026-10-30): V2 shipped.** It fell short of the bar above, but it beats both the previous prompt and `0da6075` on the worst run (P=80% against P=50%), and its one fabrication (scored HALLUC) is a future lease the page calls "critical IT load". Its three runs are committed as `result-gpt-oss_20b-capacityOperational-cryptofix-v2-rep1.json`, `-rep2.json` and `-rep3.json`. They were measured from a scratch copy whose `fields.mjs` differed from `f16314f` only in the crypto sentence, which is now the shipped text. The V1 runs stay outside the repo. `capacityMw.operational` stays off the nightly extract lane. A re-pin is still Ed's call, and it needs the "critical IT load" lease case settled first.

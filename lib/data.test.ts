@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { gzipSync, gunzipSync } from "node:zlib";
 import facilitiesRaw from "@/data/facilities.json";
+import { OFFTAKER_LABEL_PATTERN } from "@/lib/schema";
 import { canonicalCountyName } from "@/lib/counties";
 import { findUnlinkedPowerPlant, findUnpoweredDataCenter } from "@/lib/test-fixtures/unpowered-facility";
 import {
@@ -1704,6 +1705,22 @@ describe("getQuarterlyPipelineSummary", () => {
       cancelledThisQuarter: 0,
       statusChangesThisQuarter: 0,
     });
+  });
+});
+
+describe("normalizeOfftaker — schema-accepted labels", () => {
+  it.each([
+    "Amazon (AWS)",
+    "Google (Project Tembo, via Jupiter Star Holdings)",
+    "Nine Mile Data, LLC",
+    "Meta (via Pacific Power)",
+    "Meta (renewable energy credits; energy sold to Central Electric Power Cooperative)",
+    "Meta",
+  ])("%j matches the pattern and normalizes to a non-empty name with no parenthetical", (label) => {
+    expect(OFFTAKER_LABEL_PATTERN.test(label)).toBe(true);
+    const n = normalizeOfftaker(label);
+    expect(n).not.toContain("(");
+    expect(n.length).toBeGreaterThan(0);
   });
 });
 

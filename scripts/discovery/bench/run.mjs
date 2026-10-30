@@ -20,7 +20,9 @@
 //      quote reading "1GW+", and the model resolves that conflict by abstaining
 //   3. the reasonIfNull field -- forcing the model to justify an abstention turns
 //      a lazy null into a correct extraction (measured 0/6 -> 6/6)
-// Deterministic: seed changes nothing, this is not sampling noise.
+// NOT fully deterministic, even at temperature 0: three repeat runs on one
+// corpus flipped 2 of 37 capacityOperational cells (2026-10-30, README
+// "capacityOperational follow-ups"). Quote the worst of at least three runs.
 
 import { readFileSync, writeFileSync } from "node:fs";
 // Field-kind map lives in fields.mjs -- shared with rescore.mjs -- so the

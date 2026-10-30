@@ -896,5 +896,29 @@
   "123net-dc4-byron-center-mi": {
     "capacityOperational": null,
     "note": "DISTRACTOR. Read the cached www.123.net/data-center-colocation page (identical text for all three ids): states 'a dedicated 20 MW DTE substation' (a utility figure, company-wide for its Michigan facilities) and no IT capacity. The curated note's 1 / 1.5 / 1 MW 'available utility power' figures live only in per-building PDF spec sheets, which the bench fetcher cannot read, so that path is NOT exercised. null."
+  },
+  "nsa-utah-data-center-bluffdale-ut": {
+    "capacityOperational": null,
+    "note": "NON-CRYPTO CURRENT-DRAW CONTROL (2026-10-30). Read the cached CLUI Land Use Database page (1,890 chars, read in full): 'The 1.5 million square foot complex surrounds a 100,000 square foot computer brain that helps the NSA process its load of collected information ... consuming more than 65 megawatts to keep alive.' That is a stated current power draw at a data center, not a crypto-mining site, so ruling (a) does not apply, and a draw is not IT capacity under the IT-capacity-only rule. It is the page's only MW figure; no IT load is stated. TRAP: 'its load of collected information' uses 'load' for data, not power. The DB's operational 65 names no source of its own, and the record cites this same CLUI page, so it may be this draw entered as capacity. It is a hint, not this page's label. null."
+  },
+  "google-lincoln-ne": {
+    "capacityOperational": null,
+    "note": "NON-CRYPTO CURRENT-DRAW CONTROL (2026-10-30). Read the cached 1011 NOW (KOLN) page in full: 'The Google Data Center in Lincoln, named Agate LLC ...' and '... reveals that Agate LLC is reporting 52.65 megawatts of electricity during peak electrical demand and 13.299 megagallons of water ... in the last year.' A self-reported peak electrical demand at an operating data center is a draw, not IT capacity. It is the page's only MW figure; the rest are gallons, dollars and 288,530 sq ft. No IT load stated. Matches the curated energy note. null."
+  },
+  "microsoft-columbia-quincy-wa": {
+    "capacityOperational": null,
+    "note": "NON-CRYPTO DRAW CONTROL, DATED AND PAST TENSE (2026-10-30). Read the cached Wikipedia text: 'The data center consumed 30 to 50 megawatts in 2012 and employs 50 people.' A stated consumption range at an operating data center, dated 2012: a draw, not IT capacity, and not current either. It is the page's only MW figure; the others are 500,000 / 800,000 sq ft, 270 acres and '1.9 or 2.5 cents per kilowatt-hour'. No IT load. Weaker than the other two controls on the 'current' axis because the page dates the draw. null."
+  },
+  "starkville-industrial-park-road-crypto-mine-ms": {
+    "capacityOperational": null,
+    "note": "FORWARD-LOOKING DRAW CONTROL, CRYPTO (2026-10-30). Read the cached WTVA page in full: 'A proposed cryptocurrency mining facility is under review in Starkville' and 'The center would draw 30 megawatts of power; the city has a 50-megawatt capacity.' Ruling (a) counts a CURRENT draw at a crypto-mining site; this draw is future ('would draw') at a site not yet approved, so it is not operational capacity. The 50 MW is the city utility's capacity. No other MW figure. null."
+  },
+  "nccs-massena-reynolds-ny": {
+    "capacityOperational": null,
+    "note": "FORWARD-LOOKING DRAW CONTROL (2026-10-30). Read the cached NCPR page (2026-05-22) in full: 'The facility would include three buildings totaling nearly 1.5 million square feet ... The operation would consume 635 megawatts of power. That equates to roughly 70% of the power produced at the Moses-Saunders Power Dam.' Proposed project (headline: 'Massena Town Planning Board takes no action at data center meeting'); a future draw, and this page never mentions crypto. No IT capacity stated, and nothing is operating. The DB's planned 635 is this same figure; planned capacity is not under test. null."
+  },
+  "amazon-project-rainier-new-carlisle-in": {
+    "capacityOperational": null,
+    "note": "FORWARD-LOOKING DRAW AT AN OPERATING SITE (2026-10-30). Read the cached CNBC page (2025-10-29) in full: '... as of this month, seven buildings are already online, with two more campuses underway. The full site will eventually span 30 buildings and draw more than 2.2 gigawatts of electricity, enough to power more than 1.6 million homes.' The site IS operating, but the page's only MW/GW figure for it is the future full-site draw; it states no current IT capacity (chip counts only: 'about 500,000 chips'). TRAPS: 'a 2-gigawatt Hyperion site' (Meta), '33 gigawatts of new compute' (OpenAI), and Indiana Michigan Power's peak demand doubling. null."
   }
 }

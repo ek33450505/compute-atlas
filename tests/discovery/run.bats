@@ -285,9 +285,9 @@ teardown() {
 	export CHECK_SOURCES_RC=1
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"WARN: source-liveness check failed"* ]]
-	[[ "$output" == *"liveness: check-sources failed"* ]]
-	[[ "$output" == *"discovery run"*"complete"* ]]
+	[[ "$output" == *"WARN: source-liveness check failed"* ]] || return 1
+	[[ "$output" == *"liveness: check-sources failed"* ]] || return 1
+	[[ "$output" == *"discovery run"*"complete"* ]] || return 1
 }
 
 @test "live path invokes claude with the batch-contract system prompt" {
@@ -308,7 +308,7 @@ teardown() {
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 	grep -q -- "--model opus --effort high" "$CLAUDE_CALL_LOG"
-	[[ "$output" == *"claude model=opus effort=high"* ]]
+	[[ "$output" == *"claude model=opus effort=high"* ]] || return 1
 }
 
 @test "DISCOVERY_CLAUDE_MODEL and DISCOVERY_CLAUDE_EFFORT overrides are honoured" {
@@ -340,7 +340,7 @@ teardown() {
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 	grep -qF -- "Bash($REPO_ROOT/scripts/discovery/fetch-url.sh:*)" "$CLAUDE_CALL_LOG"
-	! grep -qF -- "Bash(curl" "$CLAUDE_CALL_LOG"
+	if grep -qF -- "Bash(curl" "$CLAUDE_CALL_LOG"; then return 1; fi
 }
 
 @test "the batch contract names the absolute fetch-url.sh path" {
@@ -356,7 +356,7 @@ teardown() {
 	[ "$status" -eq 0 ]
 	want="$(cd "$DISCOVERY_WORK_DIR" && pwd -P)"
 	grep -qxF "cwd=$want" "$CLAUDE_CALL_LOG"
-	! grep -qxF "cwd=$(cd "$REPO_ROOT" && pwd -P)" "$CLAUDE_CALL_LOG"
+	if grep -qxF "cwd=$(cd "$REPO_ROOT" && pwd -P)" "$CLAUDE_CALL_LOG"; then return 1; fi
 	[ "$(ls -ld "$DISCOVERY_WORK_DIR" | cut -c1-10)" = "drwx------" ]
 }
 
@@ -406,7 +406,7 @@ teardown() {
 	: > "$HOME/.compute-atlas-discovery"
 	run bash "$RUN_SH"
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" == *"cannot create contract dir"* ]]
+	[[ "$output" == *"cannot create contract dir"* ]] || return 1
 }
 
 @test "a missing lib/status.ts: claude never starts and no temp files remain" {
@@ -416,7 +416,7 @@ teardown() {
 	cp "$REPO_ROOT/lib/schema.ts" "$TEST_TMP/fakerepo/lib/schema.ts"
 	run bash "$TEST_TMP/fakerepo/scripts/discovery/run.sh"
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" == *"cannot stage the schema contract"* ]]
+	[[ "$output" == *"cannot stage the schema contract"* ]] || return 1
 	[ -z "$(find "$HOME/.compute-atlas-discovery/contract" -mindepth 1 \( -name '.schema.*' -o -name '.status.*' \) )" ]
 }
 
@@ -427,7 +427,7 @@ teardown() {
 	ln -s "$TEST_TMP/target" "$HOME/.compute-atlas-discovery/contract"
 	run bash "$RUN_SH"
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" == *"is a symlink"* ]]
+	[[ "$output" == *"is a symlink"* ]] || return 1
 	[ "$(_mode_of "$TEST_TMP/target")" = "drwxr-xr-x" ]
 	[ -z "$(ls -A "$TEST_TMP/target")" ]
 }
@@ -439,7 +439,7 @@ teardown() {
 	ln -s "$TEST_TMP/target" "$HOME/.compute-atlas-discovery"
 	run bash "$RUN_SH"
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" == *"is a symlink"* ]]
+	[[ "$output" == *"is a symlink"* ]] || return 1
 	[ -z "$(ls -A "$TEST_TMP/target")" ]
 }
 
@@ -450,7 +450,7 @@ teardown() {
 	ln -s "$TEST_TMP/secret.txt" "$HOME/.compute-atlas-discovery/contract/.schema.evil"
 	run bash "$RUN_SH"
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" == *"non-regular entry"* ]]
+	[[ "$output" == *"non-regular entry"* ]] || return 1
 	[ -L "$HOME/.compute-atlas-discovery/contract/.schema.evil" ]
 }
 
@@ -469,7 +469,7 @@ teardown() {
 	: > "$HOME/.compute-atlas-discovery/contract/stray.txt"
 	run bash "$RUN_SH"
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" == *"unexpected entry"* ]]
+	[[ "$output" == *"unexpected entry"* ]] || return 1
 	[ -e "$HOME/.compute-atlas-discovery/contract/stray.txt" ]
 }
 
@@ -493,9 +493,9 @@ teardown() {
 	export DISCOVERY_WORK_DIR="$TEST_TMP/fakerepo/work"
 	run bash "$TEST_TMP/fakerepo/scripts/discovery/run.sh"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"ERROR: discovery work dir"*"inside it"* ]]
+	[[ "$output" == *"ERROR: discovery work dir"*"inside it"* ]] || return 1
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" == *"cause=auth"* ]]
+	[[ "$output" == *"cause=auth"* ]] || return 1
 }
 
 # Work-dir guard helpers. Everything stays under $TEST_TMP: never aim
@@ -509,9 +509,9 @@ _work_dir_refused_setup() {
 
 _assert_work_dir_refused() {
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"ERROR: discovery work dir"* ]]
+	[[ "$output" == *"ERROR: discovery work dir"* ]] || return 1
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" == *"cause=auth"* ]]
+	[[ "$output" == *"cause=auth"* ]] || return 1
 }
 
 _mode_of() { ls -ld "$1" | cut -c1-10; }
@@ -525,7 +525,7 @@ _mode_of() { ls -ld "$1" | cut -c1-10; }
 	export DISCOVERY_WORK_DIR="$TEST_TMP/outer"
 	run bash "$TEST_TMP/outer/repo/scripts/discovery/run.sh"
 	_assert_work_dir_refused
-	[[ "$output" == *"contains the repo"* ]]
+	[[ "$output" == *"contains the repo"* ]] || return 1
 }
 
 @test "DISCOVERY_WORK_DIR with a regular file in it: refused (not empty)" {
@@ -534,7 +534,7 @@ _mode_of() { ls -ld "$1" | cut -c1-10; }
 	: >"$DISCOVERY_WORK_DIR/notes.txt"
 	run bash "$RUN_SH"
 	_assert_work_dir_refused
-	[[ "$output" == *"not empty (first entry: "*"notes.txt"* ]]
+	[[ "$output" == *"not empty (first entry: "*"notes.txt"* ]] || return 1
 }
 
 @test "DISCOVERY_WORK_DIR holding .env.local: refused" {
@@ -612,7 +612,7 @@ _mode_of() { ls -ld "$1" | cut -c1-10; }
 	export DISCOVERY_CLAUDE_EFFORT=turbo
 	run bash "$RUN_SH"
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_EFFORT"* ]]
+	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_EFFORT"* ]] || return 1
 	[ ! -s "$CLAUDE_CALL_LOG" ]
 }
 
@@ -621,7 +621,7 @@ _mode_of() { ls -ld "$1" | cut -c1-10; }
 	export DISCOVERY_CLAUDE_MODEL="opus extra"
 	run bash "$RUN_SH"
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_MODEL"* ]]
+	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_MODEL"* ]] || return 1
 	[ ! -s "$CLAUDE_CALL_LOG" ]
 }
 
@@ -630,7 +630,7 @@ _mode_of() { ls -ld "$1" | cut -c1-10; }
 	export DISCOVERY_CLAUDE_MODEL="-p"
 	run bash "$RUN_SH"
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_MODEL"* ]]
+	[[ "$output" == *"ERROR: DISCOVERY_CLAUDE_MODEL"* ]] || return 1
 	[ ! -s "$CLAUDE_CALL_LOG" ]
 }
 
@@ -639,7 +639,7 @@ _mode_of() { ls -ld "$1" | cut -c1-10; }
 	export DISCOVERY_MIN_CLAUDE_SECS=abc
 	run bash "$RUN_SH"
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"ERROR: DISCOVERY_MIN_CLAUDE_SECS"* ]]
+	[[ "$output" == *"ERROR: DISCOVERY_MIN_CLAUDE_SECS"* ]] || return 1
 	[ ! -s "$CLAUDE_CALL_LOG" ]
 }
 
@@ -655,18 +655,18 @@ _mode_of() { ls -ld "$1" | cut -c1-10; }
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
 
-	[[ "$output" == *"suspected misconfigured run"* ]]
-	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" == *"suspected misconfigured run"* ]] || return 1
+	[[ "$output" != *"retrying once"* ]] || return 1
 	# Exactly one claude call: no retry.
 	# (the logged prompt spans many lines; count call records, not lines)
 	[ "$(grep -c '^claude ' "$CLAUDE_CALL_LOG")" = "1" ]
 	# Nothing to stage: the empty array must not reach submit-candidates.ts.
-	! grep -q -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	if grep -q -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"; then return 1; fi
 	grep -q '"claudeStatus": "suspect_short"' "$LOG_DIR/heartbeat.json"
 	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
 	# Cursor advanced at start-of-run, then rewound to the consumed state.
 	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
-	[[ "$output" == *"environmental failure: suspect_short"* ]]
+	[[ "$output" == *"environmental failure: suspect_short"* ]] || return 1
 }
 
 @test "an instant empty [] is ok when DISCOVERY_MIN_CLAUDE_SECS=0 disables the guard" {
@@ -691,7 +691,7 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
-	[[ "$output" != *"suspected misconfigured run"* ]]
+	[[ "$output" != *"suspected misconfigured run"* ]] || return 1
 }
 
 @test "dry-run is unaffected by the suspect_short guard" {
@@ -699,7 +699,7 @@ EOF
 	export DISCOVERY_MIN_CLAUDE_SECS=120
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
-	[[ "$output" != *"suspected misconfigured run"* ]]
+	[[ "$output" != *"suspected misconfigured run"* ]] || return 1
 }
 
 @test "shape helper failing to spawn reads as bad: no_array path, retried, never ok" {
@@ -716,9 +716,9 @@ EOS
 	chmod +x "$BIN_DIR/npx"
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"retrying once"* ]]
-	! grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
-	! grep -q -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
+	[[ "$output" == *"retrying once"* ]] || return 1
+	if grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"; then return 1; fi
+	if grep -q -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"; then return 1; fi
 }
 
 @test "suspect_short rewinds once and records the state in suspect-short-requeued.txt" {
@@ -742,8 +742,8 @@ EOS
 	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"suspect_short twice in a row"* ]]
-	[[ "$output" != *"re-queued: cursor rewound"* ]]
+	[[ "$output" == *"suspect_short twice in a row"* ]] || return 1
+	[[ "$output" != *"re-queued: cursor rewound"* ]] || return 1
 	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" != "TX" ]
 	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
 	# still red for the watchdog
@@ -791,8 +791,8 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
 	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
-	[[ "$output" == *"suspect_short twice in a row"* ]]
-	[[ "$output" == *"environmental failure: blocked"* ]]
+	[[ "$output" == *"suspect_short twice in a row"* ]] || return 1
+	[[ "$output" == *"environmental failure: blocked"* ]] || return 1
 	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
 }
 
@@ -811,7 +811,7 @@ exit 1
 EOS
 	chmod +x "$BIN_DIR/claude"
 	run bash "$RUN_SH"
-	[[ "$output" == *"re-queued: cursor rewound"* ]]
+	[[ "$output" == *"re-queued: cursor rewound"* ]] || return 1
 	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
 }
 
@@ -841,7 +841,7 @@ EOF
 
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 2 ]
-	[[ "$output" == *"WARN: claude output for"*"had no parseable JSON array (cause=no_array,"*"retrying once"* ]]
+	[[ "$output" == *"WARN: claude output for"*"had no parseable JSON array (cause=no_array,"*"retrying once"* ]] || return 1
 
 	outfile="$(find "$LOG_DIR" -name 'candidates-*.json' -print -quit)"
 	[ -n "$outfile" ]
@@ -868,7 +868,7 @@ EOF
 
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 1 ]
-	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" != *"retrying once"* ]] || return 1
 }
 
 @test "dry-run never retries even though it writes an empty array" {
@@ -878,7 +878,7 @@ EOF
 	[ "$status" -eq 0 ]
 	# dry-run must never invoke the real claude binary at all, retry or not
 	[ ! -s "$CLAUDE_CALL_LOG" ]
-	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" != *"retrying once"* ]] || return 1
 }
 
 # --- failure classification (2026-09-11) ------------------------------------
@@ -914,8 +914,8 @@ EOF
 	# ONE call, not two — the retry is suppressed because it cannot help.
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 1 ]
-	[[ "$output" != *"retrying once"* ]]
-	[[ "$output" == *"NOT retrying"* ]]
+	[[ "$output" != *"retrying once"* ]] || return 1
+	[[ "$output" == *"NOT retrying"* ]] || return 1
 	grep -q '"claudeStatus": "blocked"' "$LOG_DIR/heartbeat.json"
 }
 
@@ -942,9 +942,9 @@ EOF
 
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 1 ]
-	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" != *"retrying once"* ]] || return 1
 	grep -q '"claudeStatus": "blocked"' "$LOG_DIR/heartbeat.json"
-	[[ "$output" != *"cause=api_error"* ]]
+	[[ "$output" != *"cause=api_error"* ]] || return 1
 }
 
 @test "a transient API error classifies as api_error and DOES retry" {
@@ -968,8 +968,8 @@ EOF
 
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 2 ]
-	[[ "$output" == *"cause=api_error"* ]]
-	[[ "$output" == *"retrying once"* ]]
+	[[ "$output" == *"cause=api_error"* ]] || return 1
+	[[ "$output" == *"retrying once"* ]] || return 1
 	grep -q '"claudeStatus": "api_error"' "$LOG_DIR/heartbeat.json"
 }
 
@@ -995,7 +995,7 @@ EOF
 
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 2 ]
-	[[ "$output" == *"cause=no_array"* ]]
+	[[ "$output" == *"cause=no_array"* ]] || return 1
 	grep -q '"claudeStatus": "no_array"' "$LOG_DIR/heartbeat.json"
 }
 
@@ -1016,7 +1016,7 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"30 bytes"* ]]
+	[[ "$output" == *"30 bytes"* ]] || return 1
 }
 
 # --- auth failure class (2026-10-04) ----------------------------------------
@@ -1047,12 +1047,12 @@ EOF
 	# ONE call, not two — a retry cannot revive a dead login.
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 1 ]
-	[[ "$output" != *"retrying once"* ]]
-	[[ "$output" == *"NOT retrying"* ]]
+	[[ "$output" != *"retrying once"* ]] || return 1
+	[[ "$output" == *"NOT retrying"* ]] || return 1
 	# the operator-facing reason names the login, not a JSON bug
-	[[ "$output" == *"Claude Code login expired or invalid"* ]]
-	[[ "$output" == *"cause=auth"* ]]
-	[[ "$output" != *"cause=no_array"* ]]
+	[[ "$output" == *"Claude Code login expired or invalid"* ]] || return 1
+	[[ "$output" == *"cause=auth"* ]] || return 1
+	[[ "$output" != *"cause=no_array"* ]] || return 1
 	grep -q '"claudeStatus": "auth"' "$LOG_DIR/heartbeat.json"
 }
 
@@ -1078,8 +1078,8 @@ EOF
 
 	call_count="$(cat "$CLAUDE_COUNTER_FILE")"
 	[ "$call_count" -eq 1 ]
-	[[ "$output" != *"retrying once"* ]]
-	[[ "$output" != *"cause=api_error"* ]]
+	[[ "$output" != *"retrying once"* ]] || return 1
+	[[ "$output" != *"cause=api_error"* ]] || return 1
 	grep -q '"claudeStatus": "auth"' "$LOG_DIR/heartbeat.json"
 }
 
@@ -1110,10 +1110,10 @@ EOF
 	[ "$call_count" -eq 1 ]
 
 	# VA is named as skipped, in the log and in the failure ledger
-	[[ "$output" == *"skipping claude for VA"* ]]
-	[[ "$output" == *"VA: skipped"* ]]
+	[[ "$output" == *"skipping claude for VA"* ]] || return 1
+	[[ "$output" == *"VA: skipped"* ]] || return 1
 	# the batch still completed and still covers both states
-	[[ "$output" == *"discovery batch complete"* ]]
+	[[ "$output" == *"discovery batch complete"* ]] || return 1
 
 	# per-state heartbeat: TX carries the real class, VA carries `skipped`
 	grep -A1 '"state": "TX"' "$LOG_DIR/heartbeat.json" | grep -q '"claudeStatus": "auth"'
@@ -1157,7 +1157,7 @@ EOF
 	# and VA (skipped) were researched for nothing, so both come round again.
 	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
 	[ "$cursor_after" = "TX" ]
-	[[ "$output" == *"re-queued: cursor rewound OH -> TX (environmental failure: auth); TX VA run again next batch"* ]]
+	[[ "$output" == *"re-queued: cursor rewound OH -> TX (environmental failure: auth); TX VA run again next batch"* ]] || return 1
 }
 
 @test "a blocked (session-limit) failure rewinds the cursor to the state it consumed" {
@@ -1179,7 +1179,7 @@ EOF
 	# start-of-run write put the cursor on VA; the rewind puts it back on TX
 	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
 	[ "$cursor_after" = "TX" ]
-	[[ "$output" == *"environmental failure: blocked"* ]]
+	[[ "$output" == *"environmental failure: blocked"* ]] || return 1
 }
 
 @test "the rewind targets the FIRST environmental failure, never a state that succeeded" {
@@ -1213,7 +1213,7 @@ EOF
 
 	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
 	[ "$cursor_after" = "VA" ]
-	[[ "$output" == *"re-queued: cursor rewound OH -> VA (environmental failure: blocked); VA run again next batch"* ]]
+	[[ "$output" == *"re-queued: cursor rewound OH -> VA (environmental failure: blocked); VA run again next batch"* ]] || return 1
 }
 
 @test "a DISCOVERY_STATES override run never rewinds the cursor" {
@@ -1238,7 +1238,7 @@ EOF
 
 	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
 	[ "$cursor_after" = "WA" ]
-	[[ "$output" != *"re-queued"* ]]
+	[[ "$output" != *"re-queued"* ]] || return 1
 }
 
 @test "a transient api_error does NOT rewind the cursor" {
@@ -1260,7 +1260,7 @@ EOF
 
 	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
 	[ "$cursor_after" = "VA" ]
-	[[ "$output" != *"re-queued"* ]]
+	[[ "$output" != *"re-queued"* ]] || return 1
 }
 
 @test "a fully successful default-rotation batch still advances the cursor by 2" {
@@ -1281,7 +1281,7 @@ EOF
 
 	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
 	[ "$cursor_after" = "OH" ]
-	[[ "$output" != *"re-queued"* ]]
+	[[ "$output" != *"re-queued"* ]] || return 1
 }
 
 @test "a legitimately empty [] is never classified as a failure" {
@@ -1299,7 +1299,7 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
-	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" != *"retrying once"* ]] || return 1
 	# The empty array must reach submit, not be skipped as a parse failure.
 	# (A bare `"skipping submit"` check would false-positive here: the
 	# enrichment lane logs that phrase of its own accord under the npx stub.)
@@ -1328,8 +1328,8 @@ EOF
 	# this test is unchanged and asserted below: the run still REACHES
 	# completion rather than aborting at the failure.
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"discovery run"*"complete"* ]]
-	[[ "$output" == *"skipping submit"* ]]
+	[[ "$output" == *"discovery run"*"complete"* ]] || return 1
+	[[ "$output" == *"skipping submit"* ]] || return 1
 	# check-sources still ran after the failure — nothing was short-circuited
 	run grep -q "check-sources.ts" "$NPX_CALL_LOG"
 	[ "$status" -eq 0 ]
@@ -1433,7 +1433,7 @@ EOF
 	run grep -c -- "submit-candidates.ts .*--max=3" "$NPX_CALL_LOG"
 	[ "$status" -eq 0 ]
 	[ "${output//[[:space:]]/}" != "0" ]
-	[[ "$npx_output" == *"review cap for"* ]]
+	[[ "$npx_output" == *"review cap for"* ]] || return 1
 }
 
 @test "review cap log line is emitted with a sane computed --max when no override is set" {
@@ -1450,7 +1450,7 @@ EOF
 	[ "$status" -eq 0 ]
 
 	# the compute_cap block ran and logged its decision
-	[[ "$output" == *"review cap for"* ]]
+	[[ "$output" == *"review cap for"* ]] || return 1
 
 	# the submit call's --max is a bare run of digits that terminates cleanly at
 	# a space or end of line — i.e. never empty (`--max=`), never non-numeric
@@ -1480,8 +1480,8 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
-	[[ "$output" != *"unbound variable"* ]]
-	[[ "$output" == *"discovery run"*"complete"* ]]
+	[[ "$output" != *"unbound variable"* ]] || return 1
+	[[ "$output" == *"discovery run"*"complete"* ]] || return 1
 }
 
 # --- verification-gate import safety (Track 1 Task 7) -----------------------
@@ -1517,18 +1517,18 @@ EOF
 	fi
 
 	[ "$status" -eq 0 ]
-	[[ "$output" != *"ECONNREFUSED"* ]]
-	[[ "$output" != *"11434"* ]]
-	[[ "$output" != *"fetch failed"* ]]
-	[[ "$output" != *"OLLAMA"* ]]
+	[[ "$output" != *"ECONNREFUSED"* ]] || return 1
+	[[ "$output" != *"11434"* ]] || return 1
+	[[ "$output" != *"fetch failed"* ]] || return 1
+	[[ "$output" != *"OLLAMA"* ]] || return 1
 	# Exit-code 1 alone is ambiguous — main()'s own early "API_ADMIN_TOKEN is
 	# not set" exit(1) coincides with the intentional invalid-array exit(1)
 	# below, so these are the sharper, structural signal: they can ONLY
 	# appear if `main()` ran in this "-e" context at all (a broken `isMain`
 	# guard), which is the actual regression this test exists to catch —
 	# confirmed by deliberately breaking `isMain` and re-running this file.
-	[[ "$output" != *"API_ADMIN_TOKEN"* ]]
-	[[ "$output" != *"Usage: submit-candidates.ts"* ]]
+	[[ "$output" != *"API_ADMIN_TOKEN"* ]] || return 1
+	[[ "$output" != *"Usage: submit-candidates.ts"* ]] || return 1
 }
 
 # --- multi-state batch (Unit 2, 2026-08-14) ----------------------------------
@@ -1562,7 +1562,7 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
-	[[ "$output" == *"states=TX VA"* ]]
+	[[ "$output" == *"states=TX VA"* ]] || return 1
 
 	# two distinct candidates files, one per state
 	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
@@ -1586,7 +1586,7 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
-	[[ "$output" == *"states=NM LA"* ]]
+	[[ "$output" == *"states=NM LA"* ]] || return 1
 	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
 	[ "$cursor_after" = "TX" ]
 }
@@ -1630,15 +1630,15 @@ EOF
 	[ "$call_count" -eq 2 ]
 
 	# both states reached completion despite TX's total claude failure
-	[[ "$output" == *"discovery batch complete"* ]]
-	[[ "$output" == *"skipping submit"* ]]
+	[[ "$output" == *"discovery batch complete"* ]] || return 1
+	[[ "$output" == *"skipping submit"* ]] || return 1
 
 	# only VA's candidates made it to submit (TX skipped — no parseable array)
 	run grep -c -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
 	[ "$status" -eq 0 ]
 	[ "${output//[[:space:]]/}" = "1" ]
 	run grep -- "submit-candidates.ts .*--run-id" "$NPX_CALL_LOG"
-	[[ "$output" == *"--state=VA"* ]]
+	[[ "$output" == *"--state=VA"* ]] || return 1
 }
 
 @test "batch heartbeat records one entry per state with per-state claudeStatus" {
@@ -1784,15 +1784,15 @@ EOF
 	fi
 
 	[ "$status" -eq 1 ]
-	[[ "$output" != *"ECONNREFUSED"* ]]
-	[[ "$output" != *"11434"* ]]
-	[[ "$output" != *"fetch failed"* ]]
-	[[ "$output" != *"OLLAMA"* ]]
+	[[ "$output" != *"ECONNREFUSED"* ]] || return 1
+	[[ "$output" != *"11434"* ]] || return 1
+	[[ "$output" != *"fetch failed"* ]] || return 1
+	[[ "$output" != *"OLLAMA"* ]] || return 1
 	# See the sibling test above — exit(1) is ambiguous on its own between
 	# "correctly detected a non-array" and "main() crashed for an unrelated
 	# reason"; this is the assertion that actually discriminates the two.
-	[[ "$output" != *"API_ADMIN_TOKEN"* ]]
-	[[ "$output" != *"Usage: submit-candidates.ts"* ]]
+	[[ "$output" != *"API_ADMIN_TOKEN"* ]] || return 1
+	[[ "$output" != *"Usage: submit-candidates.ts"* ]] || return 1
 }
 
 # --- alerting (open item #1, 2026-08-14) -------------------------------------
@@ -1817,10 +1817,10 @@ EOF
 	[ "$status" -eq 1 ]
 	[ -s "$NOTIFY_CALL_LOG" ]
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
-	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
+	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]] || return 1
 	# The alerting behaviour is unchanged for a `blocked` run — only the
 	# message names the real cause now instead of blaming the model's JSON.
-	[[ "$output" == *"run blocked by the environment"* ]]
+	[[ "$output" == *"run blocked by the environment"* ]] || return 1
 }
 
 @test "a clean run attempts NO notification and exits 0" {
@@ -1836,7 +1836,7 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 	[ ! -s "$NOTIFY_CALL_LOG" ]
-	[[ "$output" == *"discovery run OK — no failures"* ]]
+	[[ "$output" == *"discovery run OK — no failures"* ]] || return 1
 	grep -q '"status": "ok"' "$LOG_DIR/heartbeat.json"
 	grep -q '"failureCount": 0' "$LOG_DIR/heartbeat.json"
 }
@@ -1873,7 +1873,7 @@ EOF
 	# Missed PRIOR runs do not make THIS run a failure — it is reported, not
 	# punished. Exit stays 0 because this run itself was fine.
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"scheduled runs were MISSED"* ]]
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
 	[ -s "$NOTIFY_CALL_LOG" ]
 	grep -q "Missed runs" "$NOTIFY_CALL_LOG"
 }
@@ -1886,7 +1886,7 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
-	[[ "$output" != *"scheduled runs were MISSED"* ]]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
 	[ ! -s "$NOTIFY_CALL_LOG" ]
 }
 
@@ -1951,7 +1951,7 @@ EOF
 	# a failure of the guard, not of the output, and the old code could not see
 	# the difference at all.
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"the wall-clock cap did NOT enforce"* ]]
+	[[ "$output" == *"the wall-clock cap did NOT enforce"* ]] || return 1
 	[ -s "$NOTIFY_CALL_LOG" ]
 	grep -q '"claudeStatus": "ok"' "$LOG_DIR/heartbeat.json"
 	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
@@ -1972,7 +1972,7 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
-	[[ "$output" != *"did NOT enforce"* ]]
+	[[ "$output" != *"did NOT enforce"* ]] || return 1
 	[ ! -s "$NOTIFY_CALL_LOG" ]
 }
 
@@ -2115,7 +2115,7 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"states=IA NE"* ]]
+	[[ "$output" == *"states=IA NE"* ]] || return 1
 	[ -n "$(find "$LOG_DIR" -name 'candidates-*-IA.json' -print -quit)" ]
 	[ -n "$(find "$LOG_DIR" -name 'candidates-*-NE.json' -print -quit)" ]
 	# no state outside the override was touched
@@ -2136,7 +2136,7 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"falling back to the default rotation"* ]]
+	[[ "$output" == *"falling back to the default rotation"* ]] || return 1
 	# it actually processed a state rather than silently no-opping
 	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
 	[ "$outfile_count" = "1" ]
@@ -2162,7 +2162,7 @@ EOF
 	# this flag away — that silently re-enables both benched-unsafe fields.
 	extract_line="$(grep "extract-fields.ts" "$NPX_CALL_LOG" | head -1)"
 	[ -n "$extract_line" ]
-	[[ "$extract_line" == *"--fields=water.coolingType"* ]]
+	[[ "$extract_line" == *"--fields=water.coolingType"* ]] || return 1
 
 	# capacityMw.operational was unpinned from the nightly extract lane on
 	# 2026-10-29 (Ed). The positive above is a substring match, so it cannot
@@ -2176,8 +2176,8 @@ EOF
 	# the comment above claims: the two fields the bench REJECTED must never
 	# appear in the pinned list. Verified 2026-09-01: without these, a list with
 	# capacityMw.planned appended passes.
-	[[ "$extract_line" != *"capacityMw.planned"* ]]
-	[[ "$extract_line" != *"energy.onSiteGenerationMw"* ]]
+	[[ "$extract_line" != *"capacityMw.planned"* ]] || return 1
+	[[ "$extract_line" != *"energy.onSiteGenerationMw"* ]] || return 1
 
 	# energy.source and energy.utility were dropped from the nightly list on
 	# 2026-09-01 (F7): both shipped for months with ZERO bench measurement (no
@@ -2186,8 +2186,8 @@ EOF
 	# EXTRACTABLE_FIELDS for deliberate manual invocation; this asserts they
 	# stay OUT of the unattended nightly call so nobody re-pins an unmeasured
 	# field back onto this list.
-	[[ "$extract_line" != *"energy.source"* ]]
-	[[ "$extract_line" != *"energy.utility"* ]]
+	[[ "$extract_line" != *"energy.source"* ]] || return 1
+	[[ "$extract_line" != *"energy.utility"* ]] || return 1
 }
 
 @test "verify-fields.ts is invoked with its own explicit --fields allowlist" {
@@ -2204,7 +2204,7 @@ EOF
 	# bound, not a safety one; widening it is a cost decision.
 	verify_line="$(grep "verify-fields.ts" "$NPX_CALL_LOG" | head -1)"
 	[ -n "$verify_line" ]
-	[[ "$verify_line" == *"--fields=capacityMw.operational,water.coolingType"* ]]
+	[[ "$verify_line" == *"--fields=capacityMw.operational,water.coolingType"* ]] || return 1
 
 	# The positive assertion above is a SUBSTRING match, so it cannot catch an
 	# APPENDED field — `...,water.coolingType,capacityMw.planned` still matches it.
@@ -2213,14 +2213,14 @@ EOF
 	# stops the nightly check drifting onto fields the fill lane does not populate
 	# and silently spending time budget. Verified 2026-09-01: without these, a
 	# list with capacityMw.planned appended passes.
-	[[ "$verify_line" != *"capacityMw.planned"* ]]
-	[[ "$verify_line" != *"energy.onSiteGenerationMw"* ]]
+	[[ "$verify_line" != *"capacityMw.planned"* ]] || return 1
+	[[ "$verify_line" != *"energy.onSiteGenerationMw"* ]] || return 1
 
 	# Same F7 drop as extract-fields.ts above: verify-fields takes the fill
 	# lane's field list as a SCOPE bound, so an unmeasured field dropped from
 	# the fill side must disappear from the verify side too.
-	[[ "$verify_line" != *"energy.source"* ]]
-	[[ "$verify_line" != *"energy.utility"* ]]
+	[[ "$verify_line" != *"energy.source"* ]] || return 1
+	[[ "$verify_line" != *"energy.utility"* ]] || return 1
 }
 
 @test "package.json's extract-fields npm script pins the same safe --fields allowlist as run.sh's extract list" {
@@ -2234,7 +2234,7 @@ EOF
 	script_line="$(grep '"extract-fields":' "$REPO_ROOT/package.json")"
 	[ -n "$script_line" ]
 	# Matches run.sh's EXTRACT list (water.coolingType only since 2026-10-29).
-	[[ "$script_line" == *"--fields=water.coolingType"* ]]
+	[[ "$script_line" == *"--fields=water.coolingType"* ]] || return 1
 
 	# capacityMw.operational was unpinned from the nightly extract lane on
 	# 2026-10-29 (Ed). The positive above is a substring match, so it cannot
@@ -2245,10 +2245,10 @@ EOF
 	# Same substring-match caveat as the run.sh tests above: a positive match
 	# alone cannot catch an APPENDED field, so these negative assertions do the
 	# actual enforcement.
-	[[ "$script_line" != *"capacityMw.planned"* ]]
-	[[ "$script_line" != *"energy.onSiteGenerationMw"* ]]
-	[[ "$script_line" != *"energy.source"* ]]
-	[[ "$script_line" != *"energy.utility"* ]]
+	[[ "$script_line" != *"capacityMw.planned"* ]] || return 1
+	[[ "$script_line" != *"energy.onSiteGenerationMw"* ]] || return 1
+	[[ "$script_line" != *"energy.source"* ]] || return 1
+	[[ "$script_line" != *"energy.utility"* ]] || return 1
 }
 
 @test "dry-run skips the field-extraction/verification lane entirely" {
@@ -2270,7 +2270,7 @@ EOF
 	# a bare `grep -c ... ; [ "$status" -ne 0 ]` passes vacuously on both a
 	# skipped lane AND a run.sh that never got this far. `! grep -q` after the
 	# anchor above has already proven the log file exists and is populated.
-	! grep -q "extract-fields.ts\|verify-fields.ts" "$NPX_CALL_LOG"
+	if grep -q "extract-fields.ts\|verify-fields.ts" "$NPX_CALL_LOG"; then return 1; fi
 }
 
 @test "extract-fields.ts is invoked after check-sources.ts" {
@@ -2296,8 +2296,8 @@ EOF
 
 	extract_line="$(grep "extract-fields.ts" "$NPX_CALL_LOG" | head -1)"
 	verify_line="$(grep "verify-fields.ts" "$NPX_CALL_LOG" | head -1)"
-	[[ "$extract_line" == *"--limit=7"* ]]
-	[[ "$verify_line" == *"--limit=9"* ]]
+	[[ "$extract_line" == *"--limit=7"* ]] || return 1
+	[[ "$verify_line" == *"--limit=9"* ]] || return 1
 }
 
 @test "malformed ENRICHMENT_LIMIT/VERIFY_LIMIT fall back to the safe defaults" {
@@ -2321,8 +2321,8 @@ EOF
 
 	extract_line="$(grep "extract-fields.ts" "$NPX_CALL_LOG" | head -1)"
 	verify_line="$(grep "verify-fields.ts" "$NPX_CALL_LOG" | head -1)"
-	[[ "$extract_line" == *"--limit=60"* ]]
-	[[ "$verify_line" == *"--limit=40"* ]]
+	[[ "$extract_line" == *"--limit=60"* ]] || return 1
+	[[ "$verify_line" == *"--limit=40"* ]] || return 1
 }
 
 # --- retention-prune lane (#238) ---------------------------------------------
@@ -2341,7 +2341,7 @@ EOF
 
 	retention_line="$(grep "retention-prune.ts" "$NPX_CALL_LOG" | head -1)"
 	[ -n "$retention_line" ]
-	[[ "$retention_line" == *"--apply"* ]]
+	[[ "$retention_line" == *"--apply"* ]] || return 1
 }
 
 @test "dry-run skips the retention-prune lane entirely" {
@@ -2350,14 +2350,14 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
-	[[ "$output" == *"DISCOVERY_DRY_RUN=true — skipping retention-prune lane"* ]]
+	[[ "$output" == *"DISCOVERY_DRY_RUN=true — skipping retention-prune lane"* ]] || return 1
 
 	# Anchor: prove the run actually reached the point where the lane would
 	# fire, same rationale as the field-extraction dry-run test above — without
 	# this, "retention-prune.ts is absent" is vacuous.
 	[ -s "$NPX_CALL_LOG" ]
 	grep -q "check-sources.ts" "$NPX_CALL_LOG"
-	! grep -q "retention-prune.ts" "$NPX_CALL_LOG"
+	if grep -q "retention-prune.ts" "$NPX_CALL_LOG"; then return 1; fi
 }
 
 @test "a retention-prune failure is non-fatal — later lanes still run" {
@@ -2395,8 +2395,8 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"WARN: retention prune failed"* ]]
-	[[ "$output" == *"discovery batch complete"* ]]
+	[[ "$output" == *"WARN: retention prune failed"* ]] || return 1
+	[[ "$output" == *"discovery batch complete"* ]] || return 1
 	# Lanes that run AFTER retention-prune in run.sh (heartbeat write + publish)
 	# still executed despite the failure above them.
 	grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
@@ -2435,8 +2435,8 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
-	[[ "$output" == *"retention: prune failed"* ]]
+	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]] || return 1
+	[[ "$output" == *"retention: prune failed"* ]] || return 1
 	[ -s "$NOTIFY_CALL_LOG" ]
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
 }
@@ -2468,7 +2468,7 @@ EOF
 	# Anchor, same rationale as the retention-prune dry-run test above.
 	[ -s "$NPX_CALL_LOG" ]
 	grep -q "check-sources.ts" "$NPX_CALL_LOG"
-	! grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
+	if grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"; then return 1; fi
 }
 
 @test "a dry run never writes to Neon — heartbeat.json itself is also never written" {
@@ -2488,7 +2488,7 @@ EOF
 	[ "$status" -eq 0 ]
 
 	[ ! -f "$LOG_DIR/heartbeat.json" ]
-	! grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
+	if grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"; then return 1; fi
 }
 
 @test "a publish-heartbeat failure is non-fatal — the run still reaches its final alert/exit logic" {
@@ -2523,8 +2523,8 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"WARN: publish-heartbeat failed"* ]]
-	[[ "$output" == *"FAIL: discovery run finished with"*"failure"* ]]
+	[[ "$output" == *"WARN: publish-heartbeat failed"* ]] || return 1
+	[[ "$output" == *"FAIL: discovery run finished with"*"failure"* ]] || return 1
 	# heartbeat.json is written BEFORE the publish call in run.sh, so it must
 	# still exist even though the publish itself failed.
 	[ -f "$LOG_DIR/heartbeat.json" ]
@@ -2562,7 +2562,7 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"heartbeat: publish failed"* ]]
+	[[ "$output" == *"heartbeat: publish failed"* ]] || return 1
 	[ -s "$NOTIFY_CALL_LOG" ]
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
 }
@@ -2881,8 +2881,8 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
 	[ "$(cat "$CLAUDE_COUNTER_FILE")" -eq 1 ]
-	[[ "$output" == *"cause=auth"* ]]
-	[[ "$output" != *"retrying once"* ]]
+	[[ "$output" == *"cause=auth"* ]] || return 1
+	[[ "$output" != *"retrying once"* ]] || return 1
 	grep -q '"claudeStatus": "auth"' "$LOG_DIR/heartbeat.json"
 }
 
@@ -3070,7 +3070,7 @@ SHIM
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
-	[[ "$output" == *"states=TX VA OH"* ]]
+	[[ "$output" == *"states=TX VA OH"* ]] || return 1
 	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
 	[ "$outfile_count" = "3" ]
 	# TX VA OH consumed -> next up is GA
@@ -3087,8 +3087,8 @@ SHIM
 
 	leads_line="$(grep "leads-lane.ts" "$NPX_CALL_LOG" | head -1)"
 	[ -n "$leads_line" ]
-	[[ "$leads_line" == *"--limit=10"* ]]
-	[[ "$leads_line" == *"--run-id="*"-leads"* ]]
+	[[ "$leads_line" == *"--limit=10"* ]] || return 1
+	[[ "$leads_line" == *"--run-id="*"-leads"* ]] || return 1
 	[ -n "$(find "$LOG_DIR" -name 'leads-lane-*-leads.json' -print -quit)" ]
 }
 
@@ -3100,7 +3100,7 @@ SHIM
 	[ "$status" -eq 0 ]
 
 	leads_line="$(grep "leads-lane.ts" "$NPX_CALL_LOG" | head -1)"
-	[[ "$leads_line" == *"--limit=4"* ]]
+	[[ "$leads_line" == *"--limit=4"* ]] || return 1
 }
 
 @test "an invalid LEADS_LIMIT warns and falls back to the default 10" {
@@ -3110,10 +3110,10 @@ SHIM
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
-	[[ "$output" == *"LEADS_LIMIT=abc is not a positive integer"* ]]
+	[[ "$output" == *"LEADS_LIMIT=abc is not a positive integer"* ]] || return 1
 	leads_line="$(grep "leads-lane.ts" "$NPX_CALL_LOG" | head -1)"
-	[[ "$leads_line" == *"--limit=10"* ]]
-	[[ "$leads_line" != *"abc"* ]]
+	[[ "$leads_line" == *"--limit=10"* ]] || return 1
+	[[ "$leads_line" != *"abc"* ]] || return 1
 }
 
 @test "DISCOVERY_DRY_RUN=true does not invoke the leads lane" {
@@ -3158,8 +3158,8 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
-	[[ "$output" == *"leads: lane failed"* ]]
+	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]] || return 1
+	[[ "$output" == *"leads: lane failed"* ]] || return 1
 	# retention-prune runs AFTER the leads lane; it must not have been skipped
 	grep -q "retention-prune.ts" "$NPX_CALL_LOG"
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
@@ -3194,8 +3194,8 @@ EOF
 
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]]
-	[[ "$output" == *"liveness: check-sources failed"* ]]
+	[[ "$output" == *"FAIL: discovery run finished with 1 failure"* ]] || return 1
+	[[ "$output" == *"liveness: check-sources failed"* ]] || return 1
 	# retention-prune runs AFTER the liveness step; it must not have been skipped
 	grep -q "retention-prune.ts" "$NPX_CALL_LOG"
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
