@@ -311,7 +311,8 @@ const RETIRED_FACILITY_REDIRECTS = [
  * above); operators had none until now.
  *
  * Facility counts noted per entry are the live count on the destination hub
- * as of 2026-09-08, to help a future reader sanity-check drift.
+ * as of 2026-10-30 (re-measured; first recorded 2026-09-08), to help a future
+ * reader sanity-check drift. They go stale with every data wave.
  */
 const RETIRED_OPERATOR_REDIRECTS = [
   {
@@ -322,12 +323,12 @@ const RETIRED_OPERATOR_REDIRECTS = [
   },
   {
     source: "/operators/amazon-web-services-via-birchwood-power-partners",
-    destination: "/operators/amazon-web-services", // 45
+    destination: "/operators/amazon-web-services", // 59
     permanent: true,
   },
   {
     source: "/operators/amazon-web-services-with-reb-investment-company-llc-as-landowner",
-    destination: "/operators/amazon-web-services", // 45
+    destination: "/operators/amazon-web-services", // 59
     permanent: true,
   },
   {
@@ -379,40 +380,40 @@ const RETIRED_OPERATOR_REDIRECTS = [
   },
   {
     // CoreSite is an American Tower company, but the subject of the hub is
-    // CoreSite (16 facilities) — American Tower itself only has 2 — so
-    // "coresite", not "american-tower", is the correct successor.
+    // CoreSite (16 facilities on 2026-09-08) — American Tower itself only had
+    // 2 — so "coresite", not "american-tower", is the correct successor.
     source: "/operators/coresite-american-tower",
-    destination: "/operators/coresite", // 16
+    destination: "/operators/coresite", // 28
     permanent: true,
   },
   {
     source: "/operators/crusoe-energy-lancium-clean-campus",
-    destination: "/operators/crusoe", // 4
+    destination: "/operators/crusoe", // 6
     permanent: true,
   },
   {
     source: "/operators/crusoe-with-blue-energy",
-    destination: "/operators/crusoe", // 4
+    destination: "/operators/crusoe", // 6
     permanent: true,
   },
   {
     source: "/operators/cyrusone-in-exclusive-negotiations-with-the-us-army",
-    destination: "/operators/cyrusone", // 22
+    destination: "/operators/cyrusone", // 33
     permanent: true,
   },
   {
     source: "/operators/galaxy-digital-holdings",
-    destination: "/operators/galaxy-digital", // 3
+    destination: "/operators/galaxy-digital", // 2
     permanent: true,
   },
   {
     source: "/operators/google-montauk-innovations-llc",
-    destination: "/operators/google", // 51
+    destination: "/operators/google", // 57
     permanent: true,
   },
   {
     source: "/operators/google-with-intersect-power",
-    destination: "/operators/google", // 51
+    destination: "/operators/google", // 57
     permanent: true,
   },
   {
@@ -422,7 +423,7 @@ const RETIRED_OPERATOR_REDIRECTS = [
   },
   {
     source: "/operators/metrobloks-lincoln-property-company",
-    destination: "/operators/metrobloks", // 4
+    destination: "/operators/metrobloks", // 5
     permanent: true,
   },
   {
@@ -433,22 +434,22 @@ const RETIRED_OPERATOR_REDIRECTS = [
     // excluded from the sitemap by a separate change, but the route stays
     // live and crawlable — the redirect target remains valid.
     source: "/operators/new-day-data-centers-llc-w-doe-softbank-sb-energy",
-    destination: "/operators/sb-energy", // 1
+    destination: "/operators/sb-energy", // 2
     permanent: true,
   },
   {
     source: "/operators/ntt",
-    destination: "/operators/ntt-global-data-centers", // 15
+    destination: "/operators/ntt-global-data-centers", // 17
     permanent: true,
   },
   {
     source: "/operators/ntt-global-data-centers-americas",
-    destination: "/operators/ntt-global-data-centers", // 15
+    destination: "/operators/ntt-global-data-centers", // 17
     permanent: true,
   },
   {
     source: "/operators/pacifico-energy-data-center-tenant-unidentified",
-    destination: "/operators/pacifico-energy", // 2
+    destination: "/operators/pacifico-energy", // 3
     permanent: true,
   },
   {
@@ -458,33 +459,33 @@ const RETIRED_OPERATOR_REDIRECTS = [
   },
   {
     source: "/operators/powerhouse-data-centers-arep",
-    destination: "/operators/powerhouse-data-centers", // 10
+    destination: "/operators/powerhouse-data-centers", // 12
     permanent: true,
   },
   {
     source:
       "/operators/powerhouse-data-centers-jv-with-chirisa-technology-parks-and-blue-owl-real-estate",
-    destination: "/operators/powerhouse-data-centers", // 10
+    destination: "/operators/powerhouse-data-centers", // 12
     permanent: true,
   },
   {
     source: "/operators/powerhouse-data-centers-pennsylvania-data-center-partners",
-    destination: "/operators/powerhouse-data-centers", // 10
+    destination: "/operators/powerhouse-data-centers", // 12
     permanent: true,
   },
   {
     source: "/operators/qts",
-    destination: "/operators/qts-data-centers", // 29
+    destination: "/operators/qts-data-centers", // 40
     permanent: true,
   },
   {
     source: "/operators/qts-blackstone",
-    destination: "/operators/qts-data-centers", // 29
+    destination: "/operators/qts-data-centers", // 40
     permanent: true,
   },
   {
     source: "/operators/qts-data-centers-blackstone",
-    destination: "/operators/qts-data-centers", // 29
+    destination: "/operators/qts-data-centers", // 40
     permanent: true,
   },
   {
@@ -494,17 +495,17 @@ const RETIRED_OPERATOR_REDIRECTS = [
   },
   {
     source: "/operators/tierpoint-llc",
-    destination: "/operators/tierpoint", // 21
+    destination: "/operators/tierpoint", // 32
     permanent: true,
   },
   {
     source: "/operators/vantage",
-    destination: "/operators/vantage-data-centers", // 17
+    destination: "/operators/vantage-data-centers", // 21
     permanent: true,
   },
   {
     source: "/operators/vantage-data-centers-for-openai-oracle",
-    destination: "/operators/vantage-data-centers", // 17
+    destination: "/operators/vantage-data-centers", // 21
     permanent: true,
   },
 ];
