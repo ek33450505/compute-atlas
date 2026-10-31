@@ -4144,6 +4144,15 @@
     }
   },
   "avangrid-bluebird-solar-klickitat-wa": {
+    "nearestWater": {
+      "name": "Pine Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 1.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4173,6 +4182,15 @@
     }
   },
   "avangrid-juniper-canyon-wind-klickitat-wa": {
+    "nearestWater": {
+      "name": "Pine Creek",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4187,6 +4205,15 @@
     }
   },
   "avangrid-leaning-juniper-iia-wind-gilliam-county-or": {
+    "nearestWater": {
+      "name": "Rock Creek",
+      "kind": "river",
+      "distanceMi": 3.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 6.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4216,6 +4243,15 @@
     }
   },
   "avangrid-oregon-trail-solar-gilliam-county-or": {
+    "nearestWater": {
+      "name": "China Ditch",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 3.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4230,6 +4266,15 @@
     }
   },
   "avangrid-tower-solar-boardman-or": {
+    "nearestWater": {
+      "name": "Columbia River",
+      "kind": "river",
+      "distanceMi": 1.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 500,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -10137,6 +10182,15 @@
     }
   },
   "coffee-grounds-data-arevia-malcolm-lancaster-ne": {
+    "nearestWater": {
+      "name": "Elk Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11023,6 +11077,15 @@
     }
   },
   "colossus-starbucks-center-sodo-seattle-wa": {
+    "nearestWater": {
+      "name": "Duwamish Waterway",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -13145,6 +13208,15 @@
     }
   },
   "csquare-sea2-tukwila-wa": {
+    "nearestWater": {
+      "name": "Green River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -14401,6 +14473,15 @@
     }
   },
   "data-center-3625-first-ave-s-sodo-seattle-wa": {
+    "nearestWater": {
+      "name": "Duwamish Waterway",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -14411,6 +14492,15 @@
     }
   },
   "data-center-west-eugene-or": {
+    "nearestWater": {
+      "name": "Amazon Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -14421,6 +14511,15 @@
     }
   },
   "data-center-west-medford-or": {
+    "nearestWater": {
+      "name": "Bear Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 3.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -16256,6 +16355,15 @@
     }
   },
   "digital-realty-301-virginia-st-seattle-wa": {
+    "nearestWater": {
+      "name": "Lake Union",
+      "kind": "lake",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -17567,6 +17675,15 @@
     }
   },
   "digital-realty-wagon-hillsboro-or": {
+    "nearestWater": {
+      "name": "Dawson Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -20144,6 +20261,15 @@
     }
   },
   "enfinity-silver-maple-solar-sioux-ne": {
+    "nearestWater": {
+      "name": "Niobrara River",
+      "kind": "river",
+      "distanceMi": 4.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 12.3
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -27022,6 +27148,15 @@
     }
   },
   "hitchcock-county-data-mining-sec23-t4n-r33w-ne": {
+    "nearestWater": {
+      "name": "Frenchman Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 14.7
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -28111,6 +28246,15 @@
     }
   },
   "invenergy-prineville-solar-crook-county-or": {
+    "nearestWater": {
+      "name": "Crooked River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 1000,
+      "distanceMi": 2.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -30290,6 +30434,15 @@
     }
   },
   "lightsource-bp-golden-plains-solar-storage-perkins-ne": {
+    "nearestWater": {
+      "name": "Stinking Water Creek",
+      "kind": "river",
+      "distanceMi": 8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 17.5
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -30319,6 +30472,15 @@
     }
   },
   "limitless-north-platte-hershey-lincoln-ne": {
+    "nearestWater": {
+      "name": "Hershey Lake",
+      "kind": "lake",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 2.8
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -31442,6 +31604,15 @@
     }
   },
   "lumen-portland-1-northrup-portland-or": {
+    "nearestWater": {
+      "name": "Willamette River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 6.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -31657,6 +31828,15 @@
     }
   },
   "lunavi-bellingham-wa": {
+    "nearestWater": {
+      "name": "Squalicum Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -32230,6 +32410,15 @@
     }
   },
   "mb-club-data-center-trenton-hitchcock-ne": {
+    "nearestWater": {
+      "name": "North Fork Driftwood Creek",
+      "kind": "river",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 16.9
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -52139,6 +52328,15 @@
     }
   },
   "uniti-omaha-1721-saint-marys-ne": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -53244,6 +53442,15 @@
     }
   },
   "vines-rest-data-center-alderdale-klickitat-wa": {
+    "nearestWater": {
+      "name": "Alder Creek",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
