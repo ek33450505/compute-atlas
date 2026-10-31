@@ -125,7 +125,7 @@ The scheduled run submits candidates, so it needs the Ollama daemon reachable at
 
 ## Managing the launchd job
 
-To reload after editing the plist (a change to the committed template reaches launchd only after you re-run the `sed` install copy above, then reload):
+To reload after editing the plist (a change to the committed template reaches launchd only once it is in the INSTALLED copy, then reloaded). ⚠️ Do not simply re-run the `sed` install copy above: it overwrites the installed copy's local edits — the enabled `DISCOVERY_ENABLED`/`API_BASE_URL` and a `PATH` that includes `claude`'s directory — and the job then runs as a silent no-op or cannot find `claude`. Copy only the changed keys into the installed file (diff the two first), then reload:
 
 ```bash
 launchctl bootout gui/$(id -u)/com.compute-atlas.discovery && \
