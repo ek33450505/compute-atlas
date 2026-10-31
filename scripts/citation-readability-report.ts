@@ -120,12 +120,6 @@ export const KNOWN_HOSTS: readonly KnownHost[] = [
     provenance: "research3, 2026-10-28",
   },
   {
-    host: "baxtel.com",
-    verdict: "known_marker_false_positive",
-    reason: 'Recorded 2026-10-27/28 (research2 wave) as a false positive: page markup carries class="paywall new-layout-body"; no hidden text was found at the string level. Not a rendered visibility test.',
-    provenance: "research2 wave, 2026-10-27/28",
-  },
-  {
     host: "pinalpost.com",
     verdict: "known_marker_false_positive",
     reason: 'Recorded 2026-10-27/28 (research2 wave) as a false positive: "premium"/"locked" strings traced to an SEO plugin and an email decoder. String-level only; not a rendered visibility test.',
