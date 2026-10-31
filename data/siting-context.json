@@ -958,6 +958,25 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "aep-ohio-scioto-darby-creek-road-fuel-cell-hilliard-oh": {
+    "nearestWater": {
+      "name": "Scioto River",
+      "kind": "river",
+      "distanceMi": 1.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
   "aerotropolis-industrial-development-aurora-co": {
     "nearestWater": {
       "name": "Second Creek",
@@ -15463,13 +15482,13 @@
   },
   "dc-blox-montgomery-al": {
     "nearestWater": {
-      "name": "Alabama River",
-      "kind": "river",
-      "distanceMi": 0.4
+      "name": "Lake Linda",
+      "kind": "lake",
+      "distanceMi": 1.1
     },
     "nearestTransmission": {
       "voltageKv": 230,
-      "distanceMi": 2.3
+      "distanceMi": 2.9
     },
     "waterStress": {
       "cat": 2,
@@ -15555,9 +15574,9 @@
   },
   "dc-blox-warren-township-marion-county-in": {
     "nearestWater": {
-      "name": "Pleasant Run",
-      "kind": "river",
-      "distanceMi": 0.3
+      "name": "Bacon Swamp",
+      "kind": "lake",
+      "distanceMi": 6.6
     },
     "nearestTransmission": {
       "voltageKv": 230,
@@ -20010,6 +20029,51 @@
     "nearestTransmission": {
       "voltageKv": 345,
       "distanceMi": 3.4
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "encore-technologies-governors-hill-symmes-township-oh": {
+    "nearestWater": {
+      "name": "Polk Run",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.1
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "encore-technologies-msb1-miamisburg-oh": {
+    "nearestWater": {
+      "name": "Sycamore Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.1
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    }
+  },
+  "encore-technologies-nor1-norwood-oh": {
+    "nearestWater": {
+      "name": "Duck Creek",
+      "kind": "river",
+      "distanceMi": 2.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
     },
     "waterStress": {
       "cat": 0,
@@ -32134,9 +32198,9 @@
   },
   "mara-hopedale-harrison-oh": {
     "nearestWater": {
-      "name": "Jeffco Pond Number Twenty-One",
-      "kind": "lake",
-      "distanceMi": 1.5
+      "name": "Piney Fork",
+      "kind": "river",
+      "distanceMi": 0.4
     },
     "nearestTransmission": {
       "voltageKv": 765,
@@ -32256,9 +32320,9 @@
   },
   "markley-boston-summer-street-ma": {
     "nearestWater": {
-      "name": "Belle Isle Inlet Marshes",
-      "kind": "lake",
-      "distanceMi": 3.8
+      "name": "Charles River",
+      "kind": "river",
+      "distanceMi": 0.9
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -32271,9 +32335,9 @@
   },
   "markley-lowell-ma": {
     "nearestWater": {
-      "name": "Beaver Brook Reservoir",
-      "kind": "lake",
-      "distanceMi": 2.2
+      "name": "Concord River",
+      "kind": "river",
+      "distanceMi": 0.6
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -32358,9 +32422,9 @@
   },
   "mass-general-brigham-marlborough-ma": {
     "nearestWater": {
-      "name": "Mowry Brook",
-      "kind": "river",
-      "distanceMi": 0.9
+      "name": "Williams Lake",
+      "kind": "lake",
+      "distanceMi": 0.7
     },
     "nearestTransmission": {
       "voltageKv": 230,
@@ -40226,6 +40290,25 @@
     },
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "ports-energy-center-piketon-pike-oh": {
+    "nearestWater": {
+      "name": "Little Beaver Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
+    "waterStress": {
+      "cat": 2,
+      "label": "Medium - High (20-40%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
     }
   },
@@ -50933,9 +51016,9 @@
   },
   "tierpoint-newton-ia": {
     "nearestWater": {
-      "name": "Cardinal Creek",
-      "kind": "river",
-      "distanceMi": 0.4
+      "name": "Wire Lake",
+      "kind": "lake",
+      "distanceMi": 6.7
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -51012,9 +51095,9 @@
   },
   "tierpoint-raleigh-departure-drive-nc": {
     "nearestWater": {
-      "name": "Marsh Creek",
-      "kind": "river",
-      "distanceMi": 0.3
+      "name": "Greshams Lake",
+      "kind": "lake",
+      "distanceMi": 1.7
     },
     "nearestTransmission": {
       "voltageKv": 230,
@@ -54467,9 +54550,9 @@
   },
   "white-rose-project-kilo-south-elgin-il": {
     "nearestWater": {
-      "name": "Island Lake",
-      "kind": "lake",
-      "distanceMi": 3.9
+      "name": "Fox River",
+      "kind": "river",
+      "distanceMi": 0.6
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -54699,21 +54782,25 @@
   },
   "windy-lane-energy-center-de-baca-county-nm": {
     "nearestWater": {
-      "name": "Pecos River",
+      "name": "Truchas Creek",
       "kind": "river",
-      "distanceMi": 0.3
+      "distanceMi": 5.4
     },
     "nearestTransmission": {
       "voltageKv": 345,
-      "distanceMi": 13
+      "distanceMi": 0.2
     },
     "waterStress": {
       "cat": -1,
       "label": "Arid and Low Water Use"
     },
     "groundwaterDecline": {
-      "cat": 1,
-      "label": "Low - Medium (0-2 cm/y)"
+      "cat": 3,
+      "label": "High (4-8 cm/y)"
+    },
+    "aquifer": {
+      "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "wintersburg-313-tonopah-az": {
@@ -55023,9 +55110,9 @@
   },
   "xcel-dakota-range-i-ii-wind-codington-county-sd": {
     "nearestWater": {
-      "name": "Soo Creek",
-      "kind": "river",
-      "distanceMi": 0.7
+      "name": "Myers Lake",
+      "kind": "lake",
+      "distanceMi": 5.8
     },
     "nearestTransmission": {
       "voltageKv": 345,
