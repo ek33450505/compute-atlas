@@ -62,9 +62,9 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("parseStaleHoursEnv", () => {
-  it("returns the default (36) when unset", () => {
+  it("returns the default (84) when unset", () => {
     expect(parseStaleHoursEnv(undefined)).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
-    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBe(36); // must match run.sh's own default
+    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBe(84); // must match run.sh's own default
   });
 
   it("returns the default when set to an empty string", () => {

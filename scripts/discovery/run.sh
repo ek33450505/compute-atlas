@@ -149,7 +149,12 @@ notify() {
 # than DISCOVERY_STALE_HOURS means scheduled runs were missed entirely (machine
 # asleep at 13:00, job unloaded, plist broken) — a different failure than "the
 # run happened and produced nothing", and invisible from claudeStatus alone.
-DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-36}"
+# 84h: the longest normal gap is Fri -> Mon (~70h from a Friday run's end to
+# Monday's 13:00 start), plus the same 12h slack the old daily 36h (24+12)
+# carried, which absorbs a Monday start launchd deferred past a sleep. The
+# shortest gap a single missed run can leave is ~88h (a missed Wednesday after
+# a late-ending Monday run), so any single miss still warns.
+DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-84}"
 if [[ -f "$LOG_DIR/heartbeat.json" ]]; then
   _prev_iso="$(sed -n 's/.*"lastRunAt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$LOG_DIR/heartbeat.json" | head -1)"
   if [[ -n "$_prev_iso" ]]; then
@@ -231,11 +236,11 @@ CURSOR_FILE="$LOG_DIR/cursor.txt"
 # OVERRUN warnings or session-limit hits return, this is the first lever to
 # revert.
 #
-# Rotation arithmetic: 51 states / 3 per day = exactly a 17-day full cycle
-# (was ~26 days at 2 per day, and 11 days at 22 states / 2 before the
-# 2026-09-13 expansion). Unlike 2, 51 DOES divide evenly by 3, so the same
-# triples of states recur together every cycle rather than shifting — a
-# consequence worth knowing, not a bug.
+# Rotation arithmetic: 51 states / 3 per run = exactly 17 runs per full cycle:
+# ~6 weeks at 3 runs a week (17 days when it ran daily; was ~26 days at 2 per
+# day, and 11 days at 22 states / 2 before the 2026-09-13 expansion). Unlike 2,
+# 51 DOES divide evenly by 3, so the same triples of states recur together
+# every cycle rather than shifting — a consequence worth knowing, not a bug.
 STATES_PER_RUN="${STATES_PER_RUN:-3}"
 (( STATES_PER_RUN < 1 )) && STATES_PER_RUN=1
 (( STATES_PER_RUN > ${#STATES[@]} )) && STATES_PER_RUN=${#STATES[@]}
@@ -1223,9 +1228,9 @@ done
 #
 # Consequence worth stating plainly: a permanently broken login now stalls the
 # rotation on the same states instead of silently skipping the whole country.
-# That is correct — the watchdog fails daily on the degraded heartbeat, so the
-# stall is loud, whereas the old behaviour hid a dead pipeline behind a
-# "rotating" cursor.
+# That is correct — the watchdog fails on every scheduled run while the
+# heartbeat is degraded, so the stall is loud, whereas the old behaviour hid a
+# dead pipeline behind a "rotating" cursor.
 #
 # `suspect_short` is bounded to ONE consecutive rewind per state (see below).
 #

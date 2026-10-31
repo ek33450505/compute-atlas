@@ -78,12 +78,13 @@ import { isEntrypoint } from "../is-entrypoint";
 
 /**
  * Deliberately matches the same-named `DISCOVERY_STALE_HOURS` default in
- * `scripts/discovery/run.sh` (`DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-36}"`)
+ * `scripts/discovery/run.sh` (`DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-84}"`)
  * so the local (on-machine, same-run) check and this remote (off-machine,
  * scheduled) check agree on what "stale" means. Keep these two literals in
- * sync if either changes.
+ * sync if either changes. 84h = the Mon/Wed/Fri schedule's longest gap
+ * (Fri -> Mon, up to ~72h) + 12h slack.
  */
-export const DISCOVERY_STALE_HOURS_DEFAULT = 36;
+export const DISCOVERY_STALE_HOURS_DEFAULT = 84;
 
 /**
  * Parses `DISCOVERY_STALE_HOURS` from the environment. An unset/empty value
