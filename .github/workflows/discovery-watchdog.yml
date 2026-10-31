@@ -59,18 +59,30 @@
 # the schedule or the machine, "it ran and failed" points at that run's own
 # output on the Mac. Do not re-narrow this to freshness alone.
 #
-# Scheduled for 23:00 UTC — 5-6h after the 13:00-local run starts (17:00 UTC on
-# EDT, 18:00 UTC on EST). In practice GitHub's scheduled-run delay pushes actual
-# execution to ~00:45-01:26 UTC the NEXT day (~7-8h after the local start);
-# measured 2026-09-28 over the preceding 23 runs, none of which started at 23:00.
-# Both windows clear the ~2h runtime, so the margin below still holds; only the
-# stated timing was wrong. Re-measure with
-# `gh run list --limit 30 --workflow=discovery-watchdog.yml --json createdAt`. Also measured
-# worst-case gap between consecutive runs across a DST transition is ~30-35h,
-# still inside the 36h threshold in check-heartbeat.ts (which matches run.sh's
-# DISCOVERY_STALE_HOURS default), so the exact hour is not load-bearing.
+# Scheduled for 23:00 UTC on Mon/Wed/Fri — the same UTC day as the 13:00-local
+# discovery run (17:00 UTC on EDT, 18:00 UTC on EST, so the calendar day holds
+# across the Nov 1 DST change). The local pipeline is Mon/Wed/Fri only from
+# 2026-11-02, and this follows it. In practice GitHub's scheduled-run delay
+# pushes actual execution to ~00:40-02:30 UTC the NEXT day (Tue/Thu/Sat),
+# measured over the last 14 runs; the local run ends 13:25-15:30 local
+# normally, so the watchdog still reads a finished heartbeat. Re-measure with
+# `gh run list --limit 30 --workflow=discovery-watchdog.yml --json createdAt`.
 # Deliberately one hour after drift-alert.yml's 22:00 so the two failure emails
 # stay distinguishable.
+#
+# STALENESS BUDGET: 84h, not 36h. It is check-heartbeat.ts's
+# DISCOVERY_STALE_HOURS_DEFAULT, matched by run.sh and by automation-health's
+# staleAfterHours. The longest normal gap is Fri -> Mon (nominally 72h start to
+# start, ~70h from the Friday run's end), plus the same 12h slack the old daily
+# 36h budget carried; the slack is what absorbs a Monday start that launchd
+# deferred past a sleep. What this guarantees: a single missed run is caught
+# by run.sh's own gap check on the NEXT run (a single miss leaves ~94h from run
+# end to next run start, ~88h at worst after a late-ending run, so it clears
+# 84h); two
+# consecutive missed runs are caught here, because the heartbeat is then ~100h
+# old or more at the next watchdog. A single miss is NOT caught remotely: it rests on
+# run.sh's local check at the next run, which needs the Mac awake and run.sh
+# reaching that check, so it is the weaker of the two signals.
 #
 # Requires: DATABASE_URL as a repo secret (already configured for neon-sync).
 #
@@ -99,7 +111,7 @@ name: Discovery Watchdog
 
 on:
   schedule:
-    - cron: "0 23 * * *"  # 23:00 UTC — well after the 13:00-local discovery run
+    - cron: "0 23 * * 1,3,5"  # 23:00 UTC Mon/Wed/Fri — same UTC day as the 13:00-local run
   workflow_dispatch:
 
 permissions:

@@ -53,7 +53,9 @@ export interface WorkflowConfig {
  * has been observed firing 0.3-11.9h after its nominal time (GitHub delays
  * scheduled runs under load, worse when the repo is quiet). A tighter
  * budget would flap on scheduler jitter alone. Do not "tighten" this into a
- * flaky alarm — the slack is load-bearing.
+ * flaky alarm — the slack is load-bearing. `discovery-watchdog` runs
+ * Mon/Wed/Fri, so its 84h is its longest gap (Fri -> Mon, 72h) + the same 12h
+ * slack.
  *
  * release-please is weekly (Mondays), so its budget is days, not hours:
  * 8 days catches a truly-dead schedule while giving a full week of jitter
@@ -75,8 +77,8 @@ export const MONITORED_WORKFLOWS: WorkflowConfig[] = [
   {
     file: "discovery-watchdog.yml",
     name: "discovery-watchdog",
-    cronDescription: "0 23 * * * (daily 23:00 UTC)",
-    staleAfterHours: 36,
+    cronDescription: "0 23 * * 1,3,5 (Mon/Wed/Fri 23:00 UTC)",
+    staleAfterHours: 84,
   },
   {
     file: "googlebot-canary.yml",

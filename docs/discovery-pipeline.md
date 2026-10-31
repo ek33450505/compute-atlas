@@ -9,7 +9,7 @@ approved/rejected by a human via the `submissions` CLI.
 ## Architecture
 
 ```
-run.sh (launchd, daily)
+run.sh (launchd, Mon/Wed/Fri)
   1. kill switch check (fail-closed)
   2. pick next state from a rotation cursor
   3. fetch existing-facilities projection for state
@@ -61,7 +61,7 @@ run.sh (launchd, daily)
 
 Each scheduled invocation does
 **both** discovery of net-new facilities AND re-checking of existing facilities
-in a single daily `claude -p` call, driven by a four-responsibility prompt.
+in a single per-run `claude -p` call, driven by a four-responsibility prompt.
 
 - **Single call, four responsibilities:** `discovery-prompt.txt` directives:
   (1) research net-new AI/crypto/power facilities in the state, (2) re-check
@@ -280,7 +280,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   this round's throughput lever.
   The cap applies **per submit call**: one per state inside the rotation loop,
   **plus** a separate enrichment submit that runs once per batch outside it. So
-  the real nightly ceiling is `(STATES_PER_RUN × cap) + cap` — **120** at the
+  the real per-run ceiling is `(STATES_PER_RUN × cap) + cap` — **120** at the
   current defaults (3 × 30 + 30, since 2026-10-09). It was **90** at 2 states
   (2 × 30 + 30) and **75** before the 2026-09-13 cap raise (2 × 25 + 25). This
   counts only the per-state and enrichment `submit-candidates` calls; the
@@ -310,7 +310,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   `discovery-logs/heartbeat.json` — top-level `lastRunAt`, `status`
   (`ok` | `degraded`) and `failureCount`, plus a `states[]` array of
   `{ runId, state, claudeStatus, elapsedSecs }`. A stale `lastRunAt` means the
-  daily job isn't running (a launchd sleep-skip or crash); `claudeStatus:
+  scheduled job isn't running (a launchd sleep-skip or crash); `claudeStatus:
   no_array` means the run reached `claude` but got a session-limit/prose reply
   rather than candidates. A manual dry-run deliberately does not write the
   heartbeat, so it never masks a real launchd failure.
@@ -352,7 +352,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   **The durable signal is the heartbeat row, read off-machine.** Every
   non-dry-run invocation publishes the heartbeat to a `discovery_heartbeat` row
   in Neon (`scripts/discovery/publish-heartbeat.ts`), and
-  `.github/workflows/discovery-watchdog.yml` reads that row daily at 23:00 UTC
+  `.github/workflows/discovery-watchdog.yml` reads that row Mon/Wed/Fri at 23:00 UTC
   via `scripts/discovery/check-heartbeat.ts`. It fails when the row is missing,
   when `last_run_at` is stale — no run happened — and, **since 2026-09-28**,
   when the row is fresh but its status is not `ok` — a run happened and failed.
@@ -361,7 +361,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   freshness-only watchdog passed throughout (measured 2026-09-28: 23 consecutive
   successes with no failures back to 2026-09-06 — re-check with `gh run list
   --workflow=discovery-watchdog.yml --limit 30` rather than trusting that
-  number). **A pipeline that runs daily and fails daily is maximally fresh**, so
+  number). **A pipeline that runs and fails on every scheduled run is maximally fresh**, so
   freshness alone can never see it. Mechanics, error types and the fails-closed
   list: `docs/discovery-runbook.md` → *Discovery watchdog*.
 
@@ -369,7 +369,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   runs. It cannot detect "launchd never fired at all" — that is the stale-row
   case the off-machine watchdog owns. `run.sh`'s stale-heartbeat check is the
   on-machine partial mitigation: on startup, a previous `lastRunAt` older than
-  `DISCOVERY_STALE_HOURS` (default 36) is logged as a WARN and passed to the
+  `DISCOVERY_STALE_HOURS` (default 84) is logged as a WARN and passed to the
   same best-effort `notify()`, so missed days surface in the run log of the next
   run that happens.
 - **The wall-clock cap is enforced, and its failure is detected.**
@@ -386,7 +386,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   600s cap. Note a run can produce perfectly valid candidates and *still* be
   flagged: an overrun is a failure of the guard, not of the output.
 - **Source-liveness check:** read-only, never auto-edits. Runs unconditionally
-  every daily invocation (even in dry-run) and reports classifications to
+  every scheduled invocation (even in dry-run) and reports classifications to
   `discovery-logs/source-health-<timestamp>.json`. Current implementation is
   FLAG-ONLY: no admin UI or automated actions yet (fast-follow planned).
 
@@ -399,7 +399,7 @@ state, capped to `--max` submissions (new + updated combined, default 5).
 There is no fan-out, no multi-agent workflow, and no `/data-wave` invocation
 from this pipeline.
 
-**Cadence:** The combined-pass model runs daily via launchd, processing
+**Cadence:** The combined-pass model runs Mon/Wed/Fri via launchd, processing
 `STATES_PER_RUN` states per invocation (default **3** since 2026-10-09; 2 from
 2026-08-14 until then) from a rotation cursor. Raising it to 3 was Ed's
 decision on 2026-10-09, based on zero OVERRUN warnings since 2026-09-16 and
@@ -455,7 +455,7 @@ what the BATS suite pins so cursor tests survive the next rebalance.
 using a local Ollama model. This is an enrichment tool, not a discovery tool —
 it never proposes new facilities and it never overwrites a curated value.
 
-**This lane runs nightly.** `run.sh` invokes `extract-fields.ts` (then
+**This lane runs on every scheduled run.** `run.sh` invokes `extract-fields.ts` (then
 `submit-candidates.ts` on its output) and `verify-fields.ts` once per batch, after
 the per-state discovery loop and the source-liveness check. It can still be run by
 hand the same way. Two conditions the scheduled invocation has to keep meeting:
@@ -474,11 +474,11 @@ hand the same way. Two conditions the scheduled invocation has to keep meeting:
   flag is present for both tools (mutation-tested: deleting it fails the suite).
   The extract lane's pinned field is `water.coolingType` (P=95%/R=95%, measured 2026-09-01).
   `capacityMw.operational` was unpinned on 2026-10-29: its P=100%/R=100% measured a drifted
-  prompt on a corpus with no distractors (see `scripts/discovery/bench/README.md`). Nightly
+  prompt on a corpus with no distractors (see `scripts/discovery/bench/README.md`). On every scheduled run,
   `verify-fields` (`VERIFY_FIELDS`) still re-checks both fields. `energy.source` and `energy.utility` remain extractable but are not pinned —
   they were unmeasured (the bench could not score non-numeric fields until 2026-09-01,
   and neither ever carried a label or appeared in a result file), so they do not
-  run nightly. Re-add either only after measuring.
+  run on the schedule. Re-add either only after measuring.
 - **The `pending` staging gate is untouched.** Everything the lane produces goes
   through `submit-candidates.ts` and needs a human `approve`, exactly as before.
 
@@ -522,7 +522,7 @@ caught in seconds only because the quote travelled with the value.
   report 1455 of 1545 gaps as unfetchable. Do not cite the older "5,650 field-gaps"
   headline — it is retracted. Re-run a sweep before drawing yield conclusions.
 - **Unmeasured fields** (`energy.source`, `energy.utility`): remain extractable
-  but are not pinned nightly because they have never been measured. The bench
+  but are not pinned on the schedule because they have never been measured. The bench
   covered only numeric fields until 2026-09-01, when `water.coolingType` became
   the first non-numeric field measured (P=95%/R=95%) — but that machinery has
   not been pointed at these two. Re-add either to the pinned list only after

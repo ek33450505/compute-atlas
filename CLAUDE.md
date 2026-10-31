@@ -331,7 +331,7 @@ fetched and mechanically verified before staging, using a **local Ollama** model
 unreachable or `OLLAMA_VERIFY_MODEL` is not pulled, the run **aborts loudly** rather
 than staging unverified candidates (`VERIFY_SOURCES_ENABLED=false` is the only
 opt-out). A field-extraction lane (`extract-fields.ts` / `verify-fields.ts`) fills missing
-structured fields on existing facilities. It runs **nightly as part of `run.sh`** (after the
+structured fields on existing facilities. It runs **on every scheduled `run.sh` run** (after the
 discovery and source-liveness lanes) and can also be run by hand; everything it produces still
 stages as `pending`. It reads
 PDF sources via `pdftotext -layout` and so **requires poppler** — without it every PDF source goes
@@ -343,10 +343,10 @@ extractable fields failed the accuracy bench (`capacityMw.planned` P=75%,
 ⚠️ The shared `parseFieldsArg` helper it calls **does** still default to all six when `--fields` is
 omitted, and that default is deliberate: `verify-fields.ts` imports the same function and relies on
 it, being read-only and staging nothing. So the requirement is `extract-fields.ts`-specific, layered
-on top — do not "simplify" it into the shared helper. Since 2026-10-29 the nightly extract lane
+on top — do not "simplify" it into the shared helper. Since 2026-10-29 the scheduled extract lane
 pins ONLY `water.coolingType` (P=95%/R=95%, measured 2026-09-01). `capacityMw.operational` was unpinned:
 its P=100%/R=100% measured a drifted prompt on a corpus with no distractors (`scripts/discovery/bench/README.md`).
-Nightly `verify-fields` still re-checks both. `energy.source` and `energy.utility` remain extractable but are not pinned
+Scheduled-run `verify-fields` still re-checks both. `energy.source` and `energy.utility` remain extractable but are not pinned
 (unmeasured). ⚠️ `water.coolingType`'s 95% belongs to the PROMPT, not the field — it is 53%
 without the decision rule, which `extract-fields.ts` carries verbatim from `docs/methodology.md#cooling-type`
 under a drift test. ⛔ `aiClassification` was benched the same way on 2026-09-12 and is NOT shippable as a
@@ -363,11 +363,11 @@ re-proposing either. The scheduled invocation bakes that list in, and bounds eac
 `ENRICHMENT_LIMIT` (60) / `VERIFY_LIMIT` (40) — a full sweep is ~10 hours (rescaled from the
 measured 12h/2,525-gap figure; the 2,190-gap count is from 2026-09-01 on the old two-field list, and the one-field list is not re-measured), and an unparseable
 limit would otherwise disable the bound entirely, so `run.sh` validates both before use.
-The leads lane (`leads-lane.ts`: public URL tips → pending submissions) also runs nightly in
+The leads lane (`leads-lane.ts`: public URL tips → pending submissions) also runs on every scheduled run in
 `run.sh`, after the field-extraction lane, bounded by `LEADS_LIMIT` (default 10).
 Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics
 (launchd, `ollama pull`, running it by hand): `docs/discovery-runbook.md`. It uses the Claude Code subscription (not the metered
-API) and runs via `launchd` on the maintainer's machine — treat it as an operator
+API) and runs via `launchd` on the maintainer's machine Mon/Wed/Fri at 13:00 local — treat it as an operator
 tool, not part of the deployed app.
 
 ## Conventions
