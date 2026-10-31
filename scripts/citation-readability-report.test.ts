@@ -48,11 +48,11 @@ describe("bucketFor precedence", () => {
     expect(bucketFor({ url: "https://www.hanfordsentinel.com/news/a" })).toBe("known_excluded");
     expect(bucketFor({ url: "https://www.arkansasonline.com/news/a" })).toBe("known_excluded");
     expect(bucketFor({ url: "https://cleanview.co/x" })).toBe("known_excluded");
-    expect(bucketFor({ url: "https://baxtel.com/data-center/x" })).toBe("known_marker_false_positive");
+    expect(bucketFor({ url: "https://baxtel.com/data-center/x" })).toBe("unclassified");
     expect(bucketFor({ url: "https://measuredai.substack.com/p/x" })).toBe("known_marker_false_positive");
   });
   it("does not match a lookalike host", () => {
-    expect(bucketFor({ url: "https://evilbaxtel.com/x" })).toBe("unclassified");
+    expect(bucketFor({ url: "https://evilhanfordsentinel.com/x" })).toBe("unclassified");
   });
   it("everything else is unclassified", () => {
     expect(bucketFor({ url: "https://example.org/story" })).toBe("unclassified");
@@ -162,7 +162,7 @@ describe("buildReport / renderMarkdown", () => {
   });
   it("ranks unclassified hosts by facility count and excludes curated hosts", () => {
     const r = buildReport(facilities, null);
-    expect(r.topUnclassifiedHostsByFacilities.map((h) => h.host)).toEqual(["example.org"]);
+    expect(r.topUnclassifiedHostsByFacilities.map((h) => h.host)).toEqual(["example.org", "baxtel.com"]);
   });
 });
 

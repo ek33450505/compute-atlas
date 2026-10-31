@@ -111,10 +111,13 @@ refute a candidate, and it survives only if it holds up. It routinely catches
 errors — a miscopied capacity figure, a status that a later vote overtook, a
 name that turns out to be a duplicate — before they reach the dataset.
 
-Locations follow a geocoding discipline. When a primary source gives a parcel or
-street address, the coordinate is exact. When it names only a town, the record
-carries the town centroid and is marked `approximate` in the `precision` field —
-never presented as a parcel-level point it is not.
+Locations follow a geocoding discipline. A coordinate is marked `exact` in the
+`precision` field only when the record ties it to the facility itself: an
+OpenStreetMap outline of the facility, an EIA or permit plant location, a
+parcel the facility occupies in full, or a single-site facility geocoded from
+its own street address. A town or county centroid, a point on a single
+contiguous campus, or a road-level placement is marked `approximate`, and is
+never presented as a footprint it is not.
 
 ## Deduplication
 
@@ -219,12 +222,19 @@ means reading its provenance:
   tagged by different enrichment passes.
 - **`confidence`** — `confirmed`, `reported`, or `rumored`, describing how firmly
   the record's core facts are established.
-- **`statusHistory[]`** — an append-only audit trail of status changes, each dated
-  and tied by `sourceIndex` to the source that corroborates it. It is never
-  reordered or rewritten; new events and sources are appended, so the trail stays
-  intact.
-- **`location.precision`** — `exact` when the coordinate is a real footprint,
-  `approximate` when it is a geocoded town/parcel centroid, or `representative_multi_site` when the facility spans multiple discrete sites (e.g. a campus or distributed fleet) and the coordinate is an illustrative point only.
+- **`statusHistory[]`** — an audit trail of status changes, each dated
+  and tied by `sourceIndex` to the source that corroborates it. It is not
+  reordered; new events and sources are appended, so the trail stays intact. An
+  entry's date or note is corrected in place when it is shown to be wrong, for
+  example when a report's publication date had been entered as the date of the
+  event.
+- **`location.precision`** — `exact` when the record ties the coordinate to the
+  facility itself (see the geocoding discipline above), `approximate` when it is
+  a best-effort placement such as a town or county centroid, a point on a single
+  contiguous campus, or a road-level placement, or `representative_multi_site`
+  when the facility spans multiple discrete sites, such as buildings at separate
+  addresses or a distributed fleet, and the coordinate is an illustrative point
+  only.
 
 Put together: follow the `sources`, weigh the `confidence`, and read the
 `statusHistory` — that is what "source-cited" means here, and it is the whole
@@ -387,7 +397,7 @@ member, which has been considered and declined.
 ## Operational capacity
 
 The `capacityMw.operational` field is defined as the IT capacity that is online
-now, in megawatts. Planned capacity is a separate field and is not affected.
+now, in megawatts. Planned capacity is a separate field; the unqualified-figure rule below applies to it too.
 
 - **Counts:** IT capacity in service, which sources may also call IT load or
   critical IT load. For a crypto-mining site, a stated current power draw also
@@ -398,6 +408,9 @@ now, in megawatts. Planned capacity is a separate field and is not affected.
   or conditions the site, not how much computing it can run. For a
   crypto-mining site, a projected, expected or planned draw, and a contracted,
   interconnection, substation or building figure, do not count either.
+- **Unqualified figures:** a bare figure such as "a 50 MW facility" counts as IT
+  capacity unless the source describes it as a utility feed, power supply,
+  building power, substation, UPS or generator figure.
 
 The rule: Operational capacity is IT capacity only. A utility feed, power supply, building power, UPS or generator figure is not IT capacity. If a source states only such a figure, the field is left unrecorded and the figure is described in the notes as what it is. For a crypto-mining site, a stated current power draw (one in effect now, not projected, expected or planned) counts as operational capacity; a contracted, interconnection, substation or building figure does not.
 
@@ -506,11 +519,11 @@ the proposed/under-construction cohorts as the better-evidenced half.
   2026-09-28 across 2,241 records: 486 cite at least one primary document. Read
   the `kind` mix alongside `confidence` (953 `confirmed`, 1,264 `reported`, 24
   `rumored`).
-- **Coordinates vary in precision.** Measured 2026-09-28: 733 records are `exact`
-  footprints; 1,499 are `approximate` geocodes of a town or parcel centroid; 9
-  are `representative_multi_site`, standing for a multi-building campus or
-  distributed fleet. Check `location.precision` before doing distance or spatial
-  work.
+- **Coordinates vary in precision.** Measured 2026-09-28, before the 2026-10-30
+  precision review: 733 records are `exact` footprints; 1,499 are `approximate`
+  geocodes of a town or parcel centroid; 9 are `representative_multi_site`,
+  standing for a multi-building campus or distributed fleet. Check
+  `location.precision` before doing distance or spatial work.
 - **Some records are deliberately aggregates.** A multi-building campus or a
   carrier hotel with many tenants may be one record rather than many, because
   the site is the meaningful unit. Where this applies, `notes` says so.
