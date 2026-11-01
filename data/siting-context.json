@@ -12105,8 +12105,8 @@
   },
   "coresite-dc2-washington-d-c-dc": {
     "nearestWater": {
-      "name": "Rock Creek",
-      "kind": "river",
+      "name": "Carp Pond (historical)",
+      "kind": "lake",
       "distanceMi": 1.1
     },
     "nearestTransmission": {
@@ -15574,9 +15574,9 @@
   },
   "dc-blox-warren-township-marion-county-in": {
     "nearestWater": {
-      "name": "Bacon Swamp",
-      "kind": "lake",
-      "distanceMi": 6.6
+      "name": "Pleasant Run",
+      "kind": "river",
+      "distanceMi": 0.3
     },
     "nearestTransmission": {
       "voltageKv": 230,
@@ -51016,9 +51016,9 @@
   },
   "tierpoint-newton-ia": {
     "nearestWater": {
-      "name": "Wire Lake",
-      "kind": "lake",
-      "distanceMi": 6.7
+      "name": "Cardinal Creek",
+      "kind": "river",
+      "distanceMi": 0.4
     },
     "nearestTransmission": {
       "voltageKv": 345,
@@ -51095,9 +51095,9 @@
   },
   "tierpoint-raleigh-departure-drive-nc": {
     "nearestWater": {
-      "name": "Greshams Lake",
-      "kind": "lake",
-      "distanceMi": 1.7
+      "name": "Marsh Creek",
+      "kind": "river",
+      "distanceMi": 0.3
     },
     "nearestTransmission": {
       "voltageKv": 230,
@@ -55110,9 +55110,9 @@
   },
   "xcel-dakota-range-i-ii-wind-codington-county-sd": {
     "nearestWater": {
-      "name": "Myers Lake",
-      "kind": "lake",
-      "distanceMi": 5.8
+      "name": "Soo Creek",
+      "kind": "river",
+      "distanceMi": 0.7
     },
     "nearestTransmission": {
       "voltageKv": 345,

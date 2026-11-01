@@ -48046,13 +48046,6 @@
         "kind": "other"
       },
       {
-        "url": "https://nominatim.openstreetmap.org/search?q=Montgomery%2C+Alabama%2C+USA&format=json&limit=1",
-        "label": "Nominatim geocode of Montgomery, Alabama (city centroid)",
-        "publisher": "OpenStreetMap / Nominatim",
-        "retrievedAt": "2026-09-09",
-        "kind": "osm"
-      },
-      {
         "url": "https://www.dcblox.com/wp-content/uploads/2025/01/2025-DC-BLOX-Hyperscale-Data-Center-Campuses.pdf",
         "label": "DC BLOX Southeastern Hyperscale-Ready Digital Infrastructure campus brochure (Montgomery MGM1, 7610 Bill Joseph Pkwy)",
         "publisher": "DC BLOX",
@@ -48074,7 +48067,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-10-31",
     "notes": "Announced November 2024 as one of four DC BLOX southeastern hyperscale edge-node sites. Chamber release states verbatim: \"$30 million data center investment\", \"5MW of capacity for a hyperscale anchor tenant, with the potential to scale up to 40MW for additional tenants\", \"Located in Interstate Industrial Park\". Alabama Department of Commerce (Made in Alabama) repeats the 5MW-to-40MW figure. Status is proposed: no cited source states that construction has begun, and DC BLOX's own live location map (checked 2026-09-09) lists only Birmingham and Huntsville in Alabama with no Montgomery entry. An aggregator (servercountry.org) lists this as 40 MW under construction; that is unverified and not cited. The street address 7610 Bill Joseph Pkwy, Hope Hull, AL 36043 is taken from DC BLOX's 2025 campus brochure (Montgomery MGM1, status Planned); WSFA places the site at the Interstate Industrial Park off the Hope Hull exit on Interstate 65. The coordinates are the Nominatim point for Bill Joseph Parkway, a street-level approximation, not a surveyed lot. The brochure's MGM1 block lists \"Total SF (Buildable) 80,000 SF\", \"Available Power 32cMW/48gMW\" and \"Initial Move-In Contract + 36 months\", and WSFA reports the data center is \"expected to start being built in June 2025\"; no acreage, job count or incentive figures appear in any cited source. Distinct from Meta Montgomery Data Center (different operator and site).",
     "investmentUsd": 30000000,
     "facilityType": "data_center",
@@ -147281,7 +147274,7 @@
       "notes": "Initial power allocation of ~299 MW is required by end of 2028. STACK funds APCo transmission and generation upgrades and holds contingency rights tied to APCo confirming delivery."
     },
     "water": {
-      "notes": "Performance agreement references 7 million gallons per day of water capacity allocated from the Dan River for the megasite buildout."
+      "notes": "Water is expected to come from the Dan River; the megasite's infrastructure can provide 7 million gallons per day (Virginia Business, May 2026)."
     },
     "investmentUsd": 73500000000,
     "landAcres": 2990,
@@ -156225,11 +156218,11 @@
       }
     ],
     "lastUpdated": "2026-10-30",
-    "notes": "Scope: this is an existing 2002 merchant combined-cycle plant that Alabama Power sought to acquire, not new generation built for a compute customer, and it has no compute offtaker. It is recorded here because the state's own regulatory record ties the acquisition directly to data-center load growth, and because, as of September 2026, Alabama had no other power-generation records. Alabama Power's SEC filing for the nine months ended September 30, 2024 states that on October 24, 2024 it agreed to acquire all of the equity interests in Tenaska Alabama Partners, L.P. \"for a total purchase price of approximately $622 million, subject to working capital adjustments.\" Power Engineering reports that \"Alabama Power proposes to increase the monthly utility bill for its residential customers by $3.32, according to the filing.\" A December 5, 2025 Alabama PSC consent order, as described in Southern Company's 10-K for 2025, delays the effective date of the Rate CNP New Plant adjustment to recover costs associated with the Lindsay Hill acquisition until January 2028 billings. Southern Company's 10-K for 2025 states that the Alabama PSC approved a certificate of convenience and necessity on August 13, 2025 and that the acquisition closed on September 30, 2025. The status is operational: the plant has run since May 2002; the 2025-2026 PSC proceeding concerns its ownership, not its existence. The operator is recorded as Alabama Power (the acquirer named in the Power Engineering article); OSM still listed Tenaska Alabama Partners LP as operator as of September 2026, while EIA's monthly generator inventory (EIA-860M) lists Alabama Power Co; the 10-K identifies it as the entity Alabama Power acquired. Coordinates are the OSM plant polygon centroid, which is tagged from EIA-860, hence the pin is exact.",
+    "notes": "Scope: this is an existing 2002 merchant combined-cycle plant that Alabama Power sought to acquire, not new generation built for a compute customer, and no cited source names a compute offtaker. It is recorded here because the state's own regulatory record ties the acquisition directly to data-center load growth, and because, as of September 2026, Alabama had no other power-generation records. Alabama Power's SEC filing for the nine months ended September 30, 2024 states that on October 24, 2024 it agreed to acquire all of the equity interests in Tenaska Alabama Partners, L.P. \"for a total purchase price of approximately $622 million, subject to working capital adjustments.\" Power Engineering reports that \"Alabama Power proposes to increase the monthly utility bill for its residential customers by $3.32, according to the filing.\" A December 5, 2025 Alabama PSC consent order, as described in Southern Company's 10-K for 2025, delays the effective date of the Rate CNP New Plant adjustment to recover costs associated with the Lindsay Hill acquisition until January 2028 billings. Southern Company's 10-K for 2025 states that the Alabama PSC approved a certificate of convenience and necessity on August 13, 2025 and that the acquisition closed on September 30, 2025. The status is operational: the plant has run since May 2002; the 2025-2026 PSC proceeding concerns its ownership, not its existence. The operator is recorded as Alabama Power (the acquirer named in the Power Engineering article); OSM still listed Tenaska Alabama Partners LP as operator as of September 2026, while EIA's monthly generator inventory (EIA-860M) lists Alabama Power Co; the 10-K identifies it as the entity Alabama Power acquired. Coordinates are the OSM plant polygon centroid, which is tagged from EIA-860, hence the pin is exact.",
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
-      "notes": "Combined-cycle natural gas. Power Engineering states the plant is \"900 megawatts\" at Billingsley, Autauga County, and reports that \"Two new data centers are expected to come online in the next few years, which Alabama Power said increases the load on the system in its filing with the Alabama Public Service Commission.\" Alabama Power's resource-planning manager said the plant would help \"address an expected shortfall of energy by 2029\", with a forecast deficit of 1,179 MW by 2029 driven partly by data-center-led industrial demand. No compute offtaker: this is utility system capacity, not power contracted to a named compute company, so no offtaker or powered facility is recorded. OSM/EIA-860 record the plant as \"Tenaska Lindsay Hill Generating Station\", EIA plant ID 55271, combined-cycle gas, 939.4 MW nameplate, in service 2002-05 — the recorded operational capacity is the nameplate of \"879,700\" kW that Southern Company's 10-K for 2025 lists for the Lindsay Hill Generating Station, which differs from the 939.4 MW EIA-860 nameplate; the 900 MW figure is quoted as Power Engineering states it."
+      "notes": "Combined-cycle natural gas. Power Engineering states the plant is \"900 megawatts\" at Billingsley, Autauga County, and reports that \"Two new data centers are expected to come online in the next few years, which Alabama Power said increases the load on the system in its filing with the Alabama Public Service Commission.\" Alabama Power's resource-planning manager said the plant would help \"address an expected shortfall of energy by 2029\", with a forecast deficit of 1,179 MW by 2029 driven partly by data-center-led industrial demand. No compute offtaker: Southern Company's 10-K for 2025 states that Alabama Power assumed an existing power sales agreement under which \"the full output of the generating facility remains committed to a non-affiliated third party through April 2027\", without naming that party, and that upon expiration of that agreement Alabama Power will recover the acquisition's costs through Rate CNP New Plant, Rate CNP Compliance, Rate ECR and Rate RSE (a December 5, 2025 consent order delays the Rate CNP New Plant recovery until January 2028 billings); no cited source names a compute company as the buyer, so no offtaker or powered facility is recorded. OSM/EIA-860 record the plant as \"Tenaska Lindsay Hill Generating Station\", EIA plant ID 55271, combined-cycle gas, 939.4 MW nameplate, in service 2002-05 — the recorded operational capacity is the nameplate of \"879,700\" kW that Southern Company's 10-K for 2025 lists for the Lindsay Hill Generating Station, which differs from the 939.4 MW EIA-860 nameplate; the 900 MW figure is quoted as Power Engineering states it."
     }
   },
   {
@@ -162437,9 +162430,9 @@
       },
       {
         "status": "permitted",
-        "date": "2026-10-27",
-        "note": "The NRC issued TVA a construction permit for Clinch River Unit 1 (GE Vernova Hitachi BWRX-300), reported Sept 30, 2026. An operating license is still required.",
-        "sourceIndex": 5
+        "date": "2026-09-28",
+        "note": "The NRC issued TVA a construction permit for Clinch River Unit 1 (GE Vernova Hitachi BWRX-300); the NRC project page dates the construction permit decision September 28, 2026, and World Nuclear News reported the issuance on September 30, 2026. An operating license is still required.",
+        "sourceIndex": 3
       }
     ],
     "sources": [
@@ -162466,17 +162459,10 @@
       },
       {
         "url": "https://www.nrc.gov/reactors/new-reactors/advanced/who-were-working-with/applicant-projects/clinch-river",
-        "label": "Clinch River Nuclear Site Application (NRC project page): final SER June 25, 2026; mandatory hearing Aug 13, 2026; construction permit decision targeted Fall 2026",
+        "label": "Clinch River Nuclear Site Application (NRC project page): final SER June 25, 2026; mandatory hearing Aug 13, 2026; construction permit decision September 28, 2026",
         "publisher": "U.S. Nuclear Regulatory Commission",
-        "retrievedAt": "2026-09-21",
+        "retrievedAt": "2026-10-31",
         "kind": "permit"
-      },
-      {
-        "url": "https://world-nuclear-news.org/articles/first-construction-permit-issued-for-bwrx300-smr-in-us",
-        "label": "First construction permit issued for BWRX-300 SMR in US",
-        "publisher": "World Nuclear News",
-        "retrievedAt": "2026-10-27",
-        "kind": "press"
       },
       {
         "url": "https://world-nuclear-news.org/articles/first-construction-permit-issued-for-bwrx300-smr-in-us",
@@ -162486,12 +162472,12 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-27",
+    "lastUpdated": "2026-10-31",
     "notes": "The NRC issued the construction permit, reported September 30, 2026. No compute offtaker is asserted — this is a utility grid project, not a site-dedicated plant, and no source retrieved as of September 2026 names a specific data-center buyer.",
     "energy": {
       "source": "nuclear",
       "utility": "Tennessee Valley Authority",
-      "notes": "GE Vernova Hitachi BWRX-300 natural-circulation boiling water reactor; NRC staff issued the final safety evaluation June 25, 2026 and held the mandatory hearing Aug 13, 2026; the NRC issued the construction permit, reported September 30, 2026 (World Nuclear News)"
+      "notes": "GE Vernova Hitachi BWRX-300 natural-circulation boiling water reactor; NRC staff issued the final safety evaluation June 25, 2026 and held the mandatory hearing Aug 13, 2026; the NRC issued the construction permit, reported September 30, 2026 (World Nuclear News)."
     },
     "facilityType": "power_generation",
     "generation": {
