@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-31T14:18:16.893Z",
+  "asOf": "2026-11-01T14:44:18.590Z",
   "statuses": [
     "operational",
     "under_construction",
@@ -431,8 +431,8 @@
       "counts": {
         "operational": 627,
         "under_construction": 283,
-        "permitted": 229,
-        "proposed": 616,
+        "permitted": 230,
+        "proposed": 615,
         "cancelled": 133
       }
     },
