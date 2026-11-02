@@ -5,6 +5,13 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.35.1](https://github.com/ek33450505/compute-atlas/compare/v1.35.0...v1.35.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* **a11y:** label-in-name for axe 4.14 + floor-capped deps (replaces [#509](https://github.com/ek33450505/compute-atlas/issues/509), [#510](https://github.com/ek33450505/compute-atlas/issues/510)) ([#513](https://github.com/ek33450505/compute-atlas/issues/513)) ([e8c3129](https://github.com/ek33450505/compute-atlas/commit/e8c3129df75c30fe59b52963cf82c46309d7805c))
+
 ## [1.35.0](https://github.com/ek33450505/compute-atlas/compare/v1.34.1...v1.35.0) (2026-11-02)
 
 
