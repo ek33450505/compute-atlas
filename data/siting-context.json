@@ -365,6 +365,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "3m-maplewood-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "4am-development-burkhalter-road-statesboro-ga": {
     "nearestWater": {
       "name": "Lower Black Creek",
@@ -572,6 +582,12 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "aaim-mexico-missouri-data-center-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "aalo-atomics-inl-id": {
@@ -2213,6 +2229,16 @@
       "rock": "Sandstone"
     }
   },
+  "altigen-jurassic-spark-wellington-carbon-county-ut": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "amazon-becker-mn": {
     "nearestWater": {
       "name": "Elk River",
@@ -2498,6 +2524,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "ameren-castle-bluff-energy-center-st-louis-county-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
+    }
+  },
   "ameren-reform-solar-callaway-county-mo": {
     "nearestWater": {
       "name": "Mud Creek",
@@ -2508,6 +2544,26 @@
       "voltageKv": 345,
       "distanceMi": 0.3
     },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "ameren-stoddard-county-solar-mo": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Mississippi River Valley Alluvial Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "ameren-tom-sawyer-solar-audrain-county-mo": {
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4780,6 +4836,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "aws-danville-campus-montgomery-county-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Mississippian Aquifers",
+      "rock": "Sandstone and carbonate-rock"
+    }
+  },
   "aws-falls-township-pa": {
     "nearestWater": {
       "name": "Manor Lake",
@@ -5587,6 +5653,16 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "bcbsm-eagan-mn": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "beacon-calvert-al": {
     "nearestWater": {
       "name": "Poll Bayou",
@@ -5957,6 +6033,26 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "best-buy-bloomington-mn": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "bf-timpanogos-tech-center-provo-ut": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "bginusa-york-ne": {
@@ -6825,6 +6921,16 @@
       "rock": "Sandstone"
     }
   },
+  "blue-castle-fulcrum-point-green-river-smr-ut": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "blue-fern-cle-elum-data-center-wa": {
     "nearestWater": {
       "name": "Tillman Creek",
@@ -6890,6 +6996,16 @@
     },
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
+      "rock": "Carbonate-rock"
+    }
+  },
+  "bluebird-underground-data-center-springfield-mo": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
       "rock": "Carbonate-rock"
     }
   },
@@ -8370,6 +8486,12 @@
       "rock": "Sandstone"
     }
   },
+  "centersquare-st-louis-sl1-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "centersquare-tpa1-tampa-fl": {
     "nearestWater": {
       "name": "Delaney Creek",
@@ -8527,6 +8649,16 @@
     "aquifer": {
       "name": "Northern Atlantic Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "ch-robinson-oronoco-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "chalk-point-storage-aquasco-md": {
@@ -11405,6 +11537,12 @@
     "aquifer": {
       "name": "Rio Grande Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "connect-data-centers-berkeley-hanley-road-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "connect-data-centers-comstock-street-santa-clara-ca": {
@@ -18671,6 +18809,16 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "ecolab-eagan-mn": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "ecp-york-2-energy-center-data-center-peach-bottom-york-pa": {
     "nearestWater": {
       "name": "Scott Creek",
@@ -20878,6 +21026,16 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "epic-hosting-rochester-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "epic-hosting-verona-wi": {
     "nearestWater": {
       "name": "Sugar River",
@@ -21734,6 +21892,18 @@
       "rock": "Sandstone and carbonate-rock"
     }
   },
+  "evergy-buchanan-bluffs-energy-center-unit-2-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
+  "evergy-foxtrot-solar-jasper-county-mo": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
   "evocative-bos1-somerville-ma": {
     "nearestWater": {
       "name": "Mystic River",
@@ -22125,6 +22295,26 @@
       "rock": "Semiconsolidated sand"
     }
   },
+  "faraday-solar-utah-county-ut": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "fastenal-winona-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "fbi-cjis-division-clarksburg-harrison-county-wv": {
     "nearestWater": {
       "name": "Smith Run",
@@ -22187,6 +22377,16 @@
     },
     "aquifer": {
       "name": "High Plains Aquifer",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "fervo-cape-station-beaver-county-ut": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
       "rock": "Unconsolidated sand and gravel"
     }
   },
@@ -24228,6 +24428,16 @@
       "label": "High (40-80%)"
     }
   },
+  "general-mills-golden-valley-mn": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "generate-nb-fuel-cells-new-britain-ct": {
     "nearestWater": {
       "name": "Doerrs Pond",
@@ -24400,6 +24610,16 @@
     "waterStress": {
       "cat": 2,
       "label": "Medium - High (20-40%)"
+    }
+  },
+  "geronimo-spring-river-solar-storage-jasper-county-mo": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
     }
   },
   "gi-partners-sandy-farms-severn-md": {
@@ -26619,6 +26839,16 @@
       "rock": "Sandstone"
     }
   },
+  "h5-data-centers-st-louis-globe-building-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
+    }
+  },
   "h5-data-centers-st-paul-mn": {
     "nearestWater": {
       "name": "Lake Como",
@@ -26943,6 +27173,16 @@
     "aquifer": {
       "name": "Ordovician Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "healthpartners-mendota-heights-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "heartland-business-systems-little-chute-wi": {
@@ -28864,6 +29104,26 @@
       "rock": "Sandstone"
     }
   },
+  "irongate-msp2-woodbury-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "irongate-msp3-eagan-unisys-park-mn": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "irongate-the-bunker-warren-mi": {
     "nearestWater": {
       "name": "McCoy Drain",
@@ -28877,6 +29137,16 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "irongate-woodbury-msp1-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "ironmountain-bos1-northborough-ma": {
@@ -29947,6 +30217,16 @@
     "aquifer": {
       "name": "Edwards-trinity Aquifer System",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "land-o-lakes-arden-hills-mn": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "landshark-energy-solar-calhoun-ms": {
@@ -32435,6 +32715,12 @@
       "label": "Low - Medium (10-20%)"
     }
   },
+  "mastercard-ofallon-technology-hub-data-center-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "mawson-bellefonte-pa": {
     "nearestWater": {
       "name": "Spring Creek",
@@ -32650,6 +32936,16 @@
     "aquifer": {
       "name": "Mississippian Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "medtronic-woodbury-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "menlo-digital-chicago-exchange-il": {
@@ -34769,6 +35065,16 @@
     "aquifer": {
       "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
+    }
+  },
+  "mienergy-harmony-data-center-site-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Upper Carbonate Aquifer",
+      "rock": "Carbonate-rock"
     }
   },
   "miles-brothers-glassworks-data-campus-clarion-pa": {
@@ -37040,6 +37346,30 @@
       "rock": "Sandstone"
     }
   },
+  "nodal-power-mara-davis-landfill-layton-ut": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "nodiac-albertville-mn": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "noec-core-data-center-vinita-ok": {
     "nearestWater": {
       "name": "Bull Creek",
@@ -37228,6 +37558,16 @@
     "aquifer": {
       "name": "Central Valley Aquifer System",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "northstar-digital-shakopee-mn": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "northstar-newport-solar-jackson-county-ar": {
@@ -37543,6 +37883,16 @@
     "aquifer": {
       "name": "Pennsylvanian Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "nsi6-benton-county-old-highway-65-mo": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
     }
   },
   "ntt-ashburn-va1-data-center-va": {
@@ -38155,6 +38505,16 @@
       "rock": "Sandstone"
     }
   },
+  "nydig-duchesne-data-center-power-station-upalco-ut": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
+    }
+  },
   "nygc-buena-vista-ai-factory-ione-ca": {
     "nearestWater": {
       "name": "Lake Amador",
@@ -38627,6 +38987,16 @@
     "aquifer": {
       "name": "Southeastern Coastal Plain Aquifer System",
       "rock": "Semiconsolidated sand"
+    }
+  },
+  "oppidan-connect-north-mankato-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "oppidan-des-moines-ia": {
@@ -39421,6 +39791,12 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "patmos-independence-little-blue-parkway-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "patmos-kansas-city-mo": {
@@ -42039,6 +42415,16 @@
       "rock": "Carbonate-rock"
     }
   },
+  "prudential-plymouth-mn": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "pso-northeastern-5-6-oologah-ok": {
     "nearestWater": {
       "name": "Fourmile Creek",
@@ -42109,6 +42495,16 @@
     "aquifer": {
       "name": "Silurian-devonian Aquifers",
       "rock": "Carbonate-rock"
+    }
+  },
+  "qlevr-inver-grove-heights-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "qts-ashburn-1-va": {
@@ -43130,6 +43526,12 @@
       "label": "Medium - High (20-40%)"
     }
   },
+  "rackspace-kansas-city-mci1-airworld-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "racksquared-columbus-oh": {
     "nearestWater": {
       "name": "Scioto River",
@@ -43804,6 +44206,12 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "revitalization-unlimited-934-central-kansas-city-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "revolve-labs-glencoe-mn": {
@@ -46313,6 +46721,16 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "sherman-255-second-ave-s-minneapolis-mn": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "sholes-wind-energy-center-wayne-ne": {
@@ -50005,6 +50423,22 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "target-brooklyn-park-mn": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    }
+  },
+  "target-elk-river-mn": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "taurus-digital-realty-project-bunkhouse-stilesboro-ga": {
     "nearestWater": {
       "name": "Raccoon Creek",
@@ -51373,6 +51807,16 @@
       "label": "Low (<10%)"
     }
   },
+  "toro-bloomington-mn": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "toronto-power-plant-deuel-county-sd": {
     "nearestWater": {
       "name": "Cobb Creek",
@@ -52376,6 +52820,32 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "unitedhealth-chaska-mn": {
+    "waterStress": {
+      "cat": 1,
+      "label": "Low - Medium (10-20%)"
+    }
+  },
+  "unitedhealth-elk-river-mn": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "unitedhealth-plymouth-mn": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "uniti-des-moines-ia": {
     "nearestWater": {
       "name": "North Raccoon River",
@@ -52507,6 +52977,16 @@
     "aquifer": {
       "name": "High Plains Aquifer",
       "rock": "Unconsolidated sand and gravel"
+    }
+  },
+  "us-bank-st-paul-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
     }
   },
   "us-signal-co01-englewood-co": {
@@ -52834,6 +53314,16 @@
     "aquifer": {
       "name": "Valley And Ridge Aquifers",
       "rock": "Sandstone and carbonate-rock"
+    }
+  },
+  "valar-atomics-nvidia-orangeville-ai-data-center-ut": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
     }
   },
   "valar-atomics-project-beehive-price-ut": {
@@ -53997,6 +54487,16 @@
       "rock": "Sandstone"
     }
   },
+  "walmart-jane-data-center-mcdonald-county-mo": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Ozark Plateaus Aquifer System",
+      "rock": "Carbonate-rock"
+    }
+  },
   "warrenton-group-halifax-road-petersburg-va": {
     "nearestWater": {
       "name": "Second Swamp",
@@ -54184,6 +54684,16 @@
     },
     "aquifer": {
       "name": "Colorado Plateaus Aquifers",
+      "rock": "Sandstone"
+    }
+  },
+  "wells-fargo-shoreview-mn": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
       "rock": "Sandstone"
     }
   },
@@ -54485,6 +54995,12 @@
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
+    }
+  },
+  "white-cloud-acres-gas-generation-nodaway-mo": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "white-county-pleasant-hill-road-crypto-mine-tn": {
@@ -55121,6 +55637,30 @@
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
+    }
+  },
+  "xcel-form-energy-pine-island-iron-air-battery-mn": {
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    },
+    "aquifer": {
+      "name": "Cambrian-ordovician Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
+  "xmission-salt-lake-city-ut": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "yeehaw-junction-us-development-osceola-fl": {
