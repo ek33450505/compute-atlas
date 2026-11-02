@@ -164,6 +164,33 @@ describe("AboutPage — § The stance", () => {
     ).toHaveAttribute("href", "/opposition");
   });
 
+  it("gives the GitHub links accessible names that start with their visible text and end with the new-tab hint", async () => {
+    mockNonZero();
+    const page = await AboutPage();
+    render(page);
+
+    // WCAG 2.5.3 Label in Name: no aria-label overrides the visible text.
+    for (const [visible, name] of [
+      [
+        "The source code and data are public.",
+        "The source code and data are public. View them on GitHub (opens in new tab)",
+      ],
+      [
+        "https://github.com/ek33450505/compute-atlas",
+        "https://github.com/ek33450505/compute-atlas (opens in new tab)",
+      ],
+      [
+        "or open an issue on GitHub",
+        "or open an issue on GitHub to suggest a correction or new facility (opens in new tab)",
+      ],
+    ]) {
+      const link = screen.getByRole("link", { name });
+      expect(link).toHaveTextContent(visible);
+      expect(name.startsWith(visible)).toBe(true);
+      expect(link).toHaveAttribute("target", "_blank");
+    }
+  });
+
   it("points reusers at the on-site how-to-cite section", async () => {
     mockNonZero();
     const page = await AboutPage();

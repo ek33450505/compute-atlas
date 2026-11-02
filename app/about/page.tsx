@@ -201,7 +201,7 @@ export default async function AboutPage() {
               href={siteConfig.repoUrl}
               target="_blank"
               rel="noreferrer noopener"
-              aria-label="View the source code and data on GitHub (opens in new tab)"
+              aria-label="The source code and data are public. View them on GitHub (opens in new tab)"
               className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               The source code and data are public.
@@ -653,7 +653,7 @@ export default async function AboutPage() {
               href={siteConfig.repoUrl}
               target="_blank"
               rel="noreferrer noopener"
-              aria-label="View the Compute Atlas repository on GitHub (opens in new tab)"
+              aria-label={`${siteConfig.repoUrl} (opens in new tab)`}
               className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               {siteConfig.repoUrl}
@@ -733,7 +733,7 @@ export default async function AboutPage() {
             href={`${siteConfig.repoUrl}/issues/new/choose`}
             target="_blank"
             rel="noreferrer noopener"
-            aria-label="Open an issue on GitHub to suggest a correction or new facility (opens in new tab)"
+            aria-label="or open an issue on GitHub to suggest a correction or new facility (opens in new tab)"
             className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
           >
             or open an issue on GitHub

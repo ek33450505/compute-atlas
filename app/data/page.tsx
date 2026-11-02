@@ -160,7 +160,7 @@ export default function DataPage() {
             href="https://creativecommons.org/licenses/by/4.0/"
             target="_blank"
             rel="noreferrer noopener"
-            aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
+            aria-label="CC BY 4.0: Creative Commons Attribution 4.0 license (opens in new tab)"
             className={LINK_CLASS}
           >
             CC BY 4.0

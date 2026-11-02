@@ -1,10 +1,34 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
 
-import { NAV_LINKS, MOBILE_NAV_GROUPS } from "./site-header";
+// The nav children are client components with their own router/state needs;
+// only the wordmark link is under test in the logo-name case below.
+vi.mock("@/components/primary-nav", () => ({ PrimaryNav: () => null }));
+vi.mock("@/components/mobile-nav", () => ({ MobileNav: () => null }));
+vi.mock("@/components/search/command-palette", () => ({
+  CommandPalette: () => null,
+}));
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    ...rest
+  }: {
+    href: string;
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => (
+    <a href={href} {...rest}>
+      {children}
+    </a>
+  ),
+}));
+
+import { NAV_LINKS, MOBILE_NAV_GROUPS, SiteHeader } from "./site-header";
 
 // ---------------------------------------------------------------------------
-// SiteHeader itself is a Server Component in the root layout — not rendered
-// here. This asserts the desktop nav config directly: NAV_LINKS is what
+// SiteHeader itself is a Server Component in the root layout; only its logo
+// link is rendered here (nav children are mocked). Otherwise this asserts the desktop nav config directly: NAV_LINKS is what
 // SiteHeader passes to both PrimaryNav and CommandPalette, so covering its
 // shape covers both surfaces without needing to render either.
 // ---------------------------------------------------------------------------
@@ -53,5 +77,17 @@ describe("SiteHeader — Support is reachable in both desktop and mobile nav", (
     const support = allLinks.find((link) => link.label === "Support");
     expect(support).toBeDefined();
     expect(support?.href).toBe("/support");
+  });
+});
+
+describe("SiteHeader — logo link", () => {
+  it("has an accessible name that includes the visible wordmark and tagline (WCAG 2.5.3)", () => {
+    render(<SiteHeader />);
+    const home = screen.getByRole("link", {
+      name: "Compute Atlas: Mapping the U.S. compute buildout, home",
+    });
+    expect(home).toHaveAttribute("href", "/");
+    expect(home).toHaveAccessibleName(/^Compute Atlas/);
+    expect(home).toHaveAccessibleName(/Mapping the U\.S\. compute buildout/);
   });
 });

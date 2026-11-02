@@ -53,6 +53,9 @@ function facilityCountPhrase(count: number): string {
  * when reading the row as flowing text. Same JSX-whitespace family as the
  * leading-space-after-entity bug elsewhere in this repo: correct on screen,
  * wrong for assistive tech, invisible in code review.
+ *
+ * Link rows also carry a whitespace text node between the two spans so axe's
+ * visible-text check sees a word boundary (flex drops it visually).
  */
 function NameSeparator() {
   return <span className="sr-only">, </span>;
@@ -137,6 +140,7 @@ export function MapPageContent({
                     <span className="truncate text-foreground" aria-hidden="true">
                       {s.name}
                     </span>
+                    {" "}
                     <span
                       className="shrink-0 font-mono tabular-nums text-xs text-muted-foreground"
                       aria-hidden="true"
@@ -173,6 +177,7 @@ export function MapPageContent({
                   <span className="truncate text-foreground" aria-hidden="true">
                     {o.operator}
                   </span>
+                  {" "}
                   <span
                     className="shrink-0 font-mono tabular-nums text-xs text-muted-foreground"
                     aria-hidden="true"
@@ -200,6 +205,7 @@ export function MapPageContent({
                   <span className="truncate text-foreground" aria-hidden="true">
                     {s.label}
                   </span>
+                  {" "}
                   <span
                     className="shrink-0 font-mono tabular-nums text-xs text-muted-foreground"
                     aria-hidden="true"
@@ -228,6 +234,7 @@ export function MapPageContent({
                     <span className="truncate text-foreground" aria-hidden="true">
                       {t.label}
                     </span>
+                    {" "}
                     <span
                       className="shrink-0 font-mono tabular-nums text-xs text-muted-foreground"
                       aria-hidden="true"

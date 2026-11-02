@@ -45,4 +45,16 @@ describe("Wordmark", () => {
       screen.getByText("Mapping the U.S. compute buildout")
     ).toBeInTheDocument();
   });
+
+  it("puts a whitespace node between the name and the tagline for axe's label-in-name check", () => {
+    render(
+      <a href="#home" aria-label="Compute Atlas: Mapping the U.S. compute buildout, home">
+        <Wordmark showTagline />
+      </a>
+    );
+    const link = screen.getByRole("link", {
+      name: "Compute Atlas: Mapping the U.S. compute buildout, home",
+    });
+    expect(link.textContent).toMatch(/Compute Atlas\s+Mapping/);
+  });
 });

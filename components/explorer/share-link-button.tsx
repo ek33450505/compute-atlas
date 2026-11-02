@@ -15,7 +15,7 @@ export function ShareLinkButton() {
     <CopyButton
       getText={() => window.location.href}
       label="Copy link"
-      ariaLabel="Copy a shareable link to this view"
+      ariaLabel="Copy link to this view"
       successMessage="Link copied to clipboard"
       errorMessage="Couldn't copy the link"
       icon={Share2}

@@ -136,6 +136,16 @@ describe("DataPage", () => {
     );
   });
 
+  it("gives the CC BY 4.0 link an accessible name that starts with its visible text", () => {
+    const page = DataPage();
+    render(page);
+    // WCAG 2.5.3 Label in Name.
+    const link = screen.getByRole("link", {
+      name: "CC BY 4.0: Creative Commons Attribution 4.0 license (opens in new tab)",
+    });
+    expect(link).toHaveTextContent("CC BY 4.0");
+  });
+
   it("renders a link to /methodology", () => {
     const page = DataPage();
     render(page);

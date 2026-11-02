@@ -146,7 +146,7 @@ describe("Explorer — table controls", () => {
         <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
       </NuqsTestingAdapter>
     );
-    const copy = screen.getByRole("button", { name: /shareable link/i });
+    const copy = screen.getByRole("button", { name: "Copy link to this view" });
     const region = container.querySelector('p[aria-live="polite"][aria-atomic="true"]');
     expect(region).toBeInTheDocument();
     expect(copy.compareDocumentPosition(region!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

@@ -181,7 +181,7 @@ export default function ApiPage() {
               href="https://creativecommons.org/licenses/by/4.0/"
               target="_blank"
               rel="noreferrer noopener"
-              aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
+              aria-label="CC-BY: Creative Commons Attribution 4.0 license (opens in new tab)"
               className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               CC-BY
@@ -267,7 +267,7 @@ export default function ApiPage() {
                 href={mainBulkUrl}
                 target="_blank"
                 rel="noreferrer noopener"
-                aria-label="Full facilities dataset as JSON on GitHub (opens in new tab)"
+                aria-label="data/facilities.json: full facilities dataset as JSON on GitHub (opens in new tab)"
                 className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
               >
                 data/facilities.json
@@ -319,7 +319,7 @@ export default function ApiPage() {
                 href="https://creativecommons.org/licenses/by/4.0/"
                 target="_blank"
                 rel="noreferrer noopener"
-                aria-label="Creative Commons Attribution 4.0 (CC-BY) license (opens in new tab)"
+                aria-label="CC-BY-4.0: Creative Commons Attribution 4.0 license (opens in new tab)"
                 className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
               >
                 CC-BY-4.0

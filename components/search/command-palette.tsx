@@ -250,11 +250,13 @@ export function CommandPalette({ navLinks }: CommandPaletteProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Search (press Ctrl K or Command K)"
+        aria-label={isMac ? "Search ⌘K" : "Search Ctrl K"}
+        aria-keyshortcuts="Meta+K Control+K"
         className="flex h-11 items-center gap-2 rounded-lg px-2 sm:px-3 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <Search aria-hidden className="size-4" />
         <span className="hidden sm:inline font-mono text-xs">Search</span>
+        {" "}
         <kbd className="hidden sm:inline-flex items-center rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground">
           {isMac ? "⌘K" : "Ctrl K"}
         </kbd>

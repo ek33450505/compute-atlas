@@ -35,7 +35,7 @@ export function SiteFooter() {
           <div className="sm:col-span-2 lg:col-span-1 space-y-3">
             <Link
               href="/"
-              aria-label={`${siteConfig.name}, home`}
+              aria-label={`${siteConfig.name}: ${siteConfig.tagline}, home`}
               className="inline-flex flex-col items-start gap-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               <Wordmark showTagline />
