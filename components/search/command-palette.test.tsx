@@ -173,6 +173,25 @@ describe("CommandPalette — trigger", () => {
     renderPalette();
     expect(screen.getByRole("button", { name: /search/i })).toBeInTheDocument();
   });
+
+  it("on non-Mac, names the trigger exactly 'Search Ctrl K' with whitespace between the visible spans", () => {
+    const platform = vi.spyOn(navigator, "platform", "get").mockReturnValue("Linux x86_64");
+    renderPalette();
+    const trigger = screen.getByRole("button", { name: "Search Ctrl K" });
+    platform.mockRestore();
+    // WCAG 2.5.3 / axe: the label span and <kbd> are flex siblings; the text node
+    // gives axe's visible-text check a word boundary ("Search Ctrl K", not "SearchCtrl K").
+    expect(trigger.textContent).toMatch(/Search\sCtrl K/);
+    expect(trigger).toHaveAttribute("aria-keyshortcuts", "Meta+K Control+K");
+  });
+
+  it("on Mac, names the trigger 'Search ⌘K' with whitespace between the visible spans", () => {
+    const platform = vi.spyOn(navigator, "platform", "get").mockReturnValue("MacIntel");
+    renderPalette();
+    const trigger = screen.getByRole("button", { name: "Search ⌘K" });
+    platform.mockRestore();
+    expect(trigger.textContent).toMatch(/Search\s⌘K/);
+  });
 });
 
 describe("CommandPalette — open", () => {

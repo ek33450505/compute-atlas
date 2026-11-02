@@ -50,9 +50,14 @@ export function Wordmark({ showTagline = false, className }: WordmarkProps) {
         </span>
       </span>
       {showTagline && (
-        <span className="hidden lg:block font-mono text-[8.5px] uppercase tracking-[0.19em] text-muted-foreground leading-tight mt-0.5">
-          Mapping the U.S. compute buildout
-        </span>
+        <>
+          {/* Invisible in a flex container, but gives axe's label-in-name check
+              (WCAG 2.5.3) a word boundary between the name and the tagline. */}
+          {" "}
+          <span className="hidden lg:block font-mono text-[8.5px] uppercase tracking-[0.19em] text-muted-foreground leading-tight mt-0.5">
+            Mapping the U.S. compute buildout
+          </span>
+        </>
       )}
     </span>
   );

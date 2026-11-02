@@ -22,9 +22,10 @@ describe("ShareLinkButton", () => {
 
   it("renders an accessible Copy link button", () => {
     render(<ShareLinkButton />);
+    // WCAG 2.5.3 Label in Name: the visible "Copy link" leads the accessible name.
     expect(
-      screen.getByRole("button", { name: /copy .*link/i })
-    ).toBeInTheDocument();
+      screen.getByRole("button", { name: "Copy link to this view" })
+    ).toHaveAccessibleName(/^Copy link/);
   });
 
   it("copies the current URL and shows a success toast", async () => {

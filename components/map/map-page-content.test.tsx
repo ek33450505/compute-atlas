@@ -84,6 +84,8 @@ describe("MapPageContent", () => {
     // would pass either way since it doesn't require the separator.
     const texas = screen.getByRole("link", { name: /^Texas, 61 facilities$/ });
     expect(texas).toHaveAttribute("href", "/states/texas");
+    // WCAG 2.5.3 / axe visible-text check: a whitespace node separates the spans.
+    expect(texas.textContent).toMatch(/Texas\s61 facilities/);
 
     const virginia = screen.getByRole("link", {
       name: /^Virginia, 44 facilities$/,
@@ -97,6 +99,7 @@ describe("MapPageContent", () => {
       name: /^Acme Compute, 19 facilities$/,
     });
     expect(acme).toHaveAttribute("href", "/operators/acme-compute");
+    expect(acme.textContent).toMatch(/Acme Compute\s19 facilities/);
 
     const borealis = screen.getByRole("link", {
       name: /^Borealis Power, 8 facilities$/,
@@ -110,6 +113,7 @@ describe("MapPageContent", () => {
       name: /^Operational, 12 facilities$/,
     });
     expect(operational).toHaveAttribute("href", "/status/operational");
+    expect(operational.textContent).toMatch(/Operational\s12 facilities/);
 
     const underConstruction = screen.getByRole("link", {
       name: /^Under construction, 5 facilities$/,
@@ -127,6 +131,7 @@ describe("MapPageContent", () => {
       name: /^Crypto mining, 7 facilities$/,
     });
     expect(crypto).toHaveAttribute("href", "/crypto");
+    expect(crypto.textContent).toMatch(/Crypto mining\s7 facilities/);
 
     // data_center has no dedicated hub route — rendered as plain text, not a link.
     expect(

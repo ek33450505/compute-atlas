@@ -69,11 +69,13 @@ describe("SupportPage", () => {
     );
   });
 
-  it("renders the external repo link with target/rel and a descriptive aria-label", () => {
+  it("renders the external repo link with target/rel and an accessible name containing its visible text", () => {
     render(<SupportPage />);
     const repoLink = screen.getByRole("link", {
-      name: /View the Compute Atlas repository on GitHub/i,
+      name: /open an issue on the repo.*\(opens in new tab\)/i,
     });
+    // WCAG 2.5.3 Label in Name: the visible text leads the accessible name.
+    expect(repoLink).toHaveAccessibleName(/^open an issue on the repo/i);
     expect(repoLink).toHaveAttribute(
       "href",
       "https://github.com/ek33450505/compute-atlas"

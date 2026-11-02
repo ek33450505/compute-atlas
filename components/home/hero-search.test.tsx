@@ -18,6 +18,15 @@ describe("HeroSearch", () => {
     ).toBeInTheDocument();
   });
 
+  it("starts its accessible name with the visible label and ⌘K hint, which are separated by whitespace", () => {
+    render(<HeroSearch facilityCount={1034} />);
+    const button = screen.getByRole("button", {
+      name: "Search 1,034 sites, operators, and states ⌘K, opens a search dialog",
+    });
+    // WCAG 2.5.3 + axe: the label and <kbd> are flex siblings; a text node gives axe a word boundary.
+    expect(button.textContent).toMatch(/states\s+⌘K/);
+  });
+
   it("dispatches a compute-atlas:open-search event when clicked", async () => {
     const user = userEvent.setup();
     const handler = vi.fn();

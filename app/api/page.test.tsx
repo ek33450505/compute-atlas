@@ -119,6 +119,34 @@ describe("ApiPage — How to cite", () => {
     expect(liveText).not.toContain("September 1, 2026");
   });
 
+  it("gives the license and dataset links accessible names that start with their visible text", () => {
+    mockGetDatasetEdition.mockReturnValue({
+      version: "1.30.0",
+      asOf: "2026-09-01T16:58:23.496Z",
+      recordCount: 1309,
+      schemaVersion: 1,
+    });
+
+    render(<ApiPage />);
+
+    // WCAG 2.5.3 Label in Name: each accessible name begins with the link's visible text.
+    expect(
+      screen.getByRole("link", {
+        name: "CC-BY: Creative Commons Attribution 4.0 license (opens in new tab)",
+      })
+    ).toHaveTextContent("CC-BY");
+    expect(
+      screen.getByRole("link", {
+        name: "CC-BY-4.0: Creative Commons Attribution 4.0 license (opens in new tab)",
+      })
+    ).toHaveTextContent("CC-BY-4.0");
+    expect(
+      screen.getByRole("link", {
+        name: "data/facilities.json: full facilities dataset as JSON on GitHub (opens in new tab)",
+      })
+    ).toHaveTextContent("data/facilities.json");
+  });
+
   it("points the Bulk access section's main-branch link at main, distinct from the pinned citation URL", () => {
     mockGetDatasetEdition.mockReturnValue({
       version: "1.30.0",

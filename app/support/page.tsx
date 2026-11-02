@@ -332,7 +332,7 @@ export default function SupportPage() {
               href={siteConfig.repoUrl}
               target="_blank"
               rel="noreferrer noopener"
-              aria-label="View the Compute Atlas repository on GitHub (opens in new tab)"
+              aria-label="open an issue on the repo (opens in new tab)"
               className={LINK_CLASS}
             >
               open an issue on the repo <span aria-hidden="true">↗</span>

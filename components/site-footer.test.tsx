@@ -45,11 +45,15 @@ describe("SiteFooter", () => {
     });
   });
 
-  it("renders the wordmark/home link with the correct aria-label", () => {
+  it("renders the wordmark/home link with an accessible name that includes its visible text", () => {
     render(<SiteFooter />);
-    expect(
-      screen.getByRole("link", { name: "Compute Atlas, home" })
-    ).toHaveAttribute("href", "/");
+    const home = screen.getByRole("link", {
+      name: "Compute Atlas: Mapping the U.S. compute buildout, home",
+    });
+    expect(home).toHaveAttribute("href", "/");
+    // WCAG 2.5.3 Label in Name: both visible strings (name + tagline) appear in the name.
+    expect(home).toHaveAccessibleName(/^Compute Atlas/);
+    expect(home).toHaveAccessibleName(/Mapping the U\.S\. compute buildout/);
   });
 
   it("renders the mission paragraph and independent-project attribution", () => {

@@ -30,7 +30,7 @@ export function HeroSearch({ facilityCount, className }: HeroSearchProps) {
       onClick={() => {
         window.dispatchEvent(new CustomEvent("compute-atlas:open-search"));
       }}
-      aria-label={`${label} — opens a search dialog`}
+      aria-label={`${label} ⌘K, opens a search dialog`}
       className={cn(
         "group flex min-h-11 w-full items-center gap-2 rounded-sm border border-border bg-card px-4 text-left transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className
@@ -43,6 +43,7 @@ export function HeroSearch({ facilityCount, className }: HeroSearchProps) {
       <span className="flex-1 truncate font-mono text-sm text-muted-foreground transition-colors motion-reduce:transition-none group-hover:text-foreground">
         {label}
       </span>
+      {" "}
       <kbd className="hidden shrink-0 items-center rounded-sm border border-border px-1.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground sm:flex">
         ⌘K
       </kbd>

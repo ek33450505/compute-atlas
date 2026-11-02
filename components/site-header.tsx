@@ -58,7 +58,7 @@ export function SiteHeader() {
         {/* Wordmark */}
         <Link
           href="/"
-          aria-label={`${siteConfig.name}, home`}
+          aria-label={`${siteConfig.name}: ${siteConfig.tagline}, home`}
           className="flex shrink-0 whitespace-nowrap flex-col items-start gap-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
         >
           <Wordmark showTagline />
