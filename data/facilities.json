@@ -1123,6 +1123,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "3m-maplewood-mn",
+    "name": "3M Maplewood Data Center",
+    "operator": "3M",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.0082216,
+      "lon": -93.0456985,
+      "city": "Maplewood",
+      "county": "Ramsey",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "4am-development-burkhalter-road-statesboro-ga",
     "name": "Burkhalter Road Data Center (4AM Development)",
     "operator": "4AM Development, LLC (developer; operator undisclosed)",
@@ -1868,6 +1910,44 @@
       "notes": "Residents raised concerns about public notice, noise and proximity to homes and youth sports fields (July 2026). The city cites about $400,000/yr in electric-utility gross margin. In August 2026 the council confirmed the project is exempt from environmental review and took no further action.",
       "sourceIndex": 2
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "aaim-mexico-missouri-data-center-mo",
+    "name": "AAIM Missouri Data Center (Mexico)",
+    "operator": "AAIM Datacenters",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.1698,
+      "lon": -91.8829,
+      "city": "Mexico",
+      "county": "Audrain",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 15
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.newstribune.com/news/2026/may/20/callaway-solar-plant-to-lead-ameren-renewable/",
+        "label": "Callaway solar plant to lead Ameren renewable push (AAIM Mexico data center cited as the only operating large-load center in Mid-Missouri)",
+        "publisher": "News Tribune",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://baxtel.com/data-center/aaim-missouri",
+        "label": "AAIM: Missouri (Edge Park)",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Built in 2024 on a former clay brick plant site, with expansions planned through 2027. This is distinct from AAIM's 2023 DED-announced Moberly project.",
     "facilityType": "data_center"
   },
   {
@@ -6901,6 +6981,71 @@
     }
   },
   {
+    "id": "altigen-jurassic-spark-wellington-carbon-county-ut",
+    "name": "Jurassic Spark Gas Power and Data Center Complex",
+    "operator": "Altigen Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.5425,
+      "lon": -110.7346,
+      "city": "Wellington",
+      "county": "Carbon",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 250
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-24",
+        "note": "Altigen selected an area of about 1,200 acres east of Wellington; county commission approved a preliminary pipeline right-of-way agreement in May",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sltrib.com/news/environment/2026/09/24/residents-up-arms-over-carbon/",
+        "label": "Residents 'up in arms' over Carbon County data centers that would use nuclear, natural gas",
+        "publisher": "The Salt Lake Tribune",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://grist.org/accountability/data-centers-utah-smr-gas-beehive-jurassic-spark/",
+        "label": "Utah data centers: Project Beehive and Jurassic Spark",
+        "publisher": "Grist",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.canarymedia.com/articles/data-centers/utah-carbon-county-opposition-nuclear-gas-valar",
+        "label": "Carbon County opposition to nuclear and gas data center projects",
+        "publisher": "Canary Media",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Plans call for a 250 MW gas plant to power the data center complex at first, possibly growing to 3 GW (per County Commissioner Larry Jensen). Altigen did not respond to press inquiries. The pin is the Wellington town point.",
+    "energy": {
+      "source": "on_site_gas"
+    },
+    "landAcres": 1200,
+    "community": {
+      "status": "contested",
+      "notes": "Residents are pushing back on the gas and nuclear data center projects; all three county commissioners support them.",
+      "sourceIndex": 0
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Dedicated gas generation for a co-located data center campus. The commission approved a preliminary agreement for the county to take a pipeline right-of-way through BLM land to supply the project."
+    }
+  },
+  {
     "id": "amazon-becker-mn",
     "name": "Amazon Becker Data Center (Suspended)",
     "operator": "Amazon Web Services",
@@ -7919,6 +8064,67 @@
     }
   },
   {
+    "id": "ameren-castle-bluff-energy-center-st-louis-county-mo",
+    "name": "Castle Bluff Energy Center",
+    "operator": "Ameren Missouri (Union Electric Company)",
+    "status": "under_construction",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.402,
+      "lon": -90.336,
+      "county": "St. Louis",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 800
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-10",
+        "note": "Missouri PSC approval",
+        "sourceIndex": 0
+      },
+      {
+        "status": "under_construction",
+        "date": "2026-06-04",
+        "note": "News Tribune describes Castle Bluff as under construction",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.power-eng.com/gas/ameren-missouri-approved-to-build-800-mw-simple-cycle-facility-at-former-coal-site/",
+        "label": "Ameren Missouri approved to build 800 MW simple-cycle facility at former coal site",
+        "publisher": "Power Engineering",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ameren.com/reliability/generation/on-demand/castle-bluff",
+        "label": "Castle Bluff Energy Center",
+        "publisher": "Ameren",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.newstribune.com/news/2026/jun/04/ameren-seeks-to-build-400-megawatts-of-additional/",
+        "label": "Ameren seeks to build 400 megawatts of additional solar",
+        "publisher": "News Tribune",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "investmentUsd": 900000000,
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Simple-cycle peaking plant at the retired Meramec Energy Center site, targeted to generate by late 2027."
+    }
+  },
+  {
     "id": "ameren-reform-solar-callaway-county-mo",
     "name": "Reform Solar Project (Reform Renewable Energy Center)",
     "operator": "Ameren Missouri (Union Electric Company)",
@@ -7992,6 +8198,101 @@
       "technology": "solar",
       "offtaker": "General large-load / data-center-driven demand growth in Ameren Missouri territory (no single named customer)",
       "notes": "Ameren's filing ties the project partly to large-load customers such as data centers (STLPR, Sept. 2025). Battery storage may be added later under separate approval."
+    }
+  },
+  {
+    "id": "ameren-stoddard-county-solar-mo",
+    "name": "Stoddard County Solar Facility",
+    "operator": "Ameren Missouri (Union Electric Company)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.855,
+      "lon": -89.944,
+      "county": "Stoddard",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 225
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-29",
+        "note": "CCN request pending (EA-2026-0183)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://psc.mo.gov/Electric/PSC_Sets_Intervention_Deadline_in_Ameren_Missouri_CCN_Requests_-_pr-26-74",
+        "label": "PSC Sets Intervention Deadline in Ameren Missouri CCN Requests (PR-26-74)",
+        "publisher": "Missouri Public Service Commission",
+        "retrievedAt": "2026-11-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.newstribune.com/news/2026/jun/04/ameren-seeks-to-build-400-megawatts-of-additional/",
+        "label": "Ameren seeks to build 400 megawatts of additional solar",
+        "publisher": "News Tribune",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Placed at the county centroid; the exact site is not disclosed.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "CCN requested in PSC Case EA-2026-0183. The site is not on or next to an existing Ameren facility."
+    }
+  },
+  {
+    "id": "ameren-tom-sawyer-solar-audrain-county-mo",
+    "name": "Tom Sawyer Solar (Audrain County Solar Facility)",
+    "operator": "Ameren Missouri (Union Electric Company)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.31,
+      "lon": -91.49,
+      "county": "Audrain",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 175
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-29",
+        "note": "CCN request pending (EA-2026-0183)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://psc.mo.gov/Electric/PSC_Sets_Intervention_Deadline_in_Ameren_Missouri_CCN_Requests_-_pr-26-74",
+        "label": "PSC Sets Intervention Deadline in Ameren Missouri CCN Requests (PR-26-74)",
+        "publisher": "Missouri Public Service Commission",
+        "retrievedAt": "2026-11-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.newstribune.com/news/2026/jun/04/ameren-seeks-to-build-400-megawatts-of-additional/",
+        "label": "Ameren seeks to build 400 megawatts of additional solar",
+        "publisher": "News Tribune",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Next to the existing Huck Finn Solar Energy Center near Vandalia, with a ~2-mile lead line. CCN requested in PSC Case EA-2026-0183."
     }
   },
   {
@@ -11449,7 +11750,7 @@
         "url": "https://www.stlpr.org/government-politics-issues/2026-09-15/st-louis-okays-midtown-data-center-445m-tax-revenue",
         "label": "St. Louis OKs Midtown data center plan projected to bring $445M in tax revenue",
         "publisher": "St. Louis Public Radio",
-        "retrievedAt": "2026-10-13",
+        "retrievedAt": "2026-11-02",
         "kind": "press"
       },
       {
@@ -11460,7 +11761,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "St. Louis Board of Public Service approved the conditional use permit 5-0 on 2026-04-22; the Board of Adjustment upheld/amended it on 2026-07-30. No tenant has been named as of August 2026; targeted for full operation by end of 2028. Officially branded the 'Armory Innovation District.'",
     "energy": {
       "notes": "Conditional use permit requires renewables to supply 50% of the center's power in its first five years and 100% within 10 years, plus 2.4 MW of renewable energy on the site. Developer TerraWatt's Sept. 2026 certiorari petition calls the renewable conditions 'practically impossible on the 11-acre site'. Utility not named."
@@ -15559,6 +15860,42 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "aws-danville-campus-montgomery-county-mo",
+    "name": "AWS Second Montgomery County Campus (Danville area)",
+    "operator": "Amazon Web Services",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.913,
+      "lon": -91.531,
+      "city": "Danville",
+      "county": "Montgomery",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-10-22",
+        "note": "Amazon gave early notice to the Montgomery County Commission of up to 15 more data center buildings on up to 890 acres. The land purchase has not closed.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://baxtel.com/news/amazon-plans-second-missouri-campus-with-up-to-15-data-center-buildings",
+        "label": "Amazon plans second Missouri campus with up to 15 data center buildings",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Several miles from the tracked Project Green campus near New Florence. Amazon gave a construction window of 2027-2029. The 890 acres is an upper bound.",
+    "landAcres": 890,
+    "facilityType": "data_center"
+  },
+  {
     "id": "aws-falls-township-pa",
     "name": "Amazon Web Services Innovation Campus, Falls Township",
     "operator": "Amazon Web Services",
@@ -18338,6 +18675,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "bcbsm-eagan-mn",
+    "name": "Blue Cross Blue Shield of Minnesota Eagan Data Center",
+    "operator": "Blue Cross Blue Shield of Minnesota",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.818173,
+      "lon": -93.1659179,
+      "city": "Eagan",
+      "county": "Dakota",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center (DEED listing 'BCBSM') certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "beacon-calvert-al",
     "name": "Calvert Infrastructure Hub",
     "operator": "Beacon Data Centers",
@@ -19737,6 +20116,97 @@
     "community": {
       "status": "litigation",
       "notes": "Chesterfield's 2026 ordinance made data centers a conditional use; the planning director ruled the landowner lacked vested rights to build by-right, and the Board of Zoning Appeals unanimously upheld that denial on 2026-06-03. The project now requires a conditional-use permit; related litigation is pending."
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "best-buy-bloomington-mn",
+    "name": "Best Buy Data Center (Bloomington)",
+    "operator": "Best Buy Co., Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.8322405,
+      "lon": -93.3204872,
+      "city": "Bloomington",
+      "county": "Hennepin",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "bf-timpanogos-tech-center-provo-ut",
+    "name": "B+F Timpanogos Tech Center Data Center (East Bay)",
+    "operator": "B+F Timpanogos Tech Center LLC",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.2338,
+      "lon": -111.6585,
+      "city": "Provo",
+      "county": "Utah",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2026-03-10",
+        "note": "Provo City Council voted 7-0 to deny the rezoning needed for the data center; developer may re-apply",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.heraldextra.com/news/2026/mar/11/provo-city-council-denies-rezoning-request-for-data-center-at-east-bay/",
+        "label": "Provo City Council denies rezoning request for data center at East Bay",
+        "publisher": "Daily Herald",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Proposed 66,000 sq ft data center at about 1507 S. and 180 East in Provo's East Bay neighborhood. The council denied the rezoning even though the Planning Commission recommended approval. The pin is the Provo city point. A May 2026 Grand County staff inventory still listed it as under construction; that conflicts with the council denial.",
+    "energy": {
+      "source": "grid",
+      "utility": "Provo City Power",
+      "notes": "Developer said 6 to 10 MW had been allocated to the property."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Developer described a closed-loop system that would never discharge into the city system."
+    },
+    "community": {
+      "status": "contested",
+      "notes": "Mayor Marsha Judkins and the East District chair opposed it; the council denied it 7-0.",
+      "sourceIndex": 0
     },
     "facilityType": "data_center"
   },
@@ -22487,6 +22957,55 @@
     "facilityType": "data_center"
   },
   {
+    "id": "blue-castle-fulcrum-point-green-river-smr-ut",
+    "name": "Green River Nuclear Project (Blue Castle / Fulcrum Point, Holtec SMR-300)",
+    "operator": "Fulcrum Point Holdings and Blue Castle Holdings",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.9953,
+      "lon": -110.1599,
+      "city": "Green River",
+      "county": "Emery",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-05-28",
+        "note": "Joint venture announced to take the Green River site through NRC licensing and deployment of Holtec SMR-300s",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.deseret.com/utah/2026/05/28/green-river-utah-nuclear-energy-project/",
+        "label": "Green River, Utah nuclear energy project advances",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://techbuzznews.com/fulcrum-point-and-blue-castle-smr-project/",
+        "label": "Fulcrum Point and Blue Castle SMR project",
+        "publisher": "TechBuzz News",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Revived Blue Castle site (first proposed in 2007 as a 3 GW plant), now planned for Holtec SMR-300 small modular reactors. Sources disagree on output, so no capacity is recorded. Blue Castle holds Green River water rights; the SMR-300 can use an air-cooled condenser. No data center offtaker has been named. The pin is the Green River town point.",
+    "energy": {
+      "source": "nuclear"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "nuclear_smr",
+      "notes": "Holtec SMR-300. Same deployment model as the tracked Brigham City project (holtec-brigham-city-smr-ut), but a different site."
+    }
+  },
+  {
     "id": "blue-fern-cle-elum-data-center-wa",
     "name": "Blue Fern Cle Elum Data Center",
     "operator": "Blue Fern Development",
@@ -22712,6 +23231,41 @@
     ],
     "lastUpdated": "2026-08-14",
     "notes": "Carrier-focused colocation data center in Bettendorf, acquired by Bluebird Network from ColoHub. Bluebird's own page describes three diverse utility feeds, three backup generators with 12,000-gallon diesel tanks, a dual UPS system, SOC 2 Type II certification, over 60 percent green energy, and biometric access control with 24/7 monitoring. Total square footage and MW capacity are quoted inconsistently across third-party directories (4 MW and 6 MW both appear, alongside 53,000 and 57,000 sq ft) and are not recorded here, because no fetched page states them. One of the small number of existing Quad Cities data centers, alongside the proposed Meta Davenport campus.",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "bluebird-underground-data-center-springfield-mo",
+    "name": "Bluebird Underground Data Center (Springfield)",
+    "operator": "Bluebird Network",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.209,
+      "lon": -93.2923,
+      "city": "Springfield",
+      "county": "Greene",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2003",
+        "note": "The facility has operated since 2003. An expansion completed around 2020 brought white space to more than 29,000 sq ft.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://pipelinepub.com/news/httpwwwimillerprcomnewsbluebird-network-completes-its-underground-data-center-expansion",
+        "label": "Bluebird Network completes its underground data center expansion",
+        "publisher": "Pipeline",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Underground facility 85 ft below ground in limestone, with 6 MW of underground backup generation after an $11.5M expansion. Bluebird's web domain now redirects to bluebirdfiber.com.",
     "facilityType": "data_center"
   },
   {
@@ -23136,9 +23690,23 @@
         "publisher": "TechMediaWire via FinancialContent",
         "retrievedAt": "2026-10-13",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1416090/000149315225014760/ex99-1.htm",
+        "label": "BluSky AI Inc. 8-K Exhibit 99.1: LOI to lease Nephi, Utah site for modular AI data center",
+        "publisher": "U.S. SEC (EDGAR)",
+        "retrievedAt": "2026-11-02",
+        "kind": "filing"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah and the United States (April 2026), heard in Revenue and Taxation Interim Committee 8/19/26",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy found. Nephi City's Community Reinvestment Agency fund is tied to a hotel project area rather than this site, and no CRA participation agreement naming this project was located. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. Recorded as no-evidence-found rather than a fully closed absence: the Nephi project-area budget PDF did not return readable text on retrieval.",
     "energy": {
       "notes": "4 MW at full activation. The company release notes Nephi 'recently completed a project to increase the town's energy capacity from 29 megawatts to 85 megawatts', which is the municipal utility's headroom, not this facility's capacity. Modular deployment using the company's SkyMod data center modules on a pad of approximately 100 x 150 feet."
@@ -26943,6 +27511,43 @@
     "facilityType": "data_center"
   },
   {
+    "id": "centersquare-st-louis-sl1-mo",
+    "name": "Centersquare St. Louis SL1 (former Cyxtera STL1)",
+    "operator": "Centersquare",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.781,
+      "lon": -90.365,
+      "county": "St. Louis",
+      "street": "587 James S McDonnell Blvd",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://baxtel.com/data-center/centersquare-st-louis-sl1",
+        "label": "Centersquare: St Louis SL1",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Three-story colocation facility that Cyxtera acquired from CenturyLink in the 2017 57-site transaction and Centersquare now operates.",
+    "energy": {
+      "source": "grid",
+      "utility": "Ameren"
+    },
+    "facilityType": "data_center",
+    "environmental": {
+      "pue": 1.65,
+      "pueConfidence": "reported",
+      "waterStress": "unknown"
+    }
+  },
+  {
     "id": "centersquare-tpa1-tampa-fl",
     "name": "Centersquare Tampa TPA1",
     "operator": "Centersquare",
@@ -27498,6 +28103,48 @@
       "offtaker": "Google",
       "notes": "Google agreed to buy electricity from ARC, CFS's first customer."
     }
+  },
+  {
+    "id": "ch-robinson-oronoco-mn",
+    "name": "C.H. Robinson Oronoco Data Center",
+    "operator": "C.H. Robinson",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.1642851,
+      "lon": -92.5350748,
+      "city": "Oronoco",
+      "county": "Olmsted",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (New) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A new-build enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (New)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
   },
   {
     "id": "chalk-point-storage-aquasco-md",
@@ -35893,6 +36540,62 @@
     "facilityType": "data_center"
   },
   {
+    "id": "connect-data-centers-berkeley-hanley-road-mo",
+    "name": "Connect Data Centers St. Louis (5341 N. Hanley Rd, North Park)",
+    "operator": "Connect Data Centers (Oppidan Investment Company)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.747,
+      "lon": -90.327,
+      "city": "Berkeley",
+      "county": "St. Louis",
+      "street": "5341 N. Hanley Rd",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024-01-10",
+        "note": "Berkeley City Plan Commission Case #24-01: site development plan for a data center requested on behalf of Oppidan Investment Company",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-11-02",
+        "note": "datacenterHawk lists the 61,554 sq ft facility as commissioned",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.berkeleymo.us/egov/apps/document/center.egov?view=item&id=1339",
+        "label": "City of Berkeley Plan Commission agenda 01-10-2024, Case #24-01 (Oppidan data center, 5341 N. Hanley Rd)",
+        "publisher": "City of Berkeley, MO",
+        "retrievedAt": "2026-11-02",
+        "kind": "permit"
+      },
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/connect-data-centers/5341-n-hanley-road/1092639",
+        "label": "Connect Data Centers, 5341 N Hanley Road listing",
+        "publisher": "datacenterHawk",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/data-center/connect-data-centers-st-louis-mo",
+        "label": "Connect Data Centers: St Louis, MO",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A 61,554 sq ft purpose-built facility by Oppidan's Connect division. Directory sources disagree on status (commissioned vs. finishing construction), and MW is not disclosed.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "connect-data-centers-comstock-street-santa-clara-ca",
     "name": "Connect Data Centers Santa Clara (715 Comstock Street)",
     "operator": "Connect Data Centers (Oppidan / Harrison Street Real Estate Capital JV)",
@@ -40344,10 +41047,26 @@
         "label": "Correction source",
         "retrievedAt": "2026-09-15",
         "kind": "other"
+      },
+      {
+        "url": "https://www.realcrg.com/project/festus-data-center",
+        "label": "Festus Data Center",
+        "publisher": "CRG",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-24",
+    "lastUpdated": "2026-11-02",
     "notes": "Festus City Council approved a development-agreement ordinance 6-2 on 2026-03-30 covering a refined ~600MW, four-building conceptual plan on 360 rezoned acres (188 acres permanently preserved). Two active lawsuits seek to invalidate the rezoning/development agreement; no end-user tenant has been publicly named and construction has not started as of August 2026.",
+    "energy": {
+      "source": "grid",
+      "utility": "Ameren Missouri",
+      "notes": "Substation pad and Ameren switchyard on site; Tier 4 backup generators."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop system that recycles water with little to no wastewater. No private well withdrawals."
+    },
     "investmentUsd": 6000000000,
     "landAcres": 360,
     "jobs": {
@@ -41049,6 +41768,9 @@
       "state": "MO",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 500
+    },
     "announcedDate": "2026-07-14",
     "statusHistory": [
       {
@@ -41072,10 +41794,30 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-10-13",
         "kind": "osm"
+      },
+      {
+        "url": "https://abc17news.com/news/top-stories/2026/07/14/ai-infrastructure-company-unveils-plans-for-callaway-county-data-center/",
+        "label": "AI infrastructure company unveils plans for Callaway County data center",
+        "publisher": "ABC 17 News (KMIZ)",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "Crusoe (Denver) proposed a data center in northern Callaway County near Kingdom City. The site is a private land transaction involving the Callaway County Chamber of Commerce, and Crusoe declined to disclose the exact location. Callaway County has no countywide planning and zoning. Distinct from the Crusoe Warrenton Campus in Warren County, tracked separately as of October 2026. Coordinates are the Kingdom City town point, approximate. Single source, so the record is marked reported.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Crusoe pledged $9M+ for local water infrastructure and says ongoing use is roughly 21 homes' worth."
+    },
+    "jobs": {
+      "construction": 2000,
+      "sourceIndex": 2
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Residents objected to farmland loss, grid draw and the proposed 85% abatement. Some business owners and an advocacy group expressed support.",
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -46409,6 +47151,9 @@
       "state": "UT",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "operational": 46
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -46452,9 +47197,16 @@
         "publisher": "DataBank",
         "retrievedAt": "2026-09-05",
         "kind": "other"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Bluffdale's RDA runs three project areas — Gateway Redevelopment Area and Eastern Bluffdale EDA on the Redwood Road/Bangerter Highway corridor, and Jordan Crossing CRA along the Jordan River near the Utah County border — and DataBank's Granite Point campus on Pony Express Road falls outside all three by street-corridor and section/township/range legal-description cross-reference, not a parcel-level GIS overlay. The Jordan Crossing CRA's own draft plan names four illustrative development sites and none is Granite Point, DataBank, or Pony Express Road; no RDA board minutes or agenda mentions either. DataBank's own marketing blog names only the statewide sales-tax exemption on data-center equipment as an incentive for its Salt Lake-area sites — an entity-level, self-executing state exemption, not a Bluffdale-specific award. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Per-building on-site power from DataBank's own campus page: SLC2 10 MW (45,000 sq ft), SLC3 10 MW (53,000 sq ft), SLC4 9 MW (34,000 sq ft), SLC5 20 MW (90,000 sq ft), plus SLC6 at 11 MW available with 'another 11 megawatts to come online in the future' — 60 MW live across the five buildings, with roughly 11 MW of stated headroom at SLC6."
@@ -47089,9 +47841,16 @@
         "publisher": "Redevelopment Agency of Salt Lake City",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. 179 Social Hall Avenue sits within the RDA's Central Business District (CBD) project-area boundary (bounded by North Temple/500 South and 400 West/200 East) — but sitting inside a project area is not itself a subsidy. The CBD's own published list of RDA-funded participation developments names exactly four projects (Paperbox Lofts, The Aster, 150 Main, West Quarter), none at Social Hall Avenue and none a data center, and a full-text search of the RDA's FY2021 annual/audit report returned zero mentions of \"Social Hall.\" Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -56591,9 +57350,16 @@
         "publisher": "South Jordan City Redevelopment Agency",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-16",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. South Jordan's FY2024-25 tentative budget enumerates all 11 RDA/CDA/EDA project areas the city has ever run, active or completed, by name — none is eBay, Topaz, Daybreak, or Kennecott, and the completed pre-2008 areas predate the 2009-built Topaz campus. A separate 2022-adopted CRA (initially mislabeled \"Daybreak Commerce Park\" in a staff-report boilerplate paragraph, formally the Southwest Quadrant Urban Center Community Reinvestment Project Area) was checked and confirmed to be an unrelated greenfield transit-oriented project led by VP Daybreak Holdings/Larry H. Miller Company, not eBay. Historical state-level GOED EDTIF awards to eBay Inc. (2008 and 2011) are on the public record but are entity-level, not a South Jordan site agreement, and as of September 2026 their reported dollar figures could not be independently verified. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Data Center Knowledge reports '7.2 megawatts of capacity in phase 1, with a 30 megawatt substation on site' — the 30 MW is substation capacity for future phases, not IT load, so the recorded capacity is the 7.2 MW phase-1 figure. Efficiency features reported at opening: 400V power distribution, in-row cooling, hot air containment, and an expected PUE of 1.4. The building is LEED Gold certified."
@@ -57001,6 +57767,48 @@
       "notes": "Town of Oneonta (Otsego County) Town Board unanimously passed a one-year moratorium on data centers/crypto facilities on 2026-05-13, in direct response to Eco-Yotta Inc.'s application to rezone the County Route 9 parcel to a Planned Development District. Board cited the need for time to study impacts and amend town code before any project could proceed; per the article the applicant had earlier floated the site as an agricultural-research project. No capacity, acreage, or investment figure was confirmed by direct source fetch as of 2026-09-13 -- omitted rather than estimated.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "ecolab-eagan-mn",
+    "name": "Ecolab Eagan Data Center",
+    "operator": "Ecolab Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.818173,
+      "lon": -93.1659179,
+      "city": "Eagan",
+      "county": "Dakota",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -58465,12 +59273,16 @@
         "url": "https://edgeconnex.com/wp-content/uploads/2024/09/Salt-Lake-City-Data-Sheet.pdf",
         "label": "EdgeConneX Salt Lake City SLC01 Data Sheet",
         "publisher": "EdgeConneX",
-        "retrievedAt": "2026-10-13",
+        "retrievedAt": "2026-11-02",
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. West Valley City's Fund 22 (Redevelopment Agency) adopted budget itemizes every currently active RDA/CRA project area by name with no boundary description resolving to 2302 S President's Dr, and no line item, city filing, or state record names EdgeConneX. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
+    "water": {
+      "coolingType": "unknown",
+      "notes": "Datasheet describes a 30-inch raised-floor forced-air plenum with N+1 CRACs in separate suites; heat-rejection method not specified."
+    },
     "facilityType": "data_center"
   },
   {
@@ -59437,6 +60249,7 @@
       "precision": "approximate"
     },
     "capacityMw": {
+      "planned": 26,
       "operational": 26
     },
     "statusHistory": [
@@ -59468,10 +60281,22 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-10-13",
         "kind": "osm"
+      },
+      {
+        "url": "https://edged.us/news/new-sustainable-data-center-in-kansas-city",
+        "label": "Edged opens new sustainable data center in Kansas City",
+        "publisher": "Edged",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "26 MW critical capacity. Address 3420 North Arlington Avenue per Ingram's. Nominatim could not resolve the house number, so coordinates are the OSM point on North Arlington Avenue in the Hunt Midwest Business Center area (approximate). Distinct operator and parcel from the tracked Google Hunt Midwest campus nearby.",
+    "energy": {
+      "source": "grid",
+      "utility": "Evergy",
+      "notes": "The release also lists Spire as a utility partner."
+    },
     "water": {
       "notes": "Uses Edged's ThermalWorks waterless cooling. Company claims zero water use and ~95 million gallons/year saved versus conventional data centers, plus 74% lower energy overhead (company claims)."
     },
@@ -63292,6 +64117,48 @@
     }
   },
   {
+    "id": "epic-hosting-rochester-mn",
+    "name": "Epic Hosting Rochester Data Center",
+    "operator": "Epic Hosting, LLC",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.0234387,
+      "lon": -92.4630182,
+      "city": "Rochester",
+      "county": "Olmsted",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (New) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A new-build data center certified for Minnesota's data center sales tax exemption. The location is the Rochester city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (New)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "epic-hosting-verona-wi",
     "name": "Epic Hosting Verona Data Center",
     "operator": "Epic Hosting, LLC (Epic Systems)",
@@ -65394,6 +66261,87 @@
     }
   },
   {
+    "id": "evergy-buchanan-bluffs-energy-center-unit-2-mo",
+    "name": "Buchanan Bluffs Energy Center Unit 2",
+    "operator": "Evergy Missouri Metro / Evergy Missouri West",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.66,
+      "lon": -94.81,
+      "county": "Buchanan",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 710
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-03",
+        "note": "PSC set the intervention deadline on Evergy's CCN requests (EA-2026-0343)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://psc.mo.gov/Electric/PSC_Sets_Intervention_Deadline_in_Evergy_Missouri_CCN_Requests_-_pr-27-19",
+        "label": "PSC Sets Intervention Deadline in Evergy Missouri CCN Requests (PR-27-19)",
+        "publisher": "Missouri Public Service Commission",
+        "retrievedAt": "2026-11-02",
+        "kind": "filing"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Placed at the Buchanan County centroid; the exact site is not given in the release.",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "notes": "Combined-cycle gas turbine plant; CCN requested in PSC Case No. EA-2026-0343."
+    }
+  },
+  {
+    "id": "evergy-foxtrot-solar-jasper-county-mo",
+    "name": "Foxtrot Solar Energy",
+    "operator": "Evergy Missouri West",
+    "status": "permitted",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.31,
+      "lon": -94.6,
+      "county": "Jasper",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2025",
+        "note": "Missouri PSC granted a Certificate of Public Convenience and Necessity",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://digital-release.fourstateshomepage.com/news/local/jasper-county-solar-project-gets-green-light-for-construction/amp/",
+        "label": "Jasper County solar project gets green light for construction",
+        "publisher": "KSNF/KODE FourStatesHomepage",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "notes": "Northwest Jasper County, a few miles north of Asbury. The PSC granted a CCN."
+    }
+  },
+  {
     "id": "evocative-bos1-somerville-ma",
     "name": "Evocative BOS1 (Somerville)",
     "operator": "Evocative",
@@ -66373,6 +67321,118 @@
     "facilityType": "data_center"
   },
   {
+    "id": "faraday-solar-utah-county-ut",
+    "name": "Faraday Solar",
+    "operator": "Enel (acquired from Excelsior Energy Capital)",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 40.1297,
+      "lon": -112.0689,
+      "county": "Utah",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 525
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2025-09-30",
+        "note": "Commercial operations began Sept. 30, 2025",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://inspenet.com/en/news/excelsior-activates-the-faraday-solar-project-in-utah-with-meta-as-partner/",
+        "label": "Excelsior activates the Faraday Solar project in Utah with Meta as partner",
+        "publisher": "Inspenet",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://pv-magazine-usa.com/2026/09/11/excelsior-energy-capital-and-enel-complete-760m-transaction-for-solar-projects-serving-meta-and-google/",
+        "label": "Excelsior Energy Capital and Enel complete $760M transaction for solar projects serving Meta and Google",
+        "publisher": "pv magazine USA",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.heraldextra.com/news/2025/nov/21/rays-of-power-utahs-largest-solar-plant-becomes-operational-set-to-power-eagle-mountain-data-center/",
+        "label": "Rays of power: Utah's largest solar plant becomes operational, set to power Eagle Mountain data center",
+        "publisher": "Daily Herald",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.gem.wiki/Faraday_Solar_Project",
+        "label": "Faraday Solar Project",
+        "publisher": "Global Energy Monitor",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "685.3 MWdc / 525 MWac, about 1.2 million panels; Utah's largest solar plant. Developed by Parasol and Clenera, acquired by Excelsior in 2023 and built by RES. Coordinates are Global Energy Monitor's approximate point. Enel bought the plant from two Excelsior funds in a $760M two-plant deal reported in Sept. 2026.",
+    "energy": {
+      "source": "solar",
+      "utility": "Rocky Mountain Power (PacifiCorp)"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Meta (via PacifiCorp Schedule 34)",
+      "poweredFacilityIds": [
+        "meta-eagle-mountain-ut"
+      ],
+      "notes": "Sells under a 20-year PPA with PacifiCorp on the Rocky Mountain Power Schedule 34 tariff. The Daily Herald reports the output goes to Meta's Eagle Mountain data center."
+    }
+  },
+  {
+    "id": "fastenal-winona-mn",
+    "name": "Fastenal Winona Data Center",
+    "operator": "Fastenal Company",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.0500054,
+      "lon": -91.6392294,
+      "city": "Winona",
+      "county": "Winona",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "fbi-cjis-division-clarksburg-harrison-county-wv",
     "name": "FBI Criminal Justice Information Services (CJIS) Division Data Center",
     "operator": "Federal Bureau of Investigation",
@@ -66627,6 +67687,78 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "fervo-cape-station-beaver-county-ut",
+    "name": "Cape Station (Fervo Energy enhanced geothermal)",
+    "operator": "Fervo Energy",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.3969,
+      "lon": -113.0108,
+      "county": "Beaver",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 33
+    },
+    "announcedDate": "2023-09",
+    "statusHistory": [
+      {
+        "status": "under_construction",
+        "date": "2023-09-25",
+        "note": "Fervo broke ground on Cape Station drilling in Beaver County after BLM issued a finding of no significant impact",
+        "sourceIndex": 2
+      },
+      {
+        "status": "operational",
+        "date": "2026-09-30",
+        "note": "Fervo declared commercial operation of the first 33 MW net GeoBlock after grid sync on Sept. 24, 2026",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.renewableenergymagazine.com/geothermal/fervo-energy-declares-commercial-operation-at-cape-20261002",
+        "label": "Fervo Energy declares commercial operation at Cape Station",
+        "publisher": "Renewable Energy Magazine",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://gcn.com/?p=22778",
+        "label": "Fervo Energy starts commercial geothermal power at Cape Station",
+        "publisher": "GCN",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ksl.com/article/50738736/southwest-utah-to-house-worlds-largest-next-generation-geothermal-energy-project",
+        "label": "Southwest Utah to house world's largest next-generation geothermal energy project",
+        "publisher": "KSL.com",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Phase I is about 100 MW across three 33 MW GeoBlocks. The other two blocks are expected to reach contractual COD by Jan. 1, 2027. Phase II adds 400 MW across eight 50 MW GeoBlocks, targeted for 2028. The pin is the Milford town point, not the plant site.",
+    "energy": {
+      "source": "other",
+      "notes": "Enhanced geothermal power (EGS)."
+    },
+    "jobs": {
+      "construction": 6600,
+      "permanent": 160,
+      "sourceIndex": 2
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "geothermal",
+      "offtaker": "Shell Energy, Southern California Edison, Google",
+      "notes": "Shell Energy buys the first GeoBlock's initial output. Google signed a 396 MW PPA for 2028 delivery, with an option of about 600 MW more by June 2030. Southern California Edison and community choice aggregators are also named Cape Station offtake parties."
+    }
+  },
+  {
     "id": "fervo-corsac-station-churchill-county-nv",
     "name": "Fervo Energy Corsac Station",
     "operator": "Fervo Energy",
@@ -66808,6 +67940,9 @@
       "state": "UT",
       "precision": "exact"
     },
+    "capacityMw": {
+      "operational": 6
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -66837,9 +67972,16 @@
         "publisher": "Utah Public Notice Website",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Orem's RDA minutes record only one project area active as of 2019 (Project 90-08), and current FY2026-27 RDA activity is concentrated entirely in the University Place CDA at the mall redevelopment roughly 200m west of Fibernet's 1145 South 800 East site — outside that project area's described boundary by street-corridor cross-reference, not a parcel-level GIS check. No source names Fibernet in any Orem RDA record. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "notes": "Fibernet's own colocation page states the Orem facility supports 'more than 1 Megawatt of power' across 'up to 40,000 sq. ft.' — recorded as 1 MW, which is a floor, not a precise rating. A small independent colocation site rather than a hyperscale campus."
@@ -66885,9 +68027,16 @@
         "publisher": "Draper City",
         "retrievedAt": "2026-09-08",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Draper City's Community Reinvestment Agency's FY2025-26 adopted budget itemizes six active project areas (West Freeway, Sand Hills, Crescent, East Bangerter, Frontrunner, South Mountain) with no line item for this site; the FY2022 audited financial statements (the most recent located) name only three abatement recipients citywide (Utah Steakburgers, BG Vista/Draper Holdings, Pluralsight), none a data centre. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -68353,9 +69502,16 @@
         "publisher": "Utah Public Notice Website",
         "retrievedAt": "2026-09-08",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Cottonwood Heights' CDRA (created 2006) has established exactly one project area citywide, Canyon Centre CDA (3700 East 7000 South, at Fort Union Blvd/Wasatch Blvd) — a materially different location from this site at 6340 South 3000 East — per a 2024 CDRA project-area analysis; no other project area or agreement is documented. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -69861,9 +71017,16 @@
         "publisher": "Redevelopment Agency of Salt Lake City",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-11-02",
     "notes": "44,550 sqft, 2.65MW. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. None of Salt Lake City's 8 RDA/CRA project areas' published boundary descriptions place 572 South Delong St inside them — it sits south of Depot District's 400 South line and east of the 9 Line corridor — but this exclusion rests on published boundary descriptions, not a parcel-level GIS overlay (Salt Lake County's parcel viewer could not be queried as of September 2026). No source names Flexential in any RDA participation agreement, project-area annual report, or board minutes. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
@@ -69885,6 +71048,9 @@
       "postalCode": "84104",
       "state": "UT",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 1
     },
     "statusHistory": [],
     "sources": [
@@ -69915,9 +71081,16 @@
         "publisher": "Redevelopment Agency of Salt Lake City",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-11-02",
     "notes": "22,539 sqft, 490kW, distinct from Downtown/Millcreek SLC sites. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Flexential's Fair Park site (118 South 1000 West) sits south of North Temple, on the opposite side of the corridor from the RDA's North Temple Project Area transit-oriented redevelopment activity; the project area's own boundary-map PDF could not be retrieved as of September 2026 to confirm the exact southern boundary line, so this is a published-description exclusion, not a parcel-level GIS check. No RDA participation agreement, project-area page, or board minutes names Flexential or a Fair Park data center. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
@@ -70036,9 +71209,16 @@
         "publisher": "Millcreek City",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-11-02",
     "notes": "3949 South 200 East, 36,000 sqft, 2N UPS, distinct from Downtown/Fair Park SLC sites. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Millcreek's West Millcreek CRA — the one project area geographically plausible for 3949 South 200 East, with 200 East as its described eastern boundary — lists exactly three named participation agreements on record (Artesian Springs, Opus Green, The Howick), and none is Flexential or its predecessor brand ViaWest. Two other Millcreek CRAs (Millcreek Center, Woodland Avenue) were ruled out by boundary description on different cross-streets. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
@@ -70060,6 +71240,9 @@
       "postalCode": "84084",
       "state": "UT",
       "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 1
     },
     "statusHistory": [],
     "sources": [
@@ -70090,9 +71273,16 @@
         "publisher": "West Jordan City",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-11-02",
     "notes": "3949 S Campus View Dr, West Jordan UT 84084 (SLC09) per DataCenterJournal. Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. No participation agreement, tax abatement, or incentive names Flexential, ViaWest (its predecessor brand at this site), or Consonus Technologies (the facility's original builder); West Jordan's own Redevelopment Agency page lists six named project areas by street range (Town Center, Industrial Park, Southwire, Spratling, Downtown, Briarwood), none of which covers the Campus View Drive corridor. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
       "utility": "PacifiCorp"
@@ -72535,6 +73725,48 @@
     "aiClassification": "likely"
   },
   {
+    "id": "general-mills-golden-valley-mn",
+    "name": "General Mills II Data Center (Golden Valley)",
+    "operator": "General Mills",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.9861176,
+      "lon": -93.3784618,
+      "city": "Golden Valley",
+      "county": "Hennepin",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (New) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A new-build enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (New)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "generate-nb-fuel-cells-new-britain-ct",
     "name": "Energy & Innovation Park Fuel Cell Microgrid (Generate NB Fuel Cells)",
     "operator": "Generate NB Fuel Cells, LLC",
@@ -72985,6 +74217,9 @@
       "state": "MO",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 400
+    },
     "announcedDate": "2026-03",
     "statusHistory": [
       {
@@ -73022,12 +74257,23 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-10-13",
         "kind": "osm"
+      },
+      {
+        "url": "https://geronimopower.com/in-development/jasper-county-powered-data-park/",
+        "label": "Jasper County Powered Data Park (in development)",
+        "publisher": "Geronimo Power",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "Bloomington, MN-based Geronimo Power is evaluating eastern Jasper County, near Sarcoxie and La Russell, for a hyperscale data center plus a solar and battery park to help power it. Residents cite property along County Road 20. On ~March 30, 2026 Geronimo presented a related 640-acre solar farm in western Lawrence County to that county's commission; it is not recorded separately here. No end user is named. A 450 MW figure seen in an aggregator search summary was paywalled on the page itself, so no capacity is recorded. Coordinates are the La Russell community point (approximate); the site is described as near La Russell.",
     "energy": {
       "notes": "Developer plans a dedicated solar and battery storage park, including a 640-acre solar farm in western Lawrence County, to help power the data park; no MW stated."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Exact use undetermined. The design calls for a closed-loop system (air- or water-based)."
     },
     "community": {
       "status": "contested",
@@ -73105,6 +74351,43 @@
     },
     "facilityType": "data_center",
     "aiClassification": "likely"
+  },
+  {
+    "id": "geronimo-spring-river-solar-storage-jasper-county-mo",
+    "name": "Spring River Solar & Storage",
+    "operator": "Geronimo Power",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 37.16,
+      "lon": -94.08,
+      "county": "Jasper",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 150
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://geronimopower.com/in-development/jasper-county-powered-data-park/",
+        "label": "Jasper County Powered Data Park (in development)",
+        "publisher": "Geronimo Power",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "solar",
+      "offtaker": "Jasper County Powered Data Park",
+      "poweredFacilityIds": [
+        "geronimo-jasper-county-powered-data-park-mo"
+      ],
+      "notes": "150 MW solar plus storage, planned to help power the Jasper County Powered Data Park and support the regional grid. The solar/storage split is not given."
+    }
   },
   {
     "id": "gi-partners-sandy-farms-severn-md",
@@ -81813,6 +83096,40 @@
     "facilityType": "data_center"
   },
   {
+    "id": "h5-data-centers-st-louis-globe-building-mo",
+    "name": "H5 Data Centers St. Louis (Globe Building)",
+    "operator": "H5 Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.6333,
+      "lon": -90.1953,
+      "city": "St. Louis",
+      "county": "St. Louis City",
+      "street": "710 N. Tucker Blvd., Suite 610",
+      "postalCode": "63101",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://h5datacenters.com/saint-louis-data-center.html",
+        "label": "H5 Data Centers St. Louis facility page",
+        "publisher": "H5 Data Centers",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "36,000 sq ft of colocation space in the 550,000 sq ft Globe Building, with 1.5 MW of generator backup. Total IT MW is not stated.",
+    "water": {
+      "coolingType": "evaporative",
+      "notes": "The operator lists N+1 chillers, N+1 cooling towers and N+1 CRAC units."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "h5-data-centers-st-paul-mn",
     "name": "H5 Data Centers St. Paul",
     "operator": "H5 Data Centers",
@@ -82802,6 +84119,48 @@
       }
     ],
     "investmentUsd": 200000000,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "healthpartners-mendota-heights-mn",
+    "name": "HealthPartners Mendota Heights Data Center",
+    "operator": "HealthPartners, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.8835768,
+      "lon": -93.1382749,
+      "city": "Mendota Heights",
+      "county": "Dakota",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -88128,6 +89487,9 @@
       "state": "MO",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 3.9
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -88143,9 +89505,16 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-10-13",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.ironmountain.com/data-centers/locations/na/kansas-city",
+        "label": "Kansas City Data Center (KCM-1)",
+        "publisher": "Iron Mountain",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "Underground colocation facility ~110 ft below ground (the operator FAQ also says 100 ft) on a 22-acre campus. 50,000 sq ft building with 13,000 sq ft of data hall, and 3.9 MW 'total potential capacity' (not recorded as operational MW because it is stated as potential). 2N electrical, N+1 cooling. Coordinates are the address geocode of the campus entrance (approximate for an underground facility).",
     "energy": {
       "source": "grid",
@@ -88649,6 +90018,118 @@
     "facilityType": "data_center"
   },
   {
+    "id": "irongate-msp2-woodbury-mn",
+    "name": "IronGate MSP2 (Woodbury)",
+    "operator": "IronGate Data Centers (certificate holder Eden Ventures LLC)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.919896,
+      "lon": -92.9339449,
+      "city": "Woodbury",
+      "county": "Washington",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Listed by DEED as 'Irongate - MSP2', company Eden Ventures LLC, Woodbury, a refurbished data center. Distinct from the IronGate Woodbury new-build entry. The location is the Woodbury city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "irongate-msp3-eagan-unisys-park-mn",
+    "name": "IronGate MSP3 / Eagan Capital (former Unisys data center, 3199 Pilot Knob Rd)",
+    "operator": "IronGate Data Centers / Eagan Capital LLC (Swervo-affiliated)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.8426452,
+      "lon": -93.1693175,
+      "city": "Eagan",
+      "county": "Dakota",
+      "street": "3199 Pilot Knob Road",
+      "postalCode": "55121",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED list as 'Irongate - MSP3', company Eagan Capital LLC, Eagan. City staff found temporary trailer-mounted chillers installed and operating without permits.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://www.thegazette.com/data_centers/across_america/minnesota-elk-river-data-center-developer-withdraws-application/article_61f12c2b-f46b-46e4-8ad9-bd0f86d3ff60.html",
+        "label": "Minnesota: Elk River data center developer withdraws application (covers Eagan Capital/IronGate chiller permits at Unisys Park)",
+        "publisher": "The Gazette",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.mprnews.org/story/2026/07/07/city-of-eagan-faces-lawsuit-over-data-center-moratorium",
+        "label": "Lawsuit filed against city of Eagan over one-year data center moratorium",
+        "publisher": "MPR News",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=3199+Pilot+Knob+Road,+Eagan,+MN&format=json&limit=1",
+        "label": "OSM Nominatim geocode: Unisys building, 3199 Pilot Knob Road, Eagan",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-11-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "The former Unisys data center at Unisys Park, 3199 Pilot Knob Road, sold in November 2025. Eagan denied an Interim Use Permit for outdoor chillers in May 2026. IronGate also applied for eight permanent chillers. Eagan Capital sued the city over its data center moratorium on 2026-06-15. The point is the OSM building footprint.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "community": {
+      "status": "litigation",
+      "notes": "Resident noise complaints about chillers; IUP denied May 2026; Eagan Capital lawsuit against the city's moratorium filed June 2026",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "irongate-the-bunker-warren-mi",
     "name": "IronGate Detroit \"The Bunker\" (28201 Van Dyke Ave, Warren)",
     "operator": "IronGate Data Centers",
@@ -88704,6 +90185,64 @@
     "environmental": {
       "waterStress": "unknown"
     }
+  },
+  {
+    "id": "irongate-woodbury-msp1-mn",
+    "name": "IronGate Twin Cities East (MSP1), Woodbury",
+    "operator": "IronGate Data Centers",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.9374958,
+      "lon": -92.9540618,
+      "city": "Woodbury",
+      "county": "Washington",
+      "street": "401 Bielenberg Drive",
+      "postalCode": "55125",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Commissioned per datacenterHawk; listed Certified (New) on DEED data center sales tax refund list",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacenterhawk.com/marketplace/providers/irongate-data-centers/401-bielenberg-drive/twin-cities-east",
+        "label": "IronGate Data Centers · Twin Cities East (401 Bielenberg Drive)",
+        "publisher": "datacenterHawk",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://tcbmag.com/local-data-center-co-signs-first-client-preps-for-expansion/",
+        "label": "Local Data Center Co. Signs First Client, Preps for Expansion (2012)",
+        "publisher": "Twin Cities Business",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "An 85,000 sq ft east-metro colocation building. A 270,000 sq ft expansion was planned as of 2012. The point is on Bielenberg Drive, not the building footprint.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (New), 'Irongate - Woodbury'",
+        "jurisdiction": "MN",
+        "sourceIndex": 1
+      }
+    ],
+    "facilityType": "data_center"
   },
   {
     "id": "ironmountain-bos1-northborough-ma",
@@ -91828,7 +93367,7 @@
         "url": "https://lambda.ai/blog/lambda-to-build-a-100mw-ai-factory-in-kansas-city-mo",
         "label": "Lambda to build a 100MW AI factory in Kansas City, MO",
         "publisher": "Lambda",
-        "retrievedAt": "2026-07-07",
+        "retrievedAt": "2026-11-02",
         "kind": "press"
       },
       {
@@ -91836,9 +93375,16 @@
         "label": "Missouri Department of Economic Development — press release",
         "retrievedAt": "2026-07-25",
         "kind": "press"
+      },
+      {
+        "url": "https://www.kshb.com/news/local-news/data-centers/northland-ai-data-center-withdraws-bond-application-with-port-kc",
+        "label": "Northland AI data center withdraws bond application with Port KC",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-02",
     "notes": "11155 N. Airworld Dr (former Bank of America campus, ~16.9 acres), Platte County near KCI airport. Launches early 2026 with 24 MW confirmed; >100 MW is a scale-up ceiling (planned figure). Distinct parcels from Google (Project Mica) and Meta's Kansas City sites. Eligible for the Missouri Data Center Sales Tax Exemption (eligibility only — no award amount confirmed; honest-zero). The >$500M figure is a press estimate (notes). Dedicated to a single unnamed AI customer under a multi-year agreement.",
     "energy": {
       "source": "grid",
@@ -91855,6 +93401,11 @@
     ],
     "investmentUsd": 500000000,
     "landAcres": 16.9,
+    "community": {
+      "status": "contested",
+      "notes": "Community members opposed Port KC bonds for 'Project Blitz'. The developer withdrew its bond application in June 2026; the project itself was not reported cancelled.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -91961,6 +93512,48 @@
     "environmental": {
       "carbonIntensityBasis": "grid_average"
     }
+  },
+  {
+    "id": "land-o-lakes-arden-hills-mn",
+    "name": "Land O'Lakes Arden Hills Data Center",
+    "operator": "Land O'Lakes",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.0761409,
+      "lon": -93.1666945,
+      "city": "Arden Hills",
+      "county": "Ramsey",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
   },
   {
     "id": "landshark-energy-solar-calhoun-ms",
@@ -96515,9 +98108,16 @@
         "publisher": "Ogden City",
         "retrievedAt": "2026-09-08",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Ogden City RDA's nine active project areas (CBD Mall, Ogden River, East Washington, Trackline, Kiesel, Adams, Continental, Flagship, Airport) carry no mention of the 526 W 17th Street facility or of Lumen in their published descriptions, board minutes, or bond packets; the only named tax-increment recipient found in RDA search results is Williams International, unrelated to this site. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -96814,9 +98414,16 @@
         "publisher": "Redevelopment Agency of Salt Lake City",
         "retrievedAt": "2026-09-08",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal/operator level (2026-09-08): no site-level subsidy found. The Redevelopment Agency of Salt Lake City's FY2016 annual report and Salt Lake City Council District 2's public summary of its CRA project areas name no beneficiary matching Lumen (or its predecessor entities CenturyLink/Level 3/Qwest). Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. This record aggregates three physically distinct Lumen facilities (Salt Lake 1, 2 and 4) at different addresses across the city, so no single site-level check applies to all three; a fuller Good Jobs First Subsidy Tracker check for Lumen Technologies as a national parent company was blocked and remained unresolved as of September 2026.",
     "facilityType": "data_center"
   },
@@ -98782,6 +100389,41 @@
     "facilityType": "data_center"
   },
   {
+    "id": "mastercard-ofallon-technology-hub-data-center-mo",
+    "name": "Mastercard St. Louis Tech Hub Data Center (O'Fallon)",
+    "operator": "Mastercard",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 38.81,
+      "lon": -90.7,
+      "city": "O'Fallon",
+      "county": "St. Charles",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://careers.mastercard.com/us/en/st-louis-missouri",
+        "label": "Mastercard St. Louis Tech Hub (O'Fallon) campus description",
+        "publisher": "Mastercard",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.paric.com/project/mastercard-global-technology-operations-headquarters/",
+        "label": "Mastercard Global Technology & Operations Headquarters project page",
+        "publisher": "PARIC",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A 75,000 sq ft data center inside a 525,000 sq ft LEED Platinum campus. The campus also houses Mastercard's global operations center and has 4,000+ employees.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "mawson-bellefonte-pa",
     "name": "Big Digital Energy Bellefonte Facility",
     "operator": "Big Digital Energy",
@@ -99272,6 +100914,48 @@
       "notes": "More than 150 people signed up to speak, nearly all opposed. A Change.org petition drew 2,500+ signatures. Concerns cited utility costs, well water, health and property values.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "medtronic-woodbury-mn",
+    "name": "Medtronic Woodbury Data Center",
+    "operator": "Medtronic, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.919896,
+      "lon": -92.9339449,
+      "city": "Woodbury",
+      "county": "Washington",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -103051,12 +104735,25 @@
         "publisher": "KXCV-KRNW",
         "retrievedAt": "2026-10-13",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://www.libertymissouri.gov/2793/Metrobloks-FAQs",
+        "label": "Metrobloks FAQs",
+        "publisher": "City of Liberty, MO",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-02",
     "notes": "$1.4B, 150 MW AI-ready campus in Liberty, Clay County. Coordinates are the Liberty area centroid. Partner: Lincoln Property Company.",
     "energy": {
-      "source": "grid"
+      "source": "grid",
+      "utility": "Evergy",
+      "notes": "The Large Load Power Service tariff applies at 75 MW+."
+    },
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Liberty Utilities supplies water. The closed loop is filled once and topped off for evaporation."
     },
     "subsidies": [
       {
@@ -107843,6 +109540,42 @@
       "notes": "Residents raised concerns about environmental impact and utility bills during a roughly two-year review; the mayor asked the council to vote the development agreement down.",
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "mienergy-harmony-data-center-site-mn",
+    "name": "Harmony Data Center Site (MiEnergy option, Fillmore County Road 22)",
+    "operator": "MiEnergy Cooperative (site option holder; end user not identified)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 43.5552143,
+      "lon": -92.0053074,
+      "city": "Harmony",
+      "county": "Fillmore",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2025-10-14",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-14",
+        "note": "Harmony City Council voted unanimously to annex 60 acres for a possible data center; rezoning from agricultural to industrial still required",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://rootrivercurrent.org/harmony-minnesota-annexs-land-for-possible-data-center/",
+        "label": "Harmony, Minnesota annexes land for possible data center",
+        "publisher": "Root River Current",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Sixty acres were annexed north of Harmony on Fillmore County Road 22, next to the Dairyland Power Cooperative service center. The data center would use up to 20 acres and the rest may host solar. MiEnergy Cooperative holds the purchase option. No corporate end user or MW figure has been disclosed. The location is the Harmony town centroid.",
     "facilityType": "data_center"
   },
   {
@@ -112712,9 +114445,16 @@
         "publisher": "Provo City",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Provo has 3 RDA and 5 CDA project areas; no participation agreement, TIF, or incentive naming Newfold Digital or Ace Data Center (the building's owner) was found in any of them. The site's East Bay-area address does not match the published prose description of the downtown-core project areas, but that exclusion rests on boundary descriptions, not a parcel-level GIS overlay. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -112889,7 +114629,7 @@
         "url": "https://www.stlpr.org/government-politics-issues/2026-09-23/ferguson-city-council-says-yes-to-tax-breaks-for-data-center-development",
         "label": "Ferguson City Council says yes to tax breaks for data center development",
         "publisher": "St. Louis Public Radio",
-        "retrievedAt": "2026-10-13",
+        "retrievedAt": "2026-11-02",
         "kind": "press"
       },
       {
@@ -112907,7 +114647,7 @@
         "kind": "osm"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "217-acre former Emerson Electric campus in Ferguson, bought in 2026 by Next Revolution Technologies LLC (run by Onder Law's James Onder). The campus already has a smaller data center; the approved plan includes renovating it and a potential future 300 MW data center (the planned capacity reflects that potential expansion). Up to $22B in industrial revenue bonds authorized. Community payments: $700K to the city, $250K environmental mitigation fund, $7.5M over 10 years to the Ferguson Neighborhood Improvement Program. Coordinates are the Ferguson municipal centroid (approximate); no street address was given in the cited sources. The record is listed as proposed: the council approval is a tax-incentive/redevelopment package, not a building permit.",
     "water": {
       "coolingType": "closed_loop",
@@ -112922,6 +114662,7 @@
         "sourceIndex": 1
       }
     ],
+    "landAcres": 217,
     "community": {
       "status": "contested",
       "notes": "Nearly all public commenters opposed; the St. Louis County NAACP and Ferguson-Florissant School District raised concerns. A motion to table failed and the plan passed 4-3, with conflict-of-interest questions raised over the Neighborhood Improvement Program.",
@@ -114979,6 +116720,107 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "nodal-power-mara-davis-landfill-layton-ut",
+    "name": "Davis Landfill Bitcoin Mining Pilot (Nodal Power / MARA)",
+    "operator": "Nodal Power with MARA Holdings",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 41.0602,
+      "lon": -111.9711,
+      "city": "Layton",
+      "county": "Davis",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 0.27
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2023-09-27",
+        "note": "Pilot began; report covers first 240 days through May 24, 2024",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.sltrib.com/news/environment/2023/11/16/bitcoin-mining-gobbles-electricity/",
+        "label": "Bitcoin mining gobbles electricity. This Utah project could reduce its environmental impact.",
+        "publisher": "The Salt Lake Tribune",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://bitcoinmagazine.com/technical/report-bitcoin-an-economically-viable-approach-to-reduce-landfill-emissions",
+        "label": "Report: Bitcoin an economically viable approach to reduce landfill emissions",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Off-grid pilot at the Davis landfill (Wasatch Integrated Waste Management District) next to Hill AFB. Landfill methane runs a generator that powers MARA's miners in Nodal Power's data center. About 92% uptime was reported over the first 240 days. Operation after May 2024 is not verified. The pin is the Layton city point.",
+    "energy": {
+      "source": "other",
+      "notes": "Landfill-gas-fired generator, off-grid."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "hardwareType": "asic",
+      "powerArrangement": "behind_meter"
+    }
+  },
+  {
+    "id": "nodiac-albertville-mn",
+    "name": "Nodiac Albertville Modular Data Center (70th St NE & Karment Ave NE)",
+    "operator": "Nodiac",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.2347086,
+      "lon": -93.6642199,
+      "city": "Albertville",
+      "county": "Wright",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 20
+    },
+    "announcedDate": "2026-09-08",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-08",
+        "note": "Concept review before Albertville City Council; no formal decision; data centers not currently allowed under city code",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.hometownsource.com/press_and_news/albertville-city-council-hears-data-center-concept-approves-preliminary-tax-levy/article_b92cb137-0d0a-4877-b0b3-238628168454.html",
+        "label": "Albertville City Council hears data center concept, approves preliminary tax levy",
+        "publisher": "Hometown Source",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Site is at the intersection of 70th Street and Karment Avenue NE, next to a Wright-Hennepin electrical substation, on a newly created 3.66-acre parcel. Nodiac estimates 20 MW across 20 modular data center modules, 10 transformers and 30 equipment pads. Water would be trucked in, about 30,000 gallons on a 5-8 year cycle. The site would be unmanned apart from one on-call maintenance job. The location is the Albertville city centroid.",
+    "water": {
+      "coolingType": "unknown",
+      "notes": "About 30,000 gallons trucked in on a five-to-eight-year cycle; not on municipal supply"
+    },
+    "landAcres": 3.66,
+    "jobs": {
+      "permanent": 1,
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "noec-core-data-center-vinita-ok",
     "name": "CORE Data Center (Vinita)",
     "operator": "Northeast Oklahoma Electric Cooperative",
@@ -115556,6 +117398,52 @@
     "lastUpdated": "2026-09-12",
     "notes": "300-acre industrial campus between Vanden Road and North Gate Road in northeast Fairfield, near the Vacaville border. The Fairfield Planning Commission approved a master development permit for a 4.6-million-sq-ft industrial park here in 2023; the 150 MW data-center figure comes from developer/broker (Jones Lang LaSalle and NorthPoint) presentation materials for a data center within that park, and no data-center-specific application had been filed as of this reporting. Canon Partners (itself controlled by Andrews Lando & Associates and Stroud Properties) is also named as a co-developer. PG&E began an infrastructure/engineering cost study around Q3 2025 and issued an engineering agreement in December 2025. A public hearing would still be required before any data-center-specific approval. Coordinates are geocoded to Vanden Road in Fairfield only (no confirmed parcel or street address), so treat the pin as a rough area marker.",
     "landAcres": 300,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "northstar-digital-shakopee-mn",
+    "name": "Shakopee Hyperscale Data Center Campus (NorthStar Digital Infrastructure)",
+    "operator": "NorthStar Digital Infrastructure LLC",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.7980186,
+      "lon": -93.5268986,
+      "city": "Shakopee",
+      "county": "Scott",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 80
+    },
+    "announcedDate": "2025-10-15",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-15",
+        "note": "EAW submitted to MPCA; EAW deemed complete 2025-12-02; public comment closed 2026-02-15 with 118 comments",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn-coordinated-permitting.onconcourse.com/projects/shakopee-data-center",
+        "label": "Shakopee Data Center — Minnesota coordinated permitting dashboard (MPCA/DNR)",
+        "publisher": "State of Minnesota coordinated permitting (MPCA lead agency)",
+        "retrievedAt": "2026-11-02",
+        "kind": "permit"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Phased campus of four buildings totaling about 1.2 million sq ft on 160 acres. Phase 1 is two buildings with 80 MW of critical IT load. Plans include backup diesel generation, a cooling water system and a new substation. Estimated cost is $2.8 billion. Air permit application was targeted for 2026-06-01 and DNR water appropriation permit for 2026-09-01. No street address was published. The location is the Shakopee city centroid.",
+    "water": {
+      "coolingType": "unknown",
+      "reportedMgd": 1.5,
+      "notes": "State dashboard estimates water use at 1.5 million gallons/day; cooling water system, method not specified; DNR water appropriation permit required"
+    },
+    "investmentUsd": 2800000000,
+    "landAcres": 160,
     "facilityType": "data_center"
   },
   {
@@ -116669,6 +118557,53 @@
     },
     "facilityType": "data_center",
     "aiClassification": "confirmed"
+  },
+  {
+    "id": "nsi6-benton-county-old-highway-65-mo",
+    "name": "NSI6 Benton County Data Center (Old Highway 65)",
+    "operator": "NSI6 LLC (Trent Overhue)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 38.2431,
+      "lon": -93.3819,
+      "county": "Benton",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-09-21",
+        "note": "About 12 acres on old Highway 65 were bought Sept 9, 2026, and clearing began under a temporary restraining order against the county's six-month moratorium. The judge extended the TRO on Sept 21 and urged caution on construction.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.ky3.com/2026/09/02/data-center-moratorium-fight-plays-out-benton-county-courtroom/",
+        "label": "Data center moratorium fight plays out in Benton County courtroom",
+        "publisher": "KY3",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.ky3.com/2026/09/21/judge-extends-restraining-order-benton-county-mo-data-center-case/",
+        "label": "Judge extends restraining order in Benton County, Mo., data center case",
+        "publisher": "KY3",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Two buildings of about 20,000 sq ft each are planned. Capacity has not been disclosed. The location is placed near Warsaw; the exact parcel is not public.",
+    "landAcres": 12,
+    "community": {
+      "status": "litigation",
+      "notes": "The developer sued to block enforcement of Benton County's Aug 10, 2026 data center moratorium. A TRO was granted Sept 8 and extended Sept 21.",
+      "sourceIndex": 1
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "ntt-ashburn-va1-data-center-va",
@@ -118184,6 +120119,61 @@
     "energy": {
       "source": "on_site_gas",
       "notes": "Up to four 2,500 bhp Waukesha 9394 GSI gas engines (MAQP #5313-02), fueled by flare-destined field gas."
+    },
+    "facilityType": "crypto_mining",
+    "mining": {
+      "powerArrangement": "flared_gas"
+    }
+  },
+  {
+    "id": "nydig-duchesne-data-center-power-station-upalco-ut",
+    "name": "NYDIG Duchesne Data Center Power Station",
+    "operator": "NYDIG DFM LLC (NYDIG)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.29,
+      "lon": -110.202,
+      "city": "Upalco",
+      "county": "Duchesne",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "permitted",
+        "date": "2024-09-18",
+        "note": "Original DAQ Approval Order DAQE-AN161210003-24",
+        "sourceIndex": 0
+      },
+      {
+        "status": "operational",
+        "date": "2026-01-22",
+        "note": "DAQ amended approval order states NYDIG owns and operates the data center power station",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://daqpermitting.utah.gov/DocViewer?IntDocID=160550&contentType=application%2Fpdf",
+        "label": "Utah DAQ Approval Order DAQE-AN161210005-26, NYDIG DFM LLC - Duchesne Data Center Power Station",
+        "publisher": "Utah Division of Air Quality",
+        "retrievedAt": "2026-11-02",
+        "kind": "permit"
+      },
+      {
+        "url": "https://bitcoinmagazine.com/news/nydig-to-acquire-crusoes-bitcoin-mining-operations",
+        "label": "NYDIG to acquire Crusoe's bitcoin mining operations (incl. Digital Flare Mitigation)",
+        "publisher": "Bitcoin Magazine",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "The permit puts the site 1 mile northeast of Upalco (UTM 12N 567,859 E / 4,460,140 N, NAD83); lat/lon were converted by hand and are approximate. Equipment: two 530 hp gas compressor engines, eight 2,500 hp gas generator engines, and one 13,364 kW gas turbine. All of it burns gas that would otherwise be flared, from the adjacent XCL facility, and powers small onsite data centers. NYDIG DFM is the Digital Flare Mitigation bitcoin-mining business NYDIG agreed to buy from Crusoe in 2025, so the site is classed as crypto mining.",
+    "energy": {
+      "source": "on_site_gas",
+      "notes": "Flare-gas-fired engines and turbine; 13,364 kW turbine plus eight 2,500 hp generator engines per DAQ approval order."
     },
     "facilityType": "crypto_mining",
     "mining": {
@@ -119756,6 +121746,41 @@
       "permanent": 6,
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "oppidan-connect-north-mankato-mn",
+    "name": "Connect Data Centers North Mankato (Oppidan, Northport Industrial Park) — withdrawn",
+    "operator": "Oppidan Investment Company (Connect Data Centers)",
+    "status": "cancelled",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.1800883,
+      "lon": -94.0535532,
+      "city": "North Mankato",
+      "county": "Nicollet",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "cancelled",
+        "date": "2025",
+        "note": "Oppidan told the city it was 'no longer interested in North Mankato' before filing a formal application; reported 2025-11-17",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.mankatofreepress.com/news/local_news/data-center-plans-stalled-in-north-mankato-after-developer-backs-out/article_d0617045-9eed-4633-a055-aed5b0405879.html",
+        "label": "Data center plans stalled in North Mankato after developer backs out",
+        "publisher": "Mankato Free Press",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Proposed for Northport Industrial Park off Lookout Drive. The city signed an NDA with Oppidan in July 2023. The AUAR studied a worst-case 4 million sq ft hyperscale scenario across roughly 679 acres. Oppidan cited state backup-generator permitting timelines. The point is on Lookout Drive and is approximate.",
     "facilityType": "data_center"
   },
   {
@@ -122017,6 +124042,48 @@
     },
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
+  },
+  {
+    "id": "patmos-independence-little-blue-parkway-mo",
+    "name": "Patmos Independence Data Center (2500 S. Little Blue Parkway)",
+    "operator": "Patmos",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.057,
+      "lon": -94.353,
+      "city": "Independence",
+      "county": "Jackson",
+      "street": "2500 South Little Blue Parkway",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 100
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-11-02",
+        "note": "Building permit application for 100 MW and 285,000 sq ft. A council vote on the lease assignment from NorthPoint was postponed to Nov 2, 2026.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kshb.com/news/local-news/missouri/jackson-county/independence-city-council-postpones-decision-on-2nd-data-center-project-in-little-blue-valley",
+        "label": "Independence City Council postpones decision on 2nd data center project in Little Blue Valley",
+        "publisher": "KSHB 41",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "The initial phase is 17.5 MW with six muffled backup generators, in a warehouse in the EastGate Commerce Center. The project was grandfathered ahead of the city's moratorium.",
+    "water": {
+      "notes": "Reported to use less than 10,000 gallons of city water per day."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "patmos-kansas-city-mo",
@@ -130502,6 +132569,48 @@
     "facilityType": "data_center"
   },
   {
+    "id": "prudential-plymouth-mn",
+    "name": "Prudential Data Center (Plymouth)",
+    "operator": "Prudential",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.0065149,
+      "lon": -93.46651,
+      "city": "Plymouth",
+      "county": "Hennepin",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (New) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A new-build enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (New)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "pso-northeastern-5-6-oologah-ok",
     "name": "PSO Northeastern Units 5 & 6 (NE 5&6)",
     "operator": "Public Service Company of Oklahoma (AEP)",
@@ -130720,6 +132829,84 @@
       "status": "contested",
       "notes": "The site is directly across from the Woodford Drive residential area; residents raised environmental concerns and Mayor Treva Hodges said she wanted higher expectations for developers and suggested delaying approval.",
       "sourceIndex": 0
+    },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "qlevr-inver-grove-heights-mn",
+    "name": "QLevr Inver Grove Heights Data Center (former Travel Tags site, Carmen Ave E)",
+    "operator": "QLevr LLC (QLevr Data Centers)",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 44.8629567,
+      "lon": -93.0398372,
+      "city": "Inver Grove Heights",
+      "county": "Dakota",
+      "street": "Carmen Avenue East",
+      "postalCode": "55076",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 5
+    },
+    "announcedDate": "2026-04-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-04-07",
+        "note": "Planning Commission approved the proposal 6-3; council later continued the site plan",
+        "sourceIndex": 0
+      },
+      {
+        "status": "proposed",
+        "date": "2026-09-14",
+        "note": "Council exempted the project from the one-year data center moratorium to settle QLevr's lawsuit; final council approval still required",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://weststpaulreader.com/2026/06/26/proposed-data-center-for-inver-grove-heights/",
+        "label": "Proposed data center for Inver Grove Heights",
+        "publisher": "West St. Paul Reader",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.fox9.com/news/inver-grove-heights-council-grants-data-center-exemption-amid-lawsuit",
+        "label": "Inver Grove Heights council grants data center exemption amid lawsuit",
+        "publisher": "FOX 9",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.cbsnews.com/minnesota/news/inver-grove-data-center-moratorium-litigation/",
+        "label": "Inver Grove Heights data center moratorium and litigation threat",
+        "publisher": "CBS Minnesota",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=5842+Carmen+Avenue+East,+Inver+Grove+Heights,+MN&format=json&limit=1",
+        "label": "OSM Nominatim geocode: 5842 Carmen Avenue East, Inver Grove Heights",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-11-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Planned building of about 54,000 sq ft on the 13.9-acre former Travel Tags site next to the South St. Paul airport. Capacity is 3 MW initially, expanding to 5 MW. Sources disagree on the street number (5842 vs 5890 Carmen Ave E), so the point is the OSM geocode of 5842 and is marked approximate. An EAW petition with 712 signatures was underway as of June 2026.",
+    "water": {
+      "coolingType": "closed_loop",
+      "notes": "Closed-loop system, initial fill of about 70,000 gallons that is recirculated; the applicant says ongoing use is minimal"
+    },
+    "landAcres": 13.9,
+    "community": {
+      "status": "litigation",
+      "notes": "Moratorium adopted 3-2 on 2026-06-26. QLevr sued in July 2026, and the council granted a moratorium exemption in September 2026 to settle. EAW petition circulated.",
+      "sourceIndex": 1
     },
     "facilityType": "data_center"
   },
@@ -131419,9 +133606,16 @@
         "publisher": "Eagle Mountain Redevelopment Agency via Utah Public Notice Website",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Planned Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Sweetwater Industrial Park Community Reinvestment Project Area #3 (Eagle Mountain Redevelopment Agency, Title 17C): 61% of Real Property Tax Increment plus 74% of Personal Property Tax Increment, reimbursed per Phase for 20 years per phase (not to exceed 40 years total), from Utah County, Alpine School District, Eagle Mountain City, Central Utah Water Conservancy District, and the Unified Fire Service Area. The signed CRA Participation Agreement's Participant is QTS Eagle Mountain I, LLC — there is no separate agreement naming \"QTS Eagle Mountain II, LLC.\" This parcel (38:707:0002, 98.043 acres) is covered by the Sweetwater CRA #3 agreement with QTS Eagle Mountain I, LLC, which explicitly includes this parcel's acreage: the Agreement's own recitals and the amended Project Area's Table 1 Parcel List define the ~193-acre Project Area, and its terms, as spanning both the QTS Eagle Mountain I parcel (38:707:0001, 95.153 acres) and the QTS Eagle Mountain II parcel by acreage. A 2nd Amendment (approved August 20, 2024) changed only the payment mechanics — allowing personal-property reimbursements to be paid directly to QTS's colocation end-clients — and did not alter the 61%/74%/20yr/40yr terms.",
     "subsidies": [
       {
@@ -133786,6 +135980,43 @@
     "aiClassification": "mixed_use"
   },
   {
+    "id": "rackspace-kansas-city-mci1-airworld-mo",
+    "name": "Rackspace Kansas City (MCI1)",
+    "operator": "Rackspace Technology",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.289,
+      "lon": -94.687,
+      "city": "Kansas City",
+      "county": "Platte",
+      "street": "10828 NW Airworld Drive",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://www.rackspace.com/en-sg/about/data-centers/kansas-city",
+        "label": "Rackspace Technology Data Centers: Kansas City (MCI1)",
+        "publisher": "Rackspace Technology",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://baxtel.com/news/data-center-leased-by-rackspace-for-sale-in-kansas-city-missouri",
+        "label": "Data center leased by Rackspace for sale in Kansas City, Missouri",
+        "publisher": "Baxtel",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A 77,545 sq ft two-story building on 5.2 acres in the Airworld Center, with 15,440 sq ft of raised floor and dual 2.5 MW generators. It was marketed for sale as a NNN investment in 2023, so the current building owner is not verified.",
+    "landAcres": 5.2,
+    "facilityType": "data_center"
+  },
+  {
     "id": "racksquared-columbus-oh",
     "name": "Racksquared Data Center (Columbus)",
     "operator": "Racksquared Data Centers, LLC",
@@ -135374,9 +137605,16 @@
         "publisher": "Utah Public Notice Website",
         "retrievedAt": "2026-09-08",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. Cottonwood Heights' Community Development and Renewal Agency (CDRA, established 2006) has created exactly one project area in its history — the Canyon Centre CDA at 3700 East 7000 South, a different site — and its dedicated financial analysis (LRB Public Finance Advisors, Feb 2024) does not mention this address or Regence. No Cottonwood Heights or Salt Lake County filing found naming Regence in connection with an incentive, subsidy, RDA, or abatement. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. Note: no source confirms this address houses a data center rather than Regence's general Utah corporate/insurance office.",
     "facilityType": "data_center"
   },
@@ -135928,6 +138166,73 @@
       "unitCount": 13,
       "notes": "Bloom Energy ES-5 solid-oxide fuel cells (10 x 325 kW + 3 x 250 kW). Dedicated to the co-located data center, ReNew Riverside Micro Cloud Technology Center (234 Riverside Avenue)."
     }
+  },
+  {
+    "id": "revitalization-unlimited-934-central-kansas-city-mo",
+    "name": "934 Central Data Center Tower (Western Newspaper Union Building site)",
+    "operator": "Revitalization Unlimited",
+    "status": "proposed",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 39.1013,
+      "lon": -94.5873,
+      "city": "Kansas City",
+      "county": "Jackson",
+      "street": "934 Central St",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "announcedDate": "2026-07",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-08-05",
+        "note": "City Plan Commission voted 6-0 to deny the development plan (case CD-CPC-2026-00074). Ordinance 260870 is held in the council's Neighborhood Planning and Development Committee until Nov 10, 2026, with no final action.",
+        "sourceIndex": 2
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://clerk.kcmo.gov/LegislationDetail.aspx?GUID=4CA9D608-43DB-410C-849C-35C773E88B59&ID=8237127&Options=&Search=",
+        "label": "Kansas City File 260870: development plan for a 384-ft structure with ground-floor retail and a data center at 10th & Central",
+        "publisher": "City of Kansas City, MO (City Clerk)",
+        "retrievedAt": "2026-11-02",
+        "kind": "permit"
+      },
+      {
+        "url": "https://www.kctv5.com/2026/07/27/two-kansas-city-councilmembers-oppose-proposed-downtown-kansas-city-data-center/",
+        "label": "Two Kansas City councilmembers oppose proposed downtown Kansas City data center",
+        "publisher": "KCTV5",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.kcur.org/housing-development-section/2026-08-10/kansas-city-officials-denied-a-plan-for-downtown-data-center-some-residents-vow-to-keep-fighting",
+        "label": "Kansas City officials denied a plan for downtown data center",
+        "publisher": "KCUR",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://fox4kc.com/news/kansas-city-planning-commission-rejects-proposal-for-20-story-data-center/amp/",
+        "label": "Kansas City Planning Commission rejects proposal for 20-story data center",
+        "publisher": "FOX 4 Kansas City",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Proposed 20-story, 384-ft vertical data center designed by SOM. The Plan Commission denied it 6-0 on Aug 5, 2026, and the developer may seek a council override.",
+    "jobs": {
+      "permanent": 30,
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "opposed",
+      "notes": "55 people testified and commissioners reported 475 opposition letters and none in support. Two 4th District councilmembers and the mayor oppose it, and the project would demolish a building on the National Register.",
+      "sourceIndex": 2
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "revolve-labs-glencoe-mn",
@@ -143639,6 +145944,57 @@
     "facilityType": "data_center"
   },
   {
+    "id": "sherman-255-second-ave-s-minneapolis-mn",
+    "name": "255 Second Avenue South Data Center Conversion (former Wells Fargo Operations Center)",
+    "operator": "Sherman Associates",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.9798654,
+      "lon": -93.2650224,
+      "city": "Minneapolis",
+      "county": "Hennepin",
+      "street": "255 2nd Ave S",
+      "postalCode": "55401",
+      "state": "MN",
+      "precision": "exact"
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2025-10-05",
+        "note": "Conditional use permit sought to raise electrical service from 6 MW to 26 MW for a data center conversion (per tracker citing Bring Me The News)",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/hennepin-county-edge-campus-mn--6e005423-4348-478c-97b8-2c4b2e3f5f6f",
+        "label": "Hennepin County Edge Campus (Sherman Associates) — tracker entry",
+        "publisher": "More Than Just Parks",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.commercialcafe.com/commercial-property/us/mn/minneapolis/minneapolis-data-center-redevelopment-opportunity/",
+        "label": "Minneapolis Data Center Redevelopment Opportunity — 255 2nd Ave S listing",
+        "publisher": "CommercialCafe (Colliers listing)",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://nominatim.openstreetmap.org/search?q=255+2nd+Avenue+South,+Minneapolis,+MN&format=json&limit=1",
+        "label": "OSM Nominatim geocode: Wells Fargo Operations Center, 255 2nd Avenue South",
+        "publisher": "OpenStreetMap",
+        "retrievedAt": "2026-11-02",
+        "kind": "osm"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A 549,500 sq ft building now listed by Colliers as a data center redevelopment opportunity. It has 6 MVA existing, 26 MVA available via an Xcel Energy agreement within 14-16 months, and 14 MVA more via a DEDA within 12 months. Sale listing updated 2026-10-31. The current owner is unnamed in the listing; Sherman Associates is named as developer by the tracker. The CUP outcome was not found. The point is the OSM building footprint.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "sholes-wind-energy-center-wayne-ne",
     "name": "Sholes Wind Energy Center",
     "operator": "NextEra Energy Resources",
@@ -151185,6 +153541,9 @@
       "state": "UT",
       "precision": "approximate"
     },
+    "capacityMw": {
+      "planned": 100
+    },
     "statusHistory": [],
     "sources": [
       {
@@ -151207,14 +153566,30 @@
         "publisher": "Santaquin City Community Development and Renewal Agency",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://moabsunnews.com/wp-content/uploads/2026/05/gcpc-data-centers-staff-report-2026-05-26.pdf",
+        "label": "Grand County Planning Commission Staff Report: Data Centers in Grand County (May 26, 2026)",
+        "publisher": "Grand County Planning & Zoning (hosted by Moab Sun News)",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Planned Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. The one Santaquin CDRA/RDA document directly confirmed, a May 2023 Notice of Intent to Transfer Property, covers a 0.69-acre parcel for the unrelated \"West Fields\" Community Reinvestment Project Area, not the 20-100MW Ridge Farms Road site. A separately-named 2022 \"Summit Ridge Commercial Development\" Master Development Agreement is a car-dealership site-plan agreement (per search-engine summaries, not a direct read of the agreement itself) — a name collision, not this project's record. The city's full council/RDA meeting-minutes archive was not searched exhaustively, so this is an evidenced absence in the documents checked, not an exhaustive clearance. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "energy": {
+      "source": "on_site_gas",
       "notes": "Off-grid by design. KSL reports it 'will not be connected to the city's electric grid, it will use a series of smaller engines to power itself using natural gas'. Gardner's planned-projects table gives 100 MW nameplate with a 2027 operational year and lists the status as under construction."
     },
     "water": {
+      "coolingType": "closed_loop",
       "notes": "KSL reports the developers told the city to expect 'low water and sewer usage', attributed to Mayor Olson. A developer claim relayed by the city, not a measured or permitted figure."
     },
     "community": {
@@ -155565,6 +157940,90 @@
     "aiClassification": "likely"
   },
   {
+    "id": "target-brooklyn-park-mn",
+    "name": "Target Brooklyn Park Data Center",
+    "operator": "Target Corporation",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.1004807,
+      "lon": -93.3443585,
+      "city": "Brooklyn Park",
+      "county": "Hennepin",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "target-elk-river-mn",
+    "name": "Target Elk River Data Center",
+    "operator": "Target Corporation",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.3038538,
+      "lon": -93.5671825,
+      "city": "Elk River",
+      "county": "Sherburne",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
     "id": "taurus-digital-realty-project-bunkhouse-stilesboro-ga",
     "name": "Project Bunkhouse (Digital Realty Data Center Campus)",
     "operator": "Digital Realty",
@@ -159386,10 +161845,22 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-10-13",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.areadevelopment.com/newsItems/8-15-2024/tierpoint-st-louis-missouri.shtml",
+        "label": "TierPoint Relocates-Expands St. Louis, Missouri, Operations",
+        "publisher": "Area Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-13",
+    "lastUpdated": "2026-11-02",
     "notes": "135,840+ sq ft total with 22,640 sq ft raised floor (phase 1) and 45,000 sq ft expansion space. Four 2.0 MW generators (8.0 MW generator capacity; no facility IT capacity stated). Marketed for high-density AI/GPU colocation. The operator page reads both 'NOW AVAILABLE' and 'currently under development', so it is treated as operational with ongoing phased build-out. One of three TierPoint St. Louis sites; TierPoint St. Louis - Olive and TierPoint St. Louis - Millpark are tracked separately as of October 2026.",
+    "investmentUsd": 150000000,
+    "jobs": {
+      "permanent": 9,
+      "sourceIndex": 2
+    },
     "facilityType": "data_center"
   },
   {
@@ -159775,6 +162246,48 @@
     "lastUpdated": "2026-09-14",
     "notes": "Coordinates are a township-level geocode, not the parcel. Gander Newsroom reports a temporary township moratorium on data center development was subsequently adopted; no capacity, investment or end user has been published.",
     "landAcres": 150,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "toro-bloomington-mn",
+    "name": "Toro Company Data Center (Bloomington)",
+    "operator": "The Toro Company",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.8322405,
+      "lon": -93.3204872,
+      "city": "Bloomington",
+      "county": "Hennepin",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -163099,10 +165612,158 @@
         "publisher": "Redevelopment Agency of Salt Lake City",
         "retrievedAt": "2026-09-08",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. The Redevelopment Agency of Salt Lake City's FY2016 annual report and Salt Lake City Council District 2's public summary of its CRA project areas name no beneficiary matching Unisys, and no general web search surfaced an incentive award. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing. The facility's exact site is not independently confirmed (candidate address: 480 N 2200 W, Salt Lake City — corroborated by two business directories but not tied to the data centre specifically by any source).",
+    "facilityType": "data_center"
+  },
+  {
+    "id": "unitedhealth-chaska-mn",
+    "name": "UHG Chaska Data Center",
+    "operator": "UnitedHealth Group",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.7894072,
+      "lon": -93.6021791,
+      "city": "Chaska",
+      "county": "Carver",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (New) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://cloudhq.com/campus/msp-campus/",
+        "label": "CloudHQ MSP Campus (notes adjacent Stream and UnitedHealth data centers)",
+        "publisher": "CloudHQ",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A new-build enterprise data center certified for Minnesota's data center sales tax exemption. CloudHQ's Chaska campus page says it is adjacent to a UnitedHealth data center. The location is the Chaska city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (New)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
+  },
+  {
+    "id": "unitedhealth-elk-river-mn",
+    "name": "UHG Elk River Data Center",
+    "operator": "UnitedHealth Group (building reportedly sold to a CloudHQ affiliate in 2023)",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.3038538,
+      "lon": -93.5671825,
+      "city": "Elk River",
+      "county": "Sherburne",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://structureresearch.net/?p=82160",
+        "label": "CloudHQ affiliate reportedly buys UnitedHealth 189k sqft data centre in Elk River",
+        "publisher": "Structure Research",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A roughly 189,000 sq ft data center on a 20-acre plot, reported in January 2023 as sold by UnitedHealth Group to a CloudHQ affiliate. Current operator and leaseback status are unverified. The location is the Elk River city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "landAcres": 20,
+    "facilityType": "data_center"
+  },
+  {
+    "id": "unitedhealth-plymouth-mn",
+    "name": "UHG Plymouth Data Center",
+    "operator": "UnitedHealthCare Services, Inc.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.0065149,
+      "lon": -93.46651,
+      "city": "Plymouth",
+      "county": "Hennepin",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -163439,6 +166100,55 @@
       "technology": "wind",
       "notes": "Sited on the north and east side of Neligh in Antelope County. Ownership differs from the already-tracked Thunderhead Wind Energy Center, which is also partly in Antelope County — the two are separate projects."
     }
+  },
+  {
+    "id": "us-bank-st-paul-mn",
+    "name": "U.S. Bank St. Paul Data Center",
+    "operator": "U.S. Bank N.A.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.9497487,
+      "lon": -93.0931028,
+      "city": "Saint Paul",
+      "county": "Ramsey",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      },
+      {
+        "url": "https://morethanjustparks.com/data-center-tracker/state/minnesota",
+        "label": "Minnesota data center tracker (lists US Bank Energy Park Data Center, Ramsey County, operating)",
+        "publisher": "More Than Just Parks",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. A public tracker lists a US Bank Energy Park data center in Ramsey County. The location is the St. Paul city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
   },
   {
     "id": "us-signal-co01-englewood-co",
@@ -164323,6 +167033,51 @@
     "facilityType": "data_center"
   },
   {
+    "id": "valar-atomics-nvidia-orangeville-ai-data-center-ut",
+    "name": "Valar Atomics / Nvidia Nuclear-Powered AI Data Center (Orangeville)",
+    "operator": "Valar Atomics",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.2272,
+      "lon": -111.0535,
+      "city": "Orangeville",
+      "county": "Emery",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 30
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-07-01",
+        "note": "Valar and Nvidia said they are considering a 30 MW data center powered by Valar's reactor",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.deseret.com/u-s-world/2026/07/01/valar-atomics-nvidia-milestone/",
+        "label": "Valar Atomics, Nvidia milestone",
+        "publisher": "Deseret News",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Early-stage: the companies are 'considering' the project, and the reactor needs an NRC license before it can sell commercial power. This would be a data center next to the tracked Ward 250 test reactor (valar-atomics-ward-250-orangeville-ut), which is a separate power_generation record. The pin is the Orangeville town point.",
+    "energy": {
+      "source": "nuclear",
+      "notes": "Behind-the-meter power from a Valar Ward-series helium-cooled reactor."
+    },
+    "water": {
+      "notes": "The companies say it would use almost no water: helium-cooled reactor plus Nvidia direct liquid cooling with 113°F water and no chillers."
+    },
+    "facilityType": "data_center"
+  },
+  {
     "id": "valar-atomics-project-beehive-price-ut",
     "name": "Project Beehive",
     "operator": "Valar Atomics",
@@ -164804,9 +167559,16 @@
         "publisher": "Data Center Knowledge",
         "retrievedAt": "2026-09-08",
         "kind": "press"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-08): no site-level subsidy found. St. George's FY2025-26 Redevelopment Agency budget itemizes every currently active project area by name (Central Business District CDA, Dixie Center EDA, Ft. Pierce CDA #1, Ft. Pierce CDA #2, Millcreek CDA, and Tech Ridge CDA — formerly the St. George Airport Community Development Project Area), none covering the Tonaquint corridor at 1108 West 1600 South; the facility instead sits within Tonaquint Business Park, a privately developed park built by the site's own developer to attract tech companies, not a public redevelopment district. No city or state filing names Valor C3. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 sales-tax exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -167319,9 +170081,16 @@
         "publisher": "Utah Public Notice Website",
         "retrievedAt": "2026-09-05",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://le.utah.gov/interim/2026/pdf/00003188.pdf",
+        "label": "Kem C. Gardner Policy Institute, Data Center Growth in Utah (April 2026), Operating Data Centers table",
+        "publisher": "Utah State Legislature",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-08-15",
+    "lastUpdated": "2026-11-02",
     "notes": "Subsidies checked at the municipal tier (2026-09-05): no site-level subsidy found. Voonami's 510 East Technology Way site sits inside the Canyon Park Technology Center, associated with Orem's Project 85-02 — but the same 2019 RDA minutes establishing only Project 90-08 remained active confirm 85-02 had already stopped collecting tax increment years before any current-year subsidy could apply, and current FY2026-27 RDA activity is entirely at the unrelated University Place CDA. No source names Voonami in any Orem RDA record. Utah's EDTIF programme excludes data centres and the UCA 59-12-104 exemption is self-executing.",
     "facilityType": "data_center"
   },
@@ -167680,6 +170449,48 @@
       "permanent": 30,
       "sourceIndex": 0
     },
+    "facilityType": "data_center"
+  },
+  {
+    "id": "walmart-jane-data-center-mcdonald-county-mo",
+    "name": "Walmart Data Center (Jane, \"Area 71\")",
+    "operator": "Walmart",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 36.500767,
+      "lon": -94.264648,
+      "city": "Jane",
+      "county": "McDonald",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2004",
+        "note": "Completed in 2004 according to the 2006 Joplin Globe report",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.joplinglobe.com/news/local_news/wal-marts-data-center-remains-mystery/article_5f088740-04ea-531d-b526-a2cc9862c8aa.html",
+        "label": "Wal-Mart's data center remains mystery (2006)",
+        "publisher": "The Joplin Globe",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Area_71",
+        "label": "Area 71 (Walmart data center)",
+        "publisher": "Wikipedia",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A 125,000 sq ft enterprise data center behind a Walmart Supercenter near US-71 and the Arkansas line. The main source is from 2006, so current operation is not independently re-verified.",
     "facilityType": "data_center"
   },
   {
@@ -168237,6 +171048,48 @@
       ],
       "notes": "Behind-the-meter gas plant co-permitted alongside the adjacent Nine Mile Data Center and reWater LLC water-recycling facility."
     }
+  },
+  {
+    "id": "wells-fargo-shoreview-mn",
+    "name": "Wells Fargo Shoreview Data Center",
+    "operator": "Wells Fargo Bank N.A.",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 45.0722056,
+      "lon": -93.1282878,
+      "city": "Shoreview",
+      "county": "Ramsey",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-07-15",
+        "note": "Listed Certified (Refurbishment) on DEED data center sales tax refund list",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://mn.gov/deed/assets/data-center-project-list_tcm1045-531119.pdf",
+        "label": "Data Center Sales Tax Refund Projects (list dated 7/15/2026)",
+        "publisher": "Minnesota Department of Employment and Economic Development",
+        "retrievedAt": "2026-11-02",
+        "kind": "subsidy"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A refurbished enterprise data center certified for Minnesota's data center sales tax exemption. The location is the city centroid.",
+    "subsidies": [
+      {
+        "program": "Minnesota data center sales tax exemption (Minn. Stat. 297A.68 subd. 42) — Certified (Refurbishment)",
+        "jurisdiction": "MN",
+        "sourceIndex": 0
+      }
+    ],
+    "facilityType": "data_center"
   },
   {
     "id": "wells-interconnection-milwaukee-wi",
@@ -169040,19 +171893,92 @@
         "publisher": "KXCV-KRNW",
         "retrievedAt": "2026-08-24",
         "kind": "press"
+      },
+      {
+        "url": "https://whitecloudacres.com/",
+        "label": "White Cloud Acres project site",
+        "publisher": "White Cloud Acres, LLC",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.kq2.com/?p=159430",
+        "label": "Nodaway County residents get first look at White Cloud Acres project",
+        "publisher": "KQ2/KQTV",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-24",
+    "lastUpdated": "2026-11-02",
     "notes": "Scale Microgrids (acquired by EQT Transition Infrastructure, Jan 2025) proposal remains in the planning/discussion phase as of 2026-04-29 reporting; Nodaway County enacted a temporary moratorium on new data center proposals dated 2026-07-21. Organized opposition group 'Nodaway Says No' has drawn 7,000+ petition signatures. Nodaway County has no zoning ordinance, limiting regulatory oversight.",
     "energy": {
       "source": "on_site_gas",
+      "onSiteGenerationMw": 600,
       "notes": "Developer plans co-located on-site natural-gas generation; local reporting also associates the project with Evergy's separate ~440 MW Mullin Creek plant nearby, though Evergy describes Mullin Creek as general grid capacity, not a dedicated PPA."
     },
     "water": {
+      "coolingType": "closed_loop",
+      "reportedMgd": 0.1,
       "notes": "~200,000 gallons/day expected, per county reporting; cooling type not specified."
     },
     "investmentUsd": 4000000000,
+    "community": {
+      "status": "contested",
+      "notes": "Residents raised water, noise, roads, farmland and rate concerns at the county open house.",
+      "sourceIndex": 3
+    },
     "facilityType": "data_center"
+  },
+  {
+    "id": "white-cloud-acres-gas-generation-nodaway-mo",
+    "name": "White Cloud Acres Natural Gas Generation Facility",
+    "operator": "White Cloud Acres, LLC (Scale Microgrids)",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.23,
+      "lon": -94.87,
+      "county": "Nodaway",
+      "state": "MO",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 600
+    },
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-06-03",
+        "note": "Developer timeline: permitting Q2 2027, construction Q4 2027, operations Q4 2028",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.kq2.com/?p=159430",
+        "label": "Nodaway County residents get first look at White Cloud Acres project",
+        "publisher": "KQ2/KQTV",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://whitecloudacres.com/",
+        "label": "White Cloud Acres project site",
+        "publisher": "White Cloud Acres, LLC",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "natural_gas",
+      "offtaker": "White Cloud Acres",
+      "poweredFacilityIds": [
+        "white-cloud-acres-barnard-mo"
+      ],
+      "notes": "Co-located gas plant along US-71 about 8 miles south of Maryville, providing dedicated power to the White Cloud Acres data center."
+    }
   },
   {
     "id": "white-county-pleasant-hill-road-crypto-mine-tn",
@@ -171078,6 +174004,96 @@
     "generation": {
       "technology": "wind"
     }
+  },
+  {
+    "id": "xcel-form-energy-pine-island-iron-air-battery-mn",
+    "name": "Xcel Energy / Form Energy Pine Island Iron-Air Battery (300 MW / 30 GWh)",
+    "operator": "Xcel Energy",
+    "status": "proposed",
+    "confidence": "reported",
+    "location": {
+      "lat": 44.2033956,
+      "lon": -92.6461155,
+      "city": "Pine Island",
+      "county": "Goodhue",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "planned": 300
+    },
+    "announcedDate": "2026-02-24",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2026-02-24",
+        "note": "Announced as part of the Xcel–Google clean energy package for the Pine Island data center; the ESA requires MPUC approval",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.canarymedia.com/articles/batteries/gigantic-form-energy-battery-google-minnesota",
+        "label": "Gigantic Form Energy battery to power Google data center in Minnesota",
+        "publisher": "Canary Media",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      },
+      {
+        "url": "https://newsroom.xcelenergy.com/news/xcel-energy-to-power-new-google-data-center-in-minnesota",
+        "label": "Xcel Energy to power new Google data center in Minnesota",
+        "publisher": "Xcel Energy",
+        "retrievedAt": "2026-11-02",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "A 300 MW, roughly 30 GWh, 100-hour iron-air battery that Xcel will install, sited in Pine Island and funded by Google. Form expects to deliver batteries starting in 2028, and Xcel expects the package to come online in phases from 2028 to 2031. The location is the Pine Island centroid; no exact site was published.",
+    "energy": {
+      "source": "other",
+      "notes": "Long-duration iron-air battery storage"
+    },
+    "facilityType": "power_generation",
+    "generation": {
+      "technology": "battery",
+      "offtaker": "Google",
+      "poweredFacilityIds": [
+        "google-skyway-pine-island-mn"
+      ],
+      "notes": "Part of a 1,900 MW package (1,400 MW wind, 200 MW solar, 300 MW storage) funded through a Clean Energy Accelerator Charge"
+    }
+  },
+  {
+    "id": "xmission-salt-lake-city-ut",
+    "name": "XMission Data Center",
+    "operator": "XMission",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 40.7608,
+      "lon": -111.891,
+      "city": "Salt Lake City",
+      "county": "Salt Lake",
+      "state": "UT",
+      "precision": "approximate"
+    },
+    "statusHistory": [],
+    "sources": [
+      {
+        "url": "https://xmission.com/colocation",
+        "label": "XMission Colocation",
+        "publisher": "XMission",
+        "retrievedAt": "2026-11-02",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-11-02",
+    "notes": "Downtown Salt Lake City carrier-neutral colocation facility in the same building complex as XMission's offices. A+B redundant power with UPS, generator and ATS; ENERGY STAR score of 100 since 2017; annual SOC 2 audit. The pin is the downtown SLC point.",
+    "energy": {
+      "source": "grid",
+      "notes": "XMission says it buys 100% green-power RECs for the facility."
+    },
+    "facilityType": "data_center"
   },
   {
     "id": "yeehaw-junction-us-development-osceola-fl",
