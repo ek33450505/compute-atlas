@@ -5,6 +5,18 @@ All notable changes to Compute Atlas are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.35.0](https://github.com/ek33450505/compute-atlas/compare/v1.34.1...v1.35.0) (2026-11-02)
+
+
+### Features
+
+* offtaker label guard, bash 3.2-safe BATS asserts, crypto draw rule and capacity bench ([#503](https://github.com/ek33450505/compute-atlas/issues/503)) ([e9f3495](https://github.com/ek33450505/compute-atlas/commit/e9f3495a6bdeaee067e385c7678a3873d9b2ad4a))
+
+
+### Bug Fixes
+
+* methodology precision/statusHistory wording; drop baxtel FP ([#507](https://github.com/ek33450505/compute-atlas/issues/507)) ([e5238f4](https://github.com/ek33450505/compute-atlas/commit/e5238f4de2c16615f1aa9b73891705c4856c3ded))
+
 ## [1.34.1](https://github.com/ek33450505/compute-atlas/compare/v1.34.0...v1.34.1) (2026-10-04)
 
 
