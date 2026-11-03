@@ -366,6 +366,15 @@
     }
   },
   "3m-maplewood-mn": {
+    "nearestWater": {
+      "name": "Keller Lake",
+      "kind": "lake",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.8
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -585,6 +594,15 @@
     }
   },
   "aaim-mexico-missouri-data-center-mo": {
+    "nearestWater": {
+      "name": "South Fork Salt River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 12.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -2230,6 +2248,15 @@
     }
   },
   "altigen-jurassic-spark-wellington-carbon-county-ut": {
+    "nearestWater": {
+      "name": "Price River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 13.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -2525,6 +2552,15 @@
     }
   },
   "ameren-castle-bluff-energy-center-st-louis-county-mo": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -2550,6 +2586,15 @@
     }
   },
   "ameren-stoddard-county-solar-mo": {
+    "nearestWater": {
+      "name": "Cane Creek",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.8
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -2564,6 +2609,15 @@
     }
   },
   "ameren-tom-sawyer-solar-audrain-county-mo": {
+    "nearestWater": {
+      "name": "Kohl Irrigation Lake North",
+      "kind": "lake",
+      "distanceMi": 1.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -4837,6 +4891,15 @@
     }
   },
   "aws-danville-campus-montgomery-county-mo": {
+    "nearestWater": {
+      "name": "Rumbo Branch",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -5654,6 +5717,15 @@
     }
   },
   "bcbsm-eagan-mn": {
+    "nearestWater": {
+      "name": "Fish Lake",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6036,6 +6108,15 @@
     }
   },
   "best-buy-bloomington-mn": {
+    "nearestWater": {
+      "name": "Ninemile Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -6046,6 +6127,15 @@
     }
   },
   "bf-timpanogos-tech-center-provo-ut": {
+    "nearestWater": {
+      "name": "Mill Race",
+      "kind": "river",
+      "distanceMi": 0.4
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -6922,6 +7012,15 @@
     }
   },
   "blue-castle-fulcrum-point-green-river-smr-ut": {
+    "nearestWater": {
+      "name": "Green River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -7000,6 +7099,15 @@
     }
   },
   "bluebird-underground-data-center-springfield-mo": {
+    "nearestWater": {
+      "name": "Jordan Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.2
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -8487,6 +8595,15 @@
     }
   },
   "centersquare-st-louis-sl1-mo": {
+    "nearestWater": {
+      "name": "Cowmire Creek",
+      "kind": "river",
+      "distanceMi": 2.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.2
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -8652,6 +8769,15 @@
     }
   },
   "ch-robinson-oronoco-mn": {
+    "nearestWater": {
+      "name": "Shady Lake",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -11540,6 +11666,15 @@
     }
   },
   "connect-data-centers-berkeley-hanley-road-mo": {
+    "nearestWater": {
+      "name": "Maline Creek",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -18810,6 +18945,15 @@
     }
   },
   "ecolab-eagan-mn": {
+    "nearestWater": {
+      "name": "Fish Lake",
+      "kind": "lake",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -21027,6 +21171,15 @@
     }
   },
   "epic-hosting-rochester-mn": {
+    "nearestWater": {
+      "name": "South Fork Zumbro River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.1
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -21893,12 +22046,30 @@
     }
   },
   "evergy-buchanan-bluffs-energy-center-unit-2-mo": {
+    "nearestWater": {
+      "name": "Pigeon Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
     }
   },
   "evergy-foxtrot-solar-jasper-county-mo": {
+    "nearestWater": {
+      "name": "Pond Creek",
+      "kind": "river",
+      "distanceMi": 0.6
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -22296,6 +22467,15 @@
     }
   },
   "faraday-solar-utah-county-ut": {
+    "nearestWater": {
+      "name": "Utah Lake",
+      "kind": "lake",
+      "distanceMi": 6.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -22306,6 +22486,15 @@
     }
   },
   "fastenal-winona-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -22381,6 +22570,15 @@
     }
   },
   "fervo-cape-station-beaver-county-ut": {
+    "nearestWater": {
+      "name": "Beaver River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -24429,6 +24627,15 @@
     }
   },
   "general-mills-golden-valley-mn": {
+    "nearestWater": {
+      "name": "Bassett Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -24613,6 +24820,15 @@
     }
   },
   "geronimo-spring-river-solar-storage-jasper-county-mo": {
+    "nearestWater": {
+      "name": "Spring River",
+      "kind": "river",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 10.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -26840,6 +27056,15 @@
     }
   },
   "h5-data-centers-st-louis-globe-building-mo": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -27176,6 +27401,15 @@
     }
   },
   "healthpartners-mendota-heights-mn": {
+    "nearestWater": {
+      "name": "Rogers Lake",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29105,6 +29339,15 @@
     }
   },
   "irongate-msp2-woodbury-mn": {
+    "nearestWater": {
+      "name": "Wilmes Lake",
+      "kind": "lake",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -29115,6 +29358,15 @@
     }
   },
   "irongate-msp3-eagan-unisys-park-mn": {
+    "nearestWater": {
+      "name": "O'Leary Lake",
+      "kind": "lake",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.2
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -29140,6 +29392,15 @@
     }
   },
   "irongate-woodbury-msp1-mn": {
+    "nearestWater": {
+      "name": "Battle Creek Lake",
+      "kind": "lake",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -30220,6 +30481,15 @@
     }
   },
   "land-o-lakes-arden-hills-mn": {
+    "nearestWater": {
+      "name": "Round Lake",
+      "kind": "lake",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -32716,6 +32986,15 @@
     }
   },
   "mastercard-ofallon-technology-hub-data-center-mo": {
+    "nearestWater": {
+      "name": "Peruque Creek",
+      "kind": "river",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -32939,6 +33218,15 @@
     }
   },
   "medtronic-woodbury-mn": {
+    "nearestWater": {
+      "name": "Wilmes Lake",
+      "kind": "lake",
+      "distanceMi": 1.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -35068,6 +35356,15 @@
     }
   },
   "mienergy-harmony-data-center-site-mn": {
+    "nearestWater": {
+      "name": "South Fork Root River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 28.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -37347,6 +37644,15 @@
     }
   },
   "nodal-power-mara-davis-landfill-layton-ut": {
+    "nearestWater": {
+      "name": "Adams Reservoir",
+      "kind": "lake",
+      "distanceMi": 2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.6
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -37361,6 +37667,15 @@
     }
   },
   "nodiac-albertville-mn": {
+    "nearestWater": {
+      "name": "School Lake",
+      "kind": "lake",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -37561,6 +37876,15 @@
     }
   },
   "northstar-digital-shakopee-mn": {
+    "nearestWater": {
+      "name": "Minnesota River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -37886,6 +38210,15 @@
     }
   },
   "nsi6-benton-county-old-highway-65-mo": {
+    "nearestWater": {
+      "name": "Osage River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 50.5
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -38506,6 +38839,15 @@
     }
   },
   "nydig-duchesne-data-center-power-station-upalco-ut": {
+    "nearestWater": {
+      "name": "Big Sand Wash Reservoir",
+      "kind": "lake",
+      "distanceMi": 1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.5
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -38990,6 +39332,15 @@
     }
   },
   "oppidan-connect-north-mankato-mn": {
+    "nearestWater": {
+      "name": "Minnesota River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 1.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -39794,6 +40145,15 @@
     }
   },
   "patmos-independence-little-blue-parkway-mo": {
+    "nearestWater": {
+      "name": "Little Blue River",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 7.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -42416,6 +42776,15 @@
     }
   },
   "prudential-plymouth-mn": {
+    "nearestWater": {
+      "name": "Parkers Lake",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -42498,6 +42867,15 @@
     }
   },
   "qlevr-inver-grove-heights-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.9
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -43527,6 +43905,15 @@
     }
   },
   "rackspace-kansas-city-mci1-airworld-mo": {
+    "nearestWater": {
+      "name": "Brush Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6.4
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -44209,6 +44596,15 @@
     }
   },
   "revitalization-unlimited-934-central-kansas-city-mo": {
+    "nearestWater": {
+      "name": "Missouri River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -46724,6 +47120,15 @@
     }
   },
   "sherman-255-second-ave-s-minneapolis-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -50424,12 +50829,30 @@
     }
   },
   "target-brooklyn-park-mn": {
+    "nearestWater": {
+      "name": "Shingle Creek",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.1
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
     }
   },
   "target-elk-river-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -51808,6 +52231,15 @@
     }
   },
   "toro-bloomington-mn": {
+    "nearestWater": {
+      "name": "Ninemile Creek",
+      "kind": "river",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.6
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
@@ -52821,12 +53253,30 @@
     }
   },
   "unitedhealth-chaska-mn": {
+    "nearestWater": {
+      "name": "Firemens Clayhole",
+      "kind": "lake",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 1.1
+    },
     "waterStress": {
       "cat": 1,
       "label": "Low - Medium (10-20%)"
     }
   },
   "unitedhealth-elk-river-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 4,
       "label": "Extremely High (>80%)"
@@ -52837,6 +53287,15 @@
     }
   },
   "unitedhealth-plymouth-mn": {
+    "nearestWater": {
+      "name": "Parkers Lake",
+      "kind": "lake",
+      "distanceMi": 0.7
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -52980,6 +53439,15 @@
     }
   },
   "us-bank-st-paul-mn": {
+    "nearestWater": {
+      "name": "Mississippi River",
+      "kind": "river",
+      "distanceMi": 0.5
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 5.3
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -53317,6 +53785,15 @@
     }
   },
   "valar-atomics-nvidia-orangeville-ai-data-center-ut": {
+    "nearestWater": {
+      "name": "Cottonwood Creek",
+      "kind": "river",
+      "distanceMi": 0.2
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.5
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -54488,6 +54965,15 @@
     }
   },
   "walmart-jane-data-center-mcdonald-county-mo": {
+    "nearestWater": {
+      "name": "Bear Creek",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 9.9
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -54688,6 +55174,15 @@
     }
   },
   "wells-fargo-shoreview-mn": {
+    "nearestWater": {
+      "name": "Snail Lake",
+      "kind": "lake",
+      "distanceMi": 0
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 2.7
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
@@ -54998,6 +55493,15 @@
     }
   },
   "white-cloud-acres-gas-generation-nodaway-mo": {
+    "nearestWater": {
+      "name": "Mullin Creek",
+      "kind": "river",
+      "distanceMi": 0.9
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.6
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -55640,6 +56144,15 @@
     }
   },
   "xcel-form-energy-pine-island-iron-air-battery-mn": {
+    "nearestWater": {
+      "name": "North Branch Middle Fork Zumbro River",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.7
+    },
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
@@ -55650,6 +56163,15 @@
     }
   },
   "xmission-salt-lake-city-ut": {
+    "nearestWater": {
+      "name": "City Creek",
+      "kind": "river",
+      "distanceMi": 1.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 4
+    },
     "waterStress": {
       "cat": 3,
       "label": "High (40-80%)"
