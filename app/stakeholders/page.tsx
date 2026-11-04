@@ -15,7 +15,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: "Stakeholders",
   description:
-    "Named people with a documented, source-cited stake in a specific tracked facility — founders, owners, investors, executives, board members, landowners, and public officials.",
+    "Named people and organizations with a documented, source-cited stake in a specific tracked facility — founders, owners, investors, lenders, executives, board members, landowners, and public officials.",
   alternates: { canonical: "/stakeholders" },
 };
 
@@ -30,6 +30,8 @@ export const metadata: Metadata = {
  */
 export default async function StakeholdersIndexPage() {
   const people = await getStakeholders();
+  const peopleCount = people.filter((p) => p.kind === "person").length;
+  const organizationCount = people.length - peopleCount;
   const stakeholderStateCodes = new Set(people.flatMap((p) => p.states));
   const totalFacilityLinks = people.reduce((sum, p) => sum + p.facilityCount, 0);
   const statesTile = statesStat(stakeholderStateCodes);
@@ -53,16 +55,16 @@ export default async function StakeholdersIndexPage() {
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Stakeholders" }]} />
 
       <PageMasthead
-        eyebrow="People"
+        eyebrow="People and organizations"
         title="Stakeholders"
-        dek="Named people with a documented stake in specific tracked facilities — founders, owners, investors, executives, board members, landowners, and public officials with an on-record role."
+        dek="Named people and organizations with a documented stake in specific tracked facilities — founders, owners, investors, lenders, executives, board members, landowners, and public officials with an on-record role."
       />
 
       <section className="max-w-2xl space-y-4">
         <p className="text-base leading-relaxed text-muted-foreground">
-          A person is listed here against a facility only where a cited
-          source ties them to that specific site &mdash; not merely to its
-          operator. Public officials are listed for a documented role in a
+          A person or organization is listed here against a facility only
+          where a cited source ties them to that specific site &mdash; not
+          merely to its operator. Public officials are listed for a documented role in a
           site&rsquo;s approval or funding; listing does not by itself imply
           a financial interest. This page grows as sourced entries land, so
           most tracked facilities carry no stakeholder record yet.
@@ -71,7 +73,8 @@ export default async function StakeholdersIndexPage() {
 
       <SurveyStatRow
         stats={[
-          { value: people.length.toLocaleString(), label: "People" },
+          { value: peopleCount.toLocaleString(), label: "People" },
+          { value: organizationCount.toLocaleString(), label: "Organizations" },
           { value: totalFacilityLinks.toLocaleString(), label: "Facility links" },
           {
             ...statesTile,

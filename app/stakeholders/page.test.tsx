@@ -37,6 +37,7 @@ function makePerson(overrides: Partial<StakeholderSummary> = {}): StakeholderSum
   return {
     name: "Test Person",
     slug: "test-person",
+    kind: "person",
     roles: ["founder"],
     facilityCount: 1,
     states: ["NY"],
@@ -107,10 +108,11 @@ describe("StakeholdersIndexPage — states tile DC wording", () => {
 });
 
 describe("StakeholdersIndexPage — survey stat row", () => {
-  it("renders People / Facility links / States tiles in order", async () => {
+  it("renders People / Organizations / Facility links / States tiles in order, counting by kind", async () => {
     mockGetStakeholders.mockResolvedValue([
       makePerson({ name: "Person A", slug: "person-a", facilityCount: 1, states: ["NY"] }),
       makePerson({ name: "Person B", slug: "person-b", facilityCount: 1, states: ["TX"] }),
+      makePerson({ name: "Fund C", slug: "fund-c", kind: "organization", facilityCount: 1, states: ["TX"] }),
     ]);
 
     const page = await StakeholdersIndexPage();
@@ -118,7 +120,8 @@ describe("StakeholdersIndexPage — survey stat row", () => {
 
     const tiles = [
       { label: "People", value: "2" },
-      { label: "Facility links", value: "2" },
+      { label: "Organizations", value: "1" },
+      { label: "Facility links", value: "3" },
       { label: "States", value: "2" },
     ];
     for (const { label, value } of tiles) {

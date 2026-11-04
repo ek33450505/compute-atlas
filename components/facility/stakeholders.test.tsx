@@ -106,6 +106,29 @@ describe("StakeholdersSection", () => {
     expect(link).toHaveAttribute("href", "https://example.com/founder-source");
   });
 
+  it("renders an organization lender under the financial-interest group with a Lender label", () => {
+    const facility = makeFacility({
+      stakeholders: [
+        {
+          name: "Example Credit Fund",
+          kind: "organization",
+          role: "lender",
+          note: "Provided the construction loan for this campus.",
+          sourceIndex: 0,
+          asOf: "2024-01-01",
+        },
+      ],
+    });
+    render(<StakeholdersSection facility={facility} />);
+
+    const financialHeading = screen.getByRole("heading", {
+      name: "Ownership and financial interest",
+    });
+    const financialGroup = financialHeading.closest("div") as HTMLElement;
+    expect(within(financialGroup).getByText("Lender")).toBeInTheDocument();
+    expect(within(financialGroup).getByText("Example Credit Fund")).toBeInTheDocument();
+  });
+
   it("renders the public-official group with its caption", () => {
     const facility = makeFacility({
       stakeholders: [

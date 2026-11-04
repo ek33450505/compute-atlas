@@ -10,6 +10,7 @@ import {
   aiClassificationEnum,
   confidenceEnum,
   waterCoolingTypeEnum,
+  stakeholderKind,
 } from "@/lib/schema";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
@@ -2597,6 +2598,8 @@ async function getStakeholderIndex(): Promise<StakeholderIndex> {
 export interface StakeholderSummary {
   name: string;
   slug: string;
+  /** "organization" if any entry under this name is an organization, else "person". */
+  kind: "person" | "organization";
   /** De-duplicated union of every role recorded for this person, across all their facilities. */
   roles: string[];
   facilityCount: number;
@@ -2613,21 +2616,29 @@ export interface StakeholderSummary {
  * "investor" at another.
  */
 export async function getStakeholders(): Promise<StakeholderSummary[]> {
-  const { byPerson } = await getStakeholderIndex();
+  return summarizeStakeholders(await getStakeholderIndex());
+}
+
+/** Pure half of `getStakeholders()`, exported so kind/role derivation is unit-testable on fixtures. */
+export function summarizeStakeholders({ byPerson }: StakeholderIndex): StakeholderSummary[] {
   const summaries: StakeholderSummary[] = [];
 
   for (const [name, facilities] of byPerson) {
     const roles = new Set<string>();
     const states = new Set<string>();
+    let kind: StakeholderSummary["kind"] = "person";
     for (const f of facilities) {
       states.add(f.location.state);
       for (const s of f.stakeholders ?? []) {
-        if (s.name === name) roles.add(s.role);
+        if (s.name !== name) continue;
+        roles.add(s.role);
+        if (stakeholderKind(s) === "organization") kind = "organization";
       }
     }
     summaries.push({
       name,
       slug: personSlug(name),
+      kind,
       roles: [...roles].sort(),
       facilityCount: facilities.length,
       states: [...states].sort(),

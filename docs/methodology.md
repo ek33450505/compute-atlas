@@ -270,16 +270,21 @@ A few key distinctions:
 
 ## Stakeholders
 
-An optional `stakeholders[]` array names people with a documented stake in a
-specific facility. Coverage is deliberately sparse — not because data is missing,
+An optional `stakeholders[]` array names people and organizations with a
+documented stake in a specific facility. An entry's `kind` is `person` or
+`organization`; an entry with no `kind` is a person. Coverage is deliberately sparse — not because data is missing,
 but because the field follows a strict site-level standard that excludes most
 candidates.
 
-**The site-level standard:** A source must name the person in connection with
-THIS facility, not merely its operator. "Zuckerberg runs Meta and Meta owns this
-site" does not qualify. The person must have a stake documented through a
-verifiable public source tied directly to the facility. This is why a record with
-20 executives named in operator-level filings may carry zero stakeholders.
+**The site-level standard:** A source must name the person or
+organization in connection with THIS facility, not merely its operator.
+"Zuckerberg runs Meta and Meta owns this site" does not qualify. The stake must
+be documented through a verifiable public source tied directly to the facility.
+This is why a record with 20 executives named in operator-level filings may
+carry zero stakeholders. The same standard applies to organizations: an
+infrastructure fund holding joint-venture equity in one campus qualifies, while
+an owner of the whole operator does not, because that is an operator-level
+relationship rather than a site-level one.
 
 **Why `sourceIndex` and `asOf` are required:** Both are mandatory, unlike the
 optional `sourceIndex` on `jobs` and `community`. A name without a citation is
@@ -289,13 +294,18 @@ when that stake was documented.
 
 **Role categories:**
 
-- **Financial interests:** `founder`, `controlling_owner`, `investor`, `executive`,
-  `board_member`, `landowner`.
-- **Governmental role:** `public_official` — a person with a documented approval,
-  permit, or incentive role (e.g., a regulator issuing a permit, an official who
-  approved a subsidy). This is NOT a financial interest; the facility page renders
-  it as a separate group with a caption saying listing does not imply financial
-  involvement.
+- **Financial interests:** `founder`, `controlling_owner`, `investor`, `lender`,
+  `executive`, `board_member`, `landowner`. `lender` names a debt financier of
+  this specific project and is recorded for organizations only.
+- **Governmental role:** `public_official` — a person with a documented official
+  act on this site: approved, signed, issued, sponsored, or voted, in either
+  direction. The note states the direction of the act, never a motive. This is
+  NOT a financial interest; the facility page renders it as a separate group
+  with a caption saying listing does not imply financial involvement. It is
+  recorded for people only; an agency is not a public official.
+
+Party affiliation is never recorded. Campaign donations are not a stake in a
+facility and are not recorded.
 
 The field is excluded from both the automated discovery pipeline and public
 corrections. Stakeholders are added through maintainer research and human review

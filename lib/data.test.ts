@@ -44,6 +44,7 @@ import {
   personSlug,
   buildStakeholderIndex,
   getStakeholders,
+  summarizeStakeholders,
   getStakeholderBySlug,
   getFacilitiesByStakeholder,
   getPowerGenerationFacilities,
@@ -1165,6 +1166,33 @@ describe("buildStakeholderIndex", () => {
     const { byPerson } = buildStakeholderIndex([facility]);
 
     expect(byPerson.get("Jane Doe")).toHaveLength(1);
+  });
+});
+
+describe("getStakeholders kind derivation", () => {
+  it("derives kind per name: organization if any entry for that name is one, else person", async () => {
+    const facilities = [
+      makeFacility({
+        id: "site-a",
+        stakeholders: [
+          { name: "Jane Doe", role: "founder", sourceIndex: 0, asOf: "2026-01-01" },
+          { name: "Example Fund", kind: "organization", role: "investor", sourceIndex: 0, asOf: "2026-01-01" },
+        ],
+      }),
+      makeFacility({
+        id: "site-b",
+        stakeholders: [
+          { name: "Example Fund", role: "lender", kind: "organization", sourceIndex: 0, asOf: "2026-01-01" },
+          { name: "Jane Doe", kind: "person", role: "investor", sourceIndex: 0, asOf: "2026-01-01" },
+        ],
+      }),
+    ];
+    const byName = new Map(
+      summarizeStakeholders(buildStakeholderIndex(facilities)).map((s) => [s.name, s])
+    );
+    expect(byName.get("Example Fund")?.kind).toBe("organization");
+    expect(byName.get("Example Fund")?.roles).toEqual(["investor", "lender"]);
+    expect(byName.get("Jane Doe")?.kind).toBe("person");
   });
 });
 

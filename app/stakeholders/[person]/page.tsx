@@ -75,8 +75,8 @@ export default async function StakeholderPage({
             {roleList ? ` — ${roleList}` : ""}.
           </p>
           <p>
-            A person is listed against a facility only where a cited source
-            ties them to that specific site, not merely to its operator.
+            A person or organization is listed against a facility only where a
+            cited source ties them to that specific site, not merely to its operator.
           </p>
         </>
       }

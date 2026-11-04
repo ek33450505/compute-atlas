@@ -61,6 +61,7 @@ function makeSummary(overrides: Partial<StakeholderSummary> = {}): StakeholderSu
   return {
     name: "Jane Doe",
     slug: "jane-doe",
+    kind: "person",
     roles: ["founder"],
     facilityCount: 1,
     states: ["IL"],

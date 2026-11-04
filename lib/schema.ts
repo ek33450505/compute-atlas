@@ -350,6 +350,17 @@ export const subsidySchema = z.object({
  * objector, a private individual named in a local news comment — is never a
  * stakeholder, whatever their role would nominally be.
  *
+ * Organizations (`kind: "organization"`) follow the same site-level standard: a
+ * source must tie the organization to THIS site, e.g. an infrastructure fund
+ * holding JV equity in one campus. An owner of the whole operator is NOT a
+ * site-level stakeholder; that belongs to an operator-ownership layer, which
+ * arrives separately. `lender` is organizations only (a named debt financier of
+ * this project); `public_official` is people only (an agency is not an official).
+ *
+ * `public_official` covers any recorded official act on this site: approved,
+ * signed, issued, sponsored, or voted, in EITHER direction. The note states the
+ * direction of the act, never a motive.
+ *
  * `landowner` is the sharp edge: it is the one value that attaches a named
  * private individual to a parcel. Admissible only from a named public-record
  * filing that ties that person to THIS site (a deed or lease cited in a permit,
@@ -368,6 +379,7 @@ export const stakeholderRoleEnum = z.enum([
   "founder",
   "controlling_owner",
   "investor",
+  "lender",
   // corporate role
   "executive",
   "board_member",
@@ -377,20 +389,48 @@ export const stakeholderRoleEnum = z.enum([
   "public_official",
 ]);
 
-// A named person with a documented stake in THIS facility. Site-level only:
-// a source must tie the person to this site, never merely to its operator.
-// `sourceIndex` and `asOf` are required — unlike jobs/community, where they are
-// optional — because naming a real person without a citation is not acceptable.
-export const stakeholderSchema = z.object({
-  name: z.string().min(1),
-  role: stakeholderRoleEnum,
-  /** The entity the stake runs through, e.g. "xAI". Makes the chain explicit. */
-  via: z.string().min(1).optional(),
-  /** One neutral sentence stating the documented relationship. */
-  note: z.string().max(300).optional(),
-  sourceIndex: z.number().int().nonnegative(),
-  asOf: z.string().min(4),
-});
+export const stakeholderKindEnum = z.enum(["person", "organization"]);
+
+// A named person or organization with a documented stake in THIS facility.
+// Site-level only: a source must tie the stakeholder to this site, never merely
+// to its operator. `sourceIndex` and `asOf` are required — unlike
+// jobs/community, where they are optional — because naming a real person
+// without a citation is not acceptable.
+export const stakeholderSchema = z
+  .object({
+    name: z.string().min(1),
+    /** Absent means person. Optional, not defaulted, so legacy records parse unchanged. */
+    kind: stakeholderKindEnum.optional(),
+    role: stakeholderRoleEnum,
+    /** The entity the stake runs through, e.g. "xAI". Makes the chain explicit. */
+    via: z.string().min(1).optional(),
+    /** One neutral sentence stating the documented relationship. */
+    note: z.string().max(300).optional(),
+    sourceIndex: z.number().int().nonnegative(),
+    asOf: z.string().min(4),
+  })
+  .superRefine((s, ctx) => {
+    const kind = s.kind ?? "person";
+    if (s.role === "lender" && kind !== "organization") {
+      ctx.addIssue({
+        code: "custom",
+        message: 'role "lender" is for organizations only — set kind to "organization"',
+        path: ["role"],
+      });
+    }
+    if (s.role === "public_official" && kind === "organization") {
+      ctx.addIssue({
+        code: "custom",
+        message: 'role "public_official" is for people only — an agency is not a public official',
+        path: ["role"],
+      });
+    }
+  });
+
+/** A stakeholder's kind, with an absent `kind` read as a person. */
+export function stakeholderKind(s: { kind?: "person" | "organization" }): "person" | "organization" {
+  return s.kind ?? "person";
+}
 
 export const communityStatusEnum = z.enum([
   "supported",
