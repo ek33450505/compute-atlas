@@ -14,6 +14,7 @@ const {
   mockGetOperatorSummary,
   mockOperatorSlug,
   mockGetOperatorBySlug,
+  mockGetOperatorOwners,
 } = vi.hoisted(() => ({
   mockGetOperators: vi.fn(),
   mockGetFacilitiesByOperator: vi.fn(),
@@ -22,6 +23,13 @@ const {
     name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
   ),
   mockGetOperatorBySlug: vi.fn(),
+  mockGetOperatorOwners: vi.fn(),
+}));
+
+// Keep the real schema/labels; only the lookup is stubbed so tests can inject owners.
+vi.mock("@/lib/operator-ownership", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/operator-ownership")>()),
+  getOperatorOwners: mockGetOperatorOwners,
 }));
 
 vi.mock("@/lib/data", () => ({
@@ -101,7 +109,9 @@ beforeEach(() => {
   mockGetFacilitiesByOperator.mockReset();
   mockGetOperatorSummary.mockReset();
   mockGetOperatorBySlug.mockReset();
+  mockGetOperatorOwners.mockReset();
 
+  mockGetOperatorOwners.mockReturnValue([]);
   mockGetOperatorBySlug.mockResolvedValue("Acme Corp");
   mockGetFacilitiesByOperator.mockResolvedValue(FIXTURE_FACILITIES);
   mockGetOperatorSummary.mockResolvedValue(makeSummary());
@@ -225,5 +235,50 @@ describe("OperatorPage — DC-aware states stat and overview sentence", () => {
       screen.getByText(/across 2 states\. Operational capacity/)
     ).toBeInTheDocument();
     expect(screen.getByText("States")).toBeInTheDocument();
+  });
+});
+
+describe("OperatorPage ownership section", () => {
+  const owner = {
+    name: "Fixture Infra Partners",
+    kind: "organization" as const,
+    parent: "Fixture Group",
+    role: "investor" as const,
+    stakePct: 40,
+    note: "Holds a minority stake.",
+    source: {
+      url: "https://example.com/own",
+      label: "Ownership filing",
+      retrievedAt: "2026-11-04",
+      kind: "filing" as const,
+    },
+    asOf: "2026-11-04",
+  };
+
+  it("omits the section when the operator has no owners", async () => {
+    const page = await OperatorPage({ params: Promise.resolve({ operator: "acme-corp" }) });
+    render(page);
+
+    expect(screen.queryByRole("heading", { name: /Who owns/ })).not.toBeInTheDocument();
+  });
+
+  it("lists owners with a stakeholder-hub link, role, stake, note and source", async () => {
+    mockGetOperatorOwners.mockReturnValue([owner]);
+
+    const page = await OperatorPage({ params: Promise.resolve({ operator: "acme-corp" }) });
+    render(page);
+
+    const heading = screen.getByRole("heading", { name: "Who owns Acme Corp" });
+    const section = heading.closest("section") as HTMLElement;
+    expect(
+      within(section).getByRole("link", { name: "Fixture Infra Partners (part of Fixture Group)" })
+    ).toHaveAttribute("href", "/stakeholders/fixture-infra-partners");
+    expect(within(section).getByText(/Investor/)).toBeInTheDocument();
+    expect(within(section).getByText("40% stake")).toBeInTheDocument();
+    expect(within(section).getByText("Holds a minority stake.")).toBeInTheDocument();
+    expect(within(section).getByText("As of 2026-11-04")).toBeInTheDocument();
+    expect(
+      within(section).getByRole("link", { name: /Ownership filing \(opens in new tab\)/ })
+    ).toHaveAttribute("href", "https://example.com/own");
   });
 });

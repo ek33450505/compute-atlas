@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { StakeholdersSection, hasStakeholders } from "./stakeholders";
 import type { DataCenterFacility } from "@/lib/schema";
+import { parseOperatorOwnership } from "@/lib/operator-ownership";
 
 /** Minimal data-center Facility stub with required fields. */
 function makeFacility(
@@ -106,6 +107,29 @@ describe("StakeholdersSection", () => {
     expect(link).toHaveAttribute("href", "https://example.com/founder-source");
   });
 
+  it("renders an organization lender under the financial-interest group with a Lender label", () => {
+    const facility = makeFacility({
+      stakeholders: [
+        {
+          name: "Example Credit Fund",
+          kind: "organization",
+          role: "lender",
+          note: "Provided the construction loan for this campus.",
+          sourceIndex: 0,
+          asOf: "2024-01-01",
+        },
+      ],
+    });
+    render(<StakeholdersSection facility={facility} />);
+
+    const financialHeading = screen.getByRole("heading", {
+      name: "Ownership and financial interest",
+    });
+    const financialGroup = financialHeading.closest("div") as HTMLElement;
+    expect(within(financialGroup).getByText("Lender")).toBeInTheDocument();
+    expect(within(financialGroup).getByText("Example Credit Fund")).toBeInTheDocument();
+  });
+
   it("renders the public-official group with its caption", () => {
     const facility = makeFacility({
       stakeholders: [
@@ -176,5 +200,96 @@ describe("StakeholdersSection", () => {
     expect(
       within(officialsGroup).queryByText("Jane Doe")
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("operator-level ownership", () => {
+  const ownership = parseOperatorOwnership([
+    {
+      operator: "Test Corp",
+      owners: [
+        {
+          name: "Example Capital",
+          kind: "organization",
+          role: "controlling_owner",
+          since: "2021-08",
+          note: "Acquired the operating company.",
+          source: {
+            url: "https://example.com/ownership-filing",
+            label: "Acquisition filing",
+            publisher: "Example Wire",
+            retrievedAt: "2026-11-04",
+            kind: "filing",
+          },
+          asOf: "2026-11-04",
+        },
+        {
+          name: "Fixture Infra Partners",
+          kind: "organization",
+          parent: "Fixture Group",
+          role: "investor",
+          stakePct: 40,
+          source: {
+            url: "https://example.com/second",
+            label: "Second filing",
+            retrievedAt: "2026-11-04",
+            kind: "filing",
+          },
+          asOf: "2026-11-04",
+        },
+      ],
+    },
+  ]);
+
+  it("counts operator owners as having stakeholders, without making them site-level", () => {
+    expect(hasStakeholders(makeFacility(), ownership)).toBe(true);
+    expect(hasStakeholders(makeFacility({ operator: "Unowned Co" }), ownership)).toBe(false);
+  });
+
+  it("shows no gap prompt when only operator owners exist, and renders them under 'Through the operator'", () => {
+    render(<StakeholdersSection facility={makeFacility()} ownership={ownership} />);
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Ownership and financial interest" })).not.toBeInTheDocument();
+
+    const heading = screen.getByRole("heading", { name: "Through the operator" });
+    const group = heading.closest("div") as HTMLElement;
+    expect(
+      within(group).getByText(
+        "Test Corp is owned as shown below. These stakes are held in the operating company, not documented for this site specifically."
+      )
+    ).toBeInTheDocument();
+    expect(within(group).getByText("Controlling owner")).toBeInTheDocument();
+    expect(within(group).getByText("Example Capital")).toBeInTheDocument();
+    expect(within(group).getByText("since 2021-08")).toBeInTheDocument();
+    expect(within(group).getByText("Acquired the operating company.")).toBeInTheDocument();
+    expect(within(group).getAllByText("As of 2026-11-04")).toHaveLength(2);
+    expect(within(group).getByText("Fixture Infra Partners (part of Fixture Group)")).toBeInTheDocument();
+    expect(within(group).getByText("40% stake")).toBeInTheDocument();
+
+    const link = within(group).getByRole("link", {
+      name: /Acquisition filing, Example Wire \(opens in new tab\)/,
+    });
+    expect(link).toHaveAttribute("href", "https://example.com/ownership-filing");
+    expect(link).toHaveAttribute("rel", "noreferrer noopener");
+  });
+
+  it("renders the operator group after the site-level groups", () => {
+    const facility = makeFacility({
+      stakeholders: [{ name: "Jane Doe", role: "founder", sourceIndex: 0, asOf: "2024-01-01" }],
+    });
+    render(<StakeholdersSection facility={facility} ownership={ownership} />);
+
+    const headings = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
+    expect(headings).toEqual(["Ownership and financial interest", "Through the operator"]);
+  });
+
+  it("omits the operator group when the operator has no owners", () => {
+    const facility = makeFacility({
+      stakeholders: [{ name: "Jane Doe", role: "founder", sourceIndex: 0, asOf: "2024-01-01" }],
+    });
+    render(<StakeholdersSection facility={facility} ownership={[]} />);
+
+    expect(screen.queryByRole("heading", { name: "Through the operator" })).not.toBeInTheDocument();
   });
 });

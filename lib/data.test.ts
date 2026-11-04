@@ -3,6 +3,7 @@ import { gzipSync, gunzipSync } from "node:zlib";
 import facilitiesRaw from "@/data/facilities.json";
 import { OFFTAKER_LABEL_PATTERN } from "@/lib/schema";
 import { canonicalCountyName } from "@/lib/counties";
+import { parseOperatorOwnership } from "@/lib/operator-ownership";
 import { findUnlinkedPowerPlant, findUnpoweredDataCenter } from "@/lib/test-fixtures/unpowered-facility";
 import {
   getAllFacilities,
@@ -44,6 +45,7 @@ import {
   personSlug,
   buildStakeholderIndex,
   getStakeholders,
+  summarizeStakeholders,
   getStakeholderBySlug,
   getFacilitiesByStakeholder,
   getPowerGenerationFacilities,
@@ -1168,6 +1170,33 @@ describe("buildStakeholderIndex", () => {
   });
 });
 
+describe("summarizeStakeholders kind derivation", () => {
+  it("derives kind per name: organization if any entry for that name is one, else person", async () => {
+    const facilities = [
+      makeFacility({
+        id: "site-a",
+        stakeholders: [
+          { name: "Jane Doe", role: "founder", sourceIndex: 0, asOf: "2026-01-01" },
+          { name: "Example Fund", kind: "organization", role: "investor", sourceIndex: 0, asOf: "2026-01-01" },
+        ],
+      }),
+      makeFacility({
+        id: "site-b",
+        stakeholders: [
+          { name: "Example Fund", role: "lender", kind: "organization", sourceIndex: 0, asOf: "2026-01-01" },
+          { name: "Jane Doe", kind: "person", role: "investor", sourceIndex: 0, asOf: "2026-01-01" },
+        ],
+      }),
+    ];
+    const byName = new Map(
+      summarizeStakeholders(buildStakeholderIndex(facilities)).map((s) => [s.name, s])
+    );
+    expect(byName.get("Example Fund")?.kind).toBe("organization");
+    expect(byName.get("Example Fund")?.roles).toEqual(["investor", "lender"]);
+    expect(byName.get("Jane Doe")?.kind).toBe("person");
+  });
+});
+
 describe("getStakeholders", () => {
   // Invariant-based rather than an exact array/count: `stakeholders` is a
   // brand-new field that back-fills over time (see lib/schema.ts), so a
@@ -1177,13 +1206,130 @@ describe("getStakeholders", () => {
   // entries exist, in either case.
   it("every summary reflects at least one facility, with de-duplicated roles and states", async () => {
     for (const person of await getStakeholders()) {
-      expect(person.facilityCount).toBeGreaterThan(0);
+      // An operator-level owner may have no site-level facility.
+      expect(person.facilityCount + person.viaOperators.length).toBeGreaterThan(0);
       expect(person.roles.length).toBeGreaterThan(0);
-      expect(person.states.length).toBeGreaterThan(0);
+      // `states` is site-level: non-empty exactly when the person has site-level facilities.
+      expect(person.states.length > 0).toBe(person.facilityCount > 0);
       expect(person.slug).toBe(personSlug(person.name));
       expect(new Set(person.roles).size).toBe(person.roles.length);
       expect(new Set(person.states).size).toBe(person.states.length);
     }
+  });
+});
+
+describe("operator-level owners in the stakeholder index", () => {
+  const source = { url: "https://example.com/own", label: "Ownership filing", retrievedAt: "2026-11-04", kind: "filing" as const };
+  const ownership = parseOperatorOwnership([
+    {
+      operator: "Acme Corp",
+      owners: [
+        { name: "Example Capital", kind: "organization", role: "controlling_owner", source, asOf: "2026-11-04" },
+        { name: "Jane Doe", kind: "person", role: "investor", source, asOf: "2026-11-04" },
+      ],
+    },
+    {
+      operator: "Beta Co",
+      owners: [{ name: "Example Capital", kind: "organization", role: "investor", source, asOf: "2026-11-04" }],
+    },
+    // Operator with no tracked facility: still listed, count 0.
+    { operator: "Ghost Operator", owners: [{ name: "Example Capital", kind: "organization", role: "investor", source, asOf: "2026-11-04" }] },
+  ]);
+  const facilities = [
+    makeFacility({ id: "acme-1", operator: "Acme Corp", location: { lat: 1, lon: 1, city: "A", state: "TX", precision: "exact" } }),
+    makeFacility({ id: "acme-2", operator: "Acme Corp", location: { lat: 1, lon: 1, city: "B", state: "VA", precision: "exact" } }),
+    makeFacility({
+      id: "beta-1",
+      operator: "Beta Co",
+      stakeholders: [{ name: "Jane Doe", role: "founder", sourceIndex: 0, asOf: "2026-01-01" }],
+      location: { lat: 1, lon: 1, city: "C", state: "OH", precision: "exact" },
+    }),
+  ];
+  const summaries = new Map(
+    summarizeStakeholders(buildStakeholderIndex(facilities, ownership)).map((s) => [s.name, s])
+  );
+
+  it("lists an owner with no site-level stake, with facilityCount 0 and its operator reach", () => {
+    const fund = summaries.get("Example Capital");
+    expect(fund).toBeDefined();
+    expect(fund?.facilityCount).toBe(0);
+    expect(fund?.operatorFacilityCount).toBe(3);
+    expect(fund?.kind).toBe("organization");
+    expect(fund?.roles).toEqual(["controlling_owner", "investor"]);
+    // `states` is site-level: an owner with no site-level facility has none.
+    expect(fund?.states).toEqual([]);
+    expect(fund?.viaOperators.map((v) => [v.operator, v.slug, v.facilityCount])).toEqual([
+      ["Acme Corp", "acme-corp", 2],
+      ["Beta Co", "beta-co", 1],
+      ["Ghost Operator", "ghost-operator", 0],
+    ]);
+  });
+
+  it("a name with BOTH a site-level stake and an operator stake keeps the two apart", () => {
+    const jane = summaries.get("Jane Doe");
+    expect(jane?.facilityCount).toBe(1);
+    expect(jane?.states).toEqual(["OH"]);
+    expect(jane?.viaOperators.map((v) => v.operator)).toEqual(["Acme Corp"]);
+    expect(jane?.operatorFacilityCount).toBe(2);
+    expect(jane?.roles).toEqual(["founder", "investor"]);
+    expect(jane?.kind).toBe("person");
+  });
+
+  it("keeps owners out of byPerson but resolves their slug", () => {
+    const index = buildStakeholderIndex(facilities, ownership);
+    expect(index.byPerson.has("Example Capital")).toBe(false);
+    expect(index.slugToPerson.get("example-capital")).toBe("Example Capital");
+  });
+
+  it("on a slug collision, the site-level stakeholder keeps the slug", () => {
+    const colliding = parseOperatorOwnership([
+      {
+        operator: "Acme Corp",
+        owners: [{ name: "Jane  Doe", kind: "person", role: "investor", source, asOf: "2026-11-04" }],
+      },
+    ]);
+    const index = buildStakeholderIndex(facilities, colliding);
+    expect(personSlug("Jane  Doe")).toBe(personSlug("Jane Doe"));
+    expect(index.slugToPerson.get("jane-doe")).toBe("Jane Doe");
+  });
+
+  it("records a slug collision once at index build, and summarizing drops the loser (twice, still one log)", () => {
+    const colliding = parseOperatorOwnership([
+      {
+        operator: "Acme Corp",
+        owners: [{ name: "Jane  Doe", kind: "person", role: "investor", source, asOf: "2026-11-04" }],
+      },
+    ]);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const index = buildStakeholderIndex(facilities, colliding);
+      expect(index.collisions).toEqual([{ slug: "jane-doe", kept: "Jane Doe", dropped: "Jane  Doe" }]);
+
+      for (let i = 0; i < 2; i++) {
+        const summaries = summarizeStakeholders(index);
+        expect(summaries.filter((s) => s.slug === "jane-doe").map((s) => s.name)).toEqual(["Jane Doe"]);
+      }
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+      expect(errorSpy.mock.calls[0][0]).toMatch(/Jane  Doe.*Jane Doe.*jane-doe/);
+    } finally {
+      errorSpy.mockRestore();
+    }
+  });
+
+  it("does not memoize an injected ownership array against the facilities list", () => {
+    const withOwners = buildStakeholderIndex(facilities, ownership);
+    const without = buildStakeholderIndex(facilities, []);
+    expect(withOwners.viaByOwner.size).toBe(2);
+    expect(without.viaByOwner.size).toBe(0);
+  });
+});
+
+describe("the real stakeholder index", () => {
+  // The loud CI gate: a collision arriving via db:sync or an ownership row
+  // degrades gracefully at runtime (see buildStakeholderIndex) but must fail here.
+  it("has no slug collisions (real facilities + real operator-ownership)", async () => {
+    const index = buildStakeholderIndex(await getAllFacilities());
+    expect(index.collisions).toEqual([]);
   });
 });
 

@@ -37,8 +37,11 @@ function makePerson(overrides: Partial<StakeholderSummary> = {}): StakeholderSum
   return {
     name: "Test Person",
     slug: "test-person",
+    kind: "person",
     roles: ["founder"],
     facilityCount: 1,
+    operatorFacilityCount: 0,
+    viaOperators: [],
     states: ["NY"],
     ...overrides,
   };
@@ -107,10 +110,11 @@ describe("StakeholdersIndexPage — states tile DC wording", () => {
 });
 
 describe("StakeholdersIndexPage — survey stat row", () => {
-  it("renders People / Facility links / States tiles in order", async () => {
+  it("renders People / Organizations / Facility links / States tiles in order, counting by kind", async () => {
     mockGetStakeholders.mockResolvedValue([
       makePerson({ name: "Person A", slug: "person-a", facilityCount: 1, states: ["NY"] }),
       makePerson({ name: "Person B", slug: "person-b", facilityCount: 1, states: ["TX"] }),
+      makePerson({ name: "Fund C", slug: "fund-c", kind: "organization", facilityCount: 1, states: ["TX"] }),
     ]);
 
     const page = await StakeholdersIndexPage();
@@ -118,12 +122,77 @@ describe("StakeholdersIndexPage — survey stat row", () => {
 
     const tiles = [
       { label: "People", value: "2" },
-      { label: "Facility links", value: "2" },
+      { label: "Organizations", value: "1" },
+      { label: "Facility links", value: "3" },
       { label: "States", value: "2" },
     ];
     for (const { label, value } of tiles) {
       expect(within(tileByLabel(label)).getByText(value)).toBeInTheDocument();
     }
     expect(tileByLabel("People").parentElement?.children).toHaveLength(tiles.length);
+  });
+});
+
+describe("StakeholdersIndexPage — operator-level owners", () => {
+  it("shows 'via N operators' instead of a site count on an owner-only card, and no via line on a site-only card", async () => {
+    mockGetStakeholders.mockResolvedValue([
+      makePerson({
+        name: "Example Capital",
+        slug: "example-capital",
+        kind: "organization",
+        roles: ["controlling_owner"],
+        facilityCount: 0,
+        operatorFacilityCount: 3,
+        viaOperators: [
+          {
+            operator: "Acme Corp",
+            slug: "acme-corp",
+            facilityCount: 3,
+            owner: {
+              name: "Example Capital",
+              kind: "organization",
+              role: "controlling_owner",
+              source: { url: "https://example.com/own", label: "Filing", retrievedAt: "2026-11-04", kind: "filing" },
+              asOf: "2026-11-04",
+            },
+          },
+        ],
+        states: ["TX"],
+      }),
+      makePerson({ name: "Jane Doe", slug: "jane-doe" }),
+    ]);
+
+    render(await StakeholdersIndexPage());
+
+    const ownerCard = screen.getByRole("link", { name: /Example Capital/ });
+    expect(within(ownerCard).getByText("via 1 operator")).toBeInTheDocument();
+    expect(within(ownerCard).queryByText(/0 sites/)).not.toBeInTheDocument();
+    const personCard = screen.getByRole("link", { name: /Jane Doe/ });
+    expect(within(personCard).queryByText(/via /)).not.toBeInTheDocument();
+    expect(within(personCard).getByText("1 site")).toBeInTheDocument();
+  });
+
+  it("shows both the site count and 'via N operators' for a name with both kinds of stake", async () => {
+    const via = {
+      operator: "Acme Corp",
+      slug: "acme-corp",
+      facilityCount: 3,
+      owner: {
+        name: "Jane Doe",
+        kind: "person" as const,
+        role: "investor" as const,
+        source: { url: "https://example.com/own", label: "Filing", retrievedAt: "2026-11-04", kind: "filing" as const },
+        asOf: "2026-11-04",
+      },
+    };
+    mockGetStakeholders.mockResolvedValue([
+      makePerson({ name: "Jane Doe", slug: "jane-doe", facilityCount: 2, viaOperators: [via, { ...via, operator: "Beta Co", slug: "beta-co" }] }),
+    ]);
+
+    render(await StakeholdersIndexPage());
+
+    const card = screen.getByRole("link", { name: /Jane Doe/ });
+    expect(within(card).getByText("2 sites")).toBeInTheDocument();
+    expect(within(card).getByText("via 2 operators")).toBeInTheDocument();
   });
 });

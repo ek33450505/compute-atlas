@@ -10,6 +10,7 @@ import {
   aiClassificationEnum,
   confidenceEnum,
   waterCoolingTypeEnum,
+  stakeholderKind,
 } from "@/lib/schema";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, type FacilityType } from "@/lib/facility-type";
@@ -25,6 +26,7 @@ import { rowToFacility } from "@/lib/db/serialize";
 import { redactedErrorCode } from "@/lib/db-error";
 import type { DiffEntry } from "@/lib/doc-diff";
 import { operatorSlug, personSlug } from "@/lib/operator-slug";
+import { groupByOwner, operatorOwnership, type OperatorOwner, type OperatorOwnership } from "@/lib/operator-ownership";
 import { getGenerationFuelClass } from "@/lib/generation";
 import { containsDc } from "@/lib/us-states";
 import { getSitingContext, type SitingContext } from "@/lib/siting-context";
@@ -2528,31 +2530,66 @@ export async function getFacilitiesByCounty(slug: string): Promise<Facility[]> {
 // `"facilities"`, `revalidate: 86400`) rather than a new `unstable_cache`
 // reader.
 
+/** One operator an owner holds a stake in, with the owner's own row (and its source). */
+export interface ViaOperator {
+  operator: string;
+  slug: string;
+  /** Tracked facilities operated by `operator`. */
+  facilityCount: number;
+  owner: OperatorOwner;
+}
+
 interface StakeholderIndex {
-  /** Person name -> that person's facilities, pre-sorted by max MW desc, then name A→Z. */
+  /** Person name -> that person's SITE-LEVEL facilities, pre-sorted by max MW desc, then name A→Z. */
   byPerson: Map<string, Facility[]>;
-  /** personSlug(name) -> person name, for case-insensitive reverse slug lookup. */
+  /** Owner name -> the operators it owns a stake in (operator-level layer), sorted by facility count desc, then name. */
+  viaByOwner: Map<string, ViaOperator[]>;
+  /** Owner name -> distinct facilities reached through its operators. */
+  operatorFacilitiesByOwner: Map<string, Facility[]>;
+  /** personSlug(name) -> person name, for case-insensitive reverse slug lookup. Covers site-level stakeholders AND operator owners. */
   slugToPerson: Map<string, string>;
+  /**
+   * Distinct names that slugify alike. `kept` is the name `slugToPerson` maps
+   * the slug to; `dropped` is left out of `summarizeStakeholders` so one URL
+   * never gets two cards or duplicate static params. Empty in healthy data;
+   * a CI test asserts that for the real dataset.
+   */
+  collisions: StakeholderSlugCollision[];
+}
+
+export interface StakeholderSlugCollision {
+  slug: string;
+  kept: string;
+  dropped: string;
 }
 
 const stakeholderIndexCache = new WeakMap<Facility[], StakeholderIndex>();
 
 /**
  * Builds the stakeholder index from a facility list. A pure function of its
- * `facilities` argument — exported (like `withJsonFallback` above) so it can
- * be unit-tested directly against synthetic fixtures, since the real
- * dataset's `stakeholders` field is still mostly unpopulated (see
- * lib/schema.ts) and has no multi-facility person to exercise the grouping
- * logic against yet.
+ * arguments — exported (like `withJsonFallback` above) so it can be
+ * unit-tested directly against synthetic fixtures, since the real dataset's
+ * `stakeholders` field is still mostly unpopulated (see lib/schema.ts) and
+ * has no multi-facility person to exercise the grouping logic against yet.
  *
  * A person can appear more than once in the same facility's `stakeholders`
  * array (e.g. both "founder" and "executive") — deduped here so their
  * facility list never lists the same site twice. A person can also hold
  * different roles at different facilities; this index groups by name only,
  * `getStakeholders()` derives the de-duplicated role union.
+ *
+ * `ownership` is the operator-level layer (data/operator-ownership.json). Its
+ * owners become stakeholders too, but only through `viaByOwner` /
+ * `operatorFacilitiesByOwner`: they never enter `byPerson`, so an owner's
+ * site-level facility list stays site-level. Only the default (real-file)
+ * ownership is memoized — a fixture would poison the per-facilities cache.
  */
-export function buildStakeholderIndex(facilities: Facility[]): StakeholderIndex {
-  const cached = stakeholderIndexCache.get(facilities);
+export function buildStakeholderIndex(
+  facilities: Facility[],
+  ownership: OperatorOwnership[] = operatorOwnership
+): StakeholderIndex {
+  const useCache = ownership === operatorOwnership;
+  const cached = useCache ? stakeholderIndexCache.get(facilities) : undefined;
   if (cached) return cached;
 
   const byPerson = new Map<string, Facility[]>();
@@ -2583,8 +2620,61 @@ export function buildStakeholderIndex(facilities: Facility[]): StakeholderIndex 
     slugToPerson.set(personSlug(name), name);
   }
 
-  const index: StakeholderIndex = { byPerson, slugToPerson };
-  stakeholderIndexCache.set(facilities, index);
+  const facilitiesByOperator = new Map<string, Facility[]>();
+  for (const f of facilities) {
+    const bucket = facilitiesByOperator.get(f.operator);
+    if (bucket) bucket.push(f);
+    else facilitiesByOperator.set(f.operator, [f]);
+  }
+
+  const viaByOwner = new Map<string, ViaOperator[]>();
+  const operatorFacilitiesByOwner = new Map<string, Facility[]>();
+  for (const [name, owned] of groupByOwner(ownership)) {
+    const via: ViaOperator[] = owned.map(({ operator, owner }) => ({
+      operator,
+      slug: operatorSlug(operator),
+      facilityCount: facilitiesByOperator.get(operator)?.length ?? 0,
+      owner,
+    }));
+    via.sort((a, b) => b.facilityCount - a.facilityCount || a.operator.localeCompare(b.operator));
+    viaByOwner.set(name, via);
+
+    const reached = new Map<string, Facility>();
+    for (const { operator } of owned) {
+      for (const f of facilitiesByOperator.get(operator) ?? []) reached.set(f.id, f);
+    }
+    operatorFacilitiesByOwner.set(name, [...reached.values()]);
+    if (!slugToPerson.has(personSlug(name))) slugToPerson.set(personSlug(name), name);
+  }
+
+  // Computed (and logged) once per index build, not per summarize call. This
+  // runs on the render path and live data comes from Neon, so log, don't throw.
+  const namesBySlug = new Map<string, string[]>();
+  for (const name of new Set([...byPerson.keys(), ...viaByOwner.keys()])) {
+    const slug = personSlug(name);
+    const bucket = namesBySlug.get(slug);
+    if (bucket) bucket.push(name);
+    else namesBySlug.set(slug, [name]);
+  }
+  const collisions: StakeholderSlugCollision[] = [];
+  for (const [slug, names] of namesBySlug) {
+    if (names.length < 2) continue;
+    const kept = slugToPerson.get(slug) ?? names[0];
+    for (const dropped of names) {
+      if (dropped === kept) continue;
+      collisions.push({ slug, kept, dropped });
+      console.error(`stakeholder slug collision: "${dropped}" dropped, "${kept}" keeps slug "${slug}"`);
+    }
+  }
+
+  const index: StakeholderIndex = {
+    byPerson,
+    viaByOwner,
+    operatorFacilitiesByOwner,
+    slugToPerson,
+    collisions,
+  };
+  if (useCache) stakeholderIndexCache.set(facilities, index);
   return index;
 }
 
@@ -2597,45 +2687,84 @@ async function getStakeholderIndex(): Promise<StakeholderIndex> {
 export interface StakeholderSummary {
   name: string;
   slug: string;
-  /** De-duplicated union of every role recorded for this person, across all their facilities. */
+  /** "organization" if any entry under this name is an organization, else "person". */
+  kind: "person" | "organization";
+  /** De-duplicated union of every role recorded for this person, across their facilities and any operator-level stakes. */
   roles: string[];
+  /** SITE-LEVEL facilities only. Operator-level ownership is never counted here. */
   facilityCount: number;
-  /** Distinct location.state codes across the person's facilities, sorted A→Z. */
+  /** Distinct facilities reached through owned operators (0 when the person owns no operator stake). */
+  operatorFacilityCount: number;
+  /** Operators this person holds a stake in at the operator level, largest first. */
+  viaOperators: ViaOperator[];
+  /** Distinct location.state codes across SITE-LEVEL facilities only, sorted A→Z. Empty for an owner with no site-level stake. */
   states: string[];
 }
 
 /**
- * Returns one summary entry per named stakeholder, sorted by facility count
- * desc, then name A→Z. Backs the /stakeholders index page and the
- * per-person hub's role/state display. A person's `roles` is the
- * de-duplicated union of every role recorded for them across their
- * facilities — the same person can be a "founder" at one site and an
- * "investor" at another.
+ * Returns one summary entry per named stakeholder — site-level stakeholders
+ * and operator-level owners alike — sorted by site-level facility count desc,
+ * then operator-reach count desc, then name A→Z. Backs the /stakeholders
+ * index page and the per-person hub's role/state display. A person's `roles`
+ * is the de-duplicated union of every role recorded for them across their
+ * facilities and operator stakes — the same person can be a "founder" at one
+ * site and an "investor" at another.
  */
 export async function getStakeholders(): Promise<StakeholderSummary[]> {
-  const { byPerson } = await getStakeholderIndex();
-  const summaries: StakeholderSummary[] = [];
+  return summarizeStakeholders(await getStakeholderIndex());
+}
 
-  for (const [name, facilities] of byPerson) {
+/**
+ * Pure half of `getStakeholders()`, exported so kind/role derivation is unit-testable on fixtures.
+ * Names listed as `dropped` in `index.collisions` are left out, so each slug has one summary.
+ */
+export function summarizeStakeholders({
+  byPerson,
+  viaByOwner,
+  operatorFacilitiesByOwner,
+  collisions,
+}: StakeholderIndex): StakeholderSummary[] {
+  const summaries: StakeholderSummary[] = [];
+  const names = new Set<string>([...byPerson.keys(), ...viaByOwner.keys()]);
+
+  for (const name of names) {
+    const facilities = byPerson.get(name) ?? [];
+    const viaOperators = viaByOwner.get(name) ?? [];
+    const operatorFacilities = operatorFacilitiesByOwner.get(name) ?? [];
     const roles = new Set<string>();
     const states = new Set<string>();
+    let kind: StakeholderSummary["kind"] = "person";
     for (const f of facilities) {
       states.add(f.location.state);
       for (const s of f.stakeholders ?? []) {
-        if (s.name === name) roles.add(s.role);
+        if (s.name !== name) continue;
+        roles.add(s.role);
+        if (stakeholderKind(s) === "organization") kind = "organization";
       }
+    }
+    for (const { owner } of viaOperators) {
+      roles.add(owner.role);
+      if (owner.kind === "organization") kind = "organization";
     }
     summaries.push({
       name,
       slug: personSlug(name),
+      kind,
       roles: [...roles].sort(),
       facilityCount: facilities.length,
+      operatorFacilityCount: operatorFacilities.length,
+      viaOperators,
       states: [...states].sort(),
     });
   }
 
-  return summaries.sort(
-    (a, b) => b.facilityCount - a.facilityCount || a.name.localeCompare(b.name)
+  const dropped = new Set(collisions.map((c) => c.dropped));
+
+  return summaries.filter((s) => !dropped.has(s.name)).sort(
+    (a, b) =>
+      b.facilityCount - a.facilityCount ||
+      b.operatorFacilityCount - a.operatorFacilityCount ||
+      a.name.localeCompare(b.name)
   );
 }
 
@@ -2650,7 +2779,8 @@ export async function getStakeholderBySlug(slug: string): Promise<string | undef
 }
 
 /**
- * Returns all facilities where `name` appears in `stakeholders`, sorted by
+ * Returns all facilities where `name` appears in `stakeholders` (site-level
+ * only — operator-level ownership is on `StakeholderSummary.viaOperators`), sorted by
  * max capacity (operational or planned) desc, then name A→Z. Unlike
  * `getFacilitiesByOperator`, there is no indexed DB query behind this — it
  * reads the memoized stakeholder index (itself built on the shared,

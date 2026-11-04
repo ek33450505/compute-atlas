@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { facilitySchema, sourceSchema, emissionsSchema, OFFTAKER_LABEL_PATTERN } from "@/lib/schema";
+import { facilitySchema, sourceSchema, emissionsSchema, OFFTAKER_LABEL_PATTERN, stakeholderKind } from "@/lib/schema";
 import facilitiesRaw from "@/data/facilities.json";
 
 const baseSource = {
@@ -654,6 +654,61 @@ describe("facilitySchema — stakeholders", () => {
       stakeholders: [{ name: "Jane Doe", role: "founder", sourceIndex: 0 }],
     });
     expect(missingAsOf.success).toBe(false);
+  });
+
+  const withStakeholder = (entry: Record<string, unknown>) =>
+    facilitySchema.safeParse({
+      ...baseFacility,
+      stakeholders: [{ name: "Example Fund", sourceIndex: 0, asOf: "2026-11-04", ...entry }],
+    });
+
+  it("accepts an organization investor", () => {
+    const result = withStakeholder({ kind: "organization", role: "investor" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.stakeholders?.[0].kind).toBe("organization");
+    }
+  });
+
+  it("accepts a legacy entry without kind, and leaves kind unset on the parsed record", () => {
+    const result = withStakeholder({ name: "Jane Doe", role: "founder" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.stakeholders?.[0]).not.toHaveProperty("kind");
+    }
+  });
+
+  it("accepts an organization lender", () => {
+    expect(withStakeholder({ kind: "organization", role: "lender" }).success).toBe(true);
+  });
+
+  it("rejects a lender with kind person or no kind", () => {
+    for (const entry of [{ kind: "person", role: "lender" }, { role: "lender" }]) {
+      const result = withStakeholder(entry);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues).toContainEqual(
+          expect.objectContaining({ path: ["stakeholders", 0, "role"] })
+        );
+      }
+    }
+  });
+
+  it("rejects an organization public_official but accepts a person one", () => {
+    const org = withStakeholder({ kind: "organization", role: "public_official" });
+    expect(org.success).toBe(false);
+    if (!org.success) {
+      expect(org.error.issues).toContainEqual(
+        expect.objectContaining({ path: ["stakeholders", 0, "role"] })
+      );
+    }
+    expect(withStakeholder({ kind: "person", role: "public_official" }).success).toBe(true);
+    expect(withStakeholder({ role: "public_official" }).success).toBe(true);
+  });
+
+  it("stakeholderKind reads an absent kind as person", () => {
+    expect(stakeholderKind({})).toBe("person");
+    expect(stakeholderKind({ kind: "organization" })).toBe("organization");
   });
 });
 
