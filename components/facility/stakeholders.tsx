@@ -62,6 +62,41 @@ export function hasStakeholders(facility: Facility, ownership?: OperatorOwnershi
   return hasSiteStakeholders(facility) || operatorOwnersOf(facility, ownership).length > 0;
 }
 
+// --- Vote direction ---
+const VOTE_PATTERN = /\bvoted (for|against|yes|no)\b|\babstained\b/i;
+
+/**
+ * Splits a public official's note around the person's OWN vote direction: the
+ * first `voted for|against|yes|no` (the direction word) or `abstained`. Later
+ * matches are the body's tally, not this person's vote, so they are left alone.
+ * Returns null when there is no match. before + direction + after === note.
+ */
+export function splitVoteDirection(
+  note: string,
+): { before: string; direction: string; after: string } | null {
+  const match = VOTE_PATTERN.exec(note);
+  if (!match) return null;
+  const direction = match[1] ?? match[0];
+  const start = match.index + match[0].length - direction.length;
+  return {
+    before: note.slice(0, start),
+    direction,
+    after: note.slice(start + direction.length),
+  };
+}
+
+function VoteNote({ note }: { note: string }) {
+  const split = splitVoteDirection(note);
+  if (!split) return <>{note}</>;
+  return (
+    <>
+      {split.before}
+      <strong className="font-semibold text-foreground">{split.direction}</strong>
+      {split.after}
+    </>
+  );
+}
+
 // --- Stakeholder row ---
 function StakeholderRow({
   facility,
@@ -80,7 +115,11 @@ function StakeholderRow({
       <span className="block normal-case tracking-normal">{nameLine}</span>
       {stakeholder.note && (
         <span className="block normal-case tracking-normal text-muted-foreground">
-          {stakeholder.note}
+          {stakeholder.role === "public_official" ? (
+            <VoteNote note={stakeholder.note} />
+          ) : (
+            stakeholder.note
+          )}
         </span>
       )}
       <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 normal-case tracking-normal text-xs text-muted-foreground">

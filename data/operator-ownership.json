@@ -769,5 +769,45 @@
         "asOf": "2026-11-04"
       }
     ]
+  },
+  {
+    "operator": "US Signal",
+    "owners": [
+      {
+        "name": "Igneo Infrastructure Partners",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2023-02",
+        "note": "Igneo Infrastructure Partners announced on 15 February 2023 that it had completed its acquisition of US Signal Company, LLC.",
+        "source": {
+          "url": "https://www.igneoip.com/usa/en/institutional/news-and-insights/press/igneo-infrastructure-partners-completes-acquisition-of-us-signal.html",
+          "label": "Igneo Infrastructure Partners Completes Acquisition of US Signal",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Igneo Infrastructure Partners"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "PowerHouse Data Centers",
+    "owners": [
+      {
+        "name": "American Real Estate Partners",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "stakePct": 100,
+        "note": "A January 2024 PowerHouse Data Centers release describes PowerHouse as fully owned by American Real Estate Partners (AREP).",
+        "source": {
+          "url": "https://www.prnewswire.com/news-releases/powerhouse-data-centers-closes-on-site-of-800-mw-data-center-campus-in-spotsylvania-virginia-302041246.html",
+          "label": "PowerHouse Data Centers Closes on Site of 800 MW Data Center Campus in Spotsylvania, Virginia",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "PowerHouse Data Centers (PR Newswire)"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
   }
 ]

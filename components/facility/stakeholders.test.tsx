@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
-import { StakeholdersSection, hasStakeholders } from "./stakeholders";
+import { StakeholdersSection, hasStakeholders, splitVoteDirection } from "./stakeholders";
 import type { DataCenterFacility } from "@/lib/schema";
 import { parseOperatorOwnership } from "@/lib/operator-ownership";
 
@@ -291,5 +291,70 @@ describe("operator-level ownership", () => {
     render(<StakeholdersSection facility={facility} ownership={[]} />);
 
     expect(screen.queryByRole("heading", { name: "Through the operator" })).not.toBeInTheDocument();
+  });
+});
+
+describe("splitVoteDirection", () => {
+  const dir = (note: string) => splitVoteDirection(note)?.direction ?? null;
+
+  it("finds the direction word for each vote shape", () => {
+    expect(dir("Member of the Westfield City Council; voted against the project application. Outcome: passed 10-3.")).toBe("against");
+    expect(dir("Mayor of Buckeye; voted for Ordinance No. 08-24. Outcome: passed unanimously.")).toBe("for");
+    expect(dir("Board: voted no on the motion to approve a tax exemption; motion carried 3-1.")).toBe("no");
+    expect(dir("Board: abstained; minutes: Garczyk and Kelly abstaining.")).toBe("abstained");
+  });
+
+  it("matches only the first vote, not the body's tally", () => {
+    const note = "present per the roll call and voted yes; minutes: motion carried 4-0, all present voted yes.";
+    const split = splitVoteDirection(note);
+    expect(split?.direction).toBe("yes");
+    expect(split?.before).toBe("present per the roll call and voted ");
+    expect(split?.after).toContain("all present voted yes.");
+    expect(`${split?.before}${split?.direction}${split?.after}`).toBe(note);
+  });
+
+  it("returns null without a vote or on partial words", () => {
+    // Deliberate: a seconder note never states the person's own vote; "voting yes"
+    // describes all present, so it must not be bolded from the body's tally.
+    expect(splitVoteDirection("seconded the motion; carried 4-0, all present voting yes per the minutes.")).toBeNull();
+    expect(splitVoteDirection("Called the special session.")).toBeNull();
+    expect(splitVoteDirection("Voted forward the item; voted noted.")).toBeNull();
+  });
+});
+
+describe("vote direction emphasis", () => {
+  function renderOfficial(note: string, role: "public_official" | "investor" = "public_official") {
+    render(
+      <StakeholdersSection
+        facility={makeFacility({
+          stakeholders: [{ name: "Jane Doe", role, note, sourceIndex: 1, asOf: "2024-02-01" }],
+        })}
+      />
+    );
+  }
+
+  it("bolds only the first direction and keeps the text identical", () => {
+    const note = "Authority meeting: present and voted yes; minutes: carried 4-0, all present voted yes.";
+    renderOfficial(note);
+    const strong = screen.getByText("yes", { selector: "strong" });
+    expect(document.querySelectorAll("strong")).toHaveLength(1);
+    expect(strong.parentElement?.textContent).toBe(note);
+  });
+
+  it("bolds abstained and leaves abstaining plain", () => {
+    renderOfficial("Meeting: abstained; minutes: Kelly abstaining.");
+    expect(screen.getByText("abstained", { selector: "strong" })).toBeInTheDocument();
+    expect(document.querySelectorAll("strong")).toHaveLength(1);
+  });
+
+  it("does not bold notes without a vote", () => {
+    // Deliberate: no direction word ("voted for/against/yes/no"), so intentionally plain.
+    renderOfficial("Voted to approve the rezoning.");
+    expect(document.querySelectorAll("strong")).toHaveLength(0);
+  });
+
+  it("leaves financial-role notes unchanged", () => {
+    renderOfficial("Investor who voted for the plan.", "investor");
+    expect(document.querySelectorAll("strong")).toHaveLength(0);
   });
 });
