@@ -1,7 +1,7 @@
 import type { Facility } from "@/lib/schema";
 import { hasSitingContext } from "@/components/facility/siting-context";
 import { hasPowerLinks } from "@/components/facility/power-links";
-import { hasStakeholders } from "@/components/facility/stakeholders";
+import { hasSiteStakeholders } from "@/components/facility/stakeholders";
 
 /**
  * Single source of truth for "does this facility-page section have anything
@@ -143,7 +143,7 @@ export async function missingSectionLabels(facility: Facility): Promise<string[]
     { label: "energy and water", present: hasEnergyWater(facility) },
     { label: "air permit", present: hasEmissions(facility) },
     { label: "public subsidies", present: hasSubsidies(facility) },
-    { label: "stakeholders", present: hasStakeholders(facility) },
+    { label: "stakeholders", present: hasSiteStakeholders(facility) },
   ];
 
   return sections.filter((s) => !s.present).map((s) => s.label);

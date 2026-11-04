@@ -1,4 +1,12 @@
 import type { Facility } from "@/lib/schema";
+import {
+  OPERATOR_OWNER_ROLE_LABELS,
+  getOperatorOwners,
+  ownersFor,
+  type OperatorOwner,
+  type OperatorOwnership,
+} from "@/lib/operator-ownership";
+import { OperatorOwnerDetails, ownerDisplayName } from "@/components/operator-owner-details";
 import { SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { Separator } from "@/components/ui/separator";
 
@@ -30,9 +38,28 @@ const ROLE_LABELS: Record<string, string> = {
   public_official: "Public official",
 };
 
-// --- Predicate ---
-export function hasStakeholders(facility: Facility): boolean {
+// --- Predicates ---
+/** True when the facility itself carries a site-level stakeholder (operator owners do not count). */
+export function hasSiteStakeholders(facility: Facility): boolean {
   return !!(facility.stakeholders && facility.stakeholders.length > 0);
+}
+
+/**
+ * Owners of the facility's operator, from the operator-level ownership layer.
+ * `ownership` is injectable so tests can pass fixtures; the default reads the
+ * validated data/operator-ownership.json.
+ */
+function operatorOwnersOf(facility: Facility, ownership?: OperatorOwnership[]): OperatorOwner[] {
+  return ownership ? ownersFor(ownership, facility.operator) : getOperatorOwners(facility.operator);
+}
+
+/**
+ * True when the section has anything to show: a site-level stakeholder OR an
+ * owner of the operator. Drives the section's gap prompt and the print brief's
+ * "Not recorded" list, both of which mirror what the page renders.
+ */
+export function hasStakeholders(facility: Facility, ownership?: OperatorOwnership[]): boolean {
+  return hasSiteStakeholders(facility) || operatorOwnersOf(facility, ownership).length > 0;
 }
 
 // --- Stakeholder row ---
@@ -64,9 +91,26 @@ function StakeholderRow({
   );
 }
 
+// --- Operator-level owner row ---
+function OperatorOwnerRow({ owner }: { owner: OperatorOwner }) {
+  return (
+    <FactRow label={OPERATOR_OWNER_ROLE_LABELS[owner.role]}>
+      <span className="block normal-case tracking-normal">{ownerDisplayName(owner)}</span>
+      <OperatorOwnerDetails owner={owner} />
+    </FactRow>
+  );
+}
+
 // --- Main export ---
-export function StakeholdersSection({ facility }: { facility: Facility }) {
-  if (!hasStakeholders(facility)) {
+export function StakeholdersSection({
+  facility,
+  ownership,
+}: {
+  facility: Facility;
+  /** Test seam: defaults to the real operator-ownership file. */
+  ownership?: OperatorOwnership[];
+}) {
+  if (!hasStakeholders(facility, ownership)) {
     return (
       <SectionGapPrompt facilityId={facility.id} facilityName={facility.name} label="a documented stakeholder" />
     );
@@ -79,6 +123,7 @@ export function StakeholdersSection({ facility }: { facility: Facility }) {
     FINANCIAL_INTEREST_ROLES.has(s.role)
   );
   const officials = stakeholders.filter((s) => s.role === "public_official");
+  const operatorOwners = operatorOwnersOf(facility, ownership);
 
   return (
     <>
@@ -116,6 +161,21 @@ export function StakeholdersSection({ facility }: { facility: Facility }) {
                 facility={facility}
                 stakeholder={stakeholder}
               />
+            ))}
+          </FactGroup>
+        )}
+
+        {operatorOwners.length > 0 && (
+          <FactGroup
+            title="Through the operator"
+            intro={
+              <p className="mb-3 text-sm text-muted-foreground">
+                {`${facility.operator} is owned as shown below. These stakes are held in the operating company, not documented for this site specifically.`}
+              </p>
+            }
+          >
+            {operatorOwners.map((owner) => (
+              <OperatorOwnerRow key={owner.name} owner={owner} />
             ))}
           </FactGroup>
         )}

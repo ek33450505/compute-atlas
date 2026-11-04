@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -20,6 +21,9 @@ import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
 import { SectionHeading } from "@/components/section-heading";
+import { OperatorOwnerDetails, ownerDisplayName } from "@/components/operator-owner-details";
+import { OPERATOR_OWNER_ROLE_LABELS, getOperatorOwners } from "@/lib/operator-ownership";
+import { personSlug } from "@/lib/operator-slug";
 
 export const revalidate = 86400;
 
@@ -75,6 +79,7 @@ export default async function OperatorPage({
   }
 
   const facilities = await getFacilitiesByOperator(operatorName);
+  const owners = getOperatorOwners(operatorName);
 
   // Every figure below is read directly off `summary`/`facilities`; nothing
   // here is fetched, invented, or estimated. Each branch just phrases a zero
@@ -210,6 +215,35 @@ export default async function OperatorPage({
           )}
         </div>
       </section>
+
+      {owners.length > 0 && (
+        <section
+          aria-labelledby="ownership-heading"
+          className="space-y-4 border-t border-border pt-10"
+        >
+          <SectionHeading kicker="Ownership" id="ownership-heading" title={<>Who owns {operatorName}</>} />
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            These stakes are held in the operating company, not documented for
+            any one of its sites.
+          </p>
+          <ul className="divide-y divide-border">
+            {owners.map((owner) => (
+              <li key={owner.name} className="space-y-1 py-4 text-sm">
+                <span className="flex flex-wrap items-center gap-x-1">
+                  <Link
+                    href={`/stakeholders/${personSlug(owner.name)}`}
+                    className="inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-2 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  >
+                    {ownerDisplayName(owner)}
+                  </Link>
+                  {` · ${OPERATOR_OWNER_ROLE_LABELS[owner.role]}`}
+                </span>
+                <OperatorOwnerDetails owner={owner} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section
         aria-labelledby="facilities-heading"

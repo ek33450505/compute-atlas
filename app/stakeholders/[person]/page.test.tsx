@@ -2,7 +2,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
 import type { DataCenterFacility } from "@/lib/schema";
-import type { StakeholderSummary } from "@/lib/data";
+import type { StakeholderSummary, ViaOperator } from "@/lib/data";
 
 // vi.mock calls are hoisted above imports by Vitest. Route the shared mocks
 // through vi.hoisted() so their initialization is hoisted alongside the
@@ -64,7 +64,31 @@ function makeSummary(overrides: Partial<StakeholderSummary> = {}): StakeholderSu
     kind: "person",
     roles: ["founder"],
     facilityCount: 1,
+    operatorFacilityCount: 0,
+    viaOperators: [],
     states: ["IL"],
+    ...overrides,
+  };
+}
+
+function makeVia(overrides: Partial<ViaOperator> = {}): ViaOperator {
+  return {
+    operator: "Acme Corp",
+    slug: "acme-corp",
+    facilityCount: 3,
+    owner: {
+      name: "Example Capital",
+      kind: "organization",
+      role: "controlling_owner",
+      note: "Owns the operating company.",
+      source: {
+        url: "https://example.com/own",
+        label: "Ownership filing",
+        retrievedAt: "2026-11-04",
+        kind: "filing",
+      },
+      asOf: "2026-11-04",
+    },
     ...overrides,
   };
 }
@@ -141,6 +165,102 @@ describe("StakeholderPage", () => {
   });
 });
 
+describe("StakeholderPage — operator-level owner", () => {
+  const ownerSummary = makeSummary({
+    name: "Example Capital",
+    slug: "example-capital",
+    kind: "organization",
+    roles: ["controlling_owner"],
+    facilityCount: 0,
+    operatorFacilityCount: 3,
+    viaOperators: [makeVia(), makeVia({ operator: "Ghost Operator", slug: "ghost-operator", facilityCount: 0 })],
+    states: [],
+  });
+
+  it("shows an Operators tile and no States or Facilities tile for an owner with no site-level facility", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Example Capital");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([]);
+    mockGetStakeholders.mockResolvedValue([ownerSummary]);
+
+    render(await StakeholderPage({ params: Promise.resolve({ person: "example-capital" }) }));
+
+    expect(screen.getByText("Operators")).toBeInTheDocument();
+    expect(screen.queryByText("States")).not.toBeInTheDocument();
+    expect(screen.queryByText("State")).not.toBeInTheDocument();
+    expect(screen.queryByText("Facilities")).not.toBeInTheDocument();
+  });
+
+  it("renders both the card grid and the ownership section for a name with site-level and operator stakes", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Jane Doe");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([makeFacility()]);
+    mockGetStakeholders.mockResolvedValue([makeSummary({ viaOperators: [makeVia()], operatorFacilityCount: 3 })]);
+
+    render(await StakeholderPage({ params: Promise.resolve({ person: "jane-doe" }) }));
+
+    expect(screen.getByText("Facilities")).toBeInTheDocument();
+    expect(screen.getByText("Operators")).toBeInTheDocument();
+    expect(screen.getByText("State")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Through operator ownership" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Test Facility/ })).toBeInTheDocument();
+  });
+
+  it("renders (does not 404) for an owner with no site-level facility, and never says 'tracks 0 facilities'", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Example Capital");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([]);
+    mockGetStakeholders.mockResolvedValue([ownerSummary]);
+
+    const page = await StakeholderPage({ params: Promise.resolve({ person: "example-capital" }) });
+    render(page);
+
+    expect(screen.getByRole("heading", { level: 1, name: "Example Capital" })).toBeInTheDocument();
+    expect(screen.queryByText(/tracks 0 facilit/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/no stake documented for a specific site/i)).toBeInTheDocument();
+    expect(screen.getByText(/Acme Corp and Ghost Operator/)).toBeInTheDocument();
+  });
+
+  it("lists each operator under 'Through operator ownership', linking only operators that have a page", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Example Capital");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([]);
+    mockGetStakeholders.mockResolvedValue([ownerSummary]);
+
+    const page = await StakeholderPage({ params: Promise.resolve({ person: "example-capital" }) });
+    render(page);
+
+    const heading = screen.getByRole("heading", { name: "Through operator ownership" });
+    const section = heading.closest("section") as HTMLElement;
+    const link = within(section).getByRole("link", { name: "Acme Corp" });
+    expect(link).toHaveAttribute("href", "/operators/acme-corp");
+    expect(within(section).queryByRole("link", { name: "Ghost Operator" })).not.toBeInTheDocument();
+    expect(within(section).getByText("· Controlling owner · 3 tracked facilities", { exact: false })).toBeInTheDocument();
+    expect(within(section).getByText("· Controlling owner · 0 tracked facilities", { exact: false })).toBeInTheDocument();
+    const sourceLinks = within(section).getAllByRole("link", { name: /Ownership filing \(opens in new tab\)/ });
+    expect(sourceLinks).toHaveLength(2);
+    expect(sourceLinks[0]).toHaveAttribute("href", "https://example.com/own");
+  });
+
+  it("omits the ownership section when the person owns no operator stake", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Jane Doe");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([makeFacility()]);
+    mockGetStakeholders.mockResolvedValue([makeSummary()]);
+
+    const page = await StakeholderPage({ params: Promise.resolve({ person: "jane-doe" }) });
+    render(page);
+
+    expect(screen.queryByRole("heading", { name: "Through operator ownership" })).not.toBeInTheDocument();
+    expect(screen.getByText(/Compute Atlas tracks 1 facility/)).toBeInTheDocument();
+  });
+
+  it("still calls notFound for a known name with neither site-level facilities nor operator stakes", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Jane Doe");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([]);
+    mockGetStakeholders.mockResolvedValue([makeSummary({ facilityCount: 0 })]);
+
+    await expect(
+      StakeholderPage({ params: Promise.resolve({ person: "jane-doe" }) })
+    ).rejects.toThrow();
+  });
+});
+
 describe("generateMetadata (stakeholder)", () => {
   it("returns a not-found title for an unknown slug, without querying facilities", async () => {
     mockGetStakeholderBySlug.mockResolvedValue(undefined);
@@ -153,15 +273,31 @@ describe("generateMetadata (stakeholder)", () => {
     expect(mockGetFacilitiesByStakeholder).not.toHaveBeenCalled();
   });
 
+  it("describes an owner with no site-level facility by its operator stake, not '0 facilities'", async () => {
+    mockGetStakeholderBySlug.mockResolvedValue("Example Capital");
+    mockGetFacilitiesByStakeholder.mockResolvedValue([]);
+    mockGetStakeholders.mockResolvedValue([
+      makeSummary({ name: "Example Capital", slug: "example-capital", facilityCount: 0, viaOperators: [makeVia()] }),
+    ]);
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ person: "example-capital" }),
+    });
+
+    expect(metadata.description).toContain("stake in the operating company of 1 tracked operator");
+    expect(metadata.description).not.toMatch(/^0 /);
+  });
+
   it("titles a known slug with the person's name and sets the canonical", async () => {
     mockGetStakeholderBySlug.mockResolvedValue("Jane Doe");
     mockGetFacilitiesByStakeholder.mockResolvedValue([makeFacility()]);
+    mockGetStakeholders.mockResolvedValue([makeSummary()]);
 
     const metadata = await generateMetadata({
       params: Promise.resolve({ person: "jane-doe" }),
     });
 
-    expect(metadata.title).toBe("Jane Doe — facilities");
+    expect(metadata.title).toBe("Jane Doe — stakeholder profile");
     expect(metadata.alternates).toEqual({ canonical: "/stakeholders/jane-doe" });
   });
 });

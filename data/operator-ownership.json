@@ -1,0 +1,470 @@
+[
+  {
+    "operator": "QTS Data Centers",
+    "owners": [
+      {
+        "name": "Blackstone",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2021-08",
+        "note": "Affiliates of Blackstone Infrastructure Partners, Blackstone Real Estate Income Trust (BREIT) and Blackstone Property Partners completed the take-private of QTS Realty Trust for about $10 billion including debt.",
+        "source": {
+          "url": "https://www.sec.gov/Archives/edgar/data/1577368/000110465921111681/tm2126608d1_ex99-1.htm",
+          "label": "Blackstone Funds Complete Acquisition of QTS Realty Trust (8-K Ex. 99.1)",
+          "retrievedAt": "2026-11-04",
+          "kind": "filing",
+          "publisher": "QTS Realty Trust / Blackstone"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "CyrusOne",
+    "owners": [
+      {
+        "name": "KKR",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2022-03",
+        "note": "Funds managed by KKR and Global Infrastructure Partners jointly completed the all-cash take-private of CyrusOne at about $15 billion including assumed debt.",
+        "source": {
+          "url": "https://www.global-infra.com/news/kkr-and-gip-complete-acquisition-of-cyrusone/",
+          "label": "KKR and GIP Complete Acquisition of CyrusOne",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Global Infrastructure Partners"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Global Infrastructure Partners",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "parent": "BlackRock",
+        "since": "2022-03",
+        "note": "Funds managed by KKR and Global Infrastructure Partners jointly completed the all-cash take-private of CyrusOne at about $15 billion including assumed debt.",
+        "source": {
+          "url": "https://www.global-infra.com/news/kkr-and-gip-complete-acquisition-of-cyrusone/",
+          "label": "KKR and GIP Complete Acquisition of CyrusOne",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Global Infrastructure Partners"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Switch",
+    "owners": [
+      {
+        "name": "DigitalBridge",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2022-12",
+        "note": "Funds affiliated with DigitalBridge's investment management platform and an IFM Investors affiliate acquired all Switch common shares at $34.25 each, about $11 billion including debt repayment.",
+        "source": {
+          "url": "https://www.sec.gov/Archives/edgar/data/1710583/000119312522298966/d356989dex991.htm",
+          "label": "DigitalBridge and IFM Investors Complete $11 Billion Take-Private of Switch (8-K Ex. 99.1)",
+          "retrievedAt": "2026-11-04",
+          "kind": "filing",
+          "publisher": "Switch, Inc. / DigitalBridge"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "IFM Investors",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2022-12",
+        "note": "Funds affiliated with DigitalBridge's investment management platform and an IFM Investors affiliate acquired all Switch common shares at $34.25 each, about $11 billion including debt repayment.",
+        "source": {
+          "url": "https://www.sec.gov/Archives/edgar/data/1710583/000119312522298966/d356989dex991.htm",
+          "label": "DigitalBridge and IFM Investors Complete $11 Billion Take-Private of Switch (8-K Ex. 99.1)",
+          "retrievedAt": "2026-11-04",
+          "kind": "filing",
+          "publisher": "Switch, Inc. / DigitalBridge"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Aligned Data Centers",
+    "owners": [
+      {
+        "name": "AI Infrastructure Partnership (AIP) consortium",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2026-07",
+        "note": "The consortium of AIP, MGX and BlackRock's Global Infrastructure Partners (GIP) completed acquisition of 100% of Aligned's equity from Macquarie Asset Management infrastructure funds and co-investors at about $40 billion enterprise value; the release does not give each member's share or role.",
+        "source": {
+          "url": "https://aligneddc.com/press-release/aip-mgx-and-blackrocks-gip-close-acquisition-of-aligned-data-centers/",
+          "label": "AIP, MGX and BlackRock's GIP Close Acquisition of Aligned Data Centers",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Aligned Data Centers"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "EdgeConneX",
+    "owners": [
+      {
+        "name": "EQT Infrastructure",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2020-11",
+        "note": "EQT Infrastructure (Infrastructure IV and V funds) has been invested in EdgeConneX since 2020 and remained its largest shareholder after agreeing in 2024 to sell a minority stake to Sixth Street funds.",
+        "source": {
+          "url": "https://www.edgeconnex.com/news/press-releases/eqt-welcomes-sixth-street-as-strategic-investor-in-edgeconnex/",
+          "label": "EQT Welcomes Sixth Street as Strategic Investor in EdgeConneX",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "EdgeConneX"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Sixth Street",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2024-12",
+        "note": "Sixth Street funds agreed in September 2024 to buy a minority stake in EdgeConneX from EQT Infrastructure funds; the release gave no stake size.",
+        "source": {
+          "url": "https://www.edgeconnex.com/news/press-releases/eqt-welcomes-sixth-street-as-strategic-investor-in-edgeconnex/",
+          "label": "EQT Welcomes Sixth Street as Strategic Investor in EdgeConneX",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "EdgeConneX"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Vantage Data Centers",
+    "owners": [
+      {
+        "name": "DigitalBridge",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2024-06",
+        "note": "Vantage completed a $9.2 billion equity round led by DigitalBridge and Silver Lake; the release does not state ownership percentages.",
+        "source": {
+          "url": "https://www.silverlake.com/vantage-data-centers-completes-9-2-billion-equity-investment-led-by-digitalbridge-and-silver-lake/",
+          "label": "Vantage Data Centers Completes $9.2 Billion Equity Investment Led by DigitalBridge and Silver Lake",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Silver Lake / Vantage"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Silver Lake",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2024-06",
+        "note": "Vantage completed a $9.2 billion equity round led by DigitalBridge and Silver Lake; the release does not state ownership percentages.",
+        "source": {
+          "url": "https://www.silverlake.com/vantage-data-centers-completes-9-2-billion-equity-investment-led-by-digitalbridge-and-silver-lake/",
+          "label": "Vantage Data Centers Completes $9.2 Billion Equity Investment Led by DigitalBridge and Silver Lake",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Silver Lake / Vantage"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Flexential",
+    "owners": [
+      {
+        "name": "GI Partners",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2025-08",
+        "note": "GI Partners closed a single-asset continuation vehicle anchored by Hamilton Lane funds plus a GI Data Infrastructure fund investment, continuing its ownership of Flexential.",
+        "source": {
+          "url": "https://www.privateequitywire.co.uk/gi-partners-closes-single-asset-continuation-vehicle-and-strategic-investment-in-flexential/",
+          "label": "GI Partners closes single-asset continuation vehicle and strategic investment in Flexential",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Private Equity Wire"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Morgan Stanley Infrastructure Partners",
+        "kind": "organization",
+        "role": "investor",
+        "note": "A 2026 Flexential release names GI Partners and Morgan Stanley Infrastructure Partners (MSIP) as Flexential's equity sponsors.",
+        "source": {
+          "url": "https://www.prnewswire.com/news-releases/flexential-secures-800-million-to-fund-data-center-development-across-four-high-growth-markets-302853453.html",
+          "label": "Flexential Secures $800 Million to Fund Data Center Development",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Flexential / PR Newswire"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "DataBank",
+    "owners": [
+      {
+        "name": "Swiss Life Asset Management",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2022-08",
+        "note": "With EDF Invest, Swiss Life Asset Management, Northleaf and Ardian, a consortium bought a combined 35% of DataBank's fully diluted equity for $1.5 billion from existing investors including DigitalBridge, which remains invested; individual stakes not given.",
+        "source": {
+          "url": "https://www.prnewswire.com/news-releases/databank-completes-first-phase-of-major-recapitalization-301614430.html",
+          "label": "DataBank Completes First Phase of Major Recapitalization",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "DataBank / PR Newswire"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "EDF Invest",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2022-08",
+        "note": "With EDF Invest, Swiss Life Asset Management, Northleaf and Ardian, a consortium bought a combined 35% of DataBank's fully diluted equity for $1.5 billion from existing investors including DigitalBridge, which remains invested; individual stakes not given.",
+        "source": {
+          "url": "https://www.prnewswire.com/news-releases/databank-completes-first-phase-of-major-recapitalization-301614430.html",
+          "label": "DataBank Completes First Phase of Major Recapitalization",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "DataBank / PR Newswire"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Northleaf Capital Partners",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2022-08",
+        "note": "With EDF Invest, Swiss Life Asset Management, Northleaf and Ardian, a consortium bought a combined 35% of DataBank's fully diluted equity for $1.5 billion from existing investors including DigitalBridge, which remains invested; individual stakes not given.",
+        "source": {
+          "url": "https://www.prnewswire.com/news-releases/databank-completes-first-phase-of-major-recapitalization-301614430.html",
+          "label": "DataBank Completes First Phase of Major Recapitalization",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "DataBank / PR Newswire"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Ardian",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2022-08",
+        "note": "With EDF Invest, Swiss Life Asset Management, Northleaf and Ardian, a consortium bought a combined 35% of DataBank's fully diluted equity for $1.5 billion from existing investors including DigitalBridge, which remains invested; individual stakes not given.",
+        "source": {
+          "url": "https://www.prnewswire.com/news-releases/databank-completes-first-phase-of-major-recapitalization-301614430.html",
+          "label": "DataBank Completes First Phase of Major Recapitalization",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "DataBank / PR Newswire"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "STACK Infrastructure",
+    "owners": [
+      {
+        "name": "Blue Owl Digital Infrastructure",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "note": "An Apollo release describes STACK Infrastructure as a portfolio company of Blue Owl Digital Infrastructure.",
+        "source": {
+          "url": "https://www.apollo.com/insights-news/pressreleases/2025/04/apollo-funds-to-acquire-pan-european-highly-interconnected-colocation-data-center-business-from-stack-infrastructure-a-portfolio-company-of-blue-owl-digital-infrastructure-3069871",
+          "label": "Apollo Funds to Acquire Pan-European Colocation Data Center Business from STACK Infrastructure",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Apollo Global Management"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Cologix",
+    "owners": [
+      {
+        "name": "Stonepeak",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2017",
+        "note": "Stonepeak states it took a majority interest in Cologix in 2017 and has invested about $1 billion of incremental capital since.",
+        "source": {
+          "url": "https://stonepeak.com/portfolio-highlights/cologix",
+          "label": "Cologix (Stonepeak portfolio highlight)",
+          "retrievedAt": "2026-11-04",
+          "kind": "other",
+          "publisher": "Stonepeak"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "TierPoint",
+    "owners": [
+      {
+        "name": "Argo Infrastructure Partners",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2024-07",
+        "note": "Argo increased its interest in TierPoint to a majority in July 2024, having committed close to $700 million to the company since 2020.",
+        "source": {
+          "url": "https://realassets.ipe.com/news/argo-becomes-majority-owner-of-us-data-centre-firm-tierpoint/10074673.article",
+          "label": "Argo becomes majority owner of US data centre firm TierPoint",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "IPE Real Assets"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Tract",
+    "owners": [
+      {
+        "name": "Berkshire Partners",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Data Center Frontier names Berkshire Partners among Tract's major institutional backers; stake size and deal date not stated.",
+        "source": {
+          "url": "https://www.datacenterfrontier.com/site-selection/article/55308975/scaling-up-tracts-master-planned-land-and-infrastructure-approach-to-data-center-development",
+          "label": "Scaling Up: Tract's Master-Planned Land and Infrastructure Approach",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Data Center Frontier"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "PSP Partners",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Data Center Frontier names PSP Partners among Tract's major institutional backers; stake size and deal date not stated.",
+        "source": {
+          "url": "https://www.datacenterfrontier.com/site-selection/article/55308975/scaling-up-tracts-master-planned-land-and-infrastructure-approach-to-data-center-development",
+          "label": "Scaling Up: Tract's Master-Planned Land and Infrastructure Approach",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Data Center Frontier"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Permira",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Data Center Frontier names Permira among Tract's major institutional backers; stake size and deal date not stated.",
+        "source": {
+          "url": "https://www.datacenterfrontier.com/site-selection/article/55308975/scaling-up-tracts-master-planned-land-and-infrastructure-approach-to-data-center-development",
+          "label": "Scaling Up: Tract's Master-Planned Land and Infrastructure Approach",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Data Center Frontier"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "S2G Ventures",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Data Center Frontier names S2G Ventures among Tract's major institutional backers; stake size and deal date not stated.",
+        "source": {
+          "url": "https://www.datacenterfrontier.com/site-selection/article/55308975/scaling-up-tracts-master-planned-land-and-infrastructure-approach-to-data-center-development",
+          "label": "Scaling Up: Tract's Master-Planned Land and Infrastructure Approach",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Data Center Frontier"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Columbia Capital",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Data Center Frontier names Columbia Capital among Tract's major institutional backers; stake size and deal date not stated.",
+        "source": {
+          "url": "https://www.datacenterfrontier.com/site-selection/article/55308975/scaling-up-tracts-master-planned-land-and-infrastructure-approach-to-data-center-development",
+          "label": "Scaling Up: Tract's Master-Planned Land and Infrastructure Approach",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Data Center Frontier"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "CoreSite",
+    "owners": [
+      {
+        "name": "American Tower",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "stakePct": 100,
+        "since": "2021-12",
+        "note": "American Tower completed its acquisition of CoreSite on 28 December 2021 via a wholly owned subsidiary merger; CoreSite survived as a subsidiary.",
+        "source": {
+          "url": "https://www.coresite.com/news/american-tower-completes-acquisition-coresite-realty-corporation-0",
+          "label": "American Tower Completes Acquisition of CoreSite Realty Corporation",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "CoreSite"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Sabey Data Centers",
+    "owners": [
+      {
+        "name": "Sabey Corporation",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "note": "Sabey describes the company as a joint venture between Sabey Corporation and National Real Estate Advisors, the latter acting as investment manager for institutional clients; split not stated.",
+        "source": {
+          "url": "https://sabeydatacenters.com/news/sabey-data-centers-announces-30-megawatt-capacity-expansion-in-the-pacific-northwest",
+          "label": "Sabey Data Centers Announces 30-Megawatt Capacity Expansion",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Sabey Data Centers"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "National Real Estate Advisors",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "note": "Sabey describes the company as a joint venture between Sabey Corporation and National Real Estate Advisors, the latter acting as investment manager for institutional clients; split not stated.",
+        "source": {
+          "url": "https://sabeydatacenters.com/news/sabey-data-centers-announces-30-megawatt-capacity-expansion-in-the-pacific-northwest",
+          "label": "Sabey Data Centers Announces 30-Megawatt Capacity Expansion",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Sabey Data Centers"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  }
+]

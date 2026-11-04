@@ -62,12 +62,15 @@ export default async function StakeholdersIndexPage() {
 
       <section className="max-w-2xl space-y-4">
         <p className="text-base leading-relaxed text-muted-foreground">
-          A person or organization is listed here against a facility only
-          where a cited source ties them to that specific site &mdash; not
-          merely to its operator. Public officials are listed for a documented role in a
-          site&rsquo;s approval or funding; listing does not by itself imply
-          a financial interest. This page grows as sourced entries land, so
-          most tracked facilities carry no stakeholder record yet.
+          A person or organization is listed against a facility only where a
+          cited source ties them to that specific site. Owners of a whole
+          operating company are listed too, marked &ldquo;via&rdquo; the
+          operator; those stakes are held in the company, not documented for
+          any one site, and are not counted as site-level. Public officials
+          are listed for a documented role in a site&rsquo;s approval or
+          funding; listing does not by itself imply a financial interest.
+          This page grows as sourced entries land, so most tracked facilities
+          carry no site-level stakeholder record yet.
         </p>
       </section>
 
@@ -94,7 +97,7 @@ export default async function StakeholdersIndexPage() {
             All tracked stakeholders
           </h2>
           <ul className="grid gap-2 sm:grid-cols-2">
-            {people.map(({ name, slug, roles, facilityCount, states }) => (
+            {people.map(({ name, slug, roles, facilityCount, states, viaOperators }) => (
               <li key={slug}>
                 <Link
                   href={`/stakeholders/${slug}`}
@@ -103,12 +106,21 @@ export default async function StakeholdersIndexPage() {
                   <span className="flex items-baseline justify-between gap-2">
                     <span className="text-sm text-foreground truncate">{name}</span>
                     <span className="font-mono tabular-nums text-xs text-muted-foreground shrink-0">
-                      {facilityCount} {facilityCount === 1 ? "site" : "sites"}
+                      {facilityCount > 0
+                        ? `${facilityCount} ${facilityCount === 1 ? "site" : "sites"}`
+                        : `via ${viaOperators.length} ${viaOperators.length === 1 ? "operator" : "operators"}`}
                     </span>
                   </span>
                   <span className="font-mono text-xs text-muted-foreground truncate">
-                    {roles.map(formatStakeholderRole).join(", ")} &middot; {states.join(", ")}
+                    {[roles.map(formatStakeholderRole).join(", "), states.join(", ")]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </span>
+                  {facilityCount > 0 && viaOperators.length > 0 && (
+                    <span className="font-mono text-xs text-muted-foreground truncate">
+                      {`via ${viaOperators.length} ${viaOperators.length === 1 ? "operator" : "operators"}`}
+                    </span>
+                  )}
                 </Link>
               </li>
             ))}

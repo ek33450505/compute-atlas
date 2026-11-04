@@ -272,9 +272,9 @@ A few key distinctions:
 
 An optional `stakeholders[]` array names people and organizations with a
 documented stake in a specific facility. An entry's `kind` is `person` or
-`organization`; an entry with no `kind` is a person. Coverage is deliberately sparse — not because data is missing,
-but because the field follows a strict site-level standard that excludes most
-candidates.
+`organization`; an entry with no `kind` is a person. Coverage is deliberately
+sparse — not because data is missing, but because the field follows a strict
+site-level standard that excludes most candidates.
 
 **The site-level standard:** A source must name the person or
 organization in connection with THIS facility, not merely its operator.
@@ -285,6 +285,17 @@ carry zero stakeholders. The same standard applies to organizations: an
 infrastructure fund holding joint-venture equity in one campus qualifies, while
 an owner of the whole operator does not, because that is an operator-level
 relationship rather than a site-level one.
+
+**The operator-ownership layer:** Owners of a whole operating company are
+recorded separately, in `data/operator-ownership.json`, because they are real
+and citable but cover many sites and so cannot meet the site-level standard.
+Each row names one owner of one operator (matched on the exact operator name),
+with a role of `controlling_owner` or `investor`, an optional stake and start
+date, a neutral note, its own source and an `asOf` date. These rows appear on a
+facility page under "Through the operator", on the operator's page under
+"Ownership", and on the owner's stakeholder page under "Through operator
+ownership". They are never counted as site-level stakes: an owner's facility
+count includes only sites where a source ties them to that site.
 
 **Why `sourceIndex` and `asOf` are required:** Both are mandatory, unlike the
 optional `sourceIndex` on `jobs` and `community`. A name without a citation is

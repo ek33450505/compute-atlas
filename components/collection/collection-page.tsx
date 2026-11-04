@@ -32,6 +32,8 @@ export interface CollectionPageProps {
   facilities: Facility[];
   /** Shown in place of the card grid when `facilities` is empty. */
   emptyMessage?: string;
+  /** Extra sections rendered between the stat row and the card grid. */
+  beforeGrid?: ReactNode;
 }
 
 const DEFAULT_EMPTY_MESSAGE = "No facilities currently match this view.";
@@ -92,6 +94,7 @@ export function CollectionPage({
   statRow,
   facilities,
   emptyMessage = DEFAULT_EMPTY_MESSAGE,
+  beforeGrid,
 }: CollectionPageProps) {
   const { markerAt, footnotes } = assignFootnoteMarkers(statRow);
 
@@ -126,6 +129,8 @@ export function CollectionPage({
           <StatFootnotes footnotes={footnotes} className="-mt-4" />
         </div>
       )}
+
+      {beforeGrid}
 
       {facilities.length === 0 ? (
         <p className="text-base text-muted-foreground">{emptyMessage}</p>

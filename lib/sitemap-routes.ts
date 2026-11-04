@@ -307,8 +307,12 @@ export async function buildStakeholderRoutes(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     ...people.map((p) => {
-      const personFacilities = facilities.filter((f) =>
-        (f.stakeholders ?? []).some((s) => s.name === p.name)
+      // Site-level stakes plus facilities reached through an owned operator:
+      // the hub lists both, so it changes when either changes.
+      const personFacilities = facilities.filter(
+        (f) =>
+          (f.stakeholders ?? []).some((s) => s.name === p.name) ||
+          p.viaOperators.some((v) => v.operator === f.operator)
       );
       return {
         url: `${siteConfig.url}/stakeholders/${p.slug}`,

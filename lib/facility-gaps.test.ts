@@ -124,6 +124,16 @@ describe("missingSectionLabels", () => {
     expect(missing).toEqual(ALL_SEVEN.filter((l) => l !== label));
   });
 
+  // An owned operator makes the page's Stakeholders section render (its
+  // "Through the operator" group), but that is not a site-level record: the
+  // brief must keep saying stakeholders are not recorded for the site.
+  it("keeps 'stakeholders' in the list for an owned operator with no site-level stakeholder", async () => {
+    const missing = await missingSectionLabels(makeBare({ operator: "QTS Data Centers" }));
+
+    expect(missing).toContain("stakeholders");
+    expect(missing).toEqual(ALL_SEVEN);
+  });
+
   // The empty-object hole: schema-valid, renders nothing, and must therefore
   // be NAMED as missing. Reported as present, the printed brief would assert
   // this record has air-permit data on a page that shows none.
