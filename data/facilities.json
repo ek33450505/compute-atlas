@@ -344,8 +344,18 @@
         "kind": "iso_queue"
       }
     ],
-    "lastUpdated": "2026-10-09",
+    "lastUpdated": "2026-11-04",
     "notes": "The 2015 release describes a 232,000 sq ft data center plus a separate 60,000 sq ft business-continuity center on a 32-acre campus, with 24 MW of usable utility power and approvals for an additional 50 MW on-site substation. The May 2026 Rockland County Times report describes a 1547 / Harrison Street Asset Management joint venture. It says the site had about 3.7 MW of critical IT load at its 2021 acquisition, about 14 MW was added since, and it now carries about 18 MW. A 12 MW utility feed is under development. A further 230,000 sq ft building is pre-approved, to be served by a planned 60 MW on-site substation. No planned IT MW was stated, so no planned capacity is recorded. The NYISO row (#1715) gives Rockland County but reads 'NJ' in its state column, which appears to be a data-entry error. PeeringDB also lists a ColoHouse presence at the same address (a tenant). This campus is distinct from DataBank LGA3 (2000 Corporate Dr), the Bloomberg LP data center (155 Corporate Dr) and the JPMorgan Chase data center in Orangeburg. Coordinates are the PeeringDB geocode.",
+    "stakeholders": [
+      {
+        "name": "Harrison Street Asset Management",
+        "kind": "organization",
+        "role": "investor",
+        "note": "A May 2026 Rockland County Times item carrying a joint release by Harrison Street Asset Management and fifteenfortyseven names both as announcing the third-phase buildout of their Orangeburg, New York colocation facility.",
+        "sourceIndex": 1,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -1350,9 +1360,16 @@
         "publisher": "Gongwer Ohio (Ohio Tax Credit Authority exhibit)",
         "retrievedAt": "2026-10-28",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/business/stateincentives/Meeting_Minutes_10.27.2025.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, October 27, 2025",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "5C Group (formed May 2025 when Hypertec Cloud acquired 5C Data Centers) owns/builds the campus in the Prime Ohio corporate park; Vultr (legal entity The Constant Company, LLC) is the AI/cloud tenant. A separate Ohio Tax Credit Authority approval (December 15, 2025) went to Crusoe Energy Systems LLC for a new data center in the City of Springfield, with a $444.5 million fixed-asset investment and 20 jobs, distinct from The Constant Company approval of October 27, 2025 for this project. As of October 2026 no cited source says whether the Crusoe project is at this campus or at another site in Springfield, so it is not combined with this record and its relationship to this project is unresolved. Capacity: 75 MW disclosed operating load at opening vs. 150 MW max design load (city FAQ) -- both real, tracked field carries the larger design figure. Investment: ~$1.3B total project cost (multi-source) vs. $901.3M JobsOhio incentive-scoped committed investment -- tracked field carries the total-project figure. 120 permanent jobs / >$14M annual payroll disclosed (WYSO); a separate JobsOhio incentive filing cites 20 committed data-infrastructure jobs (narrower, incentive-scoped count). Incentives: ~$95M city enterprise-zone abatement over 15 years; $32M+ state 10-year 50% Ohio Tax Credit Authority credit (Oct 2025) to The Constant Company. Community context: Springfield passed a 6-month moratorium on new data centers and a citizen petition to ban them was launched; Clark County (Jul 2026) restricted data centers to I-2 heavy-industrial zoning, but the county's own zoning administrator noted no I-2 parcels currently exist in county jurisdiction, and Springfield Township (where Prime Ohio sits) zones separately from the county -- this rule change may not directly bind this site.",
     "energy": {
       "source": "grid",
@@ -1381,6 +1398,40 @@
       "notes": "6-month moratorium, citizen ban petition, and a county zoning restriction (I-2 heavy-industrial, of unclear applicability to this township-zoned site) -- see notes field for full context.",
       "sourceIndex": 4
     },
+    "stakeholders": [
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 27, 2025 meeting, The Constant Company, LLC (Springfield; 50%, 10-year exemption): present per the roll call and voted yes; minutes: motion carried 4-0, all present voted yes.",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 27, 2025 meeting, The Constant Company, LLC (Springfield; 50%, 10-year exemption): present per the roll call and voted yes; minutes: motion carried 4-0, all present voted yes.",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Eric Lindner",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, October 27, 2025 meeting, The Constant Company, LLC (Springfield; 50%, 10-year exemption): moved approval; motion carried 4-0, all present voting yes per the minutes.",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joy Evangelista",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 27, 2025 meeting, The Constant Company, LLC (Springfield; 50%, 10-year exemption): seconded the motion; carried 4-0, all present voting yes per the minutes.",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -10156,9 +10207,16 @@
         "publisher": "DatacenterDynamics",
         "retrievedAt": "2026-10-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1144879/000149315225021955/ex99-1.htm",
+        "label": "Applied Digital 8-K Exhibit 99.1: additional Macquarie preferred equity draws",
+        "publisher": "Applied Digital Corp. (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "Campus is 400 MW fully contracted to CoreWeave under ~15-year lease agreements valued at ~$11B total revenue. Three buildings: Building 1 (100 MW) complete Dec 2025; Building 2 (150 MW) had its first 75 MW phase declared Ready for Service in a July 1, 2026 release, bringing live capacity to 175 MW; Building 3 (150 MW) expected 2027. Coordinates are Ellendale city centroid; exact site is northeast of the city. Local jobs are reported only as projections — 'as many as 85 new jobs' (Dec 2024) and up to ~110 total local workforce at full expansion — not confirmed headcounts. As of July 2026, no confirmed total campus capital-expenditure figure was public (the ~$11B CoreWeave figure is 15-year lease revenue, not capex); North Dakota's data-center sales-tax exemption applies but individual award amounts are statutorily confidential. Applied Digital's executive vice president of public affairs and real estate acquisitions said in March 2025 that the first building was about a $1.3 billion investment for the company, with another $4 billion anticipated for the buildings, transformers, chillers and mechanical equipment; because the second amount is anticipated rather than confirmed, no investment figure is recorded. The same executive put the total capital investment on the 320-acre site at about $20 billion, which additionally counts approximately $15 billion the customer was expected to invest.",
     "energy": {
       "source": "grid",
@@ -10180,6 +10238,16 @@
       "notes": "Ellendale (pop. ~1,000) has welcomed the campus as a transformative economic boost; the state's R-WISH rural-workforce housing program is funding new homes for incoming workers. No documented opposition or litigation. Coverage notes workforce and housing strain as growing pains.",
       "sourceIndex": 2
     },
+    "stakeholders": [
+      {
+        "name": "Macquarie Asset Management",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Applied Digital stated that Macquarie Asset Management would fund $337.5 million of preferred equity into Polaris Forge 1 in Ellendale, ND, under its previously disclosed facility of up to $5.0 billion.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -10258,9 +10326,16 @@
         "publisher": "Applied Digital Corporation",
         "retrievedAt": "2026-10-27",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1144879/000114487926000002/apldq226earningsrelease.htm",
+        "label": "Applied Digital 8-K: fiscal Q2 2026 earnings release",
+        "publisher": "Applied Digital Corp. (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "Two purpose-built facilities totaling more than 1.8 million sq ft. As of the August 2025 announcement, Applied Digital was in advanced negotiations with a U.S.-based investment-grade hyperscaler; no customer or lease value had been publicly confirmed at that point. In October 2025 Applied Digital announced a lease with an unnamed U.S. investment-grade hyperscaler covering 200 MW of critical IT load, approximately $5 billion in total contracted revenue over an estimated 15-year term. The August 2025 announcement described a 280 MW AI factory, and Minnkota Power Cooperative states that the data center is expected to use 280 megawatts at peak, so 280 MW is read as peak electricity demand rather than IT load; the recorded planned capacity is the initial 200 MW of critical IT load that the lease covers in two buildings. The October 2025 release also describes the campus as a 1 GW design, with the tenant holding a first right of refusal on 800 MW more; that expansion potential is not recorded as capacity. Partial operations expected end of 2026; full capacity early 2027. Coordinates are Harwood city centroid; site is approximately 900 acres near this community north of Fargo.",
     "energy": {
       "source": "grid",
@@ -10281,6 +10356,16 @@
       "notes": "Opposition surfaced when the project was announced (Aug 2025): environmental advocates and at least one area farmer argued Minnkota Power Cooperative member-owners (farmers, ranchers, rural residents) could see higher electric rates from the substation/powerline buildout funded to serve the data center; one resident called for a moratorium to allow more planning time. No vote, denial, or litigation reported as of 2026-03-23; the ND Public Service Commission went on to approve the power project 2026-04-29/30.",
       "sourceIndex": 2
     },
+    "stakeholders": [
+      {
+        "name": "Macquarie Asset Management",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Applied Digital reported drawing an additional $562.5 million from Macquarie Asset Management under its preferred equity facility, providing capital for Polaris Forge 1 and Polaris Forge 2.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -11326,9 +11411,16 @@
         "label": "Signal Akron — \"$4.5 million tax credit will help data center expand in Akron\"",
         "retrievedAt": "2026-07-25",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/business/stateincentives/Meeting_Minutes_TCA_3.2.2026_pn7x3l.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, March 2, 2026",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-11-04",
     "notes": "191 E. Miller Ave, Akron, Summit County. First (\"3rd-generation\" per operator terminology) of two Ark Data Centers buildings at this address — see also Ark Data Centers Akron II, a separate, Tier III-certified building at the same street address. 10,000 sq ft / 300 racks, 1MW utility power with a 1MW N+1 diesel generator, 2N battery UPS. No formal Tier certification found for this building (unlike Akron II). Fiber-ring-connected to the company's Independence, OH facility. The operator's own Ohio rollup page lists a conflicting \"Akron: 20,000 sqft / 5MW\" combined figure that does not reconcile with the per-building detail page used here — flagged as an inconsistency on the operator's own materials, detail-page figures preferred. No AI/HPC-specific marketing found.",
     "energy": {
       "utility": "Ohio Edison (FirstEnergy)"
@@ -11342,6 +11434,40 @@
       }
     ],
     "investmentUsd": 25000000,
+    "stakeholders": [
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): voted no on the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): seconded the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joy Evangelista",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): voted yes on the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Matt McClellan",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): moved approval of a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -11396,9 +11522,16 @@
         "label": "Signal Akron — \"$4.5 million tax credit will help data center expand in Akron\"",
         "retrievedAt": "2026-07-25",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/business/stateincentives/Meeting_Minutes_TCA_3.2.2026_pn7x3l.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, March 2, 2026",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-11-04",
     "notes": "191 E. Miller Ave, Akron, Summit County — same street address as Ark Data Centers Akron I but a physically separate (\"4th-generation\") building, per the operator's own materials describing \"two purpose-built, concurrently maintainable facilities\" totaling 52,000+ sq ft. 10,000 sq ft / 300 racks, 1MW utility power with a 1MW N+1 diesel generator, 2N battery UPS. Uptime Institute-certified Tier III — the only Tier certification found across any of the Ark/Involta Ohio sites researched. ENERGY STAR certified 2023. Fiber-ring-connected to the company's Independence, OH facility. No AI/HPC-specific marketing found (one customer testimonial referencing AI describes a tenant's healthcare application, not the operator's own infrastructure marketing).",
     "energy": {
       "utility": "Ohio Edison (FirstEnergy)"
@@ -11412,6 +11545,40 @@
         "jurisdiction": "State of Ohio",
         "year": "2026",
         "sourceIndex": 4
+      }
+    ],
+    "stakeholders": [
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): voted no on the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): seconded the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joy Evangelista",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): voted yes on the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Matt McClellan",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): moved approval of a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
       }
     ],
     "facilityType": "data_center"
@@ -11668,9 +11835,16 @@
         "label": "Signal Akron — \"$4.5 million tax credit will help data center expand in Akron\"",
         "retrievedAt": "2026-07-25",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/business/stateincentives/Meeting_Minutes_TCA_3.2.2026_pn7x3l.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, March 2, 2026",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-07-25",
+    "lastUpdated": "2026-11-04",
     "notes": "7300 E Pleasant Valley Rd, Independence, Cuyahoga County (Cleveland metro). Rebranded from Involta to Ark Data Centers May 15, 2024 (Carlyle-backed). Fiber-ring-connected to the company's Akron facilities for real-time twinned services, per the City of Independence's own economic development page (independent of operator marketing). A single third-party directory cites 1.5MW capacity, uncorroborated elsewhere as of July 2026 — not recorded as capacity rather than stated as fact. No source supports a Tier rating or 2N+ UPS claim for this specific site (an unrelated \"Cleveland\" line item on the operator's own rollup page does not reconcile with this facility's known footprint), so no Tier or redundancy rating is recorded. As of July 2026, no AI/HPC-specific marketing had been found.",
     "subsidies": [
       {
@@ -11678,6 +11852,40 @@
         "jurisdiction": "State of Ohio",
         "year": "2026",
         "sourceIndex": 5
+      }
+    ],
+    "stakeholders": [
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): voted no on the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): seconded the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joy Evangelista",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): voted yes on the motion to approve a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Matt McClellan",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, March 2, 2026 meeting, item for ark data centers, LLC (project in Akron/Independence): moved approval of a 50 percent, 10-year tax exemption; motion carried 3-1.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
       }
     ],
     "facilityType": "data_center"
@@ -17136,9 +17344,16 @@
         "publisher": "City of Clarksdale",
         "retrievedAt": "2026-10-07",
         "kind": "other"
+      },
+      {
+        "url": "https://www.starherald.net/most-recent/its-official-amazon-behind-record-10-billion-investment-mississippi-65b5de26bbac8",
+        "label": "Its official: Amazon behind record $10 billion investment in Mississippi",
+        "publisher": "Magnolia Tribune (via Star-Herald)",
+        "retrievedAt": "2026-11-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-07",
+    "lastUpdated": "2026-11-04",
     "notes": "Two distinct complexes: Madison County Mega Site (outside Canton) and Costas Property (west of Tougaloo College near County Line Rd, Ridgeland). Amazon's total Mississippi statewide commitment expanded to $25B including subsequent Warren County ($3B) and Hinds County ($1B) announcements. Coordinates are approximate Canton-area centroid. The Veolia water partnership claim was removed: the About Amazon source names Arable (not Veolia) as water replenishment partner; recycled wastewater target of 83M gallons/year by 2027 is confirmed. Narrowed to Canton on 2026-09-10 (maintainer adjudication): this record previously combined two campuses. Madison County's own tax administration treats them as separate — it 'has entered into two fee-in-lieu-of-taxes agreements with the tech giant for its data center campuses in Canton and Ridgeland' (Mississippi Free Press, 2026-08-19) — and Magnolia Tribune (2024-07-24) gives the physical split: the Madison County Mega Site is '927 acres ... located off Highway 22 and Nissan Parkway in Canton', while the Costas Property is 'an additional 786 acres in Ridgeland'. The Ridgeland campus is therefore, as of September 2026, tracked separately as AWS Costas Property Campus (Ridgeland), and the land acreage here was reduced from the combined 1,700 to Canton's 927 so the two records do not double-count acreage. The capacity, investment and jobs figures on this record remain program-level figures from the original Project Atlas announcement covering both Madison County campuses; they are left in place here rather than split, because no source apportions them per campus. They should not be summed with AWS Costas Property Campus (Ridgeland), which carries no capacity, investment or jobs figures for this reason. The location was also corrected from an exact pin to an approximate pin: this record's notes already stated the coordinate is a Canton-area centroid, so the exact-pin claim was wrong. The two campuses are treated by Madison County's tax and incentive administration as legally and financially separate: the Madison County Mega Site (927 acres, off Highway 22 and Nissan Parkway, Canton) and the Costas Property (786 acres, Highland Colony Parkway / West County Line Road, Ridgeland), as confirmed by a 2026-08-19 Mississippi Free Press report on Madison County's denial of AWS's Canton tax-valuation appeal: the county 'has entered into two fee-in-lieu-of-taxes agreements with the tech giant for its data center campuses in Canton and Ridgeland.' The latitude and longitude (32.6121, -90.039) read as Canton-specific, closer to Canton than to Ridgeland. The combined capacity (1000 MW planned), investment ($10B) and jobs (7,000/1,000) are not apportioned by site: as of September 2026, no source found states a per-site breakdown, and apportioning by acreage share (54%/46%) would be a fabricated estimate. Ridgeland is itself within Madison County, so the aggregate's 'Madison County' framing is not geographically wrong, only combined.",
     "energy": {
       "source": "solar",
@@ -17174,6 +17389,16 @@
       "notes": "Canton neighbors report dust, noise and air-quality effects and say they were not consulted; the Southern Environmental Law Center has raised ambient-air-standard concerns over the 700+ diesel generators. No litigation over the Canton campus is documented in the fetched sources.",
       "sourceIndex": 4
     },
+    "stakeholders": [
+      {
+        "name": "Tate Reeves",
+        "role": "public_official",
+        "via": "Governor of Mississippi",
+        "note": "Governor Tate Reeves called the January 2024 special session of the Mississippi Legislature in which incentives for the Project Atlas data center complexes in Madison County were approved.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
   },
@@ -24834,7 +25059,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "Announced 2026-07-29 on part of DOE's former Paducah Gaseous Diffusion Plant (a Superfund site). Brookfield develops/operates the AI/HPC campus; NextEra builds dedicated adjacent generation (see the linked power-generation record, NextEra Paducah Site Dedicated Generation). First components could come online as soon as 2028; construction expected complete 2031. Investment reported as 'more than $100 billion' — recorded as $100,000,000,000.",
     "energy": {
       "source": "mixed",
@@ -24855,6 +25080,16 @@
       "notes": "No community reaction reporting found as of 2026-09-10; project was announced 2026-07-29 by the Paducah American Energy Hub coalition on part of the DOE's former Paducah Gaseous Diffusion Plant site.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "U.S. Department of Energy",
+        "kind": "organization",
+        "role": "landowner",
+        "note": "DOE's 2026-07-29 release announces a partnership with Brookfield and NextEra to redevelop portions of DOE's Paducah Site into a data center campus; Brookfield was selected to develop and operate it after DOE's November 2025 Request for Offers.",
+        "sourceIndex": 0,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -32857,7 +33092,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "Subsidy: no formal abatement request had been filed as of 24 July 2026, according to Yellowhammer News, which reports that the granting body would be the Lowndes County Commission. Under legislation signed by Gov. Kay Ivey in April 2026, an abatement approved before 1 January 2027 could run up to 30 years; after that date the maximum is 20 years. In October 2026 the Lowndes County Commission voted 3-2 to approve the tax abatements and project agreement; AL.com, republished by GovTech, reports the county granted \"more than $1.1 billion in tax abatements\", including 50% of the county non-educational property tax and the construction and server equipment refresh sales and use tax. No named tenant: Yellowhammer describes Cloverleaf as a Houston- and Seattle-based speculative developer assembling land for an unnamed future operator; the AI classification is therefore likely, not confirmed. Investment is \"$1.5 billion\" per WSFA and Route Fifty (\"at least $1.5 billion in the development stage\"), which is the floor recorded. The developer's own site, which said \"Over a $1 billion taxable investment in Lowndes County\" in September 2026, states no investment figure as of October 2026. Jobs: as of October 2026 the developer's site says the project will employ \"more than 1,000 construction workers\" and that full-time roles \"will grow from 225 initially to over 300 at full scale\"; the recorded figures are those floors (more than 1,000 construction jobs, over 300 full-time jobs at full scale). Other coverage that could not be retrieved as of September 2026 cites 1,000-1,500 construction and over 200 permanent jobs. Footprint: \"more than 800 acres in northeast Lowndes County\" and \"2.88 million square feet\" (Yellowhammer). Zoning: reporting notes Cloverleaf could buy and develop here because Lowndes County has no planning or zoning authority. Coordinates are the OSM-confirmed U.S. 80 / AL 21 junction that WSFA names as the site vicinity, not a parcel boundary; the actual footprint is somewhere in northeast Lowndes County near that junction.",
     "energy": {
       "source": "grid",
@@ -32889,6 +33124,48 @@
       "notes": "Route Fifty (25 Aug 2026): \"About 350 people signed the group's petition demanding more transparency from the commission\" — the group is Protect Lowndes County, which filed an open-records request on 27 July 2026 seeking project documentation and entity lists. WSFA (4 June 2026) records a resident telling the developer \"We're from Lowndes County...Go home. We don't want you,\" alongside concerns about water use, power bills, noise and transparency. A separate campaign site (45strong.net) titled \"Cloverleaf, withdraw from Lowndes County\" appeared in search results but was not reviewed and is not cited. Yellowhammer News notes the site is \"half a mile from a field where Selma-to-Montgomery marchers camped in 1965\" and that the access road is the Robert \"Bob\" Mants Jr. Memorial Highway.",
       "sourceIndex": 2
     },
+    "stakeholders": [
+      {
+        "name": "Charlie King",
+        "role": "public_official",
+        "via": "Lowndes County Commission",
+        "note": "Chairman of the Lowndes County Commission; voted for the tax abatements and project agreement for Project Red Clay. Outcome: approved 3-2 (reported 2026-10-14).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Dickson Farrior",
+        "role": "public_official",
+        "via": "Lowndes County Commission",
+        "note": "Vice-chairman of the Lowndes County Commission; voted against the tax abatements and project agreement for Project Red Clay. Outcome: approved 3-2 (reported 2026-10-14).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Fletcher Hayes",
+        "role": "public_official",
+        "via": "Lowndes County Commission",
+        "note": "Member of the Lowndes County Commission; voted for the tax abatements and project agreement for Project Red Clay. Outcome: approved 3-2 (reported 2026-10-14).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joseph Barganier",
+        "role": "public_official",
+        "via": "Lowndes County Commission",
+        "note": "Member of the Lowndes County Commission; voted against the tax abatements and project agreement for Project Red Clay. Outcome: approved 3-2 (reported 2026-10-14).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Robert Harris",
+        "role": "public_official",
+        "via": "Lowndes County Commission",
+        "note": "Member of the Lowndes County Commission; voted for the tax abatements and project agreement for Project Red Clay. Outcome: approved 3-2 (reported 2026-10-14).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -43123,15 +43400,40 @@
         "publisher": "Business Wire / Energy Capital Partners (via Internet Archive)",
         "retrievedAt": "2026-08-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.ecpgp.com/about/news-and-insights/press-releases/2025/energy-capital-partners--ecp--and-kkr-announce-development-of-hy",
+        "label": "Energy Capital Partners (ECP) and KKR Announce Development of Hyperscale Data Center Campus in Texas",
+        "publisher": "Energy Capital Partners",
+        "retrievedAt": "2026-11-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-08-26",
+    "lastUpdated": "2026-11-04",
     "notes": "Referenced in CyrusOne's Freestone Energy Center release as a separate, already-agreed 400MW arrangement between Calpine and CyrusOne tied to the Thad Hill Energy Center in Bosque County (part of CyrusOne's >1,100MW contracted Texas power total). A July 2025 Energy Capital Partners and KKR release describes a 190 MW hyperscale campus at this site, the first investment from their $50 billion strategic partnership, being constructed through a joint venture with CyrusOne, with an initial IT capacity of 144 megawatts and an expected total investment 'approaching $4 billion'. Calpine's November 2025 release says the second phase of its agreement 'adds 210MW of power to the 190MW originally announced in July'.",
     "energy": {
       "source": "on_site_gas",
       "utility": "Calpine",
       "onSiteGenerationMw": 400
     },
+    "stakeholders": [
+      {
+        "name": "Energy Capital Partners",
+        "kind": "organization",
+        "role": "investor",
+        "note": "ECP's July 2025 release, issued jointly with KKR, announces development of a 190 MW hyperscale campus in Bosque County, Texas, as the first investment of the ECP/KKR partnership.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "KKR",
+        "kind": "organization",
+        "role": "investor",
+        "note": "KKR's July 2025 release, issued jointly with ECP, announces development of a 190 MW hyperscale campus in Bosque County, Texas, as the first investment of the ECP/KKR partnership.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -47740,10 +48042,20 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-09-14",
+    "lastUpdated": "2026-11-04",
     "notes": "292-acre, 8-building campus. Distinct operator/site from Compass Datacenters' separate Red Oak, TX campus (same town, different companies).",
     "investmentUsd": 837000000,
     "landAcres": 292,
+    "stakeholders": [
+      {
+        "name": "MUFG Bank, Ltd.",
+        "kind": "organization",
+        "role": "lender",
+        "note": "DataBank's April 2026 release says MUFG Bank was Administrative Agent, Coordinating Lead Arranger and Sole Bookrunner on a $2.0B construction financing for the first three data centers on its Red Oak, Texas campus.",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -58513,9 +58825,16 @@
         "publisher": "Ohio Power Siting Board (case-tracking map data)",
         "retrievedAt": "2026-10-28",
         "kind": "filing"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/business/stateincentives/Meeting_Minutes_10.27.2025.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, October 27, 2025",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "notes": "EdgeConneX's ~$1B multi-phase \"MCN New Albany\" South campus. Per the Ohio Tax Credit Authority scope-of-work filing: Phase I converts a ~525,000 sq ft existing warehouse (9850 Innovation Campus Way) into an 80 MW data center; Phase II proposes two new 72 MW facilities (144 MW) — the planned capacity is 224 (80 + 144, IT load). A co-located PowerConneX natural-gas energy center (reported 140–216 MW of generation across sources) is excluded from the capacity figure as on-site generation, not IT load. Footprint is the four EdgeConneX MCN New Albany South PropCo 2 LLC parcels (97.53 ac per the Licking County Auditor, incl. the 33.86 ac built anchor at 9850 Innovation Campus Way). As of October 2026, the adjacent North PropCo 1 parcel (3356 Clover Valley Rd NW, 170.29 ac) is tracked separately as the EdgeConneX New Albany North Campus. \"MCN\" is EdgeConneX's internal project prefix (not publicly decoded). Distinct from EdgeConneX's separate Piper Farms land (12 parcels, 136.38 acres in Monroe Township per the Licking County Auditor, deeded 2025-11-17; as of October 2026 about 2.8 mi from this campus's recorded point, and no cited source states its intended use) and from EdgeConneX's Ashville Campus (Pickaway County). Public reception, as of 2026-09-10: this is EdgeConneX's New Albany/Licking County campus (Innovation Campus Way; PowerConneX I (120 MW) and II (216 MW) serve this campus; PowerConneX New Albany 3 (OPSB lists 450 MW; an operator notice said up to 430 MW) serves the North Campus). It is a separate EdgeConneX project from the heavily-opposed EdgeConneX proposal in Ashville, Pickaway County, OH (denied annexation 2026-02-02 after packed council meetings and a Change.org petition). For New Albany/Licking County specifically, a 2025 article on EdgeConneX's separate Piper Farms land purchase (checked 2026-09-10) mentions only general Central Ohio-wide concern that data centers could raise electricity costs, immediately caveated because this project's power comes from dedicated on-site generation (PowerConneX), not the residential grid. No hearing, resident testimony, or official statement specific to this Licking County site was found.",
     "subsidies": [
       {
@@ -58527,6 +58846,40 @@
     ],
     "investmentUsd": 1000000000,
     "landAcres": 97.5,
+    "stakeholders": [
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 27, 2025 meeting, EdgeConneX MCN New Albany South entities (50%, 10-year exemption): seconded the motion; carried 4-0, all present voting yes per the minutes.",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 27, 2025 meeting, EdgeConneX MCN New Albany South entities (50%, 10-year exemption): present per the roll call and voted yes; minutes: motion carried 4-0, all present voted yes.",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Eric Lindner",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, October 27, 2025 meeting, EdgeConneX MCN New Albany South entities (50%, 10-year exemption): moved approval; motion carried 4-0, all present voting yes per the minutes.",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joy Evangelista",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 27, 2025 meeting, EdgeConneX MCN New Albany South entities (50%, 10-year exemption): present per the roll call and voted yes; minutes: motion carried 4-0, all present voted yes.",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -66127,7 +66480,7 @@
         "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-10-17",
+    "lastUpdated": "2026-11-04",
     "notes": "Sited in the area known as Estrella, west of Atrisco Vista Boulevard and north of Interstate 40 on Albuquerque's West Side. The $1.2 billion is the private investment figure and also the face amount of the industrial revenue bonds — it is one number serving both roles in the county's structure, not two separate sums. Coordinate is an approximate anchor near the Atrisco Vista / I-40 area, not a parcel boundary.",
     "energy": {
       "source": "solar",
@@ -66154,6 +66507,16 @@
       "notes": "Approved with a community benefits package of up to $2.9 million over five years for phase one, with phase two benefits to be determined; local commentary pressed for the project to deliver benefits beyond the grid.",
       "sourceIndex": 1
     },
+    "stakeholders": [
+      {
+        "name": "Barbara Baca",
+        "role": "public_official",
+        "via": "Bernalillo County Commission",
+        "note": "Bernalillo County Commissioner Barbara Baca sponsored the $1.2 billion industrial revenue bond tax incentive package for the Estrella solar and storage project, which the County Commission approved in August 2026.",
+        "sourceIndex": 1,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "power_generation",
     "generation": {
       "technology": "solar",
@@ -70380,9 +70743,16 @@
         "publisher": "Rocky Mountain PBS",
         "retrievedAt": "2026-10-19",
         "kind": "press"
+      },
+      {
+        "url": "https://douglascounty.legistar1.com/douglascounty/meetings/2026/8/4039_M_Board_of_County_Commissioners_Business_Meeting_26-08-11_MINUTES.pdf",
+        "label": "Board of County Commissioners Business Meeting minutes, 11 Aug 2026",
+        "publisher": "Douglas County, Colorado",
+        "retrievedAt": "2026-11-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-19",
+    "lastUpdated": "2026-11-04",
     "notes": "249,000 sq ft on 17 acres on Compark Boulevard near South Chambers Road. The town of Parker approved rezoning and a data center overlay district in February 2024 after a January 2024 planning-commission approval. Douglas County commissioners unanimously approved a business-personal-property tax rebate over 35 years in August 2026 (KOAA, 2026-08-12); the Denver Gazette (2026-09-12) gives it as $19.3 million, a 100% rebate of the county's share of that tax, and it is recorded as a subsidy. County documents estimate 16 permanent positions, and Flexential confirmed 16 jobs to KOAA in August 2026; company representatives had suggested 30-50 at public meetings in 2024. Coordinates are an approximate Compark Boulevard geocode, not parcel-confirmed. Distinct from Flexential's existing Aurora, Centennial, Downtown and Englewood Denver-market sites.",
     "energy": {
       "source": "grid",
@@ -70413,6 +70783,32 @@
       "notes": "Parker's planning commission (Jan. 2024) and Town Council (Feb. 2024) both approved the rezoning and data center overlay district unanimously; the Colorado Politics article of 2026-08-11 documents no resident opposition to the facility itself. Douglas County commissioners then unanimously approved a business-personal-property tax rebate in August 2026, \"despite objections from residents who questioned whether the incentive is justified\" (KOAA, 2026-08-12); residents at that meeting also raised concerns about noise, lighting and property values. The Colorado Politics article records no opposition testimony; it says Parker is not offering tax incentives for the project, without stated rationale.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "Abe Laydon",
+        "role": "public_official",
+        "via": "Douglas County Board of County Commissioners",
+        "note": "Member of the Douglas County Board of County Commissioners; voted for a business personal property tax rebate of about $19 million for this data center. Outcome: approved unanimously (August 2026).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "George Teal",
+        "role": "public_official",
+        "via": "Douglas County Board of County Commissioners",
+        "note": "Member of the Douglas County Board of County Commissioners; voted for a business personal property tax rebate of about $19 million for this data center. Outcome: approved unanimously (August 2026).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Kevin Van Winkle",
+        "role": "public_official",
+        "via": "Douglas County Board of County Commissioners",
+        "note": "Member of the Douglas County Board of County Commissioners; voted for a business personal property tax rebate of about $19 million for this data center. Outcome: approved unanimously (August 2026).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -71419,9 +71815,16 @@
         "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
         "retrievedAt": "2026-07-23",
         "kind": "other"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000166/wulf-20260630.htm",
+        "label": "TeraWulf Inc. Form 10-Q (quarter ended 2026-06-30), Note 11",
+        "publisher": "SEC EDGAR",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "~120-acre campus in Abernathy (Hale/Lubbock counties). Distinct from the separately-tracked Aligned 'Project Caprock' Abernathy campus (313 acres, different operator/parcel). 168 MW critical IT load (240 MW gross). Google-backed via a ~$1.3B lease obligation backstop. The frequently cited $9.5B is 25-year contracted revenue, not capex (in notes only). Note: the Anthropic lease associated with this deal is at TeraWulf's Justified/Hawesville KY campus, not Abernathy. Coordinates are the Abernathy town centroid.",
     "energy": {
       "source": "grid",
@@ -71429,6 +71832,16 @@
       "notes": "Adjacent Aligned Caprock campus uses Xcel Energy; Fluidstack's Abernathy power provider not named in sources reviewed."
     },
     "landAcres": 120,
+    "stakeholders": [
+      {
+        "name": "TeraWulf Inc.",
+        "kind": "organization",
+        "role": "investor",
+        "note": "TeraWulf's 10-Q (quarter ended 2026-06-30) reports it paid $450.0 million for a 50.1% interest in the Abernathy Joint Venture, FS CS I LLC, and in July 2026 agreed to sell that entire interest to a Fluidstack-led investor group.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -73337,9 +73750,16 @@
         "publisher": "The Block",
         "retrievedAt": "2026-07-10",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1859392/000185939225000039/glxy-20250815.htm",
+        "label": "Galaxy Digital 8-K, Item 1.01: Helios I credit agreement",
+        "publisher": "Galaxy Digital Inc. (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-16",
+    "lastUpdated": "2026-11-04",
     "notes": "Built by Argo Blockchain as a ~180 MW Bitcoin-mining facility in 2022; sold to Galaxy Digital in Dec 2022 amid the crypto-market downturn. Galaxy converted the site to AI/HPC hosting for CoreWeave under a 15-year lease signed March 28, 2025. CoreWeave is the anchor tenant using the campus for large-scale AI model training. Phase I (133 MW critical IT load / 200 MW gross) is complete and operational; further phases toward the 1.63 GW approved total remain under construction. Location is near Afton, Dickens County (West Texas). Original site was 160 acres; campus has since expanded to 2,200+ acres across multiple phases. Coordinates are approximate.",
     "energy": {
       "source": "grid",
@@ -73363,6 +73783,16 @@
       "notes": "Galaxy Digital is the largest employer and taxpayer in Dickens County (pop. <2,000). County official on the CoreWeave lease: \"It's the news we've been waiting to hear — news that will bring jobs and dollars to Dickens County's doorstep.\" No opposition or litigation found. Investment/jobs: Phase 1 financed by a $1.4B debt facility + $350M Galaxy equity; Phase 2 permits estimate $3.5B (Helios 2 ~$900M, Helios 3 & 4 ~$1.3B each). Helios expects \"more than 100 permanent jobs\" plus \"50 or more\" from CoreWeave — floors, not hard counts.",
       "sourceIndex": 3
     },
+    "stakeholders": [
+      {
+        "name": "Deutsche Bank AG, New York Branch",
+        "kind": "organization",
+        "role": "lender",
+        "note": "Galaxy reported a credit agreement of 2025-08-15 naming Deutsche Bank AG, New York Branch as initial lender, with proceeds to finance development and construction of the Dickens County, Texas data center.",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -79712,9 +80142,16 @@
         "publisher": "Xcel Energy",
         "retrievedAt": "2026-10-13",
         "kind": "other"
+      },
+      {
+        "url": "https://pineislandmn.gov/vertical/sites/%7B52A5D060-3422-4069-8E86-A961C2752B7F%7D/uploads/III_B_February_4th_2026_Special_City_Council_Meeting.pdf",
+        "label": "City of Pine Island special council meeting minutes, 4 Feb 2026",
+        "publisher": "City of Pine Island",
+        "retrievedAt": "2026-11-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "Google's first Minnesota campus, Pine Island (Goodhue County), powered by Xcel Energy; ~250,000 sq ft initial building for AI applications. Electric Service Agreement pending MPUC approval as of Feb 2026 → proposed. The associated 1,900 MW (1,400 MW wind + 200 MW solar + 300 MW storage) is a new clean-energy build-out, not the data center's IT load — DC capacity not disclosed (omitted). Faces a local legal challenge. Coordinates are the Pine Island area centroid.",
     "energy": {
       "source": "grid",
@@ -79742,6 +80179,48 @@
     "community": {
       "status": "litigation"
     },
+    "stakeholders": [
+      {
+        "name": "Brandi Veith Staloch",
+        "role": "public_official",
+        "via": "Pine Island City Council",
+        "note": "Member of the Pine Island City Council; voted for Resolution 26-08, the business subsidy and tax abatement agreement for Project Skyway. Outcome: approved 5-0 with all five members present (2026-02-04).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Colton Wright",
+        "role": "public_official",
+        "via": "Pine Island City Council",
+        "note": "Member of the Pine Island City Council; voted for Resolution 26-08, the business subsidy and tax abatement agreement for Project Skyway. Outcome: approved 5-0 with all five members present (2026-02-04).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "David Friese",
+        "role": "public_official",
+        "via": "Pine Island City Council",
+        "note": "Mayor of Pine Island; voted for Resolution 26-08, the business subsidy and tax abatement agreement for Project Skyway. Outcome: approved 5-0 with all five members present (2026-02-04).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Delana Weis",
+        "role": "public_official",
+        "via": "Pine Island City Council",
+        "note": "Member of the Pine Island City Council; voted for Resolution 26-08, the business subsidy and tax abatement agreement for Project Skyway. Outcome: approved 5-0 with all five members present (2026-02-04).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Vernon Pahl",
+        "role": "public_official",
+        "via": "Pine Island City Council",
+        "note": "Member of the Pine Island City Council; voted for Resolution 26-08, the business subsidy and tax abatement agreement for Project Skyway. Outcome: approved 5-0 with all five members present (2026-02-04).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -80049,9 +80528,16 @@
         "publisher": "Public Radio Tulsa / StateImpact Oklahoma",
         "retrievedAt": "2026-09-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cushingcitizen.com/news/county-green-lights-tax-incentive-stillwater-data-center",
+        "label": "County green lights tax incentive for Stillwater data center",
+        "publisher": "Cushing Citizen",
+        "retrievedAt": "2026-11-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "Campus at intersection of Perkins Road and Richmond Road, north of Stillwater. Coordinates are approximate (city centroid shifted north). Up to 6 data center buildings, each 300,000 sq ft. Phase I targeted for 2027. City Council acceptance of final plat required before recording with Payne County Clerk. Job figures are projections (~30 permanent per phase; construction cited as 'thousands') - not recorded as confirmed counts. Oklahoma's Sec. 1357 data-center sales-tax exemption applies by statute but no Stillwater-specific award amount is published.",
     "energy": {
       "source": "grid",
@@ -80076,6 +80562,32 @@
       "notes": "All local taxing jurisdictions approved the 25-year incentive agreement, but Payne County Commissioner Rhonda Markum cast the lone dissenting vote, citing water and transparency concerns (officials were required to sign NDAs before learning project details). A Park View Estates homeowners association filed a civil suit in Payne County District Court against Google's Kipper LLC and its contractors over stormwater runoff/pollution from site grading.",
       "sourceIndex": 4
     },
+    "stakeholders": [
+      {
+        "name": "Rhonda Markum",
+        "role": "public_official",
+        "via": "Payne County Board of Commissioners",
+        "note": "Member of the Payne County Board of Commissioners; voted against a tax incentive for this data center complex. Outcome: approved 2-1 (reported 2025-01-29).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Seth Condley",
+        "role": "public_official",
+        "via": "Payne County Board of Commissioners",
+        "note": "Member of the Payne County Board of Commissioners; voted for a tax incentive for this data center complex. Outcome: approved 2-1 (reported 2025-01-29).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Zach Cavett",
+        "role": "public_official",
+        "via": "Payne County Board of Commissioners",
+        "note": "Member of the Payne County Board of Commissioners; voted for a tax incentive for this data center complex. Outcome: approved 2-1 (reported 2025-01-29).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -85617,9 +86129,16 @@
         "publisher": "Technical.ly",
         "retrievedAt": "2026-09-25",
         "kind": "press"
+      },
+      {
+        "url": "https://environmental.pasenategop.com/wp-content/uploads/sites/131/2025/05/FINAL-HCR-Testimony_.pdf",
+        "label": "Testimony of Corey Hessen, CEO, Homer City Redevelopment, to PA Senate committees",
+        "publisher": "Pennsylvania Senate Republican Caucus",
+        "retrievedAt": "2026-11-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-15",
+    "lastUpdated": "2026-11-04",
     "notes": "Dedicated on-site power generation for the co-located Homer City Energy Campus data centers (tracked separately as of August 2026). Redevelopment of Pennsylvania's largest former coal plant into up to 4.5 GW of natural-gas generation via seven GE Vernova turbines; PA DEP air-quality plan approval issued 2025-11-20, first power targeted 2027. Same-site companion to the data-center record.",
     "energy": {
       "source": "on_site_gas",
@@ -85650,6 +86169,16 @@
       "notes": "Permitted ceilings from the plan approval, not measured emissions. Stated at site level under \"SECTION C. Site Level Plan Approval Requirements\", each \"Based on a 12-month rolling total\". The permit prints the sulfur cap as \"Sulfur Oxides (SOx)\" - recorded here under SO2 with no conversion. Individual HAPs beyond formaldehyde, also tpy: acetaldehyde 2.94, ethylbenzene 2.35, propylene oxide 2.13, toluene 9.58, xylene 4.72. Permit issued 2025-11-18, expires 2027-05-31; it is a Pennsylvania plan approval (a pre-construction authorisation), not a Title V operating permit and not styled a PSD permit - the string \"PSD\" does not appear in it. Scope caveat: the permit authorises up to 17 combustion turbines (7 CC + up to 10 ADGT), while this record’s unit count of 7 describes only the seven GE Vernova 7HA.02 combined-cycle machines - the two counts measure different things. The permittee is \"HOMER CITY GENERATION LP\"; this record’s operator is the developer, Homer City Redevelopment. Twelve emergency generators carry no tpy limit at all (Tier 4 plus a 500 hr/yr cap). Two other figure sets exist in the project record, the PSD net emissions increase and emission reduction credits from the retired coal units; they are not these caps.",
       "sourceIndex": 4
     },
+    "stakeholders": [
+      {
+        "name": "Knighthead Capital Management",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Testimony of Homer City Redevelopment's CEO to Pennsylvania Senate committees (May 12, 2025) says Knighthead Capital Management will lead financing for the more than $10 billion Homer City project; the role as equity or debt is not specified.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
@@ -91379,9 +91908,16 @@
         "publisher": "Construction Owners",
         "retrievedAt": "2026-08-03",
         "kind": "press"
+      },
+      {
+        "url": "https://joliet.legistar1.com/joliet/meetings/2026/3/2615_M_City_Council_Meeting__26-03-19_Meeting_Minutes.pdf",
+        "label": "City of Joliet City Council Meeting Minutes - Final, March 19, 2026 (Council Memos 178-26 and 179-26, Joliet Technology Center annexation)",
+        "publisher": "City of Joliet, Illinois",
+        "retrievedAt": "2026-11-04",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "Coordinates approximate Jackson Township at Rowell and Bernhard Rds, south Joliet (~40 mi SW of Chicago), near Chicagoland Speedway. 24 two-story buildings planned. No confirmed hyperscale tenant as of permit date. Construction start targeted early 2027; first sub-campus by 2028. Construction jobs range reported as 7,000-10,000; permanent approximately 700.",
     "energy": {
       "source": "grid",
@@ -91400,6 +91936,80 @@
       "notes": "Hundreds of residents filled council chambers and overflow rooms; concerns over water/electricity consumption, noise pollution, and proximity to residential areas. Post-approval lawsuit filed naming City of Joliet, PowerHouse, and Hillwood as defendants.",
       "sourceIndex": 1
     },
+    "stakeholders": [
+      {
+        "name": "Cesar Cardenas",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Councilman Cesar Cardenas voted for the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Jan Hallums Quillman",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Councilwoman Jan Hallums Quillman voted for the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joe Clement",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Councilman Joe Clement voted for the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Juan Moreno",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Councilman Juan Moreno voted for the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Larry E. Hug",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Councilman Larry E. Hug voted for the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Pat Mudron",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Councilman Pat Mudron voted for the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Sherri Reardon",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Councilwoman Sherri Reardon voted for the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Suzanna Ibarra",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Councilwoman Suzanna Ibarra voted against the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Terry D'Arcy",
+        "role": "public_official",
+        "via": "Joliet City Council",
+        "note": "Mayor Terry D'Arcy voted for the annexation agreement resolution (8262) and the annexation, I-1 zoning and preliminary PUD ordinances (18826, 18827) for the Joliet Technology Center on 2026-03-19 (8-1 roll calls, all nine present).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -102138,9 +102748,16 @@
         "publisher": "KWQC",
         "retrievedAt": "2026-08-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.iowaeda.com/media/5484/download?inline",
+        "label": "IEDA Board Minutes, May 17, 2024",
+        "publisher": "Iowa Economic Development Authority",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-08-14",
+    "lastUpdated": "2026-11-04",
     "notes": "328-acre parcel at the northwest corner of Hillandale Road and Enterprise Way in northwest Davenport, held through Vemerald LLC, described in a state news release as a wholly owned subsidiary of Meta Platforms, Inc. State board documents from May 2024 said Meta would evaluate the parcel until Q1 2025, break ground by Q4 2025 and complete the data center by end of 2027. As of March 2026 the land had been purchased but construction had not started, so the record stays listed as proposed rather than under construction. Job count is 35 at $28.76/hour or more per state board documents; Davenport city documents put it at 50. Distinct site from the tracked Meta Altoona campus.",
     "subsidies": [
       {
@@ -102162,6 +102779,88 @@
       "notes": "Davenport estimates it would receive $50.6 million more in property tax revenue than if the data center were not built. Local environmental concerns have been raised, and the parcel sitting empty well past the original groundbreaking target has itself become a local story.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "Bobbi Bentz",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Doug Boone",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emily Schmitt",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC (presiding as vice chair).",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Jennifer Steffensmeier",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Lisa Shimkat",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Mark Kittrell",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Megan McKay",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Melissa Ballard",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Pankaj Monga",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Tom Townsend",
+        "role": "public_official",
+        "via": "Iowa Economic Development Authority Board",
+        "note": "Board member present at the 17 May 2024 Iowa Economic Development Authority board meeting, which voted unanimously by roll call to acknowledge Davenport's 20-year, 60% property tax exemption (est. $161M) for Vemerald, LLC.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -102316,9 +103015,16 @@
         "publisher": "Daily Herald (Utah)",
         "retrievedAt": "2026-07-06",
         "kind": "press"
+      },
+      {
+        "url": "https://www.utah.gov/pmn/files/1368129.pdf",
+        "label": "Eagle Mountain Redevelopment Agency Board meeting minutes, November 5, 2025",
+        "publisher": "Eagle Mountain Redevelopment Agency (Utah Public Notice Website)",
+        "retrievedAt": "2026-11-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "energy": {
       "source": "solar",
       "utility": "Rocky Mountain Power (PacifiCorp)",
@@ -102354,6 +103060,48 @@
       "notes": "The city strongly supports the campus (it anchors the general fund; Meta reports $1.5B+ in cumulative Utah data-center investment and $4.1M+ in local school and nonprofit grants since 2019), but arid-Utah water use is contested — state lawmakers passed a 2026 data-center water-reporting law (HB76) partly in response, and the 2018 confidentiality agreement over water data drew criticism.",
       "sourceIndex": 3
     },
+    "stakeholders": [
+      {
+        "name": "Brett Wright",
+        "role": "public_official",
+        "via": "Eagle Mountain Redevelopment Agency Board",
+        "note": "Member of the Eagle Mountain Redevelopment Agency board; voted for the Sweetwater #4 Community Reinvestment Area project area plan, about 567 acres south of the Meta campus. Outcome: adopted 4-1 (2025-11-05).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Donna Burnham",
+        "role": "public_official",
+        "via": "Eagle Mountain Redevelopment Agency Board",
+        "note": "Member of the Eagle Mountain Redevelopment Agency board; voted against the Sweetwater #4 Community Reinvestment Area project area plan, about 567 acres south of the Meta campus. Outcome: adopted 4-1 (2025-11-05).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Jared Gray",
+        "role": "public_official",
+        "via": "Eagle Mountain Redevelopment Agency Board",
+        "note": "Member of the Eagle Mountain Redevelopment Agency board; voted for the Sweetwater #4 Community Reinvestment Area project area plan, about 567 acres south of the Meta campus. Outcome: adopted 4-1 (2025-11-05).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Melissa Clark",
+        "role": "public_official",
+        "via": "Eagle Mountain Redevelopment Agency Board",
+        "note": "Member of the Eagle Mountain Redevelopment Agency board; voted for the Sweetwater #4 Community Reinvestment Area project area plan, about 567 acres south of the Meta campus. Outcome: adopted 4-1 (2025-11-05).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Rich Wood",
+        "role": "public_official",
+        "via": "Eagle Mountain Redevelopment Agency Board",
+        "note": "Member of the Eagle Mountain Redevelopment Agency board; voted for the Sweetwater #4 Community Reinvestment Area project area plan, about 567 acres south of the Meta campus. Outcome: adopted 4-1 (2025-11-05).",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
   },
@@ -103026,9 +103774,16 @@
         "publisher": "Louisiana Economic Development",
         "retrievedAt": "2026-10-17",
         "kind": "press"
+      },
+      {
+        "url": "https://irei.com/news/meta-launches-jv-with-blue-owl-capital-to-develop-hyperion-data-center-in-louisiana/",
+        "label": "Meta launches JV with Blue Owl Capital to develop Hyperion data center in Louisiana",
+        "publisher": "Institutional Real Estate, Inc.",
+        "retrievedAt": "2026-11-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "A second, larger Meta data center development at the same Richland Parish complex is in progress under the internal name 'Project Evest' (Evest LLC, a Meta subsidiary and Laidley affiliate), the subject of a new, not-yet-docketed LPSC certification application (Direct Testimony of Laura K. Beauchamp on behalf of Entergy Louisiana, filed March 2026, public-redacted version). The testimony states Evest 'seeks to develop adjacent to Laidley's data center in Richland Parish, Louisiana, that was the subject of the proceedings in LPSC Docket No. U-37425' (i.e., the already-tracked Hyperion project). To serve Evest, Entergy is seeking certification of seven new 754 MW 1x1 CCCT generators (four near the Richland Parish site, three sited near the existing Big Cajun site in Pointe Coupee Parish) plus battery storage co-located at the Bogalusa West Solar and Cypress Harvest Solar facilities -- on top of the three CCCTs (Franklin Farms 1&2, Waterford 5) already approved for Hyperion itself. Investigative coverage (The Lens, 2026-04-14) puts the combined Hyperion+Evest generation build at 10 new gas plants, 7,000+ MW, and $16B+ in new fossil-fuel infrastructure serving this one customer, and reports the underlying Entergy-Meta commercial agreements are not fully public. As of September 2026, Evest's own docket number and site-specific coordinates were not yet public.",
     "energy": {
       "source": "mixed",
@@ -103059,6 +103814,16 @@
       "notes": "Local farmers and elected officials welcome road, hospital, and school investment; Sierra Club, ratepayer advocates, and The Lens raise concerns about the Entergy gas buildout's burden on customers, water use, and whether operational jobs go to locals. No documented litigation in Richland Parish.",
       "sourceIndex": 5
     },
+    "stakeholders": [
+      {
+        "name": "Blue Owl Capital",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Trade press reports funds managed by Blue Owl Capital own an 80 percent interest in the joint venture with Meta that develops and owns the Hyperion campus in Richland Parish, Louisiana.",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -106979,9 +107744,16 @@
         "publisher": "Licking County Auditor",
         "retrievedAt": "2026-10-14",
         "kind": "other"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/about/taxcreditminutes/Meeting_Minutes_10.28.24.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, October 28, 2024",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "Site at 975 Thornwood Dr SW, Heath OH 43056; 227 acres. Part of Microsoft's $1B Licking County three-campus investment alongside Hebron and New Albany. Coordinates are approximate Heath city centroid; exact Thornwood Dr parcel not pinned. The $1B is Microsoft's three-campus Licking County commitment; no Heath-specific capital-investment figure is published (do not derive by subtraction).",
     "energy": {
       "source": "grid",
@@ -107010,6 +107782,40 @@
       "notes": "Microsoft agreed not to take real-estate tax abatements at Heath or Hebron, benefiting Lakewood Local School District. Heath Mayor praised cooperative planning process and noted off-site infrastructure improvements along Thornwood Drive corridor.",
       "sourceIndex": 1
     },
+    "stakeholders": [
+      {
+        "name": "Brian Cooper",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): present per the roll call and voted yes; minutes: motion carried 3-0, all present voted yes.",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): seconded the motion; carried 3-0, all present voting yes per the minutes.",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): present per the roll call and abstained; motion carried 3-0.",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Eric Lindner",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): moved approval; motion carried 3-0, all present voting yes per the minutes.",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
   },
@@ -107092,9 +107898,16 @@
         "publisher": "Licking County Auditor",
         "retrievedAt": "2026-10-14",
         "kind": "other"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/about/taxcreditminutes/Meeting_Minutes_10.28.24.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, October 28, 2024",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "223 acres west of Ohio 79, between North High Street and Canyon Road, Hebron OH 43025. Six-data-center campus planned. Part of Microsoft's $1B Licking County commitment; individual site investment not separately disclosed. Coordinates are approximate Hebron village area. The $1B figure is Microsoft's three-campus Licking County commitment (not disaggregated); an 'up to $3B' Hebron figure appears only in a secondary blog and is not a committed capital-expenditure figure.",
     "energy": {
       "source": "grid",
@@ -107123,6 +107936,40 @@
       "notes": "Microsoft agreed not to take real-estate tax abatements, directly benefiting Lakewood Local School District. Village of Hebron approved six-data-center campus plan.",
       "sourceIndex": 2
     },
+    "stakeholders": [
+      {
+        "name": "Brian Cooper",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): present per the roll call and voted yes; minutes: motion carried 3-0, all present voted yes.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): seconded the motion; carried 3-0, all present voting yes per the minutes.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): present per the roll call and abstained; motion carried 3-0.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Eric Lindner",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): moved approval; motion carried 3-0, all present voting yes per the minutes.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "mixed_use"
   },
@@ -108025,11 +108872,52 @@
         "publisher": "ABC6 / WSYX",
         "retrievedAt": "2026-10-14",
         "kind": "press"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/about/taxcreditminutes/Meeting_Minutes_10.28.24.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, October 28, 2024",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-10-14",
+    "lastUpdated": "2026-11-04",
     "notes": "This is the third of Microsoft's original Licking County campuses (alongside the tracked Heath and Hebron sites). Building size and capacity are not published in the sources read.",
     "landAcres": 197,
+    "stakeholders": [
+      {
+        "name": "Brian Cooper",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): present per the roll call and voted yes; minutes: motion carried 3-0, all present voted yes.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): seconded the motion; carried 3-0, all present voting yes per the minutes.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): present per the roll call and abstained; motion carried 3-0.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Eric Lindner",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, October 28, 2024 meeting, Microsoft Corporation (New Albany, Heath, Hebron; 100%, 15-year exemption): moved approval; motion carried 3-0, all present voting yes per the minutes.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -110974,9 +111862,16 @@
         "publisher": "The Nevada Independent",
         "retrievedAt": "2026-10-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.lyon-county.org/AgendaCenter/ViewFile/Minutes/_07142026-2071",
+        "label": "Lyon County Planning Commission meeting minutes, July 14, 2026 (PLZ-2026-041, Monarch Data Center PUD zone change)",
+        "publisher": "Lyon County, Nevada",
+        "retrievedAt": "2026-11-04",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-10-14",
+    "lastUpdated": "2026-11-04",
     "notes": "Roughly 505 acres in Mason Valley near Yerington; a 4.6 million-square-foot campus with north and south sub-campuses, a battery energy storage system, a natural gas plant, a substation and power lines across two parcels. First phase would provide 150 MW of the 1,000 MW total. Copia Power has one year to file its final PUD. Lyon County is drafting a stricter data center ordinance that will not apply retroactively to Monarch.",
     "energy": {
       "source": "on_site_gas",
@@ -110994,6 +111889,64 @@
       "notes": "Nearly 300 people attended the August 2026 commission meeting, a strong majority speaking in opposition. The Walker River Paiute and Yerington Paiute tribes passed formal resolutions opposing the project and stated they would pursue legal action over cultural resources and sacred sites.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "Andrew Merritt",
+        "role": "public_official",
+        "via": "Lyon County Planning Commission",
+        "note": "Planning Commissioner Andrew Merritt voted for the motion to recommend approval to the Board of County Commissioners of the Monarch Data Center PUD zone change (PLZ-2026-041) on 2026-07-14 (4-3).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Audrey Allan",
+        "role": "public_official",
+        "via": "Lyon County Planning Commission",
+        "note": "Planning Commissioner Audrey Allan voted against the motion to recommend approval to the Board of County Commissioners of the Monarch Data Center PUD zone change (PLZ-2026-041) on 2026-07-14 (4-3).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Jim Davis",
+        "role": "public_official",
+        "via": "Lyon County Planning Commission",
+        "note": "Planning Commissioner Jim Davis voted for the motion to recommend approval to the Board of County Commissioners of the Monarch Data Center PUD zone change (PLZ-2026-041) on 2026-07-14 (4-3).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Mark Jones",
+        "role": "public_official",
+        "via": "Lyon County Planning Commission",
+        "note": "Planning Commissioner Mark Jones voted for the motion to recommend approval to the Board of County Commissioners of the Monarch Data Center PUD zone change (PLZ-2026-041) on 2026-07-14 (4-3).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Michael Irvin",
+        "role": "public_official",
+        "via": "Lyon County Planning Commission",
+        "note": "Planning Commissioner Michael Irvin voted against the motion to recommend approval to the Board of County Commissioners of the Monarch Data Center PUD zone change (PLZ-2026-041) on 2026-07-14 (4-3).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Shannon Ceresola",
+        "role": "public_official",
+        "via": "Lyon County Planning Commission",
+        "note": "Planning Commissioner Shannon Ceresola voted for the motion to recommend approval to the Board of County Commissioners of the Monarch Data Center PUD zone change (PLZ-2026-041) on 2026-07-14 (4-3).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Wendy Loomis",
+        "role": "public_official",
+        "via": "Lyon County Planning Commission",
+        "note": "Planning Commissioner Wendy Loomis voted against the motion to recommend approval to the Board of County Commissioners of the Monarch Data Center PUD zone change (PLZ-2026-041) on 2026-07-14 (4-3).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -113937,7 +114890,7 @@
         "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "Officially \"PORTS-Pike Technology Campus\"; formerly tracked under the pre-announcement Ohio entity New Day Data Centers LLC, a name that appears nowhere in the SEC S-1 or SB Energy’s own announcements. Developer/operator is SB Energy (SoftBank-controlled); the DOE lease was signed 2026-02-26 by its subsidiary Pike County Portsmouth DC LLC. Capacity: three distinct figures: 8.0 GW-IT of contracted compute (8,024 MW-IT; NVIDIA guarantees the initial 4.25 GW-IT with an option on the remaining 3.78 GW-IT), 10 GW of gross power load (the planned capacity recorded here), and 9.2 GW of new gas generation. Offtake: on 2026-08-17 SB Energy subsidiaries signed 17 twenty-year triple-net leases with OpenAI, with rent commencement conditioned on interconnection and generation being available; NVIDIA provided a residual-value guaranty capped at $105B and separately bought $1.5B of non-voting stock. Land: the land area is not recorded - the DOE lease covers 189 acres (Batch 1) on which \"one data center building is expected to be constructed\", while the S-1 places the buildings \"across several thousand acres of private property\"; the widely-cited 3,700/3,777 acres is the whole federal reservation, which also hosts the separately tracked Oklo Aurora project, Centrus and the DUF6 plant. Investment: no investment figure is recorded - $10B (DOE, March) and $30-40B (project site) describe the same ~800 MW first phase and cannot both be right, the $67.2B total appears only as one trade outlet’s unattributed rollup, and the S-1 states no total capex. Subsidies: none awarded - the Ohio Tax Credit Authority minutes record no award, no JobsOhio award was found as of September 2026, and Ohio paused new data-centre tax exemptions in May 2026; a county PILOT is under negotiation because the leased federal land yields no property tax. Status: early civil works began after the 2026-03-20 groundbreaking, though the S-1 lists construction as not started, with first capacity in 2028 and full buildout 2032. Distinct from the Oklo Aurora Powerhouse on the same broader site. A March 2026 U.S. Department of Energy fact sheet states more than 2,000 operational jobs, while the developer's project site lists 2,500 operating jobs.",
     "energy": {
       "source": "mixed",
@@ -113955,6 +114908,24 @@
       "notes": "Documented local support alongside contamination-legacy distrust. Support: State Sen. Shane Wilkin - \"It’s just going to be a generational change for this area\"; SODI executive director Steve Shepherd called it \"a model for the country\"; the Scioto Valley-Piketon Area Council of Governments chair framed it as moving contaminated residential land to industrial use. Concern: a neighbouring farmer with contaminated property (\"This is the most contaminated place around here\"), and Conserve Ohio on water, transmission and the precedent of siting hyperscale projects on legacy DOE land. TRANSMISSION: the lines serving the campus are being sited by the utility, AEP Ohio Transmission Company, not by the data center operator; the customer has committed to pay for them. Three corridors: Baku-Gavin 765 kV (Pike, Jackson, Gallia; OPSB Case 26-0426-EL-BTX, application filed 2026-07-24 and found complete 2026-08-28, local public hearing set for 2026-10-27 in Jackson, with an administrative law judge entry of 2026-10-21 granting an individual's petition to intervene and OPSB Staff's report of investigation filed 2026-10-22); Hanging Rock-Baku 765 kV (Pike, Scioto, Lawrence; AEP plans to file as 26-0870-EL-BTX); and an earlier-stage feasibility study in Pike, Ross and Pickaway counties with no route selected. As of 2026-10-15 no appropriation (eminent domain) filing against landowners for these lines was found (as of October 2026, county court dockets had not been checked); AEP describes acquiring right-of-way with just compensation, and Ohio law has treated AEP's Ohio Power Company as authorised to appropriate property for transmission easements (Ohio Power Co. v. Burns, 2022, an unrelated Washington County line). No litigation, moratorium or public-hearing defeat found as of 2026-10-15; a statewide watchdog notes this project lacks the named opposition groups seen elsewhere in Ohio. Community money (not a public subsidy to the operator): a $40M Community Benefits Agreement from SB Energy plus an incremental $40M from OpenAI.",
       "sourceIndex": 10
     },
+    "stakeholders": [
+      {
+        "name": "NVIDIA",
+        "kind": "organization",
+        "role": "investor",
+        "note": "SB Energy's S-1 describes NVIDIA as a strategic investor and residual value guarantor at the campus, guaranteeing the OpenAI tenant's lease obligations for the initial ~4.25 GW-IT at $105 billion aggregate guaranteed value.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "U.S. Department of Energy",
+        "kind": "organization",
+        "role": "landowner",
+        "note": "SB Energy's S-1 (filed 2026-09-01) says its subsidiary entered a phased lease with the U.S. Department of Energy at the DOE Portsmouth Site for the PORTS-Pike Technology Campus.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "environmental": {
       "waterStress": "unknown"
@@ -114645,9 +115616,23 @@
         "publisher": "OpenStreetMap",
         "retrievedAt": "2026-10-13",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.stlpr.org/government-politics-issues/2026-10-27/ferguson-residents-investigations-tax-abatement-agreement",
+        "label": "Ferguson residents call for investigations into data center tax abatement deal",
+        "publisher": "St. Louis Public Radio",
+        "retrievedAt": "2026-11-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.audacy.com/kmox/news/local/ferguson-approves-controversial-data-center-tax-breaks",
+        "label": "Ferguson approves controversial data center tax breaks",
+        "publisher": "KMOX (Audacy)",
+        "retrievedAt": "2026-11-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-11-02",
+    "lastUpdated": "2026-11-04",
     "notes": "217-acre former Emerson Electric campus in Ferguson, bought in 2026 by Next Revolution Technologies LLC (run by Onder Law's James Onder). The campus already has a smaller data center; the approved plan includes renovating it and a potential future 300 MW data center (the planned capacity reflects that potential expansion). Up to $22B in industrial revenue bonds authorized. Community payments: $700K to the city, $250K environmental mitigation fund, $7.5M over 10 years to the Ferguson Neighborhood Improvement Program. Coordinates are the Ferguson municipal centroid (approximate); no street address was given in the cited sources. The record is listed as proposed: the council approval is a tax-incentive/redevelopment package, not a building permit.",
     "water": {
       "coolingType": "closed_loop",
@@ -114668,6 +115653,64 @@
       "notes": "Nearly all public commenters opposed; the St. Louis County NAACP and Ferguson-Florissant School District raised concerns. A motion to table failed and the plan passed 4-3, with conflict-of-interest questions raised over the Neighborhood Improvement Program.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "David Williams",
+        "role": "public_official",
+        "via": "Ferguson City Council",
+        "note": "Member of the Ferguson City Council; voted for the tax-incentive and revenue-bond bill for the Emerson campus redevelopment and data center. Outcome: passed 4-3 (September 2026).",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Jamil Franklin",
+        "role": "public_official",
+        "via": "Ferguson City Council",
+        "note": "Member of the Ferguson City Council; voted against the tax-incentive and revenue-bond bill for the Emerson campus redevelopment and data center. Outcome: passed 4-3 (September 2026).",
+        "sourceIndex": 0,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "LaMika Covington",
+        "role": "public_official",
+        "via": "Ferguson City Council",
+        "note": "Member of the Ferguson City Council; voted for the tax-incentive and revenue-bond bill for the Emerson campus redevelopment and data center. Outcome: passed 4-3 (September 2026).",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Mike Palmer",
+        "role": "public_official",
+        "via": "Ferguson City Council",
+        "note": "Member of the Ferguson City Council; voted for the tax-incentive and revenue-bond bill for the Emerson campus redevelopment and data center. Outcome: passed 4-3 (September 2026).",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Naquittia Noah",
+        "role": "public_official",
+        "via": "Ferguson City Council",
+        "note": "Member of the Ferguson City Council; voted against the tax-incentive and revenue-bond bill for the Emerson campus redevelopment and data center. Outcome: passed 4-3 (September 2026).",
+        "sourceIndex": 0,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Nick Kasoff",
+        "role": "public_official",
+        "via": "Ferguson City Council",
+        "note": "Member of the Ferguson City Council; voted for the tax-incentive and revenue-bond bill for the Emerson campus redevelopment and data center. Outcome: passed 4-3 (September 2026).",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Adrian Shropshire",
+        "role": "public_official",
+        "via": "Ferguson City Council",
+        "note": "Mayor of Ferguson; voted against the tax-incentive and revenue-bond bill for the Emerson campus redevelopment and data center. Outcome: passed 4-3 (September 2026).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -118127,9 +119170,16 @@
         "publisher": "Cleanview",
         "retrievedAt": "2026-09-24",
         "kind": "other"
+      },
+      {
+        "url": "https://goed.nv.gov/wp-content/uploads/2024/01/September-12-2023-GOED-Board-Meeting-Minutes-1-1.pdf",
+        "label": "GOED Board Meeting Minutes, September 12, 2023",
+        "publisher": "Nevada Governor's Office of Economic Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-24",
+    "lastUpdated": "2026-11-04",
     "notes": "300,000 sq ft, 60 MW data center on a 20-acre campus at 1 Astro Way in the Tahoe-Reno Industrial Center (McCarran / Storey County). Six 10 MW data halls served by an on-campus 100 MW NV Energy substation; water-free direct-to-chip cooling. Coordinates are an approximate TRIC-area geocode (exact parcel point not published).",
     "energy": {
       "source": "grid",
@@ -118141,6 +119191,80 @@
       "notes": "Water-free, direct-to-chip cooling per operator."
     },
     "landAcres": 20,
+    "stakeholders": [
+      {
+        "name": "Francisco Aguilar",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County) (Nevada Secretary of State).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "James A. Barrett, Jr.",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joe Lombardo",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County) (Governor of Nevada; presided at the meeting).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Josh Reid",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Raymond Specht",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Sasha Stephenson",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Stavros Anthony",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County) (Lieutenant Governor of Nevada).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Weldon Havins",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Yolanda King",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 12 September 2023, when the board unanimously approved data center sales tax and personal property tax abatements for Novva Reno, LLC (300,000 sq ft, Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -121215,7 +122339,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-14",
+    "lastUpdated": "2026-11-04",
     "notes": "Four data center buildings on roughly 1,400 acres inside the 2,600-acre Savannah Gateway Industrial Hub near Rincon. Effingham County values the project at $20B; OpenAI's VP of Compute Strategy has said full build-out will exceed $30B. Permanent staffing is described as ~400 at the 2028 opening rising to about 1,000 by 2032. Part of OpenAI's Stargate program.",
     "energy": {
       "source": "grid",
@@ -121245,6 +122369,16 @@
       "notes": "Three residents — Michelle Finch-Mincey, Lehman Mincey Jr. and Raymond Carver — sued in Effingham County Superior Court, reported 2026-09-03, seeking to invalidate Ordinance 2026-352 (final approval 2026-08-04), which added data centers to the county's Permitted Use Table for industrially-zoned land. The complaint alleges the required public hearings before the planning board and county commission never occurred.",
       "sourceIndex": 4
     },
+    "stakeholders": [
+      {
+        "name": "Effingham County Industrial Development Authority",
+        "kind": "organization",
+        "role": "landowner",
+        "note": "The Current GA reports the Project Camellia site is owned by the Effingham County Industrial Development Authority, per the project's state review form.",
+        "sourceIndex": 1,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -123638,14 +124772,31 @@
         "publisher": "Times News Online",
         "retrievedAt": "2026-09-12",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1812477/000121390025097957/ea026090401ex99-1_bitfarms.htm",
+        "label": "Bitfarms Converts Macquarie Debt Facility to $300M Project Financing (Exhibit 99.1)",
+        "publisher": "Bitfarms Ltd. / SEC",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-09-21",
+    "lastUpdated": "2026-11-04",
     "notes": "An HPC/AI data center campus at the Panther Creek waste-coal power plant site in Nesquehoning, Carbon County. In August 2025 Bitfarms engaged T5 Data Centers to provide pre-construction design, development-approval and construction guidance. This is a separate record from the already-tracked Panther Creek plant / crypto-mining operation at the same site, as with the split Homer City generation and campus records. The planned capacity of 350 MW follows Bitfarms' October 2025 financing release, in which Macquarie describes a '350 MW HPC/AI campus', and WFMZ's August 2026 report that, according to the website of Keel Infrastructure (formerly Bitfarms Ltd.), the campus has secured capacity of 350 MW, with possible expansion to 510 MW. As of October 2026, none of the cited sources confirms trade reports of a 350 MW firm power contract by 2028 (scalable toward 500 MW+). A February 2026 report carried by Yahoo Finance states, citing Times News Online, that the Nesquehoning Planning Commission granted a special exception permit; the same report says a $50 million draw in October 2025 accelerated equipment orders and substation construction. In April 2026 the Carbon County Planning Commission recommended conditional rejection of the Carbon Node East Development plan, and the DEP scheduled a public meeting and hearing for August 20, 2026 on the developer's NPDES permit application.",
     "water": {
       "coolingType": "closed_loop"
     },
     "landAcres": 103.95,
+    "stakeholders": [
+      {
+        "name": "Macquarie Group",
+        "kind": "organization",
+        "role": "lender",
+        "note": "A 2025 Bitfarms release (SEC Exhibit 99.1) says its Macquarie debt facility of up to $300M was converted to project-specific financing for the Panther Creek, Pennsylvania data center campus.",
+        "sourceIndex": 6,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -126678,7 +127829,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "2 GW AI training campus on a 568-acre parcel of the Mitchell family's Longfellow Ranch in Pecos County, near Fort Stockton. Coordinate anchored on Fort Stockton (nearest named town in coverage); exact parcel not publicly disclosed. CoreWeave was original anchor tenant (15-year, 250 MW lease, 40,000 Nvidia GB300 GPUs) but terminated the lease by early April 2026 after Poolside's Series C funding round failed to close; site reported idle as of mid-2026. CoreWeave (the announced anchor tenant) mutually terminated its agreement for Project Horizon after Poolside failed to stand up its first GPU cluster on schedule, and Poolside's associated ~$2B Nvidia-led funding round also fell through. As of late July 2026 Poolside was seeking a replacement partner (reportedly including Google) for up to 400MW, with no anchor tenant signed as of that reporting. As of October 2026, the status remains proposed and the planned capacity is the 2 GW announced in October 2025, not a figure from the replacement-partner talks; the originally announced 2GW/CoreWeave deal no longer stands as described.",
     "energy": {
       "source": "on_site_gas",
@@ -126686,6 +127837,22 @@
       "notes": "Designed in eight 250-MW phases powered primarily by on-site aeroderivative gas turbines fueled by Permian Basin natural gas; site adjacent to a major gas-processing hub."
     },
     "landAcres": 568,
+    "stakeholders": [
+      {
+        "name": "Eiso Kant",
+        "role": "executive",
+        "note": "As Poolside co-CEO and co-founder, announced Project Horizon on 2025-10-15 with the other co-CEO in a post detailing the 2 GW West Texas campus and the CoreWeave agreement.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Jason Warner",
+        "role": "executive",
+        "note": "As Poolside co-CEO and co-founder, announced Project Horizon on 2025-10-15 with the other co-CEO in a post detailing the 2 GW West Texas campus and the CoreWeave agreement.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -127548,7 +128715,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "Chester, Chesterfield County — first phase of a Blue Owl / Chirisa / PowerHouse JV: initial 50 MW (2025) → 120 MW facility, with a ~1 GW eventual plan. $600M construction loan closed. Distinct parcel from Google's Midlothian (Chesterfield) campus. Coordinates are the Chester area centroid. The $600M is a construction loan (financing) and the $5B is the multi-site JV total - neither is this campus's capex -> no investment figure is recorded. 800-1,200 jobs projected over 5-7 years spanning construction and operations -> no job count is recorded. Virginia law bars per-company data-center subsidy disclosure -> no subsidy is recorded. Joint venture with Chirisa Technology Parks and Blue Owl Real Estate.",
     "energy": {
       "source": "grid",
@@ -127564,6 +128731,16 @@
       "notes": "The Chesterfield County Board of Supervisors approved the Chirisa / Meadowville plans and cited a positive economic impact (redevelopment of the former Capital One campus); county-wide, data-center expansion is actively debated (residential-bill, water, and diesel-generator concerns; a Jan 2026 zoning ordinance now requires conditional-use approval for new data centers). No lawsuit or moratorium against this campus.",
       "sourceIndex": 2
     },
+    "stakeholders": [
+      {
+        "name": "Blue Owl Capital",
+        "kind": "organization",
+        "role": "investor",
+        "note": "A 2024 joint venture agreement between funds managed by Blue Owl Capital, Chirisa Technology Parks and PowerHouse Data Centers covers the first 120 MW of AI/HPC capacity at CTP's 350-acre campus near Richmond, Virginia.",
+        "sourceIndex": 0,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -127654,11 +128831,29 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-07-23",
+    "lastUpdated": "2026-11-04",
     "notes": "50MW build-to-suit at Chirisa Technology Parks' Meadowville Technology Parkway campus (Chesterfield County), JV of PowerHouse, Chirisa, and Blue Owl Real Estate; broke ground 2024/2025, CoreWeave is the confirmed GPU/AI-cloud tenant (28MW deal Sept 2023 plus this expansion). PowerHouse's own portfolio page lists 'CTP-02 and CTP-03' as a platform entry; baxtel independently corroborates PowerHouse CTP-02 as a named facility at this campus. Joint venture with Chirisa Technology Parks and Blue Owl Real Estate.",
     "energy": {
       "utility": "Dominion Energy Virginia"
     },
+    "stakeholders": [
+      {
+        "name": "Blue Owl Real Estate",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Bisnow reports the 50 MW build-to-suit facility leased to CoreWeave on CTP's 350-acre campus near Richmond is being built by a JV of PowerHouse Data Centers, Chirisa Technology Parks and Blue Owl Real Estate.",
+        "sourceIndex": 0,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Société Générale",
+        "kind": "organization",
+        "role": "lender",
+        "note": "Bisnow reports a $600M construction loan for the CoreWeave-leased 50 MW build on CTP's Richmond-area campus, arranged by Newmark, came from a syndicate led by Société Générale.",
+        "sourceIndex": 0,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -129900,7 +131095,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "Google confirmed evaluating the site. Coordinates are approximate. Developer: Panattoni Development Co. The township planning commission granted preliminary site plan approval in February 2026 and approved the final site plan 5-1 on October 14, 2026. As of October 2026, early construction was reported underway, and Google expects the facility to begin drawing power by late 2027. The record is listed as under construction.",
     "energy": {
       "source": "mixed",
@@ -129937,6 +131132,16 @@
       "notes": "The planning commission voted 5-2 in February 2026 to grant preliminary site plan approval for the data center and approved the final site plan 5-1 on October 14, 2026. As of February 2026, Planet Detroit reported that 1,400 people had signed a petition opposing the project; as of October 2026, Gander Newsroom reports that more than 2,700 residents have signed a petition against it.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "Warren Evans",
+        "role": "public_official",
+        "via": "Wayne County Executive",
+        "note": "Wayne County Executive Warren Evans vetoed the county tax exemption for the Google data center in Van Buren Township; the Wayne County Commission voted on Thursday 1 Oct 2026 to override the veto (reported 2 Oct 2026).",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -132004,9 +133209,16 @@
         "publisher": "Iron County",
         "retrievedAt": "2026-09-04",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://ironcountyut.gov/api/planning-commission/documents/2026-06-04-minutes.pdf",
+        "label": "Iron County Planning Commission minutes, June 4, 2026 (Antelope Data Center conditional use permit, agenda item 5)",
+        "publisher": "Iron County, Utah",
+        "retrievedAt": "2026-11-04",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-09-04",
+    "lastUpdated": "2026-11-04",
     "notes": "West of Cedar City along Antelope Springs Road; permit deemed vested ahead of the county's 180-day data center moratorium; development planned in phases over 8-10 years; up to 6.75M sq ft at full buildout. Subsidies checked at the municipal tier (2026-09-04): no site-level subsidy. Iron County Planning Commission minutes for the 4 June 2026 conditional-use approval state \"This CUP is not tied to any tax incentives or reimbursements\", and no Iron County community-reinvestment project area was found covering this site, which lies in unincorporated Iron County outside Cedar City's municipal limits. The applicant's consultant told the commission their tax-revenue estimate was modelled both \"with the Inland Port incentives and without\", which is a future incentive being contemplated by the developer, not an awarded one.",
     "energy": {
       "source": "on_site_gas",
@@ -132017,6 +133229,64 @@
       "notes": "\"data center would use what is called a closed-loop cooling system, which is designed to circulate and reuse water.\""
     },
     "landAcres": 640,
+    "stakeholders": [
+      {
+        "name": "Dennis Gray",
+        "role": "public_official",
+        "via": "Iron County Planning Commission",
+        "note": "Dennis Gray voted for granting the conditional use permit for Pronghorn Development's Antelope Data Center on 2026-06-04 (6 ayes, 1 abstention).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Erick Cox",
+        "role": "public_official",
+        "via": "Iron County Planning Commission",
+        "note": "Erick Cox voted for granting the conditional use permit for Pronghorn Development's Antelope Data Center on 2026-06-04 (6 ayes, 1 abstention).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Kyle Christensen",
+        "role": "public_official",
+        "via": "Iron County Planning Commission",
+        "note": "Kyle Christensen abstained from voting on granting the conditional use permit for Pronghorn Development's Antelope Data Center on 2026-06-04 (6 ayes, 1 abstention).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Mark Halterman",
+        "role": "public_official",
+        "via": "Iron County Planning Commission",
+        "note": "Mark Halterman voted for granting the conditional use permit for Pronghorn Development's Antelope Data Center on 2026-06-04 (6 ayes, 1 abstention).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Michelle Tullis",
+        "role": "public_official",
+        "via": "Iron County Planning Commission",
+        "note": "Michelle Tullis voted for granting the conditional use permit for Pronghorn Development's Antelope Data Center on 2026-06-04 (6 ayes, 1 abstention).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Mike Platt",
+        "role": "public_official",
+        "via": "Iron County Planning Commission",
+        "note": "Mike Platt voted for granting the conditional use permit for Pronghorn Development's Antelope Data Center on 2026-06-04 (6 ayes, 1 abstention).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Roger Thomas",
+        "role": "public_official",
+        "via": "Iron County Planning Commission",
+        "note": "Roger Thomas voted for granting the conditional use permit for Pronghorn Development's Antelope Data Center on 2026-06-04 (6 ayes, 1 abstention).",
+        "sourceIndex": 4,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -134371,9 +135641,16 @@
         "publisher": "Community Sentinel",
         "retrievedAt": "2026-07-07",
         "kind": "press"
+      },
+      {
+        "url": "https://cdn.prod.website-files.com/68ecf5da428edc78da18d9bb/6a21893af44fa5f67505947b_City%20Council%20Minutes%20-%20April%2021%2C%202026.pdf",
+        "label": "Bessemer City Council minutes, April 21, 2026 (Item 11, Ordinance No. 3698, AL Bessemer Land, LLC rezoning for Project Marvel)",
+        "publisher": "City of Bessemer, Alabama",
+        "retrievedAt": "2026-11-04",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "Codename: Project Marvel. 18-building hyperscale campus on Red Ridge near I-459 and I-20/59 interchange in Bessemer (Jefferson County). Announced capacity: up to 1,200 MW at full build-out — reported as a planned ceiling, roughly 9% of Alabama Power's current generating capacity; recorded as a planned capacity of 1,200 MW (an announced 'up to' full-build-out ceiling, consistent with how the dataset records other announced full-build-out figures). Investment: TPA Group's Adam Rashid told the Bessemer City Council in November 2025 that the overall capital investment is expected to be $14.5 billion (WBRC), and that figure is recorded as the investment figure; other reports put it at about $14–14.4B (Logistics Land Investment anticipated 'close to $14.4B'; DCD reported ~$14B), and QTS's own July 2026 statement gives no dollar amount. Land: ~1,607.42 acres total after two rezoning rounds (initial ~700 acres November 2025 + 914-acre expansion April 2026). QTS affiliate purchased land from TPA Group affiliate for $431.73M. Chapter 9B statutory eligibility would have provided a 30-year abatement estimated at $500M+; QTS committed not to seek local property tax incentives (per WBRC July 2026) — no subsidy is recorded, as eligibility does not equal award and QTS renounced pursuit. Full buildout timeline: 7+ years. Birmingham Business Alliance estimated ~$4B net benefit over 30 years; Bessemer City Schools projected ~$25M/year. AI framing not officially confirmed by QTS or the city as of July 2026 — size and scale (hyperscale, cloud/AI demand framing in QTS statement) support an AI classification of likely. Coordinates are approximate for the Red Ridge parcel area. Jobs: ~1,000 construction and ~330 permanent are projected figures for the proposed (not-yet-built) campus (WBRC, Nov 2025), and are recorded as the construction and permanent jobs figures. QTS Data Centers is owned by Blackstone (2021 take-private). Status: Bessemer approved land-use rezonings for this campus in November 2025 and again (914 acres) in April 2026, which, if a rezoning approval is treated as permitted, could argue for permitted rather than proposed. Status is kept at proposed because the cited source dated 2026-07-02 postdates both rezonings and still describes the campus as proposed, and no building permit or site-preparation start was found in any cited source.",
     "energy": {
       "source": "grid",
@@ -134396,6 +135673,64 @@
       "notes": "Strong and ongoing opposition. Public Facebook group 'Bessemer Data Center - We Say No!' grew to 720+ members. NAACP cited environmental justice concerns for majority-minority Bessemer community. Black Warrior Riverkeeper (BWR) and Southern Environmental Law Center (SELC) opposed construction over fossil fuel and water impacts. U.S. Fish and Wildlife Service raised concerns. Rezoning lawsuit filed in Jefferson County Circuit Court (temporarily enjoined; later dismissed). Bessemer City Council approved initial rezoning 5-2 in November 2025 despite crowd opposition (Councilman King and Councilwoman Thigpen dissented). 914-acre expansion rezoning approved April 2026. Some elected officials operated under NDAs with the developer prior to QTS confirmation. Homeowners filed additional lawsuits against the project.",
       "sourceIndex": 7
     },
+    "stakeholders": [
+      {
+        "name": "Carla F. Jackson",
+        "role": "public_official",
+        "via": "Bessemer City Council",
+        "note": "Councilor Carla F. Jackson voted for Ordinance No. 3698 on 2026-04-21 (5-2 roll call), rezoning the AL Bessemer Land, LLC property from A-1 to I-1 for the Project Marvel data center campus expansion.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Chester W. Porter",
+        "role": "public_official",
+        "via": "Bessemer City Council",
+        "note": "Councilor Chester W. Porter voted for Ordinance No. 3698 on 2026-04-21 (5-2 roll call), rezoning the AL Bessemer Land, LLC property from A-1 to I-1 for the Project Marvel data center campus expansion.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Cleophus King",
+        "role": "public_official",
+        "via": "Bessemer City Council",
+        "note": "Councilor Cleophus King voted against Ordinance No. 3698 on 2026-04-21 (5-2 roll call), rezoning the AL Bessemer Land, LLC property from A-1 to I-1 for the Project Marvel data center campus expansion.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Donna Thigpen",
+        "role": "public_official",
+        "via": "Bessemer City Council",
+        "note": "Councilor Donna Thigpen voted against Ordinance No. 3698 on 2026-04-21 (5-2 roll call), rezoning the AL Bessemer Land, LLC property from A-1 to I-1 for the Project Marvel data center campus expansion.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Jarvis Collier",
+        "role": "public_official",
+        "via": "Bessemer City Council",
+        "note": "Councilor Jarvis Collier voted for Ordinance No. 3698 on 2026-04-21 (5-2 roll call), rezoning the AL Bessemer Land, LLC property from A-1 to I-1 for the Project Marvel data center campus expansion.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Sarah Person",
+        "role": "public_official",
+        "via": "Bessemer City Council",
+        "note": "Councilor Sarah Person voted for Ordinance No. 3698 on 2026-04-21 (5-2 roll call), rezoning the AL Bessemer Land, LLC property from A-1 to I-1 for the Project Marvel data center campus expansion.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Teco Stephens",
+        "role": "public_official",
+        "via": "Bessemer City Council",
+        "note": "Councilor Teco Stephens voted for Ordinance No. 3698 on 2026-04-21 (5-2 roll call), rezoning the AL Bessemer Land, LLC property from A-1 to I-1 for the Project Marvel data center campus expansion.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -145396,9 +146731,16 @@
         "publisher": "Boston.com",
         "retrievedAt": "2026-10-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cityofwestfield.org/AgendaCenter/ViewFile/Minutes/_10212021-5921",
+        "label": "City Council meeting minutes, 21 Oct 2021",
+        "publisher": "City of Westfield, Massachusetts",
+        "retrievedAt": "2026-11-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "notes": "Would-be first Massachusetts hyperscale data center: 10-building, 2.7M sq ft campus over a long buildout (191/199 Servistar Industrial Way). Tax exemption secured 2024. Status is early and thin — no confirmed groundbreaking; conflicting signals on whether the project is still active.",
     "energy": {
       "source": "grid",
@@ -145420,6 +146762,112 @@
       "notes": "Westfield City Council voted unanimously on July 6, 2026 to enact a 365-day citywide moratorium on new data-center permits/construction after residents packed hearings over water and power-strain concerns; the moratorium is framed as not formally targeting Servistar's existing 2021 approvals.",
       "sourceIndex": 5
     },
+    "stakeholders": [
+      {
+        "name": "Brent Bean II",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "President of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Bridget Matthews-Kane",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Cindy Harris",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Dan Allie",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Dave Flaherty",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted against the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "James Adams",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "John Beltrandi III",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Kristen Mello",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted against the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Michael Burns",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Nicholas Morganelli, Jr.",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted against the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 7,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Ralph Figy",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Richard Sullivan, Jr.",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "William Onyski",
+        "role": "public_official",
+        "via": "Westfield City Council",
+        "note": "Member of the Westfield City Council; voted for the Servistar Realties LLC Chapter 121A project application and amended 121A § 6A agreement (agenda items 10 and 11). Outcome: passed 10-3 (2021-10-21).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -148005,10 +149453,35 @@
         "publisher": "SEC EDGAR",
         "retrievedAt": "2026-07-17",
         "kind": "filing"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/64463/000162828026056702/slnh-20260630.htm",
+        "label": "Soluna Holdings 10-Q for the quarter ended 2026-06-30",
+        "publisher": "Soluna Holdings, Inc. (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-07-18",
+    "lastUpdated": "2026-11-04",
     "notes": "Phases 1A (25MW) + 1B (25MW) + 2 (48MW) = 98 MW, co-located with the 150 MW Briscoe wind farm. Explicit entry in Soluna's 10-Q.",
+    "stakeholders": [
+      {
+        "name": "Generate Capital",
+        "kind": "organization",
+        "role": "lender",
+        "note": "Soluna's 10-Q reports a credit facility with Generate under which Tranche A-1 and A-3 financed Dorothy 1A and Dorothy 2, with the Dorothy subsidiaries granting Generate a first-priority leasehold deed of trust.",
+        "sourceIndex": 1,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Spring Lane Capital",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Soluna's 10-Q states Project Dorothy 2 is financed through an investment vehicle of Spring Lane Capital, which retains membership interests in it, and that Spring Lane earlier committed $35 million to Project Dorothy 1A.",
+        "sourceIndex": 1,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "crypto_mining"
   },
   {
@@ -148246,13 +149719,30 @@
         "publisher": "OpenStreetMap contributors",
         "retrievedAt": "2026-10-14",
         "kind": "osm"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/64463/000149315226027852/ex99-1.htm",
+        "label": "Soluna Holdings 8-K Exhibit 99.1 (June 2026 update)",
+        "publisher": "Soluna Holdings, Inc. (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-14",
+    "lastUpdated": "2026-11-04",
     "notes": "Adjacent to Project Kati 1 (as of October 2026, tracked as Soluna Project Kati) and planned for AI/HPC hosting. Full build is expected to exceed 350 MW. Tax abatement talks have begun. Coordinates are the Raymondville county-seat point.",
     "energy": {
       "notes": "Engineering is underway to expand the Las Majadas substation by 100 MW. A gas pipeline access agreement has been executed."
     },
+    "stakeholders": [
+      {
+        "name": "Metrobloks",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Soluna reported that a definitive joint venture agreement with Metrobloks was signed for Project Kati 2, replacing a non-binding memorandum of understanding.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -148310,15 +149800,32 @@
         "publisher": "Soluna Holdings",
         "retrievedAt": "2026-10-14",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/64463/000162828026056702/slnh-20260630.htm",
+        "label": "Soluna Holdings 10-Q for the quarter ended 2026-06-30",
+        "publisher": "Soluna Holdings, Inc. (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "notes": "Rio Grande Valley, Willacy County; 166 MW clean computing in two phases (scaling toward 300+ MW — in notes), ERCOT-approved, Phase 1 live early 2026. Coordinates are anchored to Raymondville (county seat); the exact parcel is unspecified.",
     "energy": {
       "source": "grid",
       "utility": "Magic Valley Electric Co-op Inc",
       "notes": "ERCOT grid; Soluna markets 'clean computing' co-located with renewables."
     },
+    "stakeholders": [
+      {
+        "name": "Spring Lane Capital",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Soluna's 10-Q states Spring Lane Capital (SLC) committed an initial $20.0 million for the first phase of Project Kati 1 on 2025-07-22 and retains its membership interest in it.",
+        "sourceIndex": 3,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -151414,7 +152921,7 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-16",
+    "lastUpdated": "2026-11-04",
     "notes": "Also known as the Lancium Clean Campus. Lancium announced the site in December 2021 as a Clean Compute Campus that would host Bitcoin mining and other energy-intensive applications; Crusoe has since built an eight-building AI campus on it. Oracle gives the campus as 1,100 acres; the 2021 announcement gave about 800. Epoch AI describes the AI chips as owned by Oracle and used by OpenAI. Taylor Central Appraisal District's 2026 roll (Texas appraises property as of 1 January) lists Lancium entities as owners of the land, buildings and campus substations; Crusoe-managed entities as owners of each building's \"MEP\" accounts; and Oracle America as owner of computer equipment for \"BUILDING 1 & 2\" only, valued at $3.43 billion. Business Insider reported in July 2025 that Crusoe \"has committed to spending up to $3.5 billion to build the data center site in exchange for its property tax abatement\"; that is a commitment under the abatement agreements, not a reported project cost, so no investment figure is recorded here. Crusoe, Blue Owl Capital and Primary Digital Infrastructure describe the campus as funded by a \"$15 billion joint-venture\" (May 2025); the release does not split the figure into debt and equity or state a total project cost. Newmark said it arranged a $7.1 billion construction loan, led by JP Morgan, for the second phase. Crusoe gives the eight buildings \"a total power capacity of 1.2 gigawatts\"; Oracle describes its 618 MW for six buildings as \"75% of total capacity\", without saying what kind of capacity; Epoch AI projects 843 MW of IT power for the campus by Q4 2026. The operational capacity shown is Oracle's figure for capacity \"delivered to the customer\" as of 2026-09-10. Oracle did not say whether it is IT load, and \"delivered\" is Oracle's word, not an observation of running hardware. Crusoe expected the second phase to finish in mid-2026 (March 2025) and later \"by the end of 2026\" (March 2026). A separate 900 MW Crusoe campus for Microsoft (two buildings and an onsite power plant, the first building expected to be energized in mid-2027) is being built on adjacent land and is not part of this record; Epoch AI reported in April 2026 that OpenAI had reversed plans to expand this site. Construction-workforce figures conflict widely across sources and are not repeated here. Coordinates are the approximate centre of the eight data halls outlined on Epoch AI's satellite map of the campus (retrieved 2026-10-16).",
     "energy": {
       "source": "mixed",
@@ -151445,6 +152952,24 @@
       "notes": "Abilene City Council unanimously approved the abatement; Taylor County sought additional citizen input before finalizing. Residents raised concerns about energy reliability and possible groundwater contamination, and an opposition group (saveabilene.com) formed, alongside broad local economic support. The abatement contractually requires 357 permanent jobs at a minimum $57,600 salary.",
       "sourceIndex": 6
     },
+    "stakeholders": [
+      {
+        "name": "Blue Owl Capital",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Crusoe's May 2025 release names funds managed by Blue Owl's Real Assets platform as joint sponsors, with Crusoe and Primary Digital Infrastructure, of construction of six more buildings at the Abilene campus under a $15 billion joint venture.",
+        "sourceIndex": 22,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Primary Digital Infrastructure",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Crusoe's May 2025 release names Primary Digital Infrastructure, with Crusoe and Blue Owl-managed funds, as joint sponsor of construction of six more buildings at the Abilene campus under a $15 billion joint venture.",
+        "sourceIndex": 22,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -151546,9 +153071,16 @@
         "publisher": "Epoch AI",
         "retrievedAt": "2026-10-16",
         "kind": "other"
+      },
+      {
+        "url": "https://businessjournaldaily.com/softbank-affiliate-takes-title-to-lordstown-plant/",
+        "label": "SoftBank Affiliate Takes Title to Lordstown Plant",
+        "publisher": "The Business Journal (Youngstown)",
+        "retrievedAt": "2026-11-04",
+        "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "notes": "No capacity is recorded for this site alone: the September 2025 announcement said Lordstown and Milam County together \"can scale to 1.5 gigawatts over the next 18 months,\" and gave no Lordstown-only figure. A SoftBank spokesperson said the initial SoftBank/OpenAI data center uses \"a small part\" of the 6.2M-sq-ft site, which also hosts a Foxconn/SoftBank hub manufacturing modular data-center equipment. Crescent Dune LLC (a SoftBank affiliate) acquired the site from Foxconn for $375M (Sept 2025, Trumbull County Auditor). SoftBank's \"up to $3 billion\" is a ceiling covering both manufacturing and the data center — no data-center-only investment figure is confirmed.",
     "energy": {
       "source": "grid",
@@ -151571,6 +153103,17 @@
       "notes": "Local officials and the Youngstown/Warren Regional Chamber described the SoftBank acquisition and Stargate/Foxconn manufacturing partnership as a 'transformational investment.' (A separate Lordstown data-center moratorium and lawsuit involved an unrelated developer, not this SoftBank/Foxconn site.)",
       "sourceIndex": 2
     },
+    "stakeholders": [
+      {
+        "name": "Crescent Dune LLC",
+        "kind": "organization",
+        "role": "landowner",
+        "via": "SoftBank Group",
+        "note": "Business Journal Daily reports, citing Trumbull County Auditor records, that Crescent Dune LLC, a SoftBank Group affiliate, took title to the former GM Lordstown complex and nearly 600 acres.",
+        "sourceIndex": 9,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -151925,9 +153468,16 @@
         "publisher": "Epoch AI",
         "retrievedAt": "2026-10-16",
         "kind": "other"
+      },
+      {
+        "url": "https://haussamen.com/wp-content/uploads/2025/09/9.19.25.DACAgendaAndPacket.pdf",
+        "label": "Doña Ana County Board of County Commissioners, 2025-09-19 agenda packet incl. minutes of the 2025-09-09 meeting (copy hosted by haussamen.com)",
+        "publisher": "Doña Ana County (hosted by haussamen.com)",
+        "retrievedAt": "2026-11-04",
+        "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "notes": "No planned data-center capacity is recorded. A 1,000 MW figure for the site describes generation, not data-center capacity: when the county approved the bonds, developers said the microgrid \"would produce 700 to 900 megawatts of power in its first phase, ranging up to one gigawatt\" (Albuquerque Journal, December 2025). Epoch AI models the campus at 2.2 GW of planned capacity.",
     "energy": {
       "source": "on_site_gas",
@@ -151959,6 +153509,48 @@
       "notes": "The NM Environmental Law Center sued the Doña Ana County Commission over the incentive approval; Sunland Park City Council asked for a postponement; the commission approved 4-1 amid audience opposition. Concerns center on water use in an arid region, air quality from the gas microgrids, and the speed and opacity of approvals. Investment is $50B over 5 years (up to $165B over 30 years).",
       "sourceIndex": 2
     },
+    "stakeholders": [
+      {
+        "name": "Christopher Schaljo-Hernandez",
+        "role": "public_official",
+        "via": "Doña Ana County Board of County Commissioners",
+        "note": "Chair of the Doña Ana County Board of County Commissioners; voted for publishing notice of a Local Economic Development Act ordinance reducing permit fees for Project Jupiter. Outcome: approved 4-1 (2025-09-09).",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Gloria Gameros",
+        "role": "public_official",
+        "via": "Doña Ana County Board of County Commissioners",
+        "note": "Member of the Doña Ana County Board of County Commissioners; voted for publishing notice of a Local Economic Development Act ordinance reducing permit fees for Project Jupiter. Outcome: approved 4-1 (2025-09-09).",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Manuel Sanchez",
+        "role": "public_official",
+        "via": "Doña Ana County Board of County Commissioners",
+        "note": "Member of the Doña Ana County Board of County Commissioners; voted for publishing notice of a Local Economic Development Act ordinance reducing permit fees for Project Jupiter. Outcome: approved 4-1 (2025-09-09).",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Shannon Reynolds",
+        "role": "public_official",
+        "via": "Doña Ana County Board of County Commissioners",
+        "note": "Member of the Doña Ana County Board of County Commissioners; voted for publishing notice of a Local Economic Development Act ordinance reducing permit fees for Project Jupiter. Outcome: approved 4-1 (2025-09-09).",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Susana Chaparro",
+        "role": "public_official",
+        "via": "Doña Ana County Board of County Commissioners",
+        "note": "Vice-chair of the Doña Ana County Board of County Commissioners; voted against publishing notice of a Local Economic Development Act ordinance reducing permit fees for Project Jupiter. Outcome: approved 4-1 (2025-09-09).",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -152065,9 +153657,23 @@
         "publisher": "Planet Detroit",
         "retrievedAt": "2026-10-24",
         "kind": "press"
+      },
+      {
+        "url": "https://www.cbsnews.com/detroit/news/saline-township-related-digital-data-center-financing-construction/",
+        "label": "$16 billion data center campus in Saline Township secures financing, construction underway",
+        "publisher": "CBS Detroit",
+        "retrievedAt": "2026-11-04",
+        "kind": "press"
+      },
+      {
+        "url": "https://salinetownship.org/wp-content/uploads/2026/10/1777664205_2025.09.10-ST-TB-Minutes-with-attachment.pdf",
+        "label": "Saline Township Board regular meeting minutes, September 10, 2025, with attached motion (conditional rezoning, RD Michigan Property Owner I LLC)",
+        "publisher": "Saline Township, Michigan",
+        "retrievedAt": "2026-11-04",
+        "kind": "permit"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "notes": "The Michigan Data Center Tracker (baldorilaw.com, retrieved 2026-09-09) lists 'The Barn' campus in Saline Township as 'Under construction · 2026-04'. No site-specific incentive award has been found: Michigan's 2024 data-center sales and use tax exemptions may apply, but no source ties an award to this site, and the MPSC conditions are ratepayer protections, not subsidies.",
     "energy": {
       "source": "grid",
@@ -152090,6 +153696,64 @@
       "notes": "The Saline Township board voted 4-1 to deny the rezoning (Sept 2025); Related Digital sued two days later and a court-approved settlement allowed construction to proceed with ~$14M in community benefits. A resident later filed an Open Meetings Act challenge. At least 19 Michigan municipalities enacted data-center moratoriums afterward.",
       "sourceIndex": 4
     },
+    "stakeholders": [
+      {
+        "name": "Blackstone",
+        "kind": "organization",
+        "role": "investor",
+        "note": "CBS Detroit reports the $16 billion Saline Township campus financing includes equity from funds affiliated with Blackstone alongside Related Digital.",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "PIMCO",
+        "kind": "organization",
+        "role": "lender",
+        "note": "CBS Detroit reports the Saline Township campus financing includes fixed-rate financing anchored by PIMCO-managed funds and accounts.",
+        "sourceIndex": 10,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Dean R. Marion",
+        "role": "public_official",
+        "via": "Saline Township Board",
+        "note": "Trustee Dean R. Marion voted for a motion to deny the conditional rezoning proposed by RD Michigan Property Owner I LLC (the Related Digital data center) on 2025-09-10 (Ayes 4, Nays 1; five members present).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "James C. Marion",
+        "role": "public_official",
+        "via": "Saline Township Board",
+        "note": "Supervisor James C. Marion voted for a motion to deny the conditional rezoning proposed by RD Michigan Property Owner I LLC (the Related Digital data center) on 2025-09-10 (Ayes 4, Nays 1; five members present).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Jennifer M. Zink",
+        "role": "public_official",
+        "via": "Saline Township Board",
+        "note": "Treasurer Jennifer M. Zink voted for a motion to deny the conditional rezoning proposed by RD Michigan Property Owner I LLC (the Related Digital data center) on 2025-09-10 (Ayes 4, Nays 1; five members present).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Kelly L. Marion",
+        "role": "public_official",
+        "via": "Saline Township Board",
+        "note": "Clerk Kelly L. Marion voted against a motion to deny the conditional rezoning proposed by RD Michigan Property Owner I LLC (the Related Digital data center) on 2025-09-10 (Ayes 4, Nays 1; five members present).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Tom P. Hammond",
+        "role": "public_official",
+        "via": "Saline Township Board",
+        "note": "Trustee Tom P. Hammond voted for a motion to deny the conditional rezoning proposed by RD Michigan Property Owner I LLC (the Related Digital data center) on 2025-09-10 (Ayes 4, Nays 1; five members present).",
+        "sourceIndex": 11,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -158140,7 +159804,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-09-30",
+    "lastUpdated": "2026-11-04",
     "notes": "Applicant of record is Taurus DC SPE LLC (Bartow County rezoning case Z-25-00020); no source reviewed names a parent company for that entity. Operator: Bartow County's August 2026 policy statement refers to the campus as \"Digital Realty's investment in the Stilesboro area\". The county's minutes of the June 4, 2025 hearing, summarizing the presentation by the applicant's attorney, Scott Peters, record: \"This is a Digital Realty project. It is not a Crypto center.\", and Andrew Alves of Digital Realty appeared as part of the Project Bunkhouse team at the May 19, 2025 planning commission hearing (Daily Tribune). Digital Realty has not announced the project in its own press releases. Property owner per the DRI filing: Gaines Family Land LLC; the DRI's developer field names Brian B. West of Kimley-Horn (engineering consultant). Site: Taff Road south of GA Hwy 113, south of Georgia Power's Plant Bowen, also bordering Floyd Creek Church Road; tax parcels 0032-1184-001, 0032-1122-001, 0032a-003-002 and 0032b-003-006; Raccoon Creek runs along the property. Coordinates are the point stated in the DRI filing, not a surveyed site centroid. Size: the DRI filing states 8,675,000 sq ft; the approved rezoning caps total building area at 8,300,000 sq ft. Capacity: Bartow County's August 2026 data-center policy statement says \"Digital Realty's investment in the Stilesboro area, planned for approximately 1.3 gigawatts of computing capacity, has indicated a total build-out capital investment on the order of eighteen billion dollars,\" and that Digital Realty \"forecasts total employment in excess of 800 jobs once the campus is complete\"; the 1.3 GW is recorded as planned capacity. Earlier, a site plan obtained by the Atlanta Journal-Constitution (April 2025) put the project's power needs at 1,830 MW with three on-site substations; the DRI filing's energy-demand field is blank. The same county statement says Bartow County has granted no tax abatements, PILOT or comparable arrangement to these data center facilities. Value: the DRI filing states an estimated build-out value of $19 billion and projected annual property tax of at least $40-50 million, with build-out estimated for 2035. Incentives: the DRI filing said the project was \"in the process of incentive negotiations\" with the Bartow-Cartersville Joint Development Authority; the county's economic development director, Melinda Lemmon, said that was \"mistakenly included in the DRI filing\" and that the authority \"is not negotiating incentives with the data center calling themselves Project Bunkhouse or any other data center\" (Daily Tribune, April 2, 2025). No bond validation, PILOT or abatement for the project has been found. Rezoning conditions include: an 8,300,000 sq ft cap; buffers required before occupancy; primary access from Taff Road only; distribution, manufacturing, warehousing, outdoor storage, towers, laboratories and retail prohibited; water-efficient HVAC required. Other DRI figures: about 8,588 average daily vehicle trips, about 29% impervious surface, wetlands, floodplain and historic resources present on site (impacts not expected per the filing). No building permits or site work have been reported since the rezoning.",
     "energy": {
       "utility": "Georgia Power",
@@ -158160,6 +159824,16 @@
       "notes": "Residents opposed the project at both public hearings. At the May 19, 2025 planning commission hearing, Valerie Holt, Amy Tilley and Lauren Van Winkle spoke against it (rural character, Taff Road traffic), and Joe Harris spoke in support of the landowners' right to sell; the commission still recommended approval unanimously (Daily Tribune). At the June 4, 2025 hearing, Patty Everett spoke in opposition, citing the loss of pasture and property values, and Gail Cochran asked whether Georgia Power would take her property for new transmission lines; the minutes record no other speakers. The sole commissioner approved the rezoning the same day. No petition, lawsuit or appeal specific to this project has been found.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "Steve Taylor",
+        "role": "public_official",
+        "via": "Bartow County Commissioner (sole commissioner)",
+        "note": "Sole Commissioner Steve Taylor approved rezoning case Z-25-00020 (Taurus DC SPE LLC, 876.57 acres on Taff Road, for a Digital Realty data center) on 2025-06-04, with conditions.",
+        "sourceIndex": 0,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center"
   },
   {
@@ -159196,9 +160870,16 @@
         "publisher": "WEKU",
         "retrievedAt": "2026-10-22",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/949157/000110465926009212/tm264772d1_ex99-1.htm",
+        "label": "Century Aluminum 8-K Exhibit 99.1: New digital infrastructure campus to be built at Hawesville",
+        "publisher": "Century Aluminum Company (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-22",
+    "lastUpdated": "2026-11-04",
     "notes": "Brownfield redevelopment of former Century Aluminum smelter. Site acquired February 2026 from Century Aluminum subsidiary; acquisition price reported by multiple outlets as $200M cash plus a 6.8% minority equity interest in TeraWulf (not confirmed in the official press release text as of July 2026). Lease entity: TeraWulf's Raylan Data LLC to Anthropic PBC. The ~$19B is contracted lease revenue over the 20-year term — not capex; not recorded as an investment figure. TeraWulf indicated a $3B–$4B construction investment for two data center buildings (range, not a firm single figure; not recorded as an investment figure). Site has ~480 MW of existing power availability; 401 MW is the Anthropic lease capacity. Total site ~750 acres per news sources; TeraWulf's official PR cited 'over 250 buildable acres.' Coordinates are approximate (Hawesville town center). The Fluidstack/Abernathy JV is a separate unrelated transaction and is not part of this record.",
     "energy": {
       "source": "grid",
@@ -159219,6 +160900,16 @@
       "notes": "Online petition with 1,200+ signatures asking county officials, the governor, and the state utility regulator to pause approvals pending disclosure of energy, environmental, and infrastructure impacts. Hancock County Judge-Executive Johnny Roberts publicly supportive, citing 100–120 high-paying permanent jobs and significant new annual tax revenue for schools and emergency services. Opposition concerns center on water use, traffic, and environmental effects. TeraWulf held community meetings (March 2026) to address water and cooling questions.",
       "sourceIndex": 8
     },
+    "stakeholders": [
+      {
+        "name": "Century Aluminum Company",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Century Aluminum announced the 2026-02-02 sale of its Hawesville, Kentucky site to TeraWulf and stated it would retain a non-controlling minority equity stake in the redevelopment.",
+        "sourceIndex": 15,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -159318,9 +161009,16 @@
         "publisher": "Spectrum News / NY State of Politics",
         "retrievedAt": "2026-09-21",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000077/wulf-20260428.htm",
+        "label": "TeraWulf DEF 14A (2026), related-party transactions: Amended and Restated Lake Mariner Facility Lease",
+        "publisher": "TeraWulf Inc. (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "Built on the site of the former coal-fired Somerset Generating Station (shut 2019/2020). Address 7725 Lake Rd, Barker, NY — coordinates are a town-level geocode, not a confirmed parcel pin (approximate). TeraWulf's first-quarter 2026 filing describes approximately 500 MW of gross capacity in the near term, with potential expansion to approximately 750 MW subject to additional NYISO approvals; the filing says the campus ground leases cover 162.7 acres, and no whole-site land area is recorded. The AI/HPC business here rests on signed leases rather than speculation: the Core42 leases had all commenced as of March 31, 2026 (60 MW of critical IT capacity energized), and the Fluidstack leases, each with an initial 10-year term, were expected to commence in 2026. TeraWulf's August 2025 announcement of the CB-5 expansion put contracted critical IT load for Fluidstack at about 360 MW (CB-3 and CB-4 delivering more than 200 MW, plus 160 MW in CB-5), representing $6.7 billion in contracted revenue, with Google's total backstop at about $3.2 billion and its pro forma equity ownership at about 14%. Tagged mixed-use since Bitcoin mining (145 MW energized as of March 31, 2026) remains the larger operational segment versus HPC (60 MW of critical IT energized). A New York statewide bill (Responsible Data Center Development Act, S10642/A11560) passed both legislative chambers June 4, 2026, imposing a one-year moratorium on new permits for large (≥20MW) data centers; it remained unsigned/pending before Gov. Hochul as of July 2026. Facilities with construction already underway are exempt, so TeraWulf's current build here is likely grandfathered, but any future unbuilt expansion phase requiring new permits could be affected if the bill is signed before construction starts. As of July 2026, the Niagara County Manager said the project had submitted no application for assistance to the Niagara County Industrial Development Agency.",
     "energy": {
       "utility": "New York Power Authority (NYPA)",
@@ -159341,6 +161039,16 @@
       "permanent": 200,
       "sourceIndex": 8
     },
+    "stakeholders": [
+      {
+        "name": "Paul Prager",
+        "role": "landowner",
+        "via": "Somerset Operating Company, LLC",
+        "note": "TeraWulf's 2026 proxy statement describes Somerset Operating Company, LLC, lessor of about 162.7 acres in Somerset, NY used for Lake Mariner, as owned and controlled by Paul Prager, TeraWulf's Chief Executive Officer.",
+        "sourceIndex": 9,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "crypto_mining",
     "aiClassification": "mixed_use",
     "mining": {
@@ -159445,9 +161153,16 @@
         "publisher": "WBNG",
         "retrievedAt": "2026-10-26",
         "kind": "press"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1083301/000108330126000077/wulf-20260428.htm",
+        "label": "TeraWulf DEF 14A (2026), related-party transactions: Cayuga Facility Lease",
+        "publisher": "TeraWulf Inc. (SEC)",
+        "retrievedAt": "2026-11-04",
+        "kind": "filing"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "notes": "Site is the former Cayuga Power Plant (coal-fired, retired). NYSDEC water permit application for Cayuga Lake withdrawal was originally filed in 2021 for 'unspecified future use.' Permit dates to 1955 without modern monitoring requirements per opposition. TeraWulf also has a separate cryptomining operation at the Susquehanna site in PA (Nautilus). Operating entity: Cayuga Operating Company (acquired plant). No status change. The April 2026 DEC water-withdrawal/SPDES action is explicitly for the existing power plant's current operations, not the data center; DEC states it is 'not associated with the proposed data center'. As of the sources fetched 2026-09-09 the project remains proposed and had not cleared local site-plan review. Do not read the water permit as a data-center permit.",
     "energy": {
       "source": "grid",
@@ -159470,6 +161185,16 @@
       "notes": "19,700-signature petition (17,000 from NY state) submitted to Lansing Town Board. Tompkins County Legislature voted 12-1 on January 20, 2026 urging NYSDEC to reject water withdrawal permit. TeraWulf threatened legal action against Town of Lansing over alleged Open Meeting Law violations. Multiple adjacent towns (Dryden, Danby) passed laws blocking data center development in response.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "Paul Prager",
+        "role": "landowner",
+        "via": "Cayuga Operating Company, LLC",
+        "note": "TeraWulf's 2026 proxy statement describes Cayuga Operating Company, LLC, landlord under the August 2025 lease of about 183 acres in Lansing, NY, as owned and controlled by Paul Prager, TeraWulf's Chief Executive Officer.",
+        "sourceIndex": 8,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -167904,9 +169629,16 @@
         "publisher": "Nevada Governor's Office of Economic Development",
         "retrievedAt": "2026-10-14",
         "kind": "subsidy"
+      },
+      {
+        "url": "https://goed.nv.gov/wp-content/uploads/2025/02/3.-GOED-Board-Meeting-Minutes-November-14-2024.pdf",
+        "label": "GOED Board Meeting Minutes, November 14, 2024",
+        "publisher": "Nevada Governor's Office of Economic Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-10-28",
+    "lastUpdated": "2026-11-04",
     "notes": "Located in Tahoe Reno Industrial Center (TRIC), Storey County, NV — same industrial park as Google, Apple, Microsoft, and Switch (CITADEL tracked separately as of July 2026). Four multi-story buildings, 1M+ sq ft. Designed for AI densities 360W–720W per sq ft. Vantage's eighth North American market. Coordinates are approximate TRIC centroid. Primary press release states more than 1,200 individuals employed 'across the construction and ongoing operations' — combined construction + permanent total; that release does not split construction from permanent jobs. As of October 2026, no permanent-jobs figure is recorded: a November 2024 Nevada Governor's Office of Economic Development release projects approximately 10 jobs within five years for a Vantage data center in Storey County, a five-year projection that does not name NV1.",
     "energy": {
       "source": "grid",
@@ -167933,6 +169665,56 @@
       "notes": "Storey County Manager Austin Osborne is quoted welcoming Vantage to the Tahoe-Reno Industrial Center, consistent with the county's general industrial-friendly posture toward data centers (see also Tract Virginia Highlands Technology Park). Vantage also cites an EDAWN workforce-development partnership. No opposition documented. Checked: operator press release only.",
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "Debra Jacobs",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 14 November 2024, when the board unanimously approved data center sales tax and personal property tax abatements for Vantage Data Centers NV12, LLC (Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Francisco Aguilar",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 14 November 2024, when the board unanimously approved data center sales tax and personal property tax abatements for Vantage Data Centers NV12, LLC (Storey County) (Nevada Secretary of State).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joe Lombardo",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 14 November 2024, when the board unanimously approved data center sales tax and personal property tax abatements for Vantage Data Centers NV12, LLC (Storey County) (Governor of Nevada; presided at the meeting).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Raymond Specht",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 14 November 2024, when the board unanimously approved data center sales tax and personal property tax abatements for Vantage Data Centers NV12, LLC (Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Sasha Stephenson",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 14 November 2024, when the board unanimously approved data center sales tax and personal property tax abatements for Vantage Data Centers NV12, LLC (Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Weldon Havins",
+        "role": "public_official",
+        "via": "Nevada Board of Economic Development (GOED)",
+        "note": "Voting member of the Nevada Board of Economic Development present on 14 November 2024, when the board unanimously approved data center sales tax and personal property tax abatements for Vantage Data Centers NV12, LLC (Storey County).",
+        "sourceIndex": 5,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "confirmed"
   },
@@ -168039,10 +169821,59 @@
         "publisher": "Powered By Who",
         "retrievedAt": "2026-08-05",
         "kind": "other"
+      },
+      {
+        "url": "https://dam.assets.ohio.gov/image/upload/development.ohio.gov/about/taxcreditminutes/Meeting_Minutes_10.8.2025.pdf",
+        "label": "Ohio Tax Credit Authority meeting minutes, October 8, 2025",
+        "publisher": "Ohio Department of Development",
+        "retrievedAt": "2026-11-04",
+        "kind": "subsidy"
       }
     ],
-    "lastUpdated": "2026-09-10",
+    "lastUpdated": "2026-11-04",
     "notes": "Vantage's second Ohio campus (distinct from the tracked OH1 in Johnstown), at Lancaster-Newark Rd & Blacklick Rd near Millersport — up to 7 structures incl. 4 data-center buildings, $2.1B, powered by an adjacent natural-gas generation facility; under construction as of mid-2026. Capacity figures diverge: 696 MW on Vantage's own site (used here) vs ~800 MW / 500 acres on a project aggregator — the operator figure is used and the discrepancy flagged. Coordinates approximate (Millersport city-center, not parcel-verified). Public-reception check (2026-09-10): Checked the project's own campus microsite (2026-09-10); it covers only project description and planned economic benefits, with no documented public hearing, resident reaction, or official statement of support/opposition.",
+    "stakeholders": [
+      {
+        "name": "Brian Cooper",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 8, 2025 meeting, Vantage Data Centers Management Company, LLC (Millersport; 50%, 10-year exemption): present per the roll call and voted yes; minutes: motion carried 5-0, all present voted yes.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Deborah McGraw",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 8, 2025 meeting, Vantage Data Centers Management Company, LLC (Millersport; 50%, 10-year exemption): present per the roll call and voted yes; minutes: motion carried 5-0, all present voted yes.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Emmett Kelly",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 8, 2025 meeting, Vantage Data Centers Management Company, LLC (Millersport; 50%, 10-year exemption): present per the roll call and voted yes; minutes: motion carried 5-0, all present voted yes.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Eric Lindner",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority (Acting Chair)",
+        "note": "Ohio Tax Credit Authority, October 8, 2025 meeting, Vantage Data Centers Management Company, LLC (Millersport; 50%, 10-year exemption): moved approval; motion carried 5-0, all present voting yes per the minutes.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Joy Evangelista",
+        "role": "public_official",
+        "via": "Ohio Tax Credit Authority",
+        "note": "Ohio Tax Credit Authority, October 8, 2025 meeting, Vantage Data Centers Management Company, LLC (Millersport; 50%, 10-year exemption): seconded the motion; carried 5-0, all present voting yes per the minutes.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "data_center",
     "aiClassification": "likely"
   },
@@ -168879,8 +170710,18 @@
         "kind": "press"
       }
     ],
-    "lastUpdated": "2026-10-30",
+    "lastUpdated": "2026-11-04",
     "notes": "Covers the two abandoned AP1000 units only, not the operating Unit 1. Ownership is in transition — Santee Cooper currently holds the assets and Brookfield was selected to complete them, with a feasibility study running to a decision point; the operator field records current ownership, not the eventual one. No named compute offtaker is sourced, so none is recorded despite widespread reporting that data center demand is the commercial premise. Coordinates are the OSM feature for the V.C. Summer site. As of 2026-09-10, the record remains listed as proposed. Santee Cooper's board approved an MOU with Brookfield Asset Management establishing a formal feasibility period; the MOU set a deadline of 26 June 2026 for Brookfield to determine initial feasibility, and Santee Cooper announced on 26 June 2026 that Brookfield's final investment decision is due by the end of March 2028. In May 2026, World Nuclear News reported that a joint venture of Brookfield and The Nuclear Company is to project manage the completion of the two units. As of July 2026, the South Carolina Daily Gazette reported that the project must still go through feasibility, engineering and other due diligence studies and the federal licensing process. No construction has resumed; this is still evaluation/feasibility work, not a status-changing event.",
+    "stakeholders": [
+      {
+        "name": "Brookfield Asset Management",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Santee Cooper signed a December 2025 MOU with Brookfield Asset Management for a feasibility study on completing the two partially built AP1000 units at V.C. Summer; a sale is possible only if a final investment decision is reached.",
+        "sourceIndex": 2,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "power_generation",
     "generation": {
       "technology": "nuclear",
@@ -173176,7 +175017,7 @@
         "kind": "other"
       }
     ],
-    "lastUpdated": "2026-10-11",
+    "lastUpdated": "2026-11-04",
     "notes": "600 MW combined-cycle gas plant near Clarksburg using GE Vernova equipment. Final investment decision November 2025; ground broken April 2026. Capacity is reported as 600 MW by the governor and Kindle, while other coverage cites 625 MW; the original 2017 ESC proposal was 579 MW. Coordinates come from Global Energy Monitor, which places the site on a former coal-mining property near Clarksburg, and are marked approximate.",
     "energy": {
       "source": "on_site_gas",
@@ -173187,6 +175028,16 @@
       "construction": 500,
       "sourceIndex": 0
     },
+    "stakeholders": [
+      {
+        "name": "Blackstone Energy Transition Partners",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Modern Power Systems reports Kindle Energy is developing the 600 MW Wolf Summit Energy combined-cycle plant in Harrison County, West Virginia in partnership with Blackstone Energy Transition Partners.",
+        "sourceIndex": 1,
+        "asOf": "2026-11-04"
+      }
+    ],
     "facilityType": "power_generation",
     "generation": {
       "technology": "natural_gas",
