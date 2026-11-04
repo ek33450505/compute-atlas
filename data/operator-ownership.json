@@ -466,5 +466,308 @@
         "asOf": "2026-11-04"
       }
     ]
+  },
+  {
+    "operator": "Centersquare",
+    "owners": [
+      {
+        "name": "Brookfield Corporation",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "parent": "Brookfield Corporation",
+        "note": "Csquare, Inc.'s first 10-Q after its July 2026 NYSE IPO states that it is majority-owned by investment funds managed by Brookfield Corporation.",
+        "source": {
+          "url": "https://www.sec.gov/Archives/edgar/data/2105398/000210539826000004/csqr-20260630.htm",
+          "label": "Csquare, Inc. Form 10-Q for the quarter ended 2026-06-30",
+          "retrievedAt": "2026-11-04",
+          "kind": "filing",
+          "publisher": "Csquare, Inc. (SEC EDGAR)"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Csquare",
+    "owners": [
+      {
+        "name": "Brookfield Corporation",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "parent": "Brookfield Corporation",
+        "note": "Csquare, Inc.'s first 10-Q after its July 2026 NYSE IPO states that it is majority-owned by investment funds managed by Brookfield Corporation.",
+        "source": {
+          "url": "https://www.sec.gov/Archives/edgar/data/2105398/000210539826000004/csqr-20260630.htm",
+          "label": "Csquare, Inc. Form 10-Q for the quarter ended 2026-06-30",
+          "retrievedAt": "2026-11-04",
+          "kind": "filing",
+          "publisher": "Csquare, Inc. (SEC EDGAR)"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Centersquare (Csquare)",
+    "owners": [
+      {
+        "name": "Brookfield Corporation",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "parent": "Brookfield Corporation",
+        "note": "Csquare, Inc.'s first 10-Q after its July 2026 NYSE IPO states that it is majority-owned by investment funds managed by Brookfield Corporation.",
+        "source": {
+          "url": "https://www.sec.gov/Archives/edgar/data/2105398/000210539826000004/csqr-20260630.htm",
+          "label": "Csquare, Inc. Form 10-Q for the quarter ended 2026-06-30",
+          "retrievedAt": "2026-11-04",
+          "kind": "filing",
+          "publisher": "Csquare, Inc. (SEC EDGAR)"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Centersquare (Cyxtera/Evoque)",
+    "owners": [
+      {
+        "name": "Brookfield Corporation",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "parent": "Brookfield Corporation",
+        "note": "Csquare, Inc.'s first 10-Q after its July 2026 NYSE IPO states that it is majority-owned by investment funds managed by Brookfield Corporation.",
+        "source": {
+          "url": "https://www.sec.gov/Archives/edgar/data/2105398/000210539826000004/csqr-20260630.htm",
+          "label": "Csquare, Inc. Form 10-Q for the quarter ended 2026-06-30",
+          "retrievedAt": "2026-11-04",
+          "kind": "filing",
+          "publisher": "Csquare, Inc. (SEC EDGAR)"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "DC BLOX",
+    "owners": [
+      {
+        "name": "Post Road Group",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2024-10",
+        "note": "In October 2024 DC BLOX raised incremental equity from existing and new investors led by Post Road Group and Bain Capital Credit, and the two firms converted their existing debt positions to equity; no control statement or percentage was published.",
+        "source": {
+          "url": "https://www.abfjournal.com/dc-blox-secures-equity-capital-and-green-loan-from-syndicate-of-investors/",
+          "label": "DC BLOX Secures Equity Capital and Green Loan from Syndicate of Investors",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "ABF Journal"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Bain Capital Credit",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2024-10",
+        "note": "In October 2024 DC BLOX raised incremental equity from existing and new investors led by Post Road Group and Bain Capital Credit, and the two firms converted their existing debt positions to equity; no control statement or percentage was published.",
+        "source": {
+          "url": "https://www.abfjournal.com/dc-blox-secures-equity-capital-and-green-loan-from-syndicate-of-investors/",
+          "label": "DC BLOX Secures Equity Capital and Green Loan from Syndicate of Investors",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "ABF Journal"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Compass Datacenters",
+    "owners": [
+      {
+        "name": "Brookfield Infrastructure Partners",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "parent": "Brookfield",
+        "since": "2023-10",
+        "note": "Brookfield Infrastructure Partners' Q3 2023 results report that its acquisition of Compass Datacenters, alongside Ontario Teachers' Pension Plan, closed in October 2023.",
+        "source": {
+          "url": "https://www.sec.gov/Archives/edgar/data/1406234/000117184323006579/exh_991.htm",
+          "label": "Brookfield Infrastructure Partners Q3 2023 results (6-K Ex. 99.1)",
+          "retrievedAt": "2026-11-04",
+          "kind": "filing",
+          "publisher": "Brookfield Infrastructure Partners L.P. (SEC EDGAR)"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Ontario Teachers' Pension Plan",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "note": "Ontario Teachers' co-acquired Compass Datacenters with Brookfield Infrastructure Partners (agreed June 2023; closed October 2023 per BIP's Q3 2023 results), and Compass's own site names it first among its backers.",
+        "source": {
+          "url": "https://www.compassdatacenters.com/about-us/",
+          "label": "About Compass Datacenters",
+          "retrievedAt": "2026-11-04",
+          "kind": "other",
+          "publisher": "Compass Datacenters"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "KKR",
+        "kind": "organization",
+        "role": "investor",
+        "note": "Compass's own site lists KKR among its backers alongside Ontario Teachers' and Brookfield Infrastructure; no date, stake size or deal announcement was found in a readable primary source.",
+        "source": {
+          "url": "https://www.compassdatacenters.com/about-us/",
+          "label": "About Compass Datacenters",
+          "retrievedAt": "2026-11-04",
+          "kind": "other",
+          "publisher": "Compass Datacenters"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Cloverleaf Infrastructure",
+    "owners": [
+      {
+        "name": "NGP",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2024-07",
+        "note": "In July 2024 Cloverleaf announced capital commitments totaling over $300 million from private equity investors NGP and Sandbrook Capital, alongside management contributions; the split and any control stake were not disclosed.",
+        "source": {
+          "url": "https://prnewswire.com/news-releases/cloverleaf-infrastructure-raises-300-million-from-ngp-and-sandbrook-capital-302198634.html",
+          "label": "Cloverleaf Infrastructure raises $300 Million from NGP and Sandbrook Capital",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Sandbrook Capital via PR Newswire"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Sandbrook Capital",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2024-07",
+        "note": "In July 2024 Cloverleaf announced capital commitments totaling over $300 million from private equity investors NGP and Sandbrook Capital, alongside management contributions; the split and any control stake were not disclosed.",
+        "source": {
+          "url": "https://prnewswire.com/news-releases/cloverleaf-infrastructure-raises-300-million-from-ngp-and-sandbrook-capital-302198634.html",
+          "label": "Cloverleaf Infrastructure raises $300 Million from NGP and Sandbrook Capital",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Sandbrook Capital via PR Newswire"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Stream Data Centers",
+    "owners": [
+      {
+        "name": "Apollo Global Management",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "parent": "Apollo",
+        "since": "2025-11",
+        "note": "Apollo-managed funds completed the acquisition of a majority interest in Stream Data Centers; Principal Asset Management took a minority interest and management retained a minority stake.",
+        "source": {
+          "url": "https://ir.apollo.com/news-events/press-releases/detail/587/apollo-funds-complete-acquisition-of-stream-data-centers",
+          "label": "Apollo Funds Complete Acquisition of Stream Data Centers",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Apollo Global Management"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Principal Asset Management",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2025-11",
+        "note": "As part of Apollo's November 2025 majority acquisition of Stream Data Centers, Principal Asset Management acquired a minority interest through a Principal-managed fund.",
+        "source": {
+          "url": "https://ir.apollo.com/news-events/press-releases/detail/587/apollo-funds-complete-acquisition-of-stream-data-centers",
+          "label": "Apollo Funds Complete Acquisition of Stream Data Centers",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Apollo Global Management"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "DartPoints",
+    "owners": [
+      {
+        "name": "NOVA Infrastructure",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "since": "2025-04",
+        "note": "In April 2025 NOVA Infrastructure made a majority investment in DartPoints as part of a commitment with Orion Infrastructure Capital totaling more than $250 million; prior sponsor Astra Capital Management kept a minority stake.",
+        "source": {
+          "url": "https://dallasinnovates.com/nyc-firm-snags-majority-stake-in-dallas-edge-data-center-provider-dartpoints-as-part-of-250m-commitment/",
+          "label": "NYC Firm Snags Majority Stake in Dallas Edge Data Center Provider DartPoints as Part of $250M Commitment",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Dallas Innovates"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Astra Capital Management",
+        "kind": "organization",
+        "role": "investor",
+        "note": "In April 2025 NOVA Infrastructure made a majority investment in DartPoints as part of a commitment with Orion Infrastructure Capital totaling more than $250 million; prior sponsor Astra Capital Management kept a minority stake.",
+        "source": {
+          "url": "https://dallasinnovates.com/nyc-firm-snags-majority-stake-in-dallas-edge-data-center-provider-dartpoints-as-part-of-250m-commitment/",
+          "label": "NYC Firm Snags Majority Stake in Dallas Edge Data Center Provider DartPoints as Part of $250M Commitment",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Dallas Innovates"
+        },
+        "asOf": "2026-11-04"
+      },
+      {
+        "name": "Orion Infrastructure Capital",
+        "kind": "organization",
+        "role": "investor",
+        "since": "2025-04",
+        "note": "In April 2025 NOVA Infrastructure made a majority investment in DartPoints as part of a commitment with Orion Infrastructure Capital totaling more than $250 million; prior sponsor Astra Capital Management kept a minority stake.",
+        "source": {
+          "url": "https://dallasinnovates.com/nyc-firm-snags-majority-stake-in-dallas-edge-data-center-provider-dartpoints-as-part-of-250m-commitment/",
+          "label": "NYC Firm Snags Majority Stake in Dallas Edge Data Center Provider DartPoints as Part of $250M Commitment",
+          "retrievedAt": "2026-11-04",
+          "kind": "press",
+          "publisher": "Dallas Innovates"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
+  },
+  {
+    "operator": "Expedient",
+    "owners": [
+      {
+        "name": "InfraBridge",
+        "kind": "organization",
+        "role": "controlling_owner",
+        "note": "Expedient was acquired in 2019 by AMP Capital, now InfraBridge, from Landmark Media Enterprises; Expedient's Board and Investors page still lists InfraBridge as its investor.",
+        "source": {
+          "url": "https://expedient.com/about/board-and-investors/",
+          "label": "Board and Investors",
+          "retrievedAt": "2026-11-04",
+          "kind": "other",
+          "publisher": "Expedient"
+        },
+        "asOf": "2026-11-04"
+      }
+    ]
   }
 ]
