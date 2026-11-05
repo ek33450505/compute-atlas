@@ -189,6 +189,8 @@ yours. For academic work, cite the DOI:
 `Kubiak, E. (n.d.). Compute Atlas [Data set]. https://doi.org/10.5281/zenodo.22284476`.
 Full terms: [LICENSE-DATA](LICENSE-DATA).
 
+The data is free. If you or your organization rely on it, a monthly or institution membership on [Ko-fi](https://ko-fi.com/L2T725R7FV) helps cover its upkeep.
+
 ---
 
 ## Data model

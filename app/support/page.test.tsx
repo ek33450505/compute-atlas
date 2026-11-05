@@ -220,4 +220,17 @@ describe("SupportPage — the personal sections", () => {
     expect(follows(guarantee, supporters)).toBe(true);
     expect(follows(supporters, stand)).toBe(true);
   });
+
+  it("puts the monthly-membership line before the Ko-fi link and mentions one-off tips after it", () => {
+    render(<SupportPage />);
+    const monthly = screen.getByText(/a monthly membership on Ko-fi goes furthest/);
+    const kofi = screen.getByRole("link", { name: /Support on Ko-fi/ });
+    expect(
+      Boolean(monthly.compareDocumentPosition(kofi) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ).toBe(true);
+    const oneOff = screen.getByText(/One-off tips work too/);
+    expect(
+      Boolean(kofi.compareDocumentPosition(oneOff) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ).toBe(true);
+  });
 });
