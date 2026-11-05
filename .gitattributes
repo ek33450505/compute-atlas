@@ -1,0 +1,10 @@
+# Keep the release source archive small enough for Zenodo's ZIP previewer,
+# which refuses archives with more than 1,000 entries. Tests and CI config
+# stay in the repository; they are only left out of `git archive` and
+# GitHub's release ZIPs, which Zenodo fetches and keeps as each version.
+*.test.ts export-ignore
+*.test.tsx export-ignore
+*.test.mjs export-ignore
+/e2e export-ignore
+/tests export-ignore
+/.github export-ignore
