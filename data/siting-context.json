@@ -1442,6 +1442,20 @@
       "rock": "Igneous and metamorphic-rock"
     }
   },
+  "aligned-behrend-phoenix-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "aligned-chillicothe-ross-oh": {
     "nearestWater": {
       "name": "Scioto River",
@@ -13490,6 +13504,16 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "crusoe-haskell-county-tx": {
+    "waterStress": {
+      "cat": 3,
+      "label": "High (40-80%)"
+    },
+    "aquifer": {
+      "name": "Seymour Aquifer",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "crusoe-lancium-childress-tx": {
@@ -31564,6 +31588,20 @@
       "rock": "Unconsolidated sand and gravel"
     }
   },
+  "lky-real-estate-fund-iv-phoenix-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "lm-funding-calumet-ok": {
     "nearestWater": {
       "name": "Sixmile Creek",
@@ -33723,6 +33761,20 @@
       "rock": "Sandstone"
     }
   },
+  "merit-partners-legacy-business-park-mesa-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 1,
+      "label": "Low - Medium (0-2 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
+    }
+  },
   "merkle-standard-memphis-tn": {
     "nearestWater": {
       "name": "Johns Creek",
@@ -34500,6 +34552,12 @@
     "waterStress": {
       "cat": 0,
       "label": "Low (<10%)"
+    }
+  },
+  "meyer-yorkville-il": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     }
   },
   "mghpcc-holyoke-ma": {
@@ -47714,6 +47772,20 @@
     "aquifer": {
       "name": "Early Mesozoic Basin Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "sheely-center-phoenix-az": {
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Basin And Range Basin-fill Aquifers",
+      "rock": "Unconsolidated sand and gravel"
     }
   },
   "shelbourne-white-clay-newark-de": {
