@@ -315,6 +315,36 @@ when that stake was documented.
   with a caption saying listing does not imply financial involvement. It is
   recorded for people only; an agency is not a public official.
 
+**How votes are recorded:** A recorded vote is listed only when every
+member who voted on it can be named from the acting body's own records.
+Listing some voters but not others would present one side of a decision, so a
+vote that cannot be named in full is left out.
+
+- **Every voter or none.** A roll call, or a roster of the members present
+  with a unanimous result, names every voter. A roster of the body's
+  membership does not, and neither does a voice vote that records only that
+  no one objected.
+- **The presiding officer is accounted for.** A chair, mayor or judge who was
+  present is either in the tally, or shown not to vote by the same records or
+  by a current law or charter quoted verbatim from an official source (for
+  example, a mayor who votes only to break a tie).
+- **Both directions, plus abstentions and recusals.** Votes against are
+  recorded the same way as votes for, and an abstention or recusal is
+  recorded as such.
+- **Only decisions count.** A planning commission or board recommendation to
+  another body is advisory and is not recorded. A planning body's vote is
+  recorded only where an official text shows that it decides the matter.
+- **Non-binding acts are recorded as worded.** A deciding body's stage
+  approval, or a governing board's resolution on one site, is recorded in the
+  record's own words.
+- **Approved or certified minutes.** Draft minutes are used only once a later
+  meeting has approved them. Minutes certified as the official record are used
+  without a later approval only in two forms: signed by the presiding officer,
+  attested by the clerk and sealed, all three; or attested and recorded by the
+  county clerk.
+- **Full names from records of the time.** A name comes from the minutes'
+  own roster or another official record from when the vote was taken.
+
 Party affiliation is never recorded. Campaign donations are not a stake in a
 facility and are not recorded.
 
