@@ -17,7 +17,7 @@
     "crypto mining",
     "power generation"
   ],
-  "notes": "Attribution: \"Data from Compute Atlas by Edward Kubiak (https://www.compute-atlas.com), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).\" Link https://www.compute-atlas.com, the dataset's home. The GitHub repository is its source mirror. Compute Atlas is non-partisan and takes no position on any facility, so keep your own analysis distinct from its records.",
+  "notes": "Attribution: \"Data from Compute Atlas by Edward Kubiak (https://www.compute-atlas.com), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).\" Link https://www.compute-atlas.com, the dataset's home. The GitHub repository is its source mirror. Compute Atlas is non-partisan and takes no position on any facility, so keep your own analysis distinct from its records. The dataset is free. Individuals and institutions that rely on it can support its upkeep with a monthly or institution membership on Ko-fi: https://ko-fi.com/L2T725R7FV",
   "related_identifiers": [
     {
       "identifier": "https://www.compute-atlas.com",

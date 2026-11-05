@@ -12,7 +12,7 @@ import { SUPPORTERS } from "@/lib/supporters";
 export const metadata: Metadata = {
   title: "Support",
   description:
-    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a one-off tip or a monthly membership helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
+    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a monthly membership or a one-off tip helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
   alternates: { canonical: "/support" },
 };
 
@@ -197,10 +197,14 @@ export default function SupportPage() {
           staged for a person to approve or reject by hand &mdash; so what
           that line item buys is the search, not the writing.
         </p>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          All three of those costs come due every month, so a monthly
+          membership on Ko-fi goes furthest.
+        </p>
         <SupportCta />
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Ko-fi takes one-off tips with no account needed &mdash; card or
-          PayPal &mdash; and monthly memberships.
+          One-off tips work too, with no account needed &mdash; card or
+          PayPal.
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           If a university, lab, newsroom or organization relies on the data,
