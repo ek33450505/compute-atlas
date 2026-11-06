@@ -9,7 +9,7 @@
  *
  * Uses relative imports throughout, matching the other scripts in this folder.
  */
-import { renameSync, rmSync, writeFileSync } from "node:fs";
+import { lstatSync, mkdirSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { facilitiesSchema } from "../lib/schema";
@@ -71,11 +71,42 @@ export function parseDirArg(argv: string[], cwd: string = process.cwd()): string
   const dataDir = path.resolve(cwd, "data");
   const dir = path.resolve(cwd, value);
   const rel = path.relative(dataDir, dir);
-  // Lexical check only, no realpath: a symlink out of data/ is not defended (local CLI, YAGNI).
-  if (rel === ".." || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel)) {
+  const escapes = (r: string) => r === ".." || r.startsWith(`..${path.sep}`) || path.isAbsolute(r);
+  if (escapes(rel)) {
     throw new Error(`--dir must be data/ or a path inside it (${dataDir}); got ${dir}`);
   }
+  // Symlink check, here so the CLI path is covered before exportSnapshot's mkdir
+  // follows a symlinked ancestor out of data/.
+  const realData = realpathOfDeepestExisting(dataDir);
+  const realDir = realpathOfDeepestExisting(dir);
+  if (realData === null || realDir === null || escapes(path.relative(realData, realDir))) {
+    throw new Error(`--dir must be data/ or a path inside it (${dataDir}); got ${dir} (resolves outside via a symlink)`);
+  }
   return dir;
+}
+
+/**
+ * realpath of the deepest ancestor of `p` that exists, with the not-yet-created tail re-appended.
+ * lstat, not existsSync: a dangling symlink counts as existing. Returns null when that ancestor
+ * cannot be resolved (a dangling link) or lstat fails for any reason but ENOENT; the caller refuses.
+ */
+function realpathOfDeepestExisting(p: string): string | null {
+  let existing = p;
+  while (path.dirname(existing) !== existing) {
+    try {
+      lstatSync(existing);
+      break;
+    } catch (err) {
+      // Only "not there yet" climbs; any other error (ENOTDIR, EACCES, ELOOP) fails closed.
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") return null;
+      existing = path.dirname(existing);
+    }
+  }
+  try {
+    return path.join(realpathSync(existing), path.relative(existing, p));
+  } catch {
+    return null;
+  }
 }
 
 const MISSING_DATABASE_URL =
@@ -232,6 +263,8 @@ export async function exportSnapshot(opts: SnapshotOptions = {}): Promise<Export
   ];
   const files = outputs.map(([name]) => path.join(dir, name));
   const tmps = files.map((f) => `${f}.tmp-${process.pid}`);
+  // `dir` already passed parseDirArg's confinement; creating it only now means a refused export makes nothing.
+  mkdirSync(dir, { recursive: true });
   try {
     outputs.forEach(([, body], i) => writeFileSync(tmps[i], body, "utf-8"));
     tmps.forEach((tmp, i) => renameSync(tmp, files[i]));
@@ -251,12 +284,14 @@ export async function exportSnapshot(opts: SnapshotOptions = {}): Promise<Export
 }
 
 async function main() {
+  // Parsed first so an invalid --dir is refused even when DATABASE_URL is unset.
+  const dir = parseDirArg(process.argv.slice(2));
   if (!process.env.DATABASE_URL) {
     console.error(MISSING_DATABASE_URL);
     process.exit(1);
   }
 
-  const { count, files } = await exportSnapshot({ dir: parseDirArg(process.argv.slice(2)) });
+  const { count, files } = await exportSnapshot({ dir });
 
   console.log(`Exported ${count} facilities`);
   for (const f of files) console.log(`Wrote ${f}`);

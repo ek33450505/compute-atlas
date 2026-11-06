@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
@@ -103,6 +103,25 @@ describe("exportSnapshot", () => {
       readFileSync(fx("facilities.fixture.json"), "utf-8")
     );
     for (const f of readdirSync(dir)) expect(readFileSync(path.join(dir, f), "utf-8")).toMatch(/[}\]]\n$/);
+  });
+
+  it("creates a missing nested --dir before writing", async () => {
+    const nested = path.join(dir, "sub", "dir");
+    await exportSnapshot({ dir: nested, source: source(), floors: small, warn: vi.fn() });
+    expect(readdirSync(nested).sort()).toEqual([
+      "facilities.json",
+      "facilities.meta.json",
+      "operator-ownership.json",
+      "siting-context.json",
+    ]);
+  });
+
+  it("creates no directory when the export is refused before writing", async () => {
+    const nested = path.join(dir, "never");
+    await expect(
+      exportSnapshot({ dir: nested, source: source({ facilities: [] }), floors: small, warn: vi.fn() })
+    ).rejects.toThrow(/below the floor/);
+    expect(readdirSync(dir)).toEqual([]);
   });
 
   it("a re-export of unchanged data is byte-identical (meta aside)", async () => {
@@ -225,6 +244,44 @@ describe("parseDirArg", () => {
   it("rejects the repo root and anything outside data/", () => {
     for (const v of [".", "tmp/out", "../elsewhere", "/etc", "data/..", "data/../src"]) {
       expect(() => parseDirArg([`--dir=${v}`], cwd), v).toThrow(/data\/ or a path inside it/);
+    }
+  });
+  it("rejects a symlink under data/ that points outside it, before anything is created", () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), "export-symlink-"));
+    try {
+      const outside = path.join(root, "outside");
+      mkdirSync(outside);
+      mkdirSync(path.join(root, "data"));
+      symlinkSync(outside, path.join(root, "data", "link"));
+      expect(() => parseDirArg(["--dir=data/link/x"], root)).toThrow(/data\/ or a path inside it/);
+      expect(readdirSync(outside)).toEqual([]);
+      // an in-data symlink target is still fine
+      mkdirSync(path.join(root, "data", "real"));
+      symlinkSync(path.join(root, "data", "real"), path.join(root, "data", "ok"));
+      expect(parseDirArg(["--dir=data/ok/x"], root)).toBe(path.join(root, "data", "ok", "x"));
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+  it("rejects a dangling symlink under data/, before anything is created", () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), "export-dangling-"));
+    try {
+      mkdirSync(path.join(root, "data"));
+      symlinkSync(path.join(root, "missing-outside"), path.join(root, "data", "link"));
+      expect(() => parseDirArg(["--dir=data/link/x"], root)).toThrow(/resolves outside via a symlink/);
+      expect(readdirSync(root).sort()).toEqual(["data"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+  it("fails closed on a non-ENOENT lstat error (a regular file used as a directory)", () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), "export-enotdir-"));
+    try {
+      mkdirSync(path.join(root, "data"));
+      writeFileSync(path.join(root, "data", "file"), "x");
+      expect(() => parseDirArg(["--dir=data/file/x"], root)).toThrow(/resolves outside via a symlink/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
     }
   });
   it("allows a directory whose name merely starts with two dots", () => {
