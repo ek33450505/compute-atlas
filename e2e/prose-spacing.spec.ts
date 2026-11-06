@@ -93,6 +93,13 @@ const ROUTES = [
   // shape that drops a leading space; fixed there with an explicit `{" "}`).
   // Listed so a later edit that reintroduces the shape is caught.
   "/sources/odod-dcte-2026-11",
+  // Added 2026-11-06: /sources/otc-1357-21-2026-11 interpolates dates, counts
+  // and statute strings into prose, and the Received entry's chunk after
+  // `{p.received}{" "}` contains `&ldquo;`; the entity chunk follows that
+  // explicit `{" "}`, not `{p.received}` directly.
+  // Listed as coverage against a later edit that drops it; this is not
+  // evidence about the current content.
+  "/sources/otc-1357-21-2026-11",
   // Added 2026-09-11: /contributors is a new route this session. No
   // entity-after-interpolation shape exists in app/contributors/page.tsx
   // today (verified by reading it), but this list's whole point is to catch

@@ -174,6 +174,13 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
       priority: 0.4,
     },
     {
+      url: `${siteConfig.url}/sources/otc-1357-21-2026-11`,
+      // Own date: STATIC_PAGE_LAST_MODIFIED (pinned 2026-09-03) predates this page.
+      lastModified: new Date("2026-11-06T00:00:00Z"),
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
       url: `${siteConfig.url}/activity`,
       lastModified: datasetLastModified,
       changeFrequency: "daily",
