@@ -192,16 +192,45 @@ function getRevalidate(relativePath: string): string | null {
   return match ? match[1] : null;
 }
 
+// One left-to-right pass: string literals match first (kept intact, so a `//` or
+// `/*` inside one is not a comment and the specifiers survive); comments are dropped.
+const STRING_OR_COMMENT =
+  /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)|\/\/[^\n]*|\/\*[\s\S]*?\*\//g;
+
+function stripComments(src: string): string {
+  return src.replace(STRING_OR_COMMENT, (_m, str: string | undefined) => str ?? "");
+}
+
+const DB_SPECIFIER =
+  /^(?:@\/lib\/db(?:\/|$)|drizzle-orm(?:\/|$)|@neondatabase\/|(?:\.{1,2}\/)+(?:.*\/)?db(?:\/|$))/;
+
+/** Module specifiers in `src` (outside comments) that point at the DB client or driver. */
+function dbSpecifiers(src: string): string[] {
+  const code = stripComments(src);
+  const found: string[] = [];
+  for (const re of [
+    /\bfrom\s*(["'])(.+?)\1/g,
+    /\bimport\s*\(\s*(["'`])(.+?)\1/g,
+    /\brequire\s*\(\s*(["'`])(.+?)\1/g,
+    /^\s*import\s*(["'])(.+?)\1/gm,
+  ]) {
+    for (const m of code.matchAll(re)) if (DB_SPECIFIER.test(m[2])) found.push(m[2]);
+  }
+  return found;
+}
+
 // The facility-reading aggregate pages — each carries the "facilities" cache
 // tag (see lib/cache-tags.ts) and must agree on how often it revalidates, or
 // one silently drifts. /data is NOT in this list: it no longer reads facilities
 // (static downloads + bundled meta), so it carries no tag; its own 86400
-// declaration is asserted separately below. The
+// declaration is asserted separately below. /table is NOT in this list either:
+// it is DYNAMIC (it reads searchParams for server pagination), so it has no ISR
+// timer; its data freshness comes from the 24h-cached `getAllFacilities` loader
+// (asserted separately below). The
 // homepage is deliberately excluded: it reads tagged data (getStats/loadFacilities)
 // AND also reads untagged direct-DB data (recent activity, quarterly pipeline), so it stays on a 1h timer.
 const AGGREGATE_PAGES = [
   "app/stats/page.tsx",
-  "app/table/page.tsx",
   "app/ai/page.tsx",
   "app/map/page.tsx",
 ];
@@ -227,6 +256,33 @@ describe("revalidate: /data keeps its own timer; aggregate pages agree with each
       distinctValues.size,
       `revalidate values diverge across aggregate pages: ${JSON.stringify(values)}`
     ).toBe(1);
+  });
+
+  it("/table imports getAllFacilities and imports no DB client", () => {
+    const src = readSource("app/table/page.tsx");
+    expect(src).toMatch(/^import\s*\{[^}]*\bgetAllFacilities\b[^}]*\}\s*from\s*"@\/lib\/data";/m);
+    // A direct Neon read here would run on every request now that the page is dynamic.
+    expect(dbSpecifiers(src)).toEqual([]);
+    expect(stripComments(src)).not.toMatch(/\bgetDb\(/);
+  });
+
+  it("the DB-specifier scan catches every import form", () => {
+    const hit = (code: string) => dbSpecifiers(code).length > 0;
+    expect(hit(`import { getDb } from "@/lib/db/client";`)).toBe(true);
+    expect(hit(`import { getDb } from '@/lib/db';`)).toBe(true);
+    expect(hit(`export { getDb } from "@/lib/db/client";`)).toBe(true);
+    expect(hit(`const m = await import("@/lib/db/client");`)).toBe(true);
+    expect(hit(`const m = require('drizzle-orm');`)).toBe(true);
+    expect(hit(`import "@neondatabase/serverless";`)).toBe(true);
+    expect(hit(`import { x } from "../lib/db/client";`)).toBe(true);
+    expect(hit(`import { x } from "./db";`)).toBe(true);
+    expect(hit(`import { getAllFacilities } from "@/lib/data";`)).toBe(false);
+    expect(hit(`// import { getDb } from "@/lib/db/client";`)).toBe(false);
+    expect(hit("const m = await import(`@/lib/db/client`);")).toBe(true);
+    expect(hit("const m = require(`drizzle-orm`);")).toBe(true);
+    expect(hit('// see /* note\nimport { getDb } from "@/lib/db/client";\nconst s = "*/";')).toBe(true);
+    expect(hit('const u = "https://example.com"; import { getDb } from "@/lib/db/client";')).toBe(true);
+    expect(hit('/* import { getDb } from "@/lib/db/client"; */')).toBe(false);
   });
 
   it("links the support page after the citation heading", () => {

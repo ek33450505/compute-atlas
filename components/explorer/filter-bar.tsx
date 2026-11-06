@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import type { Status } from "@/lib/status";
 import { STATUS_ORDER, STATUS_META } from "@/lib/status";
-import { getFilterOptions } from "@/lib/filters";
+import { getFilterOptions, type FilterOptions } from "@/lib/filters";
 import { StatusBadge } from "@/components/status-badge";
 import type { Facility } from "@/lib/schema";
 import type { FilterableFacility } from "@/lib/facility-slim";
+import { normalizeQuery } from "@/lib/explorer-params";
 
 // ---------------------------------------------------------------------------
 // Facility-type labels
@@ -61,10 +62,138 @@ export interface FilterSetters {
   setMinMw: (v: number) => void;
 }
 
+/** Debounced free-text search bound to the `q` URL param (table mode only). */
+export interface FilterSearch {
+  value: string;
+  onChange: (v: string) => void;
+}
+
+const SEARCH_DEBOUNCE_MS = 300;
+
 interface FilterBarProps {
-  facilities: FilterableFacility[];
+  /** Options are derived from these when `options` is not supplied (map mode). */
+  facilities?: FilterableFacility[];
+  /** Precomputed by the server from the full dataset (table mode). */
+  options?: FilterOptions;
   values: FilterValues;
   setters: FilterSetters;
+  search?: FilterSearch;
+}
+
+/**
+ * Draft + debounce for the search box. While the input has focus it owns its
+ * text: the URL value (trimmed server-side, arriving after an async round trip)
+ * never overwrites it. The draft follows the URL only when the input is not
+ * focused (Back button, external updates). On blur a pending debounce is
+ * flushed and the draft settles on the normalized (trimmed, capped) form the
+ * URL layer will echo, so a value that normalizes back to the current URL
+ * value cannot leave stale text in the box.
+ *
+ * Known limit (accepted): pressing Back while the box is focused leaves the
+ * draft stale until blur.
+ */
+function useSearchDraft(search: FilterSearch | undefined) {
+  const value = search?.value ?? "";
+  const [draft, setDraft] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const onChangeRef = useRef(search?.onChange);
+  const valueRef = useRef(value);
+
+  useEffect(() => {
+    onChangeRef.current = search?.onChange;
+    valueRef.current = value;
+  });
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  useEffect(() => {
+    if (document.activeElement !== inputRef.current) setDraft(value);
+  }, [value]);
+
+  function type(next: string) {
+    setDraft(next);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      timer.current = undefined;
+      onChangeRef.current?.(next);
+    }, SEARCH_DEBOUNCE_MS);
+  }
+
+  function onBlur() {
+    if (timer.current === undefined) {
+      setDraft(valueRef.current);
+      return;
+    }
+    clearTimeout(timer.current);
+    timer.current = undefined;
+    const normalized = normalizeQuery(inputRef.current?.value ?? "");
+    setDraft(normalized);
+    if (normalized !== valueRef.current) onChangeRef.current?.(normalized);
+  }
+
+  /** Immediate clear that also cancels any pending debounced emission. */
+  function clear() {
+    clearTimeout(timer.current);
+    timer.current = undefined;
+    setDraft("");
+    onChangeRef.current?.("");
+  }
+
+  /** Clear button: the button unmounts with the text, so hand focus to the input. */
+  function clearAndFocus() {
+    clear();
+    inputRef.current?.focus();
+  }
+
+  return { draft, type, clear, clearAndFocus, onBlur, inputRef };
+}
+
+function SearchInput({
+  draft,
+  onType,
+  onClear,
+  onBlur,
+  inputRef,
+}: {
+  draft: string;
+  onType: (v: string) => void;
+  onClear: () => void;
+  onBlur: () => void;
+  inputRef: RefObject<HTMLInputElement | null>;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Label htmlFor="facility-search" className="text-sm font-normal">
+        Search
+      </Label>
+      <div className="relative">
+        <input
+          ref={inputRef}
+          id="facility-search"
+          type="search"
+          autoComplete="off"
+          value={draft}
+          onChange={(e) => onType(e.target.value)}
+          onBlur={onBlur}
+          placeholder="Name, operator, city"
+          className="h-8 w-52 rounded-md border border-input bg-background pl-2 pr-8 text-sm focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring [&::-webkit-search-cancel-button]:appearance-none"
+        />
+        {draft && (
+          <button
+            type="button"
+            onClick={onClear}
+            // keep focus in the input so blur doesn't emit the typed text before clear() emits ""
+            onMouseDown={(e) => e.preventDefault()}
+            aria-label="Clear search"
+            className="absolute inset-y-0 right-0 flex w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -219,8 +348,9 @@ function CapacityPopover({ value, onChange }: CapacityPopoverProps) {
 // FilterBar
 // ---------------------------------------------------------------------------
 
-export function FilterBar({ facilities, values, setters }: FilterBarProps) {
-  const options = getFilterOptions(facilities);
+export function FilterBar({ facilities, options: given, values, setters, search }: FilterBarProps) {
+  const options = given ?? getFilterOptions(facilities ?? []);
+  const searchDraft = useSearchDraft(search);
 
   const { status, state, operator, facilityType, minMw } = values;
   const { setStatus, setState, setOperator, setFacilityType, setMinMw } = setters;
@@ -231,7 +361,8 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
     state.length +
     operator.length +
     facilityType.length +
-    (minMw > 0 ? 1 : 0);
+    (minMw > 0 ? 1 : 0) +
+    (search && searchDraft.draft ? 1 : 0);
 
   const hasActiveFilters = activeCount > 0;
 
@@ -274,6 +405,7 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
     setOperator([]);
     setFacilityType([]);
     setMinMw(0);
+    searchDraft.clear();
   }
 
   return (
@@ -282,6 +414,16 @@ export function FilterBar({ facilities, values, setters }: FilterBarProps) {
       aria-label="Filter facilities"
       className="flex flex-wrap items-start gap-3"
     >
+      {search && (
+        <SearchInput
+          draft={searchDraft.draft}
+          onType={searchDraft.type}
+          onClear={searchDraft.clearAndFocus}
+          onBlur={searchDraft.onBlur}
+          inputRef={searchDraft.inputRef}
+        />
+      )}
+
       {/* Status checkboxes */}
       <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0 m-0">
         <legend className="sr-only">Status</legend>

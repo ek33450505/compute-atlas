@@ -1,13 +1,7 @@
 import type { Facility } from "@/lib/schema";
-import type { TableRow } from "@/lib/facility-slim";
 import { siteConfig } from "@/lib/site";
 
-/**
- * What the CSV reads. A full `Facility` satisfies it, and so does the slim
- * `TableRow` (which carries `sourceCount` because its `sources` holds only the
- * first entry), so both serialize to identical bytes.
- */
-type CsvRecord = Facility | TableRow;
+type CsvRecord = Facility;
 
 interface CsvColumn {
   header: string;
@@ -40,7 +34,7 @@ export const CSV_COLUMNS: CsvColumn[] = [
   { header: "announced_date", value: (f) => f.announcedDate },
   { header: "last_updated", value: (f) => f.lastUpdated },
   { header: "detail_url", value: (f) => `${siteConfig.url}/facilities/${f.id}` },
-  { header: "source_count", value: (f) => ("sourceCount" in f ? f.sourceCount : f.sources.length) },
+  { header: "source_count", value: (f) => f.sources.length },
   { header: "primary_source_url", value: (f) => f.sources[0]?.url },
 ];
 

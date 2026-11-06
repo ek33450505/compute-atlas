@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FacilityTable } from "./facility-table";
@@ -78,6 +78,8 @@ const facilityDelta: Facility = {
   lastUpdated: "2024-03-10",
 };
 
+const base = { sort: "capacity", dir: "desc", onSort: () => {} } as const;
+
 const fixtures = [facilityAlpha, facilityBeta, facilityGamma, facilityDelta].map(toTableRow);
 
 // ---------------------------------------------------------------------------
@@ -86,7 +88,7 @@ const fixtures = [facilityAlpha, facilityBeta, facilityGamma, facilityDelta].map
 
 describe("FacilityTable — headers", () => {
   it("renders all required column headers", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     expect(screen.getByRole("columnheader", { name: /name/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /operator/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /status/i })).toBeInTheDocument();
@@ -99,14 +101,14 @@ describe("FacilityTable — headers", () => {
   });
 
   it("has a caption (visible to assistive tech)", () => {
-    const { container } = render(<FacilityTable facilities={fixtures} />);
+    const { container } = render(<FacilityTable facilities={fixtures} {...base} />);
     const caption = container.querySelector("caption");
     expect(caption).toBeInTheDocument();
     expect(caption?.textContent).toMatch(/Data centers/i);
   });
 
   it("insets the scroll region's focus outline so the overflow-hidden frame cannot clip it", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     const region = screen.getByRole("region", { name: /data centers table/i });
     expect(region.parentElement).toHaveClass("overflow-hidden");
     expect(region).toHaveClass(
@@ -125,35 +127,35 @@ describe("FacilityTable — headers", () => {
 
 describe("FacilityTable — row content", () => {
   it("renders a link to /facilities/<id> for each facility name", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     const alphaLink = screen.getByRole("link", { name: "Alpha Center" });
     expect(alphaLink).toHaveAttribute("href", "/facilities/alpha-facility");
   });
 
   it("renders the StatusBadge label text for each row", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     expect(screen.getByText("Operational")).toBeInTheDocument();
     expect(screen.getByText("Proposed")).toBeInTheDocument();
     expect(screen.getByText("Under construction")).toBeInTheDocument();
   });
 
   it("formats operational capacity correctly", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     expect(screen.getByText("150 MW")).toBeInTheDocument();
   });
 
   it("formats planned-only capacity with 'planned' suffix", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     expect(screen.getByText("1,200 MW planned")).toBeInTheDocument();
   });
 
   it("shows em dash for facility with no capacity", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     expect(screen.getAllByText("—").length).toBeGreaterThan(0);
   });
 
   it("renders location as City, State", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     expect(screen.getByText("Memphis, TN")).toBeInTheDocument();
   });
 
@@ -173,7 +175,7 @@ describe("FacilityTable — row content", () => {
         precision: "exact",
       },
     };
-    render(<FacilityTable facilities={[toTableRow(longLocationFacility)]} />);
+    render(<FacilityTable facilities={[toTableRow(longLocationFacility)]} {...base} />);
 
     const locationText = screen.getByText("Boardman area (Tower Road), OR");
     expect(locationText).toHaveAttribute(
@@ -184,37 +186,47 @@ describe("FacilityTable — row content", () => {
   });
 
   it("renders the facility type label", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     expect(screen.getAllByText("Data center").length).toBeGreaterThan(0);
   });
 
   it("renders the AI classification label and falls back to em dash when absent", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     expect(screen.getAllByText("AI-specific").length).toBeGreaterThan(0);
     expect(screen.getAllByText("—").length).toBeGreaterThan(0);
   });
 });
 
 // ---------------------------------------------------------------------------
-// Accessibility: aria-sort
+// Accessibility: aria-sort (reflects the URL's sort state, passed as props)
 // ---------------------------------------------------------------------------
 
 describe("FacilityTable — aria-sort", () => {
-  it("sortable headers start with aria-sort='none'", () => {
-    render(<FacilityTable facilities={fixtures} />);
-    const nameHeader = screen.getByRole("columnheader", { name: /name/i });
-    expect(nameHeader).toHaveAttribute("aria-sort", "none");
+  it("marks only the active column, with its direction", () => {
+    render(<FacilityTable facilities={fixtures} {...base} />);
+    expect(screen.getByRole("columnheader", { name: /capacity/i })).toHaveAttribute(
+      "aria-sort",
+      "descending"
+    );
+    expect(screen.getByRole("columnheader", { name: /name/i })).toHaveAttribute("aria-sort", "none");
+  });
+
+  it("reports ascending when dir is asc", () => {
+    render(<FacilityTable facilities={fixtures} sort="name" dir="asc" onSort={() => {}} />);
+    expect(screen.getByRole("columnheader", { name: /name/i })).toHaveAttribute(
+      "aria-sort",
+      "ascending"
+    );
   });
 
   it("sortable header button has accessible label", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     const nameHeader = screen.getByRole("columnheader", { name: /name/i });
-    const sortButton = within(nameHeader).getByRole("button");
-    expect(sortButton).toHaveAttribute("aria-label", "Sort by Name");
+    expect(within(nameHeader).getByRole("button")).toHaveAttribute("aria-label", "Sort by Name");
   });
 
   it("every column header is sortable", () => {
-    render(<FacilityTable facilities={fixtures} />);
+    render(<FacilityTable facilities={fixtures} {...base} />);
     screen.getAllByRole("columnheader").forEach((h) => {
       expect(h).toHaveAttribute("aria-sort");
     });
@@ -222,51 +234,38 @@ describe("FacilityTable — aria-sort", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Sorting interaction
+// Sorting interaction — headers report intent; the server sorts
 // ---------------------------------------------------------------------------
 
 describe("FacilityTable — sorting", () => {
-  it("clicking Name header sets aria-sort to ascending", async () => {
+  it("clicking an inactive text column asks for ascending", async () => {
     const user = userEvent.setup();
-    render(<FacilityTable facilities={fixtures} />);
-    const nameHeader = screen.getByRole("columnheader", { name: /name/i });
-    const sortButton = within(nameHeader).getByRole("button");
-    await user.click(sortButton);
-    expect(nameHeader).toHaveAttribute("aria-sort", "ascending");
+    const onSort = vi.fn();
+    render(<FacilityTable facilities={fixtures} sort="capacity" dir="desc" onSort={onSort} />);
+    await user.click(screen.getByRole("button", { name: "Sort by Name" }));
+    expect(onSort).toHaveBeenCalledWith("name", "asc");
   });
 
-  it("clicking Name header twice sets aria-sort to descending", async () => {
+  it("clicking the active column flips its direction", async () => {
     const user = userEvent.setup();
-    render(<FacilityTable facilities={fixtures} />);
-    const nameHeader = screen.getByRole("columnheader", { name: /name/i });
-    const sortButton = within(nameHeader).getByRole("button");
-    await user.click(sortButton);
-    await user.click(sortButton);
-    expect(nameHeader).toHaveAttribute("aria-sort", "descending");
+    const onSort = vi.fn();
+    render(<FacilityTable facilities={fixtures} sort="capacity" dir="desc" onSort={onSort} />);
+    await user.click(screen.getByRole("button", { name: "Sort by Capacity" }));
+    expect(onSort).toHaveBeenCalledWith("capacity", "asc");
   });
 
-  it("sorting by Name ascending places Alpha before Beta", async () => {
+  it("clicking Capacity from another column starts descending", async () => {
     const user = userEvent.setup();
-    render(<FacilityTable facilities={fixtures} />);
-    const nameHeader = screen.getByRole("columnheader", { name: /name/i });
-    const sortButton = within(nameHeader).getByRole("button");
-    await user.click(sortButton); // ascending
+    const onSort = vi.fn();
+    render(<FacilityTable facilities={fixtures} sort="name" dir="asc" onSort={onSort} />);
+    await user.click(screen.getByRole("button", { name: "Sort by Capacity" }));
+    expect(onSort).toHaveBeenCalledWith("capacity", "desc");
+  });
 
+  it("renders rows in the order given, without re-sorting", () => {
+    render(<FacilityTable facilities={[...fixtures].reverse()} sort="name" dir="asc" onSort={() => {}} />);
     const rows = screen.getAllByRole("row");
-    // rows[0] is the header row; rows[1] is the first data row
-    expect(within(rows[1]).getByRole("link")).toHaveTextContent("Alpha Center");
-  });
-
-  it("sorting by Name descending places Gamma before Beta", async () => {
-    const user = userEvent.setup();
-    render(<FacilityTable facilities={fixtures} />);
-    const nameHeader = screen.getByRole("columnheader", { name: /name/i });
-    const sortButton = within(nameHeader).getByRole("button");
-    await user.click(sortButton); // ascending
-    await user.click(sortButton); // descending
-
-    const rows = screen.getAllByRole("row");
-    expect(within(rows[1]).getByRole("link")).toHaveTextContent("Gamma Hub");
+    expect(within(rows[1]).getByRole("link")).toHaveTextContent("Delta Point");
   });
 });
 
@@ -276,14 +275,14 @@ describe("FacilityTable — sorting", () => {
 
 describe("FacilityTable — empty state", () => {
   it("renders the empty-state message when facilities is empty", () => {
-    render(<FacilityTable facilities={[]} />);
+    render(<FacilityTable facilities={[]} {...base} />);
     expect(
       screen.getByText("No facilities match your filters.")
     ).toBeInTheDocument();
   });
 
   it("renders no data rows when facilities is empty", () => {
-    render(<FacilityTable facilities={[]} />);
+    render(<FacilityTable facilities={[]} {...base} />);
     // Only the header row + the single empty-state row should exist
     const rows = screen.getAllByRole("row");
     // 1 header row + 1 empty state row = 2 rows total
@@ -292,23 +291,16 @@ describe("FacilityTable — empty state", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Default sort — capacity descending, no-capacity last
+// Row order
 // ---------------------------------------------------------------------------
 
-describe("FacilityTable — default sort", () => {
-  it("defaults to capacity descending: largest first, no-capacity last", () => {
-    render(<FacilityTable facilities={fixtures} />);
+describe("FacilityTable — row order", () => {
+  it("keeps the given order for the default capacity-desc sort", () => {
+    const ordered = ["Beta Farm", "Alpha Center", "Delta Point", "Gamma Hub"]
+      .map((n) => fixtures.find((f) => f.name === n)!);
+    render(<FacilityTable facilities={ordered} {...base} />);
     const rows = screen.getAllByRole("row");
-    // rows[0] = header. Beta (1200) > Alpha (150) > Delta (75) > Gamma (no capacity).
     expect(within(rows[1]).getByRole("link")).toHaveTextContent("Beta Farm");
-    expect(within(rows[2]).getByRole("link")).toHaveTextContent("Alpha Center");
-    expect(within(rows[3]).getByRole("link")).toHaveTextContent("Delta Point");
     expect(within(rows[4]).getByRole("link")).toHaveTextContent("Gamma Hub");
-  });
-
-  it("capacity header starts with aria-sort='descending'", () => {
-    render(<FacilityTable facilities={fixtures} />);
-    const capHeader = screen.getByRole("columnheader", { name: /capacity/i });
-    expect(capHeader).toHaveAttribute("aria-sort", "descending");
   });
 });

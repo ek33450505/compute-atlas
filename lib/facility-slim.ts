@@ -1,4 +1,5 @@
 import type { Facility, Source } from "@/lib/schema";
+import type { NearestTransmission, NearestWater, SitingContext } from "@/lib/siting-context";
 
 /**
  * Slim facility shape for the /map client tree (PERF-1).
@@ -136,13 +137,10 @@ export function toMapFacility(f: Facility): MapFacility {
 /**
  * Row shape for the /table client tree (PERF-1 unit C).
  *
- * What the table columns, the filters and the toggle-mode map read: no
- * statusHistory, community, notes or full `sources` array. It extends
- * `MapFacility` (so the toggle map takes rows directly, which is why it also
- * carries precision, multiSite and the crypto fields the map popup shows) with
- * the table-only fields. Coordinates keep FULL precision (a holdover from the
- * removed /table CSV export; revisit with the /table lockdown); `sources`
- * still holds only the first source and `sourceCount` carries the real length.
+ * What the table columns and filters read: no statusHistory, community, notes,
+ * full `sources` array or coordinates (the dataset is a paid product; bulk
+ * coordinates leave the server only as rounded `MapPoint`s). `sources` still
+ * holds only the first source and `sourceCount` carries the real length.
  */
 interface TableExtras {
   lastUpdated: Facility["lastUpdated"];
@@ -152,17 +150,24 @@ interface TableExtras {
   location: { county?: string };
 }
 
+/** `MapFacility` location without coordinates. */
+type RowLocation = Omit<MapFacilityBase["location"], "lat" | "lon">;
+type WithoutCoords<T extends MapFacilityBase> = Omit<T, "location"> & { location: RowLocation };
+
 export type TableRow =
-  | (MapDataCenter & TableExtras)
-  | (MapCryptoMining & TableExtras & { aiClassification?: "confirmed" | "likely" | "mixed_use" })
-  | (MapPowerGeneration & TableExtras & { generation?: { offtaker?: string } });
+  | (WithoutCoords<MapDataCenter> & TableExtras)
+  | (WithoutCoords<MapCryptoMining> & TableExtras & { aiClassification?: "confirmed" | "likely" | "mixed_use" })
+  | (WithoutCoords<MapPowerGeneration> & TableExtras & { generation?: { offtaker?: string } });
 
 /** Projects a full facility to a `TableRow`. Optional fields are omitted, not `undefined`. */
 export function toTableRow(f: Facility): TableRow {
-  const slim = toMapFacility(f);
-  const location = { ...slim.location, lat: f.location.lat, lon: f.location.lon };
+  const { location: mapLocation, ...slim } = toMapFacility(f);
+  const coordFree: RowLocation = { state: mapLocation.state };
+  if (mapLocation.city !== undefined) coordFree.city = mapLocation.city;
+  if (mapLocation.precision !== undefined) coordFree.precision = mapLocation.precision;
+  if (mapLocation.multiSite !== undefined) coordFree.multiSite = mapLocation.multiSite;
   const extras = {
-    location: f.location.county !== undefined ? { ...location, county: f.location.county } : location,
+    location: f.location.county !== undefined ? { ...coordFree, county: f.location.county } : coordFree,
     lastUpdated: f.lastUpdated,
     sourceCount: f.sources.length,
     ...(f.announcedDate !== undefined ? { announcedDate: f.announcedDate } : {}),
@@ -183,4 +188,92 @@ export function toTableRow(f: Facility): TableRow {
       return { ...slim, ...extras, ...(offtaker !== undefined ? { generation: { offtaker } } : {}) };
     }
   }
+}
+
+/**
+ * Minimal map payload: just enough to place and color a marker. No name,
+ * operator, city or capacity; details load on click via `PopupSummary`.
+ * Coordinates are rounded to 2 decimals (~1 km).
+ */
+export interface MapPoint {
+  id: string;
+  facilityType: Facility["facilityType"];
+  status: Facility["status"];
+  location: { lat: number; lon: number; state: string };
+}
+
+const POINT_DP = 2;
+
+function roundPoint(n: number): number {
+  const m = 10 ** POINT_DP;
+  // Half away from zero, so +/- ties round symmetrically.
+  return (Math.sign(n) * Math.round(Math.abs(n) * m)) / m;
+}
+
+export function toMapPoint(f: Facility): MapPoint {
+  return {
+    id: f.id,
+    facilityType: f.facilityType,
+    status: f.status,
+    location: {
+      lat: roundPoint(f.location.lat),
+      lon: roundPoint(f.location.lon),
+      state: f.location.state,
+    },
+  };
+}
+
+/**
+ * Click-time popup payload. Deliberately carries NO coordinates: the rounded
+ * marker position is all the client ever gets.
+ */
+export interface PopupSummary {
+  id: string;
+  name: string;
+  operator: string;
+  status: Facility["status"];
+  facilityType: Facility["facilityType"];
+  confidence: Facility["confidence"];
+  city?: string;
+  state: string;
+  multiSiteStates?: string[];
+  /** Present only when the location is not exact. */
+  precision?: Facility["location"]["precision"];
+  capacityMw?: Facility["capacityMw"];
+  aiClassification?: "confirmed" | "likely" | "mixed_use";
+  mining?: { hashRateThPerS?: number; powerArrangement?: string };
+  carbonIntensityProxy?: number;
+  source?: MapSource;
+  nearestWater?: NearestWater;
+  nearestTransmission?: NearestTransmission;
+}
+
+export function toPopupSummary(f: Facility, siting?: SitingContext): PopupSummary {
+  const m = toMapFacility(f);
+  const out: PopupSummary = {
+    id: f.id,
+    name: f.name,
+    operator: f.operator,
+    status: f.status,
+    facilityType: f.facilityType,
+    confidence: f.confidence,
+    state: f.location.state,
+  };
+  if (m.location.city !== undefined) out.city = m.location.city;
+  if (m.location.multiSite) out.multiSiteStates = m.location.multiSite.states;
+  if (m.location.precision) out.precision = m.location.precision;
+  if (m.capacityMw) out.capacityMw = m.capacityMw;
+  if (m.sources[0]) out.source = m.sources[0];
+  if (f.facilityType !== "power_generation" && f.aiClassification) {
+    out.aiClassification = f.aiClassification;
+  }
+  if (m.facilityType === "crypto_mining") {
+    if (m.mining) out.mining = m.mining;
+    if (m.environmental?.carbonIntensityProxy !== undefined) {
+      out.carbonIntensityProxy = m.environmental.carbonIntensityProxy;
+    }
+  }
+  if (siting?.nearestWater) out.nearestWater = siting.nearestWater;
+  if (siting?.nearestTransmission) out.nearestTransmission = siting.nearestTransmission;
+  return out;
 }

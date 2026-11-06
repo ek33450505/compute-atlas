@@ -48,20 +48,18 @@ const AXE_TAGS = [
  * Routes whose axe scan cost scales with the size of the dataset, so their
  * runtime grows on every data wave rather than staying put.
  *
- * `/table` renders a row per facility, and axe's analysis is superlinear in
- * DOM nodes: at 1,145 facilities the scan took 29.6s against the 30s default
- * and passed with 0.4s to spare; the very next wave (1,197, +4.5%) took 32.8s
- * and failed on all three attempts. Nothing about the page's accessibility
- * changed — the budget was simply too tight to survive normal growth.
+ * `/table` used to be here: it rendered a row per facility, and axe's analysis
+ * is superlinear in DOM nodes (55,293 nodes at 2,678 facilities; the scan
+ * outgrew a 90s budget). It is now server-paginated at 50 rows a page, so its
+ * DOM no longer grows with the dataset and it needs no extra budget. The
+ * measurements below are kept for the routes that remain and as the record of
+ * why the harness settings exist.
  *
- * `test.slow()` triples the per-test timeout (30s → 90s), which is ~2.7x the
- * current cost. That is headroom, not a fix: the underlying issue is that
- * `/table` puts the whole dataset in the DOM at once, which is also a real
- * user-facing weight problem. If this list needs a fourth entry, or `/table`
- * starts brushing 90s, paginate or virtualise the table instead of raising
- * this again.
+ * `test.slow()` triples the per-test timeout (30s → 90s). That is headroom,
+ * not a fix: if this list needs a second dataset-sized entry or `/counties`
+ * starts brushing 90s, paginate it instead of raising this again.
  *
- * `/counties` joins it for the same shape of risk from a different cause: it
+ * `/counties` is here for the same shape of risk from a different cause: it
  * renders one link per tracked county (636 today, growing with every data
  * wave) across ~50 nested sections. It is not a table, but axe does not care
  * what the nodes are — the cost is in the node count and the accessibility
@@ -118,7 +116,7 @@ const AXE_TAGS = [
  * The page's own DOM weight is still a real user-facing cost; this removes
  * harness overhead, not page weight.
  */
-const DATASET_SIZED_ROUTES = new Set<string>(["/table", "/counties"]);
+const DATASET_SIZED_ROUTES = new Set<string>(["/counties"]);
 
 for (const route of ROUTES) {
   test(`a11y: ${route} — zero serious/critical violations`, async ({
