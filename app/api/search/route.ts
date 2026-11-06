@@ -1,16 +1,17 @@
 import { searchFacilitiesDb, MAX_SEARCH_QUERY_LEN } from "@/lib/search-db";
-import { cacheableJson, corsPreflight, jsonResponse, READ_CACHE } from "@/lib/api-response";
+import { bulkAccessPaused, cacheableJson, corsPreflight, jsonResponse, READ_CACHE } from "@/lib/api-response";
+import { bearerMatches } from "@/lib/api-auth";
 import { extractTrustedClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 import { checkDailyApiGate } from "@/lib/api-daily-limit";
 import { PALETTE_MAX_RESULTS, PALETTE_MIN_QUERY_LEN, toFacilitySearchHit } from "@/lib/search";
 
 /**
- * Public full-text facility search over the DB `search_vector` (name +
+ * Full-text facility search over the DB `search_vector` (name +
  * operator + doc->>'notes'). Returns `{ count, facilities, query }`. An
  * empty/whitespace query or an unset DATABASE_URL both yield an empty result
  * set (handled inside `searchFacilitiesDb`), never an error — matching the
- * lenient public read API in `app/api/facilities/route.ts`. The echoed
+ * lenient filter handling in `app/api/facilities/route.ts`. The echoed
  * `query` is length-capped to `MAX_SEARCH_QUERY_LEN` (case preserved, just
  * bounded) so a very long `q` can't bloat the cached response body now that
  * a successful response carries `Cache-Control: s-maxage=600`.
@@ -29,14 +30,19 @@ import { PALETTE_MAX_RESULTS, PALETTE_MIN_QUERY_LEN, toFacilitySearchHit } from 
  * `FacilitySearchHit`). It is projected here, after `searchFacilitiesDb`, so
  * both shapes share its server-side `unstable_cache` entry. The HTTP responses
  * differ, though: the CDN and Cloudflare key on the full URL, so each shape is
- * cached under its own URL. Absent or any other value keeps the full records,
- * byte-identical to the original public contract.
+ * cached under its own URL.
+ *
+ * Absent or any other `shape` value selects the FULL records, which are a bulk
+ * exit (one broad `q` returned ~1,980 records), so that shape is admin-bearer
+ * only while bulk access is paused: anonymous callers get a 403, and an
+ * authorized response is `no-store` (Cloudflare caches non-/admin GETs and does
+ * not key on `Authorization`). Only the exact first `shape=palette` is public.
  *
  * The palette shape is also bounded, because a one-letter prefix matches
  * hundreds of facilities and the palette renders only a handful: a trimmed
  * query under `PALETTE_MIN_QUERY_LEN` returns an empty result without touching
  * the DB, and longer ones are capped to `PALETTE_MAX_RESULTS` (passed down as a limit so only that many records are resolved; `count` is the
- * returned length). The default shape is never capped.
+ * returned length). The admin-only full shape is never capped.
  */
 export async function GET(request: Request): Promise<Response> {
   const gate = checkApiRateLimit(extractTrustedClientIp(request.headers));
@@ -46,8 +52,11 @@ export async function GET(request: Request): Promise<Response> {
   if (!dailyGate.ok) return tooManyRequests(dailyGate.retryAfter ?? 60);
 
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get("q") ?? "";
   const lean = searchParams.get("shape") === "palette";
+  const admin = !lean && bearerMatches(request, process.env.API_ADMIN_TOKEN);
+  if (!lean && !admin) return bulkAccessPaused();
+
+  const query = searchParams.get("q") ?? "";
   const queryEcho = query.slice(0, MAX_SEARCH_QUERY_LEN);
 
   if (lean && query.trim().length < PALETTE_MIN_QUERY_LEN) {
@@ -66,6 +75,9 @@ export async function GET(request: Request): Promise<Response> {
   if (degraded) {
     return jsonResponse(body, { headers: { "Cache-Control": "no-store" } });
   }
+
+  // Full records are admin-only: never cacheable.
+  if (!lean) return jsonResponse(body);
 
   return cacheableJson(body, READ_CACHE.search);
 }

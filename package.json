@@ -6,9 +6,9 @@
     "node": "22.x"
   },
   "scripts": {
-    "predev": "node scripts/copy-maplibre-worker.mjs && tsx scripts/build-data-exports.ts --warn-on-mismatch",
+    "predev": "node scripts/copy-maplibre-worker.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-maplibre-worker.mjs && tsx scripts/build-data-exports.ts",
+    "prebuild": "node scripts/copy-maplibre-worker.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

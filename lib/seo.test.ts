@@ -257,9 +257,10 @@ describe("buildDatasetJsonLd", () => {
     expect(ld["@type"]).toBe("Dataset");
   });
 
-  it("points distribution[0].contentUrl at the facilities API route", () => {
+  it("carries no distribution entry while bulk access is paused", () => {
     const ld = buildDatasetJsonLd();
-    expect(ld.distribution[0].contentUrl).toMatch(/\/api\/facilities$/);
+    expect(ld).not.toHaveProperty("distribution");
+    expect(JSON.stringify(ld)).not.toMatch(/\/api\/facilities|facilities\.(csv|json)/);
   });
 
   it("sets license to the CC-BY-4.0 URL", () => {
@@ -303,7 +304,7 @@ describe("datasetJsonLdString", () => {
     const str = datasetJsonLdString();
     const parsed = JSON.parse(str);
     expect(parsed["@type"]).toBe("Dataset");
-    expect(parsed.distribution[0].contentUrl).toMatch(/\/api\/facilities$/);
+    expect(parsed).not.toHaveProperty("distribution");
   });
 });
 

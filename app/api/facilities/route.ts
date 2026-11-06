@@ -2,8 +2,8 @@ import { getAllFacilities } from "@/lib/data";
 import { filterFacilities, type FacilityFilters } from "@/lib/filters";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { facilityTypeEnum, type Facility } from "@/lib/schema";
-import { jsonResponse, cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
-import { requireAdmin } from "@/lib/api-auth";
+import { bulkAccessPaused, jsonResponse, corsPreflight } from "@/lib/api-response";
+import { bearerMatches, requireAdmin } from "@/lib/api-auth";
 import { createFacility } from "@/lib/facility-write";
 import { extractTrustedClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
@@ -34,9 +34,14 @@ function collectParam(searchParams: URLSearchParams, key: string): string[] {
 }
 
 /**
- * Public facility list, filterable via query params. Lenient on invalid
- * filter tokens (public read API — silently drops rather than 400s) so
- * malformed client input degrades to "no constraint" instead of an error.
+ * Facility list, filterable via query params. ADMIN-ONLY while bulk access is
+ * paused: the full dataset is no longer handed out anonymously. Lenient on
+ * invalid filter tokens (silently drops rather than 400s) so malformed client
+ * input degrades to "no constraint" instead of an error.
+ *
+ * Responses are `no-store` on purpose. Cloudflare caches every non-/admin GET
+ * and does not key on `Authorization`, so a cacheable authorized payload could
+ * be replayed to anonymous callers.
  */
 export async function GET(request: Request): Promise<Response> {
   const gate = checkApiRateLimit(extractTrustedClientIp(request.headers));
@@ -44,6 +49,10 @@ export async function GET(request: Request): Promise<Response> {
 
   const dailyGate = await checkDailyApiGate(request);
   if (!dailyGate.ok) return tooManyRequests(dailyGate.retryAfter ?? 60);
+
+  if (!bearerMatches(request, process.env.API_ADMIN_TOKEN)) {
+    return bulkAccessPaused();
+  }
 
   const { searchParams } = new URL(request.url);
 
@@ -72,7 +81,7 @@ export async function GET(request: Request): Promise<Response> {
   };
 
   const facilities = filterFacilities(await getAllFacilities(), filters);
-  return cacheableJson({ count: facilities.length, facilities }, READ_CACHE.list);
+  return jsonResponse({ count: facilities.length, facilities });
 }
 
 /** Admin-only: creates a new facility. Requires `Authorization: Bearer <API_ADMIN_TOKEN>`. */
@@ -95,13 +104,13 @@ export async function POST(request: Request): Promise<Response> {
 }
 
 // `admin`, NOT `read` — and this is the deliberate exception, not an oversight.
-// This path is mixed: an anonymous public GET above plus a bearer-gated POST.
+// This path is bearer-gated for both GET (bulk list, paused) and POST.
 // One OPTIONS answers for the whole path, so the preflight has to advertise the
 // union; narrowing it to `read` would make the browser reject a legitimate
 // cross-origin bearer POST before it was ever sent.
 //
-// Widening the preflight costs the public GET nothing, because the two lists
-// are **preflight-only**: the GET's own 200 comes from `cacheableJson`, which
+// The two lists are **preflight-only**: the GET's own response comes from
+// `jsonResponse`, which
 // spreads `CORS_RESPONSE_HEADERS` — `Access-Control-Allow-Origin: *` and no
 // method or header list at all. So this `admin` scope is never served to a
 // reader; it is only ever the answer to an OPTIONS.

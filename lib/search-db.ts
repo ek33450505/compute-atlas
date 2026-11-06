@@ -150,7 +150,7 @@ async function resolveFacilities(ids: string[]): Promise<Facility[]> {
  * over quota) degrades to `[]` — same pattern as `getRecentActivity` in
  * lib/data.ts. This is a PRE-EXISTING gap, not one introduced by the
  * to_tsquery switch: without it, a transient Neon failure surfaced on the
- * public, unauthenticated `/api/search` as a 500 while every other public
+ * public palette shape of `/api/search` (the full shape is admin-only) as a 500 while every other public
  * read path in this codebase degrades to empty. The catch sits OUTSIDE
  * `unstable_cache` deliberately — catching inside `searchFacilitiesDbUncached`
  * would cache the empty result for the full 600s revalidate window, turning a

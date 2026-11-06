@@ -3,8 +3,14 @@ import { GET, POST } from "./route";
 import { __resetApiRateLimit, API_RATE_LIMIT_MAX } from "@/lib/api-rate-limit";
 import facilitiesRaw from "@/data/facilities.json";
 
-function req(query: string): Request {
-  return new Request(`http://localhost/api/facilities${query}`);
+const ADMIN_TOKEN = "test-admin-token";
+
+function req(query: string, headers?: HeadersInit): Request {
+  return new Request(`http://localhost/api/facilities${query}`, { headers });
+}
+
+function adminReq(query: string): Request {
+  return req(query, { Authorization: `Bearer ${ADMIN_TOKEN}` });
 }
 
 function postReq(body: unknown, headers?: HeadersInit): Request {
@@ -22,21 +28,79 @@ beforeEach(() => {
   __resetApiRateLimit();
 });
 
-describe("GET /api/facilities", () => {
-  it("returns the full dataset with no filters", async () => {
+describe("GET /api/facilities (anonymous: bulk access paused)", () => {
+  const ORIGINAL = process.env.API_ADMIN_TOKEN;
+
+  beforeEach(() => {
+    process.env.API_ADMIN_TOKEN = ADMIN_TOKEN;
+  });
+
+  afterEach(() => {
+    if (ORIGINAL === undefined) delete process.env.API_ADMIN_TOKEN;
+    else process.env.API_ADMIN_TOKEN = ORIGINAL;
+  });
+
+  it("403s an anonymous request, no-store, with no facilities key", async () => {
     const res = await GET(req(""));
+    expect(res.status).toBe(403);
+    expect(res.headers.get("Cache-Control")).toContain("no-store");
+    const body = await res.json();
+    expect(body).not.toHaveProperty("facilities");
+    expect(body.error).toContain("paused");
+    expect(body.error).toContain("/facilities/<id>");
+    expect(body.contact).toBe("https://www.compute-atlas.com/contact");
+  });
+
+  it("403s a wrong token", async () => {
+    const res = await GET(req("", { Authorization: "Bearer nope" }));
+    expect(res.status).toBe(403);
+    expect(await res.json()).not.toHaveProperty("facilities");
+  });
+
+  it("403s everyone when API_ADMIN_TOKEN is unset (fails closed)", async () => {
+    delete process.env.API_ADMIN_TOKEN;
+    const res = await GET(req("", { Authorization: "Bearer " }));
+    expect(res.status).toBe(403);
+  });
+});
+
+describe("GET /api/facilities (admin)", () => {
+  const ORIGINAL = process.env.API_ADMIN_TOKEN;
+
+  beforeEach(() => {
+    process.env.API_ADMIN_TOKEN = ADMIN_TOKEN;
+  });
+
+  afterEach(() => {
+    if (ORIGINAL === undefined) delete process.env.API_ADMIN_TOKEN;
+    else process.env.API_ADMIN_TOKEN = ORIGINAL;
+  });
+
+  it("returns 200 no-store with facilities for the admin bearer", async () => {
+    const res = await GET(adminReq(""));
+    expect(res.status).toBe(200);
+    const cacheControl = res.headers.get("Cache-Control") ?? "";
+    expect(cacheControl).toContain("no-store");
+    expect(cacheControl).not.toContain("public");
+    expect(res.headers.get("CDN-Cache-Control")).toContain("no-store");
+    const body = await res.json();
+    expect(body.facilities.length).toBe(body.count);
+  });
+
+  it("returns the full dataset with no filters", async () => {
+    const res = await GET(adminReq(""));
     const body = await res.json();
     expect(body.count).toBe(facilitiesRaw.length);
     expect(body.facilities.length).toBe(body.count);
   });
 
   it("carries the shared CORS header", async () => {
-    const res = await GET(req(""));
+    const res = await GET(adminReq(""));
     expect(res.headers.get("access-control-allow-origin")).toBe("*");
   });
 
   it("narrows by ?status=operational", async () => {
-    const res = await GET(req("?status=operational"));
+    const res = await GET(adminReq("?status=operational"));
     const body = await res.json();
     expect(body.count).toBeGreaterThan(0);
     expect(body.count).toBeLessThan(facilitiesRaw.length);
@@ -46,7 +110,7 @@ describe("GET /api/facilities", () => {
   });
 
   it("narrows by ?type=power_generation", async () => {
-    const res = await GET(req("?type=power_generation"));
+    const res = await GET(adminReq("?type=power_generation"));
     const body = await res.json();
     expect(body.count).toBe(
       facilitiesRaw.filter((f: { facilityType: string }) => f.facilityType === "power_generation")
@@ -55,27 +119,27 @@ describe("GET /api/facilities", () => {
   });
 
   it("accepts comma-separated values for a single param", async () => {
-    const res = await GET(req("?status=operational,cancelled"));
+    const res = await GET(adminReq("?status=operational,cancelled"));
     const body = await res.json();
     const single = await (
-      await GET(req("?status=operational"))
+      await GET(adminReq("?status=operational"))
     ).json();
-    const cancelledOnly = await (await GET(req("?status=cancelled"))).json();
+    const cancelledOnly = await (await GET(adminReq("?status=cancelled"))).json();
     expect(body.count).toBe(single.count + cancelledOnly.count);
   });
 
   it("accepts repeated params for the same key", async () => {
-    const res = await GET(req("?status=operational&status=cancelled"));
+    const res = await GET(adminReq("?status=operational&status=cancelled"));
     const body = await res.json();
     const single = await (
-      await GET(req("?status=operational"))
+      await GET(adminReq("?status=operational"))
     ).json();
-    const cancelledOnly = await (await GET(req("?status=cancelled"))).json();
+    const cancelledOnly = await (await GET(adminReq("?status=cancelled"))).json();
     expect(body.count).toBe(single.count + cancelledOnly.count);
   });
 
   it("drops invalid status tokens instead of erroring, degrading to no constraint", async () => {
-    const res = await GET(req("?status=bogus"));
+    const res = await GET(adminReq("?status=bogus"));
     expect(res.status).toBe(200);
     const body = await res.json();
     // "bogus" is not a valid STATUS_ORDER member, so it's filtered out of the
@@ -85,26 +149,18 @@ describe("GET /api/facilities", () => {
   });
 
   it("narrows by ?q= substring", async () => {
-    const res = await GET(req("?q=aws"));
+    const res = await GET(adminReq("?q=aws"));
     const body = await res.json();
     expect(body.count).toBeGreaterThan(0);
     expect(body.count).toBeLessThan(facilitiesRaw.length);
   });
 
-  it("carries a public Cache-Control header", async () => {
-    const res = await GET(req(""));
-    const cacheControl = res.headers.get("Cache-Control");
-    expect(cacheControl).toContain("public");
-    expect(cacheControl).toContain("s-maxage=");
-    expect(cacheControl).toContain("stale-while-revalidate=");
-  });
-
   it("returns 429 once the per-instance rate limit is exceeded", async () => {
     for (let i = 0; i < API_RATE_LIMIT_MAX; i++) {
-      const ok = await GET(req(""));
+      const ok = await GET(adminReq(""));
       expect(ok.status).toBe(200);
     }
-    const blocked = await GET(req(""));
+    const blocked = await GET(adminReq(""));
     expect(blocked.status).toBe(429);
     expect(blocked.headers.get("Retry-After")).toBeTruthy();
   });

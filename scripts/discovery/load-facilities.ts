@@ -34,6 +34,13 @@
  * 4xx fall back immediately. On 2026-10-14 a single transient `fetch failed`
  * made submit-candidates.ts discard a 23-minute run's 39 candidates, and a
  * hung connection would otherwise have hung the nightly run forever.
+ *
+ * Bulk `GET /api/facilities` is admin-only while bulk access is paused, so the
+ * read sends `Authorization: Bearer $API_ADMIN_TOKEN` when that variable is set
+ * (run.sh loads .env.local). A 401/403 stays non-retryable and still falls back
+ * to the JSON snapshot, but now warns on stderr (never stdout: some callers
+ * print data there) because that snapshot lacks the newest records and a
+ * silent fallback produces duplicate candidates.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -63,16 +70,50 @@ const realSleep = (ms: number): Promise<void> =>
 
 type Attempt =
   | { ok: true; facilities: Facility[] }
-  | { ok: false; error: string; retryable: boolean };
+  | { ok: false; error: string; retryable: boolean; status?: number; tokenSent?: boolean };
+
+let warnedInsecureBase = false;
+
+/**
+ * The admin token is a full-privilege secret, so it is only sent over https or
+ * to a loopback host. Anything else (plain http to a remote host, an
+ * unparseable URL) goes without it, with a single stderr warning per process.
+ * Any https host receives the token, so the base URL must be the operator's own site.
+ */
+function bearerAllowedFor(url: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(url);
+    if (protocol === "https:") return true;
+    return protocol === "http:" && (hostname === "localhost" || hostname === "127.0.0.1");
+  } catch {
+    return false;
+  }
+}
 
 async function attemptOnce(url: string, fetchImpl: typeof fetch): Promise<Attempt> {
   try {
-    const res = await fetchImpl(url, { signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS) });
+    let token = process.env.API_ADMIN_TOKEN;
+    if (token && !bearerAllowedFor(url)) {
+      if (!warnedInsecureBase) {
+        warnedInsecureBase = true;
+        console.error(
+          "WARNING: API_ADMIN_TOKEN is set but the API base URL is neither https nor localhost; " +
+            "sending the request without the token."
+        );
+      }
+      token = undefined;
+    }
+    const res = await fetchImpl(url, {
+      signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+      ...(token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
+    });
     if (!res.ok) {
       return {
         ok: false,
         error: `API responded ${res.status} ${res.statusText}`.trim(),
         retryable: res.status >= 500 || res.status === 429,
+        status: res.status,
+        tokenSent: Boolean(token),
       };
     }
     const body = (await res.json()) as { facilities?: unknown };
@@ -97,6 +138,17 @@ export async function loadFacilities(
     if (result.ok) return { facilities: result.facilities, source: "api" };
     if (!result.retryable) {
       apiError = result.error;
+      if (result.status === 401 || result.status === 403) {
+        const why = result.tokenSent
+          ? "was sent but rejected (invalid)"
+          : process.env.API_ADMIN_TOKEN
+            ? "withheld: base URL is not https or loopback"
+            : "missing";
+        console.error(
+          `WARNING: facility API refused the read (${result.status}); API_ADMIN_TOKEN ${why}. ` +
+            "Falling back to data/facilities.json, which lacks the newest records, so candidates may duplicate existing facilities."
+        );
+      }
       break;
     }
     apiError = `${attempt} attempts; last: ${result.error}`;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { DATASET_LICENSE_URL } from "@/lib/site";
+import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
 /**
  * Permissive CORS for the public API. `*` origin stays safe here: writes
@@ -142,6 +142,22 @@ export function jsonResponse(
       ...init?.headers,
     },
   });
+}
+
+/**
+ * 403 for an anonymous caller of a bulk-exit endpoint (the full facility list,
+ * the full-record search shape) while bulk access is paused. `no-store` via
+ * `jsonResponse`, and it carries no `facilities` key.
+ */
+export function bulkAccessPaused(): NextResponse {
+  return jsonResponse(
+    {
+      error:
+        "Bulk access to the Compute Atlas dataset is paused while access changes. Individual facility records remain available at https://www.compute-atlas.com/facilities/<id>.",
+      contact: `${siteConfig.url}/contact`,
+    },
+    { status: 403 }
+  );
 }
 
 /**

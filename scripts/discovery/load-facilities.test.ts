@@ -72,6 +72,8 @@ const statusResponse = (status: number) => ({ ok: false, status, statusText: "" 
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+  delete process.env.API_ADMIN_TOKEN;
 });
 
 describe("loadFacilities", () => {
@@ -226,5 +228,94 @@ describe("loadFacilities", () => {
       }
       expect(fetchImpl).toHaveBeenCalledTimes(2);
     });
+  });
+});
+
+describe("loadFacilities admin bearer", () => {
+  it("sends Authorization: Bearer when API_ADMIN_TOKEN is set", async () => {
+    process.env.API_ADMIN_TOKEN = "tok-123";
+    const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
+    await loadFacilities("http://localhost:3000", fetchImpl);
+    expect(fetchImpl).toHaveBeenCalledWith(
+      "http://localhost:3000/api/facilities",
+      expect.objectContaining({ headers: { Authorization: "Bearer tok-123" } })
+    );
+  });
+
+  it("sends no Authorization header when API_ADMIN_TOKEN is unset", async () => {
+    delete process.env.API_ADMIN_TOKEN;
+    const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
+    await loadFacilities("http://localhost:3000", fetchImpl);
+    const init = fetchImpl.mock.calls[0][1] as RequestInit;
+    expect(init.headers).toBeUndefined();
+  });
+
+  it("403 falls back to the file immediately and warns on stderr naming the token", async () => {
+    delete process.env.API_ADMIN_TOKEN;
+    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
+    const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(403));
+    const result = await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
+    expect(result.source).toBe("file");
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(String(warn.mock.calls[0][0])).toMatch(/API_ADMIN_TOKEN missing/);
+  });
+
+  it("401 with a token set warns that the token is invalid", async () => {
+    process.env.API_ADMIN_TOKEN = "stale";
+    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
+    const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(401));
+    await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
+    expect(String(warn.mock.calls[0][0])).toMatch(/API_ADMIN_TOKEN was sent but rejected \(invalid\)/);
+  });
+
+  it("does not warn on a 404 fallback", async () => {
+    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
+    const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(404));
+    await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("sends the bearer to https and to http localhost / 127.0.0.1", async () => {
+    process.env.API_ADMIN_TOKEN = "tok-123";
+    for (const base of ["https://www.compute-atlas.com", "http://localhost:3000", "http://127.0.0.1:3000"]) {
+      const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
+      await loadFacilities(base, fetchImpl);
+      const init = fetchImpl.mock.calls[0][1] as RequestInit;
+      expect(init.headers, base).toEqual({ Authorization: "Bearer tok-123" });
+    }
+  });
+
+  it("withholds the bearer from plain http to a remote host and warns once on stderr", async () => {
+    vi.resetModules();
+    const { loadFacilities: fresh } = await import("./load-facilities");
+    process.env.API_ADMIN_TOKEN = "tok-123";
+    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
+    const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
+    await fresh("http://example.com", fetchImpl);
+    await fresh("http://example.com", fetchImpl);
+    for (const call of fetchImpl.mock.calls) {
+      expect((call[1] as RequestInit).headers).toBeUndefined();
+    }
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(String(warn.mock.calls[0][0])).toMatch(/neither https nor localhost/);
+  });
+
+  it("403 on a withheld-token base URL says withheld, not invalid", async () => {
+    process.env.API_ADMIN_TOKEN = "tok-123";
+    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
+    const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(403));
+    await loadFacilities("http://example.org", fetchImpl, { sleep: noSleep });
+    const messages = warn.mock.calls.map((c) => String(c[0]));
+    expect(messages.some((m) => /API_ADMIN_TOKEN withheld: base URL is not https or loopback/.test(m))).toBe(true);
+    expect(messages.some((m) => /rejected \(invalid\)/.test(m))).toBe(false);
+  });
+
+  it("withholds the bearer from a hostname that merely starts with localhost", async () => {
+    process.env.API_ADMIN_TOKEN = "tok-123";
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
+    await loadFacilities("http://localhost.evil.com", fetchImpl);
+    expect((fetchImpl.mock.calls[0][1] as RequestInit).headers).toBeUndefined();
   });
 });

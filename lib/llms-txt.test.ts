@@ -52,8 +52,10 @@ describe("public/llms.txt", () => {
     expect(LLMS_TXT).toMatch(/compute-atlas\.com\/about\b/);
   });
 
-  it("names the repo's raw data/facilities.json export", () => {
-    expect(LLMS_TXT).toContain("data/facilities.json");
+  it("says bulk access is paused and names no bulk file", () => {
+    expect(LLMS_TXT).toMatch(/Bulk access to the full dataset is paused/);
+    expect(LLMS_TXT).not.toContain("facilities.json");
+    expect(LLMS_TXT).not.toContain("raw.githubusercontent.com");
   });
 
   it("carries no facility, source or other moving count", () => {

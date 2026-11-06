@@ -20,7 +20,7 @@ export function unauthorized(): Response {
  * a length mismatch (raw tokens are rarely equal length) and avoids leaking
  * the expected token's length via a throw/no-throw side channel.
  */
-function bearerMatches(request: Request, expected: string | undefined): boolean {
+export function bearerMatches(request: Request, expected: string | undefined): boolean {
   if (!expected) {
     return false;
   }

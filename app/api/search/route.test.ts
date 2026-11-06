@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import type { Facility } from "@/lib/schema";
 import { __resetApiRateLimit, API_RATE_LIMIT_MAX } from "@/lib/api-rate-limit";
 
@@ -24,8 +24,14 @@ import { GET } from "./route";
 import { MAX_SEARCH_QUERY_LEN } from "@/lib/search-db";
 import type { FacilitySearchResult } from "@/lib/search-db";
 
-function req(query: string): Request {
-  return new Request(`http://localhost/api/search${query}`);
+const ADMIN_TOKEN = "test-admin-token";
+
+function req(query: string, headers?: HeadersInit): Request {
+  return new Request(`http://localhost/api/search${query}`, { headers });
+}
+
+function adminReq(query: string): Request {
+  return req(query, { Authorization: `Bearer ${ADMIN_TOKEN}` });
 }
 
 const FIXTURE_FACILITIES: Facility[] = [
@@ -48,12 +54,52 @@ describe("GET /api/search", () => {
     // x-forwarded-for header) — reset per-test so accumulated hits from one
     // test's assertions never bleed into the next.
     __resetApiRateLimit();
+    vi.stubEnv("API_ADMIN_TOKEN", ADMIN_TOKEN);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  describe("full-record shape is admin-only (bulk access paused)", () => {
+    it.each(["?q=data", "", "?q=data&shape=foo", "?q=data&shape=PALETTE", "?q=data&shape=x&shape=palette"])(
+      "403s an anonymous caller, no-store, no facilities key, without querying (%s)",
+      async (qs) => {
+        const res = await GET(req(qs));
+        expect(res.status).toBe(403);
+        expect(res.headers.get("Cache-Control")).toContain("no-store");
+        expect(await res.json()).not.toHaveProperty("facilities");
+        expect(searchFacilitiesDbMock).not.toHaveBeenCalled();
+      }
+    );
+
+    it("403s a wrong token", async () => {
+      const res = await GET(req("?q=data", { Authorization: "Bearer nope" }));
+      expect(res.status).toBe(403);
+    });
+
+    it("403s everyone when API_ADMIN_TOKEN is unset (fails closed)", async () => {
+      vi.stubEnv("API_ADMIN_TOKEN", "");
+      const res = await GET(req("?q=data", { Authorization: "Bearer " }));
+      expect(res.status).toBe(403);
+    });
+
+    it("answers 200 no-store with full records for the admin bearer", async () => {
+      searchFacilitiesDbMock.mockResolvedValue(ok(FIXTURE_FACILITIES));
+      const res = await GET(adminReq("?q=data"));
+      expect(res.status).toBe(200);
+      const cacheControl = res.headers.get("Cache-Control") ?? "";
+      expect(cacheControl).toContain("no-store");
+      expect(cacheControl).not.toContain("public");
+      expect(res.headers.get("CDN-Cache-Control")).toContain("no-store");
+      expect((await res.json()).facilities).toEqual(FIXTURE_FACILITIES);
+    });
   });
 
   it("returns matching facilities for a non-empty query", async () => {
     searchFacilitiesDbMock.mockResolvedValue(ok(FIXTURE_FACILITIES));
 
-    const res = await GET(req("?q=hyperscale"));
+    const res = await GET(adminReq("?q=hyperscale"));
     const body = await res.json();
 
     expect(body.count).toBe(2);
@@ -64,14 +110,14 @@ describe("GET /api/search", () => {
   it("carries the shared CORS header", async () => {
     searchFacilitiesDbMock.mockResolvedValue(ok([]));
 
-    const res = await GET(req("?q=hyperscale"));
+    const res = await GET(adminReq("?q=hyperscale"));
     expect(res.headers.get("access-control-allow-origin")).toBe("*");
   });
 
   it("returns an empty result set for an empty query", async () => {
     searchFacilitiesDbMock.mockResolvedValue(ok([]));
 
-    const res = await GET(req("?q="));
+    const res = await GET(adminReq("?q="));
     const body = await res.json();
 
     expect(body.count).toBe(0);
@@ -81,7 +127,7 @@ describe("GET /api/search", () => {
   it("passes the q param through to searchFacilitiesDb", async () => {
     searchFacilitiesDbMock.mockResolvedValue(ok([]));
 
-    await GET(req("?q=hyperscale"));
+    await GET(adminReq("?q=hyperscale"));
 
     expect(searchFacilitiesDbMock).toHaveBeenCalledWith("hyperscale");
   });
@@ -89,7 +135,7 @@ describe("GET /api/search", () => {
   it("carries a public Cache-Control header", async () => {
     searchFacilitiesDbMock.mockResolvedValue(ok([]));
 
-    const res = await GET(req("?q=hyperscale"));
+    const res = await GET(req("?q=hyperscale&shape=palette"));
     const cacheControl = res.headers.get("Cache-Control");
     expect(cacheControl).toContain("public");
     expect(cacheControl).toContain("s-maxage=");
@@ -104,7 +150,7 @@ describe("GET /api/search", () => {
     // contain 's-maxage'`.
     searchFacilitiesDbMock.mockResolvedValue(DEGRADED);
 
-    const res = await GET(req("?q=google"));
+    const res = await GET(req("?q=google&shape=palette"));
     const cacheControl = res.headers.get("Cache-Control");
 
     expect(cacheControl).not.toContain("s-maxage");
@@ -117,7 +163,7 @@ describe("GET /api/search", () => {
     // only its cacheability changes.
     searchFacilitiesDbMock.mockResolvedValue(DEGRADED);
 
-    const res = await GET(req("?q=google"));
+    const res = await GET(req("?q=google&shape=palette"));
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -131,7 +177,7 @@ describe("GET /api/search", () => {
     // reach the DB on every request.
     searchFacilitiesDbMock.mockResolvedValue(ok([]));
 
-    const res = await GET(req("?q=zzzznomatch"));
+    const res = await GET(req("?q=zzzznomatch&shape=palette"));
     const cacheControl = res.headers.get("Cache-Control");
 
     expect(cacheControl).toContain("s-maxage=600");
@@ -142,7 +188,7 @@ describe("GET /api/search", () => {
     searchFacilitiesDbMock.mockResolvedValue(ok([]));
 
     const longQuery = "a".repeat(MAX_SEARCH_QUERY_LEN + 50);
-    const res = await GET(req(`?q=${longQuery}`));
+    const res = await GET(adminReq(`?q=${longQuery}`));
     const body = await res.json();
 
     expect(body.query.length).toBe(MAX_SEARCH_QUERY_LEN);
@@ -153,10 +199,10 @@ describe("GET /api/search", () => {
     searchFacilitiesDbMock.mockResolvedValue(ok([]));
 
     for (let i = 0; i < API_RATE_LIMIT_MAX; i++) {
-      const ok = await GET(req("?q=hyperscale"));
+      const ok = await GET(req("?q=hyperscale&shape=palette"));
       expect(ok.status).toBe(200);
     }
-    const blocked = await GET(req("?q=hyperscale"));
+    const blocked = await GET(req("?q=hyperscale&shape=palette"));
     expect(blocked.status).toBe(429);
     expect(blocked.headers.get("Retry-After")).toBeTruthy();
   });
@@ -170,10 +216,10 @@ describe("GET /api/search", () => {
     })) as unknown as Facility[];
   }
 
-  it("never caps the default shape — public contract returns every match", async () => {
+  it("never caps the admin-only full shape — returns every match", async () => {
     searchFacilitiesDbMock.mockResolvedValue(ok(thirty()));
 
-    const body = await (await GET(req("?q=acme"))).json();
+    const body = await (await GET(adminReq("?q=acme"))).json();
 
     expect(body.facilities).toHaveLength(30);
     expect(body.count).toBe(30);
@@ -183,7 +229,7 @@ describe("GET /api/search", () => {
   it("does not short-circuit a 1-character query on the default shape", async () => {
     searchFacilitiesDbMock.mockResolvedValue(ok(thirty()));
 
-    const body = await (await GET(req("?q=m"))).json();
+    const body = await (await GET(adminReq("?q=m"))).json();
 
     expect(searchFacilitiesDbMock).toHaveBeenCalledTimes(1);
     expect(body.count).toBe(30);
@@ -212,11 +258,11 @@ describe("GET /api/search", () => {
     });
 
     it.each(["", "?q=acme", "?q=acme&shape=foo", "?q=acme&shape=PALETTE"])(
-      "keeps the full public records when shape is absent or unknown (%s)",
+      "keeps the full records for the admin when shape is absent or unknown (%s)",
       async (qs) => {
         searchFacilitiesDbMock.mockResolvedValue(ok([FULL]));
 
-        const body = await (await GET(req(qs))).json();
+        const body = await (await GET(adminReq(qs))).json();
 
         expect(body.facilities).toEqual([FULL]);
       }

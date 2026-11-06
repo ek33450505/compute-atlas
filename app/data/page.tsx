@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getDatasetEdition } from "@/lib/dataset-edition";
-import { formatAsOfDate } from "@/lib/as-of";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
-import { Download } from "lucide-react";
 import { breadcrumbJsonLdString, DATASET_DOI_URL } from "@/lib/seo";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
@@ -14,51 +11,24 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: "Get the data",
   description:
-    "Download the full Compute Atlas dataset free under CC-BY-4.0 — every tracked facility " +
-      "in the deployed snapshot, no login, no sign-up, no query building.",
+    "Bulk downloads of the Compute Atlas dataset are paused while access changes. " +
+    "Every facility page stays free to read and cite.",
   alternates: { canonical: "/data" },
 };
 
 const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
-const DOWNLOAD_CLASS =
-  "inline-flex h-8 items-center gap-1.5 rounded-sm border border-border bg-background px-3 " +
-  "text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 " +
-  "focus-visible:outline-ring";
-
 /**
- * /data — plain-language front door to the full dataset download. Built for
- * an audience that doesn't know what an API is: "click here, get
- * everything."
- *
- * The page does NOT load the facility array (it used to ship ~6 MB into the
- * RSC payload just to build a blob on click). The downloads are plain links
- * to static files that `scripts/build-data-exports.ts` generates on prebuild
- * from data/facilities.json. Trade-off: those files come from the bundled
- * snapshot, so they can lag live Neon until the next code deploy (data-only
- * merges skip builds). The visible copy says so plainly: the files are a
- * snapshot published with each deploy and can trail the live site. The "as of"
- * date shown comes from data/facilities.meta.json; nothing claims the files and
- * the page are content-identical (`version` below is only a cache-busting key).
- * With no loadFacilities call the page carries no "facilities" cache tag; it
- * revalidates on its 86400s timer only, which is fine for static prose.
+ * /data — front door to the dataset. Bulk downloads (CSV/JSON) are paused, so
+ * the page carries a notice instead of download links; the citation, DOI and
+ * methodology sections stay. The page loads no facility data and revalidates
+ * on its 86400s timer only.
  *
  * Deliberately does NOT emit Dataset JSON-LD — that already lives site-wide
  * on the homepage; duplicating it here would be redundant.
  */
 export default function DataPage() {
-  const edition = getDatasetEdition();
-  const asOfLabel = formatAsOfDate(edition.asOf);
-  const count = edition.recordCount.toLocaleString("en-US");
-  // The files are edge-cached for a day under /data/:path+, so the URL carries
-  // the snapshot's asOf: a fresh page links to a URL no older cache entry can
-  // hold, so a fresh page never gets a stale cached file. One direction only:
-  // an old edge-cached page linking ?v=OLD still fetches the CURRENT files,
-  // because the origin only ever holds the current build. (The static file
-  // server ignores the query.) Omitted when asOf is unusable.
-  const version = asOfLabel ? `?v=${encodeURIComponent(edition.asOf)}` : "";
-
   return (
     <div
       data-content-width="3xl"
@@ -79,55 +49,23 @@ export default function DataPage() {
       <PageMasthead
         eyebrow="DATASET"
         title="Get the data"
-        dek={
-          "The full dataset, free to download — no login, no sign-up, no query building, " +
-          "no explanation required."
-        }
+        dek="Bulk downloads are paused while access changes. Every facility page remains free to read and cite."
       />
 
-      {/* Primary download — the whole point of the page, above everything else */}
       <section
         aria-labelledby="download-heading"
         className="neatline rounded-sm border border-primary/40 bg-muted/20 p-6 sm:p-8 space-y-4"
       >
         <h2 id="download-heading" className="font-display text-2xl text-foreground">
-          Download everything
+          Bulk downloads are paused
         </h2>
-        <p className="text-sm text-muted-foreground">
-          {count} facilities
-          {asOfLabel ? `, as of ${asOfLabel}` : ""}.
-        </p>
-        <div
-          role="group"
-          aria-label="Download the dataset"
-          className="flex flex-wrap items-center gap-2"
-        >
-          <a
-            href={`/data/facilities.csv${version}`}
-            download="compute-atlas-facilities.csv"
-            aria-label={`Download CSV: all ${count} facilities`}
-            className={DOWNLOAD_CLASS}
-          >
-            <Download className="size-4" aria-hidden="true" />
-            Download CSV
-          </a>
-          <a
-            href={`/data/facilities.json${version}`}
-            download="compute-atlas-facilities.json"
-            aria-label={`Download JSON: all ${count} facilities`}
-            className={DOWNLOAD_CLASS}
-          >
-            <Download className="size-4" aria-hidden="true" />
-            Download JSON
-          </a>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {asOfLabel
-            ? `Both files are a snapshot as of ${asOfLabel}, ` +
-              "published with each site deploy."
-            : "Both files are a snapshot published with each site deploy."}{" "}
-          They can trail the live site until the next deploy. CSV is a flat table of the main
-          fields; JSON has every field, including all sources.
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Bulk downloads of the full dataset are paused while access changes. Every facility
+          page remains free to read and cite. For dataset access,{" "}
+          <Link href="/contact" className={LINK_CLASS}>
+            write to us
+          </Link>
+          .
         </p>
       </section>
 
