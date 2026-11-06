@@ -21,6 +21,11 @@ import {
 import type { Facility } from "../../lib/schema";
 import type { VerifyClaim, VerificationResult } from "./verify-source";
 
+// main() reads the live index through the shared loader (Neon); stub it so these
+// tests never touch a database or the real tmp snapshot cache.
+const loadFacilitiesMock = vi.hoisted(() => vi.fn());
+vi.mock("./load-facilities", () => ({ loadFacilities: loadFacilitiesMock }));
+
 const EXISTING_FACILITY: Facility = {
   id: "existing-facility-tx",
   name: "Existing Facility",
@@ -1746,14 +1751,9 @@ describe("main — exit code wiring", () => {
     process.env.DISCOVERY_LOG_DIR = logDir;
     process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=exit-wiring", "--base-url=http://api.test"];
 
+    loadFacilitiesMock.mockResolvedValue({ facilities: [], source: "db", cached: false });
     globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
-      if (url.endsWith("/api/facilities")) {
-        return new Response(JSON.stringify({ facilities: [] }), {
-          status: 200,
-          headers: { "content-type": "application/json" },
-        });
-      }
       if (url.endsWith("/api/submissions")) {
         return new Response(submitStatus === 200 ? JSON.stringify({ id: "sub-1" }) : "upstream boom", {
           status: submitStatus,
@@ -1828,7 +1828,7 @@ describe("main — exit code wiring", () => {
 // that just failed to answer — so it must abort before staging anything,
 // not just warn like the four read-only lanes.
 describe("main — aborts on a stale facility index", () => {
-  it("exits nonzero and never calls /api/submissions when /api/facilities responds non-OK", async () => {
+  it("exits nonzero and never calls /api/submissions when the Neon read falls back to the file", async () => {
     const logDir = mkdtempSync(path.join(tmpdir(), "submit-candidates-stale-index-"));
     const inputPath = path.join(logDir, "candidates.json");
     writeFileSync(
@@ -1854,11 +1854,13 @@ describe("main — aborts on a stale facility index", () => {
     ];
 
     const submissionsCalls: string[] = [];
+    loadFacilitiesMock.mockResolvedValue({
+      facilities: [],
+      source: "file",
+      dbError: "3 attempts; last: 57P01",
+    });
     globalThis.fetch = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
-      if (url.endsWith("/api/facilities")) {
-        return new Response("upstream boom", { status: 503, statusText: "Service Unavailable" });
-      }
       if (url.endsWith("/api/submissions")) {
         submissionsCalls.push(url);
         return new Response(JSON.stringify({ id: "sub-1" }), { status: 200 });
@@ -1881,7 +1883,7 @@ describe("main — aborts on a stale facility index", () => {
       await expect(main()).rejects.toThrow(/^process\.exit\(/);
       expect(exitCode).toBe(1);
       expect(submissionsCalls).toHaveLength(0);
-      expect(errors.some((line) => line.includes("503") && line.includes("stale"))).toBe(true);
+      expect(errors.some((line) => line.includes("57P01") && line.includes("stale"))).toBe(true);
     } finally {
       exitSpy.mockRestore();
       logSpy.mockRestore();

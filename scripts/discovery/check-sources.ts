@@ -469,14 +469,13 @@ export async function runLane(facilities: Facility[], deps: SourceCheckDeps): Pr
 }
 
 async function main(): Promise<void> {
-  const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
   const concurrency = Number(process.env.CHECK_SOURCES_CONCURRENCY) || DEFAULT_CONCURRENCY;
   const timeoutMs = Number(process.env.CHECK_SOURCES_TIMEOUT_MS) || DEFAULT_TIMEOUT_MS;
 
-  const { facilities, source, apiError } = await loadFacilities(baseUrl);
+  const { facilities, source, dbError } = await loadFacilities();
   if (source === "file") {
     console.warn(
-      `WARNING: could not read the live facility index from the API (${apiError}); ` +
+      `WARNING: could not read the live facility index from Neon (${dbError}); ` +
         `falling back to the committed data/facilities.json snapshot, which may be stale.`
     );
   }

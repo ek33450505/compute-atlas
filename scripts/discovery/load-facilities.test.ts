@@ -1,60 +1,34 @@
 /**
- * Direct coverage for loadFacilities() — the API-first/JSON-fallback loader
- * shared by all five discovery CLIs (submit-candidates.ts, check-sources.ts,
- * existing-facilities.ts, extract-fields.ts, verify-fields.ts). Added
- * because none of those five scripts' own test suites exercise this
- * function: they all test their pure, injectable core logic with a
- * facilities array passed in directly, and never call main() — the loader's
- * only caller in every one of them.
+ * Direct coverage for loadFacilities() — the Neon-first/JSON-fallback loader
+ * shared by the discovery CLIs. The DB read, clock, sleep and cache dir are
+ * all injected, so no test touches a real database or the real os.tmpdir().
  *
- * `fetchImpl` gets a real DI seam (this task's other change, in
- * load-facilities.ts) because that's the only injection point the house
- * pattern (fetch-page-text.ts's FetchPageTextDeps.fetchImpl) offers for a
- * bare global. The file-fallback path (`process.cwd()`/data/facilities.json)
- * stays hardcoded — no DI seam was added for it (out of scope; "minimal"
- * addition per the task). `vi.mock("node:fs", ...)` was tried first to point
- * that read at a fixture instead, but empirically does NOT intercept the
- * leaf's call in this Vite/Vitest 4.1.9 + jsdom setup — both fallback tests
- * silently read the real ~1,350-record data/facilities.json regardless of
- * the mock. No other file in this repo mocks node:fs, so there's no local
- * precedent to lean on either. Per the task's explicit fallback option, the
- * two fallback tests below assert against the REAL file's parse instead —
- * content-independent (never a hardcoded count or record), since the
- * dataset grows continuously and a size/content assertion here would be
- * exactly the brittle "hardcoded test-count" trap called out as a standing
- * risk. The invariant under test is "the fallback reads and JSON.parses
- * exactly this file," proven by comparing against an independent real read
- * of the same file done inside the test itself.
+ * The file-fallback path (`process.cwd()`/data/facilities.json) stays
+ * hardcoded; those tests compare against an independent read of the same file
+ * and never assert a count or a specific record, since the dataset grows.
  */
-import { readFileSync } from "node:fs";
+import {
+  chmodSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 
 import type { Facility } from "../../lib/schema";
-import { loadFacilities } from "./load-facilities";
+import { cacheFileNameFor, loadFacilities } from "./load-facilities";
 
-function makeFacility(overrides: Partial<Facility> = {}): Facility {
-  return {
-    id: "acme-dc-1",
-    name: "Acme Data Center 1",
-    operator: "Acme Corp",
-    status: "operational",
-    confidence: "confirmed",
-    facilityType: "data_center",
-    location: { lat: 30.2672, lon: -97.7431, state: "TX", precision: "exact" },
-    statusHistory: [],
-    sources: [{ url: "https://example.com/acme", label: "Announcement", retrievedAt: "2026-01-01", kind: "press" }],
-    lastUpdated: "2026-01-01",
-    ...overrides,
-  } as Facility;
-}
+// Cache reads re-validate with facilitiesSchema, so the DB fixture is a real record.
+const DB_FACILITY = (readRealFacilitiesFile() as Facility[])[0];
+const SECRET = "postgres://user:hunter2@host/db";
 
-const API_FACILITY = makeFacility({ id: "api-facility", name: "From The API" });
-
-/** Independent read of the real fallback file, for comparison — never a
- * hardcoded count or specific record, since data/facilities.json grows
- * continuously. */
 function readRealFacilitiesFile(): unknown {
   return JSON.parse(readFileSync(path.join(process.cwd(), "data", "facilities.json"), "utf-8"));
 }
@@ -66,256 +40,265 @@ function sleepRecorder() {
   return { delays, sleep: async (ms: number) => void delays.push(ms) };
 }
 
-const okResponse = () =>
-  ({ ok: true, status: 200, json: async () => ({ facilities: [API_FACILITY] }) }) as Response;
-const statusResponse = (status: number) => ({ ok: false, status, statusText: "" }) as Response;
+let cacheDir: string;
+let errSpy: MockInstance<typeof console.error>;
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
-  delete process.env.API_ADMIN_TOKEN;
+beforeEach(() => {
+  cacheDir = mkdtempSync(path.join(os.tmpdir(), "load-facilities-test-"));
+  vi.stubEnv("DATABASE_URL", FAKE_URL);
+  vi.stubEnv("DISCOVERY_FACILITIES_CACHE_TTL_MS", "");
+  errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
+afterEach(() => {
+  rmSync(cacheDir, { recursive: true, force: true });
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
+
+const stderrText = () => errSpy.mock.calls.map((c) => c.join(" ")).join("\n");
+const FAKE_URL = "postgres://fake";
+const cacheFile = () => path.join(cacheDir, cacheFileNameFor(FAKE_URL));
+
 describe("loadFacilities", () => {
-  it("returns the API's facilities when fetch succeeds, source: api, no apiError", async () => {
-    const fetchImpl = vi.fn<typeof fetch>(async () => ({
-      ok: true,
-      json: async () => ({ facilities: [API_FACILITY] }),
-    }) as Response);
+  it("returns the DB's facilities with source: db, no dbError", async () => {
+    const readDb = vi.fn(async () => [DB_FACILITY]);
 
-    const result = await loadFacilities("http://localhost:3000", fetchImpl);
+    const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep });
 
-    expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
-    expect(result.apiError).toBeUndefined();
-    expect(fetchImpl).toHaveBeenCalledWith("http://localhost:3000/api/facilities", expect.anything());
-  });
-
-  it("falls back to reading data/facilities.json when fetch rejects (network error), and reports the thrown message", async () => {
-    const fetchImpl = vi.fn<typeof fetch>(async () => {
-      throw new Error("network down");
-    });
-
-    const result = await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
-
-    expect(result.source).toBe("file");
-    expect(result.apiError).toBe("3 attempts; last: network down");
-    expect(Array.isArray(result.facilities)).toBe(true);
-    expect(result.facilities.length).toBeGreaterThan(0);
-    expect(result.facilities).toEqual(readRealFacilitiesFile());
-  });
-
-  // This is the case the pre-fix code discarded entirely: the non-ok branch
-  // fell through to the file fallback with no record of the status at all.
-  it("falls back to reading data/facilities.json when the API responds non-OK, and names the status in apiError", async () => {
-    const fetchImpl = vi.fn<typeof fetch>(
-      async () => ({ ok: false, status: 503, statusText: "Service Unavailable" }) as Response
-    );
-
-    const result = await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
-
-    expect(result.source).toBe("file");
-    expect(result.apiError).toContain("503");
-    expect(result.apiError).toContain("Service Unavailable");
-    expect(Array.isArray(result.facilities)).toBe(true);
-    expect(result.facilities.length).toBeGreaterThan(0);
-    expect(result.facilities).toEqual(readRealFacilitiesFile());
-  });
-
-  it("uses the global fetch when fetchImpl is omitted, matching every existing call site", async () => {
-    const globalFetch = vi.fn(async () => ({
-      ok: true,
-      json: async () => ({ facilities: [API_FACILITY] }),
-    }));
-    vi.stubGlobal("fetch", globalFetch);
-
-    const result = await loadFacilities("http://localhost:3000");
-
-    expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
-    expect(globalFetch).toHaveBeenCalledWith("http://localhost:3000/api/facilities", expect.anything());
+    expect(result).toEqual({ facilities: [DB_FACILITY], source: "db", cached: false });
+    expect(result.dbError).toBeUndefined();
+    expect(stderrText()).toContain("facilities: 1 from db");
   });
 
   describe("bounded retry", () => {
-    it("retries a thrown error once and then returns the API result", async () => {
+    it("retries a thrown error and then returns the DB result", async () => {
       const rec = sleepRecorder();
-      const fetchImpl = vi
-        .fn<typeof fetch>()
-        .mockRejectedValueOnce(new TypeError("fetch failed"))
-        .mockResolvedValueOnce(okResponse());
+      const readDb = vi
+        .fn<() => Promise<Facility[]>>()
+        .mockRejectedValueOnce(new Error("connection reset"))
+        .mockResolvedValueOnce([DB_FACILITY]);
 
-      const result = await loadFacilities("http://x", fetchImpl, { sleep: rec.sleep });
+      const result = await loadFacilities({ readDb, cacheDir, sleep: rec.sleep });
 
-      expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
-      expect(fetchImpl).toHaveBeenCalledTimes(2);
+      expect(result.source).toBe("db");
+      expect(readDb).toHaveBeenCalledTimes(2);
       expect(rec.delays).toEqual([2_000]);
     });
 
-    it("gives up after 3 attempts on an HTML 200 body and reports the attempt count", async () => {
+    it("treats a 0-row result as a failure and retries", async () => {
+      const readDb = vi
+        .fn<() => Promise<Facility[]>>()
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([DB_FACILITY]);
+
+      const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep });
+
+      expect(result.source).toBe("db");
+      expect(result.facilities).toEqual([DB_FACILITY]);
+      expect(readDb).toHaveBeenCalledTimes(2);
+    });
+
+    it("falls back to data/facilities.json after 3 failed attempts, warning without the raw error message", async () => {
       const rec = sleepRecorder();
-      const fetchImpl = vi.fn<typeof fetch>(
-        async () =>
-          ({
-            ok: true,
-            status: 200,
-            json: async () => JSON.parse("<!DOCTYPE html><html></html>"),
-          }) as Response
-      );
+      const readDb = vi.fn(async () => {
+        throw new Error(`Failed query: select ... params: ${SECRET}`);
+      });
 
-      const result = await loadFacilities("http://x", fetchImpl, { sleep: rec.sleep });
+      const result = await loadFacilities({ readDb, cacheDir, sleep: rec.sleep });
 
       expect(result.source).toBe("file");
-      expect(fetchImpl).toHaveBeenCalledTimes(3);
-      expect(result.apiError).toContain("3 attempts");
-      expect(result.apiError).not.toContain("\n");
+      expect(readDb).toHaveBeenCalledTimes(3);
       expect(rec.delays).toEqual([2_000, 8_000]);
+      expect(result.dbError).toContain("3 attempts");
+      expect(result.facilities.length).toBeGreaterThan(0);
+      expect(result.facilities).toEqual(readRealFacilitiesFile());
+      const err = stderrText();
+      expect(err).toContain("WARNING");
+      expect(err).toContain("duplicate");
+      expect(err).not.toContain("hunter2");
+      expect(err).not.toContain("Failed query");
+      expect(result.dbError).not.toContain("hunter2");
+    });
+  });
+
+  it("times out a hung read, retries, then falls back with dbError naming the timeout", async () => {
+    const readDb = vi.fn(() => new Promise<Facility[]>(() => {}));
+
+    const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep, attemptTimeoutMs: 5 });
+
+    expect(readDb).toHaveBeenCalledTimes(3);
+    expect(result.source).toBe("file");
+    expect(result.dbError).toBe("3 attempts; last: timeout");
+  });
+
+  it("with no DATABASE_URL falls back to the file with a warning and never calls readDb", async () => {
+    vi.stubEnv("DATABASE_URL", "");
+    const readDb = vi.fn(async () => [DB_FACILITY]);
+
+    const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep });
+
+    expect(result.source).toBe("file");
+    expect(readDb).not.toHaveBeenCalled();
+    expect(result.facilities).toEqual(readRealFacilitiesFile());
+    expect(stderrText()).toContain("DATABASE_URL is not set");
+  });
+
+  describe("snapshot cache", () => {
+    it("serves a second call within the TTL from the cache without reading the DB", async () => {
+      const readDb = vi.fn(async () => [DB_FACILITY]);
+      let t = 1_000_000;
+      const deps = { readDb, cacheDir, sleep: noSleep, now: () => t };
+
+      await loadFacilities(deps);
+      t += 60_000;
+      const second = await loadFacilities(deps);
+
+      expect(readDb).toHaveBeenCalledTimes(1);
+      expect(second).toEqual({ facilities: [DB_FACILITY], source: "db", cached: true });
+      expect(stderrText()).toContain("(cached)");
     });
 
-    it("retries a 503 and then succeeds", async () => {
-      const fetchImpl = vi
-        .fn<typeof fetch>()
-        .mockResolvedValueOnce(statusResponse(503))
-        .mockResolvedValueOnce(okResponse());
+    it("re-reads the DB once the TTL has elapsed", async () => {
+      const readDb = vi.fn(async () => [DB_FACILITY]);
+      let t = 1_000_000;
+      const deps = { readDb, cacheDir, sleep: noSleep, now: () => t };
 
-      const result = await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+      await loadFacilities(deps);
+      t += 30 * 60_000;
+      const second = await loadFacilities(deps);
 
-      expect(result.source).toBe("api");
-      expect(fetchImpl).toHaveBeenCalledTimes(2);
+      expect(readDb).toHaveBeenCalledTimes(2);
+      expect(second.cached).toBe(false);
     });
 
-    it("does not retry a 403; falls back after exactly one call", async () => {
-      const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(403));
+    it("does not serve an expired cache when the DB read fails", async () => {
+      let t = 1_000_000;
+      await loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep, now: () => t });
+      t += 31 * 60_000;
+      const bad = vi.fn(async () => {
+        throw new Error("down");
+      });
 
-      const result = await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+      const result = await loadFacilities({ readDb: bad, cacheDir, sleep: noSleep, now: () => t });
 
       expect(result.source).toBe("file");
-      expect(fetchImpl).toHaveBeenCalledTimes(1);
-      expect(result.apiError).toContain("403");
     });
 
-    it("retries a 429 and then succeeds", async () => {
-      const fetchImpl = vi
-        .fn<typeof fetch>()
-        .mockResolvedValueOnce(statusResponse(429))
-        .mockResolvedValueOnce(okResponse());
+    it("DISCOVERY_FACILITIES_CACHE_TTL_MS=0 disables the cache entirely", async () => {
+      vi.stubEnv("DISCOVERY_FACILITIES_CACHE_TTL_MS", "0");
+      const readDb = vi.fn(async () => [DB_FACILITY]);
+      const deps = { readDb, cacheDir, sleep: noSleep };
 
-      const result = await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+      await loadFacilities(deps);
+      await loadFacilities(deps);
 
-      expect(result.source).toBe("api");
-      expect(fetchImpl).toHaveBeenCalledTimes(2);
+      expect(readDb).toHaveBeenCalledTimes(2);
+      expect(() => statSync(cacheFile())).toThrow();
     });
 
-    it("treats a 200 body without a facilities array as retryable", async () => {
-      const fetchImpl = vi
-        .fn<typeof fetch>()
-        .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({}) } as Response)
-        .mockResolvedValueOnce(okResponse());
+    it("an unparseable TTL uses the default and warns", async () => {
+      vi.stubEnv("DISCOVERY_FACILITIES_CACHE_TTL_MS", "soon");
+      const readDb = vi.fn(async () => [DB_FACILITY]);
+      const deps = { readDb, cacheDir, sleep: noSleep };
 
-      const result = await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+      await loadFacilities(deps);
+      const second = await loadFacilities(deps);
 
-      expect(result).toEqual({ facilities: [API_FACILITY], source: "api" });
-      expect(fetchImpl).toHaveBeenCalledTimes(2);
+      expect(second.cached).toBe(true);
+      expect(stderrText()).toContain("DISCOVERY_FACILITIES_CACHE_TTL_MS");
     });
 
-    it("passes an AbortSignal to every fetch", async () => {
-      const fetchImpl = vi
-        .fn<typeof fetch>()
-        .mockRejectedValueOnce(new Error("boom"))
-        .mockResolvedValueOnce(okResponse());
+    it("ignores a corrupt cache file and re-reads the DB", async () => {
+      writeFileSync(cacheFile(), "{not json");
+      const readDb = vi.fn(async () => [DB_FACILITY]);
 
-      await loadFacilities("http://x", fetchImpl, { sleep: noSleep });
+      const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep });
 
-      for (const call of fetchImpl.mock.calls) {
-        expect(call[1]?.signal).toBeInstanceOf(AbortSignal);
-      }
-      expect(fetchImpl).toHaveBeenCalledTimes(2);
+      expect(readDb).toHaveBeenCalledTimes(1);
+      expect(result).toEqual({ facilities: [DB_FACILITY], source: "db", cached: false });
     });
-  });
-});
 
-describe("loadFacilities admin bearer", () => {
-  it("sends Authorization: Bearer when API_ADMIN_TOKEN is set", async () => {
-    process.env.API_ADMIN_TOKEN = "tok-123";
-    const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
-    await loadFacilities("http://localhost:3000", fetchImpl);
-    expect(fetchImpl).toHaveBeenCalledWith(
-      "http://localhost:3000/api/facilities",
-      expect.objectContaining({ headers: { Authorization: "Bearer tok-123" } })
-    );
-  });
+    it("ignores a well-formed cache with the wrong shape", async () => {
+      writeFileSync(cacheFile(), JSON.stringify({ fetchedAt: "now", facilities: [DB_FACILITY] }));
+      const readDb = vi.fn(async () => [DB_FACILITY]);
 
-  it("sends no Authorization header when API_ADMIN_TOKEN is unset", async () => {
-    delete process.env.API_ADMIN_TOKEN;
-    const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
-    await loadFacilities("http://localhost:3000", fetchImpl);
-    const init = fetchImpl.mock.calls[0][1] as RequestInit;
-    expect(init.headers).toBeUndefined();
-  });
+      await loadFacilities({ readDb, cacheDir, sleep: noSleep });
 
-  it("403 falls back to the file immediately and warns on stderr naming the token", async () => {
-    delete process.env.API_ADMIN_TOKEN;
-    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
-    const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(403));
-    const result = await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
-    expect(result.source).toBe("file");
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(String(warn.mock.calls[0][0])).toMatch(/API_ADMIN_TOKEN missing/);
-  });
+      expect(readDb).toHaveBeenCalledTimes(1);
+    });
 
-  it("401 with a token set warns that the token is invalid", async () => {
-    process.env.API_ADMIN_TOKEN = "stale";
-    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
-    const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(401));
-    await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
-    expect(String(warn.mock.calls[0][0])).toMatch(/API_ADMIN_TOKEN was sent but rejected \(invalid\)/);
-  });
+    it("ignores a cache whose payload fails facilitiesSchema", async () => {
+      writeFileSync(
+        cacheFile(),
+        JSON.stringify({ fetchedAt: 1_000_000, facilities: [{ id: "bogus" }] }),
+        { mode: 0o600 }
+      );
+      const readDb = vi.fn(async () => [DB_FACILITY]);
 
-  it("does not warn on a 404 fallback", async () => {
-    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
-    const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(404));
-    await loadFacilities("http://localhost:3000", fetchImpl, { sleep: noSleep });
-    expect(warn).not.toHaveBeenCalled();
-  });
+      const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep, now: () => 1_000_001 });
 
-  it("sends the bearer to https and to http localhost / 127.0.0.1", async () => {
-    process.env.API_ADMIN_TOKEN = "tok-123";
-    for (const base of ["https://www.compute-atlas.com", "http://localhost:3000", "http://127.0.0.1:3000"]) {
-      const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
-      await loadFacilities(base, fetchImpl);
-      const init = fetchImpl.mock.calls[0][1] as RequestInit;
-      expect(init.headers, base).toEqual({ Authorization: "Bearer tok-123" });
-    }
-  });
+      expect(readDb).toHaveBeenCalledTimes(1);
+      expect(result.cached).toBe(false);
+    });
 
-  it("withholds the bearer from plain http to a remote host and warns once on stderr", async () => {
-    vi.resetModules();
-    const { loadFacilities: fresh } = await import("./load-facilities");
-    process.env.API_ADMIN_TOKEN = "tok-123";
-    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
-    const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
-    await fresh("http://example.com", fetchImpl);
-    await fresh("http://example.com", fetchImpl);
-    for (const call of fetchImpl.mock.calls) {
-      expect((call[1] as RequestInit).headers).toBeUndefined();
-    }
-    expect(warn).toHaveBeenCalledTimes(1);
-    expect(String(warn.mock.calls[0][0])).toMatch(/neither https nor localhost/);
-  });
+    it("refuses a cache file that is a symlink", async () => {
+      const real = path.join(cacheDir, "real.json");
+      writeFileSync(real, JSON.stringify({ fetchedAt: 1_000_000, facilities: [DB_FACILITY] }), { mode: 0o600 });
+      symlinkSync(real, cacheFile());
+      const readDb = vi.fn(async () => [DB_FACILITY]);
 
-  it("403 on a withheld-token base URL says withheld, not invalid", async () => {
-    process.env.API_ADMIN_TOKEN = "tok-123";
-    const warn = vi.spyOn(console, "error").mockImplementation(() => {});
-    const fetchImpl = vi.fn<typeof fetch>(async () => statusResponse(403));
-    await loadFacilities("http://example.org", fetchImpl, { sleep: noSleep });
-    const messages = warn.mock.calls.map((c) => String(c[0]));
-    expect(messages.some((m) => /API_ADMIN_TOKEN withheld: base URL is not https or loopback/.test(m))).toBe(true);
-    expect(messages.some((m) => /rejected \(invalid\)/.test(m))).toBe(false);
-  });
+      const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep, now: () => 1_000_001 });
 
-  it("withholds the bearer from a hostname that merely starts with localhost", async () => {
-    process.env.API_ADMIN_TOKEN = "tok-123";
-    vi.spyOn(console, "error").mockImplementation(() => {});
-    const fetchImpl = vi.fn<typeof fetch>(async () => okResponse());
-    await loadFacilities("http://localhost.evil.com", fetchImpl);
-    expect((fetchImpl.mock.calls[0][1] as RequestInit).headers).toBeUndefined();
+      expect(readDb).toHaveBeenCalledTimes(1);
+      expect(result.cached).toBe(false);
+    });
+
+    it("refuses a cache file with group/other permission bits", async () => {
+      writeFileSync(cacheFile(), JSON.stringify({ fetchedAt: 1_000_000, facilities: [DB_FACILITY] }), { mode: 0o600 });
+      chmodSync(cacheFile(), 0o644);
+      const readDb = vi.fn(async () => [DB_FACILITY]);
+
+      const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep, now: () => 1_000_001 });
+
+      expect(readDb).toHaveBeenCalledTimes(1);
+      expect(result.cached).toBe(false);
+    });
+
+    it("keys the cache file to the database host + name, never the credentials", async () => {
+      const a = cacheFileNameFor("postgres://u:secret1@host-a/db1?sslmode=require");
+      expect(a).toBe(cacheFileNameFor("postgres://other:secret2@host-a/db1"));
+      expect(a).not.toBe(cacheFileNameFor("postgres://u:secret1@host-b/db1"));
+      expect(a).not.toBe(cacheFileNameFor("postgres://u:secret1@host-a/db2"));
+      expect(a).not.toContain("secret");
+
+      await loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep });
+      vi.stubEnv("DATABASE_URL", "postgres://fake-other/otherdb");
+      const readDb = vi.fn(async () => [DB_FACILITY]);
+      const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep });
+
+      expect(readDb).toHaveBeenCalledTimes(1);
+      expect(result.cached).toBe(false);
+    });
+
+    it("tightens a group/other-readable cache dir to 0o700", async () => {
+      chmodSync(cacheDir, 0o755);
+
+      await loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep });
+
+      expect(statSync(cacheDir).mode & 0o777).toBe(0o700);
+    });
+
+    it("leaves no tmp file behind after a write", async () => {
+      await loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep });
+
+      expect(readdirSync(cacheDir).filter((f) => f.endsWith(".tmp"))).toEqual([]);
+    });
+
+    it("writes the cache file with mode 0o600", async () => {
+      await loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep });
+
+      expect(statSync(cacheFile()).mode & 0o777).toBe(0o600);
+    });
   });
 });

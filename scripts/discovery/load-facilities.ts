@@ -1,5 +1,5 @@
 /**
- * Loads the live facility set — read API first, JSON file fallback.
+ * Loads the live facility set — read Neon directly, JSON file fallback.
  *
  * This was byte-identical duplicated logic across five discovery scripts
  * (submit-candidates.ts, check-sources.ts, existing-facilities.ts,
@@ -13,150 +13,237 @@
  * scripts/discovery/*.ts file from here — that would reintroduce exactly the
  * coupling this module exists to avoid.
  *
- * `fetchImpl` is optional and defaults to the global `fetch`, matching the
- * DI pattern in fetch-page-text.ts's `FetchPageTextDeps.fetchImpl` — added
- * solely so load-facilities.test.ts can inject a fake without touching real
- * network or the real data/facilities.json. Every existing call site omits
- * it and gets identical behavior to before this param existed.
+ * The read goes straight to Neon (the same `getDb()` path as scripts/export.ts)
+ * rather than `GET /api/facilities`. Since 2026-11-05 a Cloudflare rule blocks
+ * that endpoint at the edge (403 before the origin, token or not), so every
+ * scheduled run fell back to the frozen data/facilities.json and missed newly
+ * approved records, producing duplicate candidates. Reading the DB also stops
+ * discovery from sending the owner admin token just to read (security finding
+ * M2). Reads only; this module never writes to Neon.
  *
- * The return value carries `source`/`apiError` so a caller can tell whether
- * it got a live read or the committed `data/facilities.json` snapshot. Before
- * this, the fallback was silent: a caller destructuring a bare array had no
- * way to know the index it just received could be stale by however long ago
- * that file was last synced. That mattered concretely in
- * submit-candidates.ts, where a stale index makes "target not found"
- * indistinguishable from a genuinely-new facility (see its docblock above
- * `exitCodeForSummary`) — the fix is to make the fallback observable at the
- * source rather than inferring it downstream from a skip-rate.
+ * The return value carries `source`/`dbError` so a caller can tell whether it
+ * got a live read or the data/facilities.json snapshot. That mattered
+ * concretely in submit-candidates.ts, where a stale index makes "target not
+ * found" indistinguishable from a genuinely-new facility (see its docblock
+ * above `exitCodeForSummary`) — the fallback is made observable at the source
+ * rather than inferred downstream from a skip-rate.
  *
- * The API read is retried (3 attempts, 2 s then 8 s apart, 60 s timeout each)
- * on thrown errors, unparseable or facility-less 2xx bodies, 5xx and 429; other
- * 4xx fall back immediately. On 2026-10-14 a single transient `fetch failed`
- * made submit-candidates.ts discard a 23-minute run's 39 candidates, and a
- * hung connection would otherwise have hung the nightly run forever.
+ * The read is retried (3 attempts, 2 s then 8 s apart, 60 s timeout each) on
+ * thrown errors and on an empty result. On 2026-10-14 a single transient
+ * failure made submit-candidates.ts discard a 23-minute run's 39 candidates,
+ * and a hung connection would otherwise have hung the nightly run forever. On
+ * final failure, or with no DATABASE_URL, it falls back to the JSON snapshot
+ * with a stderr WARNING (never stdout: some callers print data there) because
+ * that snapshot lacks the newest records. DB errors are logged as a code only
+ * (`redactedErrorCode`): Drizzle messages embed bound parameters.
  *
- * Bulk `GET /api/facilities` is admin-only while bulk access is paused, so the
- * read sends `Authorization: Bearer $API_ADMIN_TOKEN` when that variable is set
- * (run.sh loads .env.local). A 401/403 stays non-retryable and still falls back
- * to the JSON snapshot, but now warns on stderr (never stdout: some callers
- * print data there) because that snapshot lacks the newest records and a
- * silent fallback produces duplicate candidates.
+ * Snapshot cache: run.sh invokes these scripts many times per run (once per
+ * state for existing-facilities.ts) and each full read is ~6 MB of Neon
+ * egress. A successful read is written under ~/.cache/compute-atlas/ (a
+ * 0o700 user-owned dir, never the shared tmp dir) and reused for
+ * DISCOVERY_FACILITIES_CACHE_TTL_MS (default 30 min; 0 disables). The file
+ * name carries a short hash of the database host + name (never the password),
+ * so a dev branch never reads the prod snapshot. Writes are exclusive
+ * (`wx`, 0o600) then renamed; reads refuse a symlink, a foreign owner or any
+ * group/other permission bit, and re-validate the payload with
+ * `facilitiesSchema`. The cache is never used to paper over a FAILED read
+ * beyond its TTL; a corrupt, unsafe or invalid cache is ignored.
  */
-import { readFileSync } from "node:fs";
+import { createHash, randomBytes } from "node:crypto";
+import {
+  chmodSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
-import type { Facility } from "../../lib/schema";
+import { getDb, hasDatabaseUrl } from "../../lib/db/client";
+import { redactedErrorCode } from "../../lib/db-error";
+import { facilitiesTable } from "../../lib/db/schema";
+import { rowToFacility } from "../../lib/db/serialize";
+import { facilitiesSchema, type Facility } from "../../lib/schema";
 
-export type FacilitySource = "api" | "file";
+export type FacilitySource = "db" | "file";
 
 export type LoadFacilitiesResult = {
   facilities: Facility[];
   source: FacilitySource;
-  /** Present only when source === "file": why the API read was abandoned. */
-  apiError?: string;
+  /** True when source === "db" and the set came from the tmp snapshot cache. */
+  cached?: boolean;
+  /** Present only when source === "file": why the DB read was abandoned. */
+  dbError?: string;
 };
 
 export const MAX_ATTEMPTS = 3;
 /** Delays slept between attempts 1->2 and 2->3. */
 export const RETRY_DELAYS_MS = [2_000, 8_000] as const;
 export const ATTEMPT_TIMEOUT_MS = 60_000;
+export const DEFAULT_CACHE_TTL_MS = 30 * 60_000;
+
+/** Cache file name for a DATABASE_URL: host + database name only, never credentials. */
+export function cacheFileNameFor(databaseUrl: string | undefined): string {
+  let basis = "unknown";
+  try {
+    const u = new URL(databaseUrl ?? "");
+    basis = `${u.host}${u.pathname}`;
+  } catch {
+    // unparseable URL: share one "unknown" bucket rather than hashing the raw string
+  }
+  const hash = createHash("sha256").update(basis).digest("hex").slice(0, 12);
+  return `compute-atlas-discovery-facilities-${hash}.json`;
+}
+
+export function defaultCacheDir(): string {
+  return path.join(os.homedir(), ".cache", "compute-atlas");
+}
 
 export type LoadFacilitiesDeps = {
   sleep?: (ms: number) => Promise<void>;
+  now?: () => number;
+  /** Directory holding the snapshot cache; defaults to ~/.cache/compute-atlas. */
+  cacheDir?: string;
+  /** Per-attempt timeout; defaults to ATTEMPT_TIMEOUT_MS. */
+  attemptTimeoutMs?: number;
+  readDb?: () => Promise<Facility[]>;
 };
 
 const realSleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-type Attempt =
-  | { ok: true; facilities: Facility[] }
-  | { ok: false; error: string; retryable: boolean; status?: number; tokenSent?: boolean };
+async function readDbFacilities(): Promise<Facility[]> {
+  const rows = await getDb().select({ doc: facilitiesTable.doc }).from(facilitiesTable);
+  return rows.map(rowToFacility);
+}
 
-let warnedInsecureBase = false;
+function cacheTtlMs(): number {
+  const raw = process.env.DISCOVERY_FACILITIES_CACHE_TTL_MS;
+  if (raw === undefined || raw.trim() === "") return DEFAULT_CACHE_TTL_MS;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0) {
+    console.error(
+      `WARNING: DISCOVERY_FACILITIES_CACHE_TTL_MS="${raw}" is not a non-negative number; using the default ${DEFAULT_CACHE_TTL_MS} ms.`
+    );
+    return DEFAULT_CACHE_TTL_MS;
+  }
+  return n;
+}
 
-/**
- * The admin token is a full-privilege secret, so it is only sent over https or
- * to a loopback host. Anything else (plain http to a remote host, an
- * unparseable URL) goes without it, with a single stderr warning per process.
- * Any https host receives the token, so the base URL must be the operator's own site.
- */
-function bearerAllowedFor(url: string): boolean {
+const ownerOnly = (st: { uid: number; mode: number }): boolean =>
+  (process.getuid === undefined || st.uid === process.getuid()) && (st.mode & 0o077) === 0;
+
+/** Creates the cache dir at 0o700; returns false (caching skipped) if it cannot be made private. */
+function ensureCacheDir(dir: string): boolean {
   try {
-    const { protocol, hostname } = new URL(url);
-    if (protocol === "https:") return true;
-    return protocol === "http:" && (hostname === "localhost" || hostname === "127.0.0.1");
+    mkdirSync(dir, { recursive: true, mode: 0o700 });
+    const st = lstatSync(dir);
+    if (!st.isDirectory() || (process.getuid !== undefined && st.uid !== process.getuid())) {
+      return false;
+    }
+    if ((st.mode & 0o077) !== 0) chmodSync(dir, 0o700);
+    return ownerOnly(lstatSync(dir));
   } catch {
     return false;
   }
 }
 
-async function attemptOnce(url: string, fetchImpl: typeof fetch): Promise<Attempt> {
+function readCache(file: string, ttl: number, nowMs: number): Facility[] | null {
   try {
-    let token = process.env.API_ADMIN_TOKEN;
-    if (token && !bearerAllowedFor(url)) {
-      if (!warnedInsecureBase) {
-        warnedInsecureBase = true;
-        console.error(
-          "WARNING: API_ADMIN_TOKEN is set but the API base URL is neither https nor localhost; " +
-            "sending the request without the token."
-        );
-      }
-      token = undefined;
-    }
-    const res = await fetchImpl(url, {
-      signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
-      ...(token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
-    });
-    if (!res.ok) {
-      return {
-        ok: false,
-        error: `API responded ${res.status} ${res.statusText}`.trim(),
-        retryable: res.status >= 500 || res.status === 429,
-        status: res.status,
-        tokenSent: Boolean(token),
-      };
-    }
-    const body = (await res.json()) as { facilities?: unknown };
-    if (!Array.isArray(body?.facilities)) {
-      return { ok: false, error: "API body has no facilities array", retryable: true };
-    }
-    return { ok: true, facilities: body.facilities as Facility[] };
-  } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : String(err), retryable: true };
+    const st = lstatSync(file);
+    if (!st.isFile() || !ownerOnly(st)) return null;
+    const parsed = JSON.parse(readFileSync(file, "utf-8")) as {
+      fetchedAt?: unknown;
+      facilities?: unknown;
+    };
+    if (typeof parsed.fetchedAt !== "number" || !Array.isArray(parsed.facilities)) return null;
+    if (parsed.facilities.length === 0) return null;
+    const age = nowMs - parsed.fetchedAt;
+    if (age < 0 || age >= ttl) return null;
+    if (!facilitiesSchema.safeParse(parsed.facilities).success) return null;
+    return parsed.facilities as Facility[];
+  } catch {
+    return null;
   }
 }
 
-export async function loadFacilities(
-  baseUrl: string,
-  fetchImpl: typeof fetch = fetch,
-  deps: LoadFacilitiesDeps = {}
-): Promise<LoadFacilitiesResult> {
-  const sleep = deps.sleep ?? realSleep;
-  let apiError = "";
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const result = await attemptOnce(`${baseUrl}/api/facilities`, fetchImpl);
-    if (result.ok) return { facilities: result.facilities, source: "api" };
-    if (!result.retryable) {
-      apiError = result.error;
-      if (result.status === 401 || result.status === 403) {
-        const why = result.tokenSent
-          ? "was sent but rejected (invalid)"
-          : process.env.API_ADMIN_TOKEN
-            ? "withheld: base URL is not https or loopback"
-            : "missing";
-        console.error(
-          `WARNING: facility API refused the read (${result.status}); API_ADMIN_TOKEN ${why}. ` +
-            "Falling back to data/facilities.json, which lacks the newest records, so candidates may duplicate existing facilities."
-        );
-      }
-      break;
+function writeCache(file: string, nowMs: number, facilities: Facility[]): void {
+  const tmp = `${file}.${process.pid}.${randomBytes(6).toString("hex")}.tmp`;
+  try {
+    writeFileSync(tmp, JSON.stringify({ fetchedAt: nowMs, facilities }), { flag: "wx", mode: 0o600 });
+    renameSync(tmp, file);
+  } catch {
+    // Best effort: a cache that cannot be written only costs egress.
+    try {
+      unlinkSync(tmp);
+    } catch {
+      // tmp was never created or is already gone
     }
-    apiError = `${attempt} attempts; last: ${result.error}`;
-    if (attempt < MAX_ATTEMPTS) await sleep(RETRY_DELAYS_MS[attempt - 1]);
+  }
+}
+
+async function attemptOnce(readDb: () => Promise<Facility[]>, timeoutMs: number): Promise<Facility[]> {
+  let timer: NodeJS.Timeout | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error("timeout")), timeoutMs);
+  });
+  try {
+    const facilities = await Promise.race([readDb(), timeout]);
+    if (!Array.isArray(facilities) || facilities.length === 0) {
+      throw new Error("empty result");
+    }
+    return facilities;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function loadFile(dbError: string): LoadFacilitiesResult {
+  console.error(
+    `WARNING: could not read the live facility set from Neon (${dbError}). ` +
+      "Falling back to data/facilities.json, which lacks the newest records, so candidates may duplicate existing facilities."
+  );
+  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
+  const facilities = JSON.parse(readFileSync(jsonPath, "utf-8")) as Facility[];
+  return { facilities, source: "file", dbError };
+}
+
+export async function loadFacilities(deps: LoadFacilitiesDeps = {}): Promise<LoadFacilitiesResult> {
+  const sleep = deps.sleep ?? realSleep;
+  const now = deps.now ?? Date.now;
+  const readDb = deps.readDb ?? readDbFacilities;
+
+  if (!hasDatabaseUrl()) return loadFile("DATABASE_URL is not set");
+
+  const ttl = cacheTtlMs();
+  const cacheDir = deps.cacheDir ?? defaultCacheDir();
+  const cacheFile = path.join(cacheDir, cacheFileNameFor(process.env.DATABASE_URL));
+  const useCache = ttl > 0 && ensureCacheDir(cacheDir);
+  if (useCache) {
+    const hit = readCache(cacheFile, ttl, now());
+    if (hit) {
+      console.error(`facilities: ${hit.length} from db (cached)`);
+      return { facilities: hit, source: "db", cached: true };
+    }
   }
 
-  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
-  const raw = readFileSync(jsonPath, "utf-8");
-  const facilities = JSON.parse(raw) as Facility[];
-  return { facilities, source: "file", apiError };
+  let dbError = "";
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const facilities = await attemptOnce(readDb, deps.attemptTimeoutMs ?? ATTEMPT_TIMEOUT_MS);
+      if (useCache) writeCache(cacheFile, now(), facilities);
+      console.error(`facilities: ${facilities.length} from db`);
+      return { facilities, source: "db", cached: false };
+    } catch (err) {
+      const code = err instanceof Error && err.message === "timeout" ? "timeout"
+        : err instanceof Error && err.message === "empty result" ? "empty result"
+        : redactedErrorCode(err);
+      dbError = `${attempt} attempts; last: ${code}`;
+      if (attempt < MAX_ATTEMPTS) await sleep(RETRY_DELAYS_MS[attempt - 1]);
+    }
+  }
+  return loadFile(dbError);
 }
