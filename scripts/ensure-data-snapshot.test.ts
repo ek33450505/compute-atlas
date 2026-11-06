@@ -145,6 +145,42 @@ describe("ensureDataSnapshot", () => {
     }
   });
 
+  it("CI with a missing snapshot file and no override fails closed without copying", async () => {
+    const deps = makeDeps({ env: { CI: "true" }, existing: without("data/siting-context.json") });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(1);
+    expect(deps.copies).toEqual([]);
+    expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("ALLOW_FIXTURE_SNAPSHOT"));
+  });
+
+  it("NODE_ENV=production with a missing snapshot file fails closed without copying", async () => {
+    const deps = makeDeps({ env: { NODE_ENV: "production" } });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(1);
+    expect(deps.copies).toEqual([]);
+  });
+
+  it("CI with ALLOW_FIXTURE_SNAPSHOT=1 copies the fixtures and exits 0", async () => {
+    const deps = makeDeps({ env: { CI: "true", ALLOW_FIXTURE_SNAPSHOT: "1" } });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
+    expectFixturesCopied(deps.copies);
+    expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("WARNING"));
+  });
+
+  it("CI with ALLOW_FIXTURE_SNAPSHOT=1, facilities.json present and meta missing: warns, copies no meta", async () => {
+    const deps = makeDeps({
+      env: { CI: "true", ALLOW_FIXTURE_SNAPSHOT: "1" },
+      existing: without("data/facilities.meta.json"),
+    });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
+    expect(deps.copies).toEqual([]);
+    expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("facilities.meta.json"));
+  });
+
+  it("CI with every snapshot file present is a no-op", async () => {
+    const deps = makeDeps({ env: { CI: "true", NODE_ENV: "production" }, existing: ALL });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
+    expect(deps.copies).toEqual([]);
+  });
+
   it("--export forces an export even when the snapshot exists", async () => {
     const deps = makeDeps({ existing: [path.join(ROOT, "data/facilities.json")] });
     expect(await ensureDataSnapshot({ forceExport: true }, deps)).toBe(0);

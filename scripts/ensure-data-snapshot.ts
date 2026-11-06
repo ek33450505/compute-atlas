@@ -4,16 +4,25 @@
  *   - Vercel (VERCEL=1): export from Neon. If the export fails, a build
  *     exits non-zero unless VERCEL_ENV is exactly "preview" (fail closed: never
  *     ship fixture data to prod); a preview build falls back to fixtures for
- *     absent files only, with a loud warning.
+ *     absent files only, with a loud warning. Every Vercel build, production
+ *     and preview, runs a Neon export in prebuild, so a Neon outage fails a
+ *     production deploy by design (never ship fixture or stale data to prod);
+ *     retry the deploy. ALLOW_FIXTURE_SNAPSHOT is deliberately ignored when
+ *     VERCEL=1.
  *   - Elsewhere: copy a fixture into data/ only for files that are absent. Never
  *     overwrites an existing file, except facilities.meta.json when
  *     facilities.json is absent: the pair is copied together so recordCount
  *     matches.
  *   - `--export` forces a Neon export on any machine; failure exits non-zero.
  *
- * Wired as `predev` only. `prebuild` is deliberately NOT wired in this unit:
- * the Vercel export-at-build lands in a later PR, once the data files are
- * untracked.
+ *   - CI or NODE_ENV=production off Vercel: a missing snapshot file exits
+ *     non-zero rather than copying fixtures, unless ALLOW_FIXTURE_SNAPSHOT=1.
+ *     npm does not set NODE_ENV for lifecycle scripts, so a self-hosted or
+ *     non-Vercel production build must set CI or NODE_ENV=production for this
+ *     guard to apply. A plain local `npm run build` with no DB copies the
+ *     fixture by design, so contributors can build.
+ *
+ * Wired as `predev` and `prebuild` (never with `--export`).
  *
  * Logs never include URLs or bound params: a DB error is reduced to
  * `redactedErrorCode(err)`.
@@ -127,6 +136,18 @@ export async function ensureDataSnapshot(
       deps.warn("ensure-data-snapshot: WARNING Neon export failed on a preview build; existing data/ files left as they are");
     }
     return 0;
+  }
+
+  // A CI or production build must never silently ship fixture data.
+  if (deps.env.CI || deps.env.NODE_ENV === "production") {
+    const missing = SNAPSHOT_FILES.filter((f) => !deps.fs.existsSync(path.join(deps.root, f.snapshot)));
+    if (missing.length > 0 && deps.env.ALLOW_FIXTURE_SNAPSHOT !== "1") {
+      deps.warn(
+        `ensure-data-snapshot: refusing to copy fixtures in CI/production; missing ${missing.map((f) => f.snapshot).join(", ")}. ` +
+          `Set ALLOW_FIXTURE_SNAPSHOT=1 to allow a fixture build.`
+      );
+      return 1;
+    }
   }
 
   if (!fillMissing(deps, "data/ snapshot files were missing")) {

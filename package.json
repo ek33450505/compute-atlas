@@ -8,7 +8,7 @@
   "scripts": {
     "predev": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-maplibre-worker.mjs",
+    "prebuild": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
