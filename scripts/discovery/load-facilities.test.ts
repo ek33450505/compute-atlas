@@ -26,10 +26,11 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 
 import type { Facility } from "../../lib/schema";
-import { cacheFileNameFor, loadFacilities, resolveReadUrl } from "./load-facilities";
+import { cacheFileNameFor, loadFacilities, readFacilitiesSnapshot, resolveReadUrl } from "./load-facilities";
 
 // Cache reads re-validate with facilitiesSchema, so the DB fixture is a real record.
 const FIXTURE_FILE = path.join(process.cwd(), "tests", "fixtures", "facilities.fixture.json");
+const META_FIXTURE_FILE = path.join(process.cwd(), "tests", "fixtures", "facilities.meta.fixture.json");
 const DB_FACILITY = (readFixtureFacilitiesFile() as Facility[])[0];
 const SECRET = "postgres://user:hunter2@host/db";
 
@@ -54,6 +55,9 @@ beforeEach(() => {
   cwdRoot = mkdtempSync(path.join(os.tmpdir(), "load-facilities-cwd-"));
   mkdirSync(path.join(cwdRoot, "data"));
   copyFileSync(FIXTURE_FILE, path.join(cwdRoot, "data", "facilities.json"));
+  copyFileSync(META_FIXTURE_FILE, path.join(cwdRoot, "data", "facilities.meta.json"));
+  // The fixture has 68 records, under the snapshot size floor; test-only override.
+  vi.stubEnv("DISCOVERY_ALLOW_SMALL_SNAPSHOT", "1");
   vi.spyOn(process, "cwd").mockReturnValue(cwdRoot);
   vi.stubEnv("DATABASE_URL", FAKE_URL);
   vi.stubEnv("DISCOVERY_READ_DATABASE_URL", "");
@@ -371,5 +375,122 @@ describe("loadFacilities", () => {
 
       expect(statSync(cacheFile()).mode & 0o777).toBe(0o600);
     });
+  });
+});
+
+describe("guarded snapshot fallback", () => {
+  const noDb = () => vi.stubEnv("DATABASE_URL", "");
+  const dataFile = (n: string) => path.join(cwdRoot, "data", n);
+
+  it("aborts on the tiny fixture snapshot without the test override", async () => {
+    noDb();
+    vi.stubEnv("DISCOVERY_ALLOW_SMALL_SNAPSHOT", "");
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/incomplete facility snapshot.*floor/);
+  });
+
+  it("aborts when meta recordCount differs from the array length", async () => {
+    noDb();
+    writeFileSync(dataFile("facilities.meta.json"), JSON.stringify({ asOf: "x", recordCount: 999 }));
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/says 999 records/);
+  });
+
+  it("aborts when the meta file is missing", async () => {
+    noDb();
+    rmSync(dataFile("facilities.meta.json"));
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/facilities\.meta\.json is missing/);
+  });
+
+  it("aborts when the meta file is unparseable", async () => {
+    noDb();
+    writeFileSync(dataFile("facilities.meta.json"), "{not json");
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/not valid JSON/);
+  });
+
+  it("aborts when recordCount is not a number", async () => {
+    noDb();
+    writeFileSync(dataFile("facilities.meta.json"), JSON.stringify({ asOf: "x", recordCount: "68" }));
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/numeric recordCount/);
+  });
+
+  it("aborts on an empty array", async () => {
+    noDb();
+    writeFileSync(dataFile("facilities.json"), "[]");
+    writeFileSync(dataFile("facilities.meta.json"), JSON.stringify({ asOf: "x", recordCount: 0 }));
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/non-empty array/);
+  });
+
+  it("aborts when facilities.json is missing", async () => {
+    noDb();
+    rmSync(dataFile("facilities.json"));
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/facilities\.json is missing/);
+  });
+
+  it("readFacilitiesSnapshot without a dbError does not advise restoring Neon", () => {
+    vi.stubEnv("DISCOVERY_ALLOW_SMALL_SNAPSHOT", "");
+    let message = "";
+    try {
+      readFacilitiesSnapshot(cwdRoot);
+    } catch (err) {
+      message = (err as Error).message;
+    }
+    expect(message).toContain("floor 1000");
+    expect(message).not.toContain("Restore Neon access");
+    expect(message).toContain("npm run db:export");
+    expect(message).toContain("local only");
+  });
+
+  it("includes the DB failure reason in the abort message", async () => {
+    vi.stubEnv("DISCOVERY_ALLOW_SMALL_SNAPSHOT", "");
+    await expect(
+      loadFacilities({
+        readDb: async () => {
+          throw new Error("boom");
+        },
+        cacheDir,
+        sleep: noSleep,
+      })
+    ).rejects.toThrow(/Neon read failed: 3 attempts; last: /);
+  });
+
+  it("aborts when a record fails schema validation", async () => {
+    noDb();
+    const records = readFixtureFacilitiesFile() as Record<string, unknown>[];
+    delete records[0].id;
+    writeFileSync(dataFile("facilities.json"), JSON.stringify(records));
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/fails schema validation/);
+  });
+
+  it("aborts when facilities.json is an object, not an array", async () => {
+    noDb();
+    writeFileSync(dataFile("facilities.json"), JSON.stringify({ facilities: readFixtureFacilitiesFile() }));
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/not a non-empty array/);
+  });
+
+  it("accepts the 68-record snapshot when the size floor is waived under Vitest", async () => {
+    noDb();
+    const result = await loadFacilities({ cacheDir, sleep: noSleep });
+    expect(result.source).toBe("file");
+    expect(result.facilities).toHaveLength(68);
+  });
+
+  it("ignores the size-floor waiver outside Vitest and says so", async () => {
+    noDb();
+    vi.stubEnv("VITEST", "");
+    await expect(loadFacilities({ cacheDir, sleep: noSleep })).rejects.toThrow(/floor 1000/);
+    expect(stderrText()).toContain("only honoured under Vitest");
+  });
+
+  it("with the DB down and a consistent snapshot returns source file and warns with asOf, on stderr", async () => {
+    const result = await loadFacilities({
+      readDb: async () => {
+        throw new Error("boom");
+      },
+      cacheDir,
+      sleep: noSleep,
+    });
+    expect(result.source).toBe("file");
+    expect(result.facilities).toHaveLength(68);
+    expect(stderrText()).toContain("2026-11-05T18:24:03.746Z");
+    expect(stderrText()).toContain("68 records");
   });
 });

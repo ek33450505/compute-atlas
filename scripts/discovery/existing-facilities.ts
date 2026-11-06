@@ -30,8 +30,8 @@ import { formatFatalError } from "../../lib/db-error";
  * Latest statusHistory date, or lastUpdated if statusHistory is empty/absent.
  * Defensive against raw (non-zod-parsed) JSON where `statusHistory` may be
  * missing entirely — the schema's `.default([])` only applies via `.parse()`,
- * and the CLI's file fallback reads `data/facilities.json` with a bare
- * `JSON.parse`, matching the shared loadFacilities in ./load-facilities.ts.
+ * and the shared loader's guarded file fallback validates the snapshot with
+ * the schema but returns the raw parsed JSON, not the schema's parsed output.
  */
 function latestStatusDate(facility: Facility): string {
   const history = facility.statusHistory ?? [];
@@ -170,13 +170,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const { facilities, source, dbError } = await loadFacilities();
-  if (source === "file") {
-    console.warn(
-      `WARNING: could not read the live facility index from Neon (${dbError}); ` +
-        `falling back to the committed data/facilities.json snapshot, which may be stale.`
-    );
-  }
+  const { facilities } = await loadFacilities();
   const projection = projectExisting(facilities, state);
 
   const report = loadLatestSourceHealth();

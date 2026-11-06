@@ -250,13 +250,98 @@ async function attemptOnce(readDb: () => Promise<Facility[]>, timeoutMs: number)
   }
 }
 
+/** A snapshot smaller than this is a test fixture or a truncated write, never the real set. */
+const MIN_SNAPSHOT_RECORDS = 1000;
+
+const LOCAL_ONLY_NOTE = "a db:export refresh is local only; do not commit it while data/facilities.json is tracked";
+
+/** Fix hint; the Neon-restore advice applies only on the fallback path (a dbError means Neon was tried). */
+function snapshotFix(dbError?: string): string {
+  const refresh = `\`npm run db:export\` (needs Neon access) refreshes the local data/facilities.json snapshot (${LOCAL_ONLY_NOTE})`;
+  return dbError
+    ? `Restore Neon access (DISCOVERY_READ_DATABASE_URL / DATABASE_URL); once Neon is reachable, ${refresh}.`
+    : `${refresh[0].toUpperCase()}${refresh.slice(1)}.`;
+}
+
+function refuseSnapshot(reason: string, dbError?: string): never {
+  const neon = dbError ? ` (Neon read failed: ${dbError})` : "";
+  throw new Error(
+    `discovery refuses to dedupe against an incomplete facility snapshot: ${reason}${neon}. ${snapshotFix(dbError)}`
+  );
+}
+
+function readSnapshotJson(file: string, label: string, dbError?: string): unknown {
+  let raw: string;
+  try {
+    raw = readFileSync(file, "utf-8");
+  } catch {
+    return refuseSnapshot(`${label} is missing or unreadable`, dbError);
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return refuseSnapshot(`${label} is not valid JSON`, dbError);
+  }
+}
+
+/**
+ * Whether the size floor is waived. DISCOVERY_ALLOW_SMALL_SNAPSHOT=1 is honoured
+ * ONLY under Vitest (which sets VITEST), where tests run against the 68-record
+ * fixture. Outside Vitest a stray value, e.g. in .env.local, is ignored with a
+ * stderr note so it can never weaken a real run.
+ */
+function smallSnapshotAllowed(): boolean {
+  if (process.env.DISCOVERY_ALLOW_SMALL_SNAPSHOT !== "1") return false;
+  if (process.env.VITEST) return true;
+  console.error("NOTICE: DISCOVERY_ALLOW_SMALL_SNAPSHOT is only honoured under Vitest; ignoring it.");
+  return false;
+}
+
+/**
+ * Guarded read of `<rootDir>/data/facilities.json`, the committed snapshot.
+ * Throws unless it is a non-empty array, its facilities.meta.json is readable
+ * with a numeric `recordCount` equal to the array length, every record passes
+ * `facilitiesSchema`, and the count is at least MIN_SNAPSHOT_RECORDS (waived
+ * only per `smallSnapshotAllowed`). Exported for sync callers that must NOT
+ * read Neon (the bench target builder, whose ground truth must be reproducible).
+ */
+export function readFacilitiesSnapshot(
+  rootDir: string,
+  dbError?: string
+): { facilities: Facility[]; asOf: string } {
+  const dataDir = path.join(rootDir, "data");
+  const parsed = readSnapshotJson(path.join(dataDir, "facilities.json"), "data/facilities.json", dbError);
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    refuseSnapshot("data/facilities.json is not a non-empty array", dbError);
+  }
+  const meta = readSnapshotJson(path.join(dataDir, "facilities.meta.json"), "data/facilities.meta.json", dbError);
+  const metaObj = meta as { asOf?: unknown; recordCount?: unknown } | null;
+  const recordCount = metaObj?.recordCount;
+  if (typeof recordCount !== "number") {
+    refuseSnapshot("data/facilities.meta.json has no numeric recordCount", dbError);
+  }
+  if (recordCount !== parsed.length) {
+    refuseSnapshot(
+      `data/facilities.meta.json says ${recordCount} records but data/facilities.json holds ${parsed.length}`,
+      dbError
+    );
+  }
+  if (parsed.length < MIN_SNAPSHOT_RECORDS && !smallSnapshotAllowed()) {
+    refuseSnapshot(`data/facilities.json holds only ${parsed.length} records (floor ${MIN_SNAPSHOT_RECORDS})`, dbError);
+  }
+  const valid = facilitiesSchema.safeParse(parsed);
+  if (!valid.success) refuseSnapshot("data/facilities.json fails schema validation", dbError);
+  const asOf = typeof metaObj?.asOf === "string" ? metaObj.asOf : "unknown";
+  return { facilities: parsed as Facility[], asOf };
+}
+
 function loadFile(dbError: string): LoadFacilitiesResult {
+  const { facilities, asOf } = readFacilitiesSnapshot(process.cwd(), dbError);
   console.error(
     `WARNING: could not read the live facility set from Neon (${dbError}). ` +
-      "Falling back to data/facilities.json, which lacks the newest records, so candidates may duplicate existing facilities."
+      `Falling back to data/facilities.json (${facilities.length} records, as of ${asOf}), ` +
+      "which lacks the newest records, so candidates may duplicate existing facilities."
   );
-  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
-  const facilities = JSON.parse(readFileSync(jsonPath, "utf-8")) as Facility[];
   return { facilities, source: "file", dbError };
 }
 

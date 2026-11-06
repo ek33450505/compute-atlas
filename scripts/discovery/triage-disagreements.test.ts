@@ -382,10 +382,10 @@ describe("parseArgs", () => {
     });
   });
 
-  it("defaults --facilities to data/facilities.json and leaves --out unset", () => {
+  it("leaves --facilities unset (shared guarded loader) and --out unset", () => {
     expect(parseArgs(["--report=a.json"])).toEqual({
       reportPath: "a.json",
-      facilitiesPath: "data/facilities.json",
+      facilitiesPath: undefined,
       outPath: undefined,
     });
   });

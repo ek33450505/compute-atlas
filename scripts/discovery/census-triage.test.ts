@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { FetchPageTextResult } from "./fetch-page-text";
 import {
+  buildFacilityIndex,
   formatSummary,
   isTriageCandidate,
   matchMachineDataRule,
@@ -303,5 +304,19 @@ describe("runTriage", () => {
       "no-strong-tokens": 0,
       "machine-data": 0,
     });
+  });
+});
+
+describe("buildFacilityIndex", () => {
+  it("maps ids to names and (id,url) to source kind, skipping malformed entries", () => {
+    const { names, sourceKinds } = buildFacilityIndex([
+      { id: "a", name: "Alpha", sources: [{ url: "https://x.test/1", kind: "osm" }, null, { url: "u" }] },
+      null,
+      { name: "no id" },
+    ]);
+    expect(names.get("a")).toBe("Alpha");
+    expect(names.size).toBe(1);
+    expect(sourceKinds.get(sourceKindKey("a", "https://x.test/1"))).toBe("osm");
+    expect(sourceKinds.size).toBe(1);
   });
 });

@@ -78,13 +78,14 @@
  * floor on correctness, never a clean bill of health.
  *
  * Run via: npx tsx scripts/discovery/triage-disagreements.ts --report=<path>.json
- *                                                             [--facilities=data/facilities.json]
+ *                                                             [--facilities=<path>.json]   (default: shared loader)
  *                                                             [--out=<path>.json]
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { formatErrorSummary } from "../../lib/db-error";
+import { loadFacilities } from "./load-facilities";
 import { matchMachineDataRule } from "./census-triage";
 import type { SourceVerification, VerifyFieldsSummary } from "./verify-fields";
 import type { Facility } from "../../lib/schema";
@@ -456,17 +457,16 @@ export function formatSummary(result: TriageDisagreementsResult): string {
 // CLI
 // ============================================================================
 
-export const DEFAULT_FACILITIES_PATH = "data/facilities.json";
-
 export interface CliOptions {
   reportPath: string;
-  facilitiesPath: string;
+  /** Explicit `--facilities=<path>` override; absent means the shared guarded loader. */
+  facilitiesPath?: string;
   outPath?: string;
 }
 
 export function parseArgs(argv: string[]): CliOptions {
   let reportPath: string | undefined;
-  let facilitiesPath = DEFAULT_FACILITIES_PATH;
+  let facilitiesPath: string | undefined;
   let outPath: string | undefined;
 
   for (const arg of argv) {
@@ -491,10 +491,10 @@ export function parseArgs(argv: string[]): CliOptions {
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2));
   const reportPath = path.resolve(process.cwd(), options.reportPath);
-  const facilitiesPath = path.resolve(process.cwd(), options.facilitiesPath);
+  const facilitiesPath = options.facilitiesPath ? path.resolve(process.cwd(), options.facilitiesPath) : undefined;
 
   const summary = loadReport(reportPath);
-  const facilities = loadFacilitiesFile(facilitiesPath);
+  const facilities = facilitiesPath ? loadFacilitiesFile(facilitiesPath) : (await loadFacilities()).facilities;
   const result = triageDisagreements(summary, facilities);
 
   console.log(formatSummary(result));

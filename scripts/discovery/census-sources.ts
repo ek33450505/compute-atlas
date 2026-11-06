@@ -54,6 +54,7 @@
 import { createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
+import { loadFacilities } from "./load-facilities";
 import { runWithConcurrency } from "./net-guard";
 import type { VerifyClaim, VerificationResult } from "./verify-source";
 import { isEntrypoint } from "../is-entrypoint";
@@ -982,13 +983,9 @@ export function endReportStream(
   });
 }
 
-function loadFacilities(limit?: number): { facilities: CensusFacility[]; skipped: string[] } {
-  const facilitiesPath = path.join(process.cwd(), "data", "facilities.json");
-  const parsed: unknown = JSON.parse(readFileSync(facilitiesPath, "utf8"));
-  if (!Array.isArray(parsed)) {
-    throw new Error(`${facilitiesPath} is not a JSON array`);
-  }
-  const { facilities, skipped } = selectCheckableFacilities(parsed);
+async function loadCheckableFacilities(limit?: number): Promise<{ facilities: CensusFacility[]; skipped: string[] }> {
+  const { facilities: loaded } = await loadFacilities();
+  const { facilities, skipped } = selectCheckableFacilities(loaded);
   return {
     facilities: limit === undefined ? facilities : facilities.slice(0, limit),
     skipped,
@@ -998,7 +995,7 @@ function loadFacilities(limit?: number): { facilities: CensusFacility[]; skipped
 async function main(): Promise<void> {
   const startedAt = Date.now();
   const options = parseArgs(process.argv.slice(2), makeRunId());
-  const { facilities, skipped } = loadFacilities(options.limit);
+  const { facilities, skipped } = await loadCheckableFacilities(options.limit);
 
   const reportPath = options.resume ? resolveResumePath(options) : options.out;
   const outPath = path.resolve(process.cwd(), assertSafeReportPath(reportPath));
