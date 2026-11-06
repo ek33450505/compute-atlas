@@ -1,4 +1,4 @@
-import type { MapFacility } from "@/lib/facility-slim";
+import type { MapPoint } from "@/lib/facility-slim";
 
 const TILE = 256;
 
@@ -27,7 +27,7 @@ export interface Cluster {
   /** Render position = anchor facility's coordinates. */
   lon: number;
   lat: number;
-  members: MapFacility[];
+  members: MapPoint[];
 }
 
 /**
@@ -37,7 +37,7 @@ export interface Cluster {
  * rendered markers overlap below the target-size threshold. Deterministic (sorted by id).
  */
 export function clusterFacilities(
-  facilities: MapFacility[],
+  facilities: MapPoint[],
   zoom: number,
   radiusPx = 44,
   unclusterZoom = UNCLUSTER_ZOOM

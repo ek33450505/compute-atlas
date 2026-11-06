@@ -54,15 +54,33 @@ vi.mock("next/link", () => ({
 import MapPage from "./page";
 
 describe("MapPage", () => {
-  it("hands Explorer the slim projection, not the full records", async () => {
+  it("hands Explorer only MapPoints: no name, operator, capacity, sources or city", async () => {
     render(await MapPage());
-    const props = explorerSpy.mock.calls[0][0] as { mode: string; facilities: unknown[] };
+    const props = explorerSpy.mock.calls[0][0] as {
+      mode: string;
+      points: Record<string, unknown>[];
+      facilities?: unknown;
+    };
     expect(props.mode).toBe("map");
-    const json = JSON.stringify(props.facilities);
-    expect(json).not.toContain("heavy prose");
-    expect(json).not.toContain("statusHistory");
-    expect(json).not.toContain("example.com/second");
-    expect(props.facilities).toHaveLength(1);
+    expect(props.facilities).toBeUndefined();
+    expect(props.points).toHaveLength(1);
+
+    const point = props.points[0];
+    expect(Object.keys(point).sort()).toEqual(["facilityType", "id", "location", "status"]);
+    expect(Object.keys(point.location as object).sort()).toEqual(["lat", "lon", "state"]);
+
+    const json = JSON.stringify(props.points);
+    for (const leaked of ["Acme One", "Acme", "Waco", "capacityMw", "sources", "heavy prose", "statusHistory", "31.123456"]) {
+      expect(json).not.toContain(leaked);
+    }
+    expect(point.location).toMatchObject({ lat: 31.12, lon: -97.65 });
+  });
+
+  it("passes precomputed filter options (operator names only, no records)", async () => {
+    render(await MapPage());
+    const props = explorerSpy.mock.calls[0][0] as { options: { operators: string[]; states: string[] } };
+    expect(props.options.operators).toEqual(["Acme"]);
+    expect(props.options.states).toEqual(["TX"]);
   });
 
   it("still server-renders the indexable heading and summary text", async () => {

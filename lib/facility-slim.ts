@@ -273,7 +273,15 @@ export function toPopupSummary(f: Facility, siting?: SitingContext): PopupSummar
       out.carbonIntensityProxy = m.environmental.carbonIntensityProxy;
     }
   }
-  if (siting?.nearestWater) out.nearestWater = siting.nearestWater;
-  if (siting?.nearestTransmission) out.nearestTransmission = siting.nearestTransmission;
+  // Copied field by field so a key added to the siting JSON later can't ride
+  // along into a public payload.
+  if (siting?.nearestWater) {
+    const { name, kind, distanceMi } = siting.nearestWater;
+    out.nearestWater = { name, kind, distanceMi };
+  }
+  if (siting?.nearestTransmission) {
+    const { voltageKv, distanceMi } = siting.nearestTransmission;
+    out.nearestTransmission = { voltageKv, distanceMi };
+  }
   return out;
 }

@@ -56,13 +56,13 @@ import {
   WATERWAYS_COLOR,
   WATER_STRESS_RAMP,
 } from "@/lib/map-overlays";
-import type { MapFacility } from "@/lib/facility-slim";
+import type { MapPoint } from "@/lib/facility-slim";
 import type { GeocodeResult } from "@/lib/geocode";
 
 const TOOLS_PANEL_ID = "map-tools-panel";
 
 interface FacilityMapProps {
-  facilities: MapFacility[];
+  facilities: MapPoint[];
   /** Tailwind height classes for the map container. Defaults to "h-[70vh] min-h-[420px]". */
   heightClass?: string;
   /**
@@ -221,9 +221,14 @@ export function FacilityMap({
   const pathname = usePathname();
   const escapeLinks = linksOpenInNewTab ?? isEmbedRoute(pathname);
 
-  const [selectedFacility, setSelectedFacility] = useState<MapFacility | null>(
+  const [selectedFacility, setSelectedFacility] = useState<MapPoint | null>(
     null
   );
+  // A filter change can drop the selected pin from `facilities`; its popup must
+  // not outlive it. Derived, not an effect, so the popup never renders a frame late.
+  const selectedStillShown =
+    selectedFacility !== null && facilities.some((f) => f.id === selectedFacility.id);
+  if (selectedFacility !== null && !selectedStillShown) setSelectedFacility(null);
   const [zoom, setZoom] = useState<number>(INITIAL_VIEW_STATE.zoom);
   const [bearing, setBearing] = useState<number>(0);
   const [is3D, setIs3D] = useState<boolean>(false);
@@ -509,7 +514,7 @@ export function FacilityMap({
   }, [showTools]);
 
   const handleSelectFacility = useCallback(
-    (facility: MapFacility) => {
+    (facility: MapPoint) => {
       lastSelectedIdRef.current = facility.id;
       setSelectedFacility(facility);
       mapRef.current?.easeTo({
@@ -1622,7 +1627,7 @@ export function FacilityMap({
               maxWidth="none"
             >
               <FacilityPopup
-                facility={selectedFacility}
+                id={selectedFacility.id}
                 onClose={handleClosePopup}
                 linksOpenInNewTab={escapeLinks}
               />

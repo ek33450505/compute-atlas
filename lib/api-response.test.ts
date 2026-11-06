@@ -76,6 +76,8 @@ const EXPECTED_ROUTE_SCOPES: Record<string, CorsScope> = {
   "app/api/facilities/[id]/route.ts": "admin", // GET + PATCH/DELETE all bearer-gated
   "app/api/facilities/route.ts": "admin", // mixed: public GET + bearer POST
   "app/api/leads/route.ts": "public-write",
+  "app/api/map/facility/[id]/route.ts": "read",
+  "app/api/map/match/route.ts": "read",
   "app/api/nav-index/route.ts": "read",
   "app/api/revalidate/route.ts": "admin",
   "app/api/schema/route.ts": "read",

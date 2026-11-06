@@ -5,15 +5,16 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useQueryStates } from "nuqs";
 
-import { filterFacilities, type FilterOptions } from "@/lib/filters";
+import { filterMapPoints, type FilterOptions } from "@/lib/filters";
 import { explorerParsers } from "@/lib/explorer-params";
-import type { MapFacility, TableRow } from "@/lib/facility-slim";
+import type { MapPoint, TableRow } from "@/lib/facility-slim";
 import type { SortColumn, SortDir } from "@/lib/table-sort";
 import { PAGE_SIZE } from "@/lib/table-query";
 import { FacilityTable } from "@/components/table/facility-table";
 import { TablePagination } from "@/components/table/table-pagination";
 import { FacilityMap } from "@/components/map/facility-map-dynamic";
 import { FilterBar } from "@/components/explorer/filter-bar";
+import { useMatchedIds } from "@/components/explorer/use-matched-ids";
 import { MapFilterSubheader } from "@/components/map/map-filter-subheader";
 import { ShareLinkButton } from "@/components/explorer/share-link-button";
 import { StatePanel } from "@/components/feedback/state-panel";
@@ -25,7 +26,9 @@ import { Button } from "@/components/ui/button";
 
 /**
  * `mode` selects the view.
- *  - "map": FilterBar + map. Filters client-side over the slim `MapFacility[]`.
+ *  - "map": FilterBar + map over `MapPoint[]` (id, type, status, state, coords).
+ *    Status/state/type filter locally; operator and minimum MW resolve through
+ *    `/api/map/match` (see use-matched-ids.ts) because the client holds no names.
  *  - "table": renders one server-provided page of rows (lib/table-query.ts).
  *    Filter/sort/search changes write the URL with `shallow: false`, so the
  *    server re-queries; no filtering happens on the client.
@@ -43,7 +46,7 @@ interface TableModeProps {
   q: string;
 }
 
-type ExplorerProps = { mode: "map"; facilities: MapFacility[] } | TableModeProps;
+type ExplorerProps = { mode: "map"; points: MapPoint[]; options: FilterOptions } | TableModeProps;
 
 const BASE_NUMBER = (n: number) => n.toLocaleString("en-US");
 
@@ -69,20 +72,21 @@ export function Explorer(props: ExplorerProps) {
   const setMinMw = (v: number) => setParams({ minMw: v, page: null });
   const setQ = (v: string) => setParams({ q: v, page: null });
 
-  const mapFacilities = props.mode === "map" ? props.facilities : null;
-  const mapRowsOrNull = useMemo(
-    () =>
-      mapFacilities
-        ? filterFacilities(mapFacilities, {
-            statuses: status,
-            states: state,
-            operators: operator,
-            facilityTypes: facilityType,
-            minMw,
-          })
-        : null,
-    [mapFacilities, status, state, operator, facilityType, minMw]
-  );
+  const mapPoints = props.mode === "map" ? props.points : null;
+  const match = useMatchedIds(mode === "map" ? operator : [], mode === "map" ? minMw : 0);
+  const matchedIds = match.ids;
+  // First lookup for a deep link: nothing to show yet, and unfiltered would be wrong.
+  const applying = match.pending && matchedIds === null;
+  const mapRowsOrNull = useMemo(() => {
+    if (!mapPoints) return null;
+    const local = filterMapPoints(mapPoints, {
+      statuses: status,
+      states: state,
+      facilityTypes: facilityType,
+    });
+    if (applying) return [];
+    return matchedIds ? local.filter((p) => matchedIds.has(p.id)) : local;
+  }, [mapPoints, status, state, facilityType, matchedIds, applying]);
 
   // m13: the map-mode shell below subtracts a hardcoded header height
   // (`4rem` = 64px) from the viewport height, but the real sticky header
@@ -130,7 +134,7 @@ export function Explorer(props: ExplorerProps) {
   // flexes to fill the remaining viewport height below the site header (4 rem).
   // -------------------------------------------------------------------------
   if (props.mode === "map") {
-    const { facilities } = props;
+    const { points, options } = props;
     const mapRows = mapRowsOrNull ?? [];
     return (
       <div
@@ -139,13 +143,15 @@ export function Explorer(props: ExplorerProps) {
         style={mapShellHeight !== null ? { height: mapShellHeight } : undefined}
       >
         <MapFilterSubheader
-          facilities={facilities}
+          options={options}
           values={{ status, state, operator, facilityType, minMw }}
           setters={{ setStatus, setState, setOperator, setFacilityType, setMinMw }}
           filteredCount={mapRows.length}
-          totalCount={facilities.length}
+          totalCount={points.length}
+          applying={applying}
+          lookupFailed={match.error}
         />
-        {mapRows.length === 0 ? (
+        {mapRows.length === 0 && !applying ? (
           <div className="flex flex-1 items-center justify-center">
             <StatePanel
               titleAs="p"
@@ -175,7 +181,7 @@ export function Explorer(props: ExplorerProps) {
               <FacilityMap
                 facilities={mapRows}
                 heightClass="h-full"
-                surveyOnMount={mapRows.length !== facilities.length}
+                surveyOnMount={mapRows.length !== points.length}
                 // Same "is this a real subset of the full dataset" question
                 // surveyOnMount already answers above — isFiltered feeds the
                 // SAME expression to the ongoing (post-mount) survey-pass
@@ -184,7 +190,7 @@ export function Explorer(props: ExplorerProps) {
                 // the full AK-to-HI dataset. See the isFiltered doc comment
                 // on FacilityMapProps (components/map/facility-map.tsx) for
                 // the full rationale and its known limitation.
-                isFiltered={mapRows.length !== facilities.length}
+                isFiltered={mapRows.length !== points.length}
               />
             </section>
           </div>

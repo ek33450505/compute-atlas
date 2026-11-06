@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+import { toMapPoint } from "@/lib/facility-slim";
 import { getStates, getFacilitiesByStateCached } from "@/lib/data";
 import { stateNameFromCode, stateSlugFromCode, stateCodeFromSlug } from "@/lib/us-states";
 import { siteConfig } from "@/lib/site";
@@ -88,7 +89,7 @@ export default async function EmbedStatePage({
           className="relative min-h-0 flex-1"
         >
           <FacilityMap
-            facilities={facilities}
+            facilities={facilities.map(toMapPoint)}
             heightClass="h-full"
             chrome={false}
             surveyOnMount

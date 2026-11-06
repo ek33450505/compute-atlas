@@ -1,6 +1,6 @@
 import { getStatusMeta } from "@/lib/status";
 import { getFacilityTypeMeta } from "@/lib/facility-type";
-import type { MapFacility } from "@/lib/facility-slim";
+import type { MapPoint } from "@/lib/facility-slim";
 
 /**
  * Initial view centered on the contiguous United States.
@@ -57,35 +57,18 @@ export const SATELLITE_ATTRIBUTION = "Esri, Vantor, Earthstar Geographics";
 export const SATELLITE_MAX_ZOOM = 19;
 
 /**
- * Builds a descriptive accessible label for a facility map marker.
- * Format: "Name, Operator — City, ST — Type — Status — N MW [operational|planned]"
- * Capacity segment is omitted when capacityMw is not present.
+ * Builds the accessible label for a facility map marker. The client holds only
+ * coordinates, status and type (no name), so the label is
+ * "Type — Status — ST".
  *
  * @example
- * buildMarkerLabel(colossus)
- * // "Colossus, xAI — Memphis, TN — Data center — Operational — 150 MW operational"
+ * buildMarkerLabel(point)
+ * // "Data center — Operational — TN"
  */
-export function buildMarkerLabel(f: MapFacility): string {
+export function buildMarkerLabel(f: MapPoint): string {
   const meta = getStatusMeta(f.status);
   const typeLabel = getFacilityTypeMeta(f.facilityType).label;
-  const cityState = f.location.city
-    ? `${f.location.city}, ${f.location.state}`
-    : f.location.state;
-
-  const parts: string[] = [
-    `${f.name}, ${f.operator}`,
-    cityState,
-    typeLabel,
-    meta.label,
-  ];
-
-  if (f.capacityMw?.operational !== undefined) {
-    parts.push(`${f.capacityMw.operational} MW operational`);
-  } else if (f.capacityMw?.planned !== undefined) {
-    parts.push(`${f.capacityMw.planned} MW planned`);
-  }
-
-  return parts.join(" — ");
+  return [typeLabel, meta.label, f.location.state].join(" — ");
 }
 
 /** Geographic bounding box computed from a set of facilities, for camera framing. */
@@ -102,7 +85,7 @@ export interface FacilitiesBounds {
  * instead of fitting a degenerate box.
  */
 export function computeFacilitiesBounds(
-  facilities: Pick<MapFacility, "location">[]
+  facilities: Pick<MapPoint, "location">[]
 ): FacilitiesBounds | null {
   if (facilities.length === 0) return null;
 

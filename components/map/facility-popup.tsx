@@ -4,15 +4,24 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Droplets, ExternalLink, X, Zap } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
-import {
-  formatNearestTransmission,
-  formatNearestWater,
-  getSitingContext,
-} from "@/lib/siting-context";
-import type { MapFacility } from "@/lib/facility-slim";
+import { formatNearestTransmission, formatNearestWater } from "@/lib/siting-format";
+import type { PopupSummary } from "@/lib/facility-slim";
+
+// Module-level so reopening a pin never refetches. Summaries are immutable
+// for the page's lifetime (the endpoint is edge-cached for an hour anyway).
+const summaryCache = new Map<string, PopupSummary>();
+
+/** Test hook: the cache outlives any one component instance by design. */
+export function __clearFacilityPopupCache(): void {
+  summaryCache.clear();
+}
+
+type FetchState =
+  | { id: string; summary: PopupSummary; failed?: undefined }
+  | { id: string; failed: true; summary?: undefined };
 
 interface FacilityPopupProps {
-  facility: MapFacility;
+  id: string;
   onClose: () => void;
   /**
    * When true, the "View details →" link opens the facility page in a new
@@ -52,13 +61,46 @@ interface FacilityPopupProps {
  * - When `linksOpenInNewTab` is set, "View details →" also carries "opens in
  *   new tab" in its aria-label, same convention as the source link below it
  * - Close button returns focus to the triggering marker (managed by FacilityMap parent)
+ * - Loaded content is deliberately NOT announced: focus stays on Close, and the
+ *   body carries `aria-busy` while loading. Only the failure line is a live
+ *   region (`role="status"`), since it explains why nothing appeared.
  */
 export function FacilityPopup({
-  facility,
+  id,
   onClose,
   linksOpenInNewTab = false,
 }: FacilityPopupProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  const [fetched, setFetched] = useState<FetchState | null>(null);
+  const summary: PopupSummary | undefined =
+    summaryCache.get(id) ?? (fetched?.id === id ? fetched.summary : undefined);
+  const failed = !summary && fetched?.id === id && fetched.failed === true;
+  const loading = !summary && !failed;
+
+  useEffect(() => {
+    if (summaryCache.has(id)) return;
+    const controller = new AbortController();
+    fetch(`/api/map/facility/${encodeURIComponent(id)}`, {
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`popup summary ${res.status}`);
+        return res.json() as Promise<PopupSummary>;
+      })
+      .then((body) => {
+        // An aborted request (id changed or unmounted) must not write state
+        // or poison the cache.
+        if (controller.signal.aborted) return;
+        summaryCache.set(id, body);
+        setFetched({ id, summary: body });
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setFetched({ id, failed: true });
+      });
+    return () => controller.abort();
+  }, [id]);
 
   // Move focus to the close button when the popup opens
   useEffect(() => {
@@ -150,15 +192,18 @@ export function FacilityPopup({
       window.removeEventListener("resize", recompute);
       window.visualViewport?.removeEventListener("resize", recompute);
     };
-  }, [facility.id]);
+  }, [id, loading]);
 
-  const { location, capacityMw, sources, confidence } = facility;
-  const firstSource: MapFacility["sources"][number] | undefined = sources[0];
-  const cityState = location.city
-    ? `${location.city}, ${location.state}`
-    : location.state;
-  const sitingContext = getSitingContext(facility.id);
-  const { nearestWater, nearestTransmission } = sitingContext ?? {};
+  const firstSource = summary?.source;
+  const cityState = summary
+    ? summary.city
+      ? `${summary.city}, ${summary.state}`
+      : summary.state
+    : undefined;
+  const { nearestWater, nearestTransmission } = summary ?? {};
+  const capacityMw = summary?.capacityMw;
+  const name = summary?.name;
+  const status = summary?.status;
 
   return (
     <div className="p-1 min-w-[220px] max-w-[min(280px,calc(100vw-5rem))]">
@@ -166,7 +211,9 @@ export function FacilityPopup({
           Close stays visible and reachable no matter how tall the rest of
           the card gets. */}
       <div className="flex items-center justify-between gap-2 mb-1">
-        <h3 className="text-sm font-semibold leading-tight">{facility.name}</h3>
+        <h3 className="text-sm font-semibold leading-tight">
+          {name ?? (failed ? "Facility details" : "Loading…")}
+        </h3>
         <button
           ref={closeButtonRef}
           type="button"
@@ -184,25 +231,40 @@ export function FacilityPopup({
           space left inside the map before its own bottom edge. */}
       <div
         ref={bodyRef}
+        aria-busy={loading}
         style={
           bodyMaxHeight !== undefined ? { maxHeight: `${bodyMaxHeight}px` } : undefined
         }
         className="max-h-[60vh] overflow-y-auto overscroll-contain"
       >
+        {/* Always mounted so assistive tech registers the live region before
+            its text changes; a region that mounts together with its text is
+            often not announced. Never display:none (that drops it from the
+            accessibility tree); empty it is 0px tall, and the margin applies
+            only once it has text. */}
+        <p
+          role="status"
+          className="text-xs text-muted-foreground [&:not(:empty)]:mb-2"
+        >
+          {failed ? "Details unavailable." : ""}
+        </p>
+
         {/* Operator */}
-        <p className="text-xs text-foreground mb-2">{facility.operator}</p>
+        {summary && <p className="text-xs text-foreground mb-2">{summary.operator}</p>}
 
         {/* Status badge */}
-        <div className="mb-2">
-          <StatusBadge status={facility.status} />
-        </div>
+        {status && (
+          <div className="mb-2">
+            <StatusBadge status={status} />
+          </div>
+        )}
 
         {/* Location */}
-        <p className="text-xs text-foreground mb-1">{cityState}</p>
-        {location.precision === "representative_multi_site" && (
+        {cityState && <p className="text-xs text-foreground mb-1">{cityState}</p>}
+        {summary?.precision === "representative_multi_site" && (
           <p className="text-xs italic text-muted-foreground mb-1">
             Distributed operation — pin is illustrative
-            {facility.location.multiSite && ` (${facility.location.multiSite.states.join(", ")})`}
+            {summary.multiSiteStates && ` (${summary.multiSiteStates.join(", ")})`}
           </p>
         )}
 
@@ -244,34 +306,33 @@ export function FacilityPopup({
 
         {/* Type-specific detail: AI classification for data centers, mining/environmental
             signals for crypto-mining facilities. */}
-        {facility.facilityType === "data_center" ? (
-          <p className="text-xs text-foreground mb-2 capitalize">
-            {facility.aiClassification
-              ? `${facility.aiClassification.replace("_", " ")} · ${confidence}`
-              : confidence}
-          </p>
-        ) : facility.facilityType === "crypto_mining" ? (
-          <div className="text-xs text-foreground mb-2 space-y-0.5">
-            {facility.mining?.hashRateThPerS !== undefined && (
-              <p className="tabular-nums">
-                {facility.mining.hashRateThPerS} TH/s
-              </p>
-            )}
-            {facility.mining?.powerArrangement && (
-              <p className="capitalize">
-                {facility.mining.powerArrangement.replace(/_/g, " ")}
-              </p>
-            )}
-            {facility.environmental?.carbonIntensityProxy !== undefined && (
-              <p className="tabular-nums">
-                Carbon proxy: {facility.environmental.carbonIntensityProxy}
-              </p>
-            )}
-            <p className="capitalize">{confidence}</p>
-          </div>
-        ) : (
-          <p className="text-xs text-foreground mb-2 capitalize">{confidence}</p>
-        )}
+        {summary &&
+          (summary.facilityType === "data_center" ? (
+            <p className="text-xs text-foreground mb-2 capitalize">
+              {summary.aiClassification
+                ? `${summary.aiClassification.replace("_", " ")} · ${summary.confidence}`
+                : summary.confidence}
+            </p>
+          ) : summary.facilityType === "crypto_mining" ? (
+            <div className="text-xs text-foreground mb-2 space-y-0.5">
+              {summary.mining?.hashRateThPerS !== undefined && (
+                <p className="tabular-nums">{summary.mining.hashRateThPerS} TH/s</p>
+              )}
+              {summary.mining?.powerArrangement && (
+                <p className="capitalize">
+                  {summary.mining.powerArrangement.replace(/_/g, " ")}
+                </p>
+              )}
+              {summary.carbonIntensityProxy !== undefined && (
+                <p className="tabular-nums">
+                  Carbon proxy: {summary.carbonIntensityProxy}
+                </p>
+              )}
+              <p className="capitalize">{summary.confidence}</p>
+            </div>
+          ) : (
+            <p className="text-xs text-foreground mb-2 capitalize">{summary.confidence}</p>
+          ))}
 
         {/* Footer links. Both stand alone as the entire content of their
             link — unlike the map attribution links in facility-map.tsx,
@@ -283,7 +344,7 @@ export function FacilityPopup({
             width was already >24px (79px / 55px measured). */}
         <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
           <Link
-            href={`/facilities/${facility.id}`}
+            href={`/facilities/${id}`}
             target={linksOpenInNewTab ? "_blank" : undefined}
             rel={linksOpenInNewTab ? "noopener" : undefined}
             aria-label={linksOpenInNewTab ? "View details (opens in new tab)" : undefined}
