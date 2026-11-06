@@ -16,7 +16,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LEDGER_RELATIVE_PATH, parseArgs, run } from "./update-nhd-debt";
+import { fakeStore } from "./fake-keyed-store";
+import { LEDGER_DB_KEY, LEDGER_RELATIVE_PATH, parseArgs, run, runWithLedgerDb } from "./update-nhd-debt";
 
 // The workflows (neon-sync.yml, nhd-backfill.yml) parse this script's stdout
 // with `^[0-9]+$` and rely on it writing the ledger only when the count moves,
@@ -249,6 +250,27 @@ describe("CLI process", () => {
     expect(readFileSync(file, "utf8")).toBe("{not json");
   });
 
+  it("--ledger-db without DATABASE_URL exits 1 and leaves the file ledger untouched", () => {
+    const file = writeLedger(root, ledgerText(7, "2026-01-01", "old"));
+    const before = statSync(file).mtimeMs;
+    mkdirSync(path.join(root, "scripts"));
+    mkdirSync(path.join(root, "lib"));
+    copyFileSync(path.join(SCRIPTS_DIR, "update-nhd-debt.ts"), path.join(root, "scripts/update-nhd-debt.ts"));
+    copyFileSync(path.join(SCRIPTS_DIR, "is-entrypoint.ts"), path.join(root, "scripts/is-entrypoint.ts"));
+    copyFileSync(path.join(REPO_ROOT, "lib/nhd-debt.ts"), path.join(root, "lib/nhd-debt.ts"));
+    const env = { ...process.env };
+    delete env.DATABASE_URL;
+    const result = spawnSync(
+      path.join(REPO_ROOT, "node_modules/.bin/tsx"),
+      [path.join(root, "scripts/update-nhd-debt.ts"), "--ledger-db"],
+      { cwd: root, encoding: "utf8", env },
+    );
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("--ledger-db needs DATABASE_URL");
+    expect(readFileSync(file, "utf8")).toBe(ledgerText(7, "2026-01-01", "old"));
+    expect(statSync(file).mtimeMs).toBe(before);
+  });
+
   it("a write run stamps today's UTC date from the real clock", () => {
     const file = writeLedger(root, ledgerText(7, "2026-01-01", "old"));
     // Bracketed by the date before and after the spawn so a run straddling UTC
@@ -261,5 +283,66 @@ describe("CLI process", () => {
     expect(written.ceiling).toBe(DEBT);
     expect(written.note).toBe("end to end");
     expect([before, after]).toContain(written.asOf);
+  });
+});
+
+describe("--ledger-db (opt-in Neon maintenance_ledger)", () => {
+  it("parses the flag, and rejects it with --count", () => {
+    expect(parseArgs(["--ledger-db"])).toEqual({ countOnly: false, ledgerDb: true });
+    expect(() => parseArgs(["--count", "--ledger-db"])).toThrow("--count writes nothing");
+  });
+
+  it("round trips: writes the row when missing, nothing when unchanged, rewrites when it moves", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    const store = fakeStore();
+
+    await runWithLedgerDb(["--ledger-db", "--note", "first"], root, TODAY, store);
+    expect(store.rows.get(LEDGER_DB_KEY)).toEqual({ ceiling: DEBT, asOf: TODAY, note: "first" });
+    // the file ledger is still maintained, with the same value
+    expect(JSON.parse(readFileSync(path.join(root, LEDGER_RELATIVE_PATH), "utf8"))).toEqual(
+      store.rows.get(LEDGER_DB_KEY),
+    );
+
+    await runWithLedgerDb(["--ledger-db", "--note", "second"], root, "2031-02-02", store);
+    expect(store.upsertCalls).toHaveLength(1); // unchanged count: no second write
+    expect(store.rows.get(LEDGER_DB_KEY)).toMatchObject({ asOf: TODAY, note: "first" });
+
+    store.rows.set(LEDGER_DB_KEY, { ceiling: 9, asOf: "2030-01-01", note: "old" });
+    await runWithLedgerDb(["--ledger-db", "--note", "moved"], root, "2031-03-03", store);
+    expect(store.rows.get(LEDGER_DB_KEY)).toEqual({ ceiling: DEBT, asOf: "2031-03-03", note: "moved" });
+  });
+
+  it("a malformed Neon row is reported, never overwritten", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    const store = fakeStore({ [LEDGER_DB_KEY]: { ceiling: "x" } });
+    const file = writeLedger(root, ledgerText(7, "2026-01-01", "old"));
+    await expect(runWithLedgerDb(["--ledger-db"], root, TODAY, store)).rejects.toThrow(/malformed/);
+    expect(store.upsertCalls).toHaveLength(0);
+    expect(readFileSync(file, "utf8")).toBe(ledgerText(7, "2026-01-01", "old")); // file untouched too
+  });
+
+  it("a Neon read failure aborts before the file ledger is written", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    const file = writeLedger(root, ledgerText(7, "2026-01-01", "old"));
+    const store = {
+      readAll: async () => {
+        throw new Error("neon down");
+      },
+      upsert: vi.fn(),
+    };
+    await expect(runWithLedgerDb(["--ledger-db"], root, TODAY, store)).rejects.toThrow("neon down");
+    expect(readFileSync(file, "utf8")).toBe(ledgerText(7, "2026-01-01", "old"));
+    expect(statSync(file).mtimeMs).toBe(OLD_MTIME.getTime());
+    expect(store.upsert).not.toHaveBeenCalled();
+  });
+
+  it("the default run never touches a store", () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    // `run` takes no store; if it ever grew a hidden path to one this spy would see it.
+    const store = fakeStore();
+    const reads = vi.spyOn(store, "readAll");
+    run([], root, TODAY);
+    expect(reads).not.toHaveBeenCalled();
+    expect(store.upsertCalls).toEqual([]);
   });
 });
