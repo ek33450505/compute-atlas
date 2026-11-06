@@ -211,6 +211,19 @@ describe("Neon operator-ownership loaders", () => {
     expect(await loadAllOperatorOwnershipUncached(fakeSource())).toEqual(FIXTURE);
   });
 
+  it("whole table: rows arrive sorted by operator (code-unit), whatever order Neon returns", async () => {
+    const reversed = [...FIXTURE].sort((a, b) => (a.operator < b.operator ? 1 : -1));
+    const rows = await loadAllOperatorOwnershipUncached(fakeSource({ all: async () => reversed }));
+    const names = rows.map((o) => o.operator);
+    expect(names).toEqual([...names].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)));
+    expect(names).toHaveLength(FIXTURE.length);
+  });
+
+  it("the JSON fallback snapshot is sorted by operator too", () => {
+    const names = operatorOwnership.map((o) => o.operator);
+    expect(names).toEqual([...names].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)));
+  });
+
   it("whole table: throw falls back to the snapshot", async () => {
     expect(await loadAllOperatorOwnershipUncached(fakeSource({ all: failing }))).toBe(operatorOwnership);
   });

@@ -82,3 +82,6 @@ wave-*/
 
 # Candidate files written by the data pipeline before review
 *.next.json
+
+# Atomic-export temp files (scripts/export.ts)
+data/*.tmp-*

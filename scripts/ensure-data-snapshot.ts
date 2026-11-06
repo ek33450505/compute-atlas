@@ -52,7 +52,7 @@ export interface SnapshotDeps {
   env: Record<string, string | undefined>;
   fs: SnapshotFs;
   /** Runs the Neon export (scripts/export.ts). Rejects on failure. */
-  exportFacilities: () => Promise<unknown>;
+  exportSnapshot: () => Promise<unknown>;
   log: (msg: string) => void;
   warn: (msg: string) => void;
 }
@@ -107,7 +107,7 @@ export async function ensureDataSnapshot(
 ): Promise<number> {
   const tryExport = async (): Promise<boolean> => {
     try {
-      await deps.exportFacilities();
+      await deps.exportSnapshot();
       deps.log("ensure-data-snapshot: exported snapshot from Neon");
       return true;
     } catch (err) {
@@ -125,7 +125,17 @@ export async function ensureDataSnapshot(
   }
 
   if (deps.env.VERCEL === "1") {
-    if (await tryExport()) return 0;
+    if (await tryExport()) {
+      // The export must have produced all four files. Vacuous while the data
+      // files are tracked in git (they exist regardless); it becomes meaningful
+      // when PR C untracks them.
+      const missing = SNAPSHOT_FILES.filter((f) => !deps.fs.existsSync(path.join(deps.root, f.snapshot)));
+      if (missing.length > 0) {
+        deps.warn(`ensure-data-snapshot: export reported success but ${missing.map((f) => f.snapshot).join(", ")} missing`);
+        return 1;
+      }
+      return 0;
+    }
     // Allowlist: only an explicit preview build may fall back. Production,
     // development, or an unset/unknown VERCEL_ENV all fail closed.
     if (deps.env.VERCEL_ENV !== "preview") {
@@ -163,9 +173,9 @@ async function main(): Promise<void> {
       root: process.cwd(),
       env: process.env,
       fs: { existsSync, copyFileSync, mkdirSync },
-      exportFacilities: async () => {
-        const { exportFacilities } = await import("./export");
-        return exportFacilities();
+      exportSnapshot: async () => {
+        const { exportSnapshot } = await import("./export");
+        return exportSnapshot();
       },
       log: (m) => console.log(m),
       warn: (m) => console.warn(m),

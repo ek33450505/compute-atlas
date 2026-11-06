@@ -95,12 +95,21 @@ export function groupByOwner(ownership: OperatorOwnership[]): Map<string, OwnedO
 }
 
 /**
+ * Plain code-unit order by operator, the order `scripts/export.ts` writes. A
+ * deterministic order keeps the first-wins owner-name slug map in lib/data.ts
+ * (`slugToPerson`, which iterates ownership order) stable across builds; it
+ * does not govern other names.
+ */
+export const byOperator = (a: OperatorOwnership, b: OperatorOwnership) =>
+  a.operator < b.operator ? -1 : a.operator > b.operator ? 1 : 0;
+
+/**
  * The validated bundled snapshot of data/operator-ownership.json. ONLY the
  * fallback for a Neon throw, an empty or invalid result, or a read that may not
  * use the database. Components and pages must not import it: they receive
  * ownership by props from a loader below.
  */
-export const operatorOwnership: OperatorOwnership[] = parseOperatorOwnership(ownershipRaw);
+export const operatorOwnership: OperatorOwnership[] = parseOperatorOwnership(ownershipRaw).sort(byOperator);
 
 /** Storage seam: the Neon implementation below, a fake in tests. */
 export interface OperatorOwnershipSource {
@@ -160,7 +169,7 @@ async function readAllOperatorOwnership(source: OperatorOwnershipSource): Promis
   if (rows.length === 0) throw new Error("operator_ownership table read returned no rows");
   const parsed = operatorOwnershipFileSchema.safeParse(rows);
   if (!parsed.success) throw new InvalidRowError();
-  return parsed.data;
+  return parsed.data.sort(byOperator);
 }
 
 const snapshotFor = (operator: string): OperatorOwnership[] => operatorOwnership.filter((o) => o.operator === operator);
