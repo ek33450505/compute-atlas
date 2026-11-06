@@ -50,7 +50,6 @@ export default async function TablePage() {
         <Explorer
           facilities={rows}
           mode="table"
-          snapshot={{ asOf: edition.asOf }}
         />
       </Suspense>
     </div>

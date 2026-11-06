@@ -48,12 +48,12 @@ const [FULL] = facilitiesSchema.parse([
 ]);
 
 describe("/table page", () => {
-  it("passes slim TableRow props, not full records, plus the snapshot key", async () => {
+  it("passes slim TableRow props, not full records", async () => {
     mockGetAllFacilities.mockResolvedValue([FULL]);
     render(await TablePage());
     const props = explorerProps.current!;
     expect(props.mode).toBe("table");
-    expect(props.snapshot).toEqual({ asOf: "2026-10-20T00:00:00.000Z" });
+    expect(props).not.toHaveProperty("snapshot");
     const rows = props.facilities as Array<Record<string, unknown>>;
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({ id: "acme-1", sourceCount: 2 });

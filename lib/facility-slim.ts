@@ -136,13 +136,13 @@ export function toMapFacility(f: Facility): MapFacility {
 /**
  * Row shape for the /table client tree (PERF-1 unit C).
  *
- * What the table columns, the filters, the CSV export and the toggle-mode map
- * read: no statusHistory, community, notes or full `sources` array. It extends
+ * What the table columns, the filters and the toggle-mode map read: no
+ * statusHistory, community, notes or full `sources` array. It extends
  * `MapFacility` (so the toggle map takes rows directly, which is why it also
  * carries precision, multiSite and the crypto fields the map popup shows) with
- * the CSV and table-only fields. Coordinates keep FULL
- * precision because the CSV exports them; `sources` still holds only the
- * first source and `sourceCount` carries the real length.
+ * the table-only fields. Coordinates keep FULL precision (a holdover from the
+ * removed /table CSV export; revisit with the /table lockdown); `sources`
+ * still holds only the first source and `sourceCount` carries the real length.
  */
 interface TableExtras {
   lastUpdated: Facility["lastUpdated"];

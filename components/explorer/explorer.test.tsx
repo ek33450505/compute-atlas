@@ -18,6 +18,12 @@ declare global {
   var __facilityMapProps: { isFiltered?: boolean; facilities?: unknown[] } | undefined;
 }
 
+// Table mode reads next/navigation's useSearchParams, which is null outside
+// the App Router; the real hook has no provider in jsdom.
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 vi.mock("@/components/map/facility-map-dynamic", () => ({
   FacilityMap: (props: { isFiltered?: boolean; facilities?: unknown[] }) => {
     globalThis.__facilityMapProps = props;
@@ -97,7 +103,6 @@ const facilityD: Facility = {
   lastUpdated: "2023-12-01",
 };
 
-const SNAPSHOT = { asOf: "2026-10-20T00:00:00.000Z" };
 const fixtures = [facilityA, facilityB, facilityC, facilityD].map(toTableRow);
 
 // ---------------------------------------------------------------------------
@@ -107,7 +112,7 @@ const fixtures = [facilityA, facilityB, facilityC, facilityD].map(toTableRow);
 function renderExplorer(searchParams?: Record<string, string>) {
   return render(
     <NuqsTestingAdapter searchParams={searchParams ?? { view: "table" }}>
-      <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
+      <Explorer facilities={fixtures} />
     </NuqsTestingAdapter>
   );
 }
@@ -134,22 +139,28 @@ describe("Explorer — table controls", () => {
     const many = Array.from({ length: 1234 }, (_, i) => ({ ...toTableRow(facilityA), id: `f-${i}` }));
     render(
       <NuqsTestingAdapter searchParams={{ view: "table" }}>
-        <Explorer facilities={many} snapshot={SNAPSHOT} />
+        <Explorer facilities={many} />
       </NuqsTestingAdapter>
     );
     expect(screen.getByRole("status")).toHaveTextContent("Showing 1,234 of 1,234 facilities");
   });
 
-  it("renders the export message region after the Copy link button", () => {
-    const { container } = render(
+  it("table mode offers Copy link but no export controls", () => {
+    render(
       <NuqsTestingAdapter searchParams={{ view: "table" }}>
-        <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
+        <Explorer facilities={fixtures} mode="table" />
       </NuqsTestingAdapter>
     );
-    const copy = screen.getByRole("button", { name: "Copy link to this view" });
-    const region = container.querySelector('p[aria-live="polite"][aria-atomic="true"]');
-    expect(region).toBeInTheDocument();
-    expect(copy.compareDocumentPosition(region!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Copy link to this view" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /download|export|csv|json/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /download|export|csv|json/i })).not.toBeInTheDocument();
+  });
+
+  it("toggle mode (view=table) offers Copy link but no export controls", () => {
+    renderExplorer({ view: "table" });
+    expect(screen.getByRole("button", { name: "Copy link to this view" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /download|export|csv|json/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /download|export|csv|json/i })).not.toBeInTheDocument();
   });
 });
 
@@ -270,7 +281,7 @@ describe("Explorer — map empty state", () => {
   it("shows a StatePanel instead of the map when filters exclude everything", () => {
     render(
       <NuqsTestingAdapter searchParams={{ view: "map", status: "permitted" }}>
-        <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
+        <Explorer facilities={fixtures} />
       </NuqsTestingAdapter>
     );
 
@@ -326,7 +337,7 @@ describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={fixtures} snapshot={SNAPSHOT} />
+        <Explorer facilities={fixtures} />
       </NuqsTestingAdapter>
     );
 
