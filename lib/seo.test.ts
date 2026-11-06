@@ -256,6 +256,12 @@ describe("buildDatasetJsonLd", () => {
     expect(ld["@type"]).toBe("Dataset");
   });
 
+  it("carries no sameAs and no distribution", () => {
+    const ld = buildDatasetJsonLd();
+    expect(ld).not.toHaveProperty("sameAs");
+    expect(ld).not.toHaveProperty("distribution");
+  });
+
   it("carries no distribution entry while bulk access is paused", () => {
     const ld = buildDatasetJsonLd();
     expect(ld).not.toHaveProperty("distribution");

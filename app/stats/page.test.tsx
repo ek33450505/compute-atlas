@@ -18,7 +18,6 @@ const {
   mockGetCommunityReceptionCounts,
   mockGetEnergySourceCounts,
   mockGetAllFacilities,
-  mockGetDatasetEdition,
 } = vi.hoisted(() => ({
   mockGetStats: vi.fn(),
   mockGetStatusCounts: vi.fn(),
@@ -33,7 +32,6 @@ const {
   mockGetCommunityReceptionCounts: vi.fn(),
   mockGetEnergySourceCounts: vi.fn(),
   mockGetAllFacilities: vi.fn(),
-  mockGetDatasetEdition: vi.fn(),
 }));
 
 vi.mock("@/lib/data", () => ({
@@ -50,10 +48,6 @@ vi.mock("@/lib/data", () => ({
   getCommunityReceptionCounts: mockGetCommunityReceptionCounts,
   getEnergySourceCounts: mockGetEnergySourceCounts,
   getAllFacilities: mockGetAllFacilities,
-}));
-
-vi.mock("@/lib/dataset-edition", () => ({
-  getDatasetEdition: mockGetDatasetEdition,
 }));
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency in
@@ -153,12 +147,6 @@ beforeEach(() => {
     other: 1,
   });
   mockGetAllFacilities.mockReset().mockResolvedValue(ALL_FACILITIES);
-  mockGetDatasetEdition.mockReset().mockReturnValue({
-    version: "1.30.0",
-    asOf: "2026-09-01T16:58:23.496Z",
-    recordCount: 1309,
-    schemaVersion: 1,
-  });
 });
 
 describe("StatsPage — § Data coverage dimension count", () => {
@@ -296,44 +284,17 @@ describe("StatsPage — DC-aware states wording", () => {
   });
 });
 
-describe("StatsPage — dataset edition", () => {
-  it("surfaces the real edition version, asOf date, and record count from getDatasetEdition, not a hardcoded year", async () => {
+describe("StatsPage — no edition or export wording", () => {
+  it("shows the masthead eyebrow and a cite link without edition, snapshot or export text", async () => {
     const page = await StatsPage();
-    render(page);
+    const { container } = render(page);
 
-    // Two elements legitimately carry "Edition v1.30.0" — the masthead
-    // eyebrow and the summary line — so scope the eyebrow check to the
-    // header's uppercase eyebrow text specifically, distinct from the
-    // summary line asserted below. Regression coverage for the page
-    // previously hardcoding a literal "Edition 2026" in the eyebrow.
-    expect(
-      screen.getByText(/Coverage & completeness · Edition v1\.30\.0/)
-    ).toBeInTheDocument();
+    expect(screen.getByText("Coverage & completeness")).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/Edition v|snapshot as of|records at export/);
 
-    const summary = screen.getByText(/snapshot as of September 1, 2026/);
-    expect(summary.textContent).toContain("Edition v1.30.0");
-    expect(summary.textContent).toContain("1,309 records at export");
-
-    expect(screen.getByRole("link", { name: "how to cite" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "How to cite" })).toHaveAttribute(
       "href",
       "/data#cite-heading"
     );
-  });
-
-  it("reflects a different edition when the dataset is republished, rather than a frozen value", async () => {
-    mockGetDatasetEdition.mockReset().mockReturnValue({
-      version: "2.0.0",
-      asOf: "2027-01-15T00:00:00.000Z",
-      recordCount: 2000,
-      schemaVersion: 1,
-    });
-
-    const page = await StatsPage();
-    render(page);
-
-    expect(
-      screen.getByText(/Coverage & completeness · Edition v2\.0\.0/)
-    ).toBeInTheDocument();
-    expect(screen.getByText(/snapshot as of January 15, 2027/)).toBeInTheDocument();
   });
 });

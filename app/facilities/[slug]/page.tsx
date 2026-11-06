@@ -36,6 +36,7 @@ import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { PrintBriefButton } from "@/components/facility/print-brief-button";
 import { PrintGapSummary } from "@/components/facility/print-gap-summary";
 import { PrintProvenanceFooter } from "@/components/facility/print-provenance-footer";
+import { CiteThisFacility } from "@/components/facility/cite-this-facility";
 import { submissionNotifyEnabled } from "@/lib/submission-notify";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { CorrectionNotifyProvider } from "@/components/contribute/correction-notify-context";
@@ -478,6 +479,10 @@ export default async function FacilityPage({
           search snippet can quote the fact even though it can't click a
           button. See components/contribute/source-correction-note.tsx. */}
       <SourceCorrectionNote className="text-sm leading-relaxed text-muted-foreground" />
+
+      {/* Visible citation in the /data format; access date is filled
+          client-side (ISR-cached page). Print is covered by the footer. */}
+      <CiteThisFacility name={facility.name} url={canonicalUrl} />
 
       {/* Related facilities — same operator / same state. Renders its own
           leading Separator + heading when it has content, and nothing at

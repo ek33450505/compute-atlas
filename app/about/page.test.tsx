@@ -11,7 +11,6 @@ const {
   mockGetWaterStressExposure,
   mockGetCommunityReceptionCounts,
   mockGetFrictionTotal,
-  mockGetDatasetEdition,
 } = vi.hoisted(() => ({
   mockGetStats: vi.fn(),
   mockGetGenerationBuildoutStats: vi.fn(),
@@ -23,7 +22,6 @@ const {
     (counts: { contested?: number; opposed?: number; litigation?: number }) =>
       (counts.contested ?? 0) + (counts.opposed ?? 0) + (counts.litigation ?? 0)
   ),
-  mockGetDatasetEdition: vi.fn(),
 }));
 
 vi.mock("@/lib/data", () => ({
@@ -32,10 +30,6 @@ vi.mock("@/lib/data", () => ({
   getWaterStressExposure: mockGetWaterStressExposure,
   getCommunityReceptionCounts: mockGetCommunityReceptionCounts,
   getFrictionTotal: mockGetFrictionTotal,
-}));
-
-vi.mock("@/lib/dataset-edition", () => ({
-  getDatasetEdition: mockGetDatasetEdition,
 }));
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency
@@ -95,12 +89,6 @@ function mockNonZero() {
     opposed: 222,
     litigation: 77,
     unknown: 10,
-  });
-  mockGetDatasetEdition.mockReset().mockReturnValue({
-    version: "1.30.0",
-    asOf: "2026-09-01T16:58:23.496Z",
-    recordCount: 1659,
-    schemaVersion: 1,
   });
 }
 
@@ -172,8 +160,8 @@ describe("AboutPage — § The stance", () => {
     // WCAG 2.5.3 Label in Name: no aria-label overrides the visible text.
     for (const [visible, name] of [
       [
-        "The source code and data are public.",
-        "The source code and data are public. View them on GitHub (opens in new tab)",
+        "The source code is public.",
+        "The source code is public. View it on GitHub (opens in new tab)",
       ],
       [
         "https://github.com/ek33450505/compute-atlas",
@@ -243,12 +231,6 @@ describe("AboutPage — § The stance", () => {
       opposed: 0,
       litigation: 0,
       unknown: 0,
-    });
-    mockGetDatasetEdition.mockReset().mockReturnValue({
-      version: "0.0.0",
-      asOf: "2026-09-01T16:58:23.496Z",
-      recordCount: 0,
-      schemaVersion: 1,
     });
 
     const page = await AboutPage();

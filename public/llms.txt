@@ -1,6 +1,6 @@
 # Compute Atlas
 
-> Compute Atlas is an open, source-cited map of the U.S. compute buildout —
+> Compute Atlas is a source-cited map of the U.S. compute buildout —
 > traditional and hyperscale data centers, AI-specific facilities,
 > crypto-mining operations, and the dedicated power generation built to supply
 > them — from proposed and permitted to under construction and operational. It
@@ -32,10 +32,9 @@ Copy-paste line for a page, article, answer, or dataset derived from this one:
     Data from Compute Atlas by Edward Kubiak (https://www.compute-atlas.com),
     licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
 
-Link https://www.compute-atlas.com, not the GitHub repository; the repository
-is the source mirror. Say if you changed the data, for example by filtering or
-joining it. Compute Atlas is non-partisan and takes no position on any
-facility, so keep your own analysis or commentary distinct from its records.
+Link https://www.compute-atlas.com. Say if you changed the data, for example by
+filtering or joining it. Compute Atlas is non-partisan and takes no position on
+any facility, so keep your own analysis or commentary distinct from its records.
 
 ## How to cite
 

@@ -52,7 +52,7 @@ describe("OpenRecord", () => {
     expect(screen.getByText("Moderation")).toBeInTheDocument();
     expect(screen.getByText("Human-gated")).toBeInTheDocument();
     expect(screen.getByText("License")).toBeInTheDocument();
-    expect(screen.getByText("Open data")).toBeInTheDocument();
+    expect(screen.getByText("CC BY 4.0")).toBeInTheDocument();
     expect(screen.getByText("Citation")).toBeInTheDocument();
     expect(screen.getByText("Cite any record")).toBeInTheDocument();
   });
@@ -146,10 +146,10 @@ describe("OpenRecord", () => {
       <OpenRecord sources={100} recentActivity={[]} className="mt-12 pt-10" />
     );
 
-    const section = screen.getByRole("region", { name: "A living, open record" });
+    const section = screen.getByRole("region", { name: "A living record" });
     expect(section).toHaveClass("mt-12", "pt-10");
     expect(
-      screen.getByRole("heading", { level: 2, name: "A living, open record" })
+      screen.getByRole("heading", { level: 2, name: "A living record" })
     ).toBeInTheDocument();
   });
 });

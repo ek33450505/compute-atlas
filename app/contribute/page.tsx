@@ -106,7 +106,7 @@ export default function ContributePage() {
           Support the atlas
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Compute Atlas is free, open, and ad-free. It runs on a small monthly
+          Compute Atlas is free, independent, and ad-free. It runs on a small monthly
           infrastructure budget &mdash; a database and hosting &mdash; that I
           cover myself. If it&rsquo;s useful to you, a one-off tip helps keep it
           independent and growing. Either way, every figure stays traceable to a

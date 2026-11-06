@@ -48,8 +48,8 @@ export function OpenRecord({
     },
     {
       label: "License",
-      value: "Open data",
-      sub: "Code under MIT, data under CC BY 4.0.",
+      value: "CC BY 4.0",
+      sub: "Free to reuse with attribution. Code under MIT.",
     },
     {
       label: "Citation",
@@ -82,11 +82,11 @@ export function OpenRecord({
             kicker="How this is kept"
             id="record-heading"
             size="lg"
-            title="A living, open record"
+            title="A living record"
           />
         </div>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Compute Atlas is built and corrected in the open. Every figure traces
+          Compute Atlas is built and corrected in public. Every figure traces
           to a public source, nothing goes live without a human review, and
           every record can be cited.
         </p>

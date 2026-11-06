@@ -1,110 +1,31 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-import { HeroProvenance, formatEditionDate } from "./hero-provenance";
+import { HeroProvenance } from "./hero-provenance";
 
 const BASE_PROPS = {
   sites: 1929,
   stateCodes: ["CA", "TX", "VA", "DC"],
   sources: 8421,
-  editionAsOf: "2026-09-15T00:00:00.000Z",
   newThisQuarter: 0,
   cancelledThisQuarter: 0,
 };
 
-describe("formatEditionDate", () => {
-  it("formats an ISO timestamp as `15 Sep 2026`", () => {
-    expect(formatEditionDate("2026-09-15T00:00:00.000Z")).toBe("15 Sep 2026");
-  });
-
-  it("formats a date-only ISO string the same way", () => {
-    expect(formatEditionDate("2026-01-05")).toBe("5 Jan 2026");
-  });
-
-  // Determinism guard: the whole reason this helper exists instead of
-  // `toLocaleDateString()` is that a locale-less call resolves against the
-  // host default, which differs between the Node test runner and a browser.
-  //
-  // ⚠️ Pinning TZ is what makes this test able to fail. The mutation
-  // (getUTCDate/getUTCMonth/getUTCFullYear → getDate/getMonth/getFullYear)
-  // SURVIVES both stamps under TZ=UTC, which is what CI runs — so an
-  // unpinned assertion here is a permanent false green. The two directions
-  // are also asymmetric and each needs its own stamp:
-  //   · a midnight stamp rolls BACK to the 14th in zones behind UTC
-  //     (America/New_York, Pacific/Midway)
-  //   · a 23:00 stamp rolls FORWARD to the 16th in zones ahead of UTC
-  //     (Asia/Tokyo, Pacific/Kiritimati)
-  // Neither stamp alone catches both, hence the full TZ × stamp matrix.
-  describe("is stable across host timezones", () => {
-    const ORIGINAL_TZ = process.env.TZ;
-
-    afterEach(() => {
-      // Restore so no later test in this file (or suite) inherits a mutated
-      // timezone. `delete` is the correct restore when TZ was never set.
-      if (ORIGINAL_TZ === undefined) delete process.env.TZ;
-      else process.env.TZ = ORIGINAL_TZ;
-    });
-
-    // `expectedLocalDate` asserts the PRECONDITION: that Node actually
-    // re-read process.env.TZ. Without it, a runtime that stopped honouring
-    // a mid-process TZ change would silently degrade this whole matrix back
-    // into the UTC no-op it replaced — passing vacuously instead of failing.
-    const CASES = [
-      { tz: "UTC", stamp: "2026-09-15T00:00:00.000Z", expectedLocalDate: 15 },
-      { tz: "UTC", stamp: "2026-09-15T23:00:00.000Z", expectedLocalDate: 15 },
-      {
-        tz: "America/New_York",
-        stamp: "2026-09-15T00:00:00.000Z",
-        expectedLocalDate: 14,
-      },
-      {
-        tz: "America/New_York",
-        stamp: "2026-09-15T23:00:00.000Z",
-        expectedLocalDate: 15,
-      },
-      { tz: "Asia/Tokyo", stamp: "2026-09-15T00:00:00.000Z", expectedLocalDate: 15 },
-      { tz: "Asia/Tokyo", stamp: "2026-09-15T23:00:00.000Z", expectedLocalDate: 16 },
-    ] as const;
-
-    for (const { tz, stamp, expectedLocalDate } of CASES) {
-      it(`formats ${stamp} as \`15 Sep 2026\` under TZ=${tz}`, () => {
-        process.env.TZ = tz;
-
-        expect(new Date(stamp).getDate()).toBe(expectedLocalDate);
-        expect(formatEditionDate(stamp)).toBe("15 Sep 2026");
-      });
-    }
-  });
-
-  it("formats a year-end date without rolling the year", () => {
-    expect(formatEditionDate("2026-12-31T00:00:00.000Z")).toBe("31 Dec 2026");
-  });
-
-  it("passes an unparseable value through rather than rendering Invalid Date", () => {
-    // `getDatasetEdition()` falls back to the literal string "unknown" when
-    // facilities.meta.json is malformed.
-    expect(formatEditionDate("unknown")).toBe("unknown");
-  });
-});
-
 describe("HeroProvenance", () => {
-  it("renders the live counts, the jurisdiction phrase and the edition date", () => {
+  it("renders the live counts and the jurisdiction phrase", () => {
     render(<HeroProvenance {...BASE_PROPS} />);
 
     expect(
       screen.getByText(
-        "1,929 sites · 3 states and DC · 8,421 sources · edition 15 Sep 2026"
+        "1,929 sites · 3 states and DC · 8,421 sources"
       )
     ).toBeInTheDocument();
   });
 
-  it("labels the date `edition`, never `updated`", () => {
-    // edition.asOf describes the last published SNAPSHOT export, not the live
-    // dataset (Neon moves ahead of it between publishes). Calling it "updated"
-    // would assert the live data is only as fresh as the snapshot.
+  it("carries no edition date and never says `updated`", () => {
     const { container } = render(<HeroProvenance {...BASE_PROPS} />);
 
-    expect(container.textContent).toContain("edition");
+    expect(container.textContent).not.toContain("edition");
     expect(container.textContent).not.toContain("updated");
     expect(container.textContent).not.toContain("Updated");
   });
@@ -162,7 +83,7 @@ describe("HeroProvenance", () => {
 
     expect(
       screen.getByText(
-        "1,929 sites · 3 states and DC · 8,421 sources · edition 15 Sep 2026 · static map omits 9 in U.S. territories"
+        "1,929 sites · 3 states and DC · 8,421 sources · static map omits 9 in U.S. territories"
       )
     ).toBeInTheDocument();
   });
@@ -174,7 +95,7 @@ describe("HeroProvenance", () => {
 
     expect(
       screen.getByText(
-        "1,929 sites · 3 states and DC · 8,421 sources · edition 15 Sep 2026 · +41 new this quarter · static map omits 9 in U.S. territories"
+        "1,929 sites · 3 states and DC · 8,421 sources · +41 new this quarter · static map omits 9 in U.S. territories"
       )
     ).toBeInTheDocument();
   });

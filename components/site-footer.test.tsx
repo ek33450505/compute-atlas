@@ -1,18 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-// vi.mock calls are hoisted above imports by Vitest. Route the shared mock
-// through vi.hoisted() so its initialization is hoisted alongside the
-// vi.mock call itself, rather than relying on a plain top-level const (same
-// pattern as app/api/page.test.ts / app/stats/page.test.tsx).
-const { mockGetDatasetEdition } = vi.hoisted(() => ({
-  mockGetDatasetEdition: vi.fn(),
-}));
-
-vi.mock("@/lib/dataset-edition", () => ({
-  getDatasetEdition: mockGetDatasetEdition,
-}));
-
 import { SiteFooter } from "./site-footer";
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency
@@ -37,12 +25,6 @@ vi.mock("next/link", () => ({
 
 describe("SiteFooter", () => {
   beforeEach(() => {
-    mockGetDatasetEdition.mockReturnValue({
-      version: "1.30.0",
-      asOf: "2026-09-01T16:58:23.496Z",
-      recordCount: 1309,
-      schemaVersion: 1,
-    });
   });
 
   it("renders the wordmark/home link with an accessible name that includes its visible text", () => {
@@ -59,7 +41,7 @@ describe("SiteFooter", () => {
   it("renders the mission paragraph and independent-project attribution", () => {
     render(<SiteFooter />);
     expect(
-      screen.getByText(/An open, source-cited survey of the U\.S\. compute buildout/i)
+      screen.getByText(/A source-cited survey of the U\.S\. compute buildout/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/An independent project by/i)).toBeInTheDocument();
   });
@@ -169,9 +151,10 @@ describe("SiteFooter", () => {
     ).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
   });
 
-  it("renders the edition margin line with the real dataset version", () => {
+  it("renders the margin line without a dataset version", () => {
     render(<SiteFooter />);
-    expect(screen.getByText("Compute Atlas · v1.30.0")).toBeInTheDocument();
+    expect(screen.getAllByText("Compute Atlas")).toHaveLength(2);
+    expect(screen.queryByText(/v1\.30\.0/)).not.toBeInTheDocument();
     expect(
       screen.getByLabelText("Coordinates: 39.5 degrees north, 98.5 degrees west")
     ).toBeInTheDocument();

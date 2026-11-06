@@ -140,9 +140,9 @@ Nothing becomes a live facility automatically. Every candidate — from the
 research waves, the automated pipeline, or a public contributor — lands as a
 `pending` submission and is promoted only by an explicit human approval. Public
 intake is anonymous and moderated and can only ever stage a pending record;
-privileged writes require an admin credential. This "open output, curated intake"
-model is what keeps the dataset trustworthy: the data and code are fully open,
-but volume never bypasses review.
+privileged writes require an admin credential. This curated-intake model
+is what keeps the dataset trustworthy: every record is public and cited, but
+volume never bypasses review.
 
 ## Map data pipeline
 
@@ -191,8 +191,7 @@ The dataset has a deliberate bias against inventing detail.
 
 ## How to read a record's sources
 
-Every facility carries a `sources` array; each facility page (`/facilities/{id}`) lists it, and the [frozen JSON export](../data/facilities.json),
-the final open edition, holds it in full. Reading a record
+Every facility carries a `sources` array; each facility page (`/facilities/{id}`) lists it in full. Reading a record
 means reading its provenance:
 
 - **`sources[]`** — one entry per citation, each with a `url`, a human `label`, an
@@ -517,8 +516,8 @@ public intake and discovery staging drop it.
 
 Compute Atlas is a curated dataset, not a census. What follows is the honest
 shape of its coverage — the things worth knowing before using it for analysis.
-The figures are measured against the published export and carry an as-of date;
-recompute them from the export rather than quoting them indefinitely.
+The figures below carry the date they were measured; they change as records are
+added, so cite them with that date.
 
 **Collection began on 2026-07-05.** There is no cutoff date and nothing is
 excluded for being old: the earliest dated event in the set is 1999. But the

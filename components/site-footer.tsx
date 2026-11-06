@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
-import { getDatasetEdition } from "@/lib/dataset-edition";
 import { Wordmark } from "@/components/wordmark";
 
 const EXPLORE_LINKS = [
@@ -19,8 +18,6 @@ const EXTERNAL_NAV_LINK_CLASS =
   "inline-flex min-h-11 items-center gap-1 rounded-sm underline-offset-4 transition-colors motion-reduce:transition-none hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 export function SiteFooter() {
-  const edition = getDatasetEdition();
-
   return (
     <footer data-site-footer className="print:hidden relative border-t border-border">
       {/* Faint graticule wash — atlas margin texture */}
@@ -41,7 +38,7 @@ export function SiteFooter() {
               <Wordmark showTagline />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-              An open, source-cited survey of the U.S. compute buildout —
+              A source-cited survey of the U.S. compute buildout —
               data centers, AI campuses, crypto-mining, and the power built to
               feed them — and its civic footprint. Not affiliated with any
               corporation or government agency.
@@ -175,10 +172,10 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Edition margin line */}
+        {/* Margin line */}
         <div className="mt-8 flex flex-col gap-2 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            {`${siteConfig.name} · v${edition.version}`}
+            {siteConfig.name}
           </p>
           <p
             aria-label="Coordinates: 39.5 degrees north, 98.5 degrees west"

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { ArrowRight, Globe } from "lucide-react";
 
 import { datasetJsonLdString } from "@/lib/seo";
-import { getDatasetEdition } from "@/lib/dataset-edition";
 import {
   getStats,
   getNotableFacilities,
@@ -118,7 +117,6 @@ export async function generateMetadata(): Promise<Metadata> {
  * Server component: no client state needed.
  */
 export default async function HomePage() {
-  const edition = getDatasetEdition();
   const {
     count,
     states,
@@ -356,7 +354,7 @@ export default async function HomePage() {
             />
 
             <p className="font-mono text-xs uppercase tracking-widest text-primary">
-              {`United States · Edition v${edition.version} · 39.5°N 98.5°W`}
+              United States · 39.5°N 98.5°W
             </p>
 
             {/* Three display steps, largest first: this h1 (5xl→7xl), the
@@ -394,7 +392,6 @@ export default async function HomePage() {
               sites={count}
               stateCodes={stateCodes}
               sources={sourcesCited}
-              editionAsOf={edition.asOf}
               newThisQuarter={quarterly.newThisQuarter}
               cancelledThisQuarter={quarterly.cancelledThisQuarter}
               /* The plate's territory omission, stated in durable visible text.

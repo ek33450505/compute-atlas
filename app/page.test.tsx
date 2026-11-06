@@ -18,7 +18,6 @@ const {
   mockGetCounties,
   mockGetQuarterlyPipelineSummary,
   mockSelectRecordSpecimen,
-  mockGetDatasetEdition,
 } = vi.hoisted(() => ({
   mockGetStats: vi.fn(),
   mockGetNotableFacilities: vi.fn(),
@@ -34,7 +33,6 @@ const {
   mockGetCounties: vi.fn(),
   mockGetQuarterlyPipelineSummary: vi.fn(),
   mockSelectRecordSpecimen: vi.fn(),
-  mockGetDatasetEdition: vi.fn(),
 }));
 
 vi.mock("@/lib/data", () => ({
@@ -56,10 +54,6 @@ vi.mock("@/lib/data", () => ({
 
 // Pinned so the provenance line's date is deterministic — the real helper
 // reads data/facilities.meta.json, which every data wave moves.
-vi.mock("@/lib/dataset-edition", () => ({
-  getDatasetEdition: mockGetDatasetEdition,
-}));
-
 // MapLibre needs `window` at module scope and is pure decoration here — but
 // the `plate` prop is NOT decoration: it is the static dot map, rendered on
 // this page (the server component) precisely so the `"use client"` wrapper
@@ -134,12 +128,6 @@ const FACILITIES = [
 ];
 
 beforeEach(() => {
-  mockGetDatasetEdition.mockReturnValue({
-    version: "1.30.0",
-    asOf: "2026-09-15T00:00:00.000Z",
-    recordCount: 1900,
-    schemaVersion: 2,
-  });
   mockGetStats.mockResolvedValue({
     // Deliberately NOT the live figure the homepage copy was written against
     // (1,929). Every caption and stat that claims to read the live count has to
@@ -207,13 +195,13 @@ beforeEach(() => {
 });
 
 /**
- * The provenance rule, located by its edition date. Scoped rather than
+ * The provenance rule, located by its live site and state counts. Scoped rather than
  * asserted against the whole page: OpenRecord legitimately renders a
  * "Recently updated" heading, so a page-wide "updated" assertion would be
  * testing the wrong element.
  */
 function provenanceLine(): HTMLElement {
-  return screen.getByText(/edition 15 Sep 2026/);
+  return screen.getByText(/2,412 sites · 3 states and DC/);
 }
 
 /**
@@ -282,11 +270,11 @@ describe("HomePage hero", () => {
     expect(line).toHaveTextContent("7 sources");
   });
 
-  it("labels the snapshot date `edition`, never `updated`", async () => {
+  it("carries no edition date and never says `updated`", async () => {
     render(await HomePage());
 
     const line = provenanceLine();
-    expect(line.textContent).toContain("edition 15 Sep 2026");
+    expect(line.textContent).not.toContain("edition");
     expect(line.textContent).not.toContain("updated");
     expect(line.textContent).not.toContain("Updated");
     // edition.recordCount (1,900) is a snapshot figure and must never appear
@@ -1031,7 +1019,7 @@ describe("HomePage modern-platform hooks", () => {
     // derived from — see the wrapper test below for why they are split.
     const deferred: Array<[string, string]> = [
       ["Contested sites", "[--defer-h:520px]"],
-      ["A living, open record", "[--defer-h:700px]"],
+      ["A living record", "[--defer-h:700px]"],
     ];
     for (const [name, height] of deferred) {
       const section = screen.getByRole("heading", { name }).closest("section");
