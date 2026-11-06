@@ -42,6 +42,9 @@
  *                                             build-hero-plate.mjs run)
  *   public/data/pipeline-history.json       (per-quarter status composition — see
  *                                             build-pipeline-history.mjs; local, no network)
+ *
+ * Also written, NOT committed (gitignored):
+ *
  *   data/siting-context.next.json           (per-facility nearest-water/-transmission +
  *                                             waterStress/groundwaterDecline/aquifer stats;
  *                                             gitignored. Never writes data/siting-context.json:

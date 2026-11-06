@@ -679,9 +679,10 @@ NHD_OVERLAY_STEP="Discard overlay artifacts before PR"
 	[ -n "$outputs" ]
 	# Anti-vacuity: a reworded header marker or a truncated list yields a short
 	# (or empty) list that every check below would pass.
-	# 12 = entries in the "outputs below are committed:" list in scripts/build-map-data.mjs.
+	# 11 = entries in the "outputs below are committed:" list in scripts/build-map-data.mjs.
 	# Bump it when adding an output. This is a floor: removing an entry fails the test on purpose.
-	[ "$(grep -c . <<<"$outputs")" -ge 12 ]
+	# data/siting-context.next.json left the list in PR B because it is gitignored; siting now publishes via siting:apply.
+	[ "$(grep -c . <<<"$outputs")" -ge 11 ]
 	while IFS= read -r path; do
 		[ -n "$path" ] || continue
 		git -C "$REPO_ROOT" ls-files --error-unmatch -- "$path" >/dev/null 2>&1 || untracked="$untracked $path"

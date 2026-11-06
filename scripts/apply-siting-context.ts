@@ -15,9 +15,9 @@
  * An id absent from data/facilities.json counts as a retired orphan (`pruned`),
  * exactly as in the check. Nothing is ever deleted from Neon by this script.
  *
- * NOTE: nothing produces siting-context.next.json yet. A later PR makes
- * `build:mapdata` emit it (from "PR B" onward); until then the file is absent
- * and this script exits 1 saying so.
+ * NOTE: `build:mapdata` writes siting-context.next.json. `siting:refresh`
+ * chains build:mapdata -> check-siting-additive -> siting:apply (dry run). If
+ * the file is absent this script exits 1 saying so.
  *
  * The write is one transaction on the Neon driver (see `neonStoreFor`). Verify
  * runs AFTER it commits: it re-reads the table and exits non-zero unless every
