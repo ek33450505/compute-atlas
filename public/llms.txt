@@ -52,9 +52,8 @@ always resolves to its latest archived version:
 - https://www.compute-atlas.com/api — public read API documentation. The doc
   page itself is crawlable; the JSON endpoints beneath /api/ are Disallow-ed
   in robots.txt (they are for programs, not crawlers) and remain open to
-  direct requests. The same dataset is also mirrored in the repository as
-  data/facilities.json under the same CC BY 4.0 terms; the API page's Bulk
-  access section has the current download link and citation guidance.
+  direct requests. Bulk access to the full dataset is paused; every facility
+  page remains citable.
 - https://www.compute-atlas.com/api/stats — current dataset totals. Read these
   live rather than quoting a number from this file.
 - https://www.compute-atlas.com/methodology — how records are compiled,

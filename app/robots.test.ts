@@ -274,11 +274,12 @@ describe("robots", () => {
     const licence = rule.other?.["# Licence"];
     expect(typeof bulkData).toBe("string");
     expect(typeof licence).toBe("string");
-    // Points at the human download page and the raw single-file export, not
-    // at page-by-page HTML -- that's the entire point of this comment.
+    // Bulk access is paused: the line says so and points at /data, never at a
+    // bulk file URL.
+    expect(bulkData).toContain("paused");
     expect(bulkData).toContain(`${siteConfig.url}/data`);
-    expect(bulkData).toContain("raw.githubusercontent.com");
-    expect(bulkData).toContain("data/facilities.json");
+    expect(bulkData).not.toContain("raw.githubusercontent.com");
+    expect(bulkData).not.toContain("facilities.json");
     // States the licence condition plainly, without inventing a URL.
     expect(licence).toContain(DATASET_LICENSE_URL);
     expect(licence).toContain("CC-BY-4.0");

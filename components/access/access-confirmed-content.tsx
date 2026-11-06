@@ -82,7 +82,7 @@ export function AccessConfirmedContent() {
     );
   }
 
-  const curlExample = `curl -H "Authorization: Bearer ${token}" \\\n  "https://www.compute-atlas.com/api/facilities"`;
+  const curlExample = `curl -H "Authorization: Bearer ${token}" \\\n  "https://www.compute-atlas.com/api/facilities/<id>"`;
 
   return (
     <div

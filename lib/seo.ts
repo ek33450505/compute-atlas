@@ -207,11 +207,6 @@ export interface DatasetJsonLd {
   };
   measurementTechnique: string;
   variableMeasured: string[];
-  distribution: {
-    "@type": "DataDownload";
-    encodingFormat: string;
-    contentUrl: string;
-  }[];
   dateModified?: string;
 }
 
@@ -266,13 +261,6 @@ export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): Datase
       "subsidies",
       "jobs",
       "community reception",
-    ],
-    distribution: [
-      {
-        "@type": "DataDownload",
-        encodingFormat: "application/json",
-        contentUrl: `${siteConfig.url}/api/facilities`,
-      },
     ],
     ...(opts.dateModified ? { dateModified: opts.dateModified } : {}),
   };

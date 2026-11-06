@@ -21,17 +21,6 @@ const CODE = "rounded-sm bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-for
 /** Shared style for method+path table cells. */
 const METHOD_PATH = "font-mono text-sm text-foreground";
 
-/**
- * Base for raw.githubusercontent.com file URLs, derived from siteConfig's
- * canonical repo URL rather than hardcoded a second time — the "Bulk access"
- * and "How to cite" sections both build URLs from this so the owner/repo
- * segment can't drift between them.
- */
-const RAW_BASE = siteConfig.repoUrl.replace(
-  "https://github.com/",
-  "https://raw.githubusercontent.com/"
-);
-
 interface Endpoint {
   method: string;
   path: string;
@@ -43,7 +32,7 @@ const READ_ENDPOINTS: Endpoint[] = [
     method: "GET",
     path: "/api/facilities",
     description:
-      "All facilities. Optional filters: state, type, operator, status, q — each accepts a comma-separated list or repeated params; unrecognized tokens are ignored rather than rejected. Returns { count, facilities }.",
+      "Paused. The bulk facility list is not available to anonymous callers while access changes (403). Individual records remain available at /api/facilities/{id}; see /data for the notice.",
   },
   {
     method: "GET",
@@ -54,7 +43,7 @@ const READ_ENDPOINTS: Endpoint[] = [
     method: "GET",
     path: "/api/search",
     description:
-      "Full-text search over facility names and operators: { count, facilities, query }. Query parameter q is capped at 200 characters. Optional shape=palette returns a lean projection per facility: { id, name, operator, location: { state, city?, county?, street? } }; any other value returns full records.",
+      "Full-text search over facility names and operators: { count, facilities, query }. Query parameter q is capped at 200 characters. Publicly available only with shape=palette, which returns a lean projection of at most 25 facilities: { id, name, operator, location: { state, city?, county?, street? } }, and needs a query of at least 2 characters. Without it the full-record shape is paused (403) while access changes.",
   },
   {
     method: "GET",
@@ -144,8 +133,6 @@ export default function ApiPage() {
   const edition = getDatasetEdition();
   const editionDate = formatEditionDate(edition.asOf);
   const editionYear = editionDate === "date unavailable" ? "n.d." : new Date(edition.asOf).getFullYear();
-  const mainBulkUrl = `${RAW_BASE}/main/data/facilities.json`;
-  const pinnedBulkUrl = `${RAW_BASE}/v${edition.version}/data/facilities.json`;
 
   // Two citation shapes for two different things — see the "How to cite"
   // section below. The live resource changes continuously, so APA 7 calls
@@ -157,7 +144,7 @@ export default function ApiPage() {
   // not inside the brackets. Built as plain strings (not interpolated into
   // JSX text nodes) so they render verbatim inside a <pre><code> block and
   // stay copy-pasteable as one line.
-  const snapshotCitation = `Kubiak, E. (${editionYear}). Compute Atlas (Version ${edition.version}) [Data set]. ${pinnedBulkUrl}`;
+  const snapshotCitation = `Kubiak, E. (${editionYear}). Compute Atlas (Version ${edition.version}) [Data set]. ${DATASET_DOI_URL}`;
   const liveCitation = `Kubiak, E. (n.d.). Compute Atlas. Retrieved [access date], from ${siteConfig.url}`;
   const doiCitation = `Kubiak, E. (n.d.). Compute Atlas [Data set]. ${DATASET_DOI_URL}`;
 
@@ -257,37 +244,17 @@ export default function ApiPage() {
           <div>
             <dt className="font-medium text-foreground">Bulk access</dt>
             <dd className="text-muted-foreground">
-              For the whole dataset with no query params, call{" "}
-              <code className={CODE}>GET /api/facilities</code> directly — it
-              reads the live database and is CDN-cached for up to an hour, so
-              it is the freshest bulk option this API offers.
-              If you would rather not page an API at all, take the export:
-              {" "}
-              <a
-                href={mainBulkUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label="data/facilities.json: full facilities dataset as JSON on GitHub (opens in new tab)"
+              Bulk access to the full dataset is paused while access changes.
+              Fetch records one at a time with{" "}
+              <code className={CODE}>GET /api/facilities/{"{id}"}</code>, or
+              read the{" "}
+              <Link
+                href="/data"
                 className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
               >
-                data/facilities.json
-              </a>
-              . It is every record in one file, under the same CC-BY-4.0
-              terms, and it costs this project nothing to serve — but it is a
-              periodic snapshot regenerated from the database on a daily
-              schedule, not a live read, so treat it as good-enough-fresh
-              rather than current-to-the-minute. That URL tracks the{" "}
-              <code className={CODE}>main</code> branch, so it is the
-              current latest — it is not stable to cite, since its content
-              changes under the same URL. To cite a reproducible snapshot,
-              use the version-pinned URL in{" "}
-              <a
-                href="#citation-heading"
-                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
-              >
-                How to cite
-              </a>{" "}
-              below instead.
+                notice on the data page
+              </Link>
+              .
             </dd>
           </div>
           <div>
@@ -297,12 +264,10 @@ export default function ApiPage() {
               <code className={CODE}>Cache-Control</code> header (
               <code className={CODE}>public, s-maxage, stale-while-revalidate</code>
               ) so shared caches and CDNs can serve it without hitting the
-              origin. Typical freshness: the facility list and stats ~1
+              origin. Typical freshness: stats ~1
               hour, the JSON Schema ~24 hours, search ~10 minutes. A CDN may
               legally serve stale data via{" "}
-              <code className={CODE}>stale-while-revalidate</code>: for the
-              facility list, up to ~25 hours total (1 hour fresh + 24 hours
-              stale). This tradeoff favors cache efficiency over instant
+              <code className={CODE}>stale-while-revalidate</code>. This tradeoff favors cache efficiency over instant
               freshness.
             </dd>
           </div>
@@ -367,7 +332,7 @@ export default function ApiPage() {
             tagged release snapshot
           </strong>{" "}
           is immutable — cite it with its version number, and the
-          version-pinned URL below, so the exact data behind a finding stays
+          DOI below, so the exact data behind a finding stays
           retrievable years later.
         </p>
 
@@ -461,9 +426,7 @@ export default function ApiPage() {
         </h2>
         <div className="overflow-x-auto rounded-md border border-border bg-muted/50">
           <pre className="p-4 font-mono text-xs leading-relaxed text-foreground">
-            <code>{`curl ${siteConfig.url}/api/facilities?state=TX
-
-curl ${siteConfig.url}/api/facilities?type=data_center&status=operational
+            <code>{`curl "${siteConfig.url}/api/search?q=virginia"
 
 curl ${siteConfig.url}/api/facilities/${"{id}"}
 

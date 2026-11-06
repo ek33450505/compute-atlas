@@ -48,14 +48,11 @@ describe("ApiPage — How to cite", () => {
 
     expect(snapshotText).toBe(
       "Kubiak, E. (2026). Compute Atlas (Version 1.30.0) [Data set]. " +
-        "https://raw.githubusercontent.com/ek33450505/compute-atlas/v1.30.0/data/facilities.json"
+        "https://doi.org/10.5281/zenodo.22284476"
     );
 
-    // The pinned bulk URL carries the version tag, never "main" — the whole
-    // point of the snapshot citation is that it can't silently drift.
-    expect(snapshotText).not.toContain(
-      "raw.githubusercontent.com/ek33450505/compute-atlas/main/"
-    );
+    // No bulk-file URL: bulk access is paused, so the citation points at the DOI.
+    expect(snapshotText).not.toContain("raw.githubusercontent.com");
   });
 
   // Regression: an earlier draft of this citation carried "Retrieved <date>,
@@ -140,14 +137,9 @@ describe("ApiPage — How to cite", () => {
         name: "CC-BY-4.0: Creative Commons Attribution 4.0 license (opens in new tab)",
       })
     ).toHaveTextContent("CC-BY-4.0");
-    expect(
-      screen.getByRole("link", {
-        name: "data/facilities.json: full facilities dataset as JSON on GitHub (opens in new tab)",
-      })
-    ).toHaveTextContent("data/facilities.json");
   });
 
-  it("points the Bulk access section's main-branch link at main, distinct from the pinned citation URL", () => {
+  it("documents bulk access as paused and links the bulk URLs nowhere", () => {
     mockGetDatasetEdition.mockReturnValue({
       version: "1.30.0",
       asOf: "2026-09-01T16:58:23.496Z",
@@ -155,15 +147,21 @@ describe("ApiPage — How to cite", () => {
       schemaVersion: 1,
     });
 
-    render(<ApiPage />);
+    const { container } = render(<ApiPage />);
 
-    const bulkLink = screen.getByRole("link", {
-      name: /full facilities dataset as json on github/i,
-    });
-    expect(bulkLink).toHaveAttribute(
+    expect(screen.getByText(/Bulk access to the full dataset is paused/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "notice on the data page" })).toHaveAttribute(
       "href",
-      "https://raw.githubusercontent.com/ek33450505/compute-atlas/main/data/facilities.json"
+      "/data"
     );
+    expect(screen.getByText(/^Paused\. The bulk facility list/)).toBeInTheDocument();
+    expect(screen.getByText(/Publicly available only with shape=palette/)).toBeInTheDocument();
+    expect(screen.getByText(/full-record shape is paused \(403\)/)).toBeInTheDocument();
+    expect(screen.getAllByText("GET /api/facilities/{id}").length).toBeGreaterThan(0);
+    const html = container.innerHTML;
+    expect(html).not.toContain("raw.githubusercontent.com");
+    expect(html).not.toMatch(/href="[^"]*facilities\.json/);
+    expect(html).not.toMatch(/curl [^<]*\/api\/facilities\?/);
   });
 
   it("degrades to a readable fallback instead of throwing when the edition is unavailable", () => {

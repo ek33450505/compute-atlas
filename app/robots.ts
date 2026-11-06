@@ -111,16 +111,6 @@ export const BLOCKED_SEO_CRAWLERS = [
   "SERankingBacklinksBot",
 ] as const;
 
-// Raw GitHub content URL for the dataset export -- the same one-line
-// raw.githubusercontent.com transform app/api/page.tsx uses for its "Bulk
-// access" section (RAW_BASE there), derived from siteConfig.repoUrl rather
-// than a hardcoded owner/repo string. Not imported from that file: it's a
-// route module, not a lib, and doesn't export the constant.
-const RAW_FACILITIES_URL = `${siteConfig.repoUrl.replace(
-  "https://github.com/",
-  "https://raw.githubusercontent.com/"
-)}/main/data/facilities.json`;
-
 export default function robots(): MetadataRoute.Robots {
   const rules: MetadataRoute.Robots["rules"] = [
     {
@@ -155,15 +145,11 @@ export default function robots(): MetadataRoute.Robots {
       // no bare-comment affordance, so a key starting with "#" is the only
       // way to land a line every robots.txt parser discards. No parser acts
       // on these two lines; the audience is the person deciding how to take
-      // the data. That's not hypothetical: one visitor fetched /robots.txt
-      // 12 times over 7 days while separately fetching 481 individual
-      // /facilities/<slug> pages (997 requests, 50 MB) and correctly
-      // honoured Disallow: /api/ -- but never requested /data, /sitemap*, or
-      // /table, so it never found the one-request alternative to the 997 it
-      // made.
+      // the data. Bulk downloads are paused, so the "# Bulk data" line now says
+      // so and points at /data instead of a bulk file.
       other: {
         "Content-Signal": "search=yes,ai-input=yes,ai-train=no",
-        "# Bulk data": `The dataset is one file, not one page per facility -- see ${siteConfig.url}/data, or fetch it directly at ${RAW_FACILITIES_URL}`,
+        "# Bulk data": `Bulk downloads of the dataset are paused while access changes. Every facility page stays free to read and cite -- see ${siteConfig.url}/data`,
         "# Licence": `Data is CC-BY-4.0, attribution required -- ${DATASET_LICENSE_URL}. Code is MIT.`,
       },
     },

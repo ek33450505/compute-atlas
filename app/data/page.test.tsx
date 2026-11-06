@@ -1,21 +1,7 @@
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-
-import type { DatasetEdition } from "@/lib/dataset-edition";
-
-// vi.mock calls are hoisted above imports by Vitest. Route the shared mocks
-// through vi.hoisted() so their initialization is hoisted alongside the
-// vi.mock call itself, rather than relying on plain top-level consts (same
-// pattern as app/states/page.test.tsx, app/stakeholders/[person]/page.test.tsx).
-const { mockGetDatasetEdition } = vi.hoisted(() => ({
-  mockGetDatasetEdition: vi.fn(),
-}));
-
-vi.mock("@/lib/dataset-edition", () => ({
-  getDatasetEdition: mockGetDatasetEdition,
-}));
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency in jsdom
 vi.mock("next/link", () => ({
@@ -36,18 +22,6 @@ vi.mock("next/link", () => ({
 
 import DataPage, { metadata } from "./page";
 
-const FIXTURE_EDITION: DatasetEdition = {
-  version: "1.31.0",
-  asOf: "2026-08-15T12:00:00.000Z",
-  recordCount: 3,
-  schemaVersion: 4,
-};
-
-beforeEach(() => {
-  mockGetDatasetEdition.mockReset();
-  mockGetDatasetEdition.mockReturnValue(FIXTURE_EDITION);
-});
-
 describe("DataPage", () => {
   it("renders the h1", () => {
     const page = DataPage();
@@ -55,25 +29,16 @@ describe("DataPage", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
   });
 
-  it("renders versioned static download links with the count in the accessible name", () => {
-    render(DataPage());
-    const csv = screen.getByRole("link", { name: "Download CSV: all 3 facilities" });
-    const version = encodeURIComponent(FIXTURE_EDITION.asOf);
-    expect(csv).toHaveAttribute("href", `/data/facilities.csv?v=${version}`);
-    expect(csv).toHaveAttribute("download", "compute-atlas-facilities.csv");
-    const json = screen.getByRole("link", { name: "Download JSON: all 3 facilities" });
-    expect(json).toHaveAttribute("href", `/data/facilities.json?v=${version}`);
-    expect(json).toHaveAttribute("download", "compute-atlas-facilities.json");
-  });
-
-  it("omits the version and the as-of claim when the edition date is unusable", () => {
-    mockGetDatasetEdition.mockReturnValue({ ...FIXTURE_EDITION, asOf: "unknown" });
-    render(DataPage());
-    expect(screen.getByRole("link", { name: /Download CSV/ })).toHaveAttribute(
-      "href",
-      "/data/facilities.csv"
-    );
-    expect(screen.queryByText(/as of/)).not.toBeInTheDocument();
+  it("shows the paused notice with a contact link instead of download links", () => {
+    const { container } = render(DataPage());
+    expect(
+      screen.getByText(/Bulk downloads of the full dataset are paused while access changes\./)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "write to us" })).toHaveAttribute("href", "/contact");
+    expect(screen.queryByRole("link", { name: /Download (CSV|JSON)/ })).not.toBeInTheDocument();
+    const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
+    expect(hrefs.some((h) => /facilities\.(csv|json)/.test(h ?? ""))).toBe(false);
+    expect(container.querySelector("a[download]")).toBeNull();
   });
 
   it("renders even if the DB-backed data layer throws on any use", async () => {
@@ -88,46 +53,16 @@ describe("DataPage", () => {
       const { default: FreshPage } = await import("./page");
       render(FreshPage());
       expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: /Download CSV/ })).toBeInTheDocument();
+      expect(screen.getByText(/Bulk downloads of the full dataset are paused/)).toBeInTheDocument();
     } finally {
       vi.doUnmock("@/lib/data");
     }
   });
 
-  it("states that the downloads are a deploy-time snapshot that can trail the live site", () => {
-    render(DataPage());
-    expect(
-      screen.getByText(
-        new RegExp(
-          "Both files are a snapshot as of August 15, 2026, published with each site deploy\\. " +
-            "They can trail the live site until the next deploy\\."
-        )
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByText(/same one counted above|same snapshot|regenerated/)
-    ).not.toBeInTheDocument();
-  });
-
-  it("drops the date but keeps the snapshot caveat when the edition date is unusable", () => {
-    mockGetDatasetEdition.mockReturnValue({ ...FIXTURE_EDITION, asOf: "unknown" });
-    render(DataPage());
-    expect(
-      screen.getByText(/Both files are a snapshot published with each site deploy\. They can trail/)
-    ).toBeInTheDocument();
-  });
-
-  it("qualifies the meta description as the deployed snapshot", () => {
-    expect(metadata.description).toBe(
-      "Download the full Compute Atlas dataset free under CC-BY-4.0 — every tracked facility " +
-        "in the deployed snapshot, no login, no sign-up, no query building."
-    );
+  it("states the pause in the meta description, within 160 characters", () => {
+    expect(metadata.description).toMatch(/Bulk downloads .* are paused while access changes/);
+    expect(metadata.description).not.toMatch(/CC-BY|Download the full/);
     expect((metadata.description ?? "").length).toBeLessThanOrEqual(160);
-  });
-
-  it("shows the snapshot count and as-of date from the bundled edition", () => {
-    render(DataPage());
-    expect(screen.getByText(/3 facilities, as of August 15, 2026/)).toBeInTheDocument();
   });
 
   it("does not import the DB-backed data layer", () => {
