@@ -23,11 +23,11 @@ import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
 import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import type { DataCenterFacility, PowerGenerationFacility, Source } from "../lib/schema";
 import { MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
+import { bustTags } from "./bust-tags";
 
 import {
   planSync,
   applySync,
-  bustTags,
   readBasis,
   parseCliArgs,
   printPlan,

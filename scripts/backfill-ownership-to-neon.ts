@@ -11,6 +11,10 @@
  * source count, or any row fails to deep-equal its source. Reads the file with fs,
  * never through `@/data` (Vitest aliases that to a fixture).
  *
+ * After a successful --apply it busts `operator:<slug>` for each inserted row plus `facilities`
+ * (the runtime reads ownership through 24h unstable_cache); needs API_BASE_URL + API_ADMIN_TOKEN,
+ * checked before any write, unless --skip-revalidate (writes, pages stay stale).
+ *
  * Uses relative imports, matching the other scripts here.
  */
 import { readFileSync } from "node:fs";
@@ -22,9 +26,12 @@ import {
   ownershipStore,
   RefusalError,
   syncKeyed,
+  type KeyedStore,
 } from "../lib/closed-data-store";
 import { formatFatalError } from "../lib/db-error";
 import { hasDatabaseUrl } from "../lib/db/client";
+import { operatorSlug } from "../lib/operator-slug";
+import { assertValidTags, bustAfterUpserts, resolveRevalidate } from "./bust-tags";
 import { isEntrypoint } from "./is-entrypoint";
 import { parseArgs, type Deps } from "./backfill-siting-to-neon";
 
@@ -47,10 +54,22 @@ export function loadSource(deps: Pick<Deps, "root" | "readFile">): Map<string, u
   return source;
 }
 
+/** The tags one changed-operator set invalidates: each operator's rail, plus the whole-table read. */
+export function ownershipTags(operators: string[]): string[] {
+  return [...new Set(operators.map((op) => `operator:${operatorSlug(op)}`)), "facilities"];
+}
+
 export async function run(argv: string[], deps: Deps): Promise<void> {
-  const { apply } = parseArgs(argv);
+  const { apply, skipRevalidate } = parseArgs(argv);
+  const revalidate = resolveRevalidate({ apply, skipRevalidate, env: deps.env ?? process.env });
   const source = loadSource(deps);
-  const report = await syncKeyed({ source, store: deps.store(), apply, label: "operator_ownership" });
+  // Validate the superset (every source operator) so a bad tag aborts before syncKeyed writes.
+  if (apply) assertValidTags(ownershipTags([...source.keys()]));
+  const store = deps.store();
+  const sync = (st: KeyedStore | null) => syncKeyed({ source, store: st, apply, label: "operator_ownership" });
+  const report = store
+    ? await bustAfterUpserts({ store, tagsFor: ownershipTags, config: revalidate, deps }, sync)
+    : await sync(null);
   deps.log(formatReport("operator_ownership", report));
 }
 
