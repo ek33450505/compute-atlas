@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Map, {
   Source,
   Layer,
@@ -14,7 +13,6 @@ import { BASEMAP_STYLE_URL, INITIAL_VIEW_STATE } from "@/lib/map";
 import type { Status } from "@/lib/status";
 
 export interface HeroPoint {
-  id: string;
   lat: number;
   lon: number;
   status: Status;
@@ -28,7 +26,7 @@ interface HeroGlobeProps {
 
 type HeroFeatureCollection = GeoJSON.FeatureCollection<
   GeoJSON.Point,
-  { id: string; status: Status; lon: number }
+  { status: Status; lon: number }
 >;
 
 // Status circle colors, inlined from app/globals.css :root --status-* tokens.
@@ -92,11 +90,9 @@ export function HeroGlobe({
   points,
   heightClass = "h-[60vh] min-h-[420px]",
 }: HeroGlobeProps) {
-  const router = useRouter();
   const mapRef = useRef<MapRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const containerHeightRef = useRef(0);
-  const [hovered, setHovered] = useState(false);
 
   // Lazy initializer is safe here: this component only renders client-side
   // via the ssr:false dynamic wrapper, so window is always defined at init.
@@ -135,7 +131,7 @@ export function HeroGlobe({
         .map((p) => ({
           type: "Feature",
           geometry: { type: "Point", coordinates: [p.lon, p.lat] },
-          properties: { id: p.id, status: p.status, lon: p.lon },
+          properties: { status: p.status, lon: p.lon },
         })),
     }),
     [points]
@@ -144,7 +140,7 @@ export function HeroGlobe({
   // null = every point visible (the settled end-state). MapLibre's layer
   // validator rejects `filter: undefined` (addLayer throws "array expected"
   // and the layer silently fails to add), so null renders as the always-true
-  // ["has","id"] array below rather than omitting the prop. While animating,
+  // ["has","status"] array below rather than omitting the prop. While animating,
   // holds the current reveal threshold longitude.
   const [revealLon, setRevealLon] = useState<number | null>(null);
   const revealRafRef = useRef<number | null>(null);
@@ -259,16 +255,6 @@ export function HeroGlobe({
     });
   }, [skipMotion, startReveal, applyScrimPadding]);
 
-  const handleClick = useCallback(
-    (e: { features?: { properties?: Record<string, unknown> }[] }) => {
-      const id = e.features?.[0]?.properties?.id;
-      if (typeof id === "string") {
-        router.push(`/facilities/${id}`);
-      }
-    },
-    [router]
-  );
-
   return (
     <div
       ref={containerRef}
@@ -285,10 +271,6 @@ export function HeroGlobe({
         attributionControl={false}
         onLoad={handleLoad}
         onDragStart={handleDragStart}
-        onClick={handleClick}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        cursor={hovered ? "pointer" : undefined}
         interactive={!coarse}
         scrollZoom={false}
         doubleClickZoom={false}
@@ -298,7 +280,6 @@ export function HeroGlobe({
         keyboard={false}
         touchZoomRotate={false}
         touchPitch={false}
-        interactiveLayerIds={["hero-facility-points"]}
       >
         <Source id="hero-facilities" type="geojson" data={geojson}>
           <Layer
@@ -306,7 +287,7 @@ export function HeroGlobe({
             type="circle"
             filter={
               revealLon === null
-                ? ["has", "id"]
+                ? ["has", "status"]
                 : ["<=", ["get", "lon"], revealLon]
             }
             paint={{

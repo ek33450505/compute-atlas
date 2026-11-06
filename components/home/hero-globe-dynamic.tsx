@@ -183,7 +183,6 @@ export function parseHeroPoints(data: unknown): HeroPoint[] {
     (p): p is HeroPoint =>
       typeof p === "object" &&
       p !== null &&
-      typeof (p as HeroPoint).id === "string" &&
       Number.isFinite((p as HeroPoint).lat) &&
       Number.isFinite((p as HeroPoint).lon) &&
       HERO_POINT_STATUSES.has((p as HeroPoint).status)

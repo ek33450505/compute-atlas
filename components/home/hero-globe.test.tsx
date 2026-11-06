@@ -18,11 +18,6 @@ import { STATUS_ORDER } from "@/lib/status";
 // Mocks
 // ---------------------------------------------------------------------------
 
-const pushMock = vi.fn();
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: pushMock }),
-}));
-
 // MapLibre can't render in jsdom (no WebGL) — mock react-map-gl/maplibre as
 // plain passthrough elements. Map never fires onLoad/onClick on its own; the
 // scrim-padding tests below invoke the captured onLoad handler manually (via
@@ -72,9 +67,9 @@ vi.mock("react-map-gl/maplibre", () => {
 // ---------------------------------------------------------------------------
 
 const SAMPLE_POINTS: HeroPoint[] = [
-  { id: "site-a", lat: 39.1, lon: -94.6, status: "operational" },
-  { id: "site-b", lat: 33.7, lon: -84.4, status: "under_construction" },
-  { id: "site-c", lat: 47.6, lon: -122.3, status: "proposed" },
+  { lat: 39.1, lon: -94.6, status: "operational" },
+  { lat: 33.7, lon: -84.4, status: "under_construction" },
+  { lat: 47.6, lon: -122.3, status: "proposed" },
 ];
 
 const DEFAULT_MATCH_MEDIA = (query: string) => ({
@@ -444,8 +439,8 @@ describe("HeroGlobe dynamic wrapper", () => {
         ok: true,
         json: () =>
           Promise.resolve([
-            { id: "no-coords", status: "operational" },
-            { lat: 39.1, lon: -94.6, status: "operational" },
+            { status: "operational" },
+            { lat: 39.1, lon: -94.6 },
           ]),
       } as unknown as Response)
     );
@@ -660,14 +655,13 @@ describe("parseHeroPoints", () => {
     expect(parseHeroPoints("[]")).toEqual([]);
   });
 
-  it("drops malformed entries — missing id, non-finite lat/lon, non-objects", () => {
+  it("drops malformed entries — missing coords, non-finite lat/lon, non-objects", () => {
     const parsed = parseHeroPoints([
       SAMPLE_POINTS[0],
-      { lat: 1, lon: 2, status: "operational" }, // no id
-      { id: "no-lat", lon: 2 }, // missing lat
-      { id: "nan-lat", lat: Number.NaN, lon: 2 },
-      { id: "inf-lon", lat: 1, lon: Number.POSITIVE_INFINITY },
-      { id: "string-lat", lat: "39.1", lon: -94.6 },
+      { lon: 2 }, // missing lat
+      { lat: Number.NaN, lon: 2 },
+      { lat: 1, lon: Number.POSITIVE_INFINITY },
+      { lat: "39.1", lon: -94.6 },
       null,
       "site-z",
     ]);
@@ -676,22 +670,22 @@ describe("parseHeroPoints", () => {
   });
 
   // Without the status check the predicate lies: it claims `p is HeroPoint`
-  // having verified only id/lat/lon. Such a point survives to the globe, misses
+  // having verified only lat/lon. Such a point survives to the globe, misses
   // every arm of its MapLibre `match` on "status" (hero-globe.tsx), and paints
   // as *cancelled* grey — a plausible-looking wrong dot, never an error.
   //
   // Verified by removing the check; this test then prints
   //   AssertionError: expected [ …(5) ] to deeply equal
-  //   [ { id: 'site-a', lat: 39.1, …(2) } ]
+  //   [ { lat: 39.1, lon: -94.6, …(1) } ]
   // over a diff listing the four entries it wrongly kept (no-status,
   // unknown-status, null-status, numeric-status).
   it("drops points whose status is missing or outside the Status union", () => {
     const parsed = parseHeroPoints([
       SAMPLE_POINTS[0],
-      { id: "no-status", lat: 1, lon: 2 },
-      { id: "unknown-status", lat: 1, lon: 2, status: "decommissioned" },
-      { id: "null-status", lat: 1, lon: 2, status: null },
-      { id: "numeric-status", lat: 1, lon: 2, status: 3 },
+      { lat: 1, lon: 2 },
+      { lat: 1, lon: 2, status: "decommissioned" },
+      { lat: 1, lon: 2, status: null },
+      { lat: 1, lon: 2, status: 3 },
     ]);
 
     expect(parsed).toEqual([SAMPLE_POINTS[0]]);
@@ -704,13 +698,13 @@ describe("parseHeroPoints", () => {
       "permitted",
       "proposed",
       "cancelled",
-    ].map((status, i) => ({ id: `site-${status}`, lat: i, lon: -i, status }));
+    ].map((status, i) => ({ lat: i, lon: -i, status }));
 
     expect(parseHeroPoints(oneOfEach)).toEqual(oneOfEach);
   });
 
   it("returns [] for an array whose every entry is malformed", () => {
-    expect(parseHeroPoints([null, {}, 7, { id: "x" }])).toEqual([]);
+    expect(parseHeroPoints([null, {}, 7, { lat: 1 }])).toEqual([]);
   });
 
   it("keeps every well-formed point", () => {
