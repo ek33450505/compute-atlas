@@ -109,12 +109,12 @@ import {
 } from "../../lib/leads";
 import { createSubmission, type SubmissionResult } from "../../lib/submissions";
 import { and, eq, sql } from "drizzle-orm";
-import { getDb } from "../../lib/db/client";
 import { facilitiesTable } from "../../lib/db/schema";
 import { geocodeUS, type GeocodeResult } from "../../lib/geocode";
 import { verifySource, type VerifyClaim } from "./verify-source";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
+import { getFacilitiesReadDb } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
 import { formatErrorSummary, formatFatalError } from "../../lib/db-error";
 
@@ -637,7 +637,9 @@ export function buildRealDeps(): LeadsLaneDeps {
     callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
     geocodeImpl: (query) => geocodeUS(query, undefined, { userAgent: LEADS_LANE_USER_AGENT }),
     findPossibleDuplicatesImpl: async ({ operator, state }) => {
-      const rows = await getDb()
+      const read = getFacilitiesReadDb();
+      if (!read) throw new Error("neither DISCOVERY_READ_DATABASE_URL nor DATABASE_URL is set");
+      const rows = await read.db
         .select({ id: facilitiesTable.id })
         .from(facilitiesTable)
         .where(
