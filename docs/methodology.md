@@ -191,8 +191,8 @@ The dataset has a deliberate bias against inventing detail.
 
 ## How to read a record's sources
 
-Every facility carries a `sources` array; each facility page (`/facilities/{id}`) lists it, and the [frozen JSON export](../data/facilities.json)
-(the final open edition; bulk export of current data is paused) holds it in full. Reading a record
+Every facility carries a `sources` array; each facility page (`/facilities/{id}`) lists it, and the [frozen JSON export](../data/facilities.json),
+the final open edition, holds it in full. Reading a record
 means reading its provenance:
 
 - **`sources[]`** — one entry per citation, each with a `url`, a human `label`, an
@@ -584,7 +584,7 @@ the proposed/under-construction cohorts as the better-evidenced half.
 
 ## See also
 
-- [`README.md`](../README.md) — what the dataset is and the public API.
+- [`README.md`](../README.md) — what the dataset is and how to cite it.
 - [`CONTRIBUTING.md`](../CONTRIBUTING.md) — how to add a facility or a correction.
 - [`discovery-pipeline.md`](discovery-pipeline.md) — the automated candidate pipeline.
 - [`lib/schema.ts`](../lib/schema.ts) — the authoritative Zod data model.

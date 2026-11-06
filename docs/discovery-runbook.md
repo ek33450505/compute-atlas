@@ -191,7 +191,8 @@ DISCOVERY_ENABLED=true DISCOVERY_STATES="IA NE" STATES_PER_RUN=2 \
 
 ### Utilities
 
-Fetch existing-facilities projection for a state (CLI debug):
+Fetch existing-facilities projection for a state (CLI debug). The loader reads Neon directly
+via `DATABASE_URL`, falling back loudly to `data/facilities.json`:
 
 ```bash
 npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state=TX
