@@ -46,7 +46,7 @@ npm run check-sources                        # source-liveness report (read-only
 runs three jobs — `typecheck · lint · test` (tsc, eslint, vitest), `BATS tests`
 (the discovery, vercel ignore-gate and drift-classifier shell suites), and
 `Playwright e2e` (a11y + e2e). CodeQL scans on every PR and push to `main` plus
-weekly. The Vercel preview build is an additional gate.
+weekly. The Vercel preview build is an additional gate. (Phase 1, 2026-11-05: `neon-sync`, `nhd-backfill` and `release-please` are `disabled_manually`; see Gotchas.)
 
 ⚠️ **Exactly three status checks are *required* on `main`, and their names are
 load-bearing: `typecheck · lint · test`, `BATS tests`, `Playwright e2e`.** Branch
@@ -177,6 +177,8 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
   `CONTRIBUTING.md` and the data model in `lib/schema.ts`.
 
 ## Data waves: the DB is the source of truth, the JSON is generated
+
+⚠️ **Suspended while `neon-sync` is disabled (Ed, 2026-11-05).** The `db:export` → `build:mapdata` → commit steps below do NOT run; a wave is `npm run db:sync -- --apply` only. See the Gotchas bullet "Bulk exits are closed". The procedure below is the normal path, to be restored when the open-code/closed-data refactor lands.
 
 Research → **`npm run db:sync`** (dry run, review the plan) → `-- --apply` →
 `npm run db:export` → **`npm run build:mapdata`** → commit the regenerated JSON.
@@ -383,6 +385,14 @@ tool, not part of the deployed app.
 
 ## Gotchas
 
+- **Bulk exits are closed (Phase 1, Ed 2026-11-05).** The data stays CC BY 4.0 (all records, future ones too). Protection is ACCESS-only: no bulk download, no bulk API, no per-record JSON. Site copy says nothing about pausing or bulk.
+  - `/data` is now the "How to cite Compute Atlas" page (nav label "Cite") with no downloads; `/access*` 308 → `/contact`.
+  - `GET /api/facilities` (list), `GET /api/facilities/{id}` and the full shape of `/api/search` are admin-bearer only and `no-store` (#528, #529). The public palette search (`/api/search?…&shape=palette`) stays.
+  - Cloudflare custom rule `d0286981a37e4076ad52eb840601683f` ("Pause bulk dataset exits", Block) uses the 5th of 5 Free-plan custom-rule slots. It blocks `lower(path)` in {`/api/facilities`, `/api/facilities/`, `/data/facilities.csv`, `/data/facilities.json`}, GET/HEAD on `starts_with(lower(path), "/api/facilities/")`, and `/api/search` unless `args["shape"][0] eq "palette"`.
+  - ⚠️ Always `lower()` paths in this site's CF rules: the origin matched `/API/facilities/<id>` to the route while a case-sensitive rule let it through.
+  - ⚠️ Each CF edit needs Ed's explicit go. The rule also blocks the discovery loader's authenticated `/api/facilities` read, so discovery dedupes against the frozen `data/facilities.json` until that is fixed.
+  - `/map` and `/embed/states/[state]` ship only `MapPoint` (id, facilityType, status, lat/lon rounded to 2 dp, state) plus server-computed filter options. Popup details come from `GET /api/map/facility/[id]`; operator/minMw filters from `GET /api/map/match` (#532). `public/data/hero-points.json` is anonymous, de-duplicated `{lat, lon, status}` at 2 dp (#533). `data/siting-context.json` no longer reaches the client bundle (an import-graph test guards it).
+  - `data/facilities.json` is frozen at 3,025 records as the final open edition. Until the planned open-code/closed-data refactor lands: a publish wave is `db:sync -- --apply` ONLY, with NO `db:export`/`build:mapdata` commit to the public repo; new records lack siting context until then; the NHD-debt ratchet and `siting-context.json` are frozen.
 - **`.env.local` quoting:** `vercel env add` keeps surrounding quotes; a quoted
   `DATABASE_URL` is invalid and fails *silently* (no fallback). Strip quotes.
   Two sibling traps in the same family, both silent:
@@ -418,7 +428,7 @@ tool, not part of the deployed app.
   reading the real build log (`npx vercel inspect --logs <url> | grep
   vercel-ignore`), never by local probes alone.
 - **Prod cache & bulk go-live:** The site has three independent cache tiers:
-  - **Aggregate pages** (home/map/table/stats/explore) read `loadFacilities` with a **24h ISR timer** (`revalidate: 86400`, lowered from 1h on 2026-10-13 to cut ISR Writes) and carry the `"facilities"` tag. Freshness comes from tag busts: `db:sync --apply` busts `"facilities"`, and an approve/reject that leaves the pending queue empty busts it once (`lib/submissions.ts`); single writes bust only scoped tags. Home (which also reads untagged `getRecentActivity`/`getQuarterlyPipelineSummary`), `/activity`, its feed and `/contributors` read untagged direct-DB data and stay on 3600.
+  - **Aggregate pages** (home/map/stats/explore) read `loadFacilities` with a **24h ISR timer** (`revalidate: 86400`, lowered from 1h on 2026-10-13 to cut ISR Writes) and carry the `"facilities"` tag. Freshness comes from tag busts: `db:sync --apply` busts `"facilities"`, and an approve/reject that leaves the pending queue empty busts it once (`lib/submissions.ts`); single writes bust only scoped tags. Home (which also reads untagged `getRecentActivity`/`getQuarterlyPipelineSummary`), `/activity`, its feed and `/contributors` read untagged direct-DB data and stay on 3600. `/table` is no longer an ISR aggregate page: it is dynamic and server-paginated (50 rows/page; filter, sort and `q` on the server), reading through the 24h-cached `getAllFacilities` loader, so it carries no ISR timer of its own (#531).
   - **Scoped pages**: `/facilities/[slug]` (2,241 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it declares `export const revalidate = 86400` itself (the root layout no longer reads `loadNavFacets`, so nothing inherits a floor). The jurisdiction/operator/metro/county hubs (55 states / 1,018 operators / 27 metros / 847 counties, the county hubs behind a `/counties` index) **do** still carry `"facilities"` on a 86400s timer, so they self-heal daily as well as on a bust. There is no `metro:` or `county:` tag — metro and county hubs are covered by `"facilities"` alone.
     ⚠️ Those five figures are a **snapshot, not a constant** — read from the production build log of `6515815` on **2026-09-28** (4,330 prerendered routes in total; `npm run check:drift` confirmed JSON and Neon agreed at 2,241 facilities that day). Every data wave grows them. Re-read a real build log before citing any of them; do not trust the numbers on this line.
   - **Search index** (global ⌘K palette: operator/state facets via `loadNavFacets`, fetched lazily on first open from `GET /api/nav-index`, cached at the edge `s-maxage=86400`; no longer in any page's HTML or the root layout) has **two untagged staleness layers**: the 24h `unstable_cache` on `loadNavFacets`, then the edge `s-maxage=86400` + `stale-while-revalidate=604800` on `/api/nav-index`. A new operator or state can take up to ~2 days to appear (24h origin + 24h edge, worst case); SWR adds at most one stale response after edge expiry. No tag bust affects it; `db:sync --apply` cannot refresh it. The root layout reads no cached data (`SiteFooter` uses the static `facilities.meta.json`), so no route inherits a floor from it.
@@ -493,7 +503,7 @@ tool, not part of the deployed app.
   `asOf`) — so it can't clobber a prod approval. `db:seed --force` publishes adds but
   **silently drops every correction to an existing row, writes no history, and busts
   no tags** — it is bootstrap-only. After syncing, `db:export` regenerates the JSON
-  from Neon so `check:drift` is clean.
+  from Neon so `check:drift` is clean (⚠️ suspended since 2026-11-05, Phase 1; see Data waves).
 - **Local-only docs:** some maintainer notes under `docs/` are gitignored working
   files — check `.gitignore` before adding a doc, and never commit those.
 - **Dev server:** don't run `next build`/`start` while `next dev` is live (it
@@ -521,10 +531,11 @@ tool, not part of the deployed app.
   2026-09-12: posting the exact URLs to `/zones/<id>/purge_cache` returned `success: true` while the
   entry kept serving with a climbing `age`. Only `{ purge_everything: true }` evicts. A 200 from
   purge_cache is NOT evidence of eviction; verify with `age: 0` / `cf-cache-status: MISS` and the
-  actual body. Also note the public read API is cached by Cloudflare for **4h**
-  (`cache-control: public, max-age=14400`), NOT the 1h `READ_CACHE.list` asks for, so after a publish
-  `/api/facilities` can serve a stale count for hours while home and `/data` are already correct —
-  purge it as part of the wave. ⚠️ Probe with a real **GET**: a `curl -I` HEAD reported
+  actual body. Before Phase 1 the public read API was cached by Cloudflare for **4h**
+  (`cache-control: public, max-age=14400`), NOT the 1h `READ_CACHE.list` asks for. Since 2026-11-05
+  `GET /api/facilities` is admin-bearer only, `no-store`, and CF-blocked (see the Gotchas bullet
+  "Bulk exits are closed"), so it no longer serves a stale count and needs no purge in a wave. The
+  4h figure is a pre-Phase-1 measurement; re-measure before citing it for any other route. ⚠️ Probe with a real **GET**: a `curl -I` HEAD reported
   `cf-cache-status: DYNAMIC` on the very response a GET showed as a `HIT`.
 
 <!-- BEGIN:nextjs-agent-rules -->
