@@ -82,7 +82,7 @@ export function AccessConfirmedContent() {
     );
   }
 
-  const curlExample = `curl -H "Authorization: Bearer ${token}" \\\n  "https://www.compute-atlas.com/api/facilities/<id>"`;
+  const curlExample = `curl "https://www.compute-atlas.com/api/stats"`;
 
   return (
     <div
@@ -123,6 +123,10 @@ export function AccessConfirmedContent() {
           </pre>
         </div>
       </div>
+
+      <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        Bulk access is currently paused, so this token does not unlock anything yet.
+      </p>
 
       <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
         We don&rsquo;t store this token anywhere you can retrieve it again &mdash; if you lose

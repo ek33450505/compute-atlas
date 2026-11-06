@@ -700,8 +700,9 @@ export type ApiAccessGrantRow = typeof apiAccessGrantsTable.$inferSelect;
 
 /**
  * Durable per-IP daily request counter for the public facilities-family read
- * API (`GET /api/facilities`, `/api/search`, `/api/stats`, `/api/schema`,
- * `/api/facilities/[id]`) — the anonymous daily ceiling. One row per
+ * API (`GET /api/facilities`, `/api/search`, `/api/stats`, `/api/schema`)
+ * and the gate on `/api/facilities/[id]` (admin-bearer only now, but the
+ * daily gate still runs before auth) — the anonymous daily ceiling. One row per
  * (ipHash, UTC calendar day), incremented atomically via upsert. This is
  * deliberately separate from `lib/api-rate-limit.ts`'s in-memory burst
  * limiter (60/min): that one resets on cold start and can't hold a day-long

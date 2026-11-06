@@ -32,12 +32,13 @@ const READ_ENDPOINTS: Endpoint[] = [
     method: "GET",
     path: "/api/facilities",
     description:
-      "Paused. The bulk facility list is not available to anonymous callers while access changes (403). Individual records remain available at /api/facilities/{id}; see /data for the notice.",
+      "Paused. The bulk facility list is not available to anonymous callers while access changes (403). Facility pages at /facilities/{id} remain available; see /data for the notice.",
   },
   {
     method: "GET",
     path: "/api/facilities/{id}",
-    description: "One facility by id. 404 if the id isn't found.",
+    description:
+      "Paused. Per-record JSON is admin-only (403 for anonymous callers, whether or not the id exists). Individual facilities remain available as pages at /facilities/{id}.",
   },
   {
     method: "GET",
@@ -245,9 +246,8 @@ export default function ApiPage() {
             <dt className="font-medium text-foreground">Bulk access</dt>
             <dd className="text-muted-foreground">
               Bulk access to the full dataset is paused while access changes.
-              Fetch records one at a time with{" "}
-              <code className={CODE}>GET /api/facilities/{"{id}"}</code>, or
-              read the{" "}
+              Individual facilities remain available as pages at{" "}
+              <code className={CODE}>/facilities/{"{id}"}</code>; read the{" "}
               <Link
                 href="/data"
                 className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
@@ -427,8 +427,6 @@ export default function ApiPage() {
         <div className="overflow-x-auto rounded-md border border-border bg-muted/50">
           <pre className="p-4 font-mono text-xs leading-relaxed text-foreground">
             <code>{`curl "${siteConfig.url}/api/search?q=virginia"
-
-curl ${siteConfig.url}/api/facilities/${"{id}"}
 
 curl ${siteConfig.url}/api/stats`}</code>
           </pre>

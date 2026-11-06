@@ -191,8 +191,7 @@ The dataset has a deliberate bias against inventing detail.
 
 ## How to read a record's sources
 
-Every facility carries a `sources` array; the [live API](../README.md#api) exposes it per record
-(`/api/facilities/{id}`), and the [frozen JSON export](../data/facilities.json)
+Every facility carries a `sources` array; each facility page (`/facilities/{id}`) lists it, and the [frozen JSON export](../data/facilities.json)
 (the final open edition; bulk export of current data is paused) holds it in full. Reading a record
 means reading its provenance:
 

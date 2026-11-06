@@ -163,7 +163,7 @@ Three ways in, all free and all attributed under CC BY 4.0:
 | | |
 |---|---|
 | **Browse** | The [map](https://www.compute-atlas.com/map) and [table](https://www.compute-atlas.com/table), or [explore](https://www.compute-atlas.com/explore) by [state](https://www.compute-atlas.com/states), [operator](https://www.compute-atlas.com/operators), [metro](https://www.compute-atlas.com/metros), [county](https://www.compute-atlas.com/counties), [power](https://www.compute-atlas.com/power), [status](https://www.compute-atlas.com/status), [crypto](https://www.compute-atlas.com/crypto), [community opposition](https://www.compute-atlas.com/opposition), and [stakeholders](https://www.compute-atlas.com/stakeholders) |
-| **API** | `GET /api/facilities/{id}`, `/api/search?shape=palette`, `/api/stats`, `/api/schema` — CORS-open, no auth, rate-limited by IP (the bulk list `/api/facilities` and full-record search are paused), served with `X-License: CC-BY-4.0`. Full contract at [`/api`](https://www.compute-atlas.com/api) |
+| **API** | `/api/search?shape=palette`, `/api/stats`, `/api/schema` — CORS-open, no auth, rate-limited by IP (the bulk list `/api/facilities`, per-record `/api/facilities/{id}` and full-record search are paused; facility pages stay public), served with `X-License: CC-BY-4.0`. Full contract at [`/api`](https://www.compute-atlas.com/api) |
 | **Bulk** | [`data/facilities.json`](data/facilities.json) — the frozen final open edition, as of the `asOf` in [`data/facilities.meta.json`](data/facilities.meta.json); not a live feed. Bulk access to current data is paused, see [compute-atlas.com/data](https://www.compute-atlas.com/data) |
 
 Writes are moderated: `POST /api/contribute` stages a candidate for human review and
