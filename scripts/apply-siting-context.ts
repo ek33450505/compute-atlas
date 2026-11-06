@@ -141,7 +141,12 @@ if (isEntrypoint(import.meta.url)) {
     store: sitingStore,
     log: (l) => console.log(l),
   }).catch((err) => {
-    console.error(err instanceof RefusalError ? err.message : formatFatalError(err));
+    if (err instanceof RefusalError) {
+      // lint-no-raw-error-logs: allow -- RefusalError (lib/closed-data-store.ts) is built only from ids and counts in this tooling, never from a caught DB error
+      console.error(err.message);
+    } else {
+      console.error(formatFatalError(err));
+    }
     process.exit(1);
   });
 }
