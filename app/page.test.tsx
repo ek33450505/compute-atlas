@@ -52,8 +52,6 @@ vi.mock("@/lib/data", () => ({
   selectRecordSpecimen: mockSelectRecordSpecimen,
 }));
 
-// Pinned so the provenance line's date is deterministic — the real helper
-// reads data/facilities.meta.json, which every data wave moves.
 // MapLibre needs `window` at module scope and is pure decoration here — but
 // the `plate` prop is NOT decoration: it is the static dot map, rendered on
 // this page (the server component) precisely so the `"use client"` wrapper

@@ -151,6 +151,7 @@ describe("sitemap", () => {
     );
 
     let sawEntryEarlierThanDatasetMax = false;
+    let populatedMetros = 0;
     for (const m of METROS) {
       const expectedUrl = `${siteConfig.url}/metros/${m.slug}`;
       const entry = metroRoutes.find((r) => r.url === expectedUrl);
@@ -160,6 +161,11 @@ describe("sitemap", () => {
       // to render the hub (getFacilitiesByMetro), so the sitemap and the
       // page can never disagree about which facilities belong to a metro.
       const metroFacilities = await getFacilitiesByMetro(m.slug);
+      // The ~60-record fixture does not populate every metro; an empty one
+      // falls back to build-time "now" (maxLastUpdated), which the real
+      // dataset never exercises. Only populated metros carry the claim.
+      if (metroFacilities.length === 0) continue;
+      populatedMetros++;
       const expectedMax = Math.max(
         ...metroFacilities.map((f) => new Date(f.lastUpdated).getTime())
       );
@@ -175,6 +181,8 @@ describe("sitemap", () => {
     // dataset-max date, the "own facilities, not the whole-dataset max"
     // claim above would be unfalsifiable by this suite. Verified against
     // the real dataset (2026-09-08): 25 of 27 metros are strictly earlier.
+    // populatedMetros guards the loop above against skipping everything.
+    expect(populatedMetros).toBeGreaterThanOrEqual(2);
     expect(sawEntryEarlierThanDatasetMax).toBe(true);
   });
 

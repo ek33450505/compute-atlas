@@ -27,11 +27,10 @@ describe("GET /api/stats", () => {
     expect(body.count).toBe(facilitiesRaw.length);
   });
 
-  it("includes the dataset edition's version/asOf/schemaVersion, matching facilities.meta.json", async () => {
+  it("includes the dataset edition's asOf/schemaVersion, matching facilities.meta.json", async () => {
     const res = await GET(req());
     const body = await res.json();
     expect(body.edition).toEqual({
-      version: meta.sourceRelease,
       asOf: meta.asOf,
       schemaVersion: meta.schemaVersion,
     });
@@ -47,6 +46,7 @@ describe("GET /api/stats", () => {
     // a second, unlabeled record count under `edition`.
     expect(body.count).toEqual(expect.any(Number));
     expect(body.edition).not.toHaveProperty("recordCount");
+    expect(body.edition).not.toHaveProperty("version");
   });
 
   it("rounds summed capacity fields to 1 decimal place", async () => {

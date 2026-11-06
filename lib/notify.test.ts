@@ -47,14 +47,19 @@ const facilityC = facilitiesTyped.find((f) => f.id !== facilityA.id && f.id !== 
 // Theme D (state digest) fixtures: two facilities sharing one state, plus a
 // facility in a different state, for asserting the digest stays scoped to a
 // subscriber's own state.
-const facilityTnA = facilitiesTyped[0]; // xai-colossus-memphis-tn, TN
+const facilityTnA = facilitiesTyped[0]; // first fixture record (the "Tn" names are legacy; state is whatever it is)
 const facilityTnB = facilitiesTyped.find(
   (f) => f.location.state === facilityTnA.location.state && f.id !== facilityTnA.id
 )!;
 const facilityOtherState = facilitiesTyped.find(
   (f) => f.location.state !== facilityTnA.location.state
 )!;
-const tnStateName = stateNameFromCode(facilityTnA.location.state)!; // "Tennessee"
+const tnStateName = stateNameFromCode(facilityTnA.location.state)!;
+
+// The email HTML escapes "&", and the fixture has a facility named "... Technology
+// & Energy Center", so a raw-name toContain on html would never match it.
+const escapeHtml = (text: string) =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 let tdb: TestDbHandle;
 
@@ -715,8 +720,8 @@ describe("notifyStateSubscribersMonthly (monthly state digest, D3a)", () => {
     const args = resendSendMock.mock.calls[0][0];
     expect(args.to).toBe(sub.email);
     expect(args.html).toContain(facilityTnA.name);
-    expect(args.html).toContain(facilityTnB.name);
-    expect(args.html).not.toContain(facilityOtherState.name);
+    expect(args.html).toContain(escapeHtml(facilityTnB.name));
+    expect(args.html).not.toContain(escapeHtml(facilityOtherState.name));
     expect(args.text).not.toContain(facilityOtherState.name);
 
     // Every digest email must carry a working unsubscribe link built from

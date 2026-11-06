@@ -5,16 +5,16 @@
  * back into the forkable JSON export.
  *
  * Alongside facilities.json, also writes a sibling facilities.meta.json with
- * lightweight dataset-versioning metadata (asOf/recordCount/schemaVersion/
- * sourceRelease) so downstream consumers of the CC-BY snapshot can detect
- * staleness or shape changes without diffing the full dataset.
+ * lightweight dataset-versioning metadata (asOf/recordCount/schemaVersion) so
+ * downstream consumers of the CC-BY snapshot can detect staleness or shape
+ * changes without diffing the full dataset.
  *
  * Run via: npm run db:export  (requires DATABASE_URL in .env.local)
  * Optional: --out=<path> to write somewhere other than data/facilities.json.
  *
  * Uses relative imports throughout, matching the other scripts in this folder.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { facilitiesSchema } from "../lib/schema";
@@ -31,7 +31,6 @@ export interface ExportMeta {
   asOf: string;
   recordCount: number;
   schemaVersion: number;
-  sourceRelease: string;
 }
 
 /**
@@ -44,14 +43,12 @@ export interface ExportMeta {
  */
 export function buildExportMeta(
   recordCount: number,
-  sourceRelease: string,
   now: Date = new Date()
 ): ExportMeta {
   return {
     asOf: now.toISOString(),
     recordCount,
     schemaVersion: SCHEMA_VERSION,
-    sourceRelease,
   };
 }
 
@@ -61,18 +58,30 @@ function parseOutPath(): string {
   return path.resolve(process.cwd(), rel);
 }
 
-function readPackageVersion(): string {
-  const pkgPath = path.join(process.cwd(), "package.json");
-  const pkg = JSON.parse(readFileSync(pkgPath, "utf-8")) as { version: string };
-  return pkg.version;
+const MISSING_DATABASE_URL =
+  "DATABASE_URL is not set. Configure it in .env.local (see .env.example) before exporting.";
+
+/** Thrown (by name, so callers need not import this module) when DATABASE_URL is unset. */
+export class MissingDatabaseUrlError extends Error {
+  override name = "MissingDatabaseUrlError";
 }
 
-async function main() {
+export interface ExportResult {
+  count: number;
+  outPath: string;
+  metaOutPath: string;
+}
+
+/**
+ * Reads every facility from Neon and writes facilities.json plus its sibling
+ * facilities.meta.json. Callable (rather than inlined in `main`) so
+ * scripts/ensure-data-snapshot.ts can reuse it. Throws instead of exiting.
+ */
+export async function exportFacilities(
+  outPath: string = path.resolve(process.cwd(), path.join("data", "facilities.json"))
+): Promise<ExportResult> {
   if (!process.env.DATABASE_URL) {
-    console.error(
-      "DATABASE_URL is not set. Configure it in .env.local (see .env.example) before exporting."
-    );
-    process.exit(1);
+    throw new MissingDatabaseUrlError(MISSING_DATABASE_URL);
   }
 
   const db = getDb();
@@ -104,14 +113,38 @@ async function main() {
   // be schema-valid; this throws loudly on any invalid record, same as seed.ts.
   const validated = facilitiesSchema.parse(facilities);
 
-  const outPath = parseOutPath();
-  writeFileSync(outPath, JSON.stringify(validated, null, 2) + "\n", "utf-8");
-
-  const meta = buildExportMeta(validated.length, readPackageVersion(), readAt);
+  const meta = buildExportMeta(validated.length, readAt);
   const metaOutPath = path.join(path.dirname(outPath), "facilities.meta.json");
-  writeFileSync(metaOutPath, JSON.stringify(meta, null, 2) + "\n", "utf-8");
 
-  console.log(`Exported ${validated.length} facilities to ${outPath}`);
+  // Write both files to temp paths, then rename both. This narrows the window
+  // (a failed write never touches the real files), but it is not atomic: a
+  // failure on the second rename can still leave a new facilities.json next to
+  // an old meta. No rollback is attempted.
+  const tmpSuffix = `.tmp-${process.pid}`;
+  const tmpOut = outPath + tmpSuffix;
+  const tmpMeta = metaOutPath + tmpSuffix;
+  try {
+    writeFileSync(tmpOut, JSON.stringify(validated, null, 2) + "\n", "utf-8");
+    writeFileSync(tmpMeta, JSON.stringify(meta, null, 2) + "\n", "utf-8");
+    renameSync(tmpOut, outPath);
+    renameSync(tmpMeta, metaOutPath);
+  } finally {
+    rmSync(tmpOut, { force: true });
+    rmSync(tmpMeta, { force: true });
+  }
+
+  return { count: validated.length, outPath, metaOutPath };
+}
+
+async function main() {
+  if (!process.env.DATABASE_URL) {
+    console.error(MISSING_DATABASE_URL);
+    process.exit(1);
+  }
+
+  const { count, outPath, metaOutPath } = await exportFacilities(parseOutPath());
+
+  console.log(`Exported ${count} facilities to ${outPath}`);
   console.log(`Wrote export metadata to ${metaOutPath}`);
   process.exit(0);
 }

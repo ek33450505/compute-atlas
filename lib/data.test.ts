@@ -439,11 +439,11 @@ describe("getStats", () => {
     expect(stateCodes.includes("DC")).toBe(includesDc);
   });
 
-  it("stateCodes contains known live-dataset jurisdictions (spot check)", async () => {
+  it("stateCodes contains known fixture jurisdictions (spot check)", async () => {
     const { stateCodes } = await getStats();
-    // sanity: fixture this test relies on — CA, TX, and DC are large/stable
-    // presences in the live dataset and are not expected to disappear.
-    expect(stateCodes).toEqual(expect.arrayContaining(["CA", "TX", "DC"]));
+    // TX and DC are present in tests/fixtures/facilities.fixture.json; the
+    // live-dataset spot check (CA, TX, DC) is in data.dataset.test.ts.
+    expect(stateCodes).toEqual(expect.arrayContaining(["TX", "DC"]));
   });
 });
 
@@ -751,6 +751,33 @@ describe("getFacilitiesByWaterUsage", () => {
       expect(f.status).not.toBe("cancelled");
       expect(typeof f.water?.reportedMgd).toBe("number");
       expect(f.water!.reportedMgd!).toBeGreaterThan(0);
+    }
+  });
+
+  it("excludes a cancelled facility that reports a positive reportedMgd", async () => {
+    // No real record is both cancelled and positive-MGD, so the
+    // `status !== "cancelled"` clause of hasReportedWater is only reachable with a
+    // synthetic variant: clone a positive fixture record, cancel it, and feed the
+    // list to a fresh copy of the module (same doMock pattern as
+    // dataset-edition.test.ts).
+    const positive = (await getFacilitiesByWaterUsage(100))[0];
+    const cancelled = { ...positive, id: `${positive.id}-cancelled-clone`, status: "cancelled" };
+    vi.resetModules();
+    vi.doMock("@/data/facilities.json", () => ({
+      default: [...(facilitiesRaw as unknown[]), cancelled],
+    }));
+    try {
+      const fresh = await import("@/lib/data");
+      // Control: the mock applied, i.e. the cancelled clone IS in the loaded list.
+      // Without this, a doMock that silently missed would make the exclusion below
+      // pass vacuously.
+      expect((await fresh.getAllFacilities()).map((f) => f.id)).toContain(cancelled.id);
+      const ids = (await fresh.getFacilitiesByWaterUsage(100)).map((f) => f.id);
+      expect(ids).toContain(positive.id);
+      expect(ids).not.toContain(cancelled.id);
+    } finally {
+      vi.doUnmock("@/data/facilities.json");
+      vi.resetModules();
     }
   });
 
@@ -1440,22 +1467,32 @@ describe("getOperatorSummary", () => {
     expect(summary.includesDc).toBe(false);
   });
 
-  it("stateCodes contains exactly the expected codes for CoreSite (has DC)", async () => {
-    // Derived independently from live data, not from the implementation's
+  it("stateCodes contains exactly the expected codes for a multi-state operator", async () => {
+    // Derived independently from the data, not from the implementation's
     // Set-building expression: looping into an object keyed by state, then
-    // Object.keys().sort(), so a data wave moves both sides together.
-    const facilities = await getFacilitiesByOperator("CoreSite");
-    expect(facilities.length).toBeGreaterThan(0); // sanity: fixture must exist
+    // Object.keys().sort(), so a data change moves both sides together. The
+    // fixture has CoreSite, but only one state of it; the live
+    // CoreSite/DC case is in data.dataset.test.ts. Pick whichever operator spans the most states.
+    const all = await getAllFacilities();
+    const statesByOperator = new Map<string, Set<string>>();
+    for (const f of all) {
+      const set = statesByOperator.get(f.operator) ?? new Set<string>();
+      set.add(f.location.state);
+      statesByOperator.set(f.operator, set);
+    }
+    const [operator] = [...statesByOperator].sort((x, y) => y[1].size - x[1].size)[0];
+
+    const facilities = await getFacilitiesByOperator(operator);
+    expect(facilities.length).toBeGreaterThan(0);
     const stateMap: Record<string, true> = {};
     for (const f of facilities) {
       stateMap[f.location.state] = true;
     }
     const expected = Object.keys(stateMap).sort();
-    // Sanity: CoreSite must have a DC facility for this test to be meaningful
-    expect(expected).toContain("DC");
+    // Sanity: the operator must span 2+ states for this test to be meaningful
     expect(expected.length).toBeGreaterThanOrEqual(2);
 
-    const summary = (await getOperatorSummary("CoreSite"))!;
+    const summary = (await getOperatorSummary(operator))!;
     expect(summary.stateCodes).toEqual(expected);
   });
 
@@ -1570,8 +1607,8 @@ describe("getCounties", () => {
 
     expect(counties.length).toBeGreaterThan(0);
     expect(counties.reduce((sum, c) => sum + c.count, 0)).toBe(withCounty);
-    // Facilities without a county (10 today) belong to no county at all, so
-    // the sum must fall short of the full dataset rather than matching it.
+    // Facilities without a county belong to no county at all, so the sum must
+    // fall short of the full dataset rather than matching it.
     expect(withCounty).toBeLessThan(facilities.length);
   });
 
@@ -1717,16 +1754,6 @@ describe("getCountyBySlug", () => {
       "St. Louis City"
     );
   });
-
-  it("still resolves the MO independent city, now that it is spelled one way", async () => {
-    // The live half of the old test, kept: the county the normalization pass
-    // touched must still resolve, under the Census/USGS form for an
-    // independent city — distinct from the surrounding "St. Louis County".
-    const county = (await getCountyBySlug(countySlug("St. Louis city", "MO")))!;
-    expect(county).toBeDefined();
-    expect(county.state).toBe("MO");
-    expect(county.name).toBe("St. Louis city");
-  });
 });
 
 describe("getFacilitiesByCounty", () => {
@@ -1745,8 +1772,12 @@ describe("getFacilitiesByCounty", () => {
   });
 
   it("sorts by max capacity desc, then name A→Z", async () => {
-    const multi = (await getCounties()).find((c) => c.count >= 5)!;
+    // Largest county in the data: >= 5 live, >= 2 in the fixture, which is all
+    // the sort needs to have something to order.
+    const multi = [...(await getCounties())].sort((a, b) => b.count - a.count)[0];
+    expect(multi.count).toBeGreaterThanOrEqual(2);
     const results = await getFacilitiesByCounty(multi.slug);
+    expect(results.length).toBe(multi.count);
     for (let i = 1; i < results.length; i++) {
       const prev = getFacilityMaxMw(results[i - 1]) ?? -1;
       const curr = getFacilityMaxMw(results[i]) ?? -1;
@@ -1764,6 +1795,8 @@ describe("getFacilitiesByCounty", () => {
         .filter((f) => f.location.county == null || f.location.county.trim() === "")
         .map((f) => f.id)
     );
+    // Sanity: the fixture must carry a countyless record or the exclusion below
+    // is never exercised.
     expect(countyless.size).toBeGreaterThan(0);
 
     const placed = new Set<string>();
@@ -1882,13 +1915,6 @@ describe("normalizeOfftaker", () => {
 });
 
 describe("getGenerationByOfftaker", () => {
-  it("merges the two Amazon spellings into one group", async () => {
-    const groups = await getGenerationByOfftaker();
-    const amazon = groups.find((g) => g.offtaker === "Amazon");
-    expect(amazon).toBeDefined();
-    expect(amazon!.facilities.length).toBeGreaterThanOrEqual(2);
-  });
-
   it("has no group label containing a parenthetical", async () => {
     const groups = await getGenerationByOfftaker();
     for (const g of groups) {
@@ -2288,7 +2314,7 @@ describe("getDefeatedProjects", () => {
         !!f.community?.status &&
         !["contested", "opposed", "litigation"].includes(f.community.status)
     );
-    // Sanity-check the fixture assumption: the seed dataset carries at least
+    // Sanity-check the fixture assumption: the fixture carries at least
     // one cancelled facility with a non-friction community.status (e.g.
     // "supported" or "mixed") to exercise this exclusion.
     expect(nonFrictionCancelled).toBeDefined();

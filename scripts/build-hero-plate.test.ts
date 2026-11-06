@@ -30,9 +30,26 @@ interface PlateFacility {
   location: { lat: number; lon: number; state: string };
 }
 
-const HERO_HERE = dirname(fileURLToPath(import.meta.url));
 const HERE = dirname(fileURLToPath(import.meta.url));
 const facilities = facilitiesRaw as unknown as PlateFacility[];
+
+/**
+ * The fixture (tests/fixtures) has Alaska records but no Hawaii or territory
+ * records, which the real dataset does (see build-hero-plate.dataset.test.ts).
+ * These synthetic ones keep the Hawaii inset and territory-omission checks from
+ * running over zero items. They are appended only where those checks need them.
+ */
+const SYNTHETIC_HAWAII: PlateFacility[] = [
+  { id: "synthetic-honolulu-hi", status: "operational", location: { lat: 21.3069, lon: -157.8583, state: "HI" } },
+  { id: "synthetic-kahului-hi", status: "proposed", location: { lat: 20.8893, lon: -156.4729, state: "HI" } },
+];
+const SYNTHETIC_TERRITORIES: PlateFacility[] = [
+  { id: "synthetic-guam", status: "operational", location: { lat: 13.4443, lon: 144.7937, state: "GU" } },
+  { id: "synthetic-saipan", status: "proposed", location: { lat: 15.1778, lon: 145.7501, state: "MP" } },
+  { id: "synthetic-san-juan", status: "permitted", location: { lat: 18.4655, lon: -66.1057, state: "PR" } },
+  { id: "synthetic-st-thomas", status: "cancelled", location: { lat: 18.3358, lon: -64.8963, state: "VI" } },
+];
+const plateInput = [...facilities, ...SYNTHETIC_HAWAII, ...SYNTHETIC_TERRITORIES];
 const usTopology = JSON.parse(
   readFileSync(resolve(HERE, "../node_modules/us-atlas/states-10m.json"), "utf8"),
 );
@@ -196,9 +213,9 @@ describe("makeAlbersUsa — AK and HI insets", () => {
   const inBox = (p: [number, number], b: typeof AK_MARKS) =>
     p[0] >= b.x0 && p[0] <= b.x1 && p[1] >= b.y0 && p[1] <= b.y1;
 
-  const akFacilities = facilities.filter((f) => f.location.state === "AK");
-  const hiFacilities = facilities.filter((f) => f.location.state === "HI");
-  const conusFacilities = facilities.filter(
+  const akFacilities = plateInput.filter((f) => f.location.state === "AK");
+  const hiFacilities = plateInput.filter((f) => f.location.state === "HI");
+  const conusFacilities = plateInput.filter(
     (f) =>
       f.location.state !== "AK" &&
       f.location.state !== "HI" &&
@@ -207,6 +224,7 @@ describe("makeAlbersUsa — AK and HI insets", () => {
 
   it("has Alaska and Hawaii facilities to place", () => {
     // Guards the two suites below from passing vacuously on an empty filter.
+    // Alaska is real fixture data; Hawaii is the synthetic pair above.
     expect(akFacilities.length).toBeGreaterThan(0);
     expect(hiFacilities.length).toBeGreaterThan(0);
   });
@@ -264,16 +282,18 @@ describe("makeAlbersUsa — unrepresentable jurisdictions", () => {
   });
 });
 
-describe("buildPlateData — the real dataset", () => {
-  const data = buildPlateData(facilities, WIDTH, HEIGHT);
+describe("buildPlateData — the fixture dataset plus synthetic territories", () => {
+  const data = buildPlateData(plateInput, WIDTH, HEIGHT);
 
-  const territoryFacilities = facilities.filter((f) =>
+  const territoryFacilities = plateInput.filter((f) =>
     OMITTED_JURISDICTIONS.has(f.location.state),
   );
 
+  // The real dataset's territory counts (9 facilities: GU 4, MP 2, PR 2, VI 1)
+  // are asserted in build-hero-plate.dataset.test.ts.
   it("omits exactly the territory facilities, and reports them", () => {
-    expect(territoryFacilities).toHaveLength(9);
-    expect(data.omitted).toBe(9);
+    expect(territoryFacilities).toHaveLength(SYNTHETIC_TERRITORIES.length);
+    expect(data.omitted).toBe(4);
     expect(data.omittedJurisdictions).toEqual(["GU", "MP", "PR", "VI"]);
   });
 
@@ -282,12 +302,12 @@ describe("buildPlateData — the real dataset", () => {
     for (const f of territoryFacilities) {
       byCode[f.location.state] = (byCode[f.location.state] ?? 0) + 1;
     }
-    expect(byCode).toEqual({ GU: 4, MP: 2, PR: 2, VI: 1 });
+    expect(byCode).toEqual({ GU: 1, MP: 1, PR: 1, VI: 1 });
   });
 
   it("reconciles plotted + deduped + omitted against the input length", () => {
-    expect(data.total).toBe(facilities.length);
-    expect(data.plotted + data.deduped + data.omitted).toBe(facilities.length);
+    expect(data.total).toBe(plateInput.length);
+    expect(data.plotted + data.deduped + data.omitted).toBe(plateInput.length);
   });
 
   it("counts drawn marks per status, summing to plotted", () => {
@@ -376,48 +396,39 @@ describe("buildPlateData — fails loudly rather than shipping a wrong plate", (
   });
 });
 
-describe("hero-plate-paths.ts — the committed artifact is current", () => {
-  // Mirrors lib/siting-context.test.ts: a data wave that forgets
-  // `npm run build:mapdata` turns the required check red instead of shipping a
-  // plate that silently disagrees with the dataset it claims to draw.
-  const data = buildPlateData(facilities, WIDTH, HEIGHT);
-
-  it("matches the paths the generator produces from data/facilities.json", () => {
-    expect(HERO_PLATE.paths).toEqual(data.paths);
+// Whether the committed artifact is CURRENT against the real dataset (paths,
+// counts, docs/media/map.svg, asOf) is asserted in
+// build-hero-plate.dataset.test.ts: the fixture cannot reproduce a plate drawn
+// from the full data. Here, only what holds of the artifact on its own.
+describe("hero-plate-paths.ts — the committed artifact is self-consistent", () => {
+  it("reconciles plotted + deduped + omitted against its own total", () => {
+    expect(HERO_PLATE.plotted + HERO_PLATE.deduped + HERO_PLATE.omitted).toBe(HERO_PLATE.total);
+    const marks = STATUS_ORDER.reduce(
+      (acc: number, s: string) => acc + HERO_PLATE.counts[s as keyof typeof HERO_PLATE.counts],
+      0,
+    );
+    expect(marks).toBe(HERO_PLATE.plotted);
   });
 
-  it("docs/media/map.svg is the SVG the generator produces from the current data", () => {
-    // Same failure mode as the HERO_PLATE tests above: a wave that skips
-    // `npm run build:heroplate` leaves a README map that disagrees with the
-    // dataset it claims to draw.
-    const committed = readFileSync(resolve(HERO_HERE, "../docs/media/map.svg"), "utf8");
-    const asOf = (metaRaw as { asOf: string }).asOf;
-    expect(buildReadmeSvg({ ...data, outlines: HERO_PLATE.outlines }, asOf, WIDTH, HEIGHT)).toBe(committed);
+  it("carries one well-formed zero-length-subpath string per status", () => {
+    for (const status of STATUS_ORDER) {
+      const d = HERO_PLATE.paths[status as keyof typeof HERO_PLATE.paths];
+      expect({ status, shape: /^(?:M\d+ \d+h\.01)+$/.test(d) }).toEqual({ status, shape: true });
+      expect({ status, marks: d.split("h.01").length - 1 }).toEqual({
+        status,
+        marks: HERO_PLATE.counts[status as keyof typeof HERO_PLATE.counts],
+      });
+    }
   });
 
-  it("matches the generator's counts and reconciliation", () => {
-    expect({
-      counts: { ...HERO_PLATE.counts },
-      plotted: HERO_PLATE.plotted,
-      deduped: HERO_PLATE.deduped,
-      omitted: HERO_PLATE.omitted,
-      total: HERO_PLATE.total,
-      omittedJurisdictions: [...HERO_PLATE.omittedJurisdictions],
-    }).toEqual({
-      counts: data.counts,
-      plotted: data.plotted,
-      deduped: data.deduped,
-      omitted: data.omitted,
-      total: data.total,
-      omittedJurisdictions: data.omittedJurisdictions,
-    });
-  });
-
-  it("records the viewBox and the snapshot it drew", () => {
+  it("records the viewBox and the snapshot date it drew", () => {
     expect(HERO_PLATE.viewBox).toBe(`0 0 ${WIDTH} ${HEIGHT}`);
     expect(HERO_PLATE.width).toBe(WIDTH);
     expect(HERO_PLATE.height).toBe(HEIGHT);
-    expect(HERO_PLATE.asOf).toBe((metaRaw as { asOf: string }).asOf);
+    // The default run cannot compare asOf to the real dataset's meta (see
+    // build-hero-plate.dataset.test.ts); it proves only that the committed
+    // value is a usable ISO instant, not that it is the CURRENT snapshot.
+    expect(assertUsableAsOf(HERO_PLATE.asOf)).toBe(HERO_PLATE.asOf);
   });
 
   it("stays small enough to inline in the server-rendered markup", () => {
@@ -583,11 +594,27 @@ describe("buildReadmeSvg — standalone README map", () => {
   });
 
   it("prints no marks-count as a facility count", () => {
-    const text = (svg.match(/<text[^>]*>([^<]*)<\/text>/g) ?? []).join(" ");
+    // Scans the <text>, <title> and <desc> CONTENT, minus the dataset date.
+    // HEAD also scanned the <text> tags' attribute values; that is dropped on
+    // purpose, because those are layout (x/y coordinates, font-size, #RRGGBB
+    // colours), not printed counts, and a small fixture count collides with them
+    // (a count of 5 matched the colour #5C5344). Trade: a count leaking into an
+    // attribute value is no longer caught; the printed text is what a reader sees.
+    const elements = [...svg.matchAll(/<(text|title|desc)[^>]*>([^<]*)<\/\1>/g)];
+    // The scanner skips any element with child markup (e.g. a <tspan>). Every
+    // opening tag must have been matched, so such an element fails loudly here
+    // instead of silently leaving its text unscanned.
+    const openingTags = svg.match(/<(?:text|title|desc)[\s>]/g) ?? [];
+    expect(elements.length).toBeGreaterThan(0);
+    expect(elements).toHaveLength(openingTags.length);
+    const text = elements.map((m) => m[2].replace(/\d{4}-\d{2}-\d{2}/g, "")).join(" ");
     for (const n of [data.plotted, data.total, data.total - data.omitted, ...Object.values(data.counts) as number[]]) {
       expect(text).not.toMatch(new RegExp(`(^|\\D)${n}(\\D|$)`));
     }
-    expect(text).not.toMatch(/facilit/i);
+    // The word check stays on the drawn <text> labels only, as at HEAD: the
+    // title/desc legitimately describe the map as tracking facilities.
+    const labels = [...svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(" ");
+    expect(labels).not.toMatch(/facilit/i);
   });
 
   it("stays small", () => {

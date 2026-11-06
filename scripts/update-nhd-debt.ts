@@ -12,6 +12,7 @@
  *
  *   npx tsx scripts/update-nhd-debt.ts --count            print the integer only; write nothing
  *   npx tsx scripts/update-nhd-debt.ts [--note "<why>"]   rewrite the ledger iff the count moved
+ *   ... --ledger-db                                       ALSO sync the Neon maintenance_ledger row (needs DATABASE_URL)
  *
  * An unchanged count writes nothing, so `asOf` does not churn. Exits non-zero if
  * either data file is unreadable or not JSON, or if the ledger exists but is
@@ -31,6 +32,7 @@ import {
   type FacilityStateRow,
   type SitingEntryRow,
 } from "../lib/nhd-debt";
+import type { KeyedStore } from "../lib/closed-data-store";
 import { isEntrypoint } from "./is-entrypoint";
 
 export const LEDGER_RELATIVE_PATH = "data/nhd-backfill-debt.json";
@@ -38,6 +40,8 @@ export const LEDGER_RELATIVE_PATH = "data/nhd-backfill-debt.json";
 export interface CliArgs {
   countOnly: boolean;
   note?: string;
+  /** Also keep the `maintenance_ledger` row `nhd_backfill_debt` in Neon equal to the count. */
+  ledgerDb?: boolean;
 }
 
 export function parseArgs(argv: string[]): CliArgs {
@@ -46,6 +50,8 @@ export function parseArgs(argv: string[]): CliArgs {
     const arg = argv[i];
     if (arg === "--count") {
       args.countOnly = true;
+    } else if (arg === "--ledger-db") {
+      args.ledgerDb = true;
     } else if (arg === "--note") {
       const value = argv[++i];
       if (value === undefined) throw new Error("--note requires a value");
@@ -58,6 +64,9 @@ export function parseArgs(argv: string[]): CliArgs {
   }
   if (args.countOnly && args.note !== undefined) {
     throw new Error("--count writes nothing, so --note has no effect; drop one of them");
+  }
+  if (args.countOnly && args.ledgerDb) {
+    throw new Error("--count writes nothing, so --ledger-db has no effect; drop one of them");
   }
   return args;
 }
@@ -82,9 +91,7 @@ function readLedgerIfPresent(file: string): unknown {
   return existsSync(file) ? readJson(file, LEDGER_RELATIVE_PATH) : undefined;
 }
 
-export function run(argv: string[], root: string, today: string): void {
-  const args = parseArgs(argv);
-
+function countDebt(root: string): { count: number; offenders: ReturnType<typeof missingNearestWaterOffenders> } {
   const facilities = readJson(path.join(root, "data/facilities.json"), "data/facilities.json");
   const sitingContext = readJson(path.join(root, "data/siting-context.json"), "data/siting-context.json");
   if (!Array.isArray(facilities)) {
@@ -98,7 +105,12 @@ export function run(argv: string[], root: string, today: string): void {
     facilities as FacilityStateRow[],
     sitingContext as Record<string, SitingEntryRow>,
   );
-  const count = offenders.length;
+  return { count: offenders.length, offenders };
+}
+
+export function run(argv: string[], root: string, today: string): void {
+  const args = parseArgs(argv);
+  const { count, offenders } = countDebt(root);
 
   if (args.countOnly) {
     console.log(String(count));
@@ -117,14 +129,58 @@ export function run(argv: string[], root: string, today: string): void {
   }
 }
 
+export const LEDGER_DB_KEY = "nhd_backfill_debt";
+
+// `--ledger-db`: the file ledger run, then the same plan against the Neon
+// `maintenance_ledger` row. Opt-in; `run` alone is the unchanged default.
+// Order: read Neon FIRST (a read failure or a malformed row aborts before the
+// file is touched), then write the file, then Neon. Guaranteed: a Neon outage or
+// bad row never leaves the file moved. NOT guaranteed: a Neon WRITE failure after
+// the file write leaves the file ahead of Neon; a re-run reconciles it, because
+// the file then matches the count and the Neon plan is computed on its own.
+export async function runWithLedgerDb(
+  argv: string[],
+  root: string,
+  today: string,
+  store: KeyedStore,
+): Promise<void> {
+  const args = parseArgs(argv);
+  const { count } = countDebt(root);
+  const current = (await store.readAll()).get(LEDGER_DB_KEY);
+  const plan = planLedgerUpdate(count, current, args.note, today); // throws on a malformed row
+  run(argv, root, today);
+  console.log(`NHD debt (Neon ${LEDGER_DB_KEY}): ${count} (ledger was ${plan.previous ?? "missing"})`);
+  if (plan.next !== null) {
+    await store.upsert([{ key: LEDGER_DB_KEY, data: plan.next }]);
+    console.log(`Wrote maintenance_ledger ${LEDGER_DB_KEY}: ceiling ${plan.previous ?? "missing"} -> ${count}`);
+  }
+}
+
 // Only run the CLI when this file is executed directly, not when its exports
 // are imported by a test suite — matches scripts/census-diff.ts's isMain guard.
 const isMain = isEntrypoint(import.meta.url);
 if (isMain) {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
   const today = new Date().toISOString().slice(0, 10); // UTC
+  const argv = process.argv.slice(2);
   try {
-    run(process.argv.slice(2), root, today);
+    if (parseArgs(argv).ledgerDb) {
+      // Checked BEFORE anything is written, so a missing URL cannot leave the
+      // file ledger moved while the Neon row is not.
+      if (!process.env.DATABASE_URL) {
+        throw new Error("--ledger-db needs DATABASE_URL; nothing was written");
+      }
+      // Opt-in path only: loaded lazily so the default path never touches DB code.
+      import("../lib/closed-data-store")
+        .then(({ ledgerStore }) => runWithLedgerDb(argv, root, today, ledgerStore()))
+        .catch(async (err) => {
+          const { formatFatalError } = await import("../lib/db-error");
+          console.error(formatFatalError(err));
+          process.exit(1);
+        });
+    } else {
+      run(argv, root, today);
+    }
   } catch (err) {
     // lint-no-raw-error-logs: allow -- local ledger/argv errors only; imports no DB code, and the CLI test pins this exact stderr text
     console.error(err instanceof Error ? err.message : String(err));

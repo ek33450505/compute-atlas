@@ -756,3 +756,32 @@ export const discoveryHeartbeatTable = pgTable("discovery_heartbeat", {
 });
 
 export type DiscoveryHeartbeatRow = typeof discoveryHeartbeatTable.$inferSelect;
+
+/**
+ * Closed-data tables (open-code/closed-data refactor): the curated datasets that
+ * used to ship as repo JSON now live in Neon. All three are keyed JSON blobs,
+ * written only by maintainer scripts (`backfill:siting`, `backfill:ownership`,
+ * `siting:apply`, `nhd:debt --ledger-db`); no public path reads or writes them.
+ * The row shape inside `data` is validated by the reader, not the database.
+ */
+
+/** Per-facility siting context. `facility_id` matches `facilities.id`; orphans are allowed (retired facilities). */
+export const sitingContextTable = pgTable("siting_context", {
+  facilityId: text("facility_id").primaryKey(),
+  data: jsonb("data").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Operator-level ownership. `operator_key` is the EXACT `facility.operator` string, no normalisation. */
+export const operatorOwnershipTable = pgTable("operator_ownership", {
+  operatorKey: text("operator_key").primaryKey(),
+  data: jsonb("data").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Small keyed maintenance state, e.g. `nhd_backfill_debt` -> `{ceiling, asOf, note}`. */
+export const maintenanceLedgerTable = pgTable("maintenance_ledger", {
+  key: text("key").primaryKey(),
+  value: jsonb("value").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});

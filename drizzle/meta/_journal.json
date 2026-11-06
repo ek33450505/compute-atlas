@@ -134,6 +134,13 @@
       "when": 1792620024490,
       "tag": "0018_submissions_discovered_by_idx",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1793981334133,
+      "tag": "0019_closed_data_tables",
+      "breakpoints": true
     }
   ]
 }

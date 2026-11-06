@@ -4,11 +4,14 @@
  * all injected, so no test touches a real database or the real os.tmpdir().
  *
  * The file-fallback path (`process.cwd()`/data/facilities.json) stays
- * hardcoded; those tests compare against an independent read of the same file
- * and never assert a count or a specific record, since the dataset grows.
+ * hardcoded; those tests point `process.cwd()` at a temp root holding a copy of
+ * the committed fixture (tests/fixtures), so they never depend on the real
+ * dataset, and compare against an independent read of that same file.
  */
 import {
   chmodSync,
+  copyFileSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   readdirSync,
@@ -26,11 +29,12 @@ import type { Facility } from "../../lib/schema";
 import { cacheFileNameFor, loadFacilities, resolveReadUrl } from "./load-facilities";
 
 // Cache reads re-validate with facilitiesSchema, so the DB fixture is a real record.
-const DB_FACILITY = (readRealFacilitiesFile() as Facility[])[0];
+const FIXTURE_FILE = path.join(process.cwd(), "tests", "fixtures", "facilities.fixture.json");
+const DB_FACILITY = (readFixtureFacilitiesFile() as Facility[])[0];
 const SECRET = "postgres://user:hunter2@host/db";
 
-function readRealFacilitiesFile(): unknown {
-  return JSON.parse(readFileSync(path.join(process.cwd(), "data", "facilities.json"), "utf-8"));
+function readFixtureFacilitiesFile(): unknown {
+  return JSON.parse(readFileSync(FIXTURE_FILE, "utf-8"));
 }
 
 const noSleep = async () => {};
@@ -41,10 +45,16 @@ function sleepRecorder() {
 }
 
 let cacheDir: string;
+let cwdRoot: string;
 let errSpy: MockInstance<typeof console.error>;
 
 beforeEach(() => {
   cacheDir = mkdtempSync(path.join(os.tmpdir(), "load-facilities-test-"));
+  // The loader's file fallback reads `process.cwd()`/data/facilities.json.
+  cwdRoot = mkdtempSync(path.join(os.tmpdir(), "load-facilities-cwd-"));
+  mkdirSync(path.join(cwdRoot, "data"));
+  copyFileSync(FIXTURE_FILE, path.join(cwdRoot, "data", "facilities.json"));
+  vi.spyOn(process, "cwd").mockReturnValue(cwdRoot);
   vi.stubEnv("DATABASE_URL", FAKE_URL);
   vi.stubEnv("DISCOVERY_READ_DATABASE_URL", "");
   vi.stubEnv("DISCOVERY_FACILITIES_CACHE_TTL_MS", "");
@@ -52,9 +62,10 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  rmSync(cacheDir, { recursive: true, force: true });
-  vi.unstubAllEnvs();
   vi.restoreAllMocks();
+  rmSync(cacheDir, { recursive: true, force: true });
+  rmSync(cwdRoot, { recursive: true, force: true });
+  vi.unstubAllEnvs();
 });
 
 const stderrText = () => errSpy.mock.calls.map((c) => c.join(" ")).join("\n");
@@ -171,7 +182,7 @@ describe("loadFacilities", () => {
       expect(rec.delays).toEqual([2_000, 8_000]);
       expect(result.dbError).toContain("3 attempts");
       expect(result.facilities.length).toBeGreaterThan(0);
-      expect(result.facilities).toEqual(readRealFacilitiesFile());
+      expect(result.facilities).toEqual(readFixtureFacilitiesFile());
       const err = stderrText();
       expect(err).toContain("WARNING");
       expect(err).toContain("duplicate");
@@ -199,7 +210,7 @@ describe("loadFacilities", () => {
 
     expect(result.source).toBe("file");
     expect(readDb).not.toHaveBeenCalled();
-    expect(result.facilities).toEqual(readRealFacilitiesFile());
+    expect(result.facilities).toEqual(readFixtureFacilitiesFile());
     expect(stderrText()).toContain("DISCOVERY_READ_DATABASE_URL");
     expect(stderrText()).toContain("is set");
   });

@@ -3,20 +3,13 @@ import meta from "@/data/facilities.meta.json";
 import { getDatasetEdition, getLiveDatasetEdition } from "@/lib/dataset-edition";
 
 describe("getDatasetEdition", () => {
-  it("returns the four contract fields sourced from facilities.meta.json", () => {
+  it("returns the three contract fields sourced from facilities.meta.json", () => {
     const edition = getDatasetEdition();
     expect(edition).toEqual({
-      version: meta.sourceRelease,
       asOf: meta.asOf,
       recordCount: meta.recordCount,
       schemaVersion: meta.schemaVersion,
     });
-  });
-
-  it("version is a non-empty string", () => {
-    const { version } = getDatasetEdition();
-    expect(typeof version).toBe("string");
-    expect(version.length).toBeGreaterThan(0);
   });
 
   it("recordCount is a positive number", () => {
@@ -27,13 +20,12 @@ describe("getDatasetEdition", () => {
   it("falls back to a typed, non-throwing shape when meta.json is malformed", async () => {
     vi.resetModules();
     vi.doMock("@/data/facilities.meta.json", () => ({
-      default: { asOf: "2026-01-01T00:00:00.000Z" }, // missing sourceRelease/recordCount/schemaVersion
+      default: { asOf: "2026-01-01T00:00:00.000Z" }, // missing recordCount/schemaVersion
     }));
     const { getDatasetEdition: getDatasetEditionMocked } = await import(
       "@/lib/dataset-edition"
     );
     expect(getDatasetEditionMocked()).toEqual({
-      version: "unknown",
       asOf: "unknown",
       recordCount: 0,
       schemaVersion: 0,
@@ -44,21 +36,20 @@ describe("getDatasetEdition", () => {
 });
 
 describe("getLiveDatasetEdition", () => {
-  it("returns version/asOf/schemaVersion but omits recordCount", () => {
+  it("returns asOf/schemaVersion but omits recordCount", () => {
     const live = getLiveDatasetEdition();
     expect(live).toEqual({
-      version: meta.sourceRelease,
       asOf: meta.asOf,
       schemaVersion: meta.schemaVersion,
     });
     expect(live).not.toHaveProperty("recordCount");
+    expect(live).not.toHaveProperty("version");
   });
 
   it("agrees with getDatasetEdition on every field it keeps", () => {
     const full = getDatasetEdition();
     const live = getLiveDatasetEdition();
     expect(live).toEqual({
-      version: full.version,
       asOf: full.asOf,
       schemaVersion: full.schemaVersion,
     });

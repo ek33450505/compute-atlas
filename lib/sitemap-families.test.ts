@@ -8,6 +8,7 @@ import {
   sitemapChildUrl,
   SITEMAP_INDEX_URL,
 } from "@/lib/sitemap-families";
+import { getAllFacilities } from "@/lib/data";
 import { siteConfig } from "@/lib/site";
 
 type RouteBuilder = () => Promise<MetadataRoute.Sitemap>;
@@ -92,16 +93,21 @@ describe("SITEMAP_FAMILIES set equality (regrouping, not pruning)", () => {
     });
   });
 
-  // This is a FLOOR, not an expected value — GSC reports 2,959 URLs in
-  // today's flat sitemap, but this test does not need updating as the
-  // dataset grows. It exists to catch a family silently returning `[]`,
-  // which the set-equality check above would NOT catch on its own if a bug
-  // made both the family path and the direct-builder path collapse to the
-  // same (wrong) empty result.
-  it("totals more than 2900 URLs across all families", async () => {
-    const familyResults = await Promise.all(SITEMAP_FAMILIES.map((f) => f.build()));
-    const total = familyResults.reduce((sum, r) => sum + r.length, 0);
-    expect(total).toBeGreaterThan(2900);
+  // Exact per-facility check on the fixture. It exists to catch a family
+  // silently returning `[]` (or dropping records), which the set-equality check
+  // above would NOT catch on its own if a bug made both the family path and the
+  // direct-builder path collapse to the same (wrong) result. The size FLOOR on
+  // the real dataset (GSC reports 2,959 URLs in the old flat sitemap) is in
+  // sitemap-families.dataset.test.ts.
+  it("the facilities family has exactly one URL per facility", async () => {
+    // Exact rather than a total: operators and states alone can outnumber a small
+    // fixture's facilities, so a total would pass with the facilities family
+    // collapsed to []. The real-dataset floor (2900) is in
+    // sitemap-families.dataset.test.ts.
+    const family = SITEMAP_FAMILIES.find((f) => f.id === "facilities")!;
+    const { length } = await getAllFacilities();
+    expect(length).toBeGreaterThan(0);
+    expect(await family.build()).toHaveLength(length);
   });
 });
 
