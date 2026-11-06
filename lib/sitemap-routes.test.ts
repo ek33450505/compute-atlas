@@ -47,6 +47,7 @@ describe("sitemap", () => {
     expect(urls).toContain(`${siteConfig.url}/contribute`);
     expect(urls).toContain(`${siteConfig.url}/support`);
     expect(urls).toContain(`${siteConfig.url}/sources/odod-dcte-2026-11`);
+    expect(urls).toContain(`${siteConfig.url}/sources/otc-1357-21-2026-11`);
     // /contact is an indexable landing page that was missing from the sitemap
     // entirely — GSC reported "URL is unknown to Google" (2026-09-03).
     expect(urls).toContain(`${siteConfig.url}/contact`);
@@ -467,6 +468,12 @@ describe("sitemap", () => {
   it("/sources/odod-dcte-2026-11 carries its own pinned lastModified, not the stale static-page date", async () => {
     const routes = await buildStaticRoutes();
     const entry = routes.find((r) => r.url === `${siteConfig.url}/sources/odod-dcte-2026-11`);
+    expect((entry!.lastModified as Date).getTime()).toBe(Date.UTC(2026, 10, 6));
+  });
+
+  it("/sources/otc-1357-21-2026-11 carries its own pinned lastModified, not the stale static-page date", async () => {
+    const routes = await buildStaticRoutes();
+    const entry = routes.find((r) => r.url === `${siteConfig.url}/sources/otc-1357-21-2026-11`);
     expect((entry!.lastModified as Date).getTime()).toBe(Date.UTC(2026, 10, 6));
   });
 
