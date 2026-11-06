@@ -5,7 +5,6 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SupportCta } from "@/components/support-cta";
 import { SupportersList } from "@/components/supporters-list";
-import { DATASET_DOI_URL } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { SUPPORTERS } from "@/lib/supporters";
 
@@ -211,11 +210,7 @@ export default function SupportPage() {
           Ko-fi has an institution membership. A supporting organization can
           be named on this page if it asks to be &mdash; for as long as its
           membership runs, or for twelve months after a one-off institutional
-          contribution. Citing the dataset helps too:{" "}
-          <a href={DATASET_DOI_URL} className={LINK_CLASS}>
-            doi.org/10.5281/zenodo.22284476
-          </a>
-          .
+          contribution. Citing the dataset helps too.
         </p>
       </section>
 

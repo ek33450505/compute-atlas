@@ -11,7 +11,6 @@
   <a href="https://github.com/ek33450505/compute-atlas/actions/workflows/ci.yml"><img src="https://github.com/ek33450505/compute-atlas/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-informational?style=flat" alt="Code: MIT"></a>
   <a href="LICENSE-DATA"><img src="https://img.shields.io/badge/data-CC%20BY%204.0-informational?style=flat" alt="Data: CC BY 4.0"></a>
-  <a href="https://doi.org/10.5281/zenodo.22284476"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.22284476.svg" alt="DOI: 10.5281/zenodo.22284476"></a>
 </p>
 
 <p align="center">
@@ -160,8 +159,8 @@ Link **www.compute-atlas.com**, not this repository: the site is the dataset's h
 repo is its source mirror. Say if you changed anything, for example "filtered to data
 centers" or "joined to counties". Keep your own commentary distinct from the records: Compute
 Atlas is non-partisan and takes no position on any facility, so present your conclusions as
-yours. For academic work, cite the DOI:
-`Kubiak, E. (n.d.). Compute Atlas [Data set]. https://doi.org/10.5281/zenodo.22284476`.
+yours. For academic work, cite the facility page you used and the date you accessed it, for example
+`"[Facility name]", Compute Atlas, https://www.compute-atlas.com/facilities/<id>, accessed [date]`.
 Full terms: [LICENSE-DATA](LICENSE-DATA).
 
 The data is free. If you or your organization rely on it, a monthly or institution membership on [Ko-fi](https://ko-fi.com/L2T725R7FV) helps cover its upkeep.

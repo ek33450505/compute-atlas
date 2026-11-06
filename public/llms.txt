@@ -39,13 +39,9 @@ facility, so keep your own analysis or commentary distinct from its records.
 
 ## How to cite
 
-The dataset has a permanent, citable identifier (a Zenodo concept DOI) that
-always resolves to its latest archived version:
-
-    Kubiak, E. (n.d.). Compute Atlas [Data set]. https://doi.org/10.5281/zenodo.22284476
-
-To cite a single record, name the facility and link its own page
-(https://www.compute-atlas.com/facilities/<id>) with the attribution above.
+To cite a record, name the facility and link its own page
+(https://www.compute-atlas.com/facilities/<id>) with the attribution above, and give the
+date you accessed it.
 
 ## Where to look
 

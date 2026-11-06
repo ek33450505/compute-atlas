@@ -3,16 +3,6 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 import { STATUS_META } from "@/lib/status";
 import { ENERGY_SOURCE_ENTRIES } from "@/lib/energy";
 
-/**
- * Compute Atlas's Zenodo concept DOI, resolvable and always pointing at the
- * latest archived release. This is the single source for the DOI: the
- * `Dataset` JSON-LD `identifier` below and the visible citation text on
- * `app/data/page.tsx` all read it from here, so a
- * future Zenodo release (which mints a NEW DOI) is a one-line change and
- * cannot leave the structured data disagreeing with the rendered page.
- */
-export const DATASET_DOI_URL = "https://doi.org/10.5281/zenodo.22284476";
-
 export interface FacilityJsonLd {
   "@context": "https://schema.org";
   "@type": "Place";
@@ -186,7 +176,6 @@ export interface DatasetJsonLd {
   name: string;
   description: string;
   url: string;
-  identifier: string;
   sameAs: string;
   keywords: string[];
   license: string;
@@ -213,8 +202,6 @@ export interface DatasetJsonLd {
 /**
  * Builds a schema.org Dataset JSON-LD object describing the whole facility
  * dataset (not a single facility) — enables Google Dataset Search eligibility.
- * `identifier` carries the resolvable Zenodo concept DOI, the field Google
- * Dataset Search and citation tooling key on.
  *
  * Deliberately omits `temporalCoverage`: it would need an honest start date
  * for the period the data covers, and nothing available to this builder
@@ -230,7 +217,6 @@ export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): Datase
     name: "Compute Atlas — U.S. Data Center & Compute Infrastructure Dataset",
     description: siteConfig.description,
     url: siteConfig.url,
-    identifier: DATASET_DOI_URL,
     sameAs: siteConfig.repoUrl,
     keywords: [
       "data centers",

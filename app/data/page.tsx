@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
-import { breadcrumbJsonLdString, DATASET_DOI_URL } from "@/lib/seo";
+import { breadcrumbJsonLdString } from "@/lib/seo";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
 export const revalidate = 86400;
@@ -11,7 +11,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: "How to cite Compute Atlas",
   description:
-    "How to cite Compute Atlas and its individual facility pages: attribution line, license, permanent identifier.",
+    "How to cite Compute Atlas and its individual facility pages: attribution line, license, and access date.",
   alternates: { canonical: "/data" },
 };
 
@@ -20,7 +20,7 @@ const LINK_CLASS =
 
 /**
  * /data — the citation page: how to cite the site and an individual facility
- * page, the license statement, and the permanent identifier. The route keeps
+ * page, the license statement, and the access date. The route keeps
  * its path for inbound links. The page loads no facility data and revalidates
  * on its 86400s timer only.
  *
@@ -48,7 +48,7 @@ export default function DataPage() {
       <PageMasthead
         eyebrow="CITATION"
         title="How to cite Compute Atlas"
-        dek="The attribution line for the site and for an individual facility page, the license, and the permanent identifier."
+        dek="The attribution line for the site and for an individual facility page, the license, and the access date."
       />
 
       <section aria-labelledby="what-heading" className="space-y-4 border-t border-border pt-10">
@@ -141,16 +141,6 @@ export default function DataPage() {
           Each record lists its own public sources. Cite those directly when a claim
           depends on them.
         </p>
-        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          For academic citation, Compute Atlas has a permanent identifier that always
-          resolves to its latest version:
-        </p>
-        <blockquote className="max-w-2xl border-l-2 border-border pl-4 font-mono text-sm text-muted-foreground">
-          Kubiak, E. (n.d.). Compute Atlas [Data set].{" "}
-          <a href={DATASET_DOI_URL} className={LINK_CLASS}>
-            {DATASET_DOI_URL}
-          </a>
-        </blockquote>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           If it saved you time,{" "}
           <Link href="/support" className={LINK_CLASS}>

@@ -20,8 +20,7 @@ The data is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4
   position for or against any facility or operator, and it is not affiliated with any company,
   advocacy group, or government agency. Present your conclusions as yours.
 
-For academic work, cite the DOI: Kubiak, E. (n.d.). *Compute Atlas* [Data set].
-https://doi.org/10.5281/zenodo.22284476
+For academic work, cite the facility page you used and the date you accessed it.
 
 ## Reading the records
 

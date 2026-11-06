@@ -28,7 +28,6 @@ import { StateEmbedSnippet } from "@/components/states/state-embed-snippet";
 import { WatchButton } from "@/components/subscribe/watch-button";
 import { aiClassificationEnum } from "@/lib/schema";
 import { siteConfig } from "@/lib/site";
-import { DATASET_DOI_URL } from "@/lib/seo";
 
 export const revalidate = 86400;
 
@@ -445,16 +444,6 @@ export default async function StatePage({
             {canonicalUrl}
           </a>
         </blockquote>
-        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          To cite the underlying dataset instead, use its permanent
-          identifier:{" "}
-          <a
-            href={DATASET_DOI_URL}
-            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
-          >
-            {DATASET_DOI_URL}
-          </a>
-        </p>
       </section>
     </div>
   );

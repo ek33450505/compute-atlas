@@ -2,7 +2,7 @@ import meta from "@/data/facilities.meta.json";
 
 /**
  * Public identity of the dataset release, for anyone citing it (academic
- * inquiries, the `.zenodo.json` record, a future citation UI). Sourced from
+ * inquiries, a future citation UI). Sourced from
  * `data/facilities.meta.json`, which `scripts/export.ts` regenerates on every
  * publish — see `sourceRelease` there.
  *

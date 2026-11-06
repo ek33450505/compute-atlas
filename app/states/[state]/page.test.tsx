@@ -47,7 +47,6 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import { DATASET_DOI_URL } from "@/lib/seo";
 import StatePage, { generateMetadata } from "./page";
 
 function makeFacility(overrides: Partial<Facility> = {}): Facility {
@@ -195,16 +194,13 @@ describe("StatePage embed snippet", () => {
 });
 
 describe("StatePage citation block", () => {
-  it("cites this page's own canonical URL and the dataset DOI", async () => {
+  it("cites this page's own canonical URL and no dataset DOI", async () => {
     const page = await StatePage({ params: Promise.resolve({ state: "texas" }) });
     const { getByRole } = render(page);
 
     expect(
       getByRole("link", { name: "https://www.compute-atlas.com/states/texas" })
     ).toHaveAttribute("href", "https://www.compute-atlas.com/states/texas");
-    expect(getByRole("link", { name: DATASET_DOI_URL })).toHaveAttribute(
-      "href",
-      DATASET_DOI_URL
-    );
+    expect(document.body.innerHTML).not.toMatch(/zenodo|10\.5281/i);
   });
 });

@@ -200,14 +200,12 @@ describe("SupportPage — the personal sections", () => {
     expect(text).toContain("It has never published a record.");
   });
 
-  it("explains the Ko-fi institution membership and links the dataset DOI", () => {
+  it("explains the Ko-fi institution membership without a DOI link", () => {
     render(<SupportPage />);
     expect(
       screen.getByText(/Ko-fi has an institution membership/)
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "doi.org/10.5281/zenodo.22284476" })
-    ).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.22284476");
+    expect(document.body.innerHTML).not.toMatch(/zenodo|10\.5281/i);
   });
 
   it("orders the guarantee, then supporters, then where I stand", () => {

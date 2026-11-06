@@ -46,7 +46,7 @@ function maxLastUpdated(facilities: Facility[]): Date {
  * would churn exactly like the dataset-backed routes did (see
  * buildStaticRoutes below). Bump by hand only when a page's content
  * meaningfully changes, never on every sitemap regeneration. Last bumped
- * 2026-09-03 to cover the /data Zenodo DOI update (2026-09-03) and the
+ * 2026-09-03 to cover the /data citation update (2026-09-03) and the
  * /about + /methodology edits (2026-09-01).
  */
 const STATIC_PAGE_LAST_MODIFIED = new Date("2026-09-03T00:00:00Z");
