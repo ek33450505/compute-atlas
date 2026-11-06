@@ -5,16 +5,16 @@
  * back into the forkable JSON export.
  *
  * Alongside facilities.json, also writes a sibling facilities.meta.json with
- * lightweight dataset-versioning metadata (asOf/recordCount/schemaVersion/
- * sourceRelease) so downstream consumers of the CC-BY snapshot can detect
- * staleness or shape changes without diffing the full dataset.
+ * lightweight dataset-versioning metadata (asOf/recordCount/schemaVersion) so
+ * downstream consumers of the CC-BY snapshot can detect staleness or shape
+ * changes without diffing the full dataset.
  *
  * Run via: npm run db:export  (requires DATABASE_URL in .env.local)
  * Optional: --out=<path> to write somewhere other than data/facilities.json.
  *
  * Uses relative imports throughout, matching the other scripts in this folder.
  */
-import { readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { facilitiesSchema } from "../lib/schema";
@@ -31,7 +31,6 @@ export interface ExportMeta {
   asOf: string;
   recordCount: number;
   schemaVersion: number;
-  sourceRelease: string;
 }
 
 /**
@@ -44,14 +43,12 @@ export interface ExportMeta {
  */
 export function buildExportMeta(
   recordCount: number,
-  sourceRelease: string,
   now: Date = new Date()
 ): ExportMeta {
   return {
     asOf: now.toISOString(),
     recordCount,
     schemaVersion: SCHEMA_VERSION,
-    sourceRelease,
   };
 }
 
@@ -59,12 +56,6 @@ function parseOutPath(): string {
   const flag = process.argv.find((arg) => arg.startsWith("--out="));
   const rel = flag ? flag.slice("--out=".length) : path.join("data", "facilities.json");
   return path.resolve(process.cwd(), rel);
-}
-
-function readPackageVersion(): string {
-  const pkgPath = path.join(process.cwd(), "package.json");
-  const pkg = JSON.parse(readFileSync(pkgPath, "utf-8")) as { version: string };
-  return pkg.version;
 }
 
 const MISSING_DATABASE_URL =
@@ -122,7 +113,7 @@ export async function exportFacilities(
   // be schema-valid; this throws loudly on any invalid record, same as seed.ts.
   const validated = facilitiesSchema.parse(facilities);
 
-  const meta = buildExportMeta(validated.length, readPackageVersion(), readAt);
+  const meta = buildExportMeta(validated.length, readAt);
   const metaOutPath = path.join(path.dirname(outPath), "facilities.meta.json");
 
   // Write both files to temp paths, then rename both. This narrows the window

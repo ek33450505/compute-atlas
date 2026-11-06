@@ -4,7 +4,7 @@ import meta from "@/data/facilities.meta.json";
  * Public identity of the dataset release, for anyone citing it (academic
  * inquiries, a future citation UI). Sourced from
  * `data/facilities.meta.json`, which `scripts/export.ts` regenerates on every
- * publish — see `sourceRelease` there.
+ * publish. The dataset carries no version string; `asOf` is its identity.
  *
  * This describes the last PUBLISHED SNAPSHOT, not the live dataset. Neon is
  * the actual source of truth (facilities can be added or corrected between
@@ -17,8 +17,6 @@ import meta from "@/data/facilities.meta.json";
  * `getLiveDatasetEdition` for the shape meant to sit alongside a live count.
  */
 export interface DatasetEdition {
-  /** Semver-ish release string, e.g. "1.30.0". Sourced from `meta.sourceRelease`. */
-  version: string;
   /** ISO-8601 timestamp of the export that produced this snapshot — not "now". */
   asOf: string;
   /** Facility count IN THE SNAPSHOT as of `asOf`. Not a live row count — see the interface doc above. */
@@ -34,7 +32,6 @@ export interface DatasetEdition {
  * dataset content.
  */
 const FALLBACK_EDITION: DatasetEdition = {
-  version: "unknown",
   asOf: "unknown",
   recordCount: 0,
   schemaVersion: 0,
@@ -48,19 +45,16 @@ const FALLBACK_EDITION: DatasetEdition = {
  */
 export function getDatasetEdition(): DatasetEdition {
   const raw = meta as Partial<{
-    sourceRelease: string;
     asOf: string;
     recordCount: number;
     schemaVersion: number;
   }>;
 
-  const version = typeof raw.sourceRelease === "string" ? raw.sourceRelease : undefined;
   const asOf = typeof raw.asOf === "string" ? raw.asOf : undefined;
   const recordCount = typeof raw.recordCount === "number" ? raw.recordCount : undefined;
   const schemaVersion = typeof raw.schemaVersion === "number" ? raw.schemaVersion : undefined;
 
   if (
-    version === undefined ||
     asOf === undefined ||
     recordCount === undefined ||
     schemaVersion === undefined
@@ -68,7 +62,7 @@ export function getDatasetEdition(): DatasetEdition {
     return FALLBACK_EDITION;
   }
 
-  return { version, asOf, recordCount, schemaVersion };
+  return { asOf, recordCount, schemaVersion };
 }
 
 /**
@@ -78,7 +72,7 @@ export function getDatasetEdition(): DatasetEdition {
  * its payload. Stacking the snapshot's `recordCount` next to that live count
  * in one response invites exactly the misreading this type exists to
  * prevent: two different record totals in one payload with nothing marking
- * them as describing different things. `version`, `asOf`, and `schemaVersion`
+ * them as describing different things. `asOf` and `schemaVersion`
  * don't have that live counterpart to collide with, so they're kept.
  */
 export type LiveDatasetEdition = Omit<DatasetEdition, "recordCount">;
@@ -89,6 +83,6 @@ export type LiveDatasetEdition = Omit<DatasetEdition, "recordCount">;
  * already carries a live record count elsewhere in its own payload.
  */
 export function getLiveDatasetEdition(): LiveDatasetEdition {
-  const { version, asOf, schemaVersion } = getDatasetEdition();
-  return { version, asOf, schemaVersion };
+  const { asOf, schemaVersion } = getDatasetEdition();
+  return { asOf, schemaVersion };
 }

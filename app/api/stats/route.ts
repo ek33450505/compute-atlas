@@ -8,7 +8,7 @@ import { checkDailyApiGate } from "@/lib/api-daily-limit";
 /**
  * Public aggregate dataset stats. `count` (from `getStats`) is a LIVE row
  * count, read fresh from Neon on every request. The additive `edition` key
- * carries the dataset's citable identity (version/asOf/schemaVersion) — see
+ * carries the dataset's citable identity (asOf/schemaVersion) — see
  * `lib/dataset-edition.ts` — but deliberately omits `recordCount`: that field
  * describes the last published snapshot and can legitimately disagree with
  * the live `count` above, and stacking two different record totals in one

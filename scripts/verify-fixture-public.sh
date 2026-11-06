@@ -62,18 +62,21 @@ check tests/fixtures/facilities.fixture.json data/facilities.json array-id
 check tests/fixtures/siting-context.fixture.json data/siting-context.json object
 check tests/fixtures/operator-ownership.fixture.json data/operator-ownership.json array-operator
 
-# Meta: same keys as the source, recordCount must equal the fixture length.
+# Meta: exactly {asOf, recordCount, schemaVersion}; asOf/schemaVersion match the
+# source, recordCount equals the fixture length. sourceRelease is not compared:
+# the dataset version was retired on 2026-11-06.
 META_JS="$(cat <<'NODE'
 const fs = require("node:fs");
 const src = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
 const meta = JSON.parse(fs.readFileSync("tests/fixtures/facilities.meta.fixture.json", "utf8"));
 const fixtures = JSON.parse(fs.readFileSync("tests/fixtures/facilities.fixture.json", "utf8"));
 let bad = 0;
-if (JSON.stringify(Object.keys(meta).sort()) !== JSON.stringify(Object.keys(src).sort())) {
-  console.error("FAIL: meta fixture keys differ from source");
+const wantKeys = ["asOf", "recordCount", "schemaVersion"];
+if (JSON.stringify(Object.keys(meta).sort()) !== JSON.stringify(wantKeys)) {
+  console.error(`FAIL: meta fixture keys must be exactly ${wantKeys.join(", ")}`);
   bad++;
 }
-for (const k of ["asOf", "schemaVersion", "sourceRelease"]) {
+for (const k of ["asOf", "schemaVersion"]) {
   if (meta[k] !== src[k]) {
     console.error(`FAIL: meta fixture ${k} differs from source`);
     bad++;
