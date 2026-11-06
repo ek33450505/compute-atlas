@@ -1,5 +1,5 @@
 import { searchFacilitiesDb, MAX_SEARCH_QUERY_LEN } from "@/lib/search-db";
-import { bulkAccessPaused, cacheableJson, corsPreflight, jsonResponse, READ_CACHE } from "@/lib/api-response";
+import { notAvailable, cacheableJson, corsPreflight, jsonResponse, READ_CACHE } from "@/lib/api-response";
 import { bearerMatches } from "@/lib/api-auth";
 import { extractTrustedClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
@@ -34,9 +34,9 @@ import { PALETTE_MAX_RESULTS, PALETTE_MIN_QUERY_LEN, toFacilitySearchHit } from 
  *
  * Absent or any other `shape` value selects the FULL records, which are a bulk
  * exit (one broad `q` returned ~1,980 records), so that shape is admin-bearer
- * only while bulk access is paused: anonymous callers get a 403, and an
- * authorized response is `no-store` (Cloudflare caches non-/admin GETs and does
- * not key on `Authorization`). Only the exact first `shape=palette` is public.
+ * only: anonymous callers get a 403, and an authorized response is
+ * `no-store` (Cloudflare caches non-/admin GETs and does not key on
+ * `Authorization`). Only the exact first `shape=palette` is public.
  *
  * The palette shape is also bounded, because a one-letter prefix matches
  * hundreds of facilities and the palette renders only a handful: a trimmed
@@ -54,7 +54,7 @@ export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const lean = searchParams.get("shape") === "palette";
   const admin = !lean && bearerMatches(request, process.env.API_ADMIN_TOKEN);
-  if (!lean && !admin) return bulkAccessPaused();
+  if (!lean && !admin) return notAvailable();
 
   const query = searchParams.get("q") ?? "";
   const queryEcho = query.slice(0, MAX_SEARCH_QUERY_LEN);

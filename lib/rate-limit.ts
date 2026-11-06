@@ -217,6 +217,9 @@ export function rateLimitDecision(count: number): { ok: boolean } {
  * effect that fired on some of those paths but not others is observable as a
  * difference in remaining budget, which reintroduces exactly the
  * branch-distinguishing oracle that response symmetry exists to close.
+ * (`/api/access/request` no longer creates grants or records attempts, and
+ * `requestAccessGrant` has no production caller; the paragraph describes the
+ * original design.)
  *
  * The already-refused (429) request deliberately does NOT record — see the
  * routes' comments and `recordSubscribeAttempt`: that branch is decided purely

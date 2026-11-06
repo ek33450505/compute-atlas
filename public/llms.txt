@@ -45,21 +45,22 @@ always resolves to its latest archived version:
 
     Kubiak, E. (n.d.). Compute Atlas [Data set]. https://doi.org/10.5281/zenodo.22284476
 
+To cite a single record, name the facility and link its own page
+(https://www.compute-atlas.com/facilities/<id>) with the attribution above.
+
 ## Where to look
 
 - https://www.compute-atlas.com/about — why this project exists, its method,
   and its stance on what the buildout costs locally.
-- https://www.compute-atlas.com/api — public read API documentation. The doc
-  page itself is crawlable; the JSON endpoints beneath /api/ are Disallow-ed
-  in robots.txt (they are for programs, not crawlers) and remain open to
-  direct requests. Bulk access to the full dataset is paused; every facility
-  page remains citable.
+- https://www.compute-atlas.com/api — API documentation. The doc page itself
+  is crawlable; the JSON endpoints beneath /api/ are Disallow-ed in
+  robots.txt (they are for programs, not crawlers).
 - https://www.compute-atlas.com/api/stats — current dataset totals. Read these
   live rather than quoting a number from this file.
 - https://www.compute-atlas.com/methodology — how records are compiled,
   sourced, and classified, including the limits of each field.
-- https://www.compute-atlas.com/data — dataset description, license, citation,
-  and scope caveats in full.
+- https://www.compute-atlas.com/data — how to cite, license, and scope caveats
+  in full.
 - https://www.compute-atlas.com/contribute — add a facility or correct an
   existing record; every submission needs a public source and is reviewed by
   a person before it goes live.

@@ -52,16 +52,12 @@ export function OpenRecord({
       sub: "Code under MIT, data under CC BY 4.0.",
     },
     {
-      label: "Access",
-      value: "Download + API",
+      label: "Citation",
+      value: "Cite any record",
       sub: (
         <>
           <Link href="/data" className={TRAILING_LINK_CLASS}>
-            Download
-          </Link>{" "}
-          ·{" "}
-          <Link href="/api" className={TRAILING_LINK_CLASS}>
-            JSON API
+            Cite
           </Link>{" "}
           ·{" "}
           <a href="/activity/feed.xml" className={TRAILING_LINK_CLASS}>
@@ -91,8 +87,8 @@ export function OpenRecord({
         </div>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
           Compute Atlas is built and corrected in the open. Every figure traces
-          to a public source, nothing goes live without a human review, and the
-          whole dataset is free to reuse.
+          to a public source, nothing goes live without a human review, and
+          every record can be cited.
         </p>
 
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -265,21 +265,20 @@ describe("robots", () => {
     expect(wildcard.disallow).toEqual(["/admin/", "/api/"]);
   });
 
-  it("carries the bulk-data and licence comments on the '*' rule, keyed with a leading '#'", () => {
+  it("carries the citation and licence comments on the '*' rule, keyed with a leading '#'", () => {
     const { rules } = robots();
     const rule = Array.isArray(rules) ? rules[0] : rules;
     expect(rule.userAgent).toBe("*");
 
-    const bulkData = rule.other?.["# Bulk data"];
+    const citation = rule.other?.["# Citation"];
     const licence = rule.other?.["# Licence"];
-    expect(typeof bulkData).toBe("string");
+    expect(typeof citation).toBe("string");
     expect(typeof licence).toBe("string");
-    // Bulk access is paused: the line says so and points at /data, never at a
-    // bulk file URL.
-    expect(bulkData).toContain("paused");
-    expect(bulkData).toContain(`${siteConfig.url}/data`);
-    expect(bulkData).not.toContain("raw.githubusercontent.com");
-    expect(bulkData).not.toContain("facilities.json");
+    // Points at the citation page, never at a bulk file URL.
+    expect(citation).toContain("cite");
+    expect(citation).toContain(`${siteConfig.url}/data`);
+    expect(citation).not.toContain("raw.githubusercontent.com");
+    expect(citation).not.toContain("facilities.json");
     // States the licence condition plainly, without inventing a URL.
     expect(licence).toContain(DATASET_LICENSE_URL);
     expect(licence).toContain("CC-BY-4.0");
@@ -299,16 +298,16 @@ describe("robots", () => {
     }
   });
 
-  it("emits the bulk-data and licence comments as '#'-prefixed lines in the served robots.txt, inside the '*' block", () => {
+  it("emits the citation and licence comments as '#'-prefixed lines in the served robots.txt, inside the '*' block", () => {
     const text = resolveRobots(robots());
     const blocks = text.split("\n\n");
     const wildcard = blocks.find((block) => block.startsWith("User-Agent: *\n"));
     expect(wildcard).toBeDefined();
 
     const lines = (wildcard as string).split("\n").filter((line) => line.length > 0);
-    const bulkLine = lines.find((line) => line.startsWith("# Bulk data:"));
+    const citationLine = lines.find((line) => line.startsWith("# Citation:"));
     const licenceLine = lines.find((line) => line.startsWith("# Licence:"));
-    expect(bulkLine).toBeDefined();
+    expect(citationLine).toBeDefined();
     expect(licenceLine).toBeDefined();
 
     // Every non-blank line in this block is either a real directive or a

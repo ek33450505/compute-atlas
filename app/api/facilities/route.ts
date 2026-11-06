@@ -2,7 +2,7 @@ import { getAllFacilities } from "@/lib/data";
 import { filterFacilities, type FacilityFilters } from "@/lib/filters";
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import { facilityTypeEnum, type Facility } from "@/lib/schema";
-import { bulkAccessPaused, jsonResponse, corsPreflight } from "@/lib/api-response";
+import { notAvailable, jsonResponse, corsPreflight } from "@/lib/api-response";
 import { bearerMatches, requireAdmin } from "@/lib/api-auth";
 import { createFacility } from "@/lib/facility-write";
 import { extractTrustedClientIp } from "@/lib/rate-limit";
@@ -34,8 +34,8 @@ function collectParam(searchParams: URLSearchParams, key: string): string[] {
 }
 
 /**
- * Facility list, filterable via query params. ADMIN-ONLY while bulk access is
- * paused: the full dataset is no longer handed out anonymously. Lenient on
+ * Facility list, filterable via query params. ADMIN-ONLY: anonymous callers
+ * get a 403. Lenient on
  * invalid filter tokens (silently drops rather than 400s) so malformed client
  * input degrades to "no constraint" instead of an error.
  *
@@ -51,7 +51,7 @@ export async function GET(request: Request): Promise<Response> {
   if (!dailyGate.ok) return tooManyRequests(dailyGate.retryAfter ?? 60);
 
   if (!bearerMatches(request, process.env.API_ADMIN_TOKEN)) {
-    return bulkAccessPaused();
+    return notAvailable();
   }
 
   const { searchParams } = new URL(request.url);
@@ -104,7 +104,7 @@ export async function POST(request: Request): Promise<Response> {
 }
 
 // `admin`, NOT `read` — and this is the deliberate exception, not an oversight.
-// This path is bearer-gated for both GET (bulk list, paused) and POST.
+// This path is bearer-gated for both GET (admin-only list) and POST.
 // One OPTIONS answers for the whole path, so the preflight has to advertise the
 // union; narrowing it to `read` would make the browser reject a legitimate
 // cross-origin bearer POST before it was ever sent.

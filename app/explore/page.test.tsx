@@ -50,7 +50,7 @@ describe("ExplorePage", () => {
     expect(gapsLink).toHaveAttribute("href", "/gaps");
   });
 
-  it("places the gaps card between Learn and Download in the grid", async () => {
+  it("places the gaps card right after Learn in the grid and offers no data or API card", async () => {
     mockGetStates.mockResolvedValue(["CA", "TX"]);
     mockGetOperators.mockResolvedValue(["Operator A"]);
     mockGetCounties.mockResolvedValue([{ slug: "loudoun-va", name: "Loudoun", state: "VA", count: 2 }]);
@@ -61,11 +61,11 @@ describe("ExplorePage", () => {
     const links = screen.getAllByRole("link").map((link) => link.getAttribute("href"));
     const learnIndex = links.indexOf("/learn");
     const gapsIndex = links.indexOf("/gaps");
-    const downloadIndex = links.indexOf("/data");
 
     expect(learnIndex).toBeGreaterThanOrEqual(0);
     expect(gapsIndex).toBe(learnIndex + 1);
-    expect(downloadIndex).toBe(gapsIndex + 1);
+    expect(links).not.toContain("/data");
+    expect(links).not.toContain("/api");
   });
 
   it("renders a Counties card linking to /counties, with a derived county-count stat", async () => {

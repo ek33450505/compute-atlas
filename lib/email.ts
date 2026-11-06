@@ -126,26 +126,6 @@ export async function sendConfirmEmail(input: {
   );
 }
 
-export async function sendBulkAccessEmail(input: {
-  email: string;
-  confirmToken: string;
-}): Promise<SendOutcome> {
-  const confirmUrl = `${linkBase()}/api/access/confirm?token=${encodeURIComponent(input.confirmToken)}`;
-  const subject = "Your Compute Atlas bulk API access link";
-  const why =
-    "This exists to stop automated scraping and hammering of the API, not to gatekeep the data. " +
-    "The full dataset is still available with zero login at /data for anyone who just wants it once. " +
-    "This flow is only for people building a recurring or automated integration who want a higher, non-anonymous request ceiling.";
-  const text = `Confirm your Compute Atlas bulk API access: ${confirmUrl}\n\n${why}\n\nIf this wasn't you, ignore this email — nothing is granted unless you confirm.`;
-  const html = `<p><a href="${escapeHtml(confirmUrl)}">Confirm your Compute Atlas bulk API access</a></p><p>${escapeHtml(why)}</p><p>If this wasn't you, ignore this email — nothing is granted unless you confirm.</p>`;
-
-  return sendViaResend(
-    "sendBulkAccessEmail",
-    "RESEND_API_KEY not set — skipping bulk access email send",
-    { from: fromAddress(), to: input.email, subject, text, html },
-  );
-}
-
 export async function sendContactEmail(input: {
   name: string;
   email: string;

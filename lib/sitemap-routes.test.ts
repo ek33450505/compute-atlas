@@ -28,7 +28,7 @@ import { GLOSSARY_TOPICS } from "@/lib/glossary";
 import { siteConfig } from "@/lib/site";
 
 describe("sitemap", () => {
-  it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, /explore, /activity, /contribute, /support, /contact, and /access", async () => {
+  it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, /explore, /activity, /contribute, /support, and /contact", async () => {
     const routes = await buildStaticRoutes();
     const urls = routes.map((r) => r.url);
     expect(urls).toContain(siteConfig.url);
@@ -46,11 +46,11 @@ describe("sitemap", () => {
     expect(urls).toContain(`${siteConfig.url}/activity`);
     expect(urls).toContain(`${siteConfig.url}/contribute`);
     expect(urls).toContain(`${siteConfig.url}/support`);
-    // /contact and /access are indexable landing pages (both set their own
-    // alternates.canonical) that were missing from the sitemap entirely —
-    // GSC reported both "URL is unknown to Google" (2026-09-03).
+    // /contact is an indexable landing page that was missing from the sitemap
+    // entirely — GSC reported "URL is unknown to Google" (2026-09-03).
     expect(urls).toContain(`${siteConfig.url}/contact`);
-    expect(urls).toContain(`${siteConfig.url}/access`);
+    // /access redirects to /contact and must not be advertised.
+    expect(urls).not.toContain(`${siteConfig.url}/access`);
   });
 
   it("facility routes count equals facilities.length", async () => {
@@ -455,10 +455,10 @@ describe("sitemap", () => {
     expect(actual.getTime()).toBeLessThan(testStart);
   });
 
-  it("genuinely static editorial routes (/about, /api, /contribute, /support, /contact, /access) use a stable date, not 'now'", async () => {
+  it("genuinely static editorial routes (/about, /api, /contribute, /support, /contact) use a stable date, not 'now'", async () => {
     const testStart = Date.now();
     const routes = await buildStaticRoutes();
-    for (const path of ["/about", "/api", "/contribute", "/support", "/contact", "/access"]) {
+    for (const path of ["/about", "/api", "/contribute", "/support", "/contact"]) {
       const entry = routes.find((r) => r.url === `${siteConfig.url}${path}`);
       expect(entry).toBeDefined();
       const actual = entry!.lastModified as Date;

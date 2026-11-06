@@ -399,14 +399,8 @@ export function ContactForm() {
             message is read.
           </p>
           <p className="text-sm text-muted-foreground">
-            Looking for the raw data instead of getting in touch?{" "}
-            <Link
-              href="/data"
-              className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
-            >
-              Get the data
-            </Link>
-            .
+            Have a research or data question? Use &ldquo;Send another&rdquo;
+            to describe it.
           </p>
           <Button type="button" variant="outline" onClick={handleReset}>
             Send another

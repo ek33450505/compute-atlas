@@ -1,5 +1,5 @@
 import { getFacilityById } from "@/lib/data";
-import { bulkAccessPaused, jsonResponse, corsPreflight } from "@/lib/api-response";
+import { notAvailable, jsonResponse, corsPreflight } from "@/lib/api-response";
 import { bearerMatches, requireAdmin } from "@/lib/api-auth";
 import { updateFacility, deleteFacility } from "@/lib/facility-write";
 import { extractTrustedClientIp } from "@/lib/rate-limit";
@@ -24,7 +24,7 @@ export async function GET(
   // Auth BEFORE the lookup: an anonymous caller gets the same 403 for every id,
   // so existence cannot be probed (no 404-vs-403 oracle).
   if (!bearerMatches(request, process.env.API_ADMIN_TOKEN)) {
-    return bulkAccessPaused();
+    return notAvailable();
   }
 
   const { id } = await params;

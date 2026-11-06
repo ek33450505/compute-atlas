@@ -52,8 +52,9 @@ describe("public/llms.txt", () => {
     expect(LLMS_TXT).toMatch(/compute-atlas\.com\/about\b/);
   });
 
-  it("says bulk access is paused and names no bulk file", () => {
-    expect(LLMS_TXT).toMatch(/Bulk access to the full dataset is paused/);
+  it("names no bulk file or bulk-access wording, and says how to cite a single record", () => {
+    expect(LLMS_TXT).not.toMatch(/bulk|paused|download/i);
+    expect(LLMS_TXT).toMatch(/facilities\/<id>/);
     expect(LLMS_TXT).not.toContain("facilities.json");
     expect(LLMS_TXT).not.toContain("raw.githubusercontent.com");
   });
@@ -66,5 +67,6 @@ describe("public/llms.txt", () => {
     // figure that will drift. Point at /api/stats instead.
     expect(LLMS_TXT).not.toMatch(/\d[\d,]*\s+(facilities|records|sites|sources|operators|states)\b/i);
     expect(LLMS_TXT).toMatch(/\/api\/stats/);
+    expect(LLMS_TXT).not.toMatch(/remain open to\s+direct requests/);
   });
 });

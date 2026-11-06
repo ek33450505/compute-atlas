@@ -26,19 +26,22 @@ describe("DataPage", () => {
   it("renders the h1", () => {
     const page = DataPage();
     render(page);
-    expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "How to cite Compute Atlas" })).toBeInTheDocument();
   });
 
-  it("shows the paused notice with a contact link instead of download links", () => {
+  it("carries no download, bulk, or API wording and no data-file links", () => {
     const { container } = render(DataPage());
-    expect(
-      screen.getByText(/Bulk downloads of the full dataset are paused while access changes\./)
-    ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "write to us" })).toHaveAttribute("href", "/contact");
-    expect(screen.queryByRole("link", { name: /Download (CSV|JSON)/ })).not.toBeInTheDocument();
+    const text = container.textContent ?? "";
+    expect(text).not.toMatch(/download|bulk|paused|programmatic|developer docs/i);
     const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
-    expect(hrefs.some((h) => /facilities\.(csv|json)/.test(h ?? ""))).toBe(false);
+    expect(hrefs.some((h) => /facilities\.(csv|json)|^\/api/.test(h ?? ""))).toBe(false);
     expect(container.querySelector("a[download]")).toBeNull();
+  });
+
+  it("explains how to cite an individual facility page", () => {
+    render(DataPage());
+    expect(screen.getByRole("heading", { name: "Citing a facility page" })).toBeInTheDocument();
+    expect(screen.getByText(/compute-atlas\.com\/facilities\/\[id\]/)).toBeInTheDocument();
   });
 
   it("renders even if the DB-backed data layer throws on any use", async () => {
@@ -52,16 +55,17 @@ describe("DataPage", () => {
     try {
       const { default: FreshPage } = await import("./page");
       render(FreshPage());
-      expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
-      expect(screen.getByText(/Bulk downloads of the full dataset are paused/)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { level: 1, name: "How to cite Compute Atlas" })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "How to cite" })).toBeInTheDocument();
     } finally {
       vi.doUnmock("@/lib/data");
     }
   });
 
-  it("states the pause in the meta description, within 160 characters", () => {
-    expect(metadata.description).toMatch(/Bulk downloads .* are paused while access changes/);
-    expect(metadata.description).not.toMatch(/CC-BY|Download the full/);
+  it("describes citation in the meta description, within 160 characters", () => {
+    expect(metadata.title).toBe("How to cite Compute Atlas");
+    expect(metadata.description).toMatch(/cite/i);
+    expect(metadata.description).not.toMatch(/download|bulk|paused/i);
     expect((metadata.description ?? "").length).toBeLessThanOrEqual(160);
   });
 
@@ -87,15 +91,6 @@ describe("DataPage", () => {
     expect(
       screen.getByRole("link", { name: /Read the full methodology/ })
     ).toHaveAttribute("href", "/methodology");
-  });
-
-  it("renders a link to /api", () => {
-    const page = DataPage();
-    render(page);
-    expect(screen.getByRole("link", { name: /developer docs/ })).toHaveAttribute(
-      "href",
-      "/api"
-    );
   });
 
   it("renders the DOI link", () => {
@@ -153,7 +148,7 @@ describe("DataPage", () => {
     expect(breadcrumb.itemListElement[1]).toEqual({
       "@type": "ListItem",
       position: 2,
-      name: "Get the data",
+      name: "Cite",
       item: "https://www.compute-atlas.com/data",
     });
   });
