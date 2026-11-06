@@ -3,10 +3,11 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import facilities from "@/data/facilities.json";
 import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
+import facilities from "@/data/facilities.json";
 import { CSP_REPORT_PATH } from "@/lib/csp-report";
 import { operatorSlug } from "@/lib/operator-slug";
+import { danglingDestinations, shadowedSources } from "@/lib/test-fixtures/redirect-guards";
 import nextConfig from "./next.config";
 
 /**
@@ -18,6 +19,23 @@ const chainedDestinations = (redirects: { source: string; destination: string }[
   const sources = new Set(redirects.map((r) => r.source));
   return redirects.map((r) => r.destination).filter((dest) => sources.has(dest));
 };
+
+describe("live-slug guard helpers", () => {
+  // The guards themselves; the checks that apply them to next.config's real
+  // redirects are in "retired-facility redirects" and "retired-operator
+  // redirects" below (shadowing) and next.config.dataset.test.ts (dangling).
+  const live = new Set(["survivor", "other"]);
+
+  it("shadowedSources flags a source that is still live", () => {
+    expect(shadowedSources(["retired", "survivor"], live)).toEqual(["survivor"]);
+    expect(shadowedSources(["retired"], live)).toEqual([]);
+  });
+
+  it("danglingDestinations flags a destination that is not live", () => {
+    expect(danglingDestinations(["survivor", "gone"], live)).toEqual(["gone"]);
+    expect(danglingDestinations(["survivor", "other"], live)).toEqual([]);
+  });
+});
 
 describe("chainedDestinations", () => {
   it("detects a chained pair when one is present", () => {
@@ -42,8 +60,11 @@ describe("chainedDestinations", () => {
 /**
  * Guards the retired-facility redirect list in `next.config.ts`.
  *
- * Both assertions have a real failure mode, and neither is satisfied by the
- * list simply existing:
+ * Both live-slug assertions have a real failure mode, and neither is satisfied
+ * by the list simply existing. The shadowing check runs here against the
+ * fixture ids (valid on any dataset); the dangling check needs the real
+ * dataset, because the survivors are absent from the fixture, and lives in
+ * next.config.dataset.test.ts:
  *
  * - A `source` that is a LIVE facility slug would shadow that facility's page,
  *   because Next applies redirects before routing. The facility would silently
@@ -54,28 +75,17 @@ describe("chainedDestinations", () => {
  */
 describe("retired-facility redirects", () => {
   const liveSlugs = new Set((facilities as { id: string }[]).map((f) => f.id));
+  const slugOf = (path: string) => path.replace("/facilities/", "");
 
   const facilityRedirects = async () => {
     const all = (await nextConfig.redirects?.()) ?? [];
     return all.filter((r) => r.source.startsWith("/facilities/"));
   };
 
-  const slugOf = (path: string) => path.replace("/facilities/", "");
-
-  it("never redirects away from a slug that is still a live facility", async () => {
-    const shadowed = (await facilityRedirects())
-      .map((r) => slugOf(r.source))
-      .filter((slug) => liveSlugs.has(slug));
-
-    expect(shadowed).toEqual([]);
-  });
-
-  it("only redirects to slugs that are live facilities", async () => {
-    const dangling = (await facilityRedirects())
-      .map((r) => slugOf(r.destination))
-      .filter((slug) => !liveSlugs.has(slug));
-
-    expect(dangling).toEqual([]);
+  it("never redirects away from a slug that is still a live facility (fixture ids)", async () => {
+    const redirects = await facilityRedirects();
+    expect(redirects.length).toBeGreaterThan(0);
+    expect(shadowedSources(redirects.map((r) => slugOf(r.source)), liveSlugs)).toEqual([]);
   });
 
   it("marks retired-facility redirects permanent so link equity carries over", async () => {
@@ -143,28 +153,17 @@ describe("retired-operator redirects", () => {
   const liveOperatorSlugs = new Set(
     (facilities as { operator: string }[]).map((f) => operatorSlug(f.operator))
   );
+  const slugOf = (path: string) => path.replace("/operators/", "");
 
   const operatorRedirects = async () => {
     const all = (await nextConfig.redirects?.()) ?? [];
     return all.filter((r) => r.source.startsWith("/operators/"));
   };
 
-  const slugOf = (path: string) => path.replace("/operators/", "");
-
-  it("never redirects away from a slug that is still a live operator", async () => {
-    const shadowed = (await operatorRedirects())
-      .map((r) => slugOf(r.source))
-      .filter((slug) => liveOperatorSlugs.has(slug));
-
-    expect(shadowed).toEqual([]);
-  });
-
-  it("only redirects to slugs that are live operators", async () => {
-    const dangling = (await operatorRedirects())
-      .map((r) => slugOf(r.destination))
-      .filter((slug) => !liveOperatorSlugs.has(slug));
-
-    expect(dangling).toEqual([]);
+  it("never redirects away from a slug that is still a live operator (fixture operators)", async () => {
+    const redirects = await operatorRedirects();
+    expect(redirects.length).toBeGreaterThan(0);
+    expect(shadowedSources(redirects.map((r) => slugOf(r.source)), liveOperatorSlugs)).toEqual([]);
   });
 
   it("marks retired-operator redirects permanent so link equity carries over", async () => {

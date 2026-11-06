@@ -8,7 +8,11 @@ import { facilitiesToCsv, facilitiesToJson } from "@/lib/export";
 import type { Facility } from "@/lib/schema";
 import { buildDataExports } from "./build-data-exports";
 
-const SNAPSHOT_PATH = path.join(process.cwd(), "data", "facilities.json");
+// The committed fixture, not the real snapshot: the same file the "@/data" alias
+// serves, so the path and the imported records cannot disagree. The real
+// snapshot is covered by build-data-exports.dataset.test.ts.
+const FIXTURES = path.join(process.cwd(), "tests", "fixtures");
+const SNAPSHOT_PATH = path.join(FIXTURES, "facilities.fixture.json");
 
 let dir: string;
 beforeEach(() => {
@@ -83,8 +87,8 @@ describe("buildDataExports", () => {
     expect(() => buildDataExports(...objArgs)).toThrow(/non-empty array/);
   });
 
-  it("agrees with the committed facilities.meta.json", () => {
-    const meta = path.join(process.cwd(), "data", "facilities.meta.json");
+  it("agrees with the fixture facilities.meta.json", () => {
+    const meta = path.join(FIXTURES, "facilities.meta.fixture.json");
     expect(() => buildDataExports(SNAPSHOT_PATH, dir, meta)).not.toThrow();
   });
 
