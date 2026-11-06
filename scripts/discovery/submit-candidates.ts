@@ -1500,10 +1500,10 @@ export async function main(): Promise<void> {
   // scoped to summarizing candidates that were actually processed — none
   // have been yet at this point, so there is no summary to report and
   // nothing has been staged.
-  const existingFacilitiesResult = await loadFacilities(args.baseUrl);
+  const existingFacilitiesResult = await loadFacilities();
   if (existingFacilitiesResult.source === "file") {
     console.error(
-      `Could not read the live facility index from the API (${existingFacilitiesResult.apiError}); ` +
+      `Could not read the live facility index from Neon (${existingFacilitiesResult.dbError}); ` +
         "refusing to stage candidates against the committed data/facilities.json snapshot, which may " +
         "be stale. Staging nothing this run rather than risking a false duplicate or a lost update."
     );
