@@ -1251,3 +1251,25 @@ rebase_rc1_exits_1() {
 		[ "$(rebase_rc1_exits_1 "$wf")" = "exit 1" ] || { echo "$wf: rc -eq 1 branch does not exit 1"; return 1; }
 	done
 }
+
+# Echoes the body of the `quality` job in ci.yml (the required
+# `typecheck · lint · test` check), from its key line to the next job key.
+quality_job_body() {
+	awk '
+		/^  quality:$/ { f = 1; next }
+		f && /^  [A-Za-z][A-Za-z0-9_-]*:/ { exit }
+		f { print }
+	' "$WORKFLOWS_DIR/ci.yml"
+}
+
+@test "ci quality job: test:dataset runs exactly once and after npm test (a moved or removed step fails)" {
+	local body test_count test_line data_count data_line
+	body="$(quality_job_body)"
+	test_count="$(grep -cE '^      - run: npm test[[:space:]]*$' <<<"$body" || true)"
+	test_line="$(grep -nE '^      - run: npm test[[:space:]]*$' <<<"$body" | cut -d: -f1)"
+	data_count="$(grep -cE '^ +(- )?run: npm run test:dataset[[:space:]]*$' <<<"$body" || true)"
+	data_line="$(grep -nE '^ +(- )?run: npm run test:dataset[[:space:]]*$' <<<"$body" | cut -d: -f1)"
+	[ "$test_count" -eq 1 ] || { echo "quality job: expected one '- run: npm test', found $test_count"; return 1; }
+	[ "$data_count" -eq 1 ] || { echo "quality job: expected one 'run: npm run test:dataset', found $data_count"; return 1; }
+	[ "$data_line" -gt "$test_line" ] || { echo "quality job: test:dataset (line $data_line) is not after npm test (line $test_line)"; return 1; }
+}

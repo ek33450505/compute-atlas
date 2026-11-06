@@ -77,6 +77,13 @@ jobs:
 
       - run: npm test
 
+      # Whole-dataset invariants (siting coverage, NHD-debt ratchet, hero-plate
+      # currency, export golden, redirect live slugs) against the tracked data/
+      # snapshot. They moved out of `npm test` when it switched to the fixture;
+      # this keeps them inside the required check until the data is untracked.
+      - name: Whole-dataset invariants (test:dataset)
+        run: npm run test:dataset
+
       # Informational only. Absorbed from the former neon-drift-check.yml, which
       # paid for a whole second job (checkout + setup-node + a full `npm ci`) just
       # to print this one annotation; here it rides the install this job already did.
