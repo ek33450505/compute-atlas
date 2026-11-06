@@ -119,7 +119,7 @@ describe("SiteFooter", () => {
       "/api"
     );
     expect(
-      screen.getByRole("link", { name: "Download the data" })
+      screen.getByRole("link", { name: "Cite" })
     ).toHaveAttribute("href", "/data");
     expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute(
       "href",

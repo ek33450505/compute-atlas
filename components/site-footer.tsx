@@ -95,7 +95,7 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link href="/data" className={NAV_LINK_CLASS}>
-                  Download the data
+                  Cite
                 </Link>
               </li>
               <li>

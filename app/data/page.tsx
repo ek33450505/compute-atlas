@@ -9,10 +9,9 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Get the data",
+  title: "How to cite Compute Atlas",
   description:
-    "Bulk downloads of the Compute Atlas dataset are paused while access changes. " +
-    "Every facility page stays free to read and cite.",
+    "How to cite Compute Atlas and its individual facility pages: attribution line, license, permanent identifier.",
   alternates: { canonical: "/data" },
 };
 
@@ -20,9 +19,9 @@ const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 /**
- * /data — front door to the dataset. Bulk downloads (CSV/JSON) are paused, so
- * the page carries a notice instead of download links; the citation, DOI and
- * methodology sections stay. The page loads no facility data and revalidates
+ * /data — the citation page: how to cite the site and an individual facility
+ * page, the license statement, and the permanent identifier. The route keeps
+ * its path for inbound links. The page loads no facility data and revalidates
  * on its 86400s timer only.
  *
  * Deliberately does NOT emit Dataset JSON-LD — that already lives site-wide
@@ -39,35 +38,18 @@ export default function DataPage() {
         dangerouslySetInnerHTML={{
           __html: breadcrumbJsonLdString([
             { name: "Home", url: "/" },
-            { name: "Get the data", url: "/data" },
+            { name: "Cite", url: "/data" },
           ]),
         }}
       />
 
-      <Breadcrumb items={[{ label: "Get the data" }]} />
+      <Breadcrumb items={[{ label: "Cite" }]} />
 
       <PageMasthead
-        eyebrow="DATASET"
-        title="Get the data"
-        dek="Bulk downloads are paused while access changes. Every facility page remains free to read and cite."
+        eyebrow="CITATION"
+        title="How to cite Compute Atlas"
+        dek="The attribution line for the site and for an individual facility page, the license, and the permanent identifier."
       />
-
-      <section
-        aria-labelledby="download-heading"
-        className="neatline rounded-sm border border-primary/40 bg-muted/20 p-6 sm:p-8 space-y-4"
-      >
-        <h2 id="download-heading" className="font-display text-2xl text-foreground">
-          Bulk downloads are paused
-        </h2>
-        <p className="text-base leading-relaxed text-muted-foreground">
-          Bulk downloads of the full dataset are paused while access changes. Every facility
-          page remains free to read and cite. For dataset access,{" "}
-          <Link href="/contact" className={LINK_CLASS}>
-            write to us
-          </Link>
-          .
-        </p>
-      </section>
 
       <section aria-labelledby="what-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -141,13 +123,26 @@ export default function DataPage() {
           ).
         </blockquote>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          Link www.compute-atlas.com, the dataset&apos;s home, rather than the GitHub
+          Link www.compute-atlas.com, Compute Atlas&apos;s home, rather than the GitHub
           repository. Say if you changed anything (for example, filtered or joined the
           records). Compute Atlas is non-partisan and takes no position on any facility,
           so keep your own analysis or commentary distinct from its records.
         </p>
+        <h3 className="font-display text-xl text-foreground">Citing a facility page</h3>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          For academic citation, the dataset has a permanent identifier that always
+          To cite a single record, name the facility and link its own page, then give
+          the same attribution:
+        </p>
+        <blockquote className="max-w-2xl border-l-2 border-border pl-4 font-mono text-sm text-muted-foreground">
+          &ldquo;[Facility name]&rdquo;, Compute Atlas, {siteConfig.url}/facilities/[id],
+          accessed [date]. Licensed under CC BY 4.0.
+        </blockquote>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          Each record lists its own public sources. Cite those directly when a claim
+          depends on them.
+        </p>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          For academic citation, Compute Atlas has a permanent identifier that always
           resolves to its latest version:
         </p>
         <blockquote className="max-w-2xl border-l-2 border-border pl-4 font-mono text-sm text-muted-foreground">
@@ -157,7 +152,7 @@ export default function DataPage() {
           </a>
         </blockquote>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          The dataset is free. If it saved you time,{" "}
+          If it saved you time,{" "}
           <Link href="/support" className={LINK_CLASS}>
             support keeps it running
           </Link>
@@ -187,24 +182,6 @@ export default function DataPage() {
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           <Link href="/methodology" className={LINK_CLASS}>
             Read the full methodology →
-          </Link>
-        </p>
-      </section>
-
-      <section
-        aria-labelledby="different-heading"
-        className="space-y-4 border-t border-border pt-10"
-      >
-        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          § Need something different?
-        </p>
-        <h2 id="different-heading" className="font-display text-2xl text-foreground">
-          Need something different?
-        </h2>
-        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          Looking for an API, rate limits, or programmatic access instead? See the{" "}
-          <Link href="/api" className={LINK_CLASS}>
-            developer docs →
           </Link>
         </p>
       </section>

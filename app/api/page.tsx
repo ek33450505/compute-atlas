@@ -11,7 +11,7 @@ import { DATASET_DOI_URL } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "API",
   description:
-    "The Compute Atlas API — a public, CORS-open JSON read API over the dataset, plus a provenance-staged submissions API for contributors.",
+    "The Compute Atlas API — public summary statistics, search suggestions and the record schema, plus a provenance-staged submissions API for contributors.",
   alternates: { canonical: "/api" },
 };
 
@@ -30,21 +30,9 @@ interface Endpoint {
 const READ_ENDPOINTS: Endpoint[] = [
   {
     method: "GET",
-    path: "/api/facilities",
-    description:
-      "Paused. The bulk facility list is not available to anonymous callers while access changes (403). Facility pages at /facilities/{id} remain available; see /data for the notice.",
-  },
-  {
-    method: "GET",
-    path: "/api/facilities/{id}",
-    description:
-      "Paused. Per-record JSON is admin-only (403 for anonymous callers, whether or not the id exists). Individual facilities remain available as pages at /facilities/{id}.",
-  },
-  {
-    method: "GET",
     path: "/api/search",
     description:
-      "Full-text search over facility names and operators: { count, facilities, query }. Query parameter q is capped at 200 characters. Publicly available only with shape=palette, which returns a lean projection of at most 25 facilities: { id, name, operator, location: { state, city?, county?, street? } }, and needs a query of at least 2 characters. Without it the full-record shape is paused (403) while access changes.",
+      "Search suggestions over facility names and operators. Requires shape=palette and a query of at least 2 characters; returns at most 25 facilities as { id, name, operator, location: { state, city?, county?, street? } }. Query parameter q is capped at 200 characters.",
   },
   {
     method: "GET",
@@ -159,12 +147,12 @@ export default function ApiPage() {
             {`API reference · Edition v${edition.version}`}
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-            The atlas, as JSON.
+            The public API.
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Compute Atlas exposes a small HTTP+JSON API over the open dataset.
-            Reads are public and unauthenticated; the data returned carries
-            the same{" "}
+            Compute Atlas exposes a small HTTP+JSON API: summary statistics,
+            search suggestions, the record schema and the contribution
+            endpoints. Attribution is required under{" "}
             <a
               href="https://creativecommons.org/licenses/by/4.0/"
               target="_blank"
@@ -173,8 +161,8 @@ export default function ApiPage() {
               className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               CC-BY
-            </a>{" "}
-            license as the site.
+            </a>
+            .
           </p>
         </div>
         <div className="border-t border-border" />
@@ -188,9 +176,7 @@ export default function ApiPage() {
           Public reads
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          No authentication is required, and every response carries an open
-          CORS header (<code className={CODE}>Access-Control-Allow-Origin: *</code>)
-          so the data can be fetched directly from the browser.
+          These endpoints need no authentication and carry an open CORS header (<code className={CODE}>Access-Control-Allow-Origin: *</code>).
         </p>
         <EndpointTable endpoints={READ_ENDPOINTS} />
         <p className="text-sm leading-relaxed text-muted-foreground">
@@ -240,21 +226,6 @@ export default function ApiPage() {
               <code className={CODE}>Retry-After</code> header — a
               best-effort limit per instance, not a hard global cap. Cache
               responses rather than polling.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-foreground">Bulk access</dt>
-            <dd className="text-muted-foreground">
-              Bulk access to the full dataset is paused while access changes.
-              Individual facilities remain available as pages at{" "}
-              <code className={CODE}>/facilities/{"{id}"}</code>; read the{" "}
-              <Link
-                href="/data"
-                className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
-              >
-                notice on the data page
-              </Link>
-              .
             </dd>
           </div>
           <div>
@@ -426,7 +397,7 @@ export default function ApiPage() {
         </h2>
         <div className="overflow-x-auto rounded-md border border-border bg-muted/50">
           <pre className="p-4 font-mono text-xs leading-relaxed text-foreground">
-            <code>{`curl "${siteConfig.url}/api/search?q=virginia"
+            <code>{`curl "${siteConfig.url}/api/search?q=virginia&shape=palette"
 
 curl ${siteConfig.url}/api/stats`}</code>
           </pre>

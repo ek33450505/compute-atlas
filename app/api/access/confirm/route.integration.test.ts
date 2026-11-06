@@ -43,7 +43,7 @@ function confirmReq(token: string, ip: string = IP): Request {
 }
 
 describe("GET /api/access/confirm", () => {
-  it("redirects to /access/confirmed#token=... and activates the grant on a valid token", async () => {
+  it("redirects to /contact and activates nothing, even for a valid pending token", async () => {
     await tdb.db.insert(apiAccessGrantsTable).values({
       email: "reader@example.com",
       status: "pending",
@@ -53,59 +53,21 @@ describe("GET /api/access/confirm", () => {
     const res = await GET(confirmReq("good-token"));
     expect(res.status).toBe(307); // NextResponse.redirect default
     const location = res.headers.get("location") ?? "";
-    expect(location).toContain("/access/confirmed#token=");
-    expect(location).not.toContain("?token="); // never a query param
+    expect(new URL(location).pathname).toBe("/contact");
+    expect(location).not.toContain("token");
 
     const [row] = await tdb.db.select().from(apiAccessGrantsTable);
-    expect(row.status).toBe("active");
-    expect(row.accessToken).not.toBeNull();
+    expect(row.status).toBe("pending");
+    expect(row.accessToken).toBeNull();
   });
 
-  it("redirects to /access/invalid for an unknown token", async () => {
+  it("redirects an unknown token to /contact too", async () => {
     const res = await GET(confirmReq("bogus-token"));
-    const location = res.headers.get("location") ?? "";
-    expect(location).toContain("/access/invalid");
+    expect(new URL(res.headers.get("location") ?? "").pathname).toBe("/contact");
   });
 
-  it("redirects to /access/invalid on a second confirm of the same token (single-use)", async () => {
-    await tdb.db.insert(apiAccessGrantsTable).values({
-      email: "reader@example.com",
-      status: "pending",
-      confirmToken: "one-time-token",
-    });
-
-    const first = await GET(confirmReq("one-time-token"));
-    expect(first.headers.get("location") ?? "").toContain("/access/confirmed#token=");
-
-    const second = await GET(confirmReq("one-time-token"));
-    expect(second.headers.get("location") ?? "").toContain("/access/invalid");
-  });
-});
-
-// Sharper here than on the sibling subscribe routes: the success redirect's
-// `Location` carries the minted access token itself, and a Cloudflare cache rule
-// makes every non-`/admin` GET cache-eligible — with no origin directive
-// Cloudflare supplies `public, max-age=14400` (measured on the subscribe routes
-// 2026-09-27), which would hand that token to the next caller of the same URL.
-describe("GET /api/access/confirm — uncacheable", () => {
-  it("sends both no-store headers on the success redirect", async () => {
-    await tdb.db.insert(apiAccessGrantsTable).values({
-      email: "reader@example.com",
-      status: "pending",
-      confirmToken: "nostore-token",
-    });
-
+  it("sends both no-store headers on the redirect", async () => {
     const res = await GET(confirmReq("nostore-token"));
-
-    expect(res.headers.get("location")).toContain("#token=");
-    expect(res.headers.get("cache-control")).toBe("no-store");
-    expect(res.headers.get("cdn-cache-control")).toBe("no-store");
-  });
-
-  it("sends both no-store headers on the invalid redirect", async () => {
-    const res = await GET(confirmReq("nope-not-a-token"));
-
-    expect(res.headers.get("location")).toContain("/access/invalid");
     expect(res.headers.get("cache-control")).toBe("no-store");
     expect(res.headers.get("cdn-cache-control")).toBe("no-store");
   });

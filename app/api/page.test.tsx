@@ -139,7 +139,7 @@ describe("ApiPage — How to cite", () => {
     ).toHaveTextContent("CC-BY-4.0");
   });
 
-  it("documents bulk access as paused and links the bulk URLs nowhere", () => {
+  it("documents only the public endpoints and links no bulk or per-record URL", () => {
     mockGetDatasetEdition.mockReturnValue({
       version: "1.30.0",
       asOf: "2026-09-01T16:58:23.496Z",
@@ -149,16 +149,14 @@ describe("ApiPage — How to cite", () => {
 
     const { container } = render(<ApiPage />);
 
-    expect(screen.getByText(/Bulk access to the full dataset is paused/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "notice on the data page" })).toHaveAttribute(
-      "href",
-      "/data"
-    );
-    expect(screen.getByText(/^Paused\. The bulk facility list/)).toBeInTheDocument();
-    expect(screen.getByText(/Publicly available only with shape=palette/)).toBeInTheDocument();
-    expect(screen.getByText(/full-record shape is paused \(403\)/)).toBeInTheDocument();
-    expect(screen.getAllByText("GET /api/facilities/{id}").length).toBeGreaterThan(0);
-    expect(screen.getByText(/Per-record JSON is admin-only/)).toBeInTheDocument();
+    expect(screen.getByText("GET /api/stats")).toBeInTheDocument();
+    expect(screen.getByText("GET /api/schema")).toBeInTheDocument();
+    expect(screen.getByText("GET /api/search")).toBeInTheDocument();
+    expect(screen.queryByText("GET /api/facilities")).not.toBeInTheDocument();
+    expect(screen.queryByText("GET /api/facilities/{id}")).not.toBeInTheDocument();
+    const text = container.textContent ?? "";
+    expect(text).not.toMatch(/paused|bulk access/i);
+    expect(text).toContain("/api/search?q=virginia&shape=palette");
     const html = container.innerHTML;
     expect(html).not.toContain("raw.githubusercontent.com");
     expect(html).not.toMatch(/href="[^"]*facilities\.json/);

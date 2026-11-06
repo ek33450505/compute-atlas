@@ -10,7 +10,7 @@ import { CommandPalette } from "@/components/search/command-palette";
 export const NAV_LINKS = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
-  { label: "Download", href: "/data" },
+  { label: "Cite", href: "/data" },
   { label: "Stats", href: "/stats" },
   { label: "Explore", href: "/explore" },
   { label: "Activity", href: "/activity" },
@@ -25,7 +25,7 @@ export const MOBILE_NAV_GROUPS = [
     links: [
       { label: "Map", href: "/map" },
       { label: "Table", href: "/table" },
-      { label: "Download the data", href: "/data" },
+      { label: "Cite", href: "/data" },
       { label: "Stats", href: "/stats" },
     ],
   },

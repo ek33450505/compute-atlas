@@ -138,18 +138,17 @@ export default function robots(): MetadataRoute.Robots {
       // the tension (varying the signal per agent, or dropping ai-train=no) is
       // a policy call and is deliberately NOT made here.
       //
-      // The "# Bulk data" / "# Licence" entries below are comments, not
+      // The "# Citation" / "# Licence" entries below are comments, not
       // directives -- confirmed against Next's own serializer
       // (node_modules/next/dist/build/webpack/loaders/metadata/resolve-route-data.js),
       // which emits every `other` entry as a literal "key: value" line with
       // no bare-comment affordance, so a key starting with "#" is the only
       // way to land a line every robots.txt parser discards. No parser acts
       // on these two lines; the audience is the person deciding how to take
-      // the data. Bulk downloads are paused, so the "# Bulk data" line now says
-      // so and points at /data instead of a bulk file.
+      // the data. The "# Citation" line points at /data, never at a data file.
       other: {
         "Content-Signal": "search=yes,ai-input=yes,ai-train=no",
-        "# Bulk data": `Bulk downloads of the dataset are paused while access changes. Every facility page stays free to read and cite -- see ${siteConfig.url}/data`,
+        "# Citation": `How to cite Compute Atlas and its facility pages -- see ${siteConfig.url}/data`,
         "# Licence": `Data is CC-BY-4.0, attribution required -- ${DATASET_LICENSE_URL}. Code is MIT.`,
       },
     },

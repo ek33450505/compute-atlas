@@ -63,12 +63,9 @@ const GATED_SENDERS = new Set([
  * files and nowhere else. TO GATE ANOTHER SENDER: move its name from
  * PENDING_SENDERS to GATED_SENDERS and route its call sites through
  * `sendGated`; the test fails on a stale PENDING_SENDERS entry.
- * sendBulkAccessEmail mails an access-request link (no subscription row), so
- * it cannot go through the subscription gate and stays allowlisted.
+ * Currently empty.
  */
-const PENDING_SENDERS: Record<string, string[]> = {
-  sendBulkAccessEmail: [join("app", "api", "access", "request", "route.ts")],
-};
+const PENDING_SENDERS: Record<string, string[]> = {};
 
 const GUARDED = new Set([...GATED_SENDERS, ...Object.keys(PENDING_SENDERS)]);
 const RESEND_HOST = "api.resend.com";
@@ -425,9 +422,8 @@ describe("email send gate guard", () => {
       ['const { sendConfirmEmail } = await import("@/lib/email");'],
       ['const { sendConfirmEmail: f } = require("@/lib/email");'],
       ['const { "sendWatchStartedEmail": f } = await import("@/lib/email");'],
-      // pending senders outside their allowlisted files
+      // gated senders called bare, outside a sendGated callback
       ["await sendChangeNotification(x);"],
-      ["await sendBulkAccessEmail(x);"],
       ['import { sendChangeNotification as n } from "@/lib/email";'],
     ])("flags %s", (code) => {
       expect(flagged(code)).toHaveLength(1);
@@ -443,12 +439,12 @@ describe("email send gate guard", () => {
     });
 
     it("counts only real references as a use: a comment mention is not one", () => {
-      expect(guardedReferences("// sendBulkAccessEmail is pending\n/* sendBulkAccessEmail */ const x = 1;", "lib/x.ts").size).toBe(0);
-      expect(guardedReferences("await sendBulkAccessEmail(x);", "lib/x.ts").has("sendBulkAccessEmail")).toBe(true);
+      expect(guardedReferences("// sendChangeNotification is pending\n/* sendChangeNotification */ const x = 1;", "lib/x.ts").size).toBe(0);
+      expect(guardedReferences("await sendChangeNotification(x);", "lib/x.ts").has("sendChangeNotification")).toBe(true);
     });
 
-    it("allows a pending sender only in its listed files", () => {
-      // sendChangeNotification is gated now: no file may call it bare.
+    it("allows a gated sender only inside a sendGated callback", () => {
+      // No file may call a gated sender bare.
       expect(
         flagged("await sendChangeNotification(x);", join("lib", "notify.ts")),
       ).toHaveLength(1);
@@ -458,15 +454,6 @@ describe("email send gate guard", () => {
           join("lib", "notify.ts"),
         ),
       ).toHaveLength(0);
-      expect(
-        flagged(
-          "await sendBulkAccessEmail(x);",
-          join("app", "api", "access", "request", "route.ts"),
-        ),
-      ).toHaveLength(0);
-      expect(
-        flagged("await sendBulkAccessEmail(x);", join("lib", "notify.ts")),
-      ).toHaveLength(1);
     });
 
     it.each([

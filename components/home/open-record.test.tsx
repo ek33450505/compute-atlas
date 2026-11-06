@@ -53,8 +53,8 @@ describe("OpenRecord", () => {
     expect(screen.getByText("Human-gated")).toBeInTheDocument();
     expect(screen.getByText("License")).toBeInTheDocument();
     expect(screen.getByText("Open data")).toBeInTheDocument();
-    expect(screen.getByText("Access")).toBeInTheDocument();
-    expect(screen.getByText("Download + API")).toBeInTheDocument();
+    expect(screen.getByText("Citation")).toBeInTheDocument();
+    expect(screen.getByText("Cite any record")).toBeInTheDocument();
   });
 
   it("links the contribute CTA to /contribute", () => {
@@ -95,16 +95,13 @@ describe("OpenRecord", () => {
     expect(cta).not.toHaveClass("h-11");
   });
 
-  it("links the Download, JSON API, and RSS feed access facts", () => {
+  it("links the Cite and RSS feed access facts", () => {
     render(<OpenRecord sources={100} recentActivity={[]} />);
-    expect(screen.getByRole("link", { name: "Download" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Cite" })).toHaveAttribute(
       "href",
       "/data"
     );
-    expect(screen.getByRole("link", { name: "JSON API" })).toHaveAttribute(
-      "href",
-      "/api"
-    );
+    expect(screen.queryByRole("link", { name: "API" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "RSS feed" })).toHaveAttribute(
       "href",
       "/activity/feed.xml"

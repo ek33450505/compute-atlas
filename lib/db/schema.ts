@@ -341,6 +341,9 @@ export type IntakeSurface = (typeof INTAKE_SURFACES)[number];
  * `requestAccessGrant` answers honeypot / over-cap / existing-grant with the
  * same `{ok:true}` — a rate-limit side effect that fired on some of those
  * paths but not others would be an observable oracle separating them.
+ * (`/api/access/request` no longer creates grants or records attempts, and
+ * `requestAccessGrant` has no production caller; this describes the original
+ * design.)
  *
  * WHY ONLY A HASH: same salted sha256 as every other `submitter_ip_hash` here
  * (`hashIp`, lib/rate-limit.ts); a raw IP is never stored. Rows are pruned by

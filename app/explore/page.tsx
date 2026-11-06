@@ -11,7 +11,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: "Explore US data centers",
   description:
-    "Browse the atlas by lens — geography, lifecycle stage, power and facility type, community reception, operators, rankings, the glossary, and the public API. Source-cited.",
+    "Browse the atlas by lens — geography, lifecycle stage, power and facility type, community reception, operators, rankings, and the glossary. Source-cited.",
   alternates: { canonical: "/explore" },
 };
 
@@ -94,18 +94,6 @@ const LENSES = [
     description:
       "Where the dataset needs help, ranked by what a permit or utility filing can actually resolve — with concrete leads on where to look.",
   },
-  {
-    label: "Download",
-    href: "/data",
-    description:
-      "The full dataset as CSV or JSON — no login, no query parameters, no explanation required.",
-  },
-  {
-    label: "API",
-    href: "/api",
-    description:
-      "The public JSON API behind the dataset — read, write, and submission endpoints, fully documented.",
-  },
 ] as const;
 
 /**
@@ -143,8 +131,8 @@ export default async function ExplorePage() {
             {LENSES.length}{" "}
             lenses on the same source-cited dataset — by
             geography, lifecycle stage, power and facility type, community
-            reception, and who&rsquo;s building it, plus rankings, the glossary,
-            the dataset download, and the API directly.
+            reception, and who&rsquo;s building it, plus rankings and the
+            glossary.
           </p>
         </div>
         <div className="border-t border-border" />

@@ -41,7 +41,7 @@ function maxLastUpdated(facilities: Facility[]): Date {
 
 /**
  * Stable `lastModified` for genuinely static editorial pages (/about, /api,
- * /contribute, /support, /contact, /access, /methodology) that have no
+ * /contribute, /support, /contact, /methodology) that have no
  * underlying dataset to derive freshness from — using `new Date()` here
  * would churn exactly like the dataset-backed routes did (see
  * buildStaticRoutes below). Bump by hand only when a page's content
@@ -192,12 +192,6 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${siteConfig.url}/contact`,
-      lastModified: STATIC_PAGE_LAST_MODIFIED,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${siteConfig.url}/access`,
       lastModified: STATIC_PAGE_LAST_MODIFIED,
       changeFrequency: "monthly",
       priority: 0.5,

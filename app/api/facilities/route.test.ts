@@ -46,9 +46,7 @@ describe("GET /api/facilities (anonymous: bulk access paused)", () => {
     expect(res.headers.get("Cache-Control")).toContain("no-store");
     const body = await res.json();
     expect(body).not.toHaveProperty("facilities");
-    expect(body.error).toContain("paused");
-    expect(body.error).toContain("/facilities/<id>");
-    expect(body.contact).toBe("https://www.compute-atlas.com/contact");
+    expect(body).toEqual({ error: "Not available" });
   });
 
   it("403s a wrong token", async () => {
