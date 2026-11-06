@@ -160,6 +160,34 @@ test("filter state carries from /map to /table via the shared URL", async ({
   await expect(page.getByRole("table")).toBeVisible();
 });
 
+test("/table paginates through real links and keeps the query", async ({ page }) => {
+  await page.goto("/table");
+  const nav = page.getByRole("navigation", { name: "Table pagination" });
+  await expect(nav).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: /Showing/ })).toContainText(
+    /Showing 1–50 of [\d,]+ facilities/
+  );
+  await nav.getByRole("link", { name: "Next" }).click();
+  await expect(page).toHaveURL(/[?&]page=2/);
+  await expect(page.getByRole("status").filter({ hasText: /Showing/ })).toContainText(
+    /Showing 51–100 of [\d,]+ facilities/
+  );
+  await expect(
+    page.getByRole("navigation", { name: "Table pagination" }).getByRole("link", { name: "Page 2" })
+  ).toHaveAttribute("aria-current", "page");
+});
+
+test("/table sorts from the header and resets to page 1", async ({ page }) => {
+  await page.goto("/table?page=2");
+  await page.getByRole("button", { name: "Sort by Name" }).click();
+  await expect(page).toHaveURL(/[?&]sort=name/);
+  await expect(page).not.toHaveURL(/[?&]page=/);
+  await expect(page.getByRole("columnheader", { name: /name/i })).toHaveAttribute(
+    "aria-sort",
+    "ascending"
+  );
+});
+
 // ---------------------------------------------------------------------------
 // /table page — data table
 // ---------------------------------------------------------------------------

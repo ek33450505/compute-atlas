@@ -2,17 +2,16 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 
 import { getAllFacilities } from "@/lib/data";
-import { toTableRow } from "@/lib/facility-slim";
+import { loadExplorerParams } from "@/lib/explorer-params";
+import { queryTable } from "@/lib/table-query";
 import { getDatasetEdition } from "@/lib/dataset-edition";
 import { Explorer } from "@/components/explorer/explorer";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
-export const revalidate = 86400;
-
 export const metadata: Metadata = {
   title: "Searchable table of every tracked facility",
   description:
-    "Filterable, sortable table of every facility tracked by Compute Atlas — data centers, crypto-mining operations, and dedicated power generation. Shares filter state with the map.",
+    "Filterable, sortable, paginated table of the facilities tracked by Compute Atlas — data centers, crypto-mining operations, and dedicated power generation. Shares filter state with the map.",
   alternates: { canonical: "/table" },
 };
 
@@ -22,8 +21,13 @@ export const metadata: Metadata = {
  * state; the header stays server-rendered, the Explorer subtree hydrates
  * client-side (Suspense boundary required for useSearchParams / nuqs).
  */
-export default async function TablePage() {
-  const rows = (await getAllFacilities()).map(toTableRow);
+export default async function TablePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await loadExplorerParams(searchParams);
+  const result = queryTable(await getAllFacilities(), params);
   const edition = getDatasetEdition();
 
   return (
@@ -38,9 +42,9 @@ export default async function TablePage() {
             Data center data table
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Every tracked facility is listed below, filterable and sortable.
-            Filters are shared with the map — the URL carries them between the
-            two views. Each row links to its detail plate.
+            Facilities are listed 50 to a page, filterable and sortable. Filters
+            are shared with the map — the URL carries them between the two
+            views. Each row links to its detail plate.
           </p>
         </div>
         <div className="border-t border-border" />
@@ -48,8 +52,11 @@ export default async function TablePage() {
 
       <Suspense>
         <Explorer
-          facilities={rows}
           mode="table"
+          {...result}
+          sort={params.sort}
+          dir={params.dir}
+          q={params.q}
         />
       </Suspense>
     </div>

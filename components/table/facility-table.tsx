@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
   type ColumnDef,
-  type SortingState,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
@@ -23,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
 import type { Status } from "@/lib/status";
-import { compareCapacity, compareStatus } from "@/lib/table-sort";
+import { SORT_COLUMNS, type SortColumn, type SortDir } from "@/lib/table-sort";
 import {
   formatCapacity,
   formatLocation,
@@ -69,7 +66,6 @@ const columns: ColumnDef<TableRowData>[] = [
     header: "Status",
     accessorKey: "status",
     cell: ({ row }) => <StatusBadge status={row.original.status as Status} />,
-    sortingFn: (a, b) => compareStatus(a.original, b.original),
   },
   {
     id: "facilityType",
@@ -91,7 +87,6 @@ const columns: ColumnDef<TableRowData>[] = [
           : undefined;
       return v ? AI_CLASSIFICATION_LABELS[v] ?? v : "—";
     },
-    sortUndefined: "last",
   },
   {
     id: "location",
@@ -109,15 +104,10 @@ const columns: ColumnDef<TableRowData>[] = [
   {
     id: "capacity",
     header: "Capacity",
-    // Return undefined (not a -1 sentinel) for no-capacity facilities so that
-    // `sortUndefined: "last"` keeps them at the bottom in BOTH sort directions
-    // — otherwise a descending sort floats the ~89 no-capacity rows to the top.
     accessorFn: (f) => getFacilityMaxMw(f),
     cell: ({ row }) => (
       <span className="tabular-nums">{formatCapacity(row.original)}</span>
     ),
-    sortingFn: (a, b) => compareCapacity(a.original, b.original),
-    sortUndefined: "last",
     meta: { align: "right" },
   },
   {
@@ -165,25 +155,28 @@ function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
 // ---------------------------------------------------------------------------
 
 interface FacilityTableProps {
+  /** One server-sorted page of rows; rendered in the order given. */
   facilities: TableRowData[];
+  sort: SortColumn;
+  dir: SortDir;
+  /** Header buttons call this; the caller writes `sort`/`dir` to the URL. */
+  onSort: (column: SortColumn, dir: SortDir) => void;
 }
 
-export function FacilityTable({ facilities }: FacilityTableProps) {
-  // Default view: capacity, largest first. Every column stays user-sortable;
-  // the capacity column's `sortUndefined: "last"` keeps no-capacity rows at the
-  // bottom regardless of direction.
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "capacity", desc: true },
-  ]);
+function isSortColumn(id: string): id is SortColumn {
+  return (SORT_COLUMNS as readonly string[]).includes(id);
+}
 
+export function FacilityTable({ facilities, sort, dir, onSort }: FacilityTableProps) {
+  // Sorting happens on the server (lib/table-query.ts); TanStack only renders
+  // the page it is handed and reflects the URL's sort state in the headers.
   // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table v8's useReactTable returns non-memoizable functions; the React Compiler is not enabled, so this advisory is accepted. Revisit when TanStack adds compiler support.
   const table = useReactTable({
     data: facilities,
     columns,
-    state: { sorting },
-    onSortingChange: setSorting,
+    state: { sorting: [{ id: sort, desc: dir === "desc" }] },
+    manualSorting: true,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
@@ -235,7 +228,20 @@ export function FacilityTable({ facilities }: FacilityTableProps) {
                   {canSort ? (
                     <button
                       type="button"
-                      onClick={header.column.getToggleSortingHandler()}
+                      onClick={() => {
+                        if (!isSortColumn(header.id)) return;
+                        // Re-clicking the active column flips it; a new column
+                        // starts descending for the numeric/date columns.
+                        const next: SortDir =
+                          header.id === sort
+                            ? dir === "asc"
+                              ? "desc"
+                              : "asc"
+                            : header.id === "capacity" || header.id === "lastUpdated"
+                              ? "desc"
+                              : "asc";
+                        onSort(header.id, next);
+                      }}
                       aria-label={`Sort by ${header.column.columnDef.header as string}`}
                       className="inline-flex items-center gap-0.5 text-muted-foreground transition-colors motion-reduce:transition-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                     >

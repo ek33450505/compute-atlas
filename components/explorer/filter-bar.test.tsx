@@ -1,10 +1,11 @@
 "use client";
 
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { FilterBar } from "./filter-bar";
+import { normalizeQuery } from "@/lib/explorer-params";
 import type { Facility } from "@/lib/schema";
 import type { Status } from "@/lib/status";
 
@@ -422,5 +423,187 @@ describe("FilterBar — Clear all", () => {
     expect(
       screen.queryByRole("button", { name: /clear all/i })
     ).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Table mode — server options + debounced search
+// ---------------------------------------------------------------------------
+
+describe("FilterBar — options prop and search", () => {
+  const noop = () => {};
+  const setters = {
+    setStatus: noop,
+    setState: noop,
+    setOperator: noop,
+    setFacilityType: noop,
+    setMinMw: noop,
+  };
+  const values = { status: [], state: [], operator: [], facilityType: [], minMw: 0 } as FilterValues;
+
+  it("uses precomputed options instead of deriving them from facilities", async () => {
+    const user = userEvent.setup();
+    render(
+      <FilterBar
+        options={{ statuses: ["operational"], states: ["ZZ"], operators: ["Zed"], facilityTypes: ["data_center"], maxMw: 0 }}
+        values={values}
+        setters={setters}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: "State" }));
+    expect(screen.getByRole("checkbox", { name: "ZZ" })).toBeInTheDocument();
+  });
+
+  it("debounces the labelled search input", () => {
+    vi.useFakeTimers();
+    try {
+      const onChange = vi.fn();
+      render(
+        <FilterBar
+          options={{ statuses: [], states: [], operators: [], facilityTypes: [], maxMw: 0 }}
+          values={values}
+          setters={setters}
+          search={{ value: "", onChange }}
+        />
+      );
+      const input = screen.getByRole("searchbox", { name: "Search" });
+      fireEvent.change(input, { target: { value: "ab" } });
+      fireEvent.change(input, { target: { value: "abc" } });
+      vi.advanceTimersByTime(299);
+      expect(onChange).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(1);
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith("abc");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  describe("search draft", () => {
+    const OPTS = { statuses: [], states: [], operators: [], facilityTypes: [], maxMw: 0 };
+    function Harness({ initial = "", echo = (v: string) => v }: { initial?: string; echo?: (v: string) => string }) {
+      const [q, setQ] = useState(initial);
+      return (
+        <FilterBar
+          options={OPTS}
+          values={values}
+          setters={setters}
+          // echo mimics the server: trimmed value comes back through the URL
+          search={{ value: q, onChange: (v) => setQ(echo(v)) }}
+        />
+      );
+    }
+    const box = () => screen.getByRole("searchbox", { name: "Search" }) as HTMLInputElement;
+    const type = (v: string) => {
+      box().focus();
+      fireEvent.change(box(), { target: { value: v } });
+    };
+    const withTimers = (fn: () => void) => {
+      vi.useFakeTimers();
+      try {
+        fn();
+      } finally {
+        vi.useRealTimers();
+      }
+    };
+
+    it("keeps a trailing space when the trimmed value echoes back", () =>
+      withTimers(() => {
+        render(<Harness echo={normalizeQuery} />);
+        type("Equinix ");
+        act(() => { vi.advanceTimersByTime(300); });
+        expect(box().value).toBe("Equinix ");
+      }));
+
+    it("never overwrites text typed while focused, even if the URL value changes mid-typing", () =>
+      withTimers(() => {
+        const onChange = vi.fn();
+        const props = { options: OPTS, values, setters };
+        const { rerender } = render(<FilterBar {...props} search={{ value: "", onChange }} />);
+        type("Equi");
+        // a stale echo of an earlier emission lands while the user is still typing
+        rerender(<FilterBar {...props} search={{ value: "Eq", onChange }} />);
+        expect(box().value).toBe("Equi");
+      }));
+
+    it("follows an external URL change while the input is not focused", () => {
+      const onChange = vi.fn();
+      const props = { options: OPTS, values, setters };
+      const { rerender } = render(<FilterBar {...props} search={{ value: "a", onChange }} />);
+      rerender(<FilterBar {...props} search={{ value: "b", onChange }} />);
+      expect(box().value).toBe("b");
+    });
+
+    it("reconciles to the URL value on blur once nothing is pending", () =>
+      withTimers(() => {
+        render(<Harness echo={normalizeQuery} />);
+        type("abc ");
+        act(() => { vi.advanceTimersByTime(300); });
+        act(() => { box().blur(); });
+        expect(box().value).toBe("abc");
+      }));
+
+    it("blur with a pending debounce settles on the trimmed URL value", () =>
+      withTimers(() => {
+        render(<Harness initial="dallas" echo={normalizeQuery} />);
+        type("dallas ");
+        act(() => { box().blur(); });
+        act(() => { vi.advanceTimersByTime(1000); });
+        expect(box().value).toBe("dallas");
+      }));
+
+    it("Clear search with a pending debounce writes only the empty value", () => {
+      vi.useFakeTimers();
+      try {
+        const onChange = vi.fn();
+        render(<FilterBar options={OPTS} values={values} setters={setters} search={{ value: "", onChange }} />);
+        type("abc");
+        const btn = screen.getByRole("button", { name: "Clear search" });
+        // jsdom has no default mousedown focus change: mimic the browser, which
+        // blurs the input unless mousedown is default-prevented
+        if (fireEvent.mouseDown(btn)) act(() => { box().blur(); });
+        fireEvent.click(btn);
+        act(() => { vi.advanceTimersByTime(1000); });
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith("");
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("emits through the latest onChange, not the one from when typing started", () =>
+      withTimers(() => {
+        const first = vi.fn();
+        const second = vi.fn();
+        const props = { options: OPTS, values, setters };
+        const { rerender } = render(<FilterBar {...props} search={{ value: "", onChange: first }} />);
+        type("abc");
+        rerender(<FilterBar {...props} search={{ value: "", onChange: second }} />);
+        act(() => { vi.advanceTimersByTime(300); });
+        expect(second).toHaveBeenCalledWith("abc");
+        expect(first).not.toHaveBeenCalled();
+      }));
+
+    it("Clear all within the debounce window leaves q empty after timers run", () =>
+      withTimers(() => {
+        const onChange = vi.fn();
+        render(<FilterBar options={OPTS} values={values} setters={setters} search={{ value: "", onChange }} />);
+        type("abc");
+        fireEvent.click(screen.getByRole("button", { name: /clear all/i }));
+        act(() => { vi.advanceTimersByTime(1000); });
+        expect(box().value).toBe("");
+        expect(onChange).toHaveBeenLastCalledWith("");
+        expect(onChange).not.toHaveBeenCalledWith("abc");
+      }));
+
+    it("Clear search empties the box and moves focus to it", () => {
+      render(<Harness initial="abc" />);
+      const btn = screen.getByRole("button", { name: "Clear search" });
+      btn.focus();
+      fireEvent.click(btn);
+      expect(box().value).toBe("");
+      expect(box()).toHaveFocus();
+      expect(screen.queryByRole("button", { name: "Clear search" })).not.toBeInTheDocument();
+    });
   });
 });

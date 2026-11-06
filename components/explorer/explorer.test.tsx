@@ -5,6 +5,8 @@ import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { Explorer } from "./explorer";
 import type { Facility } from "@/lib/schema";
 import { toMapFacility, toTableRow } from "@/lib/facility-slim";
+import { getFilterOptions } from "@/lib/filters";
+import * as nav from "next/navigation";
 
 // jsdom can't render the real FacilityMap (MapLibre/WebGL — see the
 // render-in-table-view note below). Explorer's OWN logic for what it passes
@@ -21,7 +23,7 @@ declare global {
 // Table mode reads next/navigation's useSearchParams, which is null outside
 // the App Router; the real hook has no provider in jsdom.
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
 vi.mock("@/components/map/facility-map-dynamic", () => ({
@@ -103,174 +105,117 @@ const facilityD: Facility = {
   lastUpdated: "2023-12-01",
 };
 
-const fixtures = [facilityA, facilityB, facilityC, facilityD].map(toTableRow);
-// Toggle mode (no production caller) draws the map from the same rows, so it needs coordinates.
-const toToggleRow = (f: (typeof facilityA)) => {
-  const row = toTableRow(f);
-  return { ...row, location: { ...row.location, lat: f.location.lat, lon: f.location.lon } };
+const all = [facilityA, facilityB, facilityC, facilityD];
+const fixtures = all.map(toTableRow);
+const mapFixtures = all.map(toMapFacility);
+
+// ---------------------------------------------------------------------------
+// Table mode — renders the server-provided page; never filters client-side
+// ---------------------------------------------------------------------------
+
+const tableProps = {
+  mode: "table" as const,
+  rows: fixtures,
+  filteredCount: 4,
+  totalCount: 4,
+  page: 1,
+  pageCount: 1,
+  options: getFilterOptions(all),
+  sort: "capacity" as const,
+  dir: "desc" as const,
+  q: "",
 };
-const toggleFixtures = [facilityA, facilityB, facilityC, facilityD].map(toToggleRow);
-const mapFixtures = [facilityA, facilityB, facilityC, facilityD].map(toMapFacility);
 
-// ---------------------------------------------------------------------------
-// Helper — render in table view (jsdom can't render WebGL map)
-// ---------------------------------------------------------------------------
-
-function renderExplorer(searchParams?: Record<string, string>) {
+function renderTable(
+  overrides: Partial<typeof tableProps> = {},
+  searchParams: Record<string, string> = {},
+  onUrlUpdate?: (e: { searchParams: URLSearchParams }) => void
+) {
   return render(
-    <NuqsTestingAdapter searchParams={searchParams ?? { view: "table" }}>
-      <Explorer facilities={toggleFixtures} />
+    <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate}>
+      <Explorer {...tableProps} {...overrides} />
     </NuqsTestingAdapter>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Result count
-// ---------------------------------------------------------------------------
-
-describe("Explorer — result count", () => {
-  it("shows correct count for all facilities in table view", () => {
-    renderExplorer();
-    expect(
-      screen.getByRole("status")
-    ).toHaveTextContent("Showing 4 of 4 facilities");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// View toggle aria-pressed
-// ---------------------------------------------------------------------------
-
-describe("Explorer — table controls", () => {
-  it("formats large counts with separators", () => {
-    const many = Array.from({ length: 1234 }, (_, i) => ({ ...toToggleRow(facilityA), id: `f-${i}` }));
-    render(
-      <NuqsTestingAdapter searchParams={{ view: "table" }}>
-        <Explorer facilities={many} />
-      </NuqsTestingAdapter>
-    );
-    expect(screen.getByRole("status")).toHaveTextContent("Showing 1,234 of 1,234 facilities");
+describe("Explorer — table mode", () => {
+  it("renders the rows it is given", () => {
+    renderTable();
+    expect(screen.getAllByRole("row")).toHaveLength(5); // header + 4
+    expect(screen.getByRole("link", { name: "Alpha Datacenter" })).toBeInTheDocument();
   });
 
-  it("table mode offers Copy link but no export controls", () => {
-    render(
-      <NuqsTestingAdapter searchParams={{ view: "table" }}>
-        <Explorer facilities={fixtures} mode="table" />
-      </NuqsTestingAdapter>
-    );
+  it("does not filter rows client-side, even when the URL carries a filter", () => {
+    renderTable({}, { status: "operational" });
+    expect(screen.getAllByRole("row")).toHaveLength(5);
+  });
+
+  it("announces the range on the current page", () => {
+    renderTable({ rows: fixtures.slice(0, 2), filteredCount: 1240, totalCount: 2000, page: 2, pageCount: 25 });
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 51–52 of 1,240 facilities");
+  });
+
+  it("announces an empty result", () => {
+    renderTable({ rows: [], filteredCount: 0, pageCount: 1 });
+    expect(screen.getByRole("status")).toHaveTextContent("No facilities match these filters");
+  });
+
+  it("offers Copy link but no export controls", () => {
+    renderTable();
     expect(screen.getByRole("button", { name: "Copy link to this view" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /download|export|csv|json/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /download|export|csv|json/i })).not.toBeInTheDocument();
   });
 
-  it("toggle mode (view=table) offers Copy link but no export controls", () => {
-    renderExplorer({ view: "table" });
-    expect(screen.getByRole("button", { name: "Copy link to this view" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /download|export|csv|json/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /download|export|csv|json/i })).not.toBeInTheDocument();
-  });
-});
-
-describe("Explorer — view toggle", () => {
-  it("Map view button has aria-pressed=false in table view", () => {
-    renderExplorer({ view: "table" });
-    const mapBtn = screen.getByRole("button", { name: "Map view" });
-    expect(mapBtn).toHaveAttribute("aria-pressed", "false");
-  });
-
-  it("Table view button has aria-pressed=true in table view", () => {
-    renderExplorer({ view: "table" });
-    const tableBtn = screen.getByRole("button", { name: "Table view" });
-    expect(tableBtn).toHaveAttribute("aria-pressed", "true");
-  });
-
-  it("toggling to table view renders table rows", async () => {
-    renderExplorer({ view: "table" });
-    // All 4 fixtures should produce rows (1 header + 4 data = 5 rows)
-    const rows = screen.getAllByRole("row");
-    expect(rows.length).toBeGreaterThanOrEqual(5);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Status checkbox filter
-// ---------------------------------------------------------------------------
-
-describe("Explorer — status filter", () => {
-  it("checking Operational status reduces displayed rows", async () => {
+  it("takes filter options from the server, not the visible rows", async () => {
     const user = userEvent.setup();
-    renderExplorer({ view: "table" });
-
-    // Initially 4 data rows
-    let rows = screen.getAllByRole("row");
-    expect(rows.length).toBe(5); // 1 header + 4 data
-
-    // Find and click the Operational status checkbox
-    const operationalCheckbox = screen.getByRole("checkbox", {
-      name: "Operational",
-    });
-    await user.click(operationalCheckbox);
-
-    // Count should update — only 1 operational facility
-    rows = screen.getAllByRole("row");
-    expect(rows.length).toBe(2); // 1 header + 1 data
-
-    // Result count live region should update
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Showing 1 of 4 facilities"
-    );
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Clear all
-// ---------------------------------------------------------------------------
-
-describe("Explorer — clear all", () => {
-  it("Clear all button appears when a status filter is active", async () => {
-    const user = userEvent.setup();
-    renderExplorer({ view: "table" });
-
-    // No active filters → Clear all should not exist
-    expect(
-      screen.queryByRole("button", { name: /clear all/i })
-    ).not.toBeInTheDocument();
-
-    // Activate a filter
-    const operationalCheckbox = screen.getByRole("checkbox", {
-      name: "Operational",
-    });
-    await user.click(operationalCheckbox);
-
-    // Clear all should appear
-    const clearBtn = screen.getByRole("button", { name: /clear all/i });
-    expect(clearBtn).toBeInTheDocument();
+    renderTable({ rows: fixtures.slice(0, 1) });
+    await user.click(screen.getByRole("button", { name: "State" }));
+    // NJ/TX/TN/etc. come from the full set although only one row is rendered.
+    expect(screen.getByRole("checkbox", { name: "TX" })).toBeInTheDocument();
   });
 
-  it("Clear all resets filters and restores all rows", async () => {
+  it("a filter change writes the URL and resets page to 1", async () => {
     const user = userEvent.setup();
-    renderExplorer({ view: "table" });
+    const onUrlUpdate = vi.fn();
+    renderTable({ page: 3, pageCount: 5 }, { page: "3" }, onUrlUpdate);
+    await user.click(screen.getByRole("checkbox", { name: "Operational" }));
+    const { searchParams } = onUrlUpdate.mock.calls.at(-1)![0];
+    expect(searchParams.get("status")).toBe("operational");
+    expect(searchParams.has("page")).toBe(false);
+  });
 
-    // Activate a filter
-    const operationalCheckbox = screen.getByRole("checkbox", {
-      name: "Operational",
-    });
-    await user.click(operationalCheckbox);
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Showing 1 of 4 facilities"
+  it("a sort change writes sort/dir and resets page to 1", async () => {
+    const user = userEvent.setup();
+    const onUrlUpdate = vi.fn();
+    renderTable({ page: 2, pageCount: 5 }, { page: "2" }, onUrlUpdate);
+    await user.click(screen.getByRole("button", { name: "Sort by Name" }));
+    const { searchParams } = onUrlUpdate.mock.calls.at(-1)![0];
+    expect(searchParams.get("sort")).toBe("name");
+    expect(searchParams.get("dir")).toBe("asc");
+    expect(searchParams.has("page")).toBe(false);
+  });
+
+  it("Clear all removes filters and the search", async () => {
+    const user = userEvent.setup();
+    const onUrlUpdate = vi.fn();
+    renderTable({}, { status: "operational", q: "alpha" }, onUrlUpdate);
+    await user.click(screen.getByRole("button", { name: /clear all/i }));
+    const { searchParams } = onUrlUpdate.mock.calls.at(-1)![0];
+    expect(searchParams.has("status")).toBe(false);
+    expect(searchParams.has("q")).toBe(false);
+  });
+
+  it("the map cross-link carries filters but not page, sort or search", () => {
+    vi.spyOn(nav, "useSearchParams").mockReturnValue(
+      new URLSearchParams("status=operational&page=3&sort=name&dir=asc&q=x") as never
     );
-
-    // Clear all
-    const clearBtn = screen.getByRole("button", { name: /clear all/i });
-    await user.click(clearBtn);
-
-    // All 4 facilities restored
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Showing 4 of 4 facilities"
+    renderTable();
+    expect(screen.getByRole("link", { name: /view map/i })).toHaveAttribute(
+      "href",
+      "/map?status=operational"
     );
-    expect(
-      screen.queryByRole("button", { name: /clear all/i })
-    ).not.toBeInTheDocument();
+    vi.restoreAllMocks();
   });
 });
 
@@ -287,8 +232,8 @@ describe("Explorer — clear all", () => {
 describe("Explorer — map empty state", () => {
   it("shows a StatePanel instead of the map when filters exclude everything", () => {
     render(
-      <NuqsTestingAdapter searchParams={{ view: "map", status: "permitted" }}>
-        <Explorer facilities={toggleFixtures} />
+      <NuqsTestingAdapter searchParams={{ status: "permitted" }}>
+        <Explorer facilities={mapFixtures} mode="map" />
       </NuqsTestingAdapter>
     );
 
@@ -336,25 +281,6 @@ describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
     // is the exact "unchecking the last box" repro path from the original
     // bug report: it's the only filter active, so this returns to zero.
     await user.click(screen.getByRole("checkbox", { name: "Operational" }));
-    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
-  });
-
-  it("toggle mode: isFiltered starts false, flips true once a filter narrows the set, and back to false after Clear all", async () => {
-    const user = userEvent.setup();
-
-    render(
-      <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={toggleFixtures} />
-      </NuqsTestingAdapter>
-    );
-
-    expect(await screen.findByTestId("mock-facility-map")).toBeInTheDocument();
-    expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
-
-    await user.click(screen.getByRole("checkbox", { name: "Operational" }));
-    expect(globalThis.__facilityMapProps?.isFiltered).toBe(true);
-
-    await user.click(screen.getByRole("button", { name: /clear all/i }));
     expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
   });
 });

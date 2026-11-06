@@ -13,8 +13,12 @@ import { STATUS_ORDER } from "@/lib/status";
 import { SORT_COLUMNS } from "@/lib/table-sort";
 
 /** Trimmed free-text query, capped before it reaches a cache key or Postgres. */
+export function normalizeQuery(raw: string): string {
+  return raw.trim().slice(0, MAX_SEARCH_QUERY_LEN);
+}
+
 const parseAsQuery = createParser<string>({
-  parse: (v) => v.trim().slice(0, MAX_SEARCH_QUERY_LEN),
+  parse: normalizeQuery,
   serialize: (v) => v,
 });
 
