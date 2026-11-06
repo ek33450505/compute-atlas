@@ -4,16 +4,25 @@
  *   - Vercel (VERCEL=1): export from Neon. If the export fails, a build
  *     exits non-zero unless VERCEL_ENV is exactly "preview" (fail closed: never
  *     ship fixture data to prod); a preview build falls back to fixtures for
- *     absent files only, with a loud warning.
+ *     absent files only, with a loud warning. Every Vercel build, production
+ *     and preview, runs a Neon export in prebuild, so a Neon outage fails a
+ *     production deploy by design (never ship fixture or stale data to prod);
+ *     retry the deploy. ALLOW_FIXTURE_SNAPSHOT is deliberately ignored when
+ *     VERCEL=1.
  *   - Elsewhere: copy a fixture into data/ only for files that are absent. Never
  *     overwrites an existing file, except facilities.meta.json when
  *     facilities.json is absent: the pair is copied together so recordCount
  *     matches.
  *   - `--export` forces a Neon export on any machine; failure exits non-zero.
  *
- * Wired as `predev` only. `prebuild` is deliberately NOT wired in this unit:
- * the Vercel export-at-build lands in a later PR, once the data files are
- * untracked.
+ *   - CI or NODE_ENV=production off Vercel: a missing snapshot file exits
+ *     non-zero rather than copying fixtures, unless ALLOW_FIXTURE_SNAPSHOT=1.
+ *     npm does not set NODE_ENV for lifecycle scripts, so a self-hosted or
+ *     non-Vercel production build must set CI or NODE_ENV=production for this
+ *     guard to apply. A plain local `npm run build` with no DB copies the
+ *     fixture by design, so contributors can build.
+ *
+ * Wired as `predev` and `prebuild` (never with `--export`).
  *
  * Logs never include URLs or bound params: a DB error is reduced to
  * `redactedErrorCode(err)`.
@@ -43,7 +52,7 @@ export interface SnapshotDeps {
   env: Record<string, string | undefined>;
   fs: SnapshotFs;
   /** Runs the Neon export (scripts/export.ts). Rejects on failure. */
-  exportFacilities: () => Promise<unknown>;
+  exportSnapshot: () => Promise<unknown>;
   log: (msg: string) => void;
   warn: (msg: string) => void;
 }
@@ -98,7 +107,7 @@ export async function ensureDataSnapshot(
 ): Promise<number> {
   const tryExport = async (): Promise<boolean> => {
     try {
-      await deps.exportFacilities();
+      await deps.exportSnapshot();
       deps.log("ensure-data-snapshot: exported snapshot from Neon");
       return true;
     } catch (err) {
@@ -116,7 +125,17 @@ export async function ensureDataSnapshot(
   }
 
   if (deps.env.VERCEL === "1") {
-    if (await tryExport()) return 0;
+    if (await tryExport()) {
+      // The export must have produced all four files. Vacuous while the data
+      // files are tracked in git (they exist regardless); it becomes meaningful
+      // when PR C untracks them.
+      const missing = SNAPSHOT_FILES.filter((f) => !deps.fs.existsSync(path.join(deps.root, f.snapshot)));
+      if (missing.length > 0) {
+        deps.warn(`ensure-data-snapshot: export reported success but ${missing.map((f) => f.snapshot).join(", ")} missing`);
+        return 1;
+      }
+      return 0;
+    }
     // Allowlist: only an explicit preview build may fall back. Production,
     // development, or an unset/unknown VERCEL_ENV all fail closed.
     if (deps.env.VERCEL_ENV !== "preview") {
@@ -127,6 +146,18 @@ export async function ensureDataSnapshot(
       deps.warn("ensure-data-snapshot: WARNING Neon export failed on a preview build; existing data/ files left as they are");
     }
     return 0;
+  }
+
+  // A CI or production build must never silently ship fixture data.
+  if (deps.env.CI || deps.env.NODE_ENV === "production") {
+    const missing = SNAPSHOT_FILES.filter((f) => !deps.fs.existsSync(path.join(deps.root, f.snapshot)));
+    if (missing.length > 0 && deps.env.ALLOW_FIXTURE_SNAPSHOT !== "1") {
+      deps.warn(
+        `ensure-data-snapshot: refusing to copy fixtures in CI/production; missing ${missing.map((f) => f.snapshot).join(", ")}. ` +
+          `Set ALLOW_FIXTURE_SNAPSHOT=1 to allow a fixture build.`
+      );
+      return 1;
+    }
   }
 
   if (!fillMissing(deps, "data/ snapshot files were missing")) {
@@ -142,9 +173,9 @@ async function main(): Promise<void> {
       root: process.cwd(),
       env: process.env,
       fs: { existsSync, copyFileSync, mkdirSync },
-      exportFacilities: async () => {
-        const { exportFacilities } = await import("./export");
-        return exportFacilities();
+      exportSnapshot: async () => {
+        const { exportSnapshot } = await import("./export");
+        return exportSnapshot();
       },
       log: (m) => console.log(m),
       warn: (m) => console.warn(m),

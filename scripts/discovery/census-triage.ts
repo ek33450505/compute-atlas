@@ -32,6 +32,7 @@
 import { createWriteStream, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
+import { loadFacilities } from "./load-facilities";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { pinnedFetch, runWithConcurrency } from "./net-guard";
 import { distinctiveEntityTokens } from "./verify-source";
@@ -586,12 +587,10 @@ export function parseArgs(argv: string[], runId: string): CliOptions {
  * one) and its per-source `kind` (so an `osm` citation is recognized even when
  * its URL matches no structural rule).
  */
-export function loadFacilityIndex(): { names: Map<string, string>; sourceKinds: Map<string, string> } {
-  const facilitiesPath = path.join(process.cwd(), "data", "facilities.json");
-  const parsed: unknown = JSON.parse(readFileSync(facilitiesPath, "utf8"));
-  if (!Array.isArray(parsed)) {
-    throw new Error(`${facilitiesPath} is not a JSON array`);
-  }
+export function buildFacilityIndex(parsed: readonly unknown[]): {
+  names: Map<string, string>;
+  sourceKinds: Map<string, string>;
+} {
   const names = new Map<string, string>();
   const sourceKinds = new Map<string, string>();
   for (const entry of parsed) {
@@ -620,7 +619,7 @@ async function main(): Promise<void> {
   mkdirSync(path.dirname(outPath), { recursive: true });
 
   const { records, malformed } = readCensusReport(path.resolve(process.cwd(), options.in));
-  const { names: liveNames, sourceKinds } = loadFacilityIndex();
+  const { names: liveNames, sourceKinds } = buildFacilityIndex((await loadFacilities()).facilities);
   const candidateCount = records.filter(isTriageCandidate).length;
 
   console.error(`[triage] read ${records.length} census record(s) from ${options.in}`);

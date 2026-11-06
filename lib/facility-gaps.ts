@@ -1,4 +1,5 @@
 import type { Facility } from "@/lib/schema";
+import type { SitingContext } from "@/lib/siting-context";
 import { hasSitingContext } from "@/components/facility/siting-context";
 import { hasPowerLinks } from "@/components/facility/power-links";
 import { hasSiteStakeholders } from "@/components/facility/stakeholders";
@@ -135,9 +136,12 @@ function powerLabel(facility: Facility): string {
  *
  * Async because `hasPowerLinks` has to query for linked facilities.
  */
-export async function missingSectionLabels(facility: Facility): Promise<string[]> {
+export async function missingSectionLabels(
+  facility: Facility,
+  siting: SitingContext | undefined
+): Promise<string[]> {
   const sections: { label: string; present: boolean }[] = [
-    { label: "siting context", present: hasSitingContext(facility) },
+    { label: "siting context", present: hasSitingContext(siting) },
     { label: powerLabel(facility), present: await hasPowerLinks(facility) },
     { label: "economic impact", present: hasEconomics(facility) },
     { label: "energy and water", present: hasEnergyWater(facility) },

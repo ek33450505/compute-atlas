@@ -5,9 +5,21 @@ import {
   hasEmissions,
   hasEnergyWater,
   hasSubsidies,
-  missingSectionLabels,
+  missingSectionLabels as missingSectionLabelsFor,
 } from "./facility-gaps";
+import sitingContextRaw from "@/data/siting-context.json";
+import type { SitingContext } from "@/lib/siting-context";
 import type { DataCenterFacility, PowerGenerationFacility } from "@/lib/schema";
+
+/** Production passes the page's single siting read; here it is the snapshot entry. */
+function missingSectionLabels(f: DataCenterFacility | PowerGenerationFacility): Promise<string[]> {
+  return missingSectionLabelsFor(f, sitingFor(f));
+}
+
+/** The siting entry the page passes in: the bundled snapshot mirrors the Neon rows. */
+function sitingFor(f: { id: string }): SitingContext | undefined {
+  return (sitingContextRaw as Record<string, SitingContext>)[f.id];
+}
 
 // ---------------------------------------------------------------------------
 // The predicates behind the printed brief's consolidated nil line, and behind

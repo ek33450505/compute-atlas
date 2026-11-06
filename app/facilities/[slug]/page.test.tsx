@@ -7,8 +7,20 @@ import type { Facility } from "@/lib/schema";
 // vi.mock calls are hoisted above imports by Vitest. Route the shared mock
 // through vi.hoisted() so its initialization is hoisted alongside the
 // vi.mock call itself, rather than relying on a plain top-level const.
-const { mockGetFacilityByIdCached } = vi.hoisted(() => ({
+const {
+  mockGetFacilityByIdCached,
+  mockGetSitingContext,
+  mockGetOperatorOwnership,
+  stakeholdersProps,
+  sitingSectionProps,
+  printGapProps,
+} = vi.hoisted(() => ({
   mockGetFacilityByIdCached: vi.fn(),
+  mockGetSitingContext: vi.fn(),
+  mockGetOperatorOwnership: vi.fn(),
+  stakeholdersProps: vi.fn(),
+  sitingSectionProps: vi.fn(),
+  printGapProps: vi.fn(),
 }));
 
 // operatorSlug is real (imported from the dependency-free lib/operator-slug
@@ -61,13 +73,21 @@ vi.mock("@/components/facility/civic-impact", () => ({
   CivicImpactSection: () => null,
 }));
 vi.mock("@/components/facility/stakeholders", () => ({
-  StakeholdersSection: () => null,
+  StakeholdersSection: (props: unknown) => {
+    stakeholdersProps(props);
+    return null;
+  },
 }));
+vi.mock("@/lib/siting-context", () => ({ getSitingContext: mockGetSitingContext }));
+vi.mock("@/lib/operator-ownership", () => ({ getOperatorOwnership: mockGetOperatorOwnership }));
 vi.mock("@/components/facility/power-links", () => ({
   PowerLinksSection: () => null,
 }));
 vi.mock("@/components/facility/siting-context", () => ({
-  SitingContextSection: () => null,
+  SitingContextSection: (props: unknown) => {
+    sitingSectionProps(props);
+    return null;
+  },
 }));
 vi.mock("@/components/facility/related-facilities", () => ({
   RelatedFacilities: () => null,
@@ -76,7 +96,10 @@ vi.mock("@/components/facility/related-facilities", () => ({
 // power-link datasets). Its own behavior is covered by lib/facility-gaps.test.ts
 // and e2e/print-brief.spec.ts.
 vi.mock("@/components/facility/print-gap-summary", () => ({
-  PrintGapSummary: () => null,
+  PrintGapSummary: (props: unknown) => {
+    printGapProps(props);
+    return null;
+  },
 }));
 
 import FacilityPage, { generateMetadata } from "./page";
@@ -518,5 +541,28 @@ describe("FacilityPage — agent-quotable contribution note", () => {
     expect(
       screen.getByRole("link", { name: "compute-atlas.com/contribute" })
     ).toHaveAttribute("href", "/contribute");
+  });
+});
+
+describe("FacilityPage — loader results reach the sections as props", () => {
+  const SITING = { nearestWater: { name: "Fake River", kind: "river", distanceMi: 2 } };
+  const OWNERSHIP = [{ operator: "Acme Corp", owners: [] }];
+
+  it("passes the loaded siting to SitingContextSection and PrintGapSummary, and ownership to StakeholdersSection", async () => {
+    const facility = makeFacility();
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+    mockGetSitingContext.mockResolvedValue(SITING);
+    mockGetOperatorOwnership.mockResolvedValue(OWNERSHIP);
+    stakeholdersProps.mockClear();
+    sitingSectionProps.mockClear();
+    printGapProps.mockClear();
+
+    render(await FacilityPage({ params: Promise.resolve({ slug: facility.id }) }));
+
+    expect(mockGetSitingContext).toHaveBeenCalledWith(facility.id);
+    expect(mockGetOperatorOwnership).toHaveBeenCalledWith(facility.operator);
+    expect(sitingSectionProps.mock.calls[0][0]).toMatchObject({ siting: SITING });
+    expect(printGapProps.mock.calls[0][0]).toMatchObject({ siting: SITING });
+    expect(stakeholdersProps.mock.calls[0][0]).toMatchObject({ ownership: OWNERSHIP });
   });
 });

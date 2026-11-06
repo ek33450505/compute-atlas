@@ -4,33 +4,29 @@ import type { Facility } from "@/lib/schema";
 import {
   formatNearestTransmission,
   formatNearestWater,
-  getSitingContext,
+  hasSitingDatum,
   splitRiskLabel,
+  type SitingContext,
 } from "@/lib/siting-context";
 import { SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { Separator } from "@/components/ui/separator";
 import { MastheadFactGrid, MastheadFactRow } from "./fact-row";
 
-function hasAnyDatum(context: ReturnType<typeof getSitingContext>): boolean {
-  return !!(
-    context &&
-    (context.nearestWater ||
-      context.nearestTransmission ||
-      context.waterStress ||
-      context.groundwaterDecline ||
-      context.aquifer)
-  );
-}
-
 // --- Predicate ---
-export function hasSitingContext(facility: Facility): boolean {
-  return hasAnyDatum(getSitingContext(facility.id));
+export function hasSitingContext(siting: SitingContext | undefined): boolean {
+  return hasSitingDatum(siting);
 }
 
 // --- Main export ---
-export function SitingContextSection({ facility }: { facility: Facility }) {
-  const context = getSitingContext(facility.id);
-  if (!hasAnyDatum(context)) {
+export function SitingContextSection({
+  facility,
+  siting: context,
+}: {
+  facility: Facility;
+  /** Fetched once by the page (`getSitingContext`) and shared with the print gap summary. */
+  siting: SitingContext | undefined;
+}) {
+  if (!hasSitingDatum(context)) {
     return <SectionGapPrompt facilityId={facility.id} facilityName={facility.name} label="the siting context" />;
   }
 
@@ -41,7 +37,7 @@ export function SitingContextSection({ facility }: { facility: Facility }) {
     waterStress,
     groundwaterDecline,
     aquifer,
-  } = context!;
+  } = context;
 
   return (
     <>

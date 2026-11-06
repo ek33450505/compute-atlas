@@ -2313,13 +2313,7 @@ export function buildRealDeps(): RunExtractDeps {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  const { facilities, source, dbError } = await loadFacilities();
-  if (source === "file") {
-    console.warn(
-      `WARNING: could not read the live facility index from Neon (${dbError}); ` +
-        `falling back to the committed data/facilities.json snapshot, which may be stale.`
-    );
-  }
+  const { facilities } = await loadFacilities();
 
   const deps = buildRealDeps();
   if (args.outPath) {

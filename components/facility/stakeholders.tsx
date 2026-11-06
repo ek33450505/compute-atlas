@@ -1,7 +1,6 @@
 import type { Facility } from "@/lib/schema";
 import {
   OPERATOR_OWNER_ROLE_LABELS,
-  getOperatorOwners,
   ownersFor,
   type OperatorOwner,
   type OperatorOwnership,
@@ -46,17 +45,18 @@ export function hasSiteStakeholders(facility: Facility): boolean {
 
 /**
  * Owners of the facility's operator, from the operator-level ownership layer.
- * `ownership` is injectable so tests can pass fixtures; the default reads the
- * validated data/operator-ownership.json.
+ * `ownership` arrives by props from the server page (which loads it); absent
+ * means no operator-level layer, never a read of the bundled snapshot.
  */
-function operatorOwnersOf(facility: Facility, ownership?: OperatorOwnership[]): OperatorOwner[] {
-  return ownership ? ownersFor(ownership, facility.operator) : getOperatorOwners(facility.operator);
+function operatorOwnersOf(facility: Facility, ownership: OperatorOwnership[] = []): OperatorOwner[] {
+  return ownersFor(ownership, facility.operator);
 }
 
 /**
  * True when the section has anything to show: a site-level stakeholder OR an
- * owner of the operator. Drives the section's gap prompt and the print brief's
- * "Not recorded" list, both of which mirror what the page renders.
+ * owner of the operator. Drives the section's gap prompt. The print brief
+ * deliberately does NOT use it: it uses `hasSiteStakeholders`, because operator
+ * owners are not a site-level record (#517).
  */
 export function hasStakeholders(facility: Facility, ownership?: OperatorOwnership[]): boolean {
   return hasSiteStakeholders(facility) || operatorOwnersOf(facility, ownership).length > 0;
@@ -146,7 +146,7 @@ export function StakeholdersSection({
   ownership,
 }: {
   facility: Facility;
-  /** Test seam: defaults to the real operator-ownership file. */
+  /** The facility's operator ownership rows, loaded by the page via getOperatorOwnership. */
   ownership?: OperatorOwnership[];
 }) {
   if (!hasStakeholders(facility, ownership)) {

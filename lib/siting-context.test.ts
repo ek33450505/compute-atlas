@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import facilitiesRaw from "@/data/facilities.json";
 import sitingContextRaw from "@/data/siting-context.json";
 import {
@@ -8,7 +8,14 @@ import {
   type FacilityStateRow,
 } from "./nhd-debt";
 import { ratchetVerdict } from "./test-fixtures/nhd-ratchet";
-import { splitRiskLabel, type SitingContext } from "./siting-context";
+import {
+  loadSitingContextUncached,
+  sitingContextSchema,
+  loadWaterStressByIdUncached,
+  splitRiskLabel,
+  type SitingContext,
+  type SitingSource,
+} from "./siting-context";
 
 describe("splitRiskLabel", () => {
   it("splits a label with a trailing parenthetical detail", () => {
@@ -180,5 +187,183 @@ describe("data-integrity: NHD debt ratchet decision (pure inputs)", () => {
     expect(count).toBe(1);
     expect(ratchetVerdict(count, ledger.ceiling)).toBe("paid_down");
     expect(plan.next?.ceiling).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Neon loaders, with an injected fake source. The fallback is the bundled
+// snapshot; `neon` rows below deliberately DIFFER from it so a hit is
+// distinguishable from a fallback.
+// ---------------------------------------------------------------------------
+const snapshot = sitingContextRaw as Record<string, SitingContext>;
+const REAL_ID = "xai-colossus-memphis-tn";
+const NEON_ENTRY: SitingContext = { waterStress: { cat: 4, label: "From Neon (>80%)" } };
+
+function fakeSource(overrides: Partial<SitingSource> = {}): SitingSource {
+  return {
+    one: async () => NEON_ENTRY,
+    waterStress: async () => new Map([[REAL_ID, NEON_ENTRY.waterStress]]),
+    ...overrides,
+  };
+}
+
+describe("Neon siting loaders", () => {
+  beforeEach(() => {
+    vi.stubEnv("DATABASE_URL", "postgres://fake");
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it("returns the Neon row on a hit, not the snapshot", async () => {
+    expect(await loadSitingContextUncached(REAL_ID, fakeSource())).toEqual(NEON_ENTRY);
+  });
+
+  it("falls back to the snapshot (and warns with a SQLSTATE only) when Neon throws", async () => {
+    const source = fakeSource({
+      one: async () => {
+        throw Object.assign(new Error("Failed query: select ... params: secret@example.com"), {
+          code: "08006",
+        });
+      },
+    });
+    expect(await loadSitingContextUncached(REAL_ID, source)).toEqual(snapshot[REAL_ID]);
+    const logged = vi.mocked(console.warn).mock.calls.flat().join(" ");
+    expect(logged).toContain("08006");
+    expect(logged).not.toContain("secret@example.com");
+  });
+
+  it("a missing Neon row means no data: undefined, NOT the snapshot", async () => {
+    const source = fakeSource({ one: async () => undefined });
+    expect(snapshot[REAL_ID]).toBeDefined();
+    expect(await loadSitingContextUncached(REAL_ID, source)).toBeUndefined();
+  });
+
+  it("falls back to the snapshot (and warns) when the Neon row is invalid", async () => {
+    const source = fakeSource({ one: async () => "not an object" });
+    expect(await loadSitingContextUncached(REAL_ID, source)).toEqual(snapshot[REAL_ID]);
+    expect(console.warn).toHaveBeenCalled();
+  });
+
+  it("falls back when a row's waterStress lacks its label (it would throw at render)", async () => {
+    const source = fakeSource({ one: async () => ({ waterStress: { cat: 4 } }) });
+    expect(await loadSitingContextUncached(REAL_ID, source)).toEqual(snapshot[REAL_ID]);
+    expect(console.warn).toHaveBeenCalled();
+  });
+
+  it("falls back when a row's distanceMi is not a number", async () => {
+    const source = fakeSource({ one: async () => ({ nearestWater: { name: "x", kind: "river", distanceMi: "far" } }) });
+    expect(await loadSitingContextUncached(REAL_ID, source)).toEqual(snapshot[REAL_ID]);
+  });
+
+  it("accepts an unknown extra key and returns it untouched", async () => {
+    const row = { ...NEON_ENTRY, futureField: { a: 1 } };
+    expect(await loadSitingContextUncached(REAL_ID, fakeSource({ one: async () => row }))).toEqual(row);
+  });
+
+  it("water-stress map: an entry without a label falls back to the snapshot values", async () => {
+    const source = fakeSource({ waterStress: async () => new Map<string, unknown>([[REAL_ID, { cat: 4 }]]) });
+    const out = await loadWaterStressByIdUncached(source);
+    expect(out[REAL_ID]).toEqual(snapshot[REAL_ID]?.waterStress);
+  });
+
+  it("treats a JSON-null field as absent, with no fallback", async () => {
+    const row = { nearestWater: null, waterStress: NEON_ENTRY.waterStress };
+    const out = await loadSitingContextUncached(REAL_ID, fakeSource({ one: async () => row }));
+    expect(out).toEqual({ waterStress: NEON_ENTRY.waterStress });
+    expect(out).not.toHaveProperty("nearestWater");
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it("water-stress map: a JSON-null projection row is skipped, not a failure", async () => {
+    const source = fakeSource({
+      waterStress: async () =>
+        new Map<string, unknown>([
+          [REAL_ID, NEON_ENTRY.waterStress],
+          ["null-row", null],
+        ]),
+    });
+    expect(await loadWaterStressByIdUncached(source)).toEqual({ [REAL_ID]: NEON_ENTRY.waterStress });
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it("water-stress map: a non-object value (string) is invalid and falls back to the snapshot values", async () => {
+    const source = fakeSource({ waterStress: async () => new Map<string, unknown>([[REAL_ID, "high"]]) });
+    const out = await loadWaterStressByIdUncached(source);
+    expect(out[REAL_ID]).toEqual(snapshot[REAL_ID]?.waterStress);
+    expect(console.warn).toHaveBeenCalled();
+  });
+
+  it("every entry in the bundled siting file passes the schema", () => {
+    const failures = Object.entries(snapshot)
+      .filter(([, v]) => !sitingContextSchema.safeParse(v).success)
+      .map(([id]) => id);
+    expect(failures).toEqual([]);
+    expect(Object.keys(snapshot).length).toBeGreaterThan(0);
+  });
+
+  it("returns undefined for an id absent from both Neon and the snapshot", async () => {
+    const source = fakeSource({ one: async () => undefined });
+    expect(await loadSitingContextUncached("no-such-facility", source)).toBeUndefined();
+  });
+
+  it("does not touch Neon when reads are not allowed to use the database", async () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    const one = vi.fn(async () => NEON_ENTRY);
+    expect(await loadSitingContextUncached(REAL_ID, fakeSource({ one }))).toEqual(snapshot[REAL_ID]);
+    expect(one).not.toHaveBeenCalled();
+  });
+
+  it("water-stress map: hit returns the Neon projection", async () => {
+    expect(await loadWaterStressByIdUncached(fakeSource())).toEqual({
+      [REAL_ID]: NEON_ENTRY.waterStress,
+    });
+  });
+
+  it("water-stress map: throw falls back to the snapshot's waterStress values", async () => {
+    const source = fakeSource({
+      waterStress: async () => {
+        throw new Error("fetch failed");
+      },
+    });
+    const result = await loadWaterStressByIdUncached(source);
+    expect(result[REAL_ID]).toEqual(snapshot[REAL_ID].waterStress);
+    expect(Object.keys(result).length).toBeGreaterThan(10);
+  });
+
+  it("water-stress map: an empty result falls back to the snapshot", async () => {
+    const source = fakeSource({ waterStress: async () => new Map() });
+    const result = await loadWaterStressByIdUncached(source);
+    expect(result[REAL_ID]).toEqual(snapshot[REAL_ID].waterStress);
+  });
+});
+
+describe("unstable_cache entry sizes", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  // unstable_cache refuses entries over 2 MiB, envelope (~2.3KB) included, and
+  // fails silently: every read then misses and hits Neon. Measured on the
+  // fixture; the aggregate is a waterStress-only projection because the whole
+  // table (~420 B/record at full scale) would cross the limit near 4,700 records.
+  const LIMIT = 2 * 1024 * 1024;
+  const ENVELOPE = 4 * 1024;
+  const bytes = (v: unknown) => Buffer.byteLength(JSON.stringify(v), "utf8");
+
+  it("every per-facility entry is far under the limit", () => {
+    const largest = Math.max(...Object.values(snapshot).map(bytes));
+    expect(largest + ENVELOPE).toBeLessThan(LIMIT);
+    expect(largest).toBeLessThan(8 * 1024);
+  });
+
+  it("the aggregate water-stress entry stays under the limit even at 10,000 facilities", async () => {
+    vi.stubEnv("DATABASE_URL", "");
+    const map = await loadWaterStressByIdUncached();
+    const perRecord = bytes(map) / Object.keys(map).length;
+    expect(perRecord * 10_000 + ENVELOPE).toBeLessThan(LIMIT);
   });
 });

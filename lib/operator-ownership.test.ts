@@ -1,9 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 
 import facilitiesRaw from "@/data/facilities.json";
 import {
   getOperatorOwners,
   groupByOwner,
+  loadAllOperatorOwnershipUncached,
+  loadOperatorOwnershipUncached,
+  type OperatorOwnershipSource,
   operatorOwnership,
   operatorOwnerSchema,
   ownersFor,
@@ -43,8 +46,8 @@ const FIXTURE: OperatorOwnership[] = parseOperatorOwnership([
 ]);
 
 describe("data/operator-ownership.json", () => {
-  it("resolves a known row: QTS Data Centers is owned by Blackstone", () => {
-    const owners = getOperatorOwners("QTS Data Centers");
+  it("resolves a known row: QTS Data Centers is owned by Blackstone", async () => {
+    const owners = await getOperatorOwners("QTS Data Centers");
     expect(owners.map((o) => o.name)).toContain("Blackstone");
     expect(owners.find((o) => o.name === "Blackstone")?.source.url).toMatch(/^https?:\/\//);
   });
@@ -136,7 +139,101 @@ describe("groupByOwner", () => {
 });
 
 describe("getOperatorOwners (real file)", () => {
-  it("returns [] for an operator with no ownership rows", () => {
-    expect(getOperatorOwners("An Operator That Does Not Exist")).toEqual([]);
+  it("returns [] for an operator with no ownership rows", async () => {
+    expect(await getOperatorOwners("An Operator That Does Not Exist")).toEqual([]);
+  });
+});
+
+function fakeSource(overrides: Partial<OperatorOwnershipSource> = {}): OperatorOwnershipSource {
+  return {
+    one: async (operator) => FIXTURE.find((o) => o.operator === operator),
+    all: async () => FIXTURE,
+    ...overrides,
+  };
+}
+
+const failing = () => {
+  throw Object.assign(new Error("Failed query: select ... params: secret@example.com"), { code: "08006" });
+};
+
+describe("Neon operator-ownership loaders", () => {
+  beforeEach(() => {
+    vi.stubEnv("DATABASE_URL", "postgres://fake");
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it("per-operator: returns the Neon row on a hit (an operator absent from the snapshot)", async () => {
+    expect(await loadOperatorOwnershipUncached("Fixture Cloud", fakeSource())).toEqual([FIXTURE[0]]);
+  });
+
+  it("per-operator: falls back to the snapshot (SQLSTATE only in the warning) when Neon throws", async () => {
+    const rows = await loadOperatorOwnershipUncached("QTS Data Centers", fakeSource({ one: failing }));
+    expect(rows).toEqual(operatorOwnership.filter((o) => o.operator === "QTS Data Centers"));
+    expect(rows).toHaveLength(1);
+    const logged = vi.mocked(console.warn).mock.calls.flat().join(" ");
+    expect(logged).toContain("08006");
+    expect(logged).not.toContain("secret@example.com");
+  });
+
+  it("per-operator: a missing Neon row means no owners, NOT the snapshot", async () => {
+    expect(operatorOwnership.some((o) => o.operator === "QTS Data Centers")).toBe(true);
+    expect(await loadOperatorOwnershipUncached("QTS Data Centers", fakeSource({ one: async () => undefined }))).toEqual(
+      []
+    );
+  });
+
+  it("per-operator: an invalid row falls back and warns, never rendering the bad data", async () => {
+    const bad = { operator: "QTS Data Centers", owners: [{ name: "Bogus Owner" }] };
+    const rows = await loadOperatorOwnershipUncached("QTS Data Centers", fakeSource({ one: async () => bad }));
+    expect(JSON.stringify(rows)).not.toContain("Bogus Owner");
+    expect(rows).toHaveLength(1);
+    expect(vi.mocked(console.warn).mock.calls.flat().join(" ")).toContain("invalid row");
+  });
+
+  it("per-operator: a row stored under another operator's name is rejected", async () => {
+    const rows = await loadOperatorOwnershipUncached("QTS Data Centers", fakeSource({ one: async () => FIXTURE[0] }));
+    expect(rows.map((o) => o.operator)).toEqual(["QTS Data Centers"]);
+  });
+
+  it("per-operator: does not touch Neon when reads may not use the database", async () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    const one = vi.fn(async () => FIXTURE[0]);
+    await loadOperatorOwnershipUncached("Fixture Cloud", fakeSource({ one }));
+    expect(one).not.toHaveBeenCalled();
+  });
+
+  it("whole table: hit returns the Neon rows, not the snapshot", async () => {
+    expect(await loadAllOperatorOwnershipUncached(fakeSource())).toEqual(FIXTURE);
+  });
+
+  it("whole table: rows arrive sorted by operator (code-unit), whatever order Neon returns", async () => {
+    const reversed = [...FIXTURE].sort((a, b) => (a.operator < b.operator ? 1 : -1));
+    const rows = await loadAllOperatorOwnershipUncached(fakeSource({ all: async () => reversed }));
+    const names = rows.map((o) => o.operator);
+    expect(names).toEqual([...names].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)));
+    expect(names).toHaveLength(FIXTURE.length);
+  });
+
+  it("the JSON fallback snapshot is sorted by operator too", () => {
+    const names = operatorOwnership.map((o) => o.operator);
+    expect(names).toEqual([...names].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)));
+  });
+
+  it("whole table: throw falls back to the snapshot", async () => {
+    expect(await loadAllOperatorOwnershipUncached(fakeSource({ all: failing }))).toBe(operatorOwnership);
+  });
+
+  it("whole table: an empty result falls back to the snapshot", async () => {
+    expect(await loadAllOperatorOwnershipUncached(fakeSource({ all: async () => [] }))).toBe(operatorOwnership);
+  });
+
+  it("whole table: one invalid row falls back for the whole table", async () => {
+    const all = async () => [...FIXTURE, { operator: "Broken", owners: [] }];
+    expect(await loadAllOperatorOwnershipUncached(fakeSource({ all }))).toBe(operatorOwnership);
   });
 });

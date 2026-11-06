@@ -472,13 +472,7 @@ async function main(): Promise<void> {
   const concurrency = Number(process.env.CHECK_SOURCES_CONCURRENCY) || DEFAULT_CONCURRENCY;
   const timeoutMs = Number(process.env.CHECK_SOURCES_TIMEOUT_MS) || DEFAULT_TIMEOUT_MS;
 
-  const { facilities, source, dbError } = await loadFacilities();
-  if (source === "file") {
-    console.warn(
-      `WARNING: could not read the live facility index from Neon (${dbError}); ` +
-        `falling back to the committed data/facilities.json snapshot, which may be stale.`
-    );
-  }
+  const { facilities } = await loadFacilities();
   process.exitCode = await runLane(facilities, { concurrency, timeoutMs });
 }
 

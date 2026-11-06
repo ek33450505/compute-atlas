@@ -26,10 +26,10 @@ import { rowToFacility } from "@/lib/db/serialize";
 import { redactedErrorCode } from "@/lib/db-error";
 import type { DiffEntry } from "@/lib/doc-diff";
 import { operatorSlug, personSlug } from "@/lib/operator-slug";
-import { groupByOwner, operatorOwnership, type OperatorOwner, type OperatorOwnership } from "@/lib/operator-ownership";
+import { getAllOperatorOwnership, groupByOwner, type OperatorOwner, type OperatorOwnership } from "@/lib/operator-ownership";
 import { getGenerationFuelClass } from "@/lib/generation";
 import { containsDc } from "@/lib/us-states";
-import { getSitingContext, type SitingContext } from "@/lib/siting-context";
+import { getWaterStressById, type SitingContext } from "@/lib/siting-context";
 import { isCommunityDiscoveredBy } from "@/lib/community-provenance";
 
 /**
@@ -1387,7 +1387,10 @@ export function computeWaterStressExposure(
  * {@link computeWaterStressExposure}.
  */
 export async function getWaterStressExposure(): Promise<WaterStressExposure> {
-  return computeWaterStressExposure(await loadFacilities(), getSitingContext);
+  const [facilities, waterStress] = await Promise.all([loadFacilities(), getWaterStressById()]);
+  return computeWaterStressExposure(facilities, (id) =>
+    waterStress[id] ? { waterStress: waterStress[id] } : undefined
+  );
 }
 
 // ============================================================
@@ -2563,8 +2566,6 @@ export interface StakeholderSlugCollision {
   dropped: string;
 }
 
-const stakeholderIndexCache = new WeakMap<Facility[], StakeholderIndex>();
-
 /**
  * Builds the stakeholder index from a facility list. A pure function of its
  * arguments — exported (like `withJsonFallback` above) so it can be
@@ -2578,20 +2579,17 @@ const stakeholderIndexCache = new WeakMap<Facility[], StakeholderIndex>();
  * different roles at different facilities; this index groups by name only,
  * `getStakeholders()` derives the de-duplicated role union.
  *
- * `ownership` is the operator-level layer (data/operator-ownership.json). Its
+ * `ownership` is the operator-level layer (the `operator_ownership` table). Its
  * owners become stakeholders too, but only through `viaByOwner` /
  * `operatorFacilitiesByOwner`: they never enter `byPerson`, so an owner's
- * site-level facility list stays site-level. Only the default (real-file)
- * ownership is memoized — a fixture would poison the per-facilities cache.
+ * site-level facility list stays site-level. Not memoized here: Neon-loaded
+ * ownership is a fresh array per read, so an identity memo never hits; the
+ * per-render dedupe is `getStakeholderIndex`'s `reactCache`.
  */
 export function buildStakeholderIndex(
   facilities: Facility[],
-  ownership: OperatorOwnership[] = operatorOwnership
+  ownership: OperatorOwnership[]
 ): StakeholderIndex {
-  const useCache = ownership === operatorOwnership;
-  const cached = useCache ? stakeholderIndexCache.get(facilities) : undefined;
-  if (cached) return cached;
-
   const byPerson = new Map<string, Facility[]>();
   const seenFacilityIdsByPerson = new Map<string, Set<string>>();
   for (const f of facilities) {
@@ -2674,14 +2672,15 @@ export function buildStakeholderIndex(
     slugToPerson,
     collisions,
   };
-  if (useCache) stakeholderIndexCache.set(facilities, index);
   return index;
 }
 
-/** Loads the facility list and returns its memoized stakeholder index. */
-async function getStakeholderIndex(): Promise<StakeholderIndex> {
-  return buildStakeholderIndex(await loadFacilities());
-}
+/** Loads the facility list and the ownership table and returns the stakeholder index, deduped per render. */
+const getStakeholderIndex = reactCache(async (): Promise<StakeholderIndex> => {
+  // Both readers carry the "facilities" tag, so this stays inside the pages that already do.
+  const [facilities, ownership] = await Promise.all([loadFacilities(), getAllOperatorOwnership()]);
+  return buildStakeholderIndex(facilities, ownership);
+});
 
 /** Aggregate summary of one named stakeholder, across every facility they're linked to. */
 export interface StakeholderSummary {

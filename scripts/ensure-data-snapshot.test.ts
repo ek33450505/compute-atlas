@@ -18,7 +18,7 @@ function makeDeps(
       copyFileSync: (src, dest) => void copies.push([src, dest]),
       mkdirSync: () => undefined,
     },
-    exportFacilities: vi.fn().mockResolvedValue(undefined),
+    exportSnapshot: vi.fn().mockResolvedValue(undefined),
     log: vi.fn(),
     warn: vi.fn(),
     ...over,
@@ -45,23 +45,41 @@ describe("ensureDataSnapshot", () => {
   it("Vercel production: a failed export exits non-zero and copies no fixtures", async () => {
     const deps = makeDeps({
       env: { VERCEL: "1", VERCEL_ENV: "production" },
-      exportFacilities: failingExport(),
+      exportSnapshot: failingExport(),
     });
     expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(1);
     expect(deps.copies).toEqual([]);
   });
 
   it("Vercel production: a successful export exits 0 without fixtures", async () => {
-    const deps = makeDeps({ env: { VERCEL: "1", VERCEL_ENV: "production" } });
+    const deps = makeDeps({ env: { VERCEL: "1", VERCEL_ENV: "production" }, existing: ALL });
     expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
-    expect(deps.exportFacilities).toHaveBeenCalledOnce();
+    expect(deps.exportSnapshot).toHaveBeenCalledOnce();
+    expect(deps.copies).toEqual([]);
+  });
+
+  it("Vercel: a successful export that left a snapshot file missing exits 1", async () => {
+    for (const env of [{ VERCEL: "1", VERCEL_ENV: "production" }, { VERCEL: "1", VERCEL_ENV: "preview" }]) {
+      const deps = makeDeps({ env, existing: without("data/operator-ownership.json") });
+      expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(1);
+      expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("operator-ownership.json"));
+      expect(deps.copies).toEqual([]);
+    }
+  });
+
+  it("Vercel production ignores ALLOW_FIXTURE_SNAPSHOT=1: a failed export exits 1 and copies nothing", async () => {
+    const deps = makeDeps({
+      env: { VERCEL: "1", VERCEL_ENV: "production", ALLOW_FIXTURE_SNAPSHOT: "1" },
+      exportSnapshot: failingExport(),
+    });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(1);
     expect(deps.copies).toEqual([]);
   });
 
   it("Vercel preview: a failed export falls back to fixtures with a loud warning", async () => {
     const deps = makeDeps({
       env: { VERCEL: "1", VERCEL_ENV: "preview" },
-      exportFacilities: failingExport(),
+      exportSnapshot: failingExport(),
     });
     expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
     expectFixturesCopied(deps.copies);
@@ -71,14 +89,14 @@ describe("ensureDataSnapshot", () => {
   it("local: existing data/facilities.json is a no-op", async () => {
     const deps = makeDeps({ existing: ALL });
     expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
-    expect(deps.exportFacilities).not.toHaveBeenCalled();
+    expect(deps.exportSnapshot).not.toHaveBeenCalled();
     expect(deps.copies).toEqual([]);
   });
 
   it("local: missing data/facilities.json copies all four fixtures and warns", async () => {
     const deps = makeDeps();
     expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
-    expect(deps.exportFacilities).not.toHaveBeenCalled();
+    expect(deps.exportSnapshot).not.toHaveBeenCalled();
     expectFixturesCopied(deps.copies);
     expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("WARNING"));
   });
@@ -120,7 +138,7 @@ describe("ensureDataSnapshot", () => {
     const err = Object.assign(new Error("DATABASE_URL is not set."), {
       name: "MissingDatabaseUrlError",
     });
-    const deps = makeDeps({ exportFacilities: vi.fn().mockRejectedValue(err) });
+    const deps = makeDeps({ exportSnapshot: vi.fn().mockRejectedValue(err) });
     expect(await ensureDataSnapshot({ forceExport: true }, deps)).toBe(1);
     expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("DATABASE_URL not set"));
     expect(deps.warn).not.toHaveBeenCalledWith(expect.stringContaining("unknown"));
@@ -130,7 +148,7 @@ describe("ensureDataSnapshot", () => {
     const deps = makeDeps({
       env: { VERCEL: "1", VERCEL_ENV: "preview" },
       existing: ALL,
-      exportFacilities: failingExport(),
+      exportSnapshot: failingExport(),
     });
     expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
     expect(deps.copies).toEqual([]);
@@ -139,21 +157,57 @@ describe("ensureDataSnapshot", () => {
 
   it("Vercel with VERCEL_ENV unset or unknown: a failed export fails closed", async () => {
     for (const env of [{ VERCEL: "1" }, { VERCEL: "1", VERCEL_ENV: "development" }]) {
-      const deps = makeDeps({ env, exportFacilities: failingExport() });
+      const deps = makeDeps({ env, exportSnapshot: failingExport() });
       expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(1);
       expect(deps.copies).toEqual([]);
     }
   });
 
+  it("CI with a missing snapshot file and no override fails closed without copying", async () => {
+    const deps = makeDeps({ env: { CI: "true" }, existing: without("data/siting-context.json") });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(1);
+    expect(deps.copies).toEqual([]);
+    expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("ALLOW_FIXTURE_SNAPSHOT"));
+  });
+
+  it("NODE_ENV=production with a missing snapshot file fails closed without copying", async () => {
+    const deps = makeDeps({ env: { NODE_ENV: "production" } });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(1);
+    expect(deps.copies).toEqual([]);
+  });
+
+  it("CI with ALLOW_FIXTURE_SNAPSHOT=1 copies the fixtures and exits 0", async () => {
+    const deps = makeDeps({ env: { CI: "true", ALLOW_FIXTURE_SNAPSHOT: "1" } });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
+    expectFixturesCopied(deps.copies);
+    expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("WARNING"));
+  });
+
+  it("CI with ALLOW_FIXTURE_SNAPSHOT=1, facilities.json present and meta missing: warns, copies no meta", async () => {
+    const deps = makeDeps({
+      env: { CI: "true", ALLOW_FIXTURE_SNAPSHOT: "1" },
+      existing: without("data/facilities.meta.json"),
+    });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
+    expect(deps.copies).toEqual([]);
+    expect(deps.warn).toHaveBeenCalledWith(expect.stringContaining("facilities.meta.json"));
+  });
+
+  it("CI with every snapshot file present is a no-op", async () => {
+    const deps = makeDeps({ env: { CI: "true", NODE_ENV: "production" }, existing: ALL });
+    expect(await ensureDataSnapshot({ forceExport: false }, deps)).toBe(0);
+    expect(deps.copies).toEqual([]);
+  });
+
   it("--export forces an export even when the snapshot exists", async () => {
     const deps = makeDeps({ existing: [path.join(ROOT, "data/facilities.json")] });
     expect(await ensureDataSnapshot({ forceExport: true }, deps)).toBe(0);
-    expect(deps.exportFacilities).toHaveBeenCalledOnce();
+    expect(deps.exportSnapshot).toHaveBeenCalledOnce();
     expect(deps.copies).toEqual([]);
   });
 
   it("--export exits non-zero on failure and never falls back to fixtures", async () => {
-    const deps = makeDeps({ exportFacilities: failingExport() });
+    const deps = makeDeps({ exportSnapshot: failingExport() });
     expect(await ensureDataSnapshot({ forceExport: true }, deps)).toBe(1);
     expect(deps.copies).toEqual([]);
   });
@@ -161,7 +215,7 @@ describe("ensureDataSnapshot", () => {
   it("logs only the error code, never the message (URLs / params)", async () => {
     const deps = makeDeps({
       env: { VERCEL: "1", VERCEL_ENV: "production" },
-      exportFacilities: failingExport(),
+      exportSnapshot: failingExport(),
     });
     await ensureDataSnapshot({ forceExport: false }, deps);
     const logged = [...vi.mocked(deps.warn).mock.calls, ...vi.mocked(deps.log).mock.calls]

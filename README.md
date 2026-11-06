@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <strong>There is no national registry of data centers.</strong><br>
-  This is the closest thing — and every record shows its sources.
+  <strong>A source-cited tracker of US AI data centers, crypto-mining sites and the power built for them.</strong><br>
+  Every record links to the public sources it comes from.
 </p>
 
 <p align="center">

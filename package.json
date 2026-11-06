@@ -8,7 +8,7 @@
   "scripts": {
     "predev": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-maplibre-worker.mjs",
+    "prebuild": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -35,6 +35,7 @@
     "backfill:siting": "tsx --env-file-if-exists=.env.local scripts/backfill-siting-to-neon.ts",
     "backfill:ownership": "tsx --env-file-if-exists=.env.local scripts/backfill-ownership-to-neon.ts",
     "siting:apply": "tsx --env-file-if-exists=.env.local scripts/apply-siting-context.ts",
+    "siting:refresh": "npm run build:mapdata && tsx --env-file-if-exists=.env.local scripts/check-siting-additive.mjs && npm run siting:apply",
     "indexnow": "tsx scripts/indexnow.ts",
     "census": "tsx scripts/index-census.ts",
     "census:baseline": "tsx scripts/census-baseline.ts",

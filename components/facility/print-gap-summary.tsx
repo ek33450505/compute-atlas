@@ -1,4 +1,5 @@
 import type { Facility } from "@/lib/schema";
+import type { SitingContext } from "@/lib/siting-context";
 import { missingSectionLabels } from "@/lib/facility-gaps";
 
 /**
@@ -26,8 +27,14 @@ import { missingSectionLabels } from "@/lib/facility-gaps";
  * because the sections it names are a facility record's. Scoping it is about
  * blast radius and keeping one rule per print affordance, not legibility.
  */
-export async function PrintGapSummary({ facility }: { facility: Facility }) {
-  const missing = await missingSectionLabels(facility);
+export async function PrintGapSummary({
+  facility,
+  siting,
+}: {
+  facility: Facility;
+  siting: SitingContext | undefined;
+}) {
+  const missing = await missingSectionLabels(facility, siting);
   if (missing.length === 0) return null;
 
   return (

@@ -8,11 +8,20 @@ import {
   perStateBreakdown,
   type FacilityStateRow,
 } from "./nhd-debt";
-import type { SitingContext } from "./siting-context";
+import { sitingContextSchema, type SitingContext } from "./siting-context";
 import { ratchetVerdict } from "./test-fixtures/nhd-ratchet";
 
 // Real-dataset invariants (DATASET=real, npm run test:dataset). The default run
 // checks the same logic against the committed fixture in siting-context.test.ts.
+
+describe("data-integrity: siting-context shape", () => {
+  it("every entry in data/siting-context.json passes the render-safety schema", () => {
+    const failures = Object.entries(sitingContextRaw as Record<string, unknown>)
+      .filter(([, v]) => !sitingContextSchema.safeParse(v).success)
+      .map(([id]) => id);
+    expect(failures.slice(0, 20)).toEqual([]);
+  });
+});
 
 describe("data-integrity: siting-context coverage", () => {
   // Only forward coverage (facility -> siting entry) is asserted here.
@@ -137,7 +146,7 @@ describe("data-integrity: NHD backfill debt", () => {
   //
   // Lowered 52 -> 0 on 2026-10-04: a FULL build:mapdata ran with NHD healthy
   // (off-peak, 10/10 quorum probes ok at 300-407ms, ~1.1 facilities/sec over
-  // all 2,328). check-siting-additive: 0 lost, 0 nulled, 4 changed — the two
+  // all 2,328). The additive guard (then git-based) reported 0 lost, 0 nulled, 4 changed — the two
   // moved GA pins (Bunkhouse, Springbank) re-queried at their corrected
   // coordinates. All 52 owed CONUS ids now carry nearestWater.
   const NHD_BACKFILL_DEBT_CEILING = parseLedger(nhdDebtLedgerRaw).ceiling;

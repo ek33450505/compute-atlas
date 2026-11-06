@@ -1,14 +1,17 @@
-// Build targets.json from the LIVE DB (data/facilities.json), not hand-typed.
+// Build targets.json from the committed snapshot, not hand-typed. Run via tsx
+// (`npx tsx scripts/discovery/bench/build-targets.mjs`). It reads the guarded
+// data/facilities.json snapshot (via readFacilitiesSnapshot, repo root taken from
+// this file's location), NOT Neon: bench ground truth must be reproducible and this
+// script overwrites the committed targets.json.
 // Ground truth must come from the record, and the record's shape is
 // capacityMw:{planned,operational} + energy:{source,utility,onSiteGenerationMw}.
 // Keeps the original 7 (already hand-labeled, carry known traps) and adds a
 // bucket-balanced set: both-capacities, operational-only, planned-only,
 // on-site generation, and no-capacity abstention cases.
-import { readFileSync, writeFileSync } from "node:fs";
-const F = JSON.parse(
-  readFileSync(new URL("../../../data/facilities.json", import.meta.url).pathname, "utf8")
-);
-const arr = Array.isArray(F) ? F : F.facilities || [];
+import { writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { readFacilitiesSnapshot } from "../load-facilities.ts";
+const { facilities: arr } = readFacilitiesSnapshot(fileURLToPath(new URL("../../../", import.meta.url)));
 const byId = Object.fromEntries(arr.map((f) => [f.id, f]));
 
 const KEEP = ["flexential-hillsboro-5-or","qts-hillsboro-2-or","crane-pdx02-forest-grove-or",

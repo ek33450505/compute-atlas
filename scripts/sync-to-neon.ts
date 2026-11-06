@@ -72,7 +72,15 @@ import { computeDocDiff, type DiffEntry } from "../lib/doc-diff";
 import { insertFacilityHistoryRow } from "../lib/facility-history";
 import { isEditorialOnlyChange } from "../lib/editorial-change";
 import { canonicalize, canonicalStringify, changedTopLevelKeys } from "../lib/canonical-json";
-import { tagsForFacility, isValidCacheTag, MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
+import { tagsForFacility, MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
+import {
+  assertValidTags,
+  bustErrorSummary,
+  bustTags,
+  errorMessage,
+  resolveRevalidate,
+  type RevalidateConfig,
+} from "./bust-tags";
 import { notifySubscribersOfChanges } from "../lib/notify";
 import { redactedErrorCode } from "../lib/db-error";
 import { isEntrypoint } from "./is-entrypoint";
@@ -442,67 +450,6 @@ function canonicalDocDiff(before: Facility | null, after: Facility): DiffEntry[]
   );
 }
 
-function errorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
-}
-
-// ---------------------------------------------------------------------------
-// Cache-tag busting
-// ---------------------------------------------------------------------------
-
-export interface BustTagsResult {
-  batches: number;
-  bustedTags: string[];
-  failedTags: string[];
-  errors: string[];
-}
-
-/**
- * Busts cache tags through `POST /api/revalidate`. A standalone tsx process
- * has no Next runtime and so cannot call `revalidateTag` itself — this route
- * exists for exactly this caller.
- *
- * Batched to `MAX_TAGS_PER_REQUEST`, and a failing batch does not strand the
- * rest: every failure is reported with its tags so the operator can retry
- * precisely.
- */
-export async function bustTags(
-  tags: string[],
-  options: { baseUrl: string; token: string; fetchImpl?: typeof fetch }
-): Promise<BustTagsResult> {
-  const doFetch = options.fetchImpl ?? fetch;
-  const result: BustTagsResult = { batches: 0, bustedTags: [], failedTags: [], errors: [] };
-
-  for (let i = 0; i < tags.length; i += MAX_TAGS_PER_REQUEST) {
-    const batch = tags.slice(i, i + MAX_TAGS_PER_REQUEST);
-    result.batches++;
-    try {
-      const res = await doFetch(`${options.baseUrl.replace(/\/$/, "")}/api/revalidate`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${options.token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tags: batch }),
-      });
-
-      if (!res.ok) {
-        const body = await res.text().catch(() => "");
-        result.failedTags.push(...batch);
-        result.errors.push(`HTTP ${res.status} ${body}`.trim());
-        continue;
-      }
-
-      result.bustedTags.push(...batch);
-    } catch (err) {
-      result.failedTags.push(...batch);
-      result.errors.push(errorMessage(err));
-    }
-  }
-
-  return result;
-}
-
 // ---------------------------------------------------------------------------
 // Basis
 // ---------------------------------------------------------------------------
@@ -675,10 +622,6 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const baseUrl = process.env.API_BASE_URL;
-  const token = process.env.API_ADMIN_TOKEN;
-  const willRevalidate = options.apply && !options.skipRevalidate;
-
   // Pre-flight BEFORE any write. Publishing rows whose pages can never be
   // busted is worse than not publishing: scoped pages (facility detail, state
   // landing) are tag-only with no ISR timer of their own. That no longer
@@ -687,19 +630,18 @@ async function main(): Promise<void> {
   // page now self-heals within ~24h worst case rather than staying stale
   // forever. Still worth refusing: ~24h of a published change not showing up
   // is exactly the kind of silent gap this guard exists to prevent.
-  // Deliberately no localhost default for API_BASE_URL — that would write
-  // prod Neon and bust a dev server's cache.
-  if (willRevalidate && (!baseUrl || !token)) {
-    console.error(
-      "Refusing to apply: --apply busts cache tags over HTTP and needs both API_BASE_URL and " +
-        "API_ADMIN_TOKEN in .env.local.\n" +
-        `  API_BASE_URL: ${baseUrl ?? "(unset)"}\n` +
-        `  API_ADMIN_TOKEN: ${token ? "(set)" : "(unset)"}\n` +
-        "Set them, or pass --skip-revalidate to write without busting (pages stay stale)."
-    );
+  let revalidateConfig: RevalidateConfig | null;
+  try {
+    revalidateConfig = resolveRevalidate({
+      apply: options.apply,
+      skipRevalidate: options.skipRevalidate,
+      env: process.env,
+    });
+  } catch (err) {
+    // lint-no-raw-error-logs: allow -- RefusalError from resolveRevalidate names only env presence and the URL scheme/host, never a token or a DB error
+    console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
-  const revalidateConfig = willRevalidate && baseUrl && token ? { baseUrl, token } : null;
 
   const jsonPath = path.join(process.cwd(), "data", "facilities.json");
   const metaPath = path.join(path.dirname(jsonPath), "facilities.meta.json");
@@ -723,12 +665,11 @@ async function main(): Promise<void> {
 
   // A tag the revalidate route would reject aborts its whole batch — catch
   // that here, before anything is written, rather than after.
-  const invalidTags = plan.tags.filter((tag) => !isValidCacheTag(tag));
-  if (invalidTags.length > 0) {
-    console.error(
-      `Refusing to proceed: ${invalidTags.length} planned cache tag(s) are outside the allowlist ` +
-        `in lib/cache-tags.ts and would be rejected by /api/revalidate:\n  ${invalidTags.join("\n  ")}`
-    );
+  try {
+    assertValidTags(plan.tags);
+  } catch (err) {
+    // lint-no-raw-error-logs: allow -- RefusalError from assertValidTags lists tag strings only
+    console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
 
@@ -778,7 +719,7 @@ async function main(): Promise<void> {
     console.log(`\nBusted ${bust.bustedTags.length} tag(s) in ${bust.batches} request(s).`);
     if (bust.failedTags.length > 0) {
       failed = true;
-      console.error(`⚠ ${bust.failedTags.length} tag(s) failed to bust: ${bust.errors.join("; ")}`);
+      console.error(`⚠ ${bust.failedTags.length} tag(s) failed to bust: ${bustErrorSummary(bust.errors)}`);
       console.error(
         "Retry them with:\n  curl -X POST \"$API_BASE_URL/api/revalidate\" " +
           '-H "Authorization: Bearer $API_ADMIN_TOKEN" -H "Content-Type: application/json" \\\n' +

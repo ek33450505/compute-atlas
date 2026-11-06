@@ -1,3 +1,7 @@
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+
 import { describe, it, expect, vi, afterEach } from "vitest";
 
 import {
@@ -17,6 +21,10 @@ import {
   computeSitingContext,
   parseNHDFlags,
   computeDistribution,
+  clearStaleSitingOutput,
+  readSitingSnapshot,
+  writeSitingContextOut,
+  SITING_CONTEXT_PATHS,
 } from "./build-map-data.mjs";
 import { point as turfPoint, lineString } from "@turf/helpers";
 
@@ -1300,5 +1308,56 @@ describe("computeDistribution", () => {
   it("throws when liveIds is not a Set", () => {
     expect(() => computeDistribution(ctx, "waterStress")).toThrow(TypeError);
     expect(() => computeDistribution(ctx, "waterStress", ["live1"])).toThrow(TypeError);
+  });
+});
+
+// main() makes network calls, so the output path is exercised through the
+// exported helpers it uses for every siting-context read and write.
+describe("siting-context output path", () => {
+  const dirs: string[] = [];
+  const tmp = () => {
+    const d = mkdtempSync(join(tmpdir(), "bmd-siting-"));
+    dirs.push(d);
+    return d;
+  };
+  afterEach(() => {
+    for (const d of dirs.splice(0)) rmSync(d, { recursive: true, force: true });
+  });
+
+  it("defaults: writes the .next file, reads the snapshot, and they differ", () => {
+    expect(SITING_CONTEXT_PATHS.out.endsWith("data/siting-context.next.json")).toBe(true);
+    expect(SITING_CONTEXT_PATHS.snapshot.endsWith("data/siting-context.json")).toBe(true);
+  });
+
+  it("writeSitingContextOut writes only the target file and leaves the snapshot alone", () => {
+    const d = tmp();
+    const snap = join(d, "siting-context.json");
+    const out = join(d, "siting-context.next.json");
+    writeFileSync(snap, '{"old":{}}');
+    writeSitingContextOut({ a: { waterStress: { cat: 1 } } }, out);
+    expect(JSON.parse(readFileSync(out, "utf8"))).toEqual({ a: { waterStress: { cat: 1 } } });
+    expect(readFileSync(snap, "utf8")).toBe('{"old":{}}');
+  });
+
+  it("readSitingSnapshot keeps the fs error code so callers can branch on ENOENT", () => {
+    expect(() => readSitingSnapshot(join(tmp(), "missing.json"))).toThrow(expect.objectContaining({ code: "ENOENT" }));
+  });
+
+  it("clearStaleSitingOutput removes a leftover file and tolerates none", () => {
+    const out = join(tmp(), "siting-context.next.json");
+    writeFileSync(out, "{}");
+    clearStaleSitingOutput(out);
+    expect(existsSync(out)).toBe(false);
+    expect(() => clearStaleSitingOutput(out)).not.toThrow();
+  });
+
+  it("main() clears the stale output before its first network call", () => {
+    // Order inside main() cannot be reached without the network; pin it at the source.
+    const src = readFileSync(resolve(__dirname, "build-map-data.mjs"), "utf8");
+    const body = src.slice(src.indexOf("async function main()"));
+    const clear = body.indexOf("clearStaleSitingOutput();");
+    expect(clear).toBeGreaterThan(-1);
+    expect(clear).toBeLessThan(body.indexOf("preflightNHDQuorum()"));
+    expect(clear).toBeLessThan(body.indexOf("await buildAqueduct()"));
   });
 });

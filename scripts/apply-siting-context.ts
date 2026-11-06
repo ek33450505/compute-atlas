@@ -15,9 +15,9 @@
  * An id absent from data/facilities.json counts as a retired orphan (`pruned`),
  * exactly as in the check. Nothing is ever deleted from Neon by this script.
  *
- * NOTE: nothing produces siting-context.next.json yet. A later PR makes
- * `build:mapdata` emit it (from "PR B" onward); until then the file is absent
- * and this script exits 1 saying so.
+ * NOTE: `build:mapdata` writes siting-context.next.json. `siting:refresh`
+ * chains build:mapdata -> check-siting-additive -> siting:apply (dry run). If
+ * the file is absent this script exits 1 saying so.
  *
  * The write is one transaction on the Neon driver (see `neonStoreFor`). Verify
  * runs AFTER it commits: it re-reads the table and exits non-zero unless every
@@ -26,6 +26,10 @@
  * Known limit: changed ids use an unguarded ON CONFLICT DO UPDATE (no
  * compare-and-set), so a concurrent writer to the same row would be overwritten.
  * Acceptable for a sole-maintainer local command; new ids use DO NOTHING.
+ *
+ * After a successful write it busts `facility:<id>` for each added or changed id plus `facilities`
+ * (the runtime reads siting through 24h unstable_cache); needs API_BASE_URL + API_ADMIN_TOKEN,
+ * checked before any write, unless --skip-revalidate. A bust failure keeps the write and exits non-zero.
  *
  * Uses relative imports, matching the other scripts here.
  */
@@ -43,8 +47,9 @@ import {
 } from "../lib/closed-data-store";
 import { formatFatalError } from "../lib/db-error";
 import { hasDatabaseUrl } from "../lib/db/client";
+import { assertValidTags, bustAfterUpserts, resolveRevalidate } from "./bust-tags";
 import { isEntrypoint } from "./is-entrypoint";
-import { parseArgs, type Deps } from "./backfill-siting-to-neon";
+import { parseArgs, sitingTags, type Deps } from "./backfill-siting-to-neon";
 import { diffSitingContext, isAdditive } from "./check-siting-additive.mjs";
 
 type Entries = Record<string, Record<string, unknown>>;
@@ -72,7 +77,8 @@ export async function run(
   argv: string[],
   deps: Omit<Deps, "store"> & { store: () => KeyedStore },
 ): Promise<void> {
-  const { apply } = parseArgs(argv);
+  const { apply, skipRevalidate } = parseArgs(argv);
+  const revalidate = resolveRevalidate({ apply, skipRevalidate, env: deps.env ?? process.env });
   const next = readObject(deps, path.join(deps.root, "data/siting-context.next.json"));
   const facilities: unknown = JSON.parse(deps.readFile(path.join(deps.root, "data/facilities.json")));
   if (!Array.isArray(facilities) || facilities.length === 0) {
@@ -83,6 +89,10 @@ export async function run(
 
   const store = deps.store();
   const current = await store.readAll();
+  if (current.size === 0) {
+    // Against an empty table every next entry looks added and the additive gate checks nothing.
+    throw new RefusalError("siting_context is empty: run `npm run backfill:siting -- --apply` first");
+  }
   // diffSitingContext compares with JSON.stringify, and Postgres jsonb does not
   // keep key order, so stored rows would read as "changed" against a file with
   // the same data. Canonicalize (sorted keys) both sides first; the check script's
@@ -124,8 +134,11 @@ export async function run(
       `add ${addedIds.length}, change ${changedIds.length}, pruned-not-deleted ${diff.pruned.length}`,
   );
   if (apply && rows.length > 0) {
-    await store.upsert(rows);
-    await verifyRows(store, new Map(rows.map((r) => [r.key, r.data])), "siting_context");
+    assertValidTags(sitingTags(rows.map((r) => r.key)));
+    await bustAfterUpserts({ store, tagsFor: sitingTags, config: revalidate, deps }, async (st) => {
+      await st.upsert(rows);
+      await verifyRows(st, new Map(rows.map((r) => [r.key, r.data])), "siting_context");
+    });
   }
 }
 

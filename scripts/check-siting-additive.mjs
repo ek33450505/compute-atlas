@@ -1,87 +1,61 @@
 /**
  * check-siting-additive.mjs
  *
- * Fail-closed guard: refuses to let a regenerated data/siting-context.json
- * silently LOSE data relative to the committed baseline on the branch this
- * sync will MERGE INTO (origin/main), not the commit that happened to be
- * checked out when the job started.
+ * Fail-closed guard: refuses to let a regenerated data/siting-context.next.json
+ * silently LOSE data relative to the LIVE Neon `siting_context` rows.
  *
  * Background: `npm run build:mapdata` recomputes per-facility siting context
- * from live external APIs (USGS NHD, HIFLD, WRI Aqueduct). build-map-data.mjs's
- * `resolveNearestWater` now carries a prior `nearestWater` forward on any
- * unconfirmed/partial NHD response (gate: `absenceConfirmed !== true`), so a
- * degraded-but-not-down NHD no longer drops that field on its own. Only a
- * genuinely confirmed absence (both NHD layers answered and found nothing)
- * clears it — which is deliberate, since that is also what lets a corrected
- * coordinate clear a stale value. `nearestTransmission` has no analogous
- * carry-forward: `fetchArcGISAll` verifies its HIFLD page count against the
- * service's own total and throws on a mismatch, so a `null` there is
- * authoritative, not an artifact of a partial fetch. This guard remains a
- * backstop: for regressions in that carry-forward logic, and for any current
- * or future field without an equivalent completeness check.
+ * from live external APIs (USGS NHD, HIFLD, WRI Aqueduct) and writes
+ * data/siting-context.next.json (gitignored; never data/siting-context.json).
+ * build-map-data.mjs's `resolveNearestWater` carries a prior `nearestWater`
+ * forward on any unconfirmed/partial NHD response (gate: `absenceConfirmed !==
+ * true`), so a degraded-but-not-down NHD does not drop that field on its own.
+ * Only a genuinely confirmed absence clears it (that is what lets a corrected
+ * coordinate clear a stale value). Both this guard and siting:apply refuse
+ * that: an omitted key is reported as `lost` and the run exits 1. Today,
+ * clearing a stale value therefore needs a reviewed change to the gate, or a
+ * direct, reviewed Neon edit; there is no override flag.
+ * `nearestTransmission` has no carry-forward: `fetchArcGISAll` verifies its
+ * HIFLD page count and throws on a mismatch, so a `null` there is
+ * authoritative. This guard remains the backstop for regressions in that logic
+ * and for any field without an equivalent completeness check.
+ *
+ * BASELINE: the live Neon rows (the same table `siting:apply` writes), read
+ * through an injected reader. Neon is the source of truth, so there is no git
+ * ref, no fetch and no stale-HEAD false positive to design around.
+ *
+ * FACILITIES SOURCE: the snapshot data/facilities.json, which `db:export`
+ * refreshes from Neon, not a Neon read. It is the same source `siting:apply`
+ * uses, so the guard and the writer classify `pruned` identically, and it
+ * avoids a second full read of the large `facilities` table (Neon egress).
+ * Limit: a stale snapshot (export not run since a facility was retired or
+ * added) can only misclassify an id that is ALSO dropped from the next file;
+ * run `db:export` first.
  *
  * `pruned` vs `removed`: full and `--backfill-nhd` runs of build:mapdata seed
- * the id set from facilities.json ∪ computed results, so a facility retired by
- * a raw Neon delete (absent from data/facilities.json, no page) has its
- * siting-context entry legitimately dropped on the next such run. Without a
- * discriminator this guard cannot tell that apart from real data loss, so it
- * classifies a dropped id as `pruned` (not `removed`, does not fail the check)
- * only when that id is ALSO absent from the working tree's data/facilities.json
- * — the only signal available for "this facility was intentionally retired."
- * `--skip-nhd` unions in the existing ids and so never drops an orphan itself.
- * This script is the machine gate that replaces the sync PR's unread "confirm
- * changes are additive" checklist item, since that PR auto-merges and no human
- * reads it.
+ * the id set from facilities.json ∪ computed results, so a retired facility
+ * (absent from data/facilities.json) has its entry legitimately dropped.
+ * A dropped id also absent from the snapshot is `pruned` (allowed); a dropped
+ * id that still has a facility is `removed` (fails).
  *
- * WHY NOT HEAD: build:mapdata takes ~30 min. Anything merged during that
- * window leaves the checked-out HEAD stale, and a recomputation that is
- * CORRECT for the new state then reads as data loss. That is not
- * hypothetical: on 2026-09-08 the sync started at 12:36:57Z on 11f9d13, PR
- * #256 merged at 12:50:24Z correcting two Salt Lake City facilities off a
- * shared placeholder centroid (40.75962,-111.8868) onto real coordinates,
- * and at 13:09:08Z this guard flagged
- * `oracle-salt-lake-city-ut.groundwaterDecline` and
- * `senawave-salt-lake-city-ut.groundwaterDecline` as dropped. The old values
- * had been computed at a fabricated coordinate; the new absence was the
- * truthful result. The guard discarded correct data and held the PR open.
- * Diffing against current origin/main removes that whole class of false
- * positive, because the baseline is then the same state the rebuild
- * describes.
- *
- * FALLBACK IS CONSERVATIVE, NOT FAIL-OPEN: when origin/main cannot be
- * resolved this falls back to HEAD. HEAD is always at-or-behind origin/main
- * (main is protected and never force-pushed), so its baseline is a SUPERSET
- * of fields — strictly more that can be seen as lost. A failed fetch can
- * therefore only make this guard stricter, never more permissive.
- *
- * Usage: node scripts/check-siting-additive.mjs
- *   Exit 0: additive (including the case where the ref has no baseline yet).
- *   Exit 1: DATA LOSS — the working-tree data/siting-context.json would lose
- *           data relative to the baseline ref (offending ids/fields printed).
- *   Exit 2: the guard could not evaluate (git failure, unparseable baseline or
- *           working-tree file). This is NOT a verdict.
- *   Callers must treat ONLY exit 1 as a data-loss verdict; any other non-zero
- *   (2, or a signal such as 134/137) means the guard did not complete.
- *   Env: SITING_BASELINE_REF overrides the preferred ref (default origin/main).
- *        SITING_BASELINE_NO_FETCH=1 skips the refresh fetch (offline/tests).
+ * Usage: tsx scripts/check-siting-additive.mjs   (tsx: the default reader
+ *   imports lib/closed-data-store.ts)
+ *   Exit 0: additive.
+ *   Exit 1: DATA LOSS (offending ids/fields printed).
+ *   Exit 2: the guard could not evaluate (missing/unparseable file, empty
+ *           facilities list, empty siting_context table, no DATABASE_URL, Neon read failure). NOT a verdict.
+ *   Callers must treat ONLY exit 1 as a data-loss verdict.
  */
 
-import { execFileSync } from "node:child_process";
 import { readFileSync, realpathSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "..");
-const SITING_CONTEXT_REL_PATH = "data/siting-context.json";
+export const NEXT_REL_PATH = "data/siting-context.next.json";
 const FACILITIES_REL_PATH = "data/facilities.json";
 const PRINT_LIMIT = 25;
-export const PREFERRED_BASELINE_REF = "origin/main";
-export const FALLBACK_BASELINE_REF = "HEAD";
-// Node's execFileSync defaults to a 1 MiB (1,048,576 byte) stdout buffer.
-// data/siting-context.json crossed that on 2026-10-14 (1,053,246 bytes) and
-// `git show` died with ENOBUFS, which the workflow read as "non-additive".
-export const GIT_SHOW_MAX_BUFFER = 256 * 1024 * 1024;
 
 // ---------------------------------------------------------------------------
 // Pure diff
@@ -177,265 +151,97 @@ export function isAdditive(diff) {
 }
 
 // ---------------------------------------------------------------------------
-// CLI
+// Check
 // ---------------------------------------------------------------------------
 
-/** True only when `git ls-tree` succeeds and lists nothing for relPath at ref. */
-function pathConfirmedAbsent(repoRoot, relPath, ref) {
-  try {
-    const out = execFileSync("git", ["ls-tree", "--name-only", ref, "--", relPath], {
-      cwd: repoRoot,
-      encoding: "utf8",
-      stdio: "pipe",
-    });
-    return String(out).trim() === "";
-  } catch {
-    return false;
-  }
-}
-
-/**
- * @param {string} ref git ref to read the baseline blob from (e.g. "origin/main")
- * @returns {Record<string, unknown> | null} null means "no baseline to compare against"
- */
-export function readBaselineFromGit(repoRoot, relPath, ref = FALLBACK_BASELINE_REF) {
-  let raw;
-  try {
-    raw = execFileSync("git", ["show", `${ref}:${relPath}`], {
-      cwd: repoRoot,
-      encoding: "utf8",
-      maxBuffer: GIT_SHOW_MAX_BUFFER,
-    });
-  } catch (err) {
-    // Exit 128 is git's code for ANY fatal error: "path not in <ref>" but also
-    // a corrupt or missing object, not-a-repo, a bad ref. Only the first is the
-    // genuine first-run case that may stand this guard down, so absence is
-    // confirmed POSITIVELY: `git ls-tree` must succeed AND list nothing for the
-    // path. Anything else (ls-tree fails, or the path IS listed so `git show`
-    // failed for another reason) rethrows the original error, which the
-    // entrypoint maps to exit 2 instead of a green "skipping".
-    if (err && err.status === 128 && pathConfirmedAbsent(repoRoot, relPath, ref)) {
-      return null;
-    }
-    // Anything else — git missing from PATH, permission denied, a corrupt
-    // object store — is an ENVIRONMENT fault, not evidence that the baseline
-    // is absent. Returning null here would disable the guard while the job
-    // still reported green, which is the exact failure mode this guard exists
-    // to prevent. Fail loudly instead.
-    throw err;
-  }
-  // Deliberately OUTSIDE the try: a corrupt or truncated baseline blob must
-  // fail loudly too. Treating unparseable JSON as "no baseline" would let real
-  // data loss through on a green run.
-  return JSON.parse(raw);
-}
-
-/**
- * True if `ref` resolves in this repo. Used to tell "ref absent" (fall back)
- * apart from "path absent in ref" (genuine first-run), which `git show`
- * reports identically as exit 128.
- * @returns {boolean}
- */
-export function refExists(repoRoot, ref, exec = execFileSync) {
-  try {
-    exec("git", ["rev-parse", "--verify", "--quiet", `${ref}^{commit}`], {
-      cwd: repoRoot,
-      encoding: "utf8",
-      stdio: "pipe",
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/** @returns {boolean} true if this clone is shallow (a .git/shallow graft exists) */
-export function isShallowRepo(repoRoot, exec = execFileSync) {
-  try {
-    const out = exec("git", ["rev-parse", "--is-shallow-repository"], {
-      cwd: repoRoot,
-      encoding: "utf8",
-      stdio: "pipe",
-    });
-    return String(out).trim() === "true";
-  } catch {
-    return false; // unknown -> assume full, which is the non-destructive branch
-  }
-}
-
-/**
- * Best-effort refresh of the preferred baseline ref. The CI checkout is
- * shallow (actions/checkout defaults to fetch-depth 1), so without this the
- * local origin/main is pinned to the commit checked out at job start and the
- * whole fix would be a no-op.
- *
- * ⚠️ `--depth=1` IS ONLY SAFE ON AN ALREADY-SHALLOW CLONE. Passing it to a
- * fetch in a FULL clone truncates that clone's history to a single commit —
- * it writes a .git/shallow graft, and `git rev-list --count HEAD` drops to 1.
- * That is a destructive side effect on a maintainer's working repo, recovered
- * only by `git fetch --unshallow`. Measured, not theorised: an earlier draft
- * of this function did exactly that to the local clone on 2026-09-08. So the
- * depth flag is gated on isShallowRepo() and a full clone gets a plain fetch.
- *
- * The refspec is written out in full (`main:refs/remotes/origin/main`) rather
- * than relying on git's opportunistic tracking-ref update, so the ref this
- * guard then reads is guaranteed to be the one just fetched.
- *
- * Deliberately swallows failure: a dead network must not abort the guard, and
- * cannot weaken it either — an unfetched origin/main is at-or-behind current
- * origin/main, so the baseline stays a superset and the check stays stricter.
- * @returns {boolean} whether the fetch succeeded
- */
-export function fetchBaselineRef(repoRoot, ref, exec = execFileSync) {
-  const [remote, ...rest] = ref.split("/");
-  const branch = rest.join("/");
-  if (!remote || !branch) return false; // not a remote-tracking ref (e.g. "HEAD")
-  const args = ["fetch"];
-  if (isShallowRepo(repoRoot, exec)) args.push("--depth=1");
-  args.push(remote, `${branch}:refs/remotes/${remote}/${branch}`);
-  try {
-    exec("git", args, { cwd: repoRoot, encoding: "utf8", stdio: "pipe" });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Pick the ref to diff against: the preferred one when it resolves, else the
- * conservative fallback. Never returns a ref that does not exist.
- * @returns {{ref: string, fellBack: boolean, fetched: boolean}}
- */
-export function resolveBaselineRef(repoRoot, options = {}) {
-  const {
-    preferred = process.env.SITING_BASELINE_REF || PREFERRED_BASELINE_REF,
-    fallback = FALLBACK_BASELINE_REF,
-    noFetch = process.env.SITING_BASELINE_NO_FETCH === "1",
-    exec = execFileSync,
-  } = options;
-
-  const fetched = noFetch ? false : fetchBaselineRef(repoRoot, preferred, exec);
-  if (refExists(repoRoot, preferred, exec)) {
-    return { ref: preferred, fellBack: false, fetched };
-  }
-  if (!refExists(repoRoot, fallback, exec)) {
-    throw new Error(
-      `neither baseline ref resolves: preferred "${preferred}" and fallback "${fallback}" ` +
-        `(not a git repo, or an empty one?)`,
-    );
-  }
-  return { ref: fallback, fellBack: true, fetched };
-}
-
-function readWorkingTree(repoRoot, relPath) {
-  const raw = readFileSync(join(repoRoot, relPath), "utf8");
-  return JSON.parse(raw);
-}
-
-function printSample(label, items, formatOne, limit = PRINT_LIMIT) {
-  console.error(`\n${label} (${items.length}, showing up to ${limit}):`);
+function printSample(error, label, items, formatOne, limit = PRINT_LIMIT) {
+  error(`\n${label} (${items.length}, showing up to ${limit}):`);
   for (const item of items.slice(0, limit)) {
-    console.error(`  - ${formatOne(item)}`);
+    error(`  - ${formatOne(item)}`);
   }
 }
 
-function main() {
-  const { ref: baselineRef, fellBack, fetched } = resolveBaselineRef(REPO_ROOT);
-  if (fellBack) {
-    console.warn(
-      `[check-siting-additive] WARNING: could not resolve ` +
-        `${process.env.SITING_BASELINE_REF || PREFERRED_BASELINE_REF}; falling back to ` +
-        `${baselineRef}. The check still runs and is STRICTER this way (an older ` +
-        `baseline holds a superset of fields), but a coordinate correction merged ` +
-        `during this build may show up as a false "dropped field".`,
-    );
-  } else if (!fetched) {
-    console.warn(
-      `[check-siting-additive] WARNING: fetch of ${baselineRef} failed; comparing ` +
-        `against the locally-known (possibly stale) copy of that ref.`,
-    );
-  }
+/** A thrown reader failure is a guard error (exit 2), never a verdict. */
+class GuardError extends Error {}
 
-  const oldObj = readBaselineFromGit(REPO_ROOT, SITING_CONTEXT_REL_PATH, baselineRef);
-  if (oldObj === null) {
-    console.log(
-      `[check-siting-additive] No baseline found at ${baselineRef}:${SITING_CONTEXT_REL_PATH} ` +
-        `(path absent at that ref — first run) — skipping the additive check.`,
-    );
-    process.exit(0);
-    return;
-  }
+/**
+ * @param {{
+ *   readNext: () => Record<string, Record<string, unknown>>,
+ *   readCurrent: () => Promise<Record<string, Record<string, unknown>>>,
+ *   readFacilities: () => unknown,
+ *   log?: (line: string) => void,
+ *   error?: (line: string) => void,
+ * }} deps
+ * @returns {Promise<0 | 1 | 2>}
+ */
+export async function runCheck({ readNext, readCurrent, readFacilities, log = console.log, error = console.error }) {
+  const guardError = (msg) =>
+    error(`[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ${msg}`);
 
   let newObj;
+  let facilities;
+  let oldObj;
   try {
-    newObj = readWorkingTree(REPO_ROOT, SITING_CONTEXT_REL_PATH);
+    // lint-no-raw-error-logs: allow -- local file reads; this file imports no DB code (the Neon reader is injected and reports only a fixed message)
+    try { newObj = readNext(); } catch (err) { throw new GuardError(`failed to read/parse ${NEXT_REL_PATH}: ${err.message}`); }
+    // lint-no-raw-error-logs: allow -- local file read
+    try { facilities = readFacilities(); } catch (err) { throw new GuardError(`failed to read/parse ${FACILITIES_REL_PATH}: ${err.message}`); }
+    try {
+      oldObj = await readCurrent();
+    } catch (err) {
+      // The injected reader owns redaction; only a GuardError message is relayed.
+      throw err instanceof GuardError ? err : new GuardError("could not read the live siting_context rows");
+    }
   } catch (err) {
-    console.error(
-      `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
-        // lint-no-raw-error-logs: allow -- local file and git reads; imports no DB code, so the error cannot carry bound params
-        `failed to read/parse working-tree ${SITING_CONTEXT_REL_PATH}: ${err.message}`,
-    );
-    process.exit(2);
-    return;
+    guardError(err instanceof GuardError ? err.message : "unexpected failure");
+    return 2;
   }
 
-  // FAIL CLOSED: an unreadable, unparseable, non-array, or empty
-  // facilities.json must not silently reclassify every genuine removal as an
-  // allowed prune. An empty liveIds set would make EVERY dropped id look like
-  // an orphan.
-  let facilities;
-  try {
-    facilities = readWorkingTree(REPO_ROOT, FACILITIES_REL_PATH);
-  } catch (err) {
-    console.error(
-      `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
-        // lint-no-raw-error-logs: allow -- local file and git reads; imports no DB code, so the error cannot carry bound params
-        `failed to read/parse working-tree ${FACILITIES_REL_PATH}: ${err.message}`,
-    );
-    process.exit(2);
-    return;
+  if (typeof newObj !== "object" || newObj === null || Array.isArray(newObj)) {
+    guardError(`${NEXT_REL_PATH} is not a JSON object keyed by facility id`);
+    return 2;
   }
+  // FAIL CLOSED: an empty list would make EVERY dropped id look like a retired orphan.
   if (!Array.isArray(facilities) || facilities.length === 0) {
-    console.error(
-      `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
-        `${FACILITIES_REL_PATH} is not a non-empty array — refusing to run ` +
+    guardError(
+      `${FACILITIES_REL_PATH} is not a non-empty array — refusing to run ` +
         `(an empty/malformed facility list would reclassify every removed id as an allowed prune).`,
     );
-    process.exit(2);
-    return;
+    return 2;
+  }
+  // FAIL CLOSED: an empty baseline compares against nothing, so every next entry
+  // would read as an addition. Backfill Neon first.
+  if (Object.keys(oldObj).length === 0) {
+    guardError("siting_context is empty: run `npm run backfill:siting -- --apply` first");
+    return 2;
   }
   const liveIds = new Set(facilities.map((facility) => facility.id));
 
   const diff = diffSitingContext(oldObj, newObj, liveIds);
   const additive = isAdditive(diff);
 
-  console.log(`=== siting-context.json additive check (vs ${baselineRef}) ===`);
-  console.log(`  added:   ${diff.added.length}`);
-  console.log(`  removed: ${diff.removed.length}`);
-  console.log(
-    `  pruned:  ${diff.pruned.length}  (allowed — orphans with no facility in ${FACILITIES_REL_PATH})`,
-  );
-  console.log(`  lost:    ${diff.lost.length}`);
-  console.log(`  nulled:  ${diff.nulled.length}`);
-  console.log(`  changed: ${diff.changed.length}  (allowed — refreshed values)`);
+  log("=== siting-context.next.json additive check (vs live Neon siting_context) ===");
+  log(`  added:   ${diff.added.length}`);
+  log(`  removed: ${diff.removed.length}`);
+  log(`  pruned:  ${diff.pruned.length}  (allowed — orphans with no facility in ${FACILITIES_REL_PATH})`);
+  log(`  lost:    ${diff.lost.length}`);
+  log(`  nulled:  ${diff.nulled.length}`);
+  log(`  changed: ${diff.changed.length}  (allowed — refreshed values)`);
 
   if (diff.pruned.length) {
-    console.log(`\nPruned facility ids (${diff.pruned.length}, showing up to ${PRINT_LIMIT}):`);
-    for (const id of diff.pruned.slice(0, PRINT_LIMIT)) {
-      console.log(`  - ${id}`);
-    }
+    log(`\nPruned facility ids (${diff.pruned.length}, showing up to ${PRINT_LIMIT}):`);
+    for (const id of diff.pruned.slice(0, PRINT_LIMIT)) log(`  - ${id}`);
   }
 
   if (!additive) {
-    console.error(
+    error(
       "\n[check-siting-additive] DATA LOSS DETECTED — the regenerated " +
-        `siting-context.json would lose data present at ${baselineRef}.`,
+        "siting-context.next.json would lose data present in Neon.",
     );
-    if (diff.removed.length) {
-      printSample("Removed facility ids", diff.removed, (id) => id);
-    }
+    if (diff.removed.length) printSample(error, "Removed facility ids", diff.removed, (id) => id);
     if (diff.lost.length) {
       printSample(
+        error,
         "Fields dropped",
         diff.lost,
         ({ id, field, oldValue }) => `${id}.${field}: was ${JSON.stringify(oldValue)} -> ABSENT`,
@@ -443,17 +249,27 @@ function main() {
     }
     if (diff.nulled.length) {
       printSample(
+        error,
         "Fields nulled",
         diff.nulled,
         ({ id, field, oldValue }) => `${id}.${field}: was ${JSON.stringify(oldValue)} -> null`,
       );
     }
-    process.exit(1);
-    return;
+    return 1;
   }
 
-  console.log("\n[check-siting-additive] OK — additive (or unchanged); no data loss detected.");
-  process.exit(0);
+  log("\n[check-siting-additive] OK — additive (or unchanged); no data loss detected.");
+  return 0;
+}
+
+/** Default reader: live Neon rows, canonicalised (jsonb does not keep key order). */
+async function readNeonSiting() {
+  if (!process.env.DATABASE_URL) {
+    throw new GuardError("DATABASE_URL is not set (the guard compares against the live rows)");
+  }
+  const { sitingStore, canonicalJson } = await import("../lib/closed-data-store.ts");
+  const rows = await sitingStore().readAll();
+  return Object.fromEntries([...rows].map(([k, v]) => [k, JSON.parse(canonicalJson(v))]));
 }
 
 // Symlink/space-safe entrypoint check — see scripts/is-entrypoint.ts (plain node cannot import .ts).
@@ -464,18 +280,19 @@ function isEntrypoint() {
     return false;
   }
 }
-const isMain = isEntrypoint();
-if (isMain) {
+if (isEntrypoint()) {
+  const readJson = (rel) => JSON.parse(readFileSync(join(REPO_ROOT, rel), "utf8"));
   // An uncaught throw would exit 1, indistinguishable from the DATA LOSS
-  // verdict. Any crash (e.g. git ENOBUFS, unparseable baseline blob) is exit 2.
-  try {
-    main();
-  } catch (err) {
-    console.error(
-      `[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict: ` +
-        // lint-no-raw-error-logs: allow -- local file and git reads; imports no DB code, so the error cannot carry bound params
-        `${err?.code ?? ""} ${err?.message ?? err}`,
-    );
-    process.exit(2);
-  }
+  // verdict; runCheck maps every failure it can see to 2 and this catches the rest.
+  runCheck({
+    readNext: () => readJson(NEXT_REL_PATH),
+    readCurrent: readNeonSiting,
+    readFacilities: () => readJson(FACILITIES_REL_PATH),
+  }).then(
+    (code) => process.exit(code),
+    () => {
+      console.error("[check-siting-additive] GUARD ERROR — could not evaluate; this is NOT a data-loss verdict.");
+      process.exit(2);
+    },
+  );
 }

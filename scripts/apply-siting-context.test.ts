@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { fakeStore } from "./fake-keyed-store";
 import { run } from "./apply-siting-context";
@@ -24,6 +24,8 @@ function setup(next: unknown, store = fakeStore(CURRENT), facilities: unknown = 
       readFile: (f: string) => JSON.stringify(files[f]),
       store: () => store,
       log: (l: string) => lines.push(l),
+      env: { API_BASE_URL: "https://example.test", API_ADMIN_TOKEN: "t" },
+      fetchImpl: vi.fn().mockResolvedValue(new Response("{}", { status: 200 })),
     },
   };
 }
@@ -144,7 +146,82 @@ describe("apply-siting-context", () => {
     await expect(run(["--apply"], s.deps)).rejects.toThrow(/read-back differs from source for 1 row\(s\) \(first: c\)/);
   });
 
+  it("refuses an empty siting_context table before any write", async () => {
+    const s = setup(CURRENT, fakeStore({}));
+    await expect(run(["--apply"], s.deps)).rejects.toThrow(/siting_context is empty: run `npm run backfill:siting -- --apply` first/);
+    expect(s.store.upsertCalls).toHaveLength(0);
+  });
+
   it("fails closed on an empty facilities.json", async () => {
     await expect(run([], setup(CURRENT, fakeStore(CURRENT), []).deps)).rejects.toThrow(/unreadable or empty/);
+  });
+
+  describe("cache busts", () => {
+    const ENV = { API_BASE_URL: "https://example.test", API_ADMIN_TOKEN: "sekret" };
+    const ok = () => vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    const bustedTags = (f: ReturnType<typeof ok>) => f.mock.calls.flatMap(([, init]) => JSON.parse(init.body).tags);
+
+    const NEXT = { ...CURRENT, a: { ...CURRENT.a, waterStress: { cat: 2 } }, c: { waterStress: { cat: 3 } } };
+    const withEnv = (s: ReturnType<typeof setup>, fetchImpl = ok(), env: Record<string, string | undefined> = ENV) => ({
+      ...s.deps,
+      env,
+      fetchImpl,
+    });
+
+    it("busts exactly the added and changed ids plus facilities", async () => {
+      const f = ok();
+      await run(["--apply"], withEnv(setup(NEXT), f));
+      expect(bustedTags(f).sort()).toEqual(["facilities", "facility:a", "facility:c"]);
+    });
+
+    it("busts nothing when no row changed", async () => {
+      const f = ok();
+      await run(["--apply"], withEnv(setup(CURRENT), f));
+      expect(f).not.toHaveBeenCalled();
+    });
+
+    it("a dry run makes no fetch, even without env", async () => {
+      const f = ok();
+      await run([], withEnv(setup(NEXT), f, {}));
+      expect(f).not.toHaveBeenCalled();
+    });
+
+    it("--skip-revalidate writes, makes no fetch and says so", async () => {
+      const f = ok();
+      const s = setup(NEXT);
+      await run(["--apply", "--skip-revalidate"], withEnv(s, f, {}));
+      expect(f).not.toHaveBeenCalled();
+      expect(s.store.upsertCalls).toHaveLength(1);
+      expect(s.lines.join("\n")).toContain("--skip-revalidate");
+    });
+
+    it("missing env refuses before any write", async () => {
+      const s = setup(NEXT);
+      await expect(run(["--apply"], withEnv(s, ok(), { API_BASE_URL: "https://example.test" }))).rejects.toThrow(/API_ADMIN_TOKEN/);
+      expect(s.store.upsertCalls).toHaveLength(0);
+    });
+
+    it("an invalid tag aborts before the write", async () => {
+      const s = setup({ ...NEXT, "Bad Id": { waterStress: { cat: 1 } } }, fakeStore(CURRENT), [...FACILITIES, { id: "Bad Id" }]);
+      await expect(run(["--apply"], withEnv(s))).rejects.toThrow(/allowlist/);
+      expect(s.store.upsertCalls).toHaveLength(0);
+    });
+
+    it("a read-back failure after the write still busts the written rows and rethrows it", async () => {
+      const f = ok();
+      const s = setup(NEXT, fakeStore(CURRENT, { corruptKey: "c" }));
+      await expect(run(["--apply"], withEnv(s, f))).rejects.toThrow(/read-back differs/);
+      expect(bustedTags(f).sort()).toEqual(["facilities", "facility:a", "facility:c"]);
+    });
+
+    it("a bust failure keeps the write, warns with status only, and rejects", async () => {
+      const f = vi.fn().mockResolvedValue(new Response("leak https://example.test sekret", { status: 503 }));
+      const s = setup(NEXT);
+      const err = await run(["--apply"], withEnv(s, f)).catch((e: Error) => e);
+      expect((err as Error).message).toMatch(/write succeeded and is kept.*503/);
+      expect((err as Error).message).not.toMatch(/sekret|example\.test/);
+      expect(s.store.rows.get("c")).toEqual(NEXT.c);
+    });
+
   });
 });

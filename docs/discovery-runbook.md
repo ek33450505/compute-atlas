@@ -198,6 +198,11 @@ via `DISCOVERY_READ_DATABASE_URL` (or `DATABASE_URL`), falling back loudly to `d
 npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state=TX
 ```
 
+When Neon cannot be read, the loader falls back to `data/facilities.json` only if that snapshot is consistent:
+a missing `facilities.meta.json`, a `recordCount` mismatch, fewer than 1000 records or a schema failure aborts
+the run instead of deduping against it. Fix it by restoring Neon access; once Neon is reachable, `npm run db:export` refreshes the local snapshot. That refresh is local only: while `data/facilities.json` is still tracked it must not be committed (the public file is frozen at 3,025 records).
+`DISCOVERY_ALLOW_SMALL_SNAPSHOT=1` waives the size floor but is honoured only under Vitest.
+
 Discovery's facility read (the loader and the leads lane's duplicate check) uses
 `DISCOVERY_READ_DATABASE_URL`, the `discovery_reader` role: SELECT on `facilities` only, read-only by
 default, 60 s statement timeout. To rotate it, set the new password as the owner from a session that

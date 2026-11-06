@@ -23,11 +23,11 @@ import { makeTestDb, seedFacility, type TestDbHandle } from "@/test/pglite-db";
 import { facilitiesTable, facilityHistoryTable } from "../lib/db/schema";
 import type { DataCenterFacility, PowerGenerationFacility, Source } from "../lib/schema";
 import { MAX_TAGS_PER_REQUEST } from "../lib/cache-tags";
+import { bustTags } from "./bust-tags";
 
 import {
   planSync,
   applySync,
-  bustTags,
   readBasis,
   parseCliArgs,
   printPlan,
@@ -619,12 +619,12 @@ describe("bustTags", () => {
   });
 
   it("treats a thrown fetch as a failed batch rather than crashing the run", async () => {
-    const fetchImpl = vi.fn().mockRejectedValue(new Error("ECONNREFUSED"));
+    const fetchImpl = vi.fn().mockRejectedValue(new Error("ECONNREFUSED https://x.test"));
 
     const result = await bustTags(["facilities"], { ...config, fetchImpl });
 
     expect(result.failedTags).toEqual(["facilities"]);
-    expect(result.errors).toEqual(["ECONNREFUSED"]);
+    expect(result.errors).toEqual(["network error"]);
   });
 });
 
