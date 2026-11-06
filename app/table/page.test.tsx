@@ -9,14 +9,6 @@ const { mockGetAllFacilities, explorerProps } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/data", () => ({ getAllFacilities: mockGetAllFacilities }));
-vi.mock("@/lib/dataset-edition", () => ({
-  getDatasetEdition: () => ({
-    version: "1.31.0",
-    asOf: "2026-10-20T00:00:00.000Z",
-    recordCount: 1,
-    schemaVersion: 1,
-  }),
-}));
 vi.mock("@/components/explorer/explorer", () => ({
   Explorer: (props: Record<string, unknown>) => {
     explorerProps.current = props;

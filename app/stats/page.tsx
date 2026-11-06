@@ -28,8 +28,7 @@ import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
 import { SectionHeading } from "@/components/section-heading";
-import { AI_CLASSIFICATION_CONFIDENCE_LABELS, countDisclosedCapacity, formatEditionDate } from "@/lib/format";
-import { getDatasetEdition } from "@/lib/dataset-edition";
+import { AI_CLASSIFICATION_CONFIDENCE_LABELS, countDisclosedCapacity } from "@/lib/format";
 
 export const revalidate = 86400;
 
@@ -97,9 +96,6 @@ export default async function StatsPage() {
     getAllFacilities(),
   ]);
 
-  const edition = getDatasetEdition();
-  const editionDate = formatEditionDate(edition.asOf);
-
   const total = stats.count;
   const communityReporting = COMMUNITY_SIGNAL_ORDER.reduce(
     (sum, key) => sum + communityCounts[key],
@@ -129,7 +125,7 @@ export default async function StatsPage() {
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            Coverage &amp; completeness · Edition v{edition.version}
+            Coverage &amp; completeness
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             The atlas in numbers.
@@ -142,21 +138,11 @@ export default async function StatsPage() {
             honest than a record that guesses.
           </p>
           <p className="font-mono text-xs text-muted-foreground">
-            {/*
-              Built as one precomputed string (not interspersed JSX text)
-              deliberately: a text chunk that follows a `{...}` interpolation
-              and contains an HTML entity (&middot;, &rsquo; etc.) can have
-              its leading space silently dropped by the JSX transform — see
-              CLAUDE.md's JSX-entity-space gotcha. A literal "·" character
-              inside one JS string sidesteps that class of bug entirely.
-            */}
-            {`Edition v${edition.version} · snapshot as of ${editionDate} · ${edition.recordCount.toLocaleString("en-US")} records at export`}{" "}
-            ·{" "}
             <a
               href="/data#cite-heading"
               className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
-              how to cite
+              How to cite
             </a>
           </p>
         </div>

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://www.compute-atlas.com"><img src="docs/media/banner.png" alt="Compute Atlas — data centers, crypto mines, and the power plants built to feed them, mapped, sourced, and open" /></a>
+  <a href="https://www.compute-atlas.com"><img src="docs/media/banner.png" alt="Compute Atlas — data centers, crypto mines, and the power plants built to feed them, mapped and sourced" /></a>
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@
 
 ---
 
-Compute Atlas is an open, source-cited dataset of **data centers, crypto-mining sites, and
+Compute Atlas is a source-cited dataset of **data centers, crypto-mining sites, and
 the dedicated power generation built to supply them** across the United States — from
 proposed and permitted through under construction and operational.
 
@@ -155,10 +155,9 @@ are moderated: nothing goes live until a human reviews it.
 For a single record, cite its facility page (`https://www.compute-atlas.com/facilities/<id>`)
 and the date you accessed it.
 
-Link **www.compute-atlas.com**, not this repository: the site is the dataset's home, and this
-repo is its source mirror. Say if you changed anything, for example "filtered to data
-centers" or "joined to counties". Keep your own commentary distinct from the records: Compute
-Atlas is non-partisan and takes no position on any facility, so present your conclusions as
+Link **www.compute-atlas.com**, the dataset's home. Say if you changed anything, for example
+"filtered to data centers" or "joined to counties". Keep your own commentary distinct from the
+records: Compute Atlas is non-partisan and takes no position on any facility, so present your conclusions as
 yours. For academic work, cite the facility page you used and the date you accessed it, for example
 `"[Facility name]", Compute Atlas, https://www.compute-atlas.com/facilities/<id>, accessed [date]`.
 Full terms: [LICENSE-DATA](LICENSE-DATA).

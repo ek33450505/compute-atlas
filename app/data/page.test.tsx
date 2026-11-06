@@ -113,7 +113,8 @@ describe("DataPage", () => {
       scoped.getByRole("link", { name: "https://creativecommons.org/licenses/by/4.0/ (opens in new tab)" })
     ).toHaveAttribute("href", "https://creativecommons.org/licenses/by/4.0/");
     expect(section!.textContent).toContain("non-partisan");
-    expect(section!.textContent).toContain("rather than the GitHub repository");
+    expect(section!.textContent).toContain("Link www.compute-atlas.com, Compute Atlas's home.");
+    expect(section!.textContent).not.toContain("GitHub");
   });
 
   it("sets the canonical alternate to /data", () => {

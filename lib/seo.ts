@@ -176,7 +176,6 @@ export interface DatasetJsonLd {
   name: string;
   description: string;
   url: string;
-  sameAs: string;
   keywords: string[];
   license: string;
   isAccessibleForFree: true;
@@ -217,7 +216,6 @@ export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): Datase
     name: "Compute Atlas — U.S. Data Center & Compute Infrastructure Dataset",
     description: siteConfig.description,
     url: siteConfig.url,
-    sameAs: siteConfig.repoUrl,
     keywords: [
       "data centers",
       "AI infrastructure",

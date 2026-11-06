@@ -59,7 +59,7 @@ export default function DataPage() {
           What this is
         </h2>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          Compute Atlas is an open, source-cited record of data centers, AI-specific
+          Compute Atlas is a source-cited record of data centers, AI-specific
           facilities, crypto-mining sites, and the power plants built to feed them, across
           the United States. Every record &mdash; from a site that&rsquo;s only proposed to
           one that&rsquo;s already running &mdash; is backed by a public source: a permit
@@ -123,10 +123,10 @@ export default function DataPage() {
           ).
         </blockquote>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-          Link www.compute-atlas.com, Compute Atlas&apos;s home, rather than the GitHub
-          repository. Say if you changed anything (for example, filtered or joined the
-          records). Compute Atlas is non-partisan and takes no position on any facility,
-          so keep your own analysis or commentary distinct from its records.
+          Link www.compute-atlas.com, Compute Atlas&apos;s home. Say if you changed
+          anything (for example, filtered or joined the records). Compute Atlas is
+          non-partisan and takes no position on any facility, so keep your own
+          analysis or commentary distinct from its records.
         </p>
         <h3 className="font-display text-xl text-foreground">Citing a facility page</h3>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">

@@ -10,7 +10,6 @@ import {
   getFrictionTotal,
 } from "@/lib/data";
 import { formatPower } from "@/lib/format";
-import { getDatasetEdition } from "@/lib/dataset-edition";
 import { AI_CLASSIFICATION_ENTRIES } from "@/lib/ai-classification";
 import { STATUS_META, STATUS_ORDER } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
@@ -36,7 +35,6 @@ export const revalidate = 86400;
 
 export default async function AboutPage() {
   const stats = await getStats();
-  const edition = getDatasetEdition();
   // § The stance's "receipts" paragraph — same helpers /power and the
   // homepage already read, so the figures can never disagree across pages.
   const buildout = await getGenerationBuildoutStats();
@@ -51,13 +49,13 @@ export default async function AboutPage() {
         <GraticuleSurvey className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]" />
         <div className="relative space-y-4 pb-8">
           <p className="font-mono text-xs uppercase tracking-widest text-primary">
-            {`About & method · Edition v${edition.version}`}
+            About &amp; method
           </p>
           <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
             Public, but scattered.
           </h1>
           <p className="drop-cap max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Compute Atlas is an open, source-cited survey of the grid-scale
+            Compute Atlas is a source-cited survey of the grid-scale
             compute buildout across the United States — where it&rsquo;s being
             built, by whom, and at what cost to energy, water, and the
             communities nearby.
@@ -201,10 +199,10 @@ export default async function AboutPage() {
               href={siteConfig.repoUrl}
               target="_blank"
               rel="noreferrer noopener"
-              aria-label="The source code and data are public. View them on GitHub (opens in new tab)"
+              aria-label="The source code is public. View it on GitHub (opens in new tab)"
               className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
-              The source code and data are public.
+              The source code is public.
             </a>
           </p>
         </div>
@@ -648,7 +646,7 @@ export default async function AboutPage() {
             >
               Creative Commons Attribution 4.0 (CC-BY)
             </a>
-            . Both are published at{" "}
+            . The code is published at{" "}
             <a
               href={siteConfig.repoUrl}
               target="_blank"
@@ -681,7 +679,7 @@ export default async function AboutPage() {
         <p className="text-sm leading-relaxed text-muted-foreground">
           I build open-source tools &mdash; some for AI-assisted engineering,
           some for making public-interest data verifiable. Compute Atlas is the
-          latter: an open atlas of the AI-datacenter buildout across the United
+          latter: an atlas of the AI-datacenter buildout across the United
           States &mdash; where these facilities are going up, by whom, and at
           what cost to the grid, the water, and the communities nearby. The
           record is public but scattered across permit filings, tax-abatement

@@ -19,7 +19,7 @@ export const siteConfig = {
   name: "Compute Atlas",
   tagline: "Mapping the U.S. compute buildout",
   description:
-    "Compute Atlas is an open, source-cited map of the U.S. compute buildout — traditional and hyperscale data centers, AI-specific facilities, crypto-mining operations, and the dedicated power generation built to supply them — from proposed and permitted to under construction and operational. It tracks what the buildout costs as well as what it adds: fuel mix, water stress, and documented community opposition, with a public source behind every record.",
+    "Compute Atlas is a source-cited map of the U.S. compute buildout — traditional and hyperscale data centers, AI-specific facilities, crypto-mining operations, and the dedicated power generation built to supply them — from proposed and permitted to under construction and operational. It tracks what the buildout costs as well as what it adds: fuel mix, water stress, and documented community opposition, with a public source behind every record.",
   /**
    * The `<meta name="description">` / og / twitter string. Deliberately SHORT
    * and separate from `description` above, which is 451 chars and feeds the
