@@ -9,7 +9,8 @@ import {
   getStatusCounts,
   getFacilityTypeCounts,
 } from "@/lib/data";
-import { toMapFacility } from "@/lib/facility-slim";
+import { toMapPoint } from "@/lib/facility-slim";
+import { getFilterOptions } from "@/lib/filters";
 import { Explorer } from "@/components/explorer/explorer";
 import { MapPageContent } from "@/components/map/map-page-content";
 
@@ -41,8 +42,10 @@ export async function generateMetadata(): Promise<Metadata> {
  * the content sits below the fold as a normal sibling.
  *
  * Server component: facilities are loaded at request time and projected to
- * the slim `MapFacility` shape (lib/facility-slim.ts) BEFORE crossing to the
- * client Explorer, so the RSC/HTML payload carries only what the map reads.
+ * `MapPoint` (lib/facility-slim.ts: id, type, status, state, rounded coords)
+ * BEFORE crossing to the client Explorer. No name, operator or capacity ships
+ * to the browser; popups load via /api/map/facility/[id] and the operator and
+ * capacity filters via /api/map/match.
  */
 export default async function MapPage() {
   const [facilities, stats, topStates, topOperators, statusCounts, typeCounts] =
@@ -61,7 +64,11 @@ export default async function MapPage() {
         Map of US data centers, crypto-mining sites, and power generation
       </h1>
       <Suspense>
-        <Explorer facilities={facilities.map(toMapFacility)} mode="map" />
+        <Explorer
+          points={facilities.map(toMapPoint)}
+          options={getFilterOptions(facilities)}
+          mode="map"
+        />
       </Suspense>
       <MapPageContent
         stats={stats}

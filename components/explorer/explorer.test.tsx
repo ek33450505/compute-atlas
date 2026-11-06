@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { Explorer } from "./explorer";
 import type { Facility } from "@/lib/schema";
-import { toMapFacility, toTableRow } from "@/lib/facility-slim";
+import { toMapPoint, toTableRow } from "@/lib/facility-slim";
 import { getFilterOptions } from "@/lib/filters";
 import * as nav from "next/navigation";
 
@@ -107,7 +107,8 @@ const facilityD: Facility = {
 
 const all = [facilityA, facilityB, facilityC, facilityD];
 const fixtures = all.map(toTableRow);
-const mapFixtures = all.map(toMapFacility);
+const mapFixtures = all.map(toMapPoint);
+const mapOptions = getFilterOptions(all);
 
 // ---------------------------------------------------------------------------
 // Table mode — renders the server-provided page; never filters client-side
@@ -233,7 +234,7 @@ describe("Explorer — map empty state", () => {
   it("shows a StatePanel instead of the map when filters exclude everything", () => {
     render(
       <NuqsTestingAdapter searchParams={{ status: "permitted" }}>
-        <Explorer facilities={mapFixtures} mode="map" />
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
       </NuqsTestingAdapter>
     );
 
@@ -263,7 +264,7 @@ describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={mapFixtures} mode="map" />
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
       </NuqsTestingAdapter>
     );
 
@@ -282,6 +283,120 @@ describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
     // bug report: it's the only filter active, so this returns to zero.
     await user.click(screen.getByRole("checkbox", { name: "Operational" }));
     expect(globalThis.__facilityMapProps?.isFiltered).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Operator / minMw on the map resolve through /api/map/match, because the
+// client holds only MapPoints (no operator, no capacity).
+// ---------------------------------------------------------------------------
+
+describe("Explorer — map operator/minMw via /api/map/match", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  function stubMatch(ids: string[] | "fail") {
+    const fetchMock = vi.fn(async () =>
+      ids === "fail"
+        ? new Response("nope", { status: 500 })
+        : new Response(JSON.stringify({ ids }), { status: 200 })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  it("keeps only the ids the server returns, and sends the filter in the query", async () => {
+    const fetchMock = stubMatch(["fac-a", "fac-d"]);
+    render(
+      <NuqsTestingAdapter searchParams={{ minMw: "100", operator: "AlphaCorp" }}>
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
+      </NuqsTestingAdapter>
+    );
+    await waitFor(() =>
+      expect((globalThis.__facilityMapProps?.facilities as { id: string }[]).map((f) => f.id)).toEqual([
+        "fac-a",
+        "fac-d",
+      ])
+    );
+    const url = String((fetchMock.mock.calls[0] as unknown[])[0]);
+    expect(url).toBe("/api/map/match?operator=AlphaCorp&minMw=100");
+  });
+
+  it("intersects the server ids with the local status filter", async () => {
+    stubMatch(["fac-a", "fac-b"]);
+    render(
+      <NuqsTestingAdapter searchParams={{ minMw: "100", status: "operational" }}>
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
+      </NuqsTestingAdapter>
+    );
+    await waitFor(() =>
+      expect((globalThis.__facilityMapProps?.facilities as { id: string }[]).map((f) => f.id)).toEqual(["fac-a"])
+    );
+  });
+
+  it("does not call the endpoint when only local filters are active", async () => {
+    const fetchMock = stubMatch([]);
+    render(
+      <NuqsTestingAdapter searchParams={{ status: "operational" }}>
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
+      </NuqsTestingAdapter>
+    );
+    await screen.findByTestId("mock-facility-map");
+    await new Promise((r) => setTimeout(r, 350));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("falls back to the local filters when the lookup fails", async () => {
+    stubMatch("fail");
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      <NuqsTestingAdapter searchParams={{ minMw: "100", status: "operational" }}>
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
+      </NuqsTestingAdapter>
+    );
+    await waitFor(() => expect(console.warn).toHaveBeenCalled());
+    expect((globalThis.__facilityMapProps?.facilities as { id: string }[]).map((f) => f.id)).toEqual(["fac-a"]);
+  });
+
+  it("while the first lookup is pending, paints no markers and says 'Applying filters…'", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(() => {})));
+    render(
+      <NuqsTestingAdapter searchParams={{ minMw: "100" }}>
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
+      </NuqsTestingAdapter>
+    );
+    expect(await screen.findByTestId("mock-facility-map")).toBeInTheDocument();
+    expect(globalThis.__facilityMapProps?.facilities).toEqual([]);
+    expect(screen.getByRole("status")).toHaveTextContent("Applying filters…");
+    expect(screen.queryByText("No facilities match these filters")).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).not.toHaveTextContent(/Showing 4 of 4/);
+  });
+
+  it("shows a visible notice when the lookup fails, keeping the local results", async () => {
+    stubMatch("fail");
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      <NuqsTestingAdapter searchParams={{ minMw: "100", status: "operational" }}>
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
+      </NuqsTestingAdapter>
+    );
+    expect(await screen.findByText(/Operator and capacity filters couldn.t be applied\./)).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Showing 1 of 4 facilities");
+  });
+
+  it("hands the map no name, operator or capacity", async () => {
+    render(
+      <NuqsTestingAdapter searchParams={{}}>
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
+      </NuqsTestingAdapter>
+    );
+    await screen.findByTestId("mock-facility-map");
+    const json = JSON.stringify(globalThis.__facilityMapProps?.facilities);
+    for (const leaked of ["Alpha", "AlphaCorp", "capacityMw", "sources", "Memphis"]) {
+      expect(json).not.toContain(leaked);
+    }
   });
 });
 
@@ -321,7 +436,7 @@ describe("Explorer — map shell height (m13)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={mapFixtures} mode="map" />
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
       </NuqsTestingAdapter>
     );
 
@@ -357,7 +472,7 @@ describe("Explorer — map shell height (m13)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={mapFixtures} mode="map" />
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
       </NuqsTestingAdapter>
     );
 
@@ -371,7 +486,7 @@ describe("Explorer — map shell height (m13)", () => {
   it("leaves the static classes as the only height source when no header is present", async () => {
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={mapFixtures} mode="map" />
+        <Explorer points={mapFixtures} options={mapOptions} mode="map" />
       </NuqsTestingAdapter>
     );
 

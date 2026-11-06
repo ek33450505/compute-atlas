@@ -120,62 +120,20 @@ describe("WIDE_AND_TALL_VIEWPORT_QUERY", () => {
 });
 
 describe("buildMarkerLabel", () => {
-  it("includes the facility name", () => {
-    expect(buildMarkerLabel(facilityFull)).toContain("Colossus");
+  it("reads \"Type — Status — ST\"", () => {
+    expect(buildMarkerLabel(facilityFull)).toBe("Data center — Operational — TN");
   });
 
-  it("includes the operator", () => {
-    expect(buildMarkerLabel(facilityFull)).toContain("xAI");
-  });
-
-  it("includes city when present", () => {
-    expect(buildMarkerLabel(facilityFull)).toContain("Memphis");
-  });
-
-  it("includes the state code", () => {
-    expect(buildMarkerLabel(facilityFull)).toContain("TN");
-  });
-
-  it("includes the human-readable status label", () => {
-    expect(buildMarkerLabel(facilityFull)).toContain("Operational");
-  });
-
-  it("includes the human-readable facility-type label", () => {
-    expect(buildMarkerLabel(facilityFull)).toContain("Data center");
-  });
-
-  it("includes operational capacity when present", () => {
-    const label = buildMarkerLabel(facilityFull);
-    expect(label).toContain("150");
-    expect(label).toContain("MW operational");
-  });
-
-  it("does not include planned capacity when operational capacity is present", () => {
-    // When both are present, operational takes precedence
-    const label = buildMarkerLabel(facilityFull);
-    expect(label).not.toContain("MW planned");
-  });
-
-  it("falls back to planned capacity when operational is absent", () => {
+  it("uses the human-readable labels, not raw enum values", () => {
     const label = buildMarkerLabel(facilityPlannedOnly);
-    expect(label).toContain("500");
-    expect(label).toContain("MW planned");
+    expect(label).not.toMatch(/data_center|crypto_mining|power_generation/);
   });
 
-  it("omits capacity segment entirely when capacityMw is absent", () => {
-    const label = buildMarkerLabel(facilityNoCapacity);
-    expect(label).not.toContain("MW");
-  });
-
-  it("handles a facility with no city (no 'undefined' in label)", () => {
-    const label = buildMarkerLabel(facilityNoCapacity);
-    expect(label).not.toContain("undefined");
-    expect(label).toContain("PA");
-  });
-
-  it("uses — as separator between parts", () => {
+  it("carries no name, operator, city or capacity (the client does not hold them)", () => {
     const label = buildMarkerLabel(facilityFull);
-    expect(label).toMatch(/—/);
+    for (const leaked of ["Colossus", "xAI", "Memphis", "MW"]) {
+      expect(label).not.toContain(leaked);
+    }
   });
 });
 

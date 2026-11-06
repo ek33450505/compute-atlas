@@ -371,12 +371,10 @@ vi.mock("@/components/map/cluster-marker", () => ({
 vi.mock("@/components/map/facility-popup", () => ({
   FacilityPopup: ({
     id,
-    initial,
     onClose,
     linksOpenInNewTab,
   }: {
     id: string;
-    initial?: { name: string };
     onClose: () => void;
     linksOpenInNewTab?: boolean;
   }) => (
@@ -385,7 +383,6 @@ vi.mock("@/components/map/facility-popup", () => ({
       data-facility-id={id}
       data-links-open-in-new-tab={String(linksOpenInNewTab)}
     >
-      <p>{initial?.name}</p>
       <button onClick={onClose}>Close Popup</button>
     </div>
   ),
@@ -581,6 +578,25 @@ describe("FacilityMap", () => {
       // Verify popup is rendered
       expect(await screen.findByTestId("mock-popup")).toBeInTheDocument();
       expect(await screen.findByTestId("facility-popup-content")).toBeInTheDocument();
+    });
+
+    it("closes the popup when a filter change removes the selected facility", async () => {
+      const user = userEvent.setup();
+      const { rerender } = render(<FacilityMap facilities={[facilityA, facilityB]} />);
+      await user.click(await screen.findByTestId("marker-fac-a"));
+      expect(await screen.findByTestId("mock-popup")).toBeInTheDocument();
+
+      rerender(<FacilityMap facilities={[facilityB]} />);
+      expect(screen.queryByTestId("mock-popup")).not.toBeInTheDocument();
+      expect(await screen.findByTestId("marker-fac-b")).toBeInTheDocument();
+    });
+
+    it("keeps the popup open when the selected facility is still in the filtered set", async () => {
+      const user = userEvent.setup();
+      const { rerender } = render(<FacilityMap facilities={[facilityA, facilityB]} />);
+      await user.click(await screen.findByTestId("marker-fac-a"));
+      rerender(<FacilityMap facilities={[facilityA]} />);
+      expect(await screen.findByTestId("mock-popup")).toBeInTheDocument();
     });
 
     it("does not pin the popup to a fixed anchor, so MapLibre can flip it to stay inside the map on short viewports", async () => {

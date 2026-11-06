@@ -29,18 +29,8 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { CAPACITY_OPTIONS } from "@/lib/capacity-options";
 import { cn } from "@/lib/utils";
-
-// ---------------------------------------------------------------------------
-// Capacity options
-// ---------------------------------------------------------------------------
-
-const CAPACITY_OPTIONS = [
-  { value: "0", label: "Any" },
-  { value: "100", label: "≥100 MW" },
-  { value: "500", label: "≥500 MW" },
-  { value: "1000", label: "≥1,000 MW" },
-] as const;
 
 // ---------------------------------------------------------------------------
 // Types

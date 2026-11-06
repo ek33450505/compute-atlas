@@ -5,18 +5,22 @@ import Link from "next/link";
 import { FilterBar } from "@/components/explorer/filter-bar";
 import type { FilterValues, FilterSetters } from "@/components/explorer/filter-bar";
 import { WIDE_AND_TALL_VIEWPORT_QUERY } from "@/lib/map";
-import type { FilterableFacility } from "@/lib/facility-slim";
+import type { FilterOptions } from "@/lib/filters";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 export interface MapFilterSubheaderProps {
-  facilities: FilterableFacility[];
+  options: FilterOptions;
   values: FilterValues;
   setters: FilterSetters;
   filteredCount: number;
   totalCount: number;
+  /** First operator/capacity lookup is in flight: no count yet. */
+  applying?: boolean;
+  /** The operator/capacity lookup failed; the count reflects only the other filters. */
+  lookupFailed?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -77,11 +81,13 @@ function getWideViewportServerSnapshot() {
  *   `motion-reduce:transition-none`.
  */
 export function MapFilterSubheader({
-  facilities,
+  options,
   values,
   setters,
   filteredCount,
   totalCount,
+  applying = false,
+  lookupFailed = false,
 }: MapFilterSubheaderProps) {
   // Stable SSR-safe default: server (and first client render) reports expanded
   // so server and first client render agree (avoids hydration mismatch).
@@ -167,9 +173,22 @@ export function MapFilterSubheader({
         <p
           role="status"
           aria-live="polite"
-          className="sr-only sm:not-sr-only sm:ml-1 shrink-0 font-mono text-xs text-muted-foreground"
+          className={[
+            "sm:ml-1 shrink-0 font-mono text-xs text-muted-foreground",
+            // A notice must be visible on mobile too, not only announced.
+            applying || lookupFailed ? "" : "sr-only sm:not-sr-only",
+          ].join(" ")}
         >
-          Showing {filteredCount} of {totalCount} facilities
+          {applying ? (
+            "Applying filters…"
+          ) : (
+            <>
+              Showing {filteredCount} of {totalCount} facilities
+              {lookupFailed && (
+                <span> · Operator and capacity filters couldn&apos;t be applied.</span>
+              )}
+            </>
+          )}
         </p>
 
         <div className="flex-1 min-w-0" />
@@ -229,7 +248,7 @@ export function MapFilterSubheader({
       {isOpen && (
         <div id={BODY_ID} className="border-t border-border px-4 py-3">
           <FilterBar
-            facilities={facilities}
+            options={options}
             values={values}
             setters={setters}
           />

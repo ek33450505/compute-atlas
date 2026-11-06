@@ -6,7 +6,6 @@ import { Droplets, ExternalLink, X, Zap } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
 import { formatNearestTransmission, formatNearestWater } from "@/lib/siting-format";
 import type { PopupSummary } from "@/lib/facility-slim";
-import type { Facility } from "@/lib/schema";
 
 // Module-level so reopening a pin never refetches. Summaries are immutable
 // for the page's lifetime (the endpoint is edge-cached for an hour anyway).
@@ -23,8 +22,6 @@ type FetchState =
 
 interface FacilityPopupProps {
   id: string;
-  /** Header data the caller already has, shown while the summary loads. */
-  initial?: { name: string; status: Facility["status"] };
   onClose: () => void;
   /**
    * When true, the "View details →" link opens the facility page in a new
@@ -70,7 +67,6 @@ interface FacilityPopupProps {
  */
 export function FacilityPopup({
   id,
-  initial,
   onClose,
   linksOpenInNewTab = false,
 }: FacilityPopupProps) {
@@ -206,8 +202,8 @@ export function FacilityPopup({
     : undefined;
   const { nearestWater, nearestTransmission } = summary ?? {};
   const capacityMw = summary?.capacityMw;
-  const name = summary?.name ?? initial?.name;
-  const status = summary?.status ?? initial?.status;
+  const name = summary?.name;
+  const status = summary?.status;
 
   return (
     <div className="p-1 min-w-[220px] max-w-[min(280px,calc(100vw-5rem))]">

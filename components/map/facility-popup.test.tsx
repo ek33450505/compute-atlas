@@ -257,20 +257,6 @@ describe("FacilityPopup", () => {
       expect(link.closest("[aria-busy]")).toHaveAttribute("aria-busy", "true");
     });
 
-    it("shows the caller's initial name and status while loading", () => {
-      fetchMock = vi.fn().mockReturnValue(new Promise(() => {}));
-      vi.stubGlobal("fetch", fetchMock);
-      render(
-        <FacilityPopup
-          id="test-facility"
-          initial={{ name: "Initial Name", status: "proposed" }}
-          onClose={() => {}}
-        />
-      );
-      expect(screen.getByText("Initial Name")).toBeInTheDocument();
-      expect(screen.getByText("Proposed")).toBeInTheDocument();
-    });
-
     it("clears aria-busy once content has loaded", async () => {
       await renderLoaded();
       expect(screen.getByRole("link", { name: "View details →" }).closest("[aria-busy]")).toHaveAttribute(

@@ -1,3 +1,4 @@
+import { getFilterOptions } from "@/lib/filters";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -74,15 +75,19 @@ function renderSubheader(overrides?: {
   values?: Partial<typeof defaultValues>;
   filteredCount?: number;
   totalCount?: number;
+  applying?: boolean;
+  lookupFailed?: boolean;
 }) {
   const values = { ...defaultValues, ...overrides?.values };
   return render(
     <MapFilterSubheader
-      facilities={fixtures}
+      options={getFilterOptions(fixtures)}
       values={values}
       setters={defaultSetters}
       filteredCount={overrides?.filteredCount ?? fixtures.length}
       totalCount={overrides?.totalCount ?? fixtures.length}
+      applying={overrides?.applying}
+      lookupFailed={overrides?.lookupFailed}
     />
   );
 }
@@ -343,5 +348,28 @@ describe("MapFilterSubheader — shared viewport query", () => {
     expect(
       screen.getByRole("button", { name: "Expand filter controls" })
     ).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
+describe("MapFilterSubheader — lookup states", () => {
+  it("reads 'Applying filters…' instead of a count while the first lookup is pending", () => {
+    renderSubheader({ applying: true });
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("Applying filters…");
+    expect(status).not.toHaveTextContent(/Showing/);
+    expect(status.className).not.toContain("sr-only");
+  });
+
+  it("appends a visible notice to the count when the lookup failed", () => {
+    renderSubheader({ lookupFailed: true, filteredCount: 2 });
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("Showing 2 of");
+    expect(status).toHaveTextContent("Operator and capacity filters couldn't be applied.");
+    expect(status.className).not.toContain("sr-only");
+  });
+
+  it("shows no notice by default", () => {
+    renderSubheader();
+    expect(screen.getByRole("status")).not.toHaveTextContent(/couldn't/);
   });
 });

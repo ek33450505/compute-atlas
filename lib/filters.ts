@@ -1,6 +1,6 @@
 import { STATUS_ORDER, type Status } from "@/lib/status";
 import type { Facility } from "@/lib/schema";
-import type { FilterableFacility } from "@/lib/facility-slim";
+import type { FilterableFacility, MapPoint } from "@/lib/facility-slim";
 import { facilityTypeEnum } from "@/lib/schema";
 import { getFacilityMaxMw } from "@/lib/format";
 
@@ -64,6 +64,24 @@ export function filterFacilities<T extends FilterableFacility>(
       if (!searchable.includes(q)) return false;
     }
 
+    return true;
+  });
+}
+
+/**
+ * The slice of the filters a `MapPoint` can answer on its own. Operator and
+ * minimum-capacity need data the /map client no longer holds; they resolve
+ * through `GET /api/map/match` and intersect with this result.
+ */
+export type MapPointFilters = Pick<FacilityFilters, "statuses" | "states" | "facilityTypes">;
+
+export function filterMapPoints<T extends MapPoint>(points: T[], f: MapPointFilters): T[] {
+  return points.filter((p) => {
+    if (f.statuses && f.statuses.length > 0 && !f.statuses.includes(p.status)) return false;
+    if (f.states && f.states.length > 0 && !f.states.includes(p.location.state)) return false;
+    if (f.facilityTypes && f.facilityTypes.length > 0 && !f.facilityTypes.includes(p.facilityType)) {
+      return false;
+    }
     return true;
   });
 }
