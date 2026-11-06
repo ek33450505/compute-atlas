@@ -5,18 +5,21 @@
  * artifact instead of serializing it into every homepage RSC payload.
  *
  * The hero globe is purely decorative (aria-hidden) and never mounts below
- * Tailwind's `sm` breakpoint, yet inlining ~1k `{id, lat, lon, status}` points
+ * Tailwind's `sm` breakpoint, yet inlining ~1k `{lat, lon, status}` points
  * into the server-rendered payload cost every visitor — phones included —
  * ~98 KB brotli on `/`. Emitting the same array to public/data means the
  * markup carries none of it and the globe fetches it after mount, from the
  * CDN, only on the viewports that actually draw it.
  *
- * Coordinates are rounded to COORD_PRECISION decimals: the globe renders at
- * zoom <= 5, where one pixel is roughly 1.2 km, so 3dp (~110 m) is far below
- * a pixel. Pure size win, no visible change.
+ * The roster is anonymous: no facility ids, so the public file cannot be joined
+ * back to a facility page. Coordinates are rounded to COORD_PRECISION decimals
+ * (2dp, ~1.1 km): the globe renders at zoom <= 5, where one pixel is roughly
+ * 1.2 km, so the rounding stays under about one pixel. Points that collapse to
+ * the same {lat, lon, status} are emitted once, which also hides co-located
+ * counts; the globe is decorative, so nothing depends on the point count.
  *
  * Output (committed):
- *   public/data/hero-points.json   [{ id, lat, lon, status }, ...]
+ *   public/data/hero-points.json   [{ lat, lon, status }, ...]
  *
  * Runs as part of `npm run build:mapdata` (including under --skip-nhd, since
  * it does no network I/O) and standalone via `npm run build:heropoints`.
@@ -34,12 +37,33 @@ const repoRoot = resolve(__dirname, '..');
 const FACILITIES_PATH = resolve(repoRoot, 'data/facilities.json');
 const OUT_PATH = resolve(repoRoot, 'public/data/hero-points.json');
 
-/** ~110 m — well under one pixel at the globe's zoom <= 5. */
-const COORD_PRECISION = 3;
+/** ~1.1 km — about one pixel at the globe's zoom <= 5. */
+export const COORD_PRECISION = 2;
 
+/** Half away from zero, matching roundPoint in lib/facility-slim.ts. */
 function round(value) {
   const factor = 10 ** COORD_PRECISION;
-  return Math.round(value * factor) / factor;
+  return (Math.sign(value) * Math.round(Math.abs(value) * factor)) / factor;
+}
+
+/**
+ * Reduce facilities to anonymous, rounded, de-duplicated `{ lat, lon, status }`
+ * points. Facilities without finite coordinates are skipped.
+ */
+export function toHeroPoints(facilities) {
+  const seen = new Set();
+  const points = [];
+  for (const facility of facilities) {
+    const lat = facility?.location?.lat;
+    const lon = facility?.location?.lon;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    const point = { lat: round(lat), lon: round(lon), status: facility.status };
+    const key = `${point.lat}|${point.lon}|${point.status}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    points.push(point);
+  }
+  return points;
 }
 
 /**
@@ -76,18 +100,7 @@ export function buildHeroPoints() {
     );
   }
 
-  const points = [];
-  for (const facility of facilities) {
-    const lat = facility?.location?.lat;
-    const lon = facility?.location?.lon;
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-    points.push({
-      id: facility.id,
-      lat: round(lat),
-      lon: round(lon),
-      status: facility.status,
-    });
-  }
+  const points = toHeroPoints(facilities);
 
   if (points.length === 0) {
     throw new Error(
