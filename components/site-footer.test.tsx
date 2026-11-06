@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 // vi.mock calls are hoisted above imports by Vitest. Route the shared mock
 // through vi.hoisted() so its initialization is hoisted alongside the
 // vi.mock call itself, rather than relying on a plain top-level const (same
-// pattern as app/api/page.test.tsx / app/stats/page.test.tsx).
+// pattern as app/api/page.test.ts / app/stats/page.test.tsx).
 const { mockGetDatasetEdition } = vi.hoisted(() => ({
   mockGetDatasetEdition: vi.fn(),
 }));
@@ -114,10 +114,7 @@ describe("SiteFooter", () => {
     expect(
       screen.getByRole("link", { name: "Methodology" })
     ).toHaveAttribute("href", "/methodology");
-    expect(screen.getByRole("link", { name: "API" })).toHaveAttribute(
-      "href",
-      "/api"
-    );
+    expect(screen.queryByRole("link", { name: "API" })).not.toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Cite" })
     ).toHaveAttribute("href", "/data");

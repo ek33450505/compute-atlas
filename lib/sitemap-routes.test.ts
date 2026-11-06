@@ -455,10 +455,10 @@ describe("sitemap", () => {
     expect(actual.getTime()).toBeLessThan(testStart);
   });
 
-  it("genuinely static editorial routes (/about, /api, /contribute, /support, /contact) use a stable date, not 'now'", async () => {
+  it("genuinely static editorial routes (/about, /contribute, /support, /contact) use a stable date, not 'now'", async () => {
     const testStart = Date.now();
     const routes = await buildStaticRoutes();
-    for (const path of ["/about", "/api", "/contribute", "/support", "/contact"]) {
+    for (const path of ["/about", "/contribute", "/support", "/contact"]) {
       const entry = routes.find((r) => r.url === `${siteConfig.url}${path}`);
       expect(entry).toBeDefined();
       const actual = entry!.lastModified as Date;

@@ -24,7 +24,7 @@ describe("robots", () => {
     expect(rule.disallow).toEqual(["/admin/", "/api/"]);
   });
 
-  it("disallow /api/ (trailing slash) does not match the bare /api doc page path", () => {
+  it("disallow /api/ (trailing slash) does not match the bare /api redirect path", () => {
     const { rules } = robots();
     const rule = Array.isArray(rules) ? rules[0] : rules;
     const disallowList = Array.isArray(rule.disallow) ? rule.disallow : [rule.disallow];

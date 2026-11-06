@@ -12,7 +12,6 @@ const ROUTES = [
   "/facilities/meta-prineville-or",
   "/contact",
   "/methodology",
-  "/api",
   "/data",
   // Chrome-free layout shape (no header/footer, full-height map + a single
   // attribution link) — never audited before. "texas" is prerendered

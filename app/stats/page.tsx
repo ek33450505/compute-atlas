@@ -153,7 +153,7 @@ export default async function StatsPage() {
             {`Edition v${edition.version} · snapshot as of ${editionDate} · ${edition.recordCount.toLocaleString("en-US")} records at export`}{" "}
             ·{" "}
             <a
-              href="/api#citation-heading"
+              href="/data#cite-heading"
               className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
             >
               how to cite

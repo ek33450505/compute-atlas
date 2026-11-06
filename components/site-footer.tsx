@@ -89,11 +89,6 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/api" className={NAV_LINK_CLASS}>
-                  API
-                </Link>
-              </li>
-              <li>
                 <Link href="/data" className={NAV_LINK_CLASS}>
                   Cite
                 </Link>
