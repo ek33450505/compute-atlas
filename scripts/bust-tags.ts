@@ -52,16 +52,22 @@ export async function bustTags(
       });
 
       if (!res.ok) {
-        const body = await res.text().catch(() => "");
+        // Status and tag chunk only: a response body may echo request data.
         result.failedTags.push(...batch);
-        result.errors.push(`HTTP ${res.status} ${body}`.trim());
+        result.errors.push(`HTTP ${res.status} [${batch.join(", ")}]`);
+        try {
+          await res.body?.cancel(); // release the socket; the body is never read
+        } catch {
+          // best effort
+        }
         continue;
       }
 
       result.bustedTags.push(...batch);
     } catch (err) {
       result.failedTags.push(...batch);
-      result.errors.push(errorMessage(err));
+      // Fixed string: a raw fetch message can carry the URL.
+      result.errors.push("network error");
     }
   }
 
@@ -118,6 +124,14 @@ export function bustErrorSummary(errors: string[]): string {
   return [...new Set(errors.map((e) => /^HTTP (\d{3})/.exec(e)?.[1] ?? "network error"))].join(", ");
 }
 
+const MAX_NAMED_TAGS = 20;
+
+/** Names at most MAX_NAMED_TAGS tags so a large failed bust cannot flood the log line. */
+function namedTags(tags: string[]): string {
+  const shown = tags.slice(0, MAX_NAMED_TAGS).join(", ");
+  return tags.length > MAX_NAMED_TAGS ? `${shown} (+${tags.length - MAX_NAMED_TAGS} more)` : shown;
+}
+
 /** Throws if the revalidate route would reject any tag; call BEFORE writing. */
 export function assertValidTags(tags: string[]): void {
   const invalid = tags.filter((tag) => !isValidCacheTag(tag));
@@ -150,15 +164,15 @@ export async function bustAfterWrite(
   if (bust.failedTags.length > 0) {
     throw new RefusalError(
       `WARNING: the write succeeded and is kept, but ${bust.failedTags.length} cache tag(s) failed to bust ` +
-        `(${bustErrorSummary(bust.errors)}). Re-bust them via POST /api/revalidate; the pages stay stale up to 24h otherwise.`,
+        `(${bustErrorSummary(bust.errors)}): ${namedTags(bust.failedTags)}. Re-bust them via POST /api/revalidate; the pages stay stale up to 24h otherwise.`,
     );
   }
 }
 
 /**
  * Runs `op` (a write against `store`) and then busts the tags for every row that was upserted,
- * whether `op` finished or threw. Recording the rows actually passed to `upsert` (inserts AND
- * updates, so a future backfill that overwrites is covered) means a failed read-back verify,
+ * whether `op` finished or threw. The rows passed to `upsert` (inserts AND updates, so a
+ * future backfill that overwrites is covered) are recorded before it runs, which means a failed read-back verify,
  * which throws AFTER the rows landed, still evicts the stale pages; busting only evicts cache,
  * so doing it on a verify failure is safe. The original error is rethrown; a bust failure
  * then is only logged.
@@ -176,8 +190,9 @@ export async function bustAfterUpserts<T>(
   const recording: KeyedStore = {
     readAll: () => opts.store.readAll(),
     async upsert(rows) {
-      await opts.store.upsert(rows);
+      // Recorded before the await so a throw mid-upsert still reports the keys in flight.
       written.push(...rows.map((r) => r.key));
+      await opts.store.upsert(rows);
     },
   };
   let result: T;

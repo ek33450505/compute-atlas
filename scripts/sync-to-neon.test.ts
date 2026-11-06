@@ -619,12 +619,12 @@ describe("bustTags", () => {
   });
 
   it("treats a thrown fetch as a failed batch rather than crashing the run", async () => {
-    const fetchImpl = vi.fn().mockRejectedValue(new Error("ECONNREFUSED"));
+    const fetchImpl = vi.fn().mockRejectedValue(new Error("ECONNREFUSED https://x.test"));
 
     const result = await bustTags(["facilities"], { ...config, fetchImpl });
 
     expect(result.failedTags).toEqual(["facilities"]);
-    expect(result.errors).toEqual(["ECONNREFUSED"]);
+    expect(result.errors).toEqual(["network error"]);
   });
 });
 
