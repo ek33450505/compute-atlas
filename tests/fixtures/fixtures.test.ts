@@ -1,10 +1,12 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, it, expect } from "vitest";
 
 import facilitiesAliased from "@/data/facilities.json";
 import metaAliased from "@/data/facilities.meta.json";
 import { facilitiesSchema } from "@/lib/schema";
+
+import { ALIASED_DATA_FILES } from "./aliased-data-files";
 
 const read = (name: string): unknown =>
   JSON.parse(readFileSync(path.join(__dirname, name), "utf-8"));
@@ -65,5 +67,31 @@ describe("test fixtures", () => {
     // the real dataset has thousands of records; a sample this small proves the alias is on
     expect(facilitiesAliased.length).toBeGreaterThanOrEqual(60);
     expect(facilitiesAliased.length).toBeLessThan(200);
+  });
+
+  it("no source file imports an @/data/*.json that the vitest alias does not cover", () => {
+    const root = path.resolve(__dirname, "../..");
+    const found = new Map<string, string>();
+    const walk = (dir: string) => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (entry.name === "node_modules" || entry.name === ".next") continue;
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) walk(full);
+        // *.dataset.test.ts files run only with DATASET=real, against real data by design.
+        else if (/\.(tsx?|mjs)$/.test(entry.name) && !/\.dataset\.test\.ts$/.test(entry.name)) {
+          const src = readFileSync(full, "utf-8");
+          for (const m of src.matchAll(/(?:from\s*|import\s*\(?\s*|require\(\s*)["']@\/data\/([^"']+\.json)["']/g)) {
+            found.set(m[1], path.relative(root, full));
+          }
+        }
+      }
+    };
+    for (const dir of ["app", "lib", "components", "scripts"]) walk(path.join(root, dir));
+
+    // Not vacuous: the scan must actually see the data imports.
+    expect(found.size).toBeGreaterThan(0);
+    const aliased: readonly string[] = ALIASED_DATA_FILES;
+    const uncovered = [...found].filter(([name]) => !aliased.includes(name));
+    expect(uncovered).toEqual([]);
   });
 });

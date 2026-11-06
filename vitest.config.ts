@@ -2,6 +2,8 @@ import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
+import { ALIASED_DATA_FILES } from "./tests/fixtures/aliased-data-files";
+
 // D3: unit tests read the committed ~60-record fixtures instead of the full
 // dataset, so CI never depends on live data. DATASET=real (npm run
 // test:dataset) drops the override and runs only the *.dataset.test.ts
@@ -9,12 +11,7 @@ import path from "path";
 const realDataset = process.env.DATASET === "real";
 const fixtureAliases = realDataset
   ? []
-  : [
-      "facilities.json",
-      "facilities.meta.json",
-      "siting-context.json",
-      "operator-ownership.json",
-    ].map((file) => ({
+  : ALIASED_DATA_FILES.map((file) => ({
       find: `@/data/${file}`,
       replacement: path.resolve(__dirname, "tests/fixtures", file.replace(/\.json$/, ".fixture.json")),
     }));
