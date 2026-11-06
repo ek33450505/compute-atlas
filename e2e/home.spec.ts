@@ -121,6 +121,15 @@ test("filter state carries from /map to /table via the shared URL", async ({
   const statusEl = page.getByRole("status").filter({ hasText: /Showing/ });
   // Capture the unfiltered count: "Showing N of N facilities"
   await expect(statusEl).toContainText(/Showing [\d,]+ of [\d,]+ facilities/);
+  const parseMapCounts = async () => {
+    const m = (await statusEl.textContent())?.match(/Showing ([\d,]+) of ([\d,]+)/);
+    expect(m).toBeTruthy();
+    return {
+      shown: Number(m![1].replace(/,/g, "")),
+      total: Number(m![2].replace(/,/g, "")),
+    };
+  };
+  const { total: unfilteredTotal } = await parseMapCounts();
 
   // Click the "Operational" status checkbox to apply a filter
   const operationalCheckbox = page.getByRole("checkbox", {
@@ -130,6 +139,12 @@ test("filter state carries from /map to /table via the shared URL", async ({
 
   // Assert the URL now includes the filter parameter
   await expect(page).toHaveURL(/[?&]status=operational/);
+
+  // Wait for the map's filtered count to drop below the unfiltered total
+  await expect
+    .poll(async () => (await parseMapCounts()).shown)
+    .toBeLessThan(unfilteredTotal);
+  const { shown: mapFilteredCount } = await parseMapCounts();
 
   // Click "View as table" link to navigate to /table
   const tableLink = page.getByRole("link", { name: /View as table/i });
@@ -145,16 +160,20 @@ test("filter state carries from /map to /table via the shared URL", async ({
   const tableStatusEl = page
     .getByRole("status")
     .filter({ hasText: /Showing/ });
-  await expect(tableStatusEl).toContainText(/Showing [\d,]+ of [\d,]+ facilities/);
+  // /table is server-paginated: "Showing 1–50 of N facilities" (en dash), where
+  // N is the FILTERED total.
+  await expect(tableStatusEl).toContainText(
+    /Showing 1–[\d,]+ of [\d,]+ facilities/
+  );
 
-  // Parse the status text to confirm the filter is actually applied:
-  // The filtered count (first number) should be less than the total (second number)
+  // Same filter, same dataset: the table total must equal the map's filtered
+  // count and be smaller than the unfiltered total.
   const statusText = await tableStatusEl.textContent();
-  const match = statusText?.match(/Showing ([\d,]+) of ([\d,]+)/);
+  const match = statusText?.match(/Showing 1–[\d,]+ of ([\d,]+) facilities/);
   expect(match).toBeTruthy();
-  const filteredCount = Number(match![1].replace(/,/g, ""));
-  const totalCount = Number(match![2].replace(/,/g, ""));
-  expect(filteredCount).toBeLessThan(totalCount);
+  const tableTotal = Number(match![1].replace(/,/g, ""));
+  expect(tableTotal).toBe(mapFilteredCount);
+  expect(tableTotal).toBeLessThan(unfilteredTotal);
 
   // Verify the table is visible on /table
   await expect(page.getByRole("table")).toBeVisible();
