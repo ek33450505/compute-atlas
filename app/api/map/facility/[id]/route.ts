@@ -16,7 +16,7 @@ const SLUG_SHAPE = /^[a-z0-9][a-z0-9-]{0,199}$/;
 /**
  * Click-time map popup summary: the slim, coordinate-free `PopupSummary` plus
  * siting context, fetched when a pin is opened so neither the full facility
- * record nor `data/siting-context.json` has to ship in the client bundle.
+ * record nor the siting-context dataset has to ship in the client bundle.
  * Malformed and unknown ids get the same 404 (id never echoed) and a malformed
  * id never reaches the loader.
  */
@@ -40,7 +40,7 @@ export async function GET(
   if (!facility) return notFound();
 
   return cacheableJson(
-    toPopupSummary(facility, getSitingContext(facility.id)),
+    toPopupSummary(facility, await getSitingContext(facility.id)),
     READ_CACHE.mapPopup
   );
 }

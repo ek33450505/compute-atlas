@@ -8,11 +8,20 @@ import {
   perStateBreakdown,
   type FacilityStateRow,
 } from "./nhd-debt";
-import type { SitingContext } from "./siting-context";
+import { sitingContextSchema, type SitingContext } from "./siting-context";
 import { ratchetVerdict } from "./test-fixtures/nhd-ratchet";
 
 // Real-dataset invariants (DATASET=real, npm run test:dataset). The default run
 // checks the same logic against the committed fixture in siting-context.test.ts.
+
+describe("data-integrity: siting-context shape", () => {
+  it("every entry in data/siting-context.json passes the render-safety schema", () => {
+    const failures = Object.entries(sitingContextRaw as Record<string, unknown>)
+      .filter(([, v]) => !sitingContextSchema.safeParse(v).success)
+      .map(([id]) => id);
+    expect(failures.slice(0, 20)).toEqual([]);
+  });
+});
 
 describe("data-integrity: siting-context coverage", () => {
   // Only forward coverage (facility -> siting entry) is asserted here.

@@ -4,6 +4,7 @@ import { __resetApiRateLimit, API_RATE_LIMIT_MAX } from "@/lib/api-rate-limit";
 import * as data from "@/lib/data";
 import * as dailyLimit from "@/lib/api-daily-limit";
 import sitingRaw from "@/data/siting-context.json";
+import * as siting from "@/lib/siting-context";
 
 const sitingById = sitingRaw as Record<string, { nearestWater?: { name: string } }>;
 const KNOWN_ID = "talen-susquehanna-aws-pa";
@@ -50,6 +51,26 @@ describe("GET /api/map/facility/[id]", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.nearestWater?.name).toBe(sitingById[WATER_ID].nearestWater!.name);
+  });
+
+  it("awaits the siting lookup and puts its result in the popup (fake source, no Neon)", async () => {
+    const spy = vi
+      .spyOn(siting, "getSitingContext")
+      .mockResolvedValue({ nearestWater: { name: "Fake River", kind: "river", distanceMi: 1.5 } });
+    const body = await (await get(KNOWN_ID)).json();
+    expect(spy).toHaveBeenCalledWith(KNOWN_ID);
+    expect(body.nearestWater?.name).toBe("Fake River");
+  });
+
+  it("omits siting fields when the lookup resolves to nothing", async () => {
+    vi.spyOn(siting, "getSitingContext").mockResolvedValue(undefined);
+    const res = await get(KNOWN_ID);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.id).toBe(KNOWN_ID);
+    for (const k of ["nearestWater", "nearestTransmission", "waterStress", "groundwaterDecline", "aquifer"]) {
+      expect(body).not.toHaveProperty(k);
+    }
   });
 
   it("serves the cacheable header on success", async () => {

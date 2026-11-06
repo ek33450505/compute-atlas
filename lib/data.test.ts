@@ -3,7 +3,7 @@ import { gzipSync, gunzipSync } from "node:zlib";
 import facilitiesRaw from "@/data/facilities.json";
 import { OFFTAKER_LABEL_PATTERN } from "@/lib/schema";
 import { canonicalCountyName } from "@/lib/counties";
-import { parseOperatorOwnership } from "@/lib/operator-ownership";
+import { operatorOwnership, parseOperatorOwnership } from "@/lib/operator-ownership";
 import { findUnlinkedPowerPlant, findUnpoweredDataCenter } from "@/lib/test-fixtures/unpowered-facility";
 import {
   getAllFacilities,
@@ -1176,7 +1176,7 @@ describe("buildStakeholderIndex", () => {
       stakeholders: [{ name: "Jane Doe", role: "investor", sourceIndex: 0, asOf: "2026-01-01" }],
     });
 
-    const { byPerson, slugToPerson } = buildStakeholderIndex([small, big]);
+    const { byPerson, slugToPerson } = buildStakeholderIndex([small, big], []);
 
     expect(byPerson.get("Jane Doe")?.map((f) => f.id)).toEqual(["site-b", "site-a"]);
     expect(slugToPerson.get(personSlug("Jane Doe"))).toBe("Jane Doe");
@@ -1191,7 +1191,7 @@ describe("buildStakeholderIndex", () => {
       ],
     });
 
-    const { byPerson } = buildStakeholderIndex([facility]);
+    const { byPerson } = buildStakeholderIndex([facility], []);
 
     expect(byPerson.get("Jane Doe")).toHaveLength(1);
   });
@@ -1216,7 +1216,7 @@ describe("summarizeStakeholders kind derivation", () => {
       }),
     ];
     const byName = new Map(
-      summarizeStakeholders(buildStakeholderIndex(facilities)).map((s) => [s.name, s])
+      summarizeStakeholders(buildStakeholderIndex(facilities, [])).map((s) => [s.name, s])
     );
     expect(byName.get("Example Fund")?.kind).toBe("organization");
     expect(byName.get("Example Fund")?.roles).toEqual(["investor", "lender"]);
@@ -1355,7 +1355,7 @@ describe("the real stakeholder index", () => {
   // The loud CI gate: a collision arriving via db:sync or an ownership row
   // degrades gracefully at runtime (see buildStakeholderIndex) but must fail here.
   it("has no slug collisions (real facilities + real operator-ownership)", async () => {
-    const index = buildStakeholderIndex(await getAllFacilities());
+    const index = buildStakeholderIndex(await getAllFacilities(), operatorOwnership);
     expect(index.collisions).toEqual([]);
   });
 });

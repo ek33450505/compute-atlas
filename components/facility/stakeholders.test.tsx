@@ -292,6 +292,19 @@ describe("operator-level ownership", () => {
 
     expect(screen.queryByRole("heading", { name: "Through the operator" })).not.toBeInTheDocument();
   });
+
+  it("treats an absent ownership prop as an empty layer (never reads a bundled snapshot)", () => {
+    // "QTS Data Centers" has a row in the bundled snapshot; the component must not look it up.
+    const facility = makeFacility({
+      operator: "QTS Data Centers",
+      stakeholders: [{ name: "Jane Doe", role: "founder", sourceIndex: 0, asOf: "2024-01-01" }],
+    });
+    render(<StakeholdersSection facility={facility} />);
+
+    expect(screen.getByRole("heading", { name: "Ownership and financial interest" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Through the operator" })).not.toBeInTheDocument();
+    expect(hasStakeholders(makeFacility({ operator: "QTS Data Centers" }))).toBe(false);
+  });
 });
 
 describe("splitVoteDirection", () => {

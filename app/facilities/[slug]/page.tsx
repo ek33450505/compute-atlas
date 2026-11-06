@@ -5,6 +5,8 @@ import { Info, Flag } from "lucide-react";
 
 import { getAllFacilityIds, getFacilityByIdCached, operatorSlug, countySlug } from "@/lib/data";
 import { previewSubset } from "@/lib/build-params";
+import { getOperatorOwnership } from "@/lib/operator-ownership";
+import { getSitingContext } from "@/lib/siting-context";
 import { getStatusMeta } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import {
@@ -152,6 +154,11 @@ export default async function FacilityPage({
     notFound();
   }
 
+  // One siting read per render, shared by the section and the print gap summary.
+  const [siting, ownership] = await Promise.all([
+    getSitingContext(facility.id),
+    getOperatorOwnership(facility.operator),
+  ]);
   const location = formatLocation(facility);
   const capacity = formatCapacity(facility);
   // Keyed on the field, not the reason text: two fields may share a reason.
@@ -437,13 +444,13 @@ export default async function FacilityPage({
         </MastheadFactGrid>
       </section>
 
-      <SitingContextSection facility={facility} />
+      <SitingContextSection facility={facility} siting={siting} />
 
       <PowerLinksSection facility={facility} />
 
       <CivicImpactSection facility={facility} />
 
-      <StakeholdersSection facility={facility} />
+      <StakeholdersSection facility={facility} ownership={ownership} />
 
       <Separator />
 
@@ -531,7 +538,7 @@ export default async function FacilityPage({
       {/* Print-only: one line naming every section this record has no data
           for. Sits immediately above the provenance footer so the sheet ends
           with what is known about the record, then what is not. */}
-      <PrintGapSummary facility={facility} />
+      <PrintGapSummary facility={facility} siting={siting} />
 
       {/* Print-only: what makes the printout citable — where it came from,
           when the record was curated, when it was printed, and the data

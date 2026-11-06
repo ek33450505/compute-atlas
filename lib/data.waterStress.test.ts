@@ -5,7 +5,8 @@ import {
   computeWaterStressExposure,
   type WaterStressExposure,
 } from "@/lib/data";
-import { getSitingContext, type SitingContext } from "@/lib/siting-context";
+import sitingContextRaw from "@/data/siting-context.json";
+import type { SitingContext } from "@/lib/siting-context";
 import type { DataCenterFacility, Facility } from "@/lib/schema";
 
 /**
@@ -115,7 +116,7 @@ describe("getWaterStressExposure", () => {
     let highOrExtreme = 0;
     let extreme = 0;
     for (const f of facilities) {
-      const waterStress = getSitingContext(f.id)?.waterStress;
+      const waterStress = (sitingContextRaw as Record<string, SitingContext>)[f.id]?.waterStress;
       if (!waterStress) continue;
       rated++;
       if (waterStress.cat >= 3) {

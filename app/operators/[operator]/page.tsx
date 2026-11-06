@@ -79,7 +79,7 @@ export default async function OperatorPage({
   }
 
   const facilities = await getFacilitiesByOperator(operatorName);
-  const owners = getOperatorOwners(operatorName);
+  const owners = await getOperatorOwners(operatorName);
 
   // Every figure below is read directly off `summary`/`facilities`; nothing
   // here is fetched, invented, or estimated. Each branch just phrases a zero
