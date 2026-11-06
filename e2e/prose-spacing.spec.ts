@@ -87,6 +87,12 @@ const ROUTES = [
   // The route's entry is coverage against future edits, not evidence about
   // its current content.
   "/support",
+  // Added 2026-11-06: /sources/odod-dcte-2026-11 interpolates numbers and
+  // dates into prose, and some chunks after an interpolation contain entities
+  // (e.g. `{DCTE_ROWS.length}{" "}projects ... &ldquo;Twenty five ...`, the
+  // shape that drops a leading space; fixed there with an explicit `{" "}`).
+  // Listed so a later edit that reintroduces the shape is caught.
+  "/sources/odod-dcte-2026-11",
   // Added 2026-09-11: /contributors is a new route this session. No
   // entity-after-interpolation shape exists in app/contributors/page.tsx
   // today (verified by reading it), but this list's whole point is to catch

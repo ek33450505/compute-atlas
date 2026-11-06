@@ -46,6 +46,7 @@ describe("sitemap", () => {
     expect(urls).toContain(`${siteConfig.url}/activity`);
     expect(urls).toContain(`${siteConfig.url}/contribute`);
     expect(urls).toContain(`${siteConfig.url}/support`);
+    expect(urls).toContain(`${siteConfig.url}/sources/odod-dcte-2026-11`);
     // /contact is an indexable landing page that was missing from the sitemap
     // entirely — GSC reported "URL is unknown to Google" (2026-09-03).
     expect(urls).toContain(`${siteConfig.url}/contact`);
@@ -453,6 +454,12 @@ describe("sitemap", () => {
     expect(actual.getTime()).toBe(expectedMax);
     // Proves the value is real facility data, not build-time "now".
     expect(actual.getTime()).toBeLessThan(testStart);
+  });
+
+  it("/sources/odod-dcte-2026-11 carries its own pinned lastModified, not the stale static-page date", async () => {
+    const routes = await buildStaticRoutes();
+    const entry = routes.find((r) => r.url === `${siteConfig.url}/sources/odod-dcte-2026-11`);
+    expect((entry!.lastModified as Date).getTime()).toBe(Date.UTC(2026, 10, 6));
   });
 
   it("genuinely static editorial routes (/about, /contribute, /support, /contact) use a stable date, not 'now'", async () => {
