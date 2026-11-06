@@ -42,13 +42,16 @@
  *                                             build-hero-plate.mjs run)
  *   public/data/pipeline-history.json       (per-quarter status composition — see
  *                                             build-pipeline-history.mjs; local, no network)
- *   data/siting-context.json                (per-facility nearest-water/-transmission +
- *                                             waterStress/groundwaterDecline/aquifer stats)
+ *   data/siting-context.next.json           (per-facility nearest-water/-transmission +
+ *                                             waterStress/groundwaterDecline/aquifer stats;
+ *                                             gitignored. Never writes data/siting-context.json:
+ *                                             vet with check-siting-additive.mjs, publish with
+ *                                             siting:apply, the Neon export refreshes the snapshot)
  *
  * Usage: node scripts/build-map-data.mjs [--skip-nhd | --backfill-nhd]
  *   --skip-nhd      Skip the slow (~5min) live USGS NHD nearest-water pass and
  *                   the water/power/drought overlay rebuild. Reuses the
- *                   EXISTING data/siting-context.json's nearestWater/
+ *                   EXISTING snapshot data/siting-context.json's nearestWater/
  *                   nearestTransmission fields and existing
  *                   public/data/map-layers.json water/power/drought entries
  *                   byte-for-byte, recomputing + merging in only the
@@ -65,7 +68,7 @@
  *                   only to make them).
  */
 
-import { writeFileSync, mkdirSync, readFileSync, realpathSync } from 'fs';
+import { writeFileSync, mkdirSync, readFileSync, realpathSync, unlinkSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
@@ -163,7 +166,7 @@ const NHD_MAX_PROJECTED_HOURS = 5; // GitHub's default job cap is 6h and this
 // same documented recovery path, so the guidance text lives in one place.
 const NHD_SKIP_FALLBACK_GUIDANCE = [
   'Documented fallback: re-run with --skip-nhd. That path makes no NHD calls,',
-  'merges into the existing siting-context.json, and still fills',
+  'merges into the existing siting-context.json snapshot, and still fills',
   'waterStress/aquifer/groundwaterDecline for new records.',
   '',
   'PRICE OF --skip-nhd: it leaves nearestWater/nearestTransmission UNSET on',
@@ -245,7 +248,36 @@ const WATER_STRESS_OUT = resolve(OUT_DIR, 'water-stress.geojson');
 const GROUNDWATER_DECLINE_OUT = resolve(OUT_DIR, 'groundwater-decline.geojson');
 const AQUIFERS_OUT = resolve(OUT_DIR, 'aquifers.geojson');
 const MANIFEST_OUT = resolve(OUT_DIR, 'map-layers.json');
-const SITING_CONTEXT_OUT = resolve(repoRoot, 'data', 'siting-context.json');
+// Read side: the snapshot the Neon export refreshes. Write side: the .next file
+// (gitignored) that check-siting-additive.mjs vets and siting:apply publishes.
+// This script NEVER writes data/siting-context.json.
+const SITING_CONTEXT_SNAPSHOT = resolve(repoRoot, 'data', 'siting-context.json');
+const SITING_CONTEXT_OUT = resolve(repoRoot, 'data', 'siting-context.next.json');
+
+/** Parse the snapshot siting context. Throws with the fs `code` intact (callers branch on ENOENT). */
+export function readSitingSnapshot(snapshotPath = SITING_CONTEXT_SNAPSHOT) {
+  return JSON.parse(readFileSync(snapshotPath, 'utf8'));
+}
+
+/** The only siting-context write. Never takes the snapshot path by default. */
+export function writeSitingContextOut(sitingContext, outPath = SITING_CONTEXT_OUT) {
+  mkdirSync(dirname(outPath), { recursive: true });
+  writeFileSync(outPath, JSON.stringify(sitingContext, null, 2), 'utf8');
+}
+
+/**
+ * Delete a leftover .next file BEFORE any network work, so a run that fails
+ * part-way can never leave an old file for siting:apply to publish.
+ */
+export function clearStaleSitingOutput(outPath = SITING_CONTEXT_OUT) {
+  try {
+    unlinkSync(outPath);
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
+}
+
+export const SITING_CONTEXT_PATHS = { snapshot: SITING_CONTEXT_SNAPSHOT, out: SITING_CONTEXT_OUT };
 const FACILITIES_PATH = resolve(repoRoot, 'data', 'facilities.json');
 
 // ---------------------------------------------------------------------------
@@ -1692,6 +1724,8 @@ async function main() {
     return;
   }
 
+  clearStaleSitingOutput();
+
   // --skip-nhd makes NO NHD calls at all, so it must NOT pre-flight: that path
   // is the documented fallback DURING an outage and has to keep working when
   // the probe would fail. Breaking this would have blocked the 2026-09-23 wave.
@@ -1743,18 +1777,18 @@ async function main() {
   if (skipNHD) {
     let existing;
     try {
-      existing = JSON.parse(readFileSync(SITING_CONTEXT_OUT, 'utf8'));
+      existing = readSitingSnapshot();
     } catch (err) {
       if (err.code === 'ENOENT') {
         throw new Error(
-          `--skip-nhd requires an existing ${SITING_CONTEXT_OUT} to merge into, but none was found. ` +
+          `--skip-nhd requires an existing ${SITING_CONTEXT_SNAPSHOT} to merge into, but none was found. ` +
           '--skip-nhd only refreshes environmental fields (waterStress/aquifer/groundwaterDecline) on ' +
           'top of a prior NHD pass — it cannot be used for a first-ever build. Run without --skip-nhd ' +
-          `once (a full NHD build) to create the initial file, or restore a committed copy of ${SITING_CONTEXT_OUT}.`
+          `once (a full NHD build) to create the initial file, or restore a committed copy of ${SITING_CONTEXT_SNAPSHOT}.`
         );
       }
       throw new Error(
-        `--skip-nhd could not read/parse the existing ${SITING_CONTEXT_OUT}${err.code ? ` (${err.code})` : ''}: ${err.message}. ` +
+        `--skip-nhd could not read/parse the existing ${SITING_CONTEXT_SNAPSHOT}${err.code ? ` (${err.code})` : ''}: ${err.message}. ` +
         '--skip-nhd merges into that file and cannot proceed without a valid one. The file exists, but this ' +
         'could be a parse error (corrupted/truncated JSON) or something else entirely, such as a permissions ' +
         'error — see the error above for the real cause. Restore a known-good committed copy, or fix access ' +
@@ -1787,7 +1821,7 @@ async function main() {
 
     let existingSitingContext = {};
     try {
-      existingSitingContext = JSON.parse(readFileSync(SITING_CONTEXT_OUT, 'utf8'));
+      existingSitingContext = readSitingSnapshot();
     } catch (err) {
       if (err.code !== 'ENOENT') {
         // NOT fake-success-ok: a file that exists but fails to read or parse is
@@ -1798,7 +1832,7 @@ async function main() {
         // in this file that legitimately use this same comment tag.
         console.error(
           // lint-no-raw-error-logs: allow -- public-API fetch and local file reads; imports no DB code, so the error cannot carry bound params
-          `  [warn] could not read/parse ${SITING_CONTEXT_OUT}, proceeding with no carry-forward data: ${err.message}`
+          `  [warn] could not read/parse ${SITING_CONTEXT_SNAPSHOT}, proceeding with no carry-forward data: ${err.message}`
         );
       }
       /* fake-success-ok: ENOENT only — first-ever build has no prior siting-context.json to carry forward from. */
@@ -1841,8 +1875,7 @@ async function main() {
     };
   }
 
-  mkdirSync(dirname(SITING_CONTEXT_OUT), { recursive: true });
-  writeFileSync(SITING_CONTEXT_OUT, JSON.stringify(sitingContext, null, 2), 'utf8');
+  writeSitingContextOut(sitingContext);
 
   const liveIds = new Set(facilities.map((f) => f.id));
   const waterStressDist = computeDistribution(sitingContext, 'waterStress', liveIds);
@@ -1895,7 +1928,7 @@ async function main() {
   console.log(`groundwater-decline.geojson: ${(aqueductResult.groundwaterSize / 1024).toFixed(0)} KB (tolerance ${aqueductResult.groundwaterTolerance})`);
   console.log(`aquifers.geojson:            ${(aquifersResult.aquifersSize / 1024).toFixed(0)} KB (tolerance ${aquifersResult.aquifersTolerance})`);
   console.log(`map-layers.json: ${MANIFEST_OUT}`);
-  console.log(`siting-context.json: ${SITING_CONTEXT_OUT} (${Object.keys(sitingContext).length} entries)`);
+  console.log(`siting-context.next.json: ${SITING_CONTEXT_OUT} (${Object.keys(sitingContext).length} entries)`);
   console.log(`hero-points.json: ${heroPointsResult.outPath} (${heroPointsResult.count} points, ${(heroPointsResult.bytes / 1024).toFixed(0)} KB)`);
   console.log(`hero-plate-paths.ts: ${heroPlateResult.outPath} (${heroPlateResult.plotted} marks, ${heroPlateResult.deduped} co-located collapsed, ${heroPlateResult.omitted} omitted${heroPlateResult.omittedJurisdictions.length ? ` in ${heroPlateResult.omittedJurisdictions.join('/')}` : ''}, ${(heroPlateResult.bytes / 1024).toFixed(1)} KB)`);
   console.log(`pipeline-history.json: ${pipelineHistoryResult.outPath} (${pipelineHistoryResult.quarters} quarters, ${pipelineHistoryResult.known} known at the last quarter, ${pipelineHistoryResult.excluded} excluded for having no statusHistory, ${(pipelineHistoryResult.bytes / 1024).toFixed(1)} KB)`);

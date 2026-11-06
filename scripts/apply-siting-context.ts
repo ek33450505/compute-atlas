@@ -83,6 +83,10 @@ export async function run(
 
   const store = deps.store();
   const current = await store.readAll();
+  if (current.size === 0) {
+    // Against an empty table every next entry looks added and the additive gate checks nothing.
+    throw new RefusalError("siting_context is empty: run `npm run backfill:siting -- --apply` first");
+  }
   // diffSitingContext compares with JSON.stringify, and Postgres jsonb does not
   // keep key order, so stored rows would read as "changed" against a file with
   // the same data. Canonicalize (sorted keys) both sides first; the check script's

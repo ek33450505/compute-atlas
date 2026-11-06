@@ -144,6 +144,12 @@ describe("apply-siting-context", () => {
     await expect(run(["--apply"], s.deps)).rejects.toThrow(/read-back differs from source for 1 row\(s\) \(first: c\)/);
   });
 
+  it("refuses an empty siting_context table before any write", async () => {
+    const s = setup(CURRENT, fakeStore({}));
+    await expect(run(["--apply"], s.deps)).rejects.toThrow(/siting_context is empty: run `npm run backfill:siting -- --apply` first/);
+    expect(s.store.upsertCalls).toHaveLength(0);
+  });
+
   it("fails closed on an empty facilities.json", async () => {
     await expect(run([], setup(CURRENT, fakeStore(CURRENT), []).deps)).rejects.toThrow(/unreadable or empty/);
   });

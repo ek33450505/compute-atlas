@@ -146,7 +146,7 @@ describe("data-integrity: NHD backfill debt", () => {
   //
   // Lowered 52 -> 0 on 2026-10-04: a FULL build:mapdata ran with NHD healthy
   // (off-peak, 10/10 quorum probes ok at 300-407ms, ~1.1 facilities/sec over
-  // all 2,328). check-siting-additive: 0 lost, 0 nulled, 4 changed — the two
+  // all 2,328). The additive guard (then git-based) reported 0 lost, 0 nulled, 4 changed — the two
   // moved GA pins (Bunkhouse, Springbank) re-queried at their corrected
   // coordinates. All 52 owed CONUS ids now carry nearestWater.
   const NHD_BACKFILL_DEBT_CEILING = parseLedger(nhdDebtLedgerRaw).ceiling;
