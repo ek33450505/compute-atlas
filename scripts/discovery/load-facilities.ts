@@ -13,8 +13,8 @@
  * scripts/discovery/*.ts file from here — that would reintroduce exactly the
  * coupling this module exists to avoid.
  *
- * The read goes straight to Neon (the same `getDb()` path as scripts/export.ts)
- * rather than `GET /api/facilities`. Since 2026-11-05 a Cloudflare rule blocks
+ * The read goes straight to Neon (via DISCOVERY_READ_DATABASE_URL, a read-only
+ * role, falling back to DATABASE_URL) rather than `GET /api/facilities`. Since 2026-11-05 a Cloudflare rule blocks
  * that endpoint at the edge (403 before the origin, token or not), so every
  * scheduled run fell back to the frozen data/facilities.json and missed newly
  * approved records, producing duplicate candidates. Reading the DB also stops
@@ -32,7 +32,7 @@
  * thrown errors and on an empty result. On 2026-10-14 a single transient
  * failure made submit-candidates.ts discard a 23-minute run's 39 candidates,
  * and a hung connection would otherwise have hung the nightly run forever. On
- * final failure, or with no DATABASE_URL, it falls back to the JSON snapshot
+ * final failure, or with no database URL, it falls back to the JSON snapshot
  * with a stderr WARNING (never stdout: some callers print data there) because
  * that snapshot lacks the newest records. DB errors are logged as a code only
  * (`redactedErrorCode`): Drizzle messages embed bound parameters.
@@ -62,8 +62,11 @@ import {
 import os from "node:os";
 import path from "node:path";
 
-import { getDb, hasDatabaseUrl } from "../../lib/db/client";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+
 import { redactedErrorCode } from "../../lib/db-error";
+import * as schema from "../../lib/db/schema";
 import { facilitiesTable } from "../../lib/db/schema";
 import { rowToFacility } from "../../lib/db/serialize";
 import { facilitiesSchema, type Facility } from "../../lib/schema";
@@ -85,7 +88,7 @@ export const RETRY_DELAYS_MS = [2_000, 8_000] as const;
 export const ATTEMPT_TIMEOUT_MS = 60_000;
 export const DEFAULT_CACHE_TTL_MS = 30 * 60_000;
 
-/** Cache file name for a DATABASE_URL: host + database name only, never credentials. */
+/** Cache file name for a database URL (reader and owner share one: same host + db): host + database name only, never credentials. */
 export function cacheFileNameFor(databaseUrl: string | undefined): string {
   let basis = "unknown";
   try {
@@ -115,8 +118,54 @@ export type LoadFacilitiesDeps = {
 const realSleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-async function readDbFacilities(): Promise<Facility[]> {
-  const rows = await getDb().select({ doc: facilitiesTable.doc }).from(facilitiesTable);
+export type ReadRole = "reader" | "owner";
+
+let ownerFallbackNoticed = false;
+
+/**
+ * The URL for the facility read: the read-only discovery_reader role when
+ * DISCOVERY_READ_DATABASE_URL is set, else the owner DATABASE_URL (one stderr
+ * notice per process). Null when neither is set. Never logs the URL.
+ */
+export function resolveReadUrl(): { url: string; role: ReadRole } | null {
+  const reader = process.env.DISCOVERY_READ_DATABASE_URL;
+  if (reader) return { url: reader, role: "reader" };
+  const owner = process.env.DATABASE_URL;
+  if (!owner) return null;
+  if (!ownerFallbackNoticed) {
+    ownerFallbackNoticed = true;
+    console.error(
+      "NOTICE: DISCOVERY_READ_DATABASE_URL is not set; reading with DATABASE_URL (owner). " +
+        "Set the read-only URL (see docs/discovery-runbook.md)."
+    );
+  }
+  return { url: owner, role: "owner" };
+}
+
+// Built here, not in lib/db/client.ts, which the app and the write scripts share.
+const clients = new Map<string, ReturnType<typeof drizzle<typeof schema>>>();
+
+function dbFor(url: string) {
+  let db = clients.get(url);
+  if (!db) {
+    db = drizzle(neon(url), { schema });
+    clients.set(url, db);
+  }
+  return db;
+}
+
+/**
+ * The memoized facilities-read client, for callers that need a query of their
+ * own (leads-lane's duplicate check). Null when neither URL is set. Same
+ * reader-first resolution, and NOTICE, as loadFacilities().
+ */
+export function getFacilitiesReadDb(): { db: ReturnType<typeof dbFor>; role: ReadRole } | null {
+  const resolved = resolveReadUrl();
+  return resolved ? { db: dbFor(resolved.url), role: resolved.role } : null;
+}
+
+async function readDbFacilities(url: string): Promise<Facility[]> {
+  const rows = await dbFor(url).select({ doc: facilitiesTable.doc }).from(facilitiesTable);
   return rows.map(rowToFacility);
 }
 
@@ -214,18 +263,20 @@ function loadFile(dbError: string): LoadFacilitiesResult {
 export async function loadFacilities(deps: LoadFacilitiesDeps = {}): Promise<LoadFacilitiesResult> {
   const sleep = deps.sleep ?? realSleep;
   const now = deps.now ?? Date.now;
-  const readDb = deps.readDb ?? readDbFacilities;
 
-  if (!hasDatabaseUrl()) return loadFile("DATABASE_URL is not set");
+  const resolved = resolveReadUrl();
+  if (!resolved) return loadFile("neither DISCOVERY_READ_DATABASE_URL nor DATABASE_URL is set");
+  const { url: readUrl, role } = resolved;
+  const readDb = deps.readDb ?? (() => readDbFacilities(readUrl));
 
   const ttl = cacheTtlMs();
   const cacheDir = deps.cacheDir ?? defaultCacheDir();
-  const cacheFile = path.join(cacheDir, cacheFileNameFor(process.env.DATABASE_URL));
+  const cacheFile = path.join(cacheDir, cacheFileNameFor(readUrl));
   const useCache = ttl > 0 && ensureCacheDir(cacheDir);
   if (useCache) {
     const hit = readCache(cacheFile, ttl, now());
     if (hit) {
-      console.error(`facilities: ${hit.length} from db (cached)`);
+      console.error(`facilities: ${hit.length} from db (${role}) (cached)`);
       return { facilities: hit, source: "db", cached: true };
     }
   }
@@ -235,7 +286,7 @@ export async function loadFacilities(deps: LoadFacilitiesDeps = {}): Promise<Loa
     try {
       const facilities = await attemptOnce(readDb, deps.attemptTimeoutMs ?? ATTEMPT_TIMEOUT_MS);
       if (useCache) writeCache(cacheFile, now(), facilities);
-      console.error(`facilities: ${facilities.length} from db`);
+      console.error(`facilities: ${facilities.length} from db (${role})`);
       return { facilities, source: "db", cached: false };
     } catch (err) {
       const code = err instanceof Error && err.message === "timeout" ? "timeout"

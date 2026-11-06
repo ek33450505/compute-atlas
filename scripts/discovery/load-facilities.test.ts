@@ -23,7 +23,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 
 import type { Facility } from "../../lib/schema";
-import { cacheFileNameFor, loadFacilities } from "./load-facilities";
+import { cacheFileNameFor, loadFacilities, resolveReadUrl } from "./load-facilities";
 
 // Cache reads re-validate with facilitiesSchema, so the DB fixture is a real record.
 const DB_FACILITY = (readRealFacilitiesFile() as Facility[])[0];
@@ -46,6 +46,7 @@ let errSpy: MockInstance<typeof console.error>;
 beforeEach(() => {
   cacheDir = mkdtempSync(path.join(os.tmpdir(), "load-facilities-test-"));
   vi.stubEnv("DATABASE_URL", FAKE_URL);
+  vi.stubEnv("DISCOVERY_READ_DATABASE_URL", "");
   vi.stubEnv("DISCOVERY_FACILITIES_CACHE_TTL_MS", "");
   errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -60,6 +61,64 @@ const stderrText = () => errSpy.mock.calls.map((c) => c.join(" ")).join("\n");
 const FAKE_URL = "postgres://fake";
 const cacheFile = () => path.join(cacheDir, cacheFileNameFor(FAKE_URL));
 
+describe("read-role resolution", () => {
+  const OWNER = "postgres://owner:ownerpw-xyz@host-a/db1";
+  const READER = "postgres://discovery_reader:readerpw-xyz@host-a/db1";
+
+  it("prefers DISCOVERY_READ_DATABASE_URL and reports the reader role", async () => {
+    vi.stubEnv("DATABASE_URL", OWNER);
+    vi.stubEnv("DISCOVERY_READ_DATABASE_URL", READER);
+
+    expect(resolveReadUrl()).toEqual({ url: READER, role: "reader" });
+    await loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep });
+
+    expect(stderrText()).toContain("facilities: 1 from db (reader)");
+    expect(stderrText()).not.toContain("NOTICE");
+    expect(stderrText()).not.toContain("readerpw-xyz");
+    expect(stderrText()).not.toContain("ownerpw-xyz");
+  });
+
+  it("falls back to DATABASE_URL with exactly one NOTICE per process", async () => {
+    vi.resetModules();
+    const fresh = await import("./load-facilities");
+    vi.stubEnv("DATABASE_URL", OWNER);
+
+    await fresh.loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep });
+    await fresh.loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep });
+
+    const notices = errSpy.mock.calls.filter((c) => String(c[0]).startsWith("NOTICE:"));
+    expect(notices).toHaveLength(1);
+    expect(stderrText()).toContain("(owner)");
+    expect(stderrText()).not.toContain("ownerpw-xyz");
+  });
+
+  it("with neither set uses the file fallback, never calls readDb, and names both vars", async () => {
+    vi.stubEnv("DATABASE_URL", "");
+    vi.stubEnv("DISCOVERY_READ_DATABASE_URL", "");
+    const readDb = vi.fn(async () => [DB_FACILITY]);
+
+    const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep });
+
+    expect(result.source).toBe("file");
+    expect(readDb).not.toHaveBeenCalled();
+    expect(result.dbError).toContain("DISCOVERY_READ_DATABASE_URL");
+    expect(result.dbError).toContain("DATABASE_URL");
+  });
+
+  it("shares one cache between the reader and owner URLs (same host + db)", async () => {
+    vi.stubEnv("DATABASE_URL", OWNER);
+    vi.stubEnv("DISCOVERY_READ_DATABASE_URL", READER);
+    await loadFacilities({ readDb: async () => [DB_FACILITY], cacheDir, sleep: noSleep });
+    vi.stubEnv("DISCOVERY_READ_DATABASE_URL", "");
+    const readDb = vi.fn(async () => [DB_FACILITY]);
+
+    const result = await loadFacilities({ readDb, cacheDir, sleep: noSleep });
+
+    expect(result.cached).toBe(true);
+    expect(readDb).not.toHaveBeenCalled();
+  });
+});
+
 describe("loadFacilities", () => {
   it("returns the DB's facilities with source: db, no dbError", async () => {
     const readDb = vi.fn(async () => [DB_FACILITY]);
@@ -68,7 +127,7 @@ describe("loadFacilities", () => {
 
     expect(result).toEqual({ facilities: [DB_FACILITY], source: "db", cached: false });
     expect(result.dbError).toBeUndefined();
-    expect(stderrText()).toContain("facilities: 1 from db");
+    expect(stderrText()).toContain("facilities: 1 from db (owner)");
   });
 
   describe("bounded retry", () => {
@@ -132,7 +191,7 @@ describe("loadFacilities", () => {
     expect(result.dbError).toBe("3 attempts; last: timeout");
   });
 
-  it("with no DATABASE_URL falls back to the file with a warning and never calls readDb", async () => {
+  it("with neither URL set falls back to the file with a warning and never calls readDb", async () => {
     vi.stubEnv("DATABASE_URL", "");
     const readDb = vi.fn(async () => [DB_FACILITY]);
 
@@ -141,7 +200,8 @@ describe("loadFacilities", () => {
     expect(result.source).toBe("file");
     expect(readDb).not.toHaveBeenCalled();
     expect(result.facilities).toEqual(readRealFacilitiesFile());
-    expect(stderrText()).toContain("DATABASE_URL is not set");
+    expect(stderrText()).toContain("DISCOVERY_READ_DATABASE_URL");
+    expect(stderrText()).toContain("is set");
   });
 
   describe("snapshot cache", () => {

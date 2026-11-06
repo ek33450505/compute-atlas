@@ -192,11 +192,21 @@ DISCOVERY_ENABLED=true DISCOVERY_STATES="IA NE" STATES_PER_RUN=2 \
 ### Utilities
 
 Fetch existing-facilities projection for a state (CLI debug). The loader reads Neon directly
-via `DATABASE_URL`, falling back loudly to `data/facilities.json`:
+via `DISCOVERY_READ_DATABASE_URL` (or `DATABASE_URL`), falling back loudly to `data/facilities.json`:
 
 ```bash
 npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state=TX
 ```
+
+Discovery's facility read (the loader and the leads lane's duplicate check) uses
+`DISCOVERY_READ_DATABASE_URL`, the `discovery_reader` role: SELECT on `facilities` only, read-only by
+default, 60 s statement timeout. To rotate it, set the new password as the owner from a session that
+keeps no history: `psql` with `\password discovery_reader` prompts for it and sends it hashed, so
+nothing lands in shell history (avoid a literal `ALTER ROLE ... PASSWORD '...'` on the command
+line). Then update the URL in `.env.local`. The 30-minute snapshot cache is unaffected by a rotation:
+it is keyed on host + database only. If the variable is missing, discovery currently falls back to
+`DATABASE_URL` (owner) and prints a NOTICE on stderr; this is planned to tighten to refusing once a
+scheduled run logs `(reader)`.
 
 Check source liveness (read-only, generates report):
 
