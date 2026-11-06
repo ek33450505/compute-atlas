@@ -386,8 +386,8 @@ The project follows [Semantic Versioning](https://semver.org). Releases are publ
 [GitHub Releases](https://github.com/ek33450505/compute-atlas/releases) and automated with
 release-please; see [CHANGELOG.md](../CHANGELOG.md).
 
-Each release exports a versioned snapshot — `data/facilities.json` carries an `asOf`
-timestamp in `data/facilities.meta.json` so consumers can track data currency.
+`data/facilities.json` is the final open edition and is frozen. Its `asOf` timestamp in
+`data/facilities.meta.json` records when it was generated.
 
 ## Accepted dependency advisories
 

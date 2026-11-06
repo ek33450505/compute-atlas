@@ -15,7 +15,7 @@ We aim to acknowledge reports within a few days and to keep you updated as we in
 In scope:
 
 - The Compute Atlas web app ([www.compute-atlas.com](https://www.compute-atlas.com)) and this repository's code
-- The public API under `/api`
+- The public read and intake routes and the admin-bearer routes under `/api`
 - Data-integrity issues that could let unverified or malicious content enter the dataset
 
 Out of scope:

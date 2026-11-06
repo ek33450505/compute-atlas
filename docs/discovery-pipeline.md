@@ -253,8 +253,9 @@ request list, an RTO's generation queue) rather than the aggregator.
 
 ## Safety properties
 
-- **Staging-only:** the pipeline only ever calls `POST /api/submissions`. It
-  never calls `/api/facilities` and never edits `data/facilities.json`.
+- **Staging-only:** the pipeline's only write is `POST /api/submissions`. It
+  reads the existing facilities directly from Neon via `DATABASE_URL`, falling
+  back loudly to `data/facilities.json`, and never edits `data/facilities.json`.
   Promotion to a live facility (new or updated) happens only via `npm run submissions --
   approve <id>`, a deliberate human action.
 - **Fail-closed kill switch:** `run.sh` exits 0 immediately unless

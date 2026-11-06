@@ -1,9 +1,9 @@
 # Compute Atlas data
 
-`facilities.json` is the full Compute Atlas dataset in one file. It is regenerated from the
-live database once per data wave. `facilities.meta.json` records when it was generated
-(`asOf`) and how many records it holds. For current figures, use the
-[API](https://www.compute-atlas.com/api) or [/api/stats](https://www.compute-atlas.com/api/stats).
+`facilities.json` is the final open edition of the Compute Atlas dataset, in one file. It is
+frozen and no longer updated. `facilities.meta.json` records when it was generated (`asOf`) and
+how many records it holds. For current records, see the live site at
+[www.compute-atlas.com](https://www.compute-atlas.com).
 
 ## License and attribution
 
