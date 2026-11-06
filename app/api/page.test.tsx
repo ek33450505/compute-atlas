@@ -158,6 +158,7 @@ describe("ApiPage — How to cite", () => {
     expect(screen.getByText(/Publicly available only with shape=palette/)).toBeInTheDocument();
     expect(screen.getByText(/full-record shape is paused \(403\)/)).toBeInTheDocument();
     expect(screen.getAllByText("GET /api/facilities/{id}").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Per-record JSON is admin-only/)).toBeInTheDocument();
     const html = container.innerHTML;
     expect(html).not.toContain("raw.githubusercontent.com");
     expect(html).not.toMatch(/href="[^"]*facilities\.json/);

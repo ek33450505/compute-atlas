@@ -73,7 +73,7 @@ const EXPECTED_ROUTE_SCOPES: Record<string, CorsScope> = {
   "app/api/access/request/route.ts": "public-write",
   "app/api/contact/route.ts": "public-write",
   "app/api/contribute/route.ts": "public-write",
-  "app/api/facilities/[id]/route.ts": "admin", // mixed: public GET + bearer PATCH/DELETE
+  "app/api/facilities/[id]/route.ts": "admin", // GET + PATCH/DELETE all bearer-gated
   "app/api/facilities/route.ts": "admin", // mixed: public GET + bearer POST
   "app/api/leads/route.ts": "public-write",
   "app/api/nav-index/route.ts": "read",
@@ -271,7 +271,7 @@ describe("corsPreflight", () => {
   });
 
   it("scopes a mixed path to the union of what it accepts, not to `read`", () => {
-    // `/api/facilities` and `/api/facilities/[id]` each pair a public GET with a
+    // `/api/facilities` and `/api/facilities/[id]` each pair a GET with a
     // bearer-gated write, and one OPTIONS answers for the whole path. Narrowing
     // them would be the plausible-looking change that breaks a real caller, so
     // it is pinned separately from the map above — a reviewer reading only that

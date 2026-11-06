@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { GET, PATCH, DELETE } from "./route";
 import { __resetApiRateLimit, API_RATE_LIMIT_MAX } from "@/lib/api-rate-limit";
 
@@ -20,40 +20,91 @@ beforeEach(() => {
   __resetApiRateLimit();
 });
 
-describe("GET /api/facilities/[id]", () => {
-  it("returns 200 with the matching facility for a known id", async () => {
-    const id = "talen-susquehanna-aws-pa";
-    const res = await GET(new Request(`http://localhost/api/facilities/${id}`), params(id));
-    expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
-    const facility = await res.json();
-    expect(facility.id).toBe(id);
+const ADMIN_TOKEN = "test-admin-token";
+const KNOWN_ID = "talen-susquehanna-aws-pa";
+
+function get(id: string, token?: string): Promise<Response> {
+  return GET(
+    new Request(`http://localhost/api/facilities/${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    }),
+    params(id)
+  );
+}
+
+describe("GET /api/facilities/[id] (admin-only)", () => {
+  const ORIGINAL = process.env.API_ADMIN_TOKEN;
+  beforeEach(() => {
+    process.env.API_ADMIN_TOKEN = ADMIN_TOKEN;
+  });
+  afterEach(() => {
+    if (ORIGINAL === undefined) delete process.env.API_ADMIN_TOKEN;
+    else process.env.API_ADMIN_TOKEN = ORIGINAL;
   });
 
-  it("returns 404 with an error for an unknown id", async () => {
+  it("returns 403 no-store with no record fields to an anonymous caller for a known id", async () => {
+    const res = await get(KNOWN_ID);
+    expect(res.status).toBe(403);
+    expect(res.headers.get("Cache-Control")).toContain("no-store");
+    const body = await res.json();
+    expect(body.id).toBeUndefined();
+    expect(body.name).toBeUndefined();
+  });
+
+  it("returns the identical 403 for a non-existent id (no existence oracle)", async () => {
+    const known = await get(KNOWN_ID);
+    const missing = await get("not-a-real-facility");
+    expect(missing.status).toBe(403);
+    expect(await missing.json()).toEqual(await known.json());
+  });
+
+  it("still requires the bearer when the request path is uppercase (/API/...)", async () => {
+    const anon = await GET(new Request(`http://localhost/API/facilities/${KNOWN_ID}`), params(KNOWN_ID));
+    expect(anon.status).toBe(403);
+    const ok = await GET(
+      new Request(`http://localhost/API/facilities/${KNOWN_ID}`, {
+        headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+      }),
+      params(KNOWN_ID)
+    );
+    expect(ok.status).toBe(200);
+  });
+
+  it("returns 403 for a wrong token", async () => {
+    const res = await get(KNOWN_ID, "wrong-token");
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 403 when no admin token is configured", async () => {
+    delete process.env.API_ADMIN_TOKEN;
+    const res = await get(KNOWN_ID, ADMIN_TOKEN);
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 200 no-store with the facility for the admin token", async () => {
+    const res = await get(KNOWN_ID, ADMIN_TOKEN);
+    expect(res.status).toBe(200);
+    const cacheControl = res.headers.get("Cache-Control") ?? "";
+    expect(cacheControl).toContain("no-store");
+    expect(cacheControl).not.toContain("public");
+    expect((await res.json()).id).toBe(KNOWN_ID);
+  });
+
+  it("returns 404 for an unknown id when authorized", async () => {
     const id = "not-a-real-facility";
-    const res = await GET(new Request(`http://localhost/api/facilities/${id}`), params(id));
+    const res = await get(id, ADMIN_TOKEN);
     expect(res.status).toBe(404);
     const body = await res.json();
     expect(body.error).toBeTruthy();
     expect(body.id).toBe(id);
   });
 
-  it("carries a public Cache-Control header on a hit", async () => {
-    const id = "talen-susquehanna-aws-pa";
-    const res = await GET(new Request(`http://localhost/api/facilities/${id}`), params(id));
-    const cacheControl = res.headers.get("Cache-Control");
-    expect(cacheControl).toContain("public");
-    expect(cacheControl).toContain("s-maxage=");
-  });
-
-  it("returns 429 once the per-instance rate limit is exceeded", async () => {
-    const id = "talen-susquehanna-aws-pa";
+  it("applies the rate gate before auth (429 even for an anonymous caller)", async () => {
     for (let i = 0; i < API_RATE_LIMIT_MAX; i++) {
-      const ok = await GET(new Request(`http://localhost/api/facilities/${id}`), params(id));
-      expect(ok.status).toBe(200);
+      const denied = await get(KNOWN_ID);
+      expect(denied.status).toBe(403);
     }
-    const blocked = await GET(new Request(`http://localhost/api/facilities/${id}`), params(id));
+    const blocked = await get(KNOWN_ID);
     expect(blocked.status).toBe(429);
     expect(blocked.headers.get("Retry-After")).toBeTruthy();
   });

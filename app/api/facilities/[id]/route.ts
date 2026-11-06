@@ -1,12 +1,16 @@
 import { getFacilityById } from "@/lib/data";
-import { jsonResponse, cacheableJson, corsPreflight, READ_CACHE } from "@/lib/api-response";
-import { requireAdmin } from "@/lib/api-auth";
+import { bulkAccessPaused, jsonResponse, corsPreflight } from "@/lib/api-response";
+import { bearerMatches, requireAdmin } from "@/lib/api-auth";
 import { updateFacility, deleteFacility } from "@/lib/facility-write";
 import { extractTrustedClientIp } from "@/lib/rate-limit";
 import { checkApiRateLimit, tooManyRequests } from "@/lib/api-rate-limit";
 import { checkDailyApiGate } from "@/lib/api-daily-limit";
 
-/** Public single-facility lookup by id. */
+/**
+ * Admin-only single-facility lookup by id. Facility pages stay public and
+ * citable; the per-record JSON would be a scraping shortcut (sitemap + JSON =
+ * the dataset), and nothing in the site or pipeline calls it.
+ */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -16,6 +20,12 @@ export async function GET(
 
   const dailyGate = await checkDailyApiGate(request);
   if (!dailyGate.ok) return tooManyRequests(dailyGate.retryAfter ?? 60);
+
+  // Auth BEFORE the lookup: an anonymous caller gets the same 403 for every id,
+  // so existence cannot be probed (no 404-vs-403 oracle).
+  if (!bearerMatches(request, process.env.API_ADMIN_TOKEN)) {
+    return bulkAccessPaused();
+  }
 
   const { id } = await params;
   const facility = await getFacilityById(id);
@@ -27,7 +37,9 @@ export async function GET(
     // this 404 is the one to reconsider — a short window via `cacheableJson`.
     return jsonResponse({ error: "Facility not found", id }, { status: 404 });
   }
-  return cacheableJson(facility, READ_CACHE.facility);
+  // jsonResponse (no-store), never cacheableJson: Cloudflare caches non-/admin
+  // GETs without keying on Authorization.
+  return jsonResponse(facility);
 }
 
 /** Admin-only: patches a facility. Top-level shallow merge — see `updateFacility`. */
@@ -70,12 +82,9 @@ export async function DELETE(
 }
 
 // `admin`, NOT `read` — same mixed-path exception as `/api/facilities`: an
-// anonymous public GET above plus bearer-gated PATCH and DELETE. One OPTIONS
-// covers all three, so it must advertise the union or a legitimate cross-origin
-// bearer write fails at the preflight. As there, the GET's own 200 carries no
-// method/header list — `cacheableJson` spreads `CORS_RESPONSE_HEADERS`, which
-// is `Access-Control-Allow-Origin: *` alone — because both lists are
-// preflight-only, so this scope reaches an OPTIONS and nothing else.
+// GET, PATCH and DELETE are all bearer-gated now. One OPTIONS covers all three,
+// so it must advertise the union (including Authorization) or a legitimate
+// cross-origin bearer request fails at the preflight.
 export function OPTIONS(): Response {
   return corsPreflight("admin");
 }

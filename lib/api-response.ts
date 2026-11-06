@@ -153,7 +153,7 @@ export function bulkAccessPaused(): NextResponse {
   return jsonResponse(
     {
       error:
-        "Bulk access to the Compute Atlas dataset is paused while access changes. Individual facility records remain available at https://www.compute-atlas.com/facilities/<id>.",
+        "Bulk access to the Compute Atlas dataset is paused while access changes. Individual facility pages remain available at https://www.compute-atlas.com/facilities/<id>.",
       contact: `${siteConfig.url}/contact`,
     },
     { status: 403 }
@@ -210,7 +210,6 @@ export const READ_CACHE = {
   schema: { sMaxage: 86400, swr: 604800 },
   search: { sMaxage: 600, swr: 3600 },
   navIndex: { sMaxage: 86400, swr: 604800 },
-  facility: { sMaxage: 3600, swr: 86400 },
 } satisfies Record<string, ReadCacheWindow>;
 
 /**

@@ -14,7 +14,8 @@ describe("AccessConfirmedContent", () => {
     render(<AccessConfirmedContent />);
 
     expect(screen.getByText("abc123DEF")).toBeInTheDocument();
-    expect(screen.getByText(/Bearer abc123DEF/)).toBeInTheDocument();
+    expect(screen.getByText(/curl "https:\/\/www\.compute-atlas\.com\/api\/stats"/)).toBeInTheDocument();
+    expect(screen.getByText(/Bulk access is currently paused/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /copy access token/i })).toBeInTheDocument();
   });
 
