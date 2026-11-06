@@ -11,8 +11,7 @@
 Site: https://www.compute-atlas.com
 
 This file states what the dataset is, how it is licensed, and how to attribute
-it. It contains no counts or other figures that move — see /api/stats for
-current totals.
+it. It contains no counts or other figures that move.
 
 ## License
 
@@ -52,11 +51,6 @@ To cite a single record, name the facility and link its own page
 
 - https://www.compute-atlas.com/about — why this project exists, its method,
   and its stance on what the buildout costs locally.
-- https://www.compute-atlas.com/api — API documentation. The doc page itself
-  is crawlable; the JSON endpoints beneath /api/ are Disallow-ed in
-  robots.txt (they are for programs, not crawlers).
-- https://www.compute-atlas.com/api/stats — current dataset totals. Read these
-  live rather than quoting a number from this file.
 - https://www.compute-atlas.com/methodology — how records are compiled,
   sourced, and classified, including the limits of each field.
 - https://www.compute-atlas.com/data — how to cite, license, and scope caveats

@@ -25,7 +25,7 @@ const TRAILING_LINK_CLASS =
 
 /**
  * Closing band for the home page — the credibility/trust close. Provenance
- * facts (sources cited / moderation / license / API+RSS access), a
+ * facts (sources cited / moderation / license / RSS access), a
  * contribute CTA, and the recent-activity stream (only when non-empty, e.g.
  * omitted entirely on the local JSON fallback with no DB). Server
  * component: no client state needed.

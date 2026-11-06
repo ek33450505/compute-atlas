@@ -64,9 +64,9 @@ describe("public/llms.txt", () => {
     // Every number it may legitimately contain is part of a fixed token: the
     // licence version (CC BY 4.0), the DOI (10.5281/zenodo.22284476). Anything
     // else that reads like a tally — "1,929 facilities", "934 records" — is a
-    // figure that will drift. Point at /api/stats instead.
+    // figure that will drift. The file points at no data endpoint.
     expect(LLMS_TXT).not.toMatch(/\d[\d,]*\s+(facilities|records|sites|sources|operators|states)\b/i);
-    expect(LLMS_TXT).toMatch(/\/api\/stats/);
+    expect(LLMS_TXT).not.toMatch(/\/api\b/);
     expect(LLMS_TXT).not.toMatch(/remain open to\s+direct requests/);
   });
 });

@@ -168,9 +168,8 @@ export function notAvailable(): NextResponse {
  * does not compile. Every possible default is wrong in one direction and silent
  * in both. `admin` over-advertises a read endpoint, which *is* the 2026-09-27
  * finding; `read` blocks a legitimate cross-origin write at the preflight
- * (`POST /api/contribute` and `POST /api/leads` are published as
- * browser-callable in `app/api/page.tsx`, and a JSON POST is not CORS-simple,
- * so it is preflighted). Neither failure surfaces at runtime. A required
+ * (`POST /api/contribute` and `POST /api/leads` are called from
+ * the browser, and a JSON POST is not CORS-simple, so it is preflighted). Neither failure surfaces at runtime. A required
  * argument turns "nobody decided this path's posture" into a type error.
  *
  * A transitional `admin` default did exist while five call sites were off-limits

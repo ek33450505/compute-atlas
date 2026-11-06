@@ -7,7 +7,7 @@ import { ENERGY_SOURCE_ENTRIES } from "@/lib/energy";
  * Compute Atlas's Zenodo concept DOI, resolvable and always pointing at the
  * latest archived release. This is the single source for the DOI: the
  * `Dataset` JSON-LD `identifier` below and the visible citation text on
- * `app/api/page.tsx` and `app/data/page.tsx` all read it from here, so a
+ * `app/data/page.tsx` all read it from here, so a
  * future Zenodo release (which mints a NEW DOI) is a one-line change and
  * cannot leave the structured data disagreeing with the rendered page.
  */

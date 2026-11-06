@@ -190,7 +190,7 @@ export default function SupportPage() {
           almost all of that is data moving between the database and the site
           rather than data stored, because the dataset itself is only tens of
           megabytes. Hosting (Vercel) serves every facility page, the
-          full-screen map, and an open JSON API, with no paywall and no paid
+          full-screen map, with no paywall and no paid
           tier. The third is the discovery pipeline, which runs on a paid
           Claude subscription: it reads public sources overnight and proposes
           candidates. It has never published a record. Every candidate is

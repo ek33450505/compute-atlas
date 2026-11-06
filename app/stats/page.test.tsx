@@ -316,7 +316,7 @@ describe("StatsPage — dataset edition", () => {
 
     expect(screen.getByRole("link", { name: "how to cite" })).toHaveAttribute(
       "href",
-      "/api#citation-heading"
+      "/data#cite-heading"
     );
   });
 

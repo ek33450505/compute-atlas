@@ -40,13 +40,13 @@ function maxLastUpdated(facilities: Facility[]): Date {
 }
 
 /**
- * Stable `lastModified` for genuinely static editorial pages (/about, /api,
+ * Stable `lastModified` for genuinely static editorial pages (/about,
  * /contribute, /support, /contact, /methodology) that have no
  * underlying dataset to derive freshness from — using `new Date()` here
  * would churn exactly like the dataset-backed routes did (see
  * buildStaticRoutes below). Bump by hand only when a page's content
  * meaningfully changes, never on every sitemap regeneration. Last bumped
- * 2026-09-03 to cover the /api Zenodo DOI update (2026-09-03) and the
+ * 2026-09-03 to cover the /data Zenodo DOI update (2026-09-03) and the
  * /about + /methodology edits (2026-09-01).
  */
 const STATIC_PAGE_LAST_MODIFIED = new Date("2026-09-03T00:00:00Z");
@@ -153,12 +153,6 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
       lastModified: STATIC_PAGE_LAST_MODIFIED,
       changeFrequency: "monthly",
       priority: 0.6,
-    },
-    {
-      url: `${siteConfig.url}/api`,
-      lastModified: STATIC_PAGE_LAST_MODIFIED,
-      changeFrequency: "monthly",
-      priority: 0.5,
     },
     {
       url: `${siteConfig.url}/explore`,

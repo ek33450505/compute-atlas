@@ -118,8 +118,8 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       // Trailing slash matters: "/api/" blocks the JSON endpoints under
       // /api/... (facilities, stats, search, contribute, submissions) but
-      // NOT the public doc page at the bare "/api" path (app/api/page.tsx),
-      // which stays crawlable and is listed in the sitemap.
+      // not the bare "/api" path, which is a permanent redirect to /data
+      // (app/api/page.tsx) and is not in the sitemap.
       disallow: ["/admin/", "/api/"],
       // Content-Signal (contentsignals.org): search indexing yes, AI input
       // (grounding / retrieval / citation) yes, training no. This is the
