@@ -139,6 +139,52 @@
     "facilityType": "data_center"
   },
   {
+    "id": "365-data-centers-aurora-co1-co",
+    "name": "365 Data Centers Aurora (CO1)",
+    "operator": "365 Data Centers",
+    "status": "operational",
+    "confidence": "reported",
+    "location": {
+      "lat": 39.762184,
+      "lon": -104.760923,
+      "city": "Aurora",
+      "street": "3431 N Windsor Dr",
+      "postalCode": "80011",
+      "state": "CO",
+      "precision": "exact"
+    },
+    "capacityMw": {
+      "operational": 8
+    },
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2026-10-19",
+        "note": "Operator page markets the facility for tours; PeeringDB lists it active.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://365datacenters.com/aurora-data-center/",
+        "label": "Aurora, CO Data Center",
+        "publisher": "365 Data Centers",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.peeringdb.com/fac/16128",
+        "label": "PeeringDB: 365 Data Centers Aurora (CO1)",
+        "publisher": "PeeringDB",
+        "retrievedAt": "2026-10-19",
+        "kind": "other"
+      }
+    ],
+    "lastUpdated": "2026-10-19",
+    "notes": "150,000 sq ft facility with an 8 MW data center per the operator. Previously listed in PeeringDB as Sungard AS Aurora at the same address.",
+    "facilityType": "data_center"
+  },
+  {
     "id": "5c-group-vultr-prime-ohio-springfield-oh",
     "name": "5C Group / Vultr Data Center (Prime Ohio)",
     "operator": "5C Group (Hypertec Cloud + 5C Data Centers); tenant Vultr (The Constant Company, LLC)",
@@ -1354,6 +1400,84 @@
       ],
       "notes": "Behind-the-meter generation intended to serve the co-located Marshall Technology & Energy Center data center campus; the developer has also said the plant would contribute to the grid."
     }
+  },
+  {
+    "id": "amazon-becker-mn",
+    "name": "Amazon Becker Data Center (Suspended)",
+    "operator": "Amazon Web Services",
+    "status": "cancelled",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 45.397,
+      "lon": -93.876,
+      "city": "Becker",
+      "county": "Sherburne",
+      "state": "MN",
+      "precision": "approximate"
+    },
+    "announcedDate": "2024",
+    "statusHistory": [
+      {
+        "status": "proposed",
+        "date": "2024",
+        "note": "Amazon purchased 348 acres near Xcel Energy's retiring Sherco coal plant in Becker for $73.5M; multibillion-dollar data center planned as economic replacement for coal plant jobs",
+        "sourceIndex": 0
+      },
+      {
+        "status": "cancelled",
+        "date": "2025",
+        "note": "Amazon suspended plans citing 'uncertain' permit and utility agreement timelines; Minnesota lawmakers simultaneously reduced sales tax exemptions on electricity for large data center facilities",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.startribune.com/amazon-suspends-minnesota-data-center-as-lawmakers-plan-to-reduce-big-tech-tax-breaks/601359665",
+        "label": "Amazon suspends Minnesota data center as lawmakers plan to reduce Big Tech tax breaks",
+        "publisher": "Star Tribune",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/amazon-web-services-suspends-plans-for-minnesota-data-center/",
+        "label": "Amazon Web Services suspends plans for Minnesota data center",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd",
+        "label": "HIFLD Electric Retail Service Territories (ORNL/DOE-CESER, 2023-08 vintage)",
+        "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
+        "retrievedAt": "2026-07-23",
+        "kind": "other"
+      },
+      {
+        "url": "https://knsiradio.com/2024/11/14/amazon-purchases-348-acres-in-becker-for-data-center-development-near-retiring-sherco-plant/",
+        "label": "KNSI Radio — Amazon purchases 348 acres in Becker",
+        "retrievedAt": "2026-07-25",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-30",
+    "notes": "Amazon has not officially sold the 348-acre parcel and has not ruled out revisiting the project; the cancelled status reflects indefinite suspension with no restart timeline. Near Xcel Energy's Sherburne County (Sherco) generating station, slated for retirement by 2030. Second major tech retreat from Becker after Google abandoned a $600M project in 2022. As of July 2026, the Star Tribune primary source could not be read; story confirmed by Data Center Dynamics and multiple other outlets.",
+    "energy": {
+      "utility": "Xcel Energy"
+    },
+    "investmentUsd": 1000000000,
+    "landAcres": 348,
+    "jobs": {
+      "construction": 1200,
+      "permanent": 100,
+      "sourceIndex": 3
+    },
+    "community": {
+      "status": "mixed",
+      "notes": "Project was economically critical for Becker as replacement for Sherco coal plant tax base (~$5M of $12M school district budget). State officials described suspension as a 'gut punch' for the community. Amazon retaining the land.",
+      "sourceIndex": 0
+    },
+    "facilityType": "data_center",
+    "aiClassification": "likely"
   },
   {
     "id": "amazon-perry-township-stark-oh",
@@ -3278,6 +3402,99 @@
     "aiClassification": "confirmed"
   },
   {
+    "id": "google-council-bluffs-ia",
+    "name": "Google Council Bluffs Data Center",
+    "operator": "Google",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 41.167368,
+      "lon": -95.792975,
+      "city": "Council Bluffs",
+      "county": "Pottawattamie",
+      "state": "IA",
+      "precision": "approximate"
+    },
+    "capacityMw": {
+      "operational": 407
+    },
+    "poweredBy": "MidAmerican Energy Wind VIII program (up to 407 MW wind, REC-tracked)",
+    "announcedDate": "2007",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2007",
+        "note": "Operational since 2007 per Google's own Iowa location page; multi-building campus, actively expanding.",
+        "sourceIndex": 0
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://datacenters.google/locations/iowa/",
+        "label": "Google Iowa — official location page: Council Bluffs operational since 2007, multi-building campus",
+        "publisher": "Google",
+        "retrievedAt": "2026-09-21",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.arcgis.com/home/item.html?id=597555ce8e4a4892a030784a7c657fdd",
+        "label": "HIFLD Electric Retail Service Territories (ORNL/DOE-CESER, 2023-08 vintage)",
+        "publisher": "Oak Ridge National Laboratory (ORNL) / HIFLD",
+        "retrievedAt": "2026-07-23",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.einpresswire.com/article/203308813/google-inc-partners-with-midamerican-energy-to-purchase-407-mw-wind",
+        "label": "Google Inc partners with MidAmerican Energy to purchase 407 MW wind",
+        "retrievedAt": "2026-09-21",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.environmentenergyleader.com/stories/googles-iowa-data-center-buys-407-mw-of-recs,28158",
+        "label": "Google's Iowa Data Center Buys 407 MW of RECs",
+        "retrievedAt": "2026-07-24",
+        "kind": "other"
+      },
+      {
+        "url": "https://www.datacenterknowledge.com/hyperscalers/iowa-officials-approve-tax-breaks-for-google-data-center-expansion",
+        "label": "Data Center Knowledge — Iowa officials approve tax breaks for Google data center expansion",
+        "retrievedAt": "2026-07-25",
+        "kind": "press"
+      },
+      {
+        "url": "https://thecurrentga.org/2025/08/26/data-centers-consume-massive-amounts-of-water-companies-rarely-tell-the-public-exactly-how-much/",
+        "label": "Data centers consume massive amounts of water - companies rarely tell the public exactly how much",
+        "publisher": "The Current",
+        "retrievedAt": "2026-08-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-09-21",
+    "notes": "Google's flagship Iowa data center in Council Bluffs, Pottawattamie County — operational since 2007, heavily expanded across multiple buildings (the Southlands campus on Bunge Ave among them). Distinct from Google's tracked Cedar Rapids campus and from the separate proposed Google/Tenaska Nebraska project. Per Google's own location page, Google has invested $20B+ across Iowa since 2007 (Council Bluffs + Cedar Rapids combined — not a site-specific figure). No site-specific IT-load MW is disclosed. Coordinates are an approximate geocode of a disclosed campus address; a county-parcel pass could upgrade precision to exact.",
+    "energy": {
+      "source": "wind",
+      "utility": "MidAmerican Energy",
+      "notes": "Google signed a contract with MidAmerican Energy for up to 407 MW of wind energy (tracked via RECs from MidAmerican's Wind VIII program) specifically to supply the Council Bluffs data center campus, one of Google's largest renewable commitments at the time."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "reportedMgd": 2.74,
+      "notes": "Google's per-site disclosure for 2024 shows the Council Bluffs data center consumed 1 billion gallons of water that year - the most of any Google data center - which averages about 2.74 MGD. Reported by The Current (26 Aug 2025) from Google's environmental-report site-level figures. This is reported CONSUMPTION, not withdrawal; withdrawal is higher. By contrast Google's air-cooled sites disclose far less: Pflugerville, TX at 10,000 gallons and Storey County, NV at 1.5 million gallons for the same year, which is consistent with Council Bluffs being water-cooled."
+    },
+    "subsidies": [
+      {
+        "program": "Iowa Economic Development Authority sales & use-tax refund (data center expansion project)",
+        "amountUsd": 19800000,
+        "jurisdiction": "State of Iowa",
+        "year": "2015",
+        "sourceIndex": 4
+      }
+    ],
+    "investmentUsd": 2500000000,
+    "facilityType": "data_center",
+    "aiClassification": "likely"
+  },
+  {
     "id": "google-haskell-county-tx",
     "name": "Google Haskell County Data Center Campus",
     "operator": "Google",
@@ -3449,6 +3666,110 @@
     "investmentUsd": 600000000,
     "landAcres": 580,
     "facilityType": "data_center"
+  },
+  {
+    "id": "google-pryor-ok",
+    "name": "Google Pryor Data Center Campus (Mayes County Expansion)",
+    "operator": "Google",
+    "status": "operational",
+    "confidence": "confirmed",
+    "location": {
+      "lat": 36.32,
+      "lon": -95.31,
+      "city": "Pryor",
+      "county": "Mayes",
+      "state": "OK",
+      "precision": "approximate"
+    },
+    "poweredBy": "Grid (Southwest Power Pool) with renewable PPAs",
+    "announcedDate": "2007-01",
+    "statusHistory": [
+      {
+        "status": "operational",
+        "date": "2011-01",
+        "note": "Campus opens in Mayes County after first announcement in 2007. Has undergone three expansions since opening.",
+        "sourceIndex": 1
+      },
+      {
+        "status": "operational",
+        "date": "2025-08",
+        "note": "New expansion announced as part of Google's $9B, two-year Oklahoma investment commitment.",
+        "sourceIndex": 1
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://www.okcommerce.gov/google-planning-another-expansion-for-pryor-data-center/",
+        "label": "Google planning another expansion for Pryor data center",
+        "publisher": "Oklahoma Department of Commerce",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.datacenterdynamics.com/en/news/google-to-invest-9bn-in-cloud-and-ai-infrastructure-in-oklahoma/",
+        "label": "Google to invest $9B in cloud and AI infrastructure in Oklahoma",
+        "publisher": "Data Center Dynamics",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.readfrontier.org/stories/as-data-centers-boom-in-oklahoma-so-does-water-demand/",
+        "label": "As data centers boom in Oklahoma, so does water demand",
+        "publisher": "The Frontier",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.readfrontier.org/stories/oklahoma-lawmakers-tried-to-cut-a-costly-incentive-for-data-centers-but-gave-google-a-break/",
+        "label": "Oklahoma lawmakers tried to cut a costly data-center incentive, but gave Google a break",
+        "publisher": "The Frontier",
+        "retrievedAt": "2026-07-06",
+        "kind": "filing"
+      },
+      {
+        "url": "https://www.pryorinfopub.com/news/google-announces-support-for-local-schools-and-nonprofits/article_ddd319a6-4823-11ef-bbfd-9b7b0264f6f1.html",
+        "label": "Google announces support for local schools and nonprofits",
+        "publisher": "Pryor Information Publication",
+        "retrievedAt": "2026-07-06",
+        "kind": "press"
+      },
+      {
+        "url": "https://www.lreus.com/over-700mwac-new-solar-projects-in-ok/",
+        "label": "LRE Announces Over 700 MWac of New Solar Projects in Oklahoma",
+        "publisher": "Leeward Renewable Energy",
+        "retrievedAt": "2026-09-14",
+        "kind": "press"
+      }
+    ],
+    "lastUpdated": "2026-10-22",
+    "notes": "Campus operational since 2011; Google's second-largest data center globally per Alphabet CIO Ruth Porat. Four expansions now underway. $5.7B+ invested historically in Oklahoma prior to August 2025 $9B commitment. Expansion capacity and MW not publicly specified. Coordinates are Pryor city center.",
+    "energy": {
+      "source": "grid",
+      "utility": "Grand River Dam Authority (GRDA)",
+      "notes": "Google's second-largest data center campus in the world. Oklahoma wind generates ~42% of in-state electricity. New expansion announced as part of $9B Oklahoma investment (August 2025). Google has invested $5.7B+ in Oklahoma historically (prior to August 2025 $9B commitment)."
+    },
+    "water": {
+      "coolingType": "evaporative",
+      "reportedMgd": 3,
+      "notes": "Utility records (open-records request) show the Pryor center used more than 1.1 billion gallons Jul 2024–Jun 2025 (≈3.0 MGD, a floor) from the Neosho River via the state-owned MidAmerica Industrial Park; ~253M gallons were discharged back to the river, the remainder lost to evaporative cooling. Google was the park's second-largest water user that year."
+    },
+    "subsidies": [
+      {
+        "program": "Oklahoma ad valorem manufacturing exemption (5-year property-tax exemption on data-center equipment) — $45.9M in 2021 alone (largest single-year benefit; amountUsd reflects this 2021 figure); ~$239M reimbursed cumulatively over ~a decade for the Mayes County facility; existing qualifying equipment retains the exemption to 2036 under SB 609 (2021)",
+        "amountUsd": 45900000,
+        "jurisdiction": "Mayes County, OK",
+        "year": "2021",
+        "sourceIndex": 3
+      }
+    ],
+    "investmentUsd": 4400000000,
+    "community": {
+      "status": "mixed",
+      "notes": "Strong official support — Pryor Mayor Zac Doyle: Google has brought \"hundreds of jobs, economic growth, and billions in investment\" and supports local schools and nonprofits. Google reports more than 800 jobs created to date in Pryor and $4.4 billion invested in Mayes County to date (company-provided figures via The Frontier). Grassroots and state-level concerns are documented: local hiring practices, rising housing costs, and heavy water use (>1.1B gal/yr); the Oklahoma Water Resources Board warned (Oct 2025) that data centers \"will contribute to the strain\" on water supply. Subsidy scale also criticized: ~$239M ad valorem for this facility, plus $113.9M in income-tax credits Google has claimed statewide since 2017.",
+      "sourceIndex": 4
+    },
+    "facilityType": "data_center",
+    "aiClassification": "mixed_use"
   },
   {
     "id": "google-skyway-pine-island-mn",

@@ -85,7 +85,7 @@ function fillMissing(deps: SnapshotDeps, why: string): boolean {
   if (copied.length > 0) {
     deps.warn(
       `ensure-data-snapshot: WARNING ${why}. Copied fixtures into ${copied.join(", ")}; ` +
-        `this is a ~64-record sample, NOT the real dataset.`
+        `this is a ~68-record sample, NOT the real dataset.`
     );
   }
   return copied.length > 0;

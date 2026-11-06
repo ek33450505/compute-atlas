@@ -1,7 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { brotliCompressSync, constants } from "node:zlib";
 
 import { facilitiesSchema, type Facility } from "@/lib/schema";
 import { toMapFacility, toMapPoint, toPopupSummary, toTableRow } from "@/lib/facility-slim";
@@ -115,34 +112,6 @@ describe("toMapFacility", () => {
   });
 });
 
-describe("map payload size budget", () => {
-  // Measures brotli q5 of JSON.stringify(projected corpus), NOT the RSC wire
-  // format; real wire bytes are measured post-deploy. Per-record so data
-  // growth cannot trip it, while adding a field to the projection still does.
-  // It is a corpus average: a field added to only a few records is diluted and
-  // can slip under the ceiling. The allow-list test above is what catches that.
-  // Measured 2026-10-21: 255,024 B / 2,745 records = 92.9 B per record
-  // (full records: 495 B). Ceiling = measured x ~1.2. Mutation-tested:
-  // projecting `sources: f.sources` gives ~194 B per record and fails.
-  // The PERF-1 brief's 0.2 MB estimate used 3 dp coordinates; 4 dp costs the rest.
-  const MAX_BR_BYTES_PER_RECORD = 112;
-
-  it("brotli-compressed projection stays within the per-record ceiling", () => {
-    const all = facilitiesSchema.parse(
-      JSON.parse(readFileSync(join(process.cwd(), "data/facilities.json"), "utf8"))
-    );
-    const json = JSON.stringify(all.map(toMapFacility));
-    const br = brotliCompressSync(Buffer.from(json), {
-      params: { [constants.BROTLI_PARAM_QUALITY]: 5 },
-    }).length;
-    const perRecord = br / all.length;
-    expect(
-      perRecord,
-      `map payload is ${br} B brotli (q5) over ${all.length} records = ${perRecord.toFixed(1)} B/record`
-    ).toBeLessThanOrEqual(MAX_BR_BYTES_PER_RECORD);
-  });
-});
-
 describe("toTableRow", () => {
   // Adding a field to the /table payload is a deliberate act: update this list.
   it("emits exactly the allow-listed keys", () => {
@@ -204,28 +173,10 @@ describe("toTableRow", () => {
   });
 });
 
-describe("table payload size budget", () => {
-  // Same method and caveats as the map budget above. Measured 2026-10-21:
-  // 284,870 B / 2,745 records = 103.8 B per record (full records: 495 B,
-  // 1,359,639 B). Ceiling = measured x ~1.2. Mutation-tested: projecting
-  // `sources: f.sources` pushes it well past the ceiling.
-  const MAX_BR_BYTES_PER_RECORD = 125;
-
-  it("brotli-compressed projection stays within the per-record ceiling", () => {
-    const all = facilitiesSchema.parse(
-      JSON.parse(readFileSync(join(process.cwd(), "data/facilities.json"), "utf8"))
-    );
-    const json = JSON.stringify(all.map(toTableRow));
-    const br = brotliCompressSync(Buffer.from(json), {
-      params: { [constants.BROTLI_PARAM_QUALITY]: 5 },
-    }).length;
-    const perRecord = br / all.length;
-    expect(
-      perRecord,
-      `table payload is ${br} B brotli (q5) over ${all.length} records = ${perRecord.toFixed(1)} B/record`
-    ).toBeLessThanOrEqual(MAX_BR_BYTES_PER_RECORD);
-  });
-});
+// The map/table payload size budgets are per-record brotli ceilings measured on
+// the full dataset (a small fixture compresses differently per record, so the
+// same ceilings would be meaningless there). They live in
+// facility-slim.dataset.test.ts.
 
 describe("toMapPoint", () => {
   // Adding a field to the public map payload is a deliberate act: update this list.

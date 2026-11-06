@@ -26,6 +26,26 @@ describe("test fixtures", () => {
     );
   });
 
+  it("includes the kinds some lib tests need to be non-vacuous", () => {
+    const inFixture = (p: (f: (typeof facilities)[number]) => boolean) => facilities.filter(p);
+    const positiveMgd = inFixture((f) => f.status !== "cancelled" && (f.water?.reportedMgd ?? 0) > 0);
+    expect(positiveMgd.length).toBeGreaterThanOrEqual(2);
+    expect(inFixture((f) => !f.location.county).length).toBeGreaterThan(0);
+    const friction = ["contested", "opposed", "litigation"];
+    expect(
+      inFixture((f) => f.status === "cancelled" && !!f.community && !friction.includes(f.community.status ?? ""))
+        .length
+    ).toBeGreaterThan(0);
+  });
+
+  it("every poweredFacilityIds entry resolves inside the fixture", () => {
+    const ids = new Set(facilities.map((f) => f.id));
+    for (const f of facilities) {
+      const powered = (f as { generation?: { poweredFacilityIds?: string[] } }).generation?.poweredFacilityIds;
+      for (const id of powered ?? []) expect(ids.has(id)).toBe(true);
+    }
+  });
+
   it("meta recordCount matches the fixture length", () => {
     expect((read("facilities.meta.fixture.json") as { recordCount: number }).recordCount).toBe(
       facilities.length
@@ -40,7 +60,10 @@ describe("test fixtures", () => {
   });
 
   it("vitest aliases @/data/*.json to the fixtures (a broken alias fails loudly)", () => {
-    expect(facilitiesAliased).toHaveLength(64);
-    expect(metaAliased.recordCount).toBe(64);
+    expect(facilitiesAliased).toHaveLength(metaAliased.recordCount);
+    expect(facilitiesAliased).toHaveLength(facilities.length);
+    // the real dataset has thousands of records; a sample this small proves the alias is on
+    expect(facilitiesAliased.length).toBeGreaterThanOrEqual(60);
+    expect(facilitiesAliased.length).toBeLessThan(200);
   });
 });

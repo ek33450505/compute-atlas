@@ -85,8 +85,9 @@ describe("buildNavSearchIndex", () => {
     ).size;
 
     expect(navIndex.length).toBe(operatorCount + stateCount);
-    // The invariant the ratio was reaching for, stated without a magic factor.
-    expect(navIndex.length).toBeLessThan(facilities.length);
+    // "Fewer entries than facilities" is a property of the real dataset only
+    // (a small fixture has proportionally many distinct operators); it is asserted
+    // in search.dataset.test.ts.
   });
 });
 

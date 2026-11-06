@@ -1,6 +1,6 @@
 # Test fixtures
 
-A ~64-record sample of the public dataset. Vitest aliases `@/data/*.json` to these files (see `vitest.config.ts`), so the default `npm test` never depends on the full dataset. `DATASET=real` (`npm run test:dataset`) drops the alias and runs only the `*.dataset.test.ts` invariants against the real `data/` snapshot.
+A ~68-record sample of the public dataset. Vitest aliases `@/data/*.json` to these files (see `vitest.config.ts`), so the default `npm test` never depends on the full dataset. `DATASET=real` (`npm run test:dataset`) drops the alias and runs only the `*.dataset.test.ts` invariants against the real `data/` snapshot.
 
 | Fixture | Mirrors |
 | --- | --- |
@@ -23,7 +23,7 @@ Commit `86fef0c`. **Every record must stay deep-equal to its `86fef0c` version.*
 - One state with several records (TX, OH).
 - Operators that have rows in `operator-ownership.json`.
 - Records with `stakeholders`, and records with `notRecorded`.
-- Records whose siting-context entry has no `nearestWater`. Every facility in the real data has a siting-context entry, so the fixture has none without one; `lib/siting-context.test.ts` asserts that every id has an entry.
+- Records whose siting-context entry has no `nearestWater`. Three Alaska records (`greensparc-*-ak`) have an entry with no `nearestWater` (NHD is CONUS-only, so they are not NHD debt). Every fixture id still has a siting-context entry; `lib/siting-context.test.ts` asserts that.
 
 ## Adding a record
 

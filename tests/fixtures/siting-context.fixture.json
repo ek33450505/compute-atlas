@@ -29,6 +29,29 @@
       "label": "Low (<10%)"
     }
   },
+  "365-data-centers-aurora-co1-co": {
+    "nearestWater": {
+      "name": "First Creek",
+      "kind": "river",
+      "distanceMi": 1.3
+    },
+    "nearestTransmission": {
+      "voltageKv": 230,
+      "distanceMi": 0.5
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
+    },
+    "groundwaterDecline": {
+      "cat": 2,
+      "label": "Medium - High (2-4 cm/y)"
+    },
+    "aquifer": {
+      "name": "Denver Basin Aquifer System",
+      "rock": "Sandstone"
+    }
+  },
   "5c-group-vultr-prime-ohio-springfield-oh": {
     "nearestWater": {
       "name": "Goose Creek",
@@ -338,6 +361,21 @@
     "aquifer": {
       "name": "Marshall Aquifer",
       "rock": "Sandstone"
+    }
+  },
+  "amazon-becker-mn": {
+    "nearestWater": {
+      "name": "Elk River",
+      "kind": "river",
+      "distanceMi": 0.8
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.8
+    },
+    "waterStress": {
+      "cat": 4,
+      "label": "Extremely High (>80%)"
     }
   },
   "amazon-perry-township-stark-oh": {
@@ -731,6 +769,21 @@
       "label": "Extremely High (>80%)"
     }
   },
+  "google-council-bluffs-ia": {
+    "nearestWater": {
+      "name": "Pony Creek",
+      "kind": "river",
+      "distanceMi": 2.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 0.3
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
+    }
+  },
   "google-haskell-county-tx": {
     "nearestWater": {
       "name": "Rice Springs Branch",
@@ -767,6 +820,21 @@
     "aquifer": {
       "name": "Lower Cretaceous Aquifers",
       "rock": "Sandstone"
+    }
+  },
+  "google-pryor-ok": {
+    "nearestWater": {
+      "name": "Salt Branch",
+      "kind": "river",
+      "distanceMi": 0.1
+    },
+    "nearestTransmission": {
+      "voltageKv": 345,
+      "distanceMi": 3.2
+    },
+    "waterStress": {
+      "cat": 0,
+      "label": "Low (<10%)"
     }
   },
   "google-skyway-pine-island-mn": {

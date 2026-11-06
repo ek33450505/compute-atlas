@@ -109,6 +109,7 @@ describe("data-integrity: county slug uniqueness", () => {
   // Mutation-tested: deleting the `-${state}` suffix from countySlug fails
   // this on "Washington" alone (a county in OR, NE, OH, TN, GA, PA, LA, MS
   // and UT).
+  // Fixture-level run; the whole-dataset version is counties.dataset.test.ts.
   it("maps no two distinct (state, county) pairs to the same slug", () => {
     const facilities = facilitiesRaw as Array<{
       location: { state: string; county?: string | null };
@@ -143,6 +144,6 @@ describe("data-integrity: county slug uniqueness", () => {
 
     expect(collisions).toEqual([]);
     // Sanity floor: the guard is worthless if it silently scans nothing.
-    expect(pairsBySlug.size).toBeGreaterThan(500);
+    expect(pairsBySlug.size).toBeGreaterThan(10);
   });
 });
