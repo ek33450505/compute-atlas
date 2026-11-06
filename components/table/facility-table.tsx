@@ -22,7 +22,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/status-badge";
-import { STATUS_ORDER, type Status } from "@/lib/status";
+import type { Status } from "@/lib/status";
+import { compareCapacity, compareStatus } from "@/lib/table-sort";
 import {
   formatCapacity,
   formatLocation,
@@ -37,35 +38,6 @@ import type { TableRow as TableRowData } from "@/lib/facility-slim";
 // ---------------------------------------------------------------------------
 // Column definitions
 // ---------------------------------------------------------------------------
-
-/**
- * Custom sort for Status using STATUS_ORDER index (operational first →
- * cancelled last).
- */
-function statusSortFn(
-  rowA: { original: TableRowData },
-  rowB: { original: TableRowData }
-): number {
-  return (
-    STATUS_ORDER.indexOf(rowA.original.status) -
-    STATUS_ORDER.indexOf(rowB.original.status)
-  );
-}
-
-/**
- * Custom sort for Capacity; facilities with no capacity data sort last.
- */
-function capacitySortFn(
-  rowA: { original: TableRowData },
-  rowB: { original: TableRowData }
-): number {
-  const a = getFacilityMaxMw(rowA.original);
-  const b = getFacilityMaxMw(rowB.original);
-  if (a === undefined && b === undefined) return 0;
-  if (a === undefined) return 1;
-  if (b === undefined) return -1;
-  return a - b;
-}
 
 const columns: ColumnDef<TableRowData>[] = [
   {
@@ -97,7 +69,7 @@ const columns: ColumnDef<TableRowData>[] = [
     header: "Status",
     accessorKey: "status",
     cell: ({ row }) => <StatusBadge status={row.original.status as Status} />,
-    sortingFn: statusSortFn,
+    sortingFn: (a, b) => compareStatus(a.original, b.original),
   },
   {
     id: "facilityType",
@@ -144,7 +116,7 @@ const columns: ColumnDef<TableRowData>[] = [
     cell: ({ row }) => (
       <span className="tabular-nums">{formatCapacity(row.original)}</span>
     ),
-    sortingFn: capacitySortFn,
+    sortingFn: (a, b) => compareCapacity(a.original, b.original),
     sortUndefined: "last",
     meta: { align: "right" },
   },

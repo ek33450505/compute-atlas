@@ -4,8 +4,7 @@ import { join } from "node:path";
 import { brotliCompressSync, constants } from "node:zlib";
 
 import { facilitiesSchema, type Facility } from "@/lib/schema";
-import { toMapFacility, toTableRow } from "@/lib/facility-slim";
-import { facilitiesToCsv } from "@/lib/export";
+import { toMapFacility, toMapPoint, toPopupSummary, toTableRow } from "@/lib/facility-slim";
 
 // A record with every field the projector may carry, one per facility type.
 const SOURCES = [
@@ -168,7 +167,7 @@ describe("toTableRow", () => {
     );
     expect(Object.keys(power).sort()).toEqual([...common].sort());
     expect(Object.keys(dc.location).sort()).toEqual(
-      ["city", "county", "lat", "lon", "multiSite", "precision", "state"].sort()
+      ["city", "county", "multiSite", "precision", "state"].sort()
     );
     expect(Object.keys(dc.sources[0]).sort()).toEqual(["label", "url"]);
   });
@@ -179,10 +178,10 @@ describe("toTableRow", () => {
     expect(row.sources).toEqual([{ url: "https://example.com/a", label: "A" }]);
   });
 
-  it("keeps full-precision coordinates for the CSV", () => {
-    const { location } = toTableRow(FULL[0]);
-    expect(location.lat).toBe(31.123456789);
-    expect(location.lon).toBe(-97.987654321);
+  it("carries no coordinates", () => {
+    const json = JSON.stringify(FULL.map(toTableRow));
+    expect(json).not.toMatch(/"lat"|"lon"/);
+    expect(json).not.toContain("31.12");
   });
 
   it("drops heavy fields", () => {
@@ -202,21 +201,6 @@ describe("toTableRow", () => {
     ]);
     const row = toTableRow(plant);
     expect("generation" in row && row.generation).toEqual({ offtaker: "Acme Cloud" });
-  });
-});
-
-describe("table CSV parity", () => {
-  const all = facilitiesSchema.parse(
-    JSON.parse(readFileSync(join(process.cwd(), "data/facilities.json"), "utf8"))
-  );
-
-  it("is byte-identical for full records and their TableRow projections (whole dataset)", () => {
-    expect(facilitiesToCsv(all.map(toTableRow))).toBe(facilitiesToCsv(all));
-  });
-
-  it("is byte-identical for the fixture records, whose source counts differ from 1", () => {
-    expect(facilitiesToCsv(FULL.map(toTableRow))).toBe(facilitiesToCsv(FULL));
-    expect(facilitiesToCsv(FULL.map(toTableRow))).toContain(",2,https://example.com/a");
   });
 });
 
@@ -240,5 +224,97 @@ describe("table payload size budget", () => {
       perRecord,
       `table payload is ${br} B brotli (q5) over ${all.length} records = ${perRecord.toFixed(1)} B/record`
     ).toBeLessThanOrEqual(MAX_BR_BYTES_PER_RECORD);
+  });
+});
+
+describe("toMapPoint", () => {
+  // Adding a field to the public map payload is a deliberate act: update this list.
+  it("emits exactly the allow-listed keys", () => {
+    for (const f of FULL) {
+      const p = toMapPoint(f);
+      expect(Object.keys(p).sort()).toEqual(["facilityType", "id", "location", "status"]);
+      expect(Object.keys(p.location).sort()).toEqual(["lat", "lon", "state"]);
+    }
+  });
+
+  it("serializes no identifying text", () => {
+    const json = JSON.stringify(FULL.map(toMapPoint));
+    for (const k of ["Acme", "Waco", "name", "operator", "city", "capacityMw", "sources", "precision"]) {
+      expect(json).not.toContain(k);
+    }
+  });
+
+  it("rounds coordinates to 2 decimals", () => {
+    const { location } = toMapPoint(FULL[0]);
+    expect(location.lat).toBe(31.12);
+    expect(location.lon).toBe(-97.99);
+    const dp = (n: number) => (String(n).split(".")[1] ?? "").length;
+    expect(dp(location.lat)).toBeLessThanOrEqual(2);
+    expect(dp(location.lon)).toBeLessThanOrEqual(2);
+  });
+});
+
+describe("toMapPoint rounding", () => {
+  it("rounds ties away from zero for negative and positive coordinates", () => {
+    const at = (lat: number, lon: number) =>
+      toMapPoint({ ...FULL[0], location: { ...FULL[0].location, lat, lon } } as Facility).location;
+    expect(at(40.125, -97.125)).toMatchObject({ lat: 40.13, lon: -97.13 });
+    expect(at(-40.125, 97.125)).toMatchObject({ lat: -40.13, lon: 97.13 });
+  });
+});
+
+describe("toPopupSummary", () => {
+  it("carries no coordinates", () => {
+    const json = JSON.stringify(FULL.map((f) => toPopupSummary(f)));
+    expect(json).not.toMatch(/"lat"|"lon"/);
+    expect(json).not.toContain("31.12");
+  });
+
+  it("carries the fields the popup shows", () => {
+    const s = toPopupSummary(FULL[0]);
+    expect(s).toMatchObject({
+      id: "acme-1",
+      name: "Acme One",
+      operator: "Acme",
+      status: "operational",
+      facilityType: "data_center",
+      confidence: "confirmed",
+      city: "Waco",
+      state: "TX",
+      multiSiteStates: ["TX", "OK"],
+      precision: "representative_multi_site",
+      capacityMw: { operational: 10, planned: 20 },
+      aiClassification: "confirmed",
+      source: { url: "https://example.com/a", label: "A" },
+    });
+    expect(JSON.stringify(s)).not.toContain("example.com/b");
+    expect(JSON.stringify(s)).not.toContain("secret prose");
+  });
+
+  it("carries mining fields and carbon proxy for crypto sites", () => {
+    const s = toPopupSummary(FULL[1]);
+    expect(s.mining).toEqual({ hashRateThPerS: 5, powerArrangement: "grid" });
+    expect(s.carbonIntensityProxy).toBe(3);
+  });
+
+  it("includes siting distances only when an entry is passed", () => {
+    expect(toPopupSummary(FULL[0]).nearestWater).toBeUndefined();
+    const s = toPopupSummary(FULL[0], {
+      nearestWater: { name: "Brazos River", kind: "river", distanceMi: 1.2 },
+      nearestTransmission: { voltageKv: 345, distanceMi: 0.4 },
+      aquifer: { name: "x", rock: "y" },
+    });
+    expect(s.nearestWater).toEqual({ name: "Brazos River", kind: "river", distanceMi: 1.2 });
+    expect(s.nearestTransmission).toEqual({ voltageKv: 345, distanceMi: 0.4 });
+    expect(JSON.stringify(s)).not.toContain("aquifer");
+  });
+
+  it("omits precision when exact and handles a record with no sources", () => {
+    const exact = facilitiesSchema.parse([
+      { ...BASE, facilityType: "data_center", location: { lat: 1, lon: 2, state: "TX", precision: "exact" } },
+    ])[0];
+    expect("precision" in toPopupSummary(exact)).toBe(false);
+    const none = { ...FULL[0], sources: [] } as Facility;
+    expect(toPopupSummary(none).source).toBeUndefined();
   });
 });

@@ -30,8 +30,6 @@ import { Button } from "@/components/ui/button";
 const VIEW_VALUES = ["map", "table"] as const;
 type ViewValue = (typeof VIEW_VALUES)[number];
 
-type ExplorerMode = "toggle" | "map" | "table";
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -42,20 +40,23 @@ type ExplorerMode = "toggle" | "map" | "table";
  *  - "map": renders FilterBar + map only; toggle buttons replaced by a cross-link
  *  - "table": reserved; toggle hidden, table rendered
  *
- * Map mode accepts the slim server-projected `MapFacility[]`, the table and
- * toggle modes `TableRow[]` (see lib/facility-slim.ts).
+ * Map mode accepts the slim server-projected `MapFacility[]`, table mode
+ * `TableRow[]` (see lib/facility-slim.ts). Toggle mode renders both views, and
+ * `TableRow` carries no coordinates, so it needs rows that are both.
+ * Toggle mode has no production caller.
  */
+type ToggleRow = TableRow & { location: { lat: number; lon: number } };
+
 type ExplorerProps =
   | { mode: "map"; facilities: MapFacility[] }
-  | {
-      mode?: Exclude<ExplorerMode, "map">;
-      facilities: TableRow[];
-    };
+  | { mode: "table"; facilities: TableRow[] }
+  | { mode?: "toggle"; facilities: ToggleRow[] };
 
 /** Filter result tagged with the record type it holds, so branches narrow without casts. */
 type Filtered =
   | { kind: "map"; rows: MapFacility[] }
-  | { kind: "full"; rows: TableRow[] };
+  | { kind: "full"; rows: TableRow[] }
+  | { kind: "toggle"; rows: ToggleRow[] };
 
 export function Explorer(props: ExplorerProps) {
   const { facilities } = props;
@@ -95,9 +96,14 @@ export function Explorer(props: ExplorerProps) {
       facilityTypes: facilityType,
       minMw,
     };
-    return props.mode === "map"
-      ? { kind: "map", rows: filterFacilities(props.facilities, filters) }
-      : { kind: "full", rows: filterFacilities(props.facilities, filters) };
+    switch (props.mode) {
+      case "map":
+        return { kind: "map", rows: filterFacilities(props.facilities, filters) };
+      case "table":
+        return { kind: "full", rows: filterFacilities(props.facilities, filters) };
+      default:
+        return { kind: "toggle", rows: filterFacilities(props.facilities, filters) };
+    }
   }, [props.mode, props.facilities, status, state, operator, facilityType, minMw]);
 
   // m13: the map-mode shell below subtracts a hardcoded header height
@@ -218,7 +224,7 @@ export function Explorer(props: ExplorerProps) {
   // schema; the "View map" cross-link copies the current query so filters
   // carry between the two views.
   // -------------------------------------------------------------------------
-  if (mode === "table") {
+  if (filtered.kind === "full") {
     const qs = searchParams.toString();
     const mapHref = qs ? `/map?${qs}` : "/map";
 

@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { Explorer } from "./explorer";
 import type { Facility } from "@/lib/schema";
-import { toTableRow } from "@/lib/facility-slim";
+import { toMapFacility, toTableRow } from "@/lib/facility-slim";
 
 // jsdom can't render the real FacilityMap (MapLibre/WebGL — see the
 // render-in-table-view note below). Explorer's OWN logic for what it passes
@@ -104,6 +104,13 @@ const facilityD: Facility = {
 };
 
 const fixtures = [facilityA, facilityB, facilityC, facilityD].map(toTableRow);
+// Toggle mode (no production caller) draws the map from the same rows, so it needs coordinates.
+const toToggleRow = (f: (typeof facilityA)) => {
+  const row = toTableRow(f);
+  return { ...row, location: { ...row.location, lat: f.location.lat, lon: f.location.lon } };
+};
+const toggleFixtures = [facilityA, facilityB, facilityC, facilityD].map(toToggleRow);
+const mapFixtures = [facilityA, facilityB, facilityC, facilityD].map(toMapFacility);
 
 // ---------------------------------------------------------------------------
 // Helper — render in table view (jsdom can't render WebGL map)
@@ -112,7 +119,7 @@ const fixtures = [facilityA, facilityB, facilityC, facilityD].map(toTableRow);
 function renderExplorer(searchParams?: Record<string, string>) {
   return render(
     <NuqsTestingAdapter searchParams={searchParams ?? { view: "table" }}>
-      <Explorer facilities={fixtures} />
+      <Explorer facilities={toggleFixtures} />
     </NuqsTestingAdapter>
   );
 }
@@ -136,7 +143,7 @@ describe("Explorer — result count", () => {
 
 describe("Explorer — table controls", () => {
   it("formats large counts with separators", () => {
-    const many = Array.from({ length: 1234 }, (_, i) => ({ ...toTableRow(facilityA), id: `f-${i}` }));
+    const many = Array.from({ length: 1234 }, (_, i) => ({ ...toToggleRow(facilityA), id: `f-${i}` }));
     render(
       <NuqsTestingAdapter searchParams={{ view: "table" }}>
         <Explorer facilities={many} />
@@ -281,7 +288,7 @@ describe("Explorer — map empty state", () => {
   it("shows a StatePanel instead of the map when filters exclude everything", () => {
     render(
       <NuqsTestingAdapter searchParams={{ view: "map", status: "permitted" }}>
-        <Explorer facilities={fixtures} />
+        <Explorer facilities={toggleFixtures} />
       </NuqsTestingAdapter>
     );
 
@@ -311,7 +318,7 @@ describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={fixtures} mode="map" />
+        <Explorer facilities={mapFixtures} mode="map" />
       </NuqsTestingAdapter>
     );
 
@@ -337,7 +344,7 @@ describe("Explorer — isFiltered wiring to FacilityMap (M5)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={fixtures} />
+        <Explorer facilities={toggleFixtures} />
       </NuqsTestingAdapter>
     );
 
@@ -388,7 +395,7 @@ describe("Explorer — map shell height (m13)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={fixtures} mode="map" />
+        <Explorer facilities={mapFixtures} mode="map" />
       </NuqsTestingAdapter>
     );
 
@@ -424,7 +431,7 @@ describe("Explorer — map shell height (m13)", () => {
 
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={fixtures} mode="map" />
+        <Explorer facilities={mapFixtures} mode="map" />
       </NuqsTestingAdapter>
     );
 
@@ -438,7 +445,7 @@ describe("Explorer — map shell height (m13)", () => {
   it("leaves the static classes as the only height source when no header is present", async () => {
     render(
       <NuqsTestingAdapter searchParams={{ view: "map" }}>
-        <Explorer facilities={fixtures} mode="map" />
+        <Explorer facilities={mapFixtures} mode="map" />
       </NuqsTestingAdapter>
     );
 

@@ -7,12 +7,9 @@ import { facilitiesTable } from "@/lib/db/schema";
 import { rowToFacility } from "@/lib/db/serialize";
 import { redactedErrorCode } from "@/lib/db-error";
 import { loadFacilities } from "@/lib/data";
+import { MAX_SEARCH_QUERY_LEN, MAX_SEARCH_TOKENS } from "@/lib/search-limits";
 
-/** Hard cap on search query length, applied before the query reaches Postgres or a cache key. */
-export const MAX_SEARCH_QUERY_LEN = 200;
-
-/** Defensive cap on tokens per query (length is already capped at MAX_SEARCH_QUERY_LEN). */
-const MAX_SEARCH_TOKENS = 10;
+export { MAX_SEARCH_QUERY_LEN };
 
 /**
  * Turns a user query into an autocomplete-style tsquery string, or `null` when
