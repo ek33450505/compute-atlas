@@ -6,7 +6,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "predev": "node scripts/copy-maplibre-worker.mjs",
+    "predev": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts",
     "dev": "next dev",
     "prebuild": "node scripts/copy-maplibre-worker.mjs",
     "build": "next build",
@@ -15,6 +15,8 @@
     "lint:errorlogs": "node scripts/lint-no-raw-error-logs.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:dataset": "DATASET=real vitest run",
+    "fixtures:verify": "bash scripts/verify-fixture-public.sh",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "build:basemap": "node scripts/build-parchment-style.mjs",

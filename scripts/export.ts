@@ -14,7 +14,7 @@
  *
  * Uses relative imports throughout, matching the other scripts in this folder.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { facilitiesSchema } from "../lib/schema";
@@ -67,12 +67,30 @@ function readPackageVersion(): string {
   return pkg.version;
 }
 
-async function main() {
+const MISSING_DATABASE_URL =
+  "DATABASE_URL is not set. Configure it in .env.local (see .env.example) before exporting.";
+
+/** Thrown (by name, so callers need not import this module) when DATABASE_URL is unset. */
+export class MissingDatabaseUrlError extends Error {
+  override name = "MissingDatabaseUrlError";
+}
+
+export interface ExportResult {
+  count: number;
+  outPath: string;
+  metaOutPath: string;
+}
+
+/**
+ * Reads every facility from Neon and writes facilities.json plus its sibling
+ * facilities.meta.json. Callable (rather than inlined in `main`) so
+ * scripts/ensure-data-snapshot.ts can reuse it. Throws instead of exiting.
+ */
+export async function exportFacilities(
+  outPath: string = path.resolve(process.cwd(), path.join("data", "facilities.json"))
+): Promise<ExportResult> {
   if (!process.env.DATABASE_URL) {
-    console.error(
-      "DATABASE_URL is not set. Configure it in .env.local (see .env.example) before exporting."
-    );
-    process.exit(1);
+    throw new MissingDatabaseUrlError(MISSING_DATABASE_URL);
   }
 
   const db = getDb();
@@ -104,14 +122,38 @@ async function main() {
   // be schema-valid; this throws loudly on any invalid record, same as seed.ts.
   const validated = facilitiesSchema.parse(facilities);
 
-  const outPath = parseOutPath();
-  writeFileSync(outPath, JSON.stringify(validated, null, 2) + "\n", "utf-8");
-
   const meta = buildExportMeta(validated.length, readPackageVersion(), readAt);
   const metaOutPath = path.join(path.dirname(outPath), "facilities.meta.json");
-  writeFileSync(metaOutPath, JSON.stringify(meta, null, 2) + "\n", "utf-8");
 
-  console.log(`Exported ${validated.length} facilities to ${outPath}`);
+  // Write both files to temp paths, then rename both. This narrows the window
+  // (a failed write never touches the real files), but it is not atomic: a
+  // failure on the second rename can still leave a new facilities.json next to
+  // an old meta. No rollback is attempted.
+  const tmpSuffix = `.tmp-${process.pid}`;
+  const tmpOut = outPath + tmpSuffix;
+  const tmpMeta = metaOutPath + tmpSuffix;
+  try {
+    writeFileSync(tmpOut, JSON.stringify(validated, null, 2) + "\n", "utf-8");
+    writeFileSync(tmpMeta, JSON.stringify(meta, null, 2) + "\n", "utf-8");
+    renameSync(tmpOut, outPath);
+    renameSync(tmpMeta, metaOutPath);
+  } finally {
+    rmSync(tmpOut, { force: true });
+    rmSync(tmpMeta, { force: true });
+  }
+
+  return { count: validated.length, outPath, metaOutPath };
+}
+
+async function main() {
+  if (!process.env.DATABASE_URL) {
+    console.error(MISSING_DATABASE_URL);
+    process.exit(1);
+  }
+
+  const { count, outPath, metaOutPath } = await exportFacilities(parseOutPath());
+
+  console.log(`Exported ${count} facilities to ${outPath}`);
   console.log(`Wrote export metadata to ${metaOutPath}`);
   process.exit(0);
 }

@@ -2,13 +2,36 @@ import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
+// D3: unit tests read the committed ~60-record fixtures instead of the full
+// dataset, so CI never depends on live data. DATASET=real (npm run
+// test:dataset) drops the override and runs only the *.dataset.test.ts
+// invariants against the real data/ snapshot.
+const realDataset = process.env.DATASET === "real";
+const fixtureAliases = realDataset
+  ? []
+  : [
+      "facilities.json",
+      "facilities.meta.json",
+      "siting-context.json",
+      "operator-ownership.json",
+    ].map((file) => ({
+      find: `@/data/${file}`,
+      replacement: path.resolve(__dirname, "tests/fixtures", file.replace(/\.json$/, ".fixture.json")),
+    }));
+
 export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
-    exclude: ["**/node_modules/**", "**/e2e/**", "**/.next/**"],
+    exclude: [
+      "**/node_modules/**",
+      "**/e2e/**",
+      "**/.next/**",
+      ...(realDataset ? [] : ["**/*.dataset.test.ts"]),
+    ],
+    ...(realDataset ? { include: ["**/*.dataset.test.ts"] } : {}),
     // Vitest does not clear mock call history between tests by default, and
     // most files calling vi.mock never cleared one by hand (39 of 66 when this
     // was added). That let an assertion match a PREVIOUS test's call and pass
@@ -50,8 +73,8 @@ export default defineConfig({
     hookTimeout: 30_000,
   },
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "."),
-    },
+    // Array form: order matters. The fixture overrides must precede the
+    // generic "@" entry or "@" would match first.
+    alias: [...fixtureAliases, { find: "@", replacement: path.resolve(__dirname, ".") }],
   },
 });
