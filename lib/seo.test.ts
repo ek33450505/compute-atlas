@@ -11,7 +11,6 @@ import {
   siteJsonLdString,
   buildItemListJsonLd,
   itemListJsonLdString,
-  DATASET_DOI_URL,
 } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import type { Facility } from "@/lib/schema";
@@ -268,10 +267,9 @@ describe("buildDatasetJsonLd", () => {
     expect(ld.license).toBe("https://creativecommons.org/licenses/by/4.0/");
   });
 
-  it("sets identifier to the resolvable Zenodo DOI", () => {
+  it("carries no identifier", () => {
     const ld = buildDatasetJsonLd();
-    expect(ld.identifier).toBe(DATASET_DOI_URL);
-    expect(ld.identifier).toBe("https://doi.org/10.5281/zenodo.22284476");
+    expect(ld).not.toHaveProperty("identifier");
   });
 
   it("includes dateModified when provided", () => {

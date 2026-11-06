@@ -79,10 +79,8 @@ publish commentary, ratings, or advocacy alongside the data, make it clear
 which parts are Compute Atlas records and which are yours. Do not present
 your conclusions as Compute Atlas's.
 
-For academic citation, use the dataset's permanent DOI:
-
-  Kubiak, E. (n.d.). Compute Atlas [Data set].
-  https://doi.org/10.5281/zenodo.22284476
+For academic citation, cite the facility page you used
+(https://www.compute-atlas.com/facilities/<id>) and the date you accessed it.
 
 ------------------------------------------------------------------------------
 

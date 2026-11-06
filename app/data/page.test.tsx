@@ -93,16 +93,10 @@ describe("DataPage", () => {
     ).toHaveAttribute("href", "/methodology");
   });
 
-  it("renders the DOI link", () => {
+  it("does not mention a DOI or Zenodo", () => {
     const page = DataPage();
     render(page);
-    const doiLinks = screen.getAllByRole("link", {
-      name: "https://doi.org/10.5281/zenodo.22284476",
-    });
-    expect(doiLinks.length).toBeGreaterThan(0);
-    for (const link of doiLinks) {
-      expect(link).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.22284476");
-    }
+    expect(document.body.innerHTML).not.toMatch(/zenodo|10\.5281/i);
   });
 
   it("gives one canonical attribution in How to cite: site link, license link, " +

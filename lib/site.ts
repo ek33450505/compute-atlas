@@ -7,7 +7,7 @@
  * but those are anchors with visible text, not machine declarations, so they
  * are left as-is.
  *
- * It lives here rather than beside `DATASET_DOI_URL` in `lib/seo.ts` because
+ * It lives here rather than inside `lib/seo.ts` because
  * `lib/api-response.ts` is a dependency of every API route, and `lib/seo.ts`
  * reaches `lucide-react` through `lib/status.ts` — importing it there would
  * put React icon components in ~20 route bundles to read one string. This
