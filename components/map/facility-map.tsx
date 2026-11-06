@@ -1622,7 +1622,8 @@ export function FacilityMap({
               maxWidth="none"
             >
               <FacilityPopup
-                facility={selectedFacility}
+                id={selectedFacility.id}
+                initial={{ name: selectedFacility.name, status: selectedFacility.status }}
                 onClose={handleClosePopup}
                 linksOpenInNewTab={escapeLinks}
               />

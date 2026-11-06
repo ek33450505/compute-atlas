@@ -370,19 +370,22 @@ vi.mock("@/components/map/cluster-marker", () => ({
 
 vi.mock("@/components/map/facility-popup", () => ({
   FacilityPopup: ({
-    facility,
+    id,
+    initial,
     onClose,
     linksOpenInNewTab,
   }: {
-    facility: Facility;
+    id: string;
+    initial?: { name: string };
     onClose: () => void;
     linksOpenInNewTab?: boolean;
   }) => (
     <div
       data-testid="facility-popup-content"
+      data-facility-id={id}
       data-links-open-in-new-tab={String(linksOpenInNewTab)}
     >
-      <p>{facility.name}</p>
+      <p>{initial?.name}</p>
       <button onClick={onClose}>Close Popup</button>
     </div>
   ),

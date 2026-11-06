@@ -200,6 +200,7 @@ export interface ReadCacheWindow {
 export const READ_CACHE = {
   list: { sMaxage: 3600, swr: 86400 },
   stats: { sMaxage: 3600, swr: 86400 },
+  mapPopup: { sMaxage: 3600, swr: 86400 },
   schema: { sMaxage: 86400, swr: 604800 },
   search: { sMaxage: 600, swr: 3600 },
   navIndex: { sMaxage: 86400, swr: 604800 },

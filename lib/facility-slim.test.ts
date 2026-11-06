@@ -264,6 +264,17 @@ describe("toMapPoint rounding", () => {
 });
 
 describe("toPopupSummary", () => {
+  it("copies siting fields one by one, so an extra siting key never leaks", () => {
+    const siting = {
+      nearestWater: { name: "Creek", kind: "river", distanceMi: 1.2, lat: 31.1 },
+      nearestTransmission: { voltageKv: 345, distanceMi: 2.5, lon: -97.1 },
+    } as unknown as Parameters<typeof toPopupSummary>[1];
+    const s = toPopupSummary(FULL[0], siting);
+    expect(s.nearestWater).toEqual({ name: "Creek", kind: "river", distanceMi: 1.2 });
+    expect(s.nearestTransmission).toEqual({ voltageKv: 345, distanceMi: 2.5 });
+    expect(JSON.stringify(s)).not.toMatch(/"lat"|"lon"/);
+  });
+
   it("carries no coordinates", () => {
     const json = JSON.stringify(FULL.map((f) => toPopupSummary(f)));
     expect(json).not.toMatch(/"lat"|"lon"/);

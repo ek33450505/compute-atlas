@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { facilitiesSchema } from "@/lib/schema";
-import { toMapFacility } from "@/lib/facility-slim";
-import { FacilityPopup } from "./facility-popup";
+import { toPopupSummary } from "@/lib/facility-slim";
+import { FacilityPopup, __clearFacilityPopupCache } from "./facility-popup";
 
 vi.mock("next/link", () => ({
   default: ({ href, children }: { href: string; children: React.ReactNode }) => (
@@ -62,10 +62,30 @@ const [dataCenter, multiSite, mining] = facilitiesSchema.parse([
   },
 ]);
 
+function stubFetch(record: Parameters<typeof toPopupSummary>[0]) {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => JSON.parse(JSON.stringify(toPopupSummary(record))),
+    })
+  );
+}
+
+beforeEach(() => {
+  __clearFacilityPopupCache();
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 describe("FacilityPopup with a projected record", () => {
-  it("shows the first source link and capacity for a data center", () => {
-    render(<FacilityPopup facility={toMapFacility(dataCenter)} onClose={() => {}} />);
-    const link = screen.getByRole("link", { name: "First Source (opens in new tab)" });
+  it("shows the first source link and capacity for a data center", async () => {
+    stubFetch(dataCenter);
+    render(<FacilityPopup id={dataCenter.id} onClose={() => {}} />);
+    const link = await screen.findByRole("link", { name: "First Source (opens in new tab)" });
     expect(link).toHaveAttribute("href", "https://example.com/first");
     // Popup contract: only the first source is linked. The projection-side
     // guard (second source never reaches the client) is in lib/facility-slim.test.ts.
@@ -76,24 +96,27 @@ describe("FacilityPopup with a projected record", () => {
     expect(screen.getByText("mixed use · reported")).toBeInTheDocument();
   });
 
-  it("shows the multi-site line with its states", () => {
-    render(<FacilityPopup facility={toMapFacility(multiSite)} onClose={() => {}} />);
+  it("shows the multi-site line with its states", async () => {
+    stubFetch(multiSite);
+    render(<FacilityPopup id={multiSite.id} onClose={() => {}} />);
     expect(
-      screen.getByText(/Distributed operation — pin is illustrative \(TX, OK\)/)
+      await screen.findByText(/Distributed operation — pin is illustrative \(TX, OK\)/)
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /First Source/ })).toBeInTheDocument();
   });
 
-  it("shows mining and environmental details for a crypto-mining site", () => {
-    render(<FacilityPopup facility={toMapFacility(mining)} onClose={() => {}} />);
-    expect(screen.getByText("500 TH/s")).toBeInTheDocument();
+  it("shows mining and environmental details for a crypto-mining site", async () => {
+    stubFetch(mining);
+    render(<FacilityPopup id={mining.id} onClose={() => {}} />);
+    expect(await screen.findByText("500 TH/s")).toBeInTheDocument();
     expect(screen.getByText("stranded gas")).toBeInTheDocument();
     expect(screen.getByText("Carbon proxy: 42")).toBeInTheDocument();
   });
 
-  it("renders without a Source link when the record has no sources", () => {
-    const noSources = toMapFacility({ ...dataCenter, sources: [] });
-    render(<FacilityPopup facility={noSources} onClose={() => {}} />);
+  it("renders without a Source link when the record has no sources", async () => {
+    stubFetch({ ...dataCenter, sources: [] });
+    render(<FacilityPopup id={dataCenter.id} onClose={() => {}} />);
+    await screen.findByText("Waco, TX");
     expect(screen.queryByRole("link", { name: /opens in new tab/ })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /View details/ })).toHaveAttribute(
       "href",
