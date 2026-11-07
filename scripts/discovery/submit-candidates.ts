@@ -34,7 +34,7 @@
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { formatErrorSummary, formatFatalError, redactedErrorCode } from "../../lib/db-error";
+import { formatErrorSummary, formatFatalError, redactedErrorCode, scrubUriCredentials } from "../../lib/db-error";
 import { facilitySchema, type Facility, type Source } from "../../lib/schema";
 import { statusUpdateIntentSchema, type StatusUpdateIntent } from "../../lib/status-update";
 import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../../lib/enrichment-update";
@@ -145,6 +145,8 @@ export interface RunSubmitOptions {
 }
 
 export interface RunSubmitDeps {
+  /** Test seam for the POST retry backoff; defaults to setTimeout. */
+  sleepImpl?: (ms: number) => Promise<void>;
   fetchImpl: typeof fetch;
   existingFacilities: Facility[];
   /**
@@ -759,6 +761,103 @@ function applyEnrichmentIntentSourceStrip(
 
 // --- core --------------------------------------------------------------------
 
+/** Retries after a failed connect; total attempts = 1 + this. */
+const POST_CONNECT_RETRIES = 2;
+const POST_RETRY_BASE_MS = 5000;
+/** Server error bodies are logged bounded: they come from the network. */
+const MAX_ERROR_BODY_CHARS = 300;
+
+/**
+ * ⚠️ LOAD-BEARING SAFETY LIST. `POST /api/submissions` has NO idempotency key, so
+ * a retry is safe ONLY when the request provably never reached the server. NEVER
+ * add ECONNRESET, read/headers timeouts or any HTTP status here: the server may
+ * have processed the request and a retry would stage a second `pending` row (a
+ * human still reviews it, but it is a duplicate).
+ *
+ * Error codes proving the request NEVER reached the server, so a retry cannot
+ * double-stage a submission. ECONNRESET / read timeouts are deliberately absent:
+ * the server may have processed the POST, and a retry could create a second
+ * pending row. 2026-11-04..06: a single UND_ERR_CONNECT_TIMEOUT (10s) on one
+ * POST failed the whole state ("submit failed") in TX/VA/AZ.
+ */
+const PRE_CONNECT_CODES = new Set([
+  "UND_ERR_CONNECT_TIMEOUT",
+  "ECONNREFUSED",
+  "ENOTFOUND",
+  "EAI_AGAIN",
+]);
+
+/** Codes on the error, its cause, and the cause's AggregateError children (multi-address connects). */
+function failureCodes(err: unknown): unknown[] {
+  const cause = (err as { cause?: unknown } | null)?.cause as { code?: unknown; errors?: unknown } | undefined;
+  const children = Array.isArray(cause?.errors) ? (cause.errors as Array<{ code?: unknown } | null>) : [];
+  return [(err as { code?: unknown } | null)?.code, cause?.code, ...children.map((c) => c?.code)];
+}
+
+function isPreConnectFailure(err: unknown): boolean {
+  // Every DEFINED code must be whitelisted: one non-whitelisted code (e.g. an
+  // ECONNRESET child) means a connection may have been made, so no retry.
+  const defined = failureCodes(err).filter((c) => c !== undefined && c !== null);
+  return defined.length > 0 && defined.every((c) => typeof c === "string" && PRE_CONNECT_CODES.has(c));
+}
+
+/** Summaries whose state hit an exhausted pre-connect retry budget: skip the rest of their POSTs. */
+const connectOutage = new WeakSet<RunSubmitSummary>();
+
+/**
+ * POST one envelope to /api/submissions and count the outcome. Failures log
+ * `error: submit {failed|threw} for <id> (stage=POST[, attempt n/m]) — <status> <body>`
+ * so launchd.out alone names the candidate, stage and server answer.
+ */
+async function postSubmission(
+  deps: RunSubmitDeps,
+  opts: RunSubmitOptions,
+  envelope: unknown,
+  id: string,
+  summary: RunSubmitSummary
+): Promise<void> {
+  if (connectOutage.has(summary)) {
+    summary.errors++;
+    return;
+  }
+  const sleep = deps.sleepImpl ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
+  const attempts = 1 + POST_CONNECT_RETRIES;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const res = await deps.fetchImpl(`${opts.baseUrl}/api/submissions`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${submissionToken()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(envelope),
+      });
+      if (!res.ok) {
+        const body = scrubUriCredentials((await res.text().catch(() => "")).replace(/[\r\n]+/g, " ")).slice(0, MAX_ERROR_BODY_CHARS);
+        console.log(`error: submit failed for ${id} (stage=POST) — ${res.status} ${body}`);
+        summary.errors++;
+        return;
+      }
+      summary.submitted++;
+      summary.submittedIds.push(id);
+      return;
+    } catch (err) {
+      if (attempt < attempts && isPreConnectFailure(err)) {
+        console.log(`retry: submit connect failed for ${id} (attempt ${attempt}/${attempts}) — ${formatErrorSummary(err)}`);
+        await sleep(POST_RETRY_BASE_MS * attempt);
+        continue;
+      }
+      console.log(`error: submit threw for ${id} (stage=POST, attempt ${attempt}/${attempts}) — ${formatErrorSummary(err)}`);
+      summary.errors++;
+      if (isPreConnectFailure(err)) {
+        connectOutage.add(summary);
+        console.log(`error: connect retry budget exhausted for ${id}; skipping the remaining POSTs for this run (each counted as an error, state fails)`);
+      }
+      return;
+    }
+  }
+}
+
 /**
  * Testable core: validates, dedupes, classifies, caps, and (optionally)
  * submits candidates. The CLI `main()` below wraps this with argv parsing,
@@ -943,27 +1042,7 @@ export async function runSubmit(
         continue;
       }
 
-      try {
-        const res = await deps.fetchImpl(`${opts.baseUrl}/api/submissions`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${submissionToken()}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(envelope),
-        });
-        if (!res.ok) {
-          const body = await res.text().catch(() => "");
-          console.log(`error: submit failed for ${targetFacilityId} — ${res.status} ${body}`);
-          summary.errors++;
-          continue;
-        }
-        summary.submitted++;
-        summary.submittedIds.push(targetFacilityId);
-      } catch (err) {
-        console.log(`error: submit threw for ${targetFacilityId} — ${formatErrorSummary(err)}`);
-        summary.errors++;
-      }
+      await postSubmission(deps, opts, envelope, targetFacilityId, summary);
       continue;
     }
 
@@ -1060,27 +1139,7 @@ export async function runSubmit(
         continue;
       }
 
-      try {
-        const res = await deps.fetchImpl(`${opts.baseUrl}/api/submissions`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${submissionToken()}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(envelope),
-        });
-        if (!res.ok) {
-          const body = await res.text().catch(() => "");
-          console.log(`error: submit failed for ${targetFacilityId} — ${res.status} ${body}`);
-          summary.errors++;
-          continue;
-        }
-        summary.submitted++;
-        summary.submittedIds.push(targetFacilityId);
-      } catch (err) {
-        console.log(`error: submit threw for ${targetFacilityId} — ${formatErrorSummary(err)}`);
-        summary.errors++;
-      }
+      await postSubmission(deps, opts, envelope, targetFacilityId, summary);
       continue;
     }
 
@@ -1211,27 +1270,7 @@ export async function runSubmit(
       continue;
     }
 
-    try {
-      const res = await deps.fetchImpl(`${opts.baseUrl}/api/submissions`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${submissionToken()}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(envelope),
-      });
-      if (!res.ok) {
-        const body = await res.text().catch(() => "");
-        console.log(`error: submit failed for ${doc.id} — ${res.status} ${body}`);
-        summary.errors++;
-        continue;
-      }
-      summary.submitted++;
-      summary.submittedIds.push(doc.id);
-    } catch (err) {
-      console.log(`error: submit threw for ${doc.id} — ${formatErrorSummary(err)}`);
-      summary.errors++;
-    }
+    await postSubmission(deps, opts, envelope, doc.id, summary);
   }
 
   return summary;

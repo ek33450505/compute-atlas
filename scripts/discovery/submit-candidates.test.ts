@@ -263,6 +263,117 @@ describe("runSubmit", () => {
     expect(summary.submitted).toBe(1);
     expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
+
+  function connectTimeout() {
+    return Object.assign(new TypeError("fetch failed"), {
+      cause: Object.assign(new Error("Connect Timeout Error"), { code: "UND_ERR_CONNECT_TIMEOUT" }),
+    });
+  }
+
+  it("retries a connect timeout and stages the candidate (no error)", async () => {
+    const ok = { ok: true, status: 201, text: async () => "" } as Response;
+    const fetchImpl = vi.fn().mockRejectedValueOnce(connectTimeout()).mockResolvedValueOnce(ok);
+    const sleepImpl = vi.fn(async () => {});
+    const summary = await runSubmit(
+      [{ facility: makeCandidate({ id: "retry-1" }), provenance: { sources: ["https://x/1"] } }],
+      baseOpts(),
+      { fetchImpl: fetchImpl as unknown as typeof fetch, existingFacilities: [], sleepImpl }
+    );
+    expect(summary.errors).toBe(0);
+    expect(summary.submitted).toBe(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(sleepImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it("does NOT retry ECONNRESET (server may have processed the POST) and names the candidate", async () => {
+    const reset = Object.assign(new TypeError("fetch failed"), {
+      cause: Object.assign(new Error("read ECONNRESET"), { code: "ECONNRESET" }),
+    });
+    const fetchImpl = vi.fn().mockRejectedValue(reset);
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    const summary = await runSubmit(
+      [{ facility: makeCandidate({ id: "reset-1" }), provenance: { sources: ["https://x/1"] } }],
+      baseOpts(),
+      { fetchImpl: fetchImpl as unknown as typeof fetch, existingFacilities: [], sleepImpl: async () => {} }
+    );
+    const lines = log.mock.calls.map((c) => String(c[0]));
+    log.mockRestore();
+    expect(summary.errors).toBe(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(lines.some((l) => l.includes("reset-1") && l.includes("stage=POST") && l.includes("ECONNRESET"))).toBe(true);
+  });
+
+  it("retries when the connect codes sit on cause.errors[] (AggregateError from multi-address connects)", async () => {
+    const agg = Object.assign(new TypeError("fetch failed"), {
+      cause: Object.assign(new AggregateError([Object.assign(new Error("t"), { code: "UND_ERR_CONNECT_TIMEOUT" })], "x"), {}),
+    });
+    const ok = { ok: true, status: 201, text: async () => "" } as Response;
+    const fetchImpl = vi.fn().mockRejectedValueOnce(agg).mockResolvedValueOnce(ok);
+    const summary = await runSubmit(
+      [{ facility: makeCandidate({ id: "agg-1" }), provenance: { sources: ["https://x/1"] } }],
+      baseOpts(),
+      { fetchImpl: fetchImpl as unknown as typeof fetch, existingFacilities: [], sleepImpl: async () => {} }
+    );
+    expect(summary.errors).toBe(0);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it("does NOT retry a mixed aggregate [ECONNRESET, ECONNREFUSED] (one attempt)", async () => {
+    const mixed = Object.assign(new TypeError("fetch failed"), {
+      cause: new AggregateError(
+        [Object.assign(new Error("r"), { code: "ECONNRESET" }), Object.assign(new Error("c"), { code: "ECONNREFUSED" })],
+        "x"
+      ),
+    });
+    const fetchImpl = vi.fn().mockRejectedValue(mixed);
+    const summary = await runSubmit(
+      [{ facility: makeCandidate({ id: "mixed-1" }), provenance: { sources: ["https://x/1"] } }],
+      baseOpts(),
+      { fetchImpl: fetchImpl as unknown as typeof fetch, existingFacilities: [], sleepImpl: async () => {} }
+    );
+    expect(summary.errors).toBe(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it("after one candidate exhausts the connect budget, skips remaining POSTs (counted as errors, one log line)", async () => {
+    const fetchImpl = vi.fn().mockRejectedValue(connectTimeout());
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    const summary = await runSubmit(
+      [1, 2, 3].map((n) => ({ facility: makeCandidate({ id: `outage-${n}` }), provenance: { sources: [`https://x/${n}`] } })),
+      baseOpts(),
+      { fetchImpl: fetchImpl as unknown as typeof fetch, existingFacilities: [], sleepImpl: async () => {} }
+    );
+    const lines = log.mock.calls.map((c) => String(c[0]));
+    log.mockRestore();
+    expect(fetchImpl).toHaveBeenCalledTimes(3); // only the first candidate's 1 + 2 retries
+    expect(summary.errors).toBe(3);
+    expect(lines.filter((l) => l.includes("retry budget exhausted")).length).toBe(1);
+  });
+
+  it("scrubs URI credentials from a logged server body", async () => {
+    const fetchImpl = makeFetch([{ ok: false, status: 500, body: { error: "see postgres://user:s3cret@host/db" } }]);
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    await runSubmit(
+      [{ facility: makeCandidate({ id: "scrub-1" }), provenance: { sources: ["https://x/1"] } }],
+      baseOpts(),
+      { fetchImpl, existingFacilities: [] }
+    );
+    const text = log.mock.calls.map((c) => String(c[0])).join("\n");
+    log.mockRestore();
+    expect(text).toContain("scrub-1");
+    expect(text).not.toContain("s3cret");
+  });
+
+  it("gives up after the retry budget and counts one error", async () => {
+    const fetchImpl = vi.fn().mockRejectedValue(connectTimeout());
+    const summary = await runSubmit(
+      [{ facility: makeCandidate({ id: "retry-2" }), provenance: { sources: ["https://x/1"] } }],
+      baseOpts(),
+      { fetchImpl: fetchImpl as unknown as typeof fetch, existingFacilities: [], sleepImpl: async () => {} }
+    );
+    expect(summary.errors).toBe(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+  });
 });
 
 describe("runSubmit — verification gate (facility seam)", () => {

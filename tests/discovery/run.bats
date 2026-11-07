@@ -179,7 +179,7 @@ EOF
 	# here keeps those assertions exact and makes them immune to the next
 	# rebalance. The default list's CONTENT is asserted separately, in the
 	# dedicated test near the bottom that unsets this.
-	export DISCOVERY_STATES="TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA"
+	export DISCOVERY_DEFAULT_STATES="TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA"
 
 	# run.sh now defaults STATES_PER_RUN=2 (Unit 2, 2026-08-14). Every existing
 	# test in this file was written against the prior single-state-per-run
@@ -251,7 +251,8 @@ teardown() {
 
 @test "cursor advances exactly once per run" {
 	export DISCOVERY_ENABLED=true
-	export DISCOVERY_DRY_RUN=true
+	# Live (non-dry) run: dry runs no longer advance the cursor.
+	export DISCOVERY_DRY_RUN=false
 	echo "TX" >"$LOG_DIR/cursor.txt"
 
 	run bash "$RUN_SH"
@@ -1226,9 +1227,9 @@ EOF
 @test "a DISCOVERY_STATES override run never rewinds the cursor" {
 	export DISCOVERY_ENABLED=true
 	# The known trap: an override-list state must never be written into the live
-	# cursor.txt by the rewind. Three states so the two candidate answers differ:
-	# the start-of-run write for batch [IA NE] is WA (index 2), while an
-	# unguarded rewind would write IA (the first failed state).
+	# cursor.txt, by the start-of-run advance (would write WA, index 2 of the
+	# batch [IA NE]) or by an unguarded rewind (would write IA, the first failed
+	# state). The cursor file must not exist afterwards at all.
 	export DISCOVERY_STATES="IA NE WA"
 	export STATES_PER_RUN=2
 	rm -f "$LOG_DIR/cursor.txt"
@@ -1243,9 +1244,83 @@ EOF
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
 
-	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
-	[ "$cursor_after" = "WA" ]
+	# An override run never touches the live cursor (2026-11-07: it did, NC -> NE).
+	[ ! -e "$LOG_DIR/cursor.txt" ]
 	[[ "$output" != *"re-queued"* ]] || return 1
+}
+
+@test "an override run and a dry run each leave an existing cursor.txt byte-identical" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	printf 'NC\n' >"$LOG_DIR/cursor.txt"
+	_before="$(shasum -a 256 <"$LOG_DIR/cursor.txt")"
+
+	# (1) dry run + override list (the exact 2026-11-07 incident)
+	export DISCOVERY_STATES="NE"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(shasum -a 256 <"$LOG_DIR/cursor.txt")" = "$_before" ]
+
+	# (2) dry run on the default rotation
+	unset DISCOVERY_STATES
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(shasum -a 256 <"$LOG_DIR/cursor.txt")" = "$_before" ]
+
+	# (3) non-dry override run
+	export DISCOVERY_DRY_RUN=false
+	export DISCOVERY_STATES="NE IA"
+	run bash "$RUN_SH"
+	[ "$(shasum -a 256 <"$LOG_DIR/cursor.txt")" = "$_before" ]
+}
+
+@test "a default-rotation non-dry run still advances the cursor" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	printf 'TX\n' >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+}
+
+@test "DISCOVERY_DEFAULT_STATES is ignored without DISCOVERY_TEST_MODE (full default rotation used)" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	# strict flags off so the (sentinel-less) preflight does not need a real .env.local
+	export DISCOVERY_REQUIRE_READER=0 DISCOVERY_REQUIRE_INTAKE_TOKEN=0
+	unset DISCOVERY_STATES DISCOVERY_TEST_MODE
+	export DISCOVERY_DEFAULT_STATES="ZZ"
+	export STATES_PER_RUN=1
+	# IA is index 0 of the real default list; under the seam the list would be ZZ
+	# and an absent cursor state reads as index 0, so the batch would be ZZ.
+	printf 'IA\n' >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"starting discovery batch for states=IA "* ]] || return 1
+	[[ "$output" != *"states=ZZ"* ]] || return 1
+}
+
+@test "notify falls back to osascript and writes ALERTS-PENDING when terminal-notifier exits 3" {
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_STATES
+	cat >"$BIN_DIR/terminal-notifier" <<'EOF'
+#!/usr/bin/env bash
+echo "terminal-notifier $*" >>"$NOTIFY_CALL_LOG"
+exit 3
+EOF
+	chmod +x "$BIN_DIR/terminal-notifier"
+	cat >"$BIN_DIR/claude" <<'EOF'
+#!/usr/bin/env bash
+echo "Failed to authenticate: OAuth session expired and could not be refreshed"
+exit 1
+EOF
+	chmod +x "$BIN_DIR/claude"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"notify: FAILED via terminal-notifier (exit 3"* ]] || return 1
+	[[ "$output" == *"notify: dispatched via osascript"* ]] || return 1
+	grep -q "^osascript " "$NOTIFY_CALL_LOG"
+	grep -q "Compute Atlas discovery FAILED" "$LOG_DIR/ALERTS-PENDING.txt"
+	# owner-only: the file can name states/run ids
+	[ "$(ls -l "$LOG_DIR/ALERTS-PENDING.txt" | cut -c1-10)" = "-rw-------" ]
 }
 
 @test "a transient api_error does NOT rewind the cursor" {
@@ -1544,7 +1619,8 @@ EOF
 
 @test "STATES_PER_RUN=1 preserves today's single-state behavior" {
 	export DISCOVERY_ENABLED=true
-	export DISCOVERY_DRY_RUN=true
+	# Live (non-dry) run: dry runs no longer advance the cursor.
+	export DISCOVERY_DRY_RUN=false
 	export STATES_PER_RUN=1
 	echo "TX" >"$LOG_DIR/cursor.txt"
 
@@ -1562,7 +1638,8 @@ EOF
 
 @test "a 2-state batch processes both states and advances the cursor by 2" {
 	export DISCOVERY_ENABLED=true
-	export DISCOVERY_DRY_RUN=true
+	# Live (non-dry) run: dry runs no longer advance the cursor.
+	export DISCOVERY_DRY_RUN=false
 	export STATES_PER_RUN=2
 	echo "TX" >"$LOG_DIR/cursor.txt"
 
@@ -1584,7 +1661,8 @@ EOF
 
 @test "a 2-state batch wraps the rotation correctly at the end of the list" {
 	export DISCOVERY_ENABLED=true
-	export DISCOVERY_DRY_RUN=true
+	# Live (non-dry) run: dry runs no longer advance the cursor.
+	export DISCOVERY_DRY_RUN=false
 	export STATES_PER_RUN=2
 	# STATES=(TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA) — NM is index 13,
 	# LA is index 14 (the last). A batch starting at NM must wrap to TX.
@@ -2019,7 +2097,7 @@ EOF
 @test "the default rotation adds the unvisited hyperscaler states without dropping any" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=true
-	unset DISCOVERY_STATES
+	unset DISCOVERY_STATES DISCOVERY_DEFAULT_STATES
 	rm -f "$LOG_DIR/cursor.txt"
 	export STATES_PER_RUN=99   # clamped to the rotation length — visits all
 
@@ -2047,7 +2125,7 @@ EOF
 @test "the 2026-09-13 expansion adds all 29 never-swept states plus DC" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=true
-	unset DISCOVERY_STATES
+	unset DISCOVERY_STATES DISCOVERY_DEFAULT_STATES
 	rm -f "$LOG_DIR/cursor.txt"
 	export STATES_PER_RUN=99   # clamped to the rotation length — visits all
 
@@ -2080,7 +2158,7 @@ EOF
 	# Do not "simplify" this back to a membership check.
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=true
-	unset DISCOVERY_STATES
+	unset DISCOVERY_STATES DISCOVERY_DEFAULT_STATES
 	rm -f "$LOG_DIR/cursor.txt"
 	export STATES_PER_RUN=99   # clamped to 51 — the whole rotation in ONE batch,
 	                           # so BATCH_STATES[*] is the full ordered list.
@@ -3070,7 +3148,8 @@ SHIM
 
 @test "STATES_PER_RUN unset defaults to a 3-state batch and the cursor advances by 3" {
 	export DISCOVERY_ENABLED=true
-	export DISCOVERY_DRY_RUN=true
+	# Live (non-dry) run: dry runs no longer advance the cursor.
+	export DISCOVERY_DRY_RUN=false
 	unset STATES_PER_RUN
 	echo "TX" >"$LOG_DIR/cursor.txt"
 

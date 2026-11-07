@@ -340,7 +340,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   `scripts/discovery/run.sh` was made legible on 2026-09-28: each arm's
   status is captured with `|| rc=$?` and every call logs one of four outcomes —
   `SUPPRESSED` (the `DISCOVERY_NOTIFY` early return at the top of `notify()`),
-  `NO NOTIFIER on PATH`, `dispatched`, or `FAILED`. That
+  `NO NOTIFIER DISPATCHED`, `dispatched`, or `FAILED`. That
   makes the *attempt* auditable, not the delivery — both notifiers exit 0 with
   the banner swallowed by Focus or a revoked permission, which is why the log
   says `dispatched` and never `delivered`. The

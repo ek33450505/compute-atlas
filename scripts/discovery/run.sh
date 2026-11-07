@@ -136,26 +136,51 @@ notify() {
   # set -e is in force, so capture the status with `|| rc=$?` — immediately,
   # and never through a pipe (a pipeline has silently replaced an exit status
   # in this repo before).
+  # Fallback chain: terminal-notifier -> osascript -> marker file. terminal-
+  # notifier exits 3 when macOS notification authorization for its bundle is
+  # DENIED (confirmed 2026-11-07: `terminal-notifier -diagnose` says
+  # "authorization denied"); that is a permission problem, not a launchd one, and
+  # it silenced every failure alert from at least 2026-10-03 on. So a failed arm
+  # falls through to the next, and the marker file below is written regardless:
+  # a zero exit proves only dispatch, so the file is the one channel that cannot
+  # be swallowed by Focus/DND/permissions.
   rc=0
+  local delivered=false
   if command -v terminal-notifier >/dev/null 2>&1; then
     terminal-notifier -title "$safe_title" -message "$safe_message" \
       -group com.compute-atlas.discovery >/dev/null 2>&1 || rc=$?
     if [[ "$rc" -eq 0 ]]; then
+      delivered=true
       log "notify: dispatched via terminal-notifier (exit 0; dispatched != seen) — $safe_title: $safe_message"
     else
-      log "notify: FAILED via terminal-notifier (exit $rc) — $safe_title: $safe_message"
+      log "notify: FAILED via terminal-notifier (exit $rc; 3 = notifications denied, run 'terminal-notifier -diagnose') — $safe_title: $safe_message"
     fi
-  elif command -v osascript >/dev/null 2>&1; then
+  fi
+  if [[ "$delivered" != "true" ]] && command -v osascript >/dev/null 2>&1; then
+    rc=0
     osascript -e "display notification \"$safe_message\" with title \"$safe_title\"" \
       >/dev/null 2>&1 || rc=$?
     if [[ "$rc" -eq 0 ]]; then
+      delivered=true
       log "notify: dispatched via osascript (exit 0; dispatched != seen) — $safe_title: $safe_message"
     else
       log "notify: FAILED via osascript (exit $rc) — $safe_title: $safe_message"
     fi
-  else
-    log "notify: NO NOTIFIER on PATH (neither terminal-notifier nor osascript) — $safe_title: $safe_message"
   fi
+  if [[ "$delivered" != "true" ]]; then
+    log "notify: NO NOTIFIER DISPATCHED (terminal-notifier and osascript absent or failed) — $safe_title: $safe_message"
+  fi
+  # Durable marker: appended on every non-suppressed alert, trimmed to the last
+  # 200 lines. Ed (or the next interactive session) reads and deletes it.
+  # Best-effort: a write failure must never fail the run.
+  (
+    umask 077
+    printf '%s %s: %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$safe_title" "$safe_message" >>"$LOG_DIR/ALERTS-PENDING.txt" \
+      && tail -n 200 "$LOG_DIR/ALERTS-PENDING.txt" >"$LOG_DIR/ALERTS-PENDING.txt.tmp" \
+      && mv "$LOG_DIR/ALERTS-PENDING.txt.tmp" "$LOG_DIR/ALERTS-PENDING.txt"
+  ) 2>/dev/null || true
+  # umask only covers NEW files; tighten one that already existed with looser bits.
+  chmod 600 "$LOG_DIR/ALERTS-PENDING.txt" 2>/dev/null || true
   return 0
 }
 
@@ -244,10 +269,17 @@ fi
 # `lastUpdated` in one of the original 22 means the pipeline looked and found
 # nothing, but in one of these 29 it means nobody has ever looked.
 #
+# DISCOVERY_DEFAULT_STATES replaces the default list but still counts as the live
+# rotation. TEST SEAM: honored ONLY under DISCOVERY_TEST_MODE=1 (like
+# DISCOVERY_ENV_FILE above); tests/discovery/run.bats pins a short list with it.
 # DISCOVERY_STATES overrides the list entirely (space-separated). That is the
 # supported way to drive a targeted manual run without editing this file:
 #   DISCOVERY_STATES="IA NE" STATES_PER_RUN=2 bash scripts/discovery/run.sh
-DEFAULT_STATES="IA NE WA OR MN MO UT TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA AL AK AR CA CO CT DC DE FL HI ID KS KY ME MD MA MI MS MT NH NJ NY ND RI SC SD TN VT WV"
+_default_states_override=""
+if [[ "${DISCOVERY_TEST_MODE:-0}" == "1" ]]; then
+  _default_states_override="${DISCOVERY_DEFAULT_STATES:-}"
+fi
+DEFAULT_STATES="${_default_states_override:-IA NE WA OR MN MO UT TX VA OH GA AZ NV NC PA IL WI IN OK WY NM LA AL AK AR CA CO CT DC DE FL HI ID KS KY ME MD MA MI MS MT NH NJ NY ND RI SC SD TN VT WV}"
 read -r -a STATES <<< "${DISCOVERY_STATES:-$DEFAULT_STATES}"
 # True only when STATES IS the default rotation. The re-queue rewind after the
 # state loop writes a state into cursor.txt, and an override-list state must
@@ -326,7 +358,14 @@ done
 # Cursor advance is written ONCE, before any research work below, so a crash
 # mid-batch cannot make the rotation stick on the same states forever.
 NEXT_INDEX=$(( (CURRENT_INDEX + STATES_PER_RUN) % ${#STATES[@]} ))
-echo "${STATES[$NEXT_INDEX]}" > "$CURSOR_FILE"
+# ...but ONLY for the live rotation: an override list (DISCOVERY_STATES) or a
+# dry run must leave cursor.txt byte-identical. 2026-11-07: a
+# `DISCOVERY_DRY_RUN=true DISCOVERY_STATES=NE` run overwrote the live cursor
+# (NC -> NE). The read above is safe for an override: a cursor state that is
+# not in STATES simply falls back to index 0.
+if [[ "$ROTATION_IS_DEFAULT" == "true" && "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
+  echo "${STATES[$NEXT_INDEX]}" > "$CURSOR_FILE"
+fi
 
 log "starting discovery batch for states=${BATCH_STATES[*]} (STATES_PER_RUN=$STATES_PER_RUN)"
 
