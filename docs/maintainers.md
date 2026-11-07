@@ -301,14 +301,25 @@ show `0`). Delete `~/.rot` when done.
 
 **2. `API_ADMIN_TOKEN`.** Grants every admin write route, the admin UI, the cron recovery path, and
 discovery staging writes too (the intake split was declined 2026-10-28). ⚠️ **Rotating it invalidates
-every live `admin_session` cookie**, because the cookie HMAC is keyed by the raw token
-(`lib/admin-session.ts`, `signV2Parts`). There is **no overlap window** — the code compares against
+every live `admin_session` cookie**, because the cookie HMAC key is HKDF-derived from the token
+(`lib/admin-session.ts`, `deriveSessionKey`). There is **no overlap window** — the code compares against
 exactly one value, so it is a hard cutover.
 Order: Vercel production → **redeploy** → `.env.local` (the `submissions` CLI, `sync-to-neon.ts` and
 `submit-candidates.ts` all read it) → log in to `/admin` again.
 Do it when **no nightly `run.sh` discovery run is in flight**.
 The discovery pipeline also submits with `API_ADMIN_TOKEN` (the intake split was declined 2026-10-28), so
 its `.env.local` is part of this rotation, and the in-flight-run caveat above applies.
+
+**Sign out everywhere (without rotating the token).** The session cookie (`v3.<issuedAtMs>.<nonce>.<hmac>`) is
+signed with an HKDF-SHA256 key derived from `API_ADMIN_TOKEN` plus the optional env `ADMIN_SESSION_EPOCH`
+(unset = `"0"`). Logout only clears the browser's cookie; a stolen cookie stays valid for up to 7 days. To
+revoke every outstanding session: set or bump `ADMIN_SESSION_EPOCH` (any new string, e.g. `1`, `2`) in
+Vercel production → **redeploy** (Vercel env applies to new deployments only) → log in again. The bearer
+token and password are unchanged. The `v2` to `v3` cutover itself signed everyone out once. The login
+brute-force cap (5 failed attempts / 15 min per IPv4 address or IPv6 /64, hashed) is durable in
+`intake_attempts` under surface `admin-login`. Each attempt reserves a row before the password is checked
+and the row is deleted on success, so concurrent guesses (also across instances) can never exceed the cap; a simultaneous burst may be refused entirely. It fails closed if the DB is unreachable, so a Neon outage also blocks admin login. Residual:
+if the post-success delete fails, that login still succeeds but the row counts as a failure.
 
 **3. `NEON_SYNC_PAT`.** Unused: no surviving workflow reads it (`neon-sync` and `nhd-backfill` were
 deleted). Revoke it in GitHub when convenient. (It was used only by `neon-sync.yml` and `nhd-backfill.yml`, both deleted in PR C; it had no Workflows scope by design and was due to expire 2026-12-04.) The `DATABASE_URL` Actions secret is still used by

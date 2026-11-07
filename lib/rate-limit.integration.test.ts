@@ -20,6 +20,9 @@ import {
 
 import {
   checkIntakeRateLimit,
+  reserveAdminLoginAttempt,
+  releaseAdminLoginAttempt,
+  ADMIN_LOGIN_BUDGET,
   checkSubscribeRateLimit,
   recordIntakeAttempt,
   recordSubscribeAttempt,
@@ -174,6 +177,61 @@ describe("recordIntakeAttempt", () => {
     await recordIntakeAttempt(surface, IP_HASH);
     const rows = await tdb.db.select().from(intakeAttemptsTable);
     expect(rows[0].surface).toBe(surface);
+  });
+});
+
+describe("admin-login budget (reserve-then-count)", () => {
+  async function rowCount(ipHash: string): Promise<number> {
+    const rows = await tdb.db.select().from(intakeAttemptsTable);
+    return rows.filter((r) => r.surface === "admin-login" && r.submitterIpHash === ipHash).length;
+  }
+
+  it("admits 5 reservations, refuses the 6th, scoped to the IP", async () => {
+    for (let i = 0; i < 5; i++) expect((await reserveAdminLoginAttempt(IP_HASH)).ok).toBe(true);
+    expect((await reserveAdminLoginAttempt(IP_HASH)).ok).toBe(false);
+    expect((await reserveAdminLoginAttempt(OTHER_IP_HASH)).ok).toBe(true);
+  });
+
+  // On one connection every concurrent INSERT lands before any COUNT, so a
+  // simultaneous burst from a cold start sees the whole burst and is refused
+  // entirely (over-refusal, never over-admission). To make the assertions
+  // meaningful the first reservation is made alone (it must be admitted), then
+  // the burst runs against it: total admitted is >= 1 and never > max.
+  it("never over-admits under concurrency, and still admits the earlier request", async () => {
+    const first = await reserveAdminLoginAttempt(IP_HASH);
+    expect(first.ok).toBe(true);
+    const burst = await Promise.all(
+      Array.from({ length: 20 }, () => reserveAdminLoginAttempt(IP_HASH))
+    );
+    const admitted = 1 + burst.filter((r) => r.ok).length;
+    expect(admitted).toBeGreaterThanOrEqual(1);
+    expect(admitted).toBeLessThanOrEqual(ADMIN_LOGIN_BUDGET.max);
+  });
+
+  it("a refused reservation does not stay in the window; a released one is removed", async () => {
+    const admitted = [];
+    for (let i = 0; i < 5; i++) admitted.push(await reserveAdminLoginAttempt(IP_HASH));
+    expect((await reserveAdminLoginAttempt(IP_HASH)).ok).toBe(false);
+    expect(await rowCount(IP_HASH)).toBe(5);
+    await releaseAdminLoginAttempt(admitted[0].id); // successful login
+    expect(await rowCount(IP_HASH)).toBe(4);
+    expect((await reserveAdminLoginAttempt(IP_HASH)).ok).toBe(true);
+  });
+
+  it("uses a 15-minute window, not the hourly one", async () => {
+    await seedIntakeAttempts("admin-login", IP_HASH, 5, ADMIN_LOGIN_BUDGET.windowMs + 60_000);
+    expect((await reserveAdminLoginAttempt(IP_HASH)).ok).toBe(true);
+    await tdb.reset();
+    await seedIntakeAttempts("admin-login", IP_HASH, 5, ADMIN_LOGIN_BUDGET.windowMs - 60_000);
+    expect((await reserveAdminLoginAttempt(IP_HASH)).ok).toBe(false);
+  });
+
+  it("does not share budget with other surfaces", async () => {
+    await seedIntakeAttempts("contact", IP_HASH, 5);
+    expect((await reserveAdminLoginAttempt(IP_HASH)).ok).toBe(true);
+    await seedIntakeAttempts("admin-login", IP_HASH, 5);
+    expect((await checkIntakeRateLimit("contact", IP_HASH)).ok).toBe(false);
+    expect((await checkIntakeRateLimit("leads", IP_HASH)).ok).toBe(true);
   });
 });
 

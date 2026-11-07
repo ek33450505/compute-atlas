@@ -330,4 +330,31 @@ describe("hashNotifyEmail", () => {
       "f0ca8dc9a0d9d09e999aedbeea5aa17f06be1edb8a395cac927f7bed844be61f"
     );
   });
+
+  it.each([
+    ["2001:DB8::1", "2001:db8:0:0"],
+    ["2001:0db8::1", "2001:db8:0:0"],
+    ["2001:db8:0:0:0:0:0:1", "2001:db8:0:0"],
+    ["2001:0DB8:0000:0000:0000:0000:0000:0001", "2001:db8:0:0"],
+    ["2001:db8::1%eth0", "2001:db8:0:0"],
+    ["2001:db8:00ab:0:aaaa::1", "2001:db8:ab:0"],
+    ["2001:db8:ab:0:1::2", "2001:db8:ab:0"],
+  ])("canonicalises %s to one bucket %s", (input, expected) => {
+    expect(normaliseIpForBucketing(input)).toBe(expected);
+  });
+
+  it.each([
+    "::ffff:203.0.113.9",
+    "::FFFF:203.0.113.9",
+    "0:0:0:0:0:ffff:203.0.113.9",
+    "::ffff:cb00:7109",
+    "0000:0000:0000:0000:0000:ffff:cb00:7109",
+  ])("maps IPv4-mapped %s to the plain IPv4 bucket", (input) => {
+    expect(normaliseIpForBucketing(input)).toBe("203.0.113.9");
+  });
+
+  it("does not throw on malformed colon strings", () => {
+    expect(() => normaliseIpForBucketing("zz::::1")).not.toThrow();
+    expect(() => normaliseIpForBucketing("::ffff:999.1.1.1")).not.toThrow();
+  });
 });

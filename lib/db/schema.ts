@@ -298,7 +298,14 @@ export type SubscribeAttemptRow = typeof subscribeAttemptsTable.$inferSelect;
  * The write surfaces `intake_attempts` counts, one budget each. String
  * literals, not an enum type: adding a surface must not need a migration.
  */
-export const INTAKE_SURFACES = ["contribute", "leads", "contact", "access-request"] as const;
+export const INTAKE_SURFACES = [
+  "contribute",
+  "leads",
+  "contact",
+  "access-request",
+  // Failed admin-login attempts only (app/admin/login/actions.ts); own budget, see ADMIN_LOGIN_* in lib/rate-limit.ts.
+  "admin-login",
+] as const;
 
 export type IntakeSurface = (typeof INTAKE_SURFACES)[number];
 
