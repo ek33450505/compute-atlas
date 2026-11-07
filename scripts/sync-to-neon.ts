@@ -688,10 +688,32 @@ export function printPlan(plan: SyncPlan, jsonCount: number, neonCount: number, 
 async function main(): Promise<void> {
   const options = parseCliArgs(process.argv.slice(2));
 
+  // Pre-flight BEFORE any write. Publishing rows whose pages can never be
+  // busted is worse than not publishing: scoped pages (facility detail, state
+  // landing) are tag-only with no ISR timer of their own. That no longer
+  // means indefinitely stale, though — the facility, state and embed-state
+  // pages declare `revalidate = 86400` themselves (nothing else supplies a
+  // floor; see `lib/data.ts`), so an un-busted scoped page self-heals within
+  // ~24h worst case rather than staying stale forever. Still worth refusing: ~24h of a published change not showing up
+  // is exactly the kind of silent gap this guard exists to prevent.
+  let revalidateConfig: RevalidateConfig | null;
+  try {
+    revalidateConfig = resolveRevalidate({
+      apply: options.apply,
+      skipRevalidate: options.skipRevalidate,
+      env: process.env,
+    });
+  } catch (err) {
+    // lint-no-raw-error-logs: allow -- RefusalError from resolveRevalidate names only env presence and the URL scheme/host, never a token or a DB error
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
+
+  // Config/argument errors above; then the snapshot size guard, before DATABASE_URL and any DB read.
   const jsonPath = path.join(process.cwd(), "data", "facilities.json");
   const metaPath = path.join(path.dirname(jsonPath), "facilities.meta.json");
 
-  // Size guard first: before DATABASE_URL, any DB read, and in dry run too.
+  // Size guard: before DATABASE_URL, any DB read, and in dry run too.
   const snapshot = loadSnapshotForSync((p) => readFileSync(p, "utf-8"), jsonPath, metaPath);
   if (!snapshot.ok) {
     console.error(snapshot.message);
@@ -708,27 +730,6 @@ async function main(): Promise<void> {
     console.error(
       "DATABASE_URL is not set. Configure it in .env.local (see .env.example) before syncing."
     );
-    process.exit(1);
-  }
-
-  // Pre-flight BEFORE any write. Publishing rows whose pages can never be
-  // busted is worse than not publishing: scoped pages (facility detail, state
-  // landing) are tag-only with no ISR timer of their own. That no longer
-  // means indefinitely stale, though — every route still floors at the root
-  // layout's 86400s `loadNavFacets` timer, so an un-busted scoped
-  // page now self-heals within ~24h worst case rather than staying stale
-  // forever. Still worth refusing: ~24h of a published change not showing up
-  // is exactly the kind of silent gap this guard exists to prevent.
-  let revalidateConfig: RevalidateConfig | null;
-  try {
-    revalidateConfig = resolveRevalidate({
-      apply: options.apply,
-      skipRevalidate: options.skipRevalidate,
-      env: process.env,
-    });
-  } catch (err) {
-    // lint-no-raw-error-logs: allow -- RefusalError from resolveRevalidate names only env presence and the URL scheme/host, never a token or a DB error
-    console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
 

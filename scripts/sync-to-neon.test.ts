@@ -743,8 +743,15 @@ describe("db:sync CLI size guard", () => {
   const run = (dir: string, args: string[]) =>
     spawnSync(process.execPath, ["--import", pathToFileURL(join(process.cwd(), "node_modules/tsx/dist/loader.mjs")).href, script, ...args], {
       cwd: dir,
-      // No DATABASE_URL: reaching the DB check would print a different message.
-      env: { NODE_ENV: "test", PATH: process.env.PATH ?? "", TSX_TSCONFIG_PATH: join(process.cwd(), "tsconfig.json") },
+      // No DATABASE_URL: reaching the DB check would print a different message. A valid https
+      // API_BASE_URL + token so --apply passes the revalidate pre-flight, which runs before the floor.
+      env: {
+        NODE_ENV: "test",
+        PATH: process.env.PATH ?? "",
+        TSX_TSCONFIG_PATH: join(process.cwd(), "tsconfig.json"),
+        API_BASE_URL: "https://www.example.com",
+        API_ADMIN_TOKEN: "test-token",
+      },
       encoding: "utf8",
     });
 

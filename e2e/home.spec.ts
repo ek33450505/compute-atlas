@@ -183,14 +183,14 @@ test("/table paginates through real links and keeps the query", async ({ page })
   await page.goto("/table");
   const nav = page.getByRole("navigation", { name: "Table pagination" });
   await expect(nav).toBeVisible();
-  await expect(page.getByRole("status").filter({ hasText: /Showing/ })).toContainText(
-    /Showing 1–50 of [\d,]+ facilities/
-  );
+  const status = page.getByRole("status").filter({ hasText: /Showing/ });
+  await expect(status).toContainText(/Showing 1–50 of [\d,]+ facilities/);
+  const total = Number(/of ([\d,]+) facilities/.exec((await status.textContent()) ?? "")?.[1].replace(/,/g, ""));
+  // Fewer than two pages would make this test pass without paginating anything.
+  expect(total, "pagination is untestable with <= 50 facilities").toBeGreaterThan(50);
   await nav.getByRole("link", { name: "Next" }).click();
   await expect(page).toHaveURL(/[?&]page=2/);
-  await expect(page.getByRole("status").filter({ hasText: /Showing/ })).toContainText(
-    /Showing 51–100 of [\d,]+ facilities/
-  );
+  await expect(status).toContainText(new RegExp(`Showing 51–${Math.min(100, total)} of [\\d,]+ facilities`));
   await expect(
     page.getByRole("navigation", { name: "Table pagination" }).getByRole("link", { name: "Page 2" })
   ).toHaveAttribute("aria-current", "page");
