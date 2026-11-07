@@ -2,11 +2,11 @@
 # Classifies the exit code and output of `check-digest-status.ts` into exactly
 # one of three states: healthy | crashed | detector-broken.
 #
-# Why three states, and why the rule order differs from classify-drift-output.sh:
-# check-neon-drift.ts ALWAYS exits 0 (even when it couldn't check anything), so
-# THAT classifier can treat "any non-zero exit" as an unambiguous "the detector
-# never ran" signal and check it first. check-digest-status.ts does NOT have
-# that contract — it explicitly exits 1 on TWO distinct conditions: a real
+# Why three states, and why the rule order checks output before exit code:
+# a classifier for a detector that always exits 0 could treat "any non-zero
+# exit" as an unambiguous "the detector never ran" signal and check it first.
+# check-digest-status.ts does NOT have that contract — it explicitly exits 1 on TWO
+# distinct conditions: a real
 # crash (an incomplete digest run was found) and a detector failure (DB
 # unreachable, query error). Both conditions produce exit 1, so exit code
 # alone cannot tell them apart; this classifier must inspect the OUTPUT

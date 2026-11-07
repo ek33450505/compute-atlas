@@ -15,9 +15,9 @@ import {
 } from "./automation-health";
 
 const DAILY: WorkflowConfig = {
-  file: "drift-alert.yml",
-  name: "drift-alert",
-  cronDescription: "0 22 * * * (daily 22:00 UTC)",
+  file: "googlebot-canary.yml",
+  name: "googlebot-canary",
+  cronDescription: "0 6 * * * (daily 06:00 UTC)",
   staleAfterHours: 36,
 };
 

@@ -173,8 +173,9 @@ const NHD_SKIP_FALLBACK_GUIDANCE = [
   'PRICE OF --skip-nhd: it leaves nearestWater/nearestTransmission UNSET on',
   'new records. Record that debt in the same change with',
   '`npm run nhd:debt -- --note "<why>"`, or the ratchet in',
-  'lib/siting-context.test.ts fails CI. The nightly nhd-backfill workflow',
-  'pays it off-peak (--backfill-nhd). A FULL build:mapdata is still the only',
+  'lib/siting-context.test.ts fails CI. A maintainer-run',
+  '`npm run build:mapdata -- --backfill-nhd` (ideally off-peak, when USGS NHD is',
+  'healthy) pays it off. A FULL build:mapdata is still the only',
   'way to re-query a facility whose coordinates were corrected.',
 ];
 

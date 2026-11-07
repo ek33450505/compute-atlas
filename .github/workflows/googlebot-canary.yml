@@ -46,7 +46,7 @@ name: Googlebot Access Canary
 
 on:
   schedule:
-    - cron: "0 6 * * *"  # 06:00 UTC daily — clear of neon-sync (08:00), release-please (09:00 Mon), drift-alert (22:00), discovery-watchdog (23:00)
+    - cron: "0 6 * * *"  # 06:00 UTC daily — clear of release-please (09:00 Mon), discovery-watchdog (23:00)
   workflow_dispatch:
 
 permissions:

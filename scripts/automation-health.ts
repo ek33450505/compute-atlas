@@ -3,23 +3,21 @@
  * Actions workflow has stopped running, or has started failing, and posts
  * that as a GitHub issue.
  *
- * Why this exists (2026-09-09): `.github/workflows/drift-alert.yml` failed
- * six consecutive nightly runs (2026-09-03 .. 2026-09-08) and nobody
+ * Why this exists (2026-09-09): a nightly drift-alert workflow (since retired)
+ * failed six consecutive nightly runs (2026-09-03 .. 2026-09-08) and nobody
  * noticed. Root cause of the *non-noticing*, not of the failure itself:
  * scheduled-workflow failures have no reader. A normal CI failure gets seen
  * because it blocks a PR; a scheduled failure sends an email that gets
  * filtered. The maintainer works the backlog via `gh issue list`, so a
  * GitHub issue is the surface that actually reaches them.
  *
- * Second, related gap this closes: when `neon-sync.yml` finds no drift it
- * correctly opens no PR — so "no sync PR today" is indistinguishable from
- * "the sync chain is dead." Run *freshness* (not just conclusion)
+ * Second, related gap this closes: a scheduled job that correctly does nothing
+ * is indistinguishable from a dead one. Run *freshness* (not just conclusion)
  * disambiguates that, because the scheduled run still happens either way.
  * Freshness also catches GitHub auto-disabling a schedule after 60 days of
  * repo inactivity — that shows up here as `never-run`/`stale`, not silence.
  *
- * Fails CLOSED, like `scripts/check-schema-drift.ts` and unlike
- * `scripts/check-neon-drift.ts` (which is deliberately advisory): a missing
+ * Fails CLOSED, like `scripts/check-schema-drift.ts`: a missing
  * `GITHUB_TOKEN`, or any workflow found not-`ok`, exits 1. "Could not check"
  * must never read as "healthy" — that is the exact failure mode this script
  * exists to catch, one layer up.
@@ -45,12 +43,10 @@ export interface WorkflowConfig {
 
 /**
  * Monitored workflows and their freshness budgets. Crons verified on disk
- * 2026-09-09, except `nhd-backfill.yml`, which is new in the
- * fix/map-automation-resilience PR (its cron is `23 4 * * *`, set in that same
- * PR and not part of the 2026-09-09 verification).
+ * 2026-09-09.
  *
- * 36h on a DAILY job is deliberate slack, not laziness: `neon-sync`'s cron
- * has been observed firing 0.3-11.9h after its nominal time (GitHub delays
+ * 36h on a DAILY job is deliberate slack, not laziness: a daily cron (the retired
+ * `neon-sync`) was observed firing 0.3-11.9h after its nominal time (GitHub delays
  * scheduled runs under load, worse when the repo is quiet). A tighter
  * budget would flap on scheduler jitter alone. Do not "tighten" this into a
  * flaky alarm — the slack is load-bearing. `discovery-watchdog` runs
@@ -62,18 +58,6 @@ export interface WorkflowConfig {
  * room before alarming.
  */
 export const MONITORED_WORKFLOWS: WorkflowConfig[] = [
-  {
-    file: "neon-sync.yml",
-    name: "neon-sync",
-    cronDescription: "0 8 * * * (daily 08:00 UTC)",
-    staleAfterHours: 36,
-  },
-  {
-    file: "drift-alert.yml",
-    name: "drift-alert",
-    cronDescription: "0 22 * * * (daily 22:00 UTC)",
-    staleAfterHours: 36,
-  },
   {
     file: "discovery-watchdog.yml",
     name: "discovery-watchdog",
@@ -91,12 +75,6 @@ export const MONITORED_WORKFLOWS: WorkflowConfig[] = [
     name: "release-please",
     cronDescription: "0 9 * * 1 (Mondays 09:00 UTC)",
     staleAfterHours: 8 * 24,
-  },
-  {
-    file: "nhd-backfill.yml",
-    name: "nhd-backfill",
-    cronDescription: "23 4 * * * (daily 04:23 UTC)",
-    staleAfterHours: 36,
   },
 ];
 
