@@ -89,7 +89,7 @@ const createSchema = z.object({
 const correctionSchema = z.object({
   kind: z.literal("correction"),
   website: z.string().max(200).optional(),
-  targetFacilityId: storableText(z.string().min(1)),
+  targetFacilityId: storableText(z.string().min(1).max(120)),
   field: z.enum(CORRECTABLE_KEYS),
   value: z.union([storableText(z.string().max(2000)), z.number()]),
   sourceUrl: httpUrlSchema,

@@ -1,6 +1,7 @@
 import { after } from "next/server";
 
-import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { readJsonBody } from "@/lib/read-json-body";
+import { jsonResponse, corsPreflight, methodNotAllowed } from "@/lib/api-response";
 import { redactedErrorCode } from "@/lib/db-error";
 import {
   checkIntakeRateLimit,
@@ -47,12 +48,15 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonResponse({ error: "Invalid JSON" }, { status: 400 });
+  // Size-capped after the rate-limit attempt is recorded (same ordering as the
+  // old `request.json()`), so an oversize body still spends budget.
+  const parsed = await readJsonBody(request);
+  if (!parsed.ok) {
+    return parsed.reason === "too_large"
+      ? jsonResponse({ error: "Request body too large" }, { status: 413 })
+      : jsonResponse({ error: "Invalid JSON" }, { status: 400 });
   }
+  const body: unknown = parsed.body;
 
   // Honeypot: checked against the RAW body, before any schema parsing, so a
   // bot that fills `website` gets the same silent 201 with nothing written
@@ -104,4 +108,9 @@ export async function POST(request: Request) {
 // neither `Authorization` nor those verbs.
 export function OPTIONS() {
   return corsPreflight("public-write");
+}
+
+// POST-only: answer GET with a no-store 405 (a bare framework 405 is edge-cacheable).
+export function GET() {
+  return methodNotAllowed(["POST", "OPTIONS"]);
 }

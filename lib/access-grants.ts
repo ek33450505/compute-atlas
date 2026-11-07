@@ -11,6 +11,7 @@ import { hashToken, isHashedToken } from "@/lib/token-hash";
 
 export const accessGrantInputSchema = z.object({
   email: z.string().email().max(254),
+  // Deliberately unbounded: isHoneypotTripped trims, so a whitespace-only value over a max would skip the honeypot and 400 (an oracle); the 64 KiB body cap bounds it.
   website: z.string().optional(), // honeypot — real users never fill this; checked on the RAW input before this schema runs
 });
 

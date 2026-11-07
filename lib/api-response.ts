@@ -154,6 +154,20 @@ export function notAvailable(): NextResponse {
 }
 
 /**
+ * 405 with `Allow`, `no-store` via `jsonResponse`. POST-only routes export
+ * `GET = () => methodNotAllowed(["POST", "OPTIONS"])`: with no GET export,
+ * Next answers with its own 405 carrying no cache directive, so Cloudflare
+ * supplied `public, max-age=14400` and the 405 was edge-cacheable.
+ * `app/api/route-methods.guard.test.ts` fails if a route module has no GET.
+ */
+export function methodNotAllowed(allowed: readonly string[]): NextResponse {
+  return jsonResponse(
+    { error: "Method not allowed" },
+    { status: 405, headers: { Allow: allowed.join(", ") } }
+  );
+}
+
+/**
  * Shared OPTIONS preflight response — each route re-exports this as its own
  * `OPTIONS`, naming the scope its path genuinely accepts.
  *

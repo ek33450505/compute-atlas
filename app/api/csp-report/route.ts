@@ -1,3 +1,5 @@
+import { NO_STORE_HEADERS } from "@/lib/api-response";
+import { readBodyText } from "@/lib/read-json-body";
 import { extractTrustedClientIp, normaliseIpForBucketing } from "@/lib/rate-limit";
 import {
   MAX_CSP_REPORT_BYTES,
@@ -46,25 +48,14 @@ export async function POST(request: Request): Promise<Response> {
   const globalGate = checkCspReportGlobalLimit();
   if (!globalGate.ok) return tooManyReports(globalGate.retryAfter);
 
-  // Checked twice on purpose. `content-length` lets an oversized body be
-  // rejected before it is read, but it is caller-supplied and may be absent
-  // or a lie, so the actual decoded size is checked again below — the header
-  // is an optimisation, never the bound.
-  const declaredLength = Number(request.headers.get("content-length"));
-  if (Number.isFinite(declaredLength) && declaredLength > MAX_CSP_REPORT_BYTES) {
-    return new Response(null, { status: 413 });
+  // Capped streaming read: `content-length` rejects early, and the stream is
+  // counted as it arrives because the header may be absent or a lie. Never
+  // buffers more than MAX_CSP_REPORT_BYTES.
+  const read = await readBodyText(request, { maxBytes: MAX_CSP_REPORT_BYTES });
+  if (!read.ok) {
+    return new Response(null, { status: read.reason === "too_large" ? 413 : 400 });
   }
-
-  let raw: string;
-  try {
-    raw = await request.text();
-  } catch {
-    return new Response(null, { status: 400 });
-  }
-
-  if (new TextEncoder().encode(raw).length > MAX_CSP_REPORT_BYTES) {
-    return new Response(null, { status: 413 });
-  }
+  const raw = read.text;
 
   let body: unknown;
   try {
@@ -79,4 +70,13 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   return new Response(null, { status: 204 });
+}
+
+/**
+ * POST-only: a no-store 405 on GET. Built by hand rather than with
+ * `methodNotAllowed` for the same reason the rest of this file avoids
+ * `jsonResponse`: no CORS headers on a same-origin side channel.
+ */
+export function GET(): Response {
+  return new Response(null, { status: 405, headers: { ...NO_STORE_HEADERS, Allow: "POST" } });
 }

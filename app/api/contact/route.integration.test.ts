@@ -44,7 +44,7 @@ import { contactMessagesTable, intakeAttemptsTable } from "@/lib/db/schema";
 import { RATE_LIMIT_MAX, hashIp, normaliseIpForBucketing } from "@/lib/rate-limit";
 
 // Imported after the mocks above so the mocked modules are in effect.
-import { POST } from "./route";
+import { GET, POST } from "./route";
 
 // cf-connecting-ip is honoured only alongside a valid edge secret
 // (lib/edge-secret.ts), so these tests present one like Cloudflare would.
@@ -105,6 +105,35 @@ afterAll(async () => {
 });
 
 describe("POST /api/contact", () => {
+  it("answers an oversize body with 413 and stores nothing (declared and streamed)", async () => {
+    const big = { name: "a", email: "a@b.co", message: "m".repeat(70_000) };
+    const declared = await POST(req(big));
+    expect(declared.status).toBe(413);
+
+    const streamed = await POST(
+      new Request("http://localhost/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...EDGE_HEADER },
+        body: new ReadableStream({
+          start(c) {
+            c.enqueue(new TextEncoder().encode(JSON.stringify(big)));
+            c.close();
+          },
+        }),
+        duplex: "half",
+      } as RequestInit)
+    );
+    expect(streamed.status).toBe(413);
+    expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(0);
+  });
+
+  it("GET is a no-store 405 with Allow", () => {
+    const res = GET();
+    expect(res.status).toBe(405);
+    expect(res.headers.get("Allow")).toBe("POST, OPTIONS");
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+  });
+
   it("stages a valid message with 201, and emailSent stays false when RESEND_API_KEY is unset", async () => {
     const res = await POST(req(VALID));
     expect(res.status).toBe(201);
