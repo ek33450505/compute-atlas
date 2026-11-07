@@ -24,7 +24,7 @@ vi.mock("./check-googlebot-access", () => ({
 // Only the "--sitemap source lands in the written report" test below drives
 // main() far enough (--run, with credentials/token/inspect mocked) to reach
 // the real write — mock node:fs so that path, and only that path, can never
-// touch this repo's actual data/index-census.json.
+// touch this repo's actual ops/index-census/index-census.json.
 vi.mock("node:fs", async (importOriginal) => {
   const actual = await importOriginal<typeof import("node:fs")>();
   return { ...actual, writeFileSync: mockWriteFileSync, mkdirSync: mockMkdirSync };
