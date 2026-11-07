@@ -205,10 +205,11 @@ the run instead of deduping against it. Fix it by restoring Neon access; once Ne
 
 Discovery's facility read (the loader and the leads lane's duplicate check) uses
 `DISCOVERY_READ_DATABASE_URL`, the `discovery_reader` role: SELECT on `facilities` only, read-only by
-default, 60 s statement timeout. To rotate it, set the new password as the owner from a session that
-keeps no history: `psql` with `\password discovery_reader` prompts for it and sends it hashed, so
-nothing lands in shell history (avoid a literal `ALTER ROLE ... PASSWORD '...'` on the command
-line). Then update the URL in `.env.local`. The 30-minute snapshot cache is unaffected by a rotation:
+default, 60 s statement timeout. To rotate it, use the Neon Console "Reset password" on that role, or set the new password as the owner
+from a session that keeps no history: `psql` with `\set HISTFILE /dev/null`, then
+`ALTER ROLE discovery_reader WITH PASSWORD '<plaintext>'` (Neon needs at least 60 bits of entropy and
+rejects hashed passwords, so psql's `\password` will not work; the password is plain text on the wire,
+inside TLS). Never put the literal in a shell command line or a file, and keep the owner connection URL off the `psql` command line too (it lands in shell history and `ps`): read it from a no-history prompt into the environment, or use the Neon SQL Editor. Then update the URL in `.env.local`. The 30-minute snapshot cache is unaffected by a rotation:
 it is keyed on host + database only. Scheduled runs set `DISCOVERY_REQUIRE_READER=1`: if
 `DISCOVERY_READ_DATABASE_URL` is missing they refuse the owner `DATABASE_URL` and fail loudly instead of
 falling back. Manual runs, with the flag unset or set to `0`, still fall back to `DATABASE_URL` (owner)

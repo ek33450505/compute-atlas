@@ -599,13 +599,13 @@ To (re)create or rotate it, with the owner `DATABASE_URL` in `.env.local`:
 
 ```bash
 npm run ops:ci-monitor-role                      # dry run: prints the SQL plan, connects to nothing
-F="$(mktemp "$HOME/.ci-monitor-url.XXXXXX")"; rm "$F"   # unpredictable path; the tool refuses to overwrite
-npm run ops:ci-monitor-role -- --apply --out "$F"        # add --rotate if the role exists
-gh secret set DATABASE_URL -R ek33450505/compute-atlas < "$F"
-rm "$F"
+D="$(mktemp -d)"                                         # fresh private directory; the tool refuses to overwrite
+npm run ops:ci-monitor-role -- --apply --out "$D/ci.url" # add --rotate if the role exists
+gh secret set DATABASE_URL -R ek33450505/compute-atlas < "$D/ci.url"
+rm -rf "$D"                                              # delete the URL file once the secret is set
 ```
 
-The URL file has no trailing newline (so `gh secret set < file` stores the URL exactly). The tool installs a client-computed SCRAM-SHA-256 verifier, writes the URL only to `--out` (mode 0600, never overwritten), prints only fixed strings and error codes, and sets `NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS NOINHERIT CONNECTION LIMIT 5` on create and rotate. If a workflow starts reading another table, add it to `GRANTED_TABLES` in `scripts/ops/create-ci-monitor-role.ts` and re-run with `--rotate`.
+The URL file has no trailing newline (so `gh secret set < file` stores the URL exactly). The tool sends the generated password as a plain-text literal over TLS, because Neon rejects hashed passwords ([Neon: manage roles](https://neon.com/docs/manage/roles)). It writes the URL only to `--out` (mode 0600, never overwritten), prints only fixed strings and error codes, and sets `NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS NOINHERIT CONNECTION LIMIT 5` on create and rotate. If a workflow starts reading another table, add it to `GRANTED_TABLES` in `scripts/ops/create-ci-monitor-role.ts` and re-run with `--rotate`.
 
 After applying, the tool connects as `ci_monitor` and checks the boundary instead of trusting the grants: the SELECT-able public relations are exactly the three granted tables (computed from `pg_class` oids), `ci_monitor` has no `CREATE` on schema `public` and belongs to no role, and an INSERT is refused. These checks exist because the boundary also depends on what PUBLIC and default ACLs grant. Measured on Neon (PG 18.6, 2026-11-07, read-only probe): PUBLIC has no `CREATE` on schema `public`, there are no public-schema functions, and both `pg_default_acl` rows grant only to `neon_superuser`; `TEMP` on the database comes via PUBLIC and is left in place (nothing is revoked from PUBLIC).
 
