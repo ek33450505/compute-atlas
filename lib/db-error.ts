@@ -222,7 +222,7 @@ export function formatFatalError(err: unknown): string {
  * email or any other PII, a bearer token or an API key in plain text is printed
  * as-is. The helpers redact DB params and URI credentials, not arbitrary PII.
  */
-function scrubUriCredentials(text: string): string {
+export function scrubUriCredentials(text: string): string {
   // Whole-text pass first: it may cross quote characters (`p"w` in a password).
   // Scheme length is bounded so the scan stays linear on long alphanumeric
   // runs. An unencoded SPACE in a password is still NOT covered.
