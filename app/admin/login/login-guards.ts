@@ -14,14 +14,12 @@ interface AttemptBucket {
 }
 
 /**
- * Fixed-window in-memory cap on failed login attempts per IP hash. This is a
- * per-instance, best-effort brute-force backstop (state resets on cold
- * start, isn't shared across serverless instances) — the same caveat as
- * `lib/api-rate-limit.ts`'s read-API buckets, which this mirrors. There is
- * no admin-login-attempts table to persist this in, and adding one is out of
- * scope for this fix; the in-memory bucket is deliberately not a new
- * durable store, just this file's local instance of the existing bucket
- * idiom used elsewhere in the codebase for the same concern.
+ * Fixed-window in-memory cap on failed login attempts per IP hash. This is the
+ * SECONDARY bound: the authoritative, durable and cross-instance budget lives in
+ * the `intake_attempts` table (surface `admin-login`, `reserveAdminLoginAttempt`
+ * in lib/rate-limit.ts). This bucket is per-instance (resets on cold start) and
+ * only adds a cheap local short-circuit; it mirrors `lib/api-rate-limit.ts`'s
+ * read-API buckets.
  */
 const loginAttempts = new Map<string, AttemptBucket>();
 

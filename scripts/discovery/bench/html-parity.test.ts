@@ -16,7 +16,7 @@
 // This test is what makes the now-shared `htmlToText` logic safe to
 // duplicate — run it whenever either file changes.
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { htmlToText as htmlToTextJs } from "./html.mjs";
@@ -110,18 +110,38 @@ interface PageEntry {
   facilityId: string;
   text: string;
 }
-const pagesFile = JSON.parse(
-  readFileSync(path.join(BENCH_DIR, "pages.json"), "utf8")
-) as PageEntry[];
+// pages.json is a gitignored local file (see bench/README.md); the corpus tests
+// skip cleanly when it is absent, as lib/siting-context.dataset.test.ts does.
+const PAGES_PATH = path.join(BENCH_DIR, "pages.json");
+const hasPages = existsSync(PAGES_PATH);
+const pagesFile = hasPages ? (JSON.parse(readFileSync(PAGES_PATH, "utf8")) as PageEntry[]) : [];
+
+// Always-on counterpart of the corpus loop below: the tracked excerpts carry real
+// entities (&#8211;, &#160;), so entity parity is still checked without pages.json.
+const curated = (
+  JSON.parse(readFileSync(path.join(BENCH_DIR, "curated-snippets.json"), "utf8")) as {
+    snippets: Record<string, string>;
+  }
+).snippets;
+describe("tracked excerpts: html.mjs vs fetch-page-text.ts parity", () => {
+  for (const [facilityId, text] of Object.entries(curated)) {
+    it(`${facilityId}`, () => {
+      expect(htmlToTextJs(text)).toBe(htmlToTextTs(text));
+    });
+  }
+  it("the excerpts include entities, so the parity check is not vacuous", () => {
+    expect(Object.values(curated).some((t) => /&#\d+;/.test(t))).toBe(true);
+  });
+});
 
 // Canary: an empty corpus would make the loop below vacuous — it would pass
 // trivially while testing nothing (same shape as quote-parity.test.ts's
 // "loaded a meaningful number of real triples" canary).
-it("loaded a meaningful number of real cached pages from the bench corpus", () => {
+it.skipIf(!hasPages)("loaded a meaningful number of real cached pages from the bench corpus", () => {
   expect(pagesFile.length).toBeGreaterThan(20);
 });
 
-describe("real corpus: html.mjs vs fetch-page-text.ts parity on every cached page's text", () => {
+describe.skipIf(!hasPages)("real corpus: html.mjs vs fetch-page-text.ts parity on every cached page's text", () => {
   for (const { facilityId, text } of pagesFile) {
     it(`${facilityId}`, () => {
       expect(htmlToTextJs(text)).toBe(htmlToTextTs(text));

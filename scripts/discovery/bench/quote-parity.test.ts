@@ -11,7 +11,7 @@
 // extract-fields.test.ts) was in version control; quote.mjs and the bench
 // pages/results that back these real-data cases were gitignored.
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -46,13 +46,33 @@ interface RealCase {
 // facility-form-state.test.ts's identical note: import.meta.url is unreliable
 // under this project's Turbopack-flavored transform pipeline.
 const BENCH_DIR = path.resolve(process.cwd(), "scripts/discovery/bench");
-const resultFile = JSON.parse(
-  readFileSync(path.join(BENCH_DIR, "result-gpt-oss_20b.json"), "utf8")
+// The result file and pages.json are gitignored local files (see bench/README.md).
+const RESULT_PATH = path.join(BENCH_DIR, "result-gpt-oss_20b.json");
+const hasResult = existsSync(RESULT_PATH);
+const resultFile = (
+  hasResult ? JSON.parse(readFileSync(RESULT_PATH, "utf8")) : { rows: [] }
 ) as { rows: Array<{ facility: string; field: string; quote: string | null; got: unknown }> };
-const pagesFile = JSON.parse(readFileSync(path.join(BENCH_DIR, "pages.json"), "utf8")) as Array<{
-  facilityId: string;
-  text: string;
-}>;
+// pages.json is a gitignored local file (see bench/README.md); the real-data
+// tests skip cleanly when it is absent, as lib/siting-context.dataset.test.ts does.
+const PAGES_PATH = path.join(BENCH_DIR, "pages.json");
+const hasPages = existsSync(PAGES_PATH);
+const hasCorpus = hasPages && hasResult;
+
+// Tracked excerpts of public source pages (a few hundred chars each), so the
+// curated cases below run on every checkout, unlike the full-corpus loop.
+const snippets = (
+  JSON.parse(readFileSync(path.join(BENCH_DIR, "curated-snippets.json"), "utf8")) as {
+    snippets: Record<string, string>;
+  }
+).snippets;
+function snippet(facilityId: string): string {
+  const text = snippets[facilityId];
+  if (!text) throw new Error(`curated-snippets.json has no entry for ${facilityId}`);
+  return text;
+}
+const pagesFile = hasPages
+  ? (JSON.parse(readFileSync(PAGES_PATH, "utf8")) as Array<{ facilityId: string; text: string }>)
+  : [];
 const pageTextByFacility = new Map(pagesFile.map((p) => [p.facilityId, p.text]));
 
 // Dedup by facility+field+quote and coerce `got` to a real number — a few
@@ -79,11 +99,11 @@ for (const row of resultFile.rows) {
 // A canary, not a magic number: if this collapses toward 0, pages.json or
 // result-gpt-oss_20b.json stopped loading and the "real data" section below
 // would be silently vacuous (an empty loop passes trivially).
-it("loaded a meaningful number of real (quote, pageText, value) triples from the bench artifacts", () => {
+it.skipIf(!hasCorpus)("loaded a meaningful number of real (quote, pageText, value) triples from the bench artifacts", () => {
   expect(realCases.length).toBeGreaterThan(20);
 });
 
-describe("real data: quote.mjs vs extract-fields.ts parity across every real model quote", () => {
+describe.skipIf(!hasCorpus)("real data: quote.mjs vs extract-fields.ts parity across every real model quote", () => {
   for (const { facility, field, quote, value } of realCases) {
     it(`${facility}/${field} — ${JSON.stringify(quote.slice(0, 60))}`, () => {
       const pageText = pageTextByFacility.get(facility)!;
@@ -173,7 +193,7 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
 
   it("accepts a model-emitted quote wrapped in literal backslash-quote marks: \"\\\"540 MW\\\"\"", () => {
     // Real case: aligned-project-caprock-hale-county-tx / capacityMw.planned.
-    const page = pageTextByFacility.get("aligned-project-caprock-hale-county-tx")!;
+    const page = snippet("aligned-project-caprock-hale-county-tx");
     const wrappedQuote = '"540 MW"';
 
     expect(quoteVerbatimJs(wrappedQuote, page)).toBe(true);
@@ -203,7 +223,7 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
     // Real case: ark-data-centers-akron-i-summit-county-oh. A >=20-char rule
     // rejected this 17-char span outright; softNorm (not the alnum collapse)
     // is what keeps the comma-separated "1,000" intact for the regex.
-    const page = pageTextByFacility.get("ark-data-centers-akron-i-summit-county-oh")!;
+    const page = snippet("ark-data-centers-akron-i-summit-county-oh");
     const quote = "Capacity 1,000 kW";
 
     expect(quoteVerbatimJs(quote, page)).toBe(true);
@@ -215,7 +235,7 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
   it('accepts "~48 MW" for value 48 (short-but-real quote)', () => {
     // Real case: crane-pdx02-forest-grove-or. A >=3-token/>=12-char rule
     // measured killing 16 correct values (incl. this one) to block 1 bad one.
-    const page = pageTextByFacility.get("crane-pdx02-forest-grove-or")!;
+    const page = snippet("crane-pdx02-forest-grove-or");
     const quote = "~48 MW";
 
     expect(quoteVerbatimJs(quote, page)).toBe(true);
@@ -227,7 +247,7 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
   it('accepts "1GW+" for value 1000 (GW -> MW conversion; the value cannot appear literally in the quote)', () => {
     // Real case: tract-altoona-ia. quoteSupportsValue cannot just check that
     // `value` appears in the quote text — the quote reads "1GW+", never "1000".
-    const page = pageTextByFacility.get("tract-altoona-ia")!;
+    const page = snippet("tract-altoona-ia");
     const quote = "1GW+";
 
     expect(quoteVerbatimJs(quote, page)).toBe(true);
@@ -240,7 +260,7 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
     // Real case: bitfarms-panther-creek-nesquehoning-pa / capacityOperational.
     // The gate exists precisely to block this: a real span is necessary but
     // not sufficient — it must also carry a number+unit that reconciles.
-    const page = pageTextByFacility.get("bitfarms-panther-creek-nesquehoning-pa")!;
+    const page = snippet("bitfarms-panther-creek-nesquehoning-pa");
     const quote = "60";
 
     expect(quoteVerbatimJs(quote, page)).toBe(true);
@@ -272,7 +292,7 @@ describe("curated edge cases: intended behaviour, asserted on both implementatio
     // states "...358,000-square-foot, 36‑megawatt, two‑story facility"
     // using U+2011 (non-breaking hyphen), not ASCII '-'. This was measured as
     // breaking both implementations until the dash-class fix.
-    const page = pageTextByFacility.get("flexential-hillsboro-5-or")!;
+    const page = snippet("flexential-hillsboro-5-or");
     const quote = "Hillsboro 5, at 4975 NE Starr Blvd., is a 358,000-square-foot, 36‑megawatt, two‑story facility.";
 
     expect(quoteVerbatimJs(quote, page)).toBe(true);

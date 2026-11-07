@@ -7,6 +7,7 @@ import {
   cacheableJson,
   corsPreflight,
   jsonResponse,
+  methodNotAllowed,
   API_VERSION,
   CORS_HEADERS_BY_SCOPE,
   CORS_RESPONSE_HEADERS,
@@ -547,5 +548,16 @@ describe("cacheableJson", () => {
       expect(res.headers.get("Cache-Control")).not.toContain("no-store");
       expect(res.headers.get("CDN-Cache-Control")).toBeNull();
     }
+  });
+});
+
+describe("methodNotAllowed", () => {
+  it("is a no-store 405 carrying Allow", async () => {
+    const res = methodNotAllowed(["POST", "OPTIONS"]);
+    expect(res.status).toBe(405);
+    expect(res.headers.get("Allow")).toBe("POST, OPTIONS");
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+    expect(res.headers.get("CDN-Cache-Control")).toBe("no-store");
+    expect(await res.json()).toEqual({ error: "Method not allowed" });
   });
 });

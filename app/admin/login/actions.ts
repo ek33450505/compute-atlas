@@ -1,6 +1,6 @@
 "use server";
 
-import { pbkdf2Sync, timingSafeEqual } from "node:crypto";
+import { timingSafeEqual } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -9,11 +9,31 @@ import {
   SESSION_MAX_AGE_SECONDS,
   createSessionValue,
 } from "@/lib/admin-session";
-import { extractTrustedClientIp, hashIp } from "@/lib/rate-limit";
+import { redactedErrorCode } from "@/lib/db-error";
+import {
+  extractTrustedClientIp,
+  hashIp,
+  normaliseIpForBucketing,
+  releaseAdminLoginAttempt,
+  reserveAdminLoginAttempt,
+} from "@/lib/rate-limit";
+import { derivePasswordHash } from "./password-hash";
 import { isLoginRateLimited, recordFailedLogin, safeLoginRedirect } from "./login-guards";
 
 export interface LoginState {
   error?: string;
+}
+
+/** Per-process memo of the expected hash, keyed by token + salt (one PBKDF2 per request, not two). */
+let expectedHashCache: { token: string; salt: string; hash: Buffer } | null = null;
+
+function expectedHash(token: string, salt: string): Buffer {
+  if (expectedHashCache?.token === token && expectedHashCache.salt === salt) {
+    return expectedHashCache.hash;
+  }
+  const hash = derivePasswordHash(token, salt);
+  expectedHashCache = { token, salt, hash };
+  return hash;
 }
 
 /**
@@ -30,13 +50,8 @@ function isCorrectPassword(password: string): boolean {
     return false;
   }
 
-  const iterations = 210_000;
-  const keylen = 32;
-  const digest = "sha256";
-
-  const presentedHash = pbkdf2Sync(password, salt, iterations, keylen, digest);
-  const expectedHash = pbkdf2Sync(expected, salt, iterations, keylen, digest);
-  return timingSafeEqual(presentedHash, expectedHash);
+  const presentedHash = derivePasswordHash(password, salt);
+  return timingSafeEqual(presentedHash, expectedHash(expected, salt));
 }
 
 /**
@@ -52,22 +67,43 @@ export async function login(
   const password = String(formData.get("password") ?? "");
   const redirectTo = String(formData.get("redirect") ?? "");
 
-  // Same generic error on both the rate-limited and wrong-password paths —
-  // an attacker probing the endpoint can't distinguish "locked out" from
-  // "bad guess" from the response text alone.
-  const ipHash = hashIp(extractTrustedClientIp(await headers()));
+  // Same generic error on the rate-limited and wrong-password paths, so the
+  // response text does not distinguish "locked out" from "bad guess". An
+  // over-budget request skips the PBKDF2 compare entirely: the resulting
+  // timing difference reveals only the caller's own per-IP budget state, which
+  // is not a secret, and the dummy compare only burned CPU. /64-normalised so rotating within one IPv6 prefix shares a bucket.
+  const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(await headers())));
   if (isLoginRateLimited(ipHash)) {
-    // Still run the same constant-time password check as the wrong-password
-    // branch below (result discarded) so response latency doesn't leak
-    // lockout state — otherwise an attacker could distinguish "locked out"
-    // from "bad guess" by timing alone despite the identical error text.
-    isCorrectPassword(password);
+    return { error: "Incorrect password." };
+  }
+
+  // Durable, cross-instance budget. Reserve an attempt row BEFORE the password
+  // check (exact under concurrency; see `reserveAdminLoginAttempt`) and delete
+  // it on success, so only failures persist. If the DB cannot answer, the cap
+  // cannot be enforced, so fail closed.
+  let reservation: { ok: boolean; id: string };
+  try {
+    reservation = await reserveAdminLoginAttempt(ipHash);
+  } catch (err) {
+    console.error(
+      `admin login rate-limit reservation failed — refusing the attempt (sqlstate: ${redactedErrorCode(err)})`
+    );
+    return { error: "Login is temporarily unavailable. Try again shortly." };
+  }
+  if (!reservation.ok) {
     return { error: "Incorrect password." };
   }
 
   if (!isCorrectPassword(password)) {
     recordFailedLogin(ipHash);
     return { error: "Incorrect password." };
+  }
+
+  try {
+    await releaseAdminLoginAttempt(reservation.id);
+  } catch (err) {
+    // The row stays and counts as a failure: conservative, never a bypass.
+    console.error(`admin login reservation release failed (sqlstate: ${redactedErrorCode(err)})`);
   }
 
   const expected = process.env.API_ADMIN_TOKEN;

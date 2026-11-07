@@ -1,4 +1,4 @@
-import { jsonResponse, corsPreflight } from "@/lib/api-response";
+import { jsonResponse, corsPreflight, methodNotAllowed } from "@/lib/api-response";
 import { requireAdmin } from "@/lib/api-auth";
 import { rejectSubmission } from "@/lib/submissions";
 
@@ -31,4 +31,9 @@ export async function POST(
 // genuinely has to be advertised.
 export function OPTIONS(): Response {
   return corsPreflight("admin");
+}
+
+// POST-only: answer GET with a no-store 405 (a bare framework 405 is edge-cacheable).
+export function GET() {
+  return methodNotAllowed(["POST", "OPTIONS"]);
 }

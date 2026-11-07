@@ -135,59 +135,80 @@ export function toMapFacility(f: Facility): MapFacility {
 }
 
 /**
- * Row shape for the /table client tree (PERF-1 unit C).
+ * Row shape for the /table client tree (PERF-1 unit C; trimmed in the 2026-11-07 leak audit).
  *
- * What the table columns and filters read: no statusHistory, community, notes,
- * full `sources` array or coordinates (the dataset is a paid product; bulk
- * coordinates leave the server only as rounded `MapPoint`s). `sources` still
- * holds only the first source and `sourceCount` carries the real length.
+ * Exactly what the table columns and the client-side sort icons read, nothing
+ * more: filtering and sorting run on the server over the full record, so no
+ * source, county, precision, count or date-announced field ships. No
+ * coordinates (the dataset is a paid product; bulk coordinates leave the server
+ * only as rounded `MapPoint`s).
  */
-interface TableExtras {
+interface TableRowBase {
+  id: string;
+  name: string;
+  operator: string;
+  status: Facility["status"];
+  confidence: Facility["confidence"];
   lastUpdated: Facility["lastUpdated"];
-  announcedDate?: string;
-  /** `sources.length` of the full record (the projected `sources` holds only the first). */
-  sourceCount: number;
-  location: { county?: string };
+  capacityMw?: Facility["capacityMw"];
+  location: { city?: string; state: string };
 }
 
-/** `MapFacility` location without coordinates. */
-type RowLocation = Omit<MapFacilityBase["location"], "lat" | "lon">;
-type WithoutCoords<T extends MapFacilityBase> = Omit<T, "location"> & { location: RowLocation };
-
 export type TableRow =
-  | (WithoutCoords<MapDataCenter> & TableExtras)
-  | (WithoutCoords<MapCryptoMining> & TableExtras & { aiClassification?: "confirmed" | "likely" | "mixed_use" })
-  | (WithoutCoords<MapPowerGeneration> & TableExtras & { generation?: { offtaker?: string } });
+  | (TableRowBase & { facilityType: "data_center"; aiClassification?: "confirmed" | "likely" | "mixed_use" })
+  | (TableRowBase & { facilityType: "crypto_mining"; aiClassification?: "confirmed" | "likely" | "mixed_use" })
+  | (TableRowBase & { facilityType: "power_generation" });
 
 /** Projects a full facility to a `TableRow`. Optional fields are omitted, not `undefined`. */
 export function toTableRow(f: Facility): TableRow {
-  const { location: mapLocation, ...slim } = toMapFacility(f);
-  const coordFree: RowLocation = { state: mapLocation.state };
-  if (mapLocation.city !== undefined) coordFree.city = mapLocation.city;
-  if (mapLocation.precision !== undefined) coordFree.precision = mapLocation.precision;
-  if (mapLocation.multiSite !== undefined) coordFree.multiSite = mapLocation.multiSite;
-  const extras = {
-    location: f.location.county !== undefined ? { ...coordFree, county: f.location.county } : coordFree,
+  const base: TableRowBase = {
+    id: f.id,
+    name: f.name,
+    operator: f.operator,
+    status: f.status,
+    confidence: f.confidence,
     lastUpdated: f.lastUpdated,
-    sourceCount: f.sources.length,
-    ...(f.announcedDate !== undefined ? { announcedDate: f.announcedDate } : {}),
+    ...(f.capacityMw !== undefined ? { capacityMw: f.capacityMw } : {}),
+    location: f.location.city !== undefined
+      ? { city: f.location.city, state: f.location.state }
+      : { state: f.location.state },
   };
-  switch (slim.facilityType) {
+  switch (f.facilityType) {
     case "data_center":
-      return { ...slim, ...extras };
+      return {
+        ...base,
+        facilityType: "data_center",
+        ...(f.aiClassification ? { aiClassification: f.aiClassification } : {}),
+      };
     case "crypto_mining":
       return {
-        ...slim,
-        ...extras,
-        ...(f.facilityType === "crypto_mining" && f.aiClassification
-          ? { aiClassification: f.aiClassification }
-          : {}),
+        ...base,
+        facilityType: "crypto_mining",
+        ...(f.aiClassification ? { aiClassification: f.aiClassification } : {}),
       };
-    case "power_generation": {
-      const offtaker = f.facilityType === "power_generation" ? f.generation?.offtaker : undefined;
-      return { ...slim, ...extras, ...(offtaker !== undefined ? { generation: { offtaker } } : {}) };
-    }
+    case "power_generation":
+      return { ...base, facilityType: "power_generation" };
   }
+}
+
+/** Mini-map props for the facility detail page: name, status and the one coordinate pair the map centers on. */
+export interface MiniMapFacility {
+  name: string;
+  status: Facility["status"];
+  location: { lat: number; lon: number; city?: string; state: string };
+}
+
+export function toMiniMapFacility(f: Facility): MiniMapFacility {
+  return {
+    name: f.name,
+    status: f.status,
+    location: {
+      lat: f.location.lat,
+      lon: f.location.lon,
+      ...(f.location.city !== undefined ? { city: f.location.city } : {}),
+      state: f.location.state,
+    },
+  };
 }
 
 /**

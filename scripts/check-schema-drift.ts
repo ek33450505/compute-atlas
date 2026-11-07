@@ -10,8 +10,9 @@
  * caught the resulting DB error and *failed open* on every request, and
  * `POST /api/access/request` would have 500'd. Nothing surfaced it — CI was
  * green, the deploy succeeded, all four public API routes kept returning 200.
- * It was found by hand, by querying `information_schema`. This script is the
- * missing signal, meant to be run by hand or on a schedule.
+ * It was found by hand, by querying `information_schema`. (The check now lists
+ * tables via `pg_catalog.pg_tables`, which the role's grants do not filter.)
+ * This script is the missing signal, meant to be run by hand or on a schedule.
  *
  * Unlike the retired JSON-vs-Neon drift check (non-blocking, always exited 0,
  * treated an unreachable DB as "nothing to report"), this script
@@ -109,10 +110,13 @@ export async function runSchemaDriftCheck(
 ): Promise<SchemaDriftReport> {
   const db = getDb();
 
-  const { rows } = await db.execute<{ table_name: string }>(
-    sql`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'`
+  // pg_catalog.pg_tables, not information_schema.tables: the latter lists only
+  // tables the role holds a privilege on, so a least-privilege monitor role
+  // (scripts/ops/create-ci-monitor-role.ts) would see a false "missing table".
+  const { rows } = await db.execute<{ tablename: string }>(
+    sql`SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'`
   );
-  const present = new Set(rows.map((r) => r.table_name));
+  const present = new Set(rows.map((r) => r.tablename));
 
   const presentTables = expectedTables.filter((t) => present.has(t));
   const missingTables = expectedTables.filter((t) => !present.has(t));

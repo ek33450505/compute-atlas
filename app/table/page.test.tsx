@@ -58,8 +58,8 @@ describe("/table page", () => {
     expect(props).not.toHaveProperty("snapshot");
     const rows = props.rows as Array<Record<string, unknown>>;
     expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ id: "acme-1", sourceCount: 2 });
-    expect(rows[0].sources).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ id: "acme-1" });
+    expect(rows[0]).not.toHaveProperty("sources");
     const json = JSON.stringify(rows);
     for (const k of ["statusHistory", "community", "notes", "secret prose", "example.com/b"]) {
       expect(json).not.toContain(k);
@@ -70,7 +70,7 @@ describe("/table page", () => {
     mockGetAllFacilities.mockResolvedValue(MANY);
     const props = await render_();
     expect(props.rows).toHaveLength(50);
-    expect(props).toMatchObject({ filteredCount: 120, totalCount: 120, page: 1, pageCount: 3 });
+    expect(props).toMatchObject({ filteredCount: 120, reachableCount: 120, totalCount: 120, page: 1, pageCount: 3 });
   });
 
   it("serves the requested page", async () => {

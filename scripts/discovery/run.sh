@@ -59,6 +59,21 @@ if [[ "${DISCOVERY_ENABLED:-false}" != "true" ]] || [[ -f "$LOG_DIR/DISABLED" ]]
   exit 0
 fi
 
+# --- strict credential modes -------------------------------------------------
+# A scheduled run must never READ with the owner credential or SUBMIT with the
+# admin token. These flags are exported so every `npx tsx --env-file=.env.local`
+# step inherits them (--env-file does not override variables already set).
+# An operator can opt out for a manual emergency run by setting the flag to 0 in
+# the environment; the default is 1. Values other than 0/1 are rejected by the
+# preflight below (the TS checks are `=== "1"`, so `true` would fail open).
+# NOTE: the owner DATABASE_URL stays in .env.local for retention-prune,
+# publish-heartbeat and the leads lane (createSubmission / updateLeadStatus /
+# promoteLead write via lib/db/client with DATABASE_URL), so this narrows
+# facility reads and the submit-candidates token only.
+: "${DISCOVERY_REQUIRE_READER:=1}"
+: "${DISCOVERY_REQUIRE_INTAKE_TOKEN:=1}"
+export DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN
+
 # --- alerting ----------------------------------------------------------------
 # 2026-08-14 open item #1: heartbeat.json recorded claudeStatus=no_array every
 # day for SIX consecutive days and nothing surfaced it. The instrument worked
@@ -143,6 +158,43 @@ notify() {
   fi
   return 0
 }
+
+# --- strict-credential preflight ---------------------------------------------
+# Fail loudly BEFORE any lane starts when a strict flag is on but .env.local
+# lacks the credential it requires; otherwise the first tsx step would die
+# mid-run. Keys only: values are never read into a log line.
+env_key_present() {
+  local file="$1" key="$2" val
+  [[ -f "$file" ]] || return 1
+  val="$(sed -n "s/^[[:space:]]*\(export[[:space:]]\{1,\}\)\{0,1\}${key}[[:space:]]*=[[:space:]]*//p" "$file" | tail -1)"
+  val="$(printf '%s' "$val" | tr -d '"'"'"'[:space:]')"
+  [[ -n "$val" ]]
+}
+# DISCOVERY_ENV_FILE is honored ONLY under DISCOVERY_TEST_MODE=1; in production
+# the preflight always reads the same file the tsx steps load.
+_env_file="$REPO_ROOT/.env.local"
+if [[ "${DISCOVERY_TEST_MODE:-0}" == "1" && -n "${DISCOVERY_ENV_FILE:-}" ]]; then
+  _env_file="$DISCOVERY_ENV_FILE"
+fi
+for _flag in DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN; do
+  if [[ "${!_flag}" != "0" && "${!_flag}" != "1" ]]; then
+    log "ERROR: ${_flag}='${!_flag}' must be 0 or 1 - refusing to run"
+    notify "Compute Atlas discovery FAILED" "Preflight: ${_flag} must be 0 or 1"
+    exit 1
+  fi
+done
+_preflight_missing=()
+if [[ "$DISCOVERY_REQUIRE_READER" == "1" ]] && ! env_key_present "$_env_file" DISCOVERY_READ_DATABASE_URL; then
+  _preflight_missing+=("DISCOVERY_READ_DATABASE_URL")
+fi
+if [[ "$DISCOVERY_REQUIRE_INTAKE_TOKEN" == "1" ]] && ! env_key_present "$_env_file" API_INTAKE_TOKEN; then
+  _preflight_missing+=("API_INTAKE_TOKEN")
+fi
+if (( ${#_preflight_missing[@]} > 0 )); then
+  log "ERROR: strict credential preflight failed: ${_preflight_missing[*]} missing or empty in .env.local - refusing to run (set DISCOVERY_REQUIRE_READER=0 / DISCOVERY_REQUIRE_INTAKE_TOKEN=0 to opt out for a manual run)"
+  notify "Compute Atlas discovery FAILED" "Preflight: ${_preflight_missing[*]} missing in .env.local"
+  exit 1
+fi
 
 # --- stale-heartbeat check ---------------------------------------------------
 # Reads the PREVIOUS run's heartbeat before this run overwrites it. A gap wider

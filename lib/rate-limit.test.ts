@@ -21,7 +21,18 @@ describe("rateLimitDecision", () => {
   });
 });
 
+const EDGE = { "x-edge-shared-secret": "test-edge-secret" };
+const ORIGINAL_EDGE_SECRET = process.env.EDGE_SHARED_SECRET;
+
 describe("extractTrustedClientIp", () => {
+  beforeEach(() => {
+    process.env.EDGE_SHARED_SECRET = "test-edge-secret";
+  });
+  afterEach(() => {
+    if (ORIGINAL_EDGE_SECRET === undefined) delete process.env.EDGE_SHARED_SECRET;
+    else process.env.EDGE_SHARED_SECRET = ORIGINAL_EDGE_SECRET;
+  });
+
   it("prefers x-real-ip over x-forwarded-for when both are present", () => {
     const headers = new Headers({
       "x-real-ip": "203.0.113.9",
@@ -71,6 +82,7 @@ describe("extractTrustedClientIp", () => {
   it("prefers cf-connecting-ip over a spoofed leftmost x-forwarded-for entry", () => {
     const trusted = "203.0.113.9";
     const headers = new Headers({
+      ...EDGE,
       "cf-connecting-ip": trusted,
       "x-forwarded-for": "1.2.3.4, 198.51.100.1",
     });
@@ -79,6 +91,7 @@ describe("extractTrustedClientIp", () => {
 
   it("prefers cf-connecting-ip over x-real-ip when both are present", () => {
     const headers = new Headers({
+      ...EDGE,
       "cf-connecting-ip": "203.0.113.9",
       "x-real-ip": "198.51.100.1",
     });
@@ -102,11 +115,41 @@ describe("extractTrustedClientIp", () => {
   it("prefers cf-connecting-ip when cf-connecting-ip, x-real-ip, and x-forwarded-for are all present", () => {
     const trusted = "203.0.113.9";
     const headers = new Headers({
+      ...EDGE,
       "cf-connecting-ip": trusted,
       "x-real-ip": "198.51.100.1",
       "x-forwarded-for": "1.2.3.4, 198.51.100.2",
     });
     expect(extractTrustedClientIp(headers)).toBe(trusted);
+  });
+
+  // cf-connecting-ip is client-settable on a direct-to-origin request, so it
+  // counts only alongside a valid edge secret.
+  it("ignores a spoofed cf-connecting-ip with no edge secret header", () => {
+    const headers = new Headers({
+      "cf-connecting-ip": "6.6.6.6",
+      "x-real-ip": "203.0.113.9",
+    });
+    expect(extractTrustedClientIp(headers)).toBe("203.0.113.9");
+  });
+
+  it("ignores a spoofed cf-connecting-ip with a wrong edge secret header", () => {
+    const headers = new Headers({
+      "x-edge-shared-secret": "wrong",
+      "cf-connecting-ip": "6.6.6.6",
+      "x-real-ip": "203.0.113.9",
+    });
+    expect(extractTrustedClientIp(headers)).toBe("203.0.113.9");
+  });
+
+  it("does not trust cf-connecting-ip when EDGE_SHARED_SECRET is unset", () => {
+    delete process.env.EDGE_SHARED_SECRET;
+    const headers = new Headers({
+      ...EDGE,
+      "cf-connecting-ip": "6.6.6.6",
+      "x-real-ip": "203.0.113.9",
+    });
+    expect(extractTrustedClientIp(headers)).toBe("203.0.113.9");
   });
 });
 
@@ -286,5 +329,32 @@ describe("hashNotifyEmail", () => {
     expect(hashNotifyEmail("pin-test@example.com")).toBe(
       "f0ca8dc9a0d9d09e999aedbeea5aa17f06be1edb8a395cac927f7bed844be61f"
     );
+  });
+
+  it.each([
+    ["2001:DB8::1", "2001:db8:0:0"],
+    ["2001:0db8::1", "2001:db8:0:0"],
+    ["2001:db8:0:0:0:0:0:1", "2001:db8:0:0"],
+    ["2001:0DB8:0000:0000:0000:0000:0000:0001", "2001:db8:0:0"],
+    ["2001:db8::1%eth0", "2001:db8:0:0"],
+    ["2001:db8:00ab:0:aaaa::1", "2001:db8:ab:0"],
+    ["2001:db8:ab:0:1::2", "2001:db8:ab:0"],
+  ])("canonicalises %s to one bucket %s", (input, expected) => {
+    expect(normaliseIpForBucketing(input)).toBe(expected);
+  });
+
+  it.each([
+    "::ffff:203.0.113.9",
+    "::FFFF:203.0.113.9",
+    "0:0:0:0:0:ffff:203.0.113.9",
+    "::ffff:cb00:7109",
+    "0000:0000:0000:0000:0000:ffff:cb00:7109",
+  ])("maps IPv4-mapped %s to the plain IPv4 bucket", (input) => {
+    expect(normaliseIpForBucketing(input)).toBe("203.0.113.9");
+  });
+
+  it("does not throw on malformed colon strings", () => {
+    expect(() => normaliseIpForBucketing("zz::::1")).not.toThrow();
+    expect(() => normaliseIpForBucketing("::ffff:999.1.1.1")).not.toThrow();
   });
 });

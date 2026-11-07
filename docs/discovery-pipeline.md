@@ -24,9 +24,10 @@ run.sh (launchd, Mon/Wed/Fri)
   `create`/`update`, caps how many it submits per run, and POSTs to
   `/api/submissions` with `Authorization: Bearer <token>`, where the token is
   `API_INTAKE_TOKEN || API_ADMIN_TOKEN` (`submissionToken()`). The intake token is
-  accepted by that one route and nothing else. The pipeline holds the admin token:
-  the split was declined on 2026-10-28 because the pipeline also holds the owner
-  `DATABASE_URL` in `.env.local`. See the `API_INTAKE_TOKEN` section in
+  accepted by that one route and nothing else. The scheduled run sets
+  `DISCOVERY_REQUIRE_INTAKE_TOKEN=1`, which drops the admin fallback; manual runs keep it.
+  This narrows submissions only: the pipeline still holds the owner `DATABASE_URL` in
+  `.env.local` for the leads lane, retention-prune and publish-heartbeat. See the `API_INTAKE_TOKEN` section in
   `docs/maintainers.md`.
 - `scripts/discovery/run.sh` — the scheduled harness. Owns the kill switch,
   the state-rotation cursor, the existing-facilities fetch, the single

@@ -519,6 +519,20 @@ describe("contributeInputSchema length caps", () => {
     const result = contributeInputSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
+
+  it("rejects a correction whose targetFacilityId exceeds 120 characters", () => {
+    const input = {
+      kind: "correction",
+      targetFacilityId: "a".repeat(121),
+      field: "name",
+      value: "x",
+      sourceUrl: "https://example.com/correction",
+    };
+    expect(contributeInputSchema.safeParse(input).success).toBe(false);
+    expect(
+      contributeInputSchema.safeParse({ ...input, targetFacilityId: "a".repeat(120) }).success
+    ).toBe(true);
+  });
 });
 
 describe("sanitizeAttribution", () => {

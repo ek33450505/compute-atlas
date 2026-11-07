@@ -1428,14 +1428,30 @@ describe("submissionToken", () => {
     expect(submissionToken({ API_INTAKE_TOKEN: "intake", API_ADMIN_TOKEN: "admin" })).toBe("intake");
   });
 
-  // Load-bearing: API_INTAKE_TOKEN does not exist in production until it is
-  // set there, so without this fallback merging the split breaks the nightly run.
+  // Default (manual runs): the admin fallback stays; the scheduled run opts out below.
   it("falls back to API_ADMIN_TOKEN when API_INTAKE_TOKEN is unset", () => {
     expect(submissionToken({ API_ADMIN_TOKEN: "admin" })).toBe("admin");
   });
 
   it("falls back when API_INTAKE_TOKEN is an empty string", () => {
     expect(submissionToken({ API_INTAKE_TOKEN: "", API_ADMIN_TOKEN: "admin" })).toBe("admin");
+  });
+
+  it("strict mode uses the intake token and ignores the admin token", () => {
+    expect(
+      submissionToken({ DISCOVERY_REQUIRE_INTAKE_TOKEN: "1", API_INTAKE_TOKEN: "intake", API_ADMIN_TOKEN: "admin" })
+    ).toBe("intake");
+  });
+
+  it("strict mode never falls back to API_ADMIN_TOKEN", () => {
+    expect(submissionToken({ DISCOVERY_REQUIRE_INTAKE_TOKEN: "1", API_ADMIN_TOKEN: "admin" })).toBeUndefined();
+    expect(
+      submissionToken({ DISCOVERY_REQUIRE_INTAKE_TOKEN: "1", API_INTAKE_TOKEN: "", API_ADMIN_TOKEN: "admin" })
+    ).toBeUndefined();
+  });
+
+  it("only the exact value 1 enables strict mode", () => {
+    expect(submissionToken({ DISCOVERY_REQUIRE_INTAKE_TOKEN: "true", API_ADMIN_TOKEN: "admin" })).toBe("admin");
   });
 
   it("returns undefined — never the string \"undefined\" — when neither is set", () => {
@@ -1726,6 +1742,42 @@ describe("exitCodeForSummary", () => {
 
 // Wiring, not arithmetic: every test above would pass unchanged against the
 // hardcoded `process.exit(0)` this replaced. These drive the real `main()`.
+describe("main — token preflight", () => {
+  async function preflight(env: Record<string, string>): Promise<{ code: number | undefined; stderr: string }> {
+    for (const [k, v] of Object.entries(env)) vi.stubEnv(k, v);
+    let code: number | undefined;
+    const errors: string[] = [];
+    const errSpy = vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
+      errors.push(a.map(String).join(" "));
+    });
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((c?: number) => {
+      code = c;
+      throw new Error(`process.exit(${c})`);
+    }) as never);
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(1\)$/);
+      return { code, stderr: errors.join("\n") };
+    } finally {
+      exitSpy.mockRestore();
+      errSpy.mockRestore();
+      vi.unstubAllEnvs();
+    }
+  }
+
+  it("strict mode with only the admin token exits 1 naming the strict flag", async () => {
+    const r = await preflight({ DISCOVERY_REQUIRE_INTAKE_TOKEN: "1", API_INTAKE_TOKEN: "", API_ADMIN_TOKEN: "admin" });
+    expect(r.code).toBe(1);
+    expect(r.stderr).toContain("API_INTAKE_TOKEN is required when DISCOVERY_REQUIRE_INTAKE_TOKEN=1");
+    expect(r.stderr).not.toContain("Neither");
+  });
+
+  it("default mode with neither token keeps the original message", async () => {
+    const r = await preflight({ DISCOVERY_REQUIRE_INTAKE_TOKEN: "", API_INTAKE_TOKEN: "", API_ADMIN_TOKEN: "" });
+    expect(r.code).toBe(1);
+    expect(r.stderr).toContain("Neither API_INTAKE_TOKEN nor API_ADMIN_TOKEN is set");
+  });
+});
+
 describe("main — exit code wiring", () => {
   async function runMain(submitStatus: number): Promise<{
     exitCode: number | undefined;

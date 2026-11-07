@@ -1,18 +1,8 @@
-import { createHash, timingSafeEqual } from "node:crypto";
-
 import { NextResponse, type NextRequest } from "next/server";
 
 import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/admin-session";
 import { NO_STORE_HEADERS } from "@/lib/api-response";
-
-/**
- * Request header a Cloudflare Transform Rule injects on every request that
- * traverses the edge. Its value is compared against `EDGE_SHARED_SECRET`.
- *
- * Deliberately not prefixed `cf-`/`x-cf-`: Cloudflare reserves those names
- * and a Transform Rule cannot set them.
- */
-const EDGE_SECRET_HEADER = "x-edge-shared-secret";
+import { hasValidEdgeSecret } from "@/lib/edge-secret";
 
 /** True for `/admin` and everything under it. */
 function isAdminPath(pathname: string): boolean {
@@ -67,7 +57,7 @@ function isCronPath(pathname: string): boolean {
  *
  * Operational consequence: unsetting `EDGE_SHARED_SECRET` on production (or a
  * deploy that drops it) now 403s every matched path — `/admin`, `/api` except
- * `/api/cron/*`, `/map`, `/data`, `/table` — instead of disarming the gate.
+ * `/api/cron/*`, `/map`, `/data`, `/table`, `/facilities/*`, `/embed/*` — instead of disarming the gate.
  * Rotation therefore cannot start by unsetting it; see `docs/maintainers.md`
  * §9.
  *
@@ -81,11 +71,11 @@ function isCronPath(pathname: string): boolean {
  * before step 3 lands — not after it:
  *   1. Create a Cloudflare Transform Rule (Modify Request Header → Set
  *      static) injecting `x-edge-shared-secret` — EXACTLY that header name,
- *      the value of `EDGE_SECRET_HEADER` above — with the secret you are
- *      about to set, on all incoming requests. A mismatch between the rule's
+ *      the value of `EDGE_SECRET_HEADER` in `lib/edge-secret.ts` — with the
+ *      secret you are about to set, on all incoming requests. A mismatch between the rule's
  *      header name and this file 403s EVERY matched path the moment step 3
- *      lands — `/admin`, `/api` except `/api/cron/*`, `/map`, `/data` and
- *      `/table` — so copy the string, don't retype it.
+ *      lands — `/admin`, `/api` except `/api/cron/*`, `/map`, `/data`, `/table`,
+ *      `/facilities/*` and `/embed/*` — so copy the string, don't retype it.
  *   2. Set `EDGE_SHARED_SECRET` in the Vercel project, production scope, to
  *      that same value. Still inert — the running deployment cannot see it.
  *   3. Redeploy. This is the enforcing step. Verify with `curl --resolve
@@ -129,10 +119,8 @@ function isCronPath(pathname: string): boolean {
  *     Cloudflare either, so reaching it by hand needs the header passed
  *     explicitly (`curl -H 'x-edge-shared-secret: …'`).
  *
- * Compares by SHA-256 hashing both sides to a fixed 32-byte digest, then
- * `timingSafeEqual` — the shape `lib/api-auth.ts` uses, and for the same two
- * reasons: `timingSafeEqual` throws on a length mismatch, and the throw/
- * no-throw branch would leak the expected secret's length.
+ * The compare itself lives in `lib/edge-secret.ts` (`hasValidEdgeSecret`),
+ * shared with `lib/rate-limit.ts` so the two cannot fork.
  */
 function isEdgeOriginAllowed(request: NextRequest, pathname: string): boolean {
   if (isCronPath(pathname)) {
@@ -142,20 +130,8 @@ function isEdgeOriginAllowed(request: NextRequest, pathname: string): boolean {
     return true;
   }
 
-  const expected = process.env.EDGE_SHARED_SECRET;
-  if (!expected) {
-    // Fail CLOSED: an unset or empty secret must not disarm the gate.
-    return false;
-  }
-
-  const presented = request.headers.get(EDGE_SECRET_HEADER);
-  if (!presented) {
-    return false;
-  }
-
-  const presentedHash = createHash("sha256").update(presented).digest();
-  const expectedHash = createHash("sha256").update(expected).digest();
-  return timingSafeEqual(presentedHash, expectedHash);
+  // Fails CLOSED: an unset or empty secret must not disarm the gate.
+  return hasValidEdgeSecret(request.headers);
 }
 
 /**
@@ -251,15 +227,21 @@ export function proxy(request: NextRequest) {
  *        early return, so this proves the matcher and the cache behaviour,
  *        not the production header compare.
  *
+ *  - `/facilities/:path*`, `/embed/:path*` — added 2026-11-07 (leak audit F1c/F4).
+ *    Measured at the origin: `/facilities/<slug>` and `/embed/states/texas`
+ *    answered 200 directly (the embed ships 177 MapPoints with ids), so they
+ *    bypassed every Cloudflare control. `/facilities/<slug>/opengraph-image`
+ *    is covered too; social crawlers arrive through Cloudflare. There is no
+ *    bare `/facilities` index route.
+ *
  * Also deliberately NOT matched:
  *  - `/_next/static`, `/_next/image` and the `public/` asset prefixes
  *    (`/data/*`, `/basemap/*`, `/fonts/*`). They are served from Vercel's
  *    CDN, so a check here would add proxy latency to every asset on every
  *    page, and Next's image optimizer can fetch a local source internally
  *    without traversing Cloudflare.
- *  - the remaining ~3,000 HTML routes (`/facilities/*`, `/explore/*`, the
- *    hubs). They are ~40 KB each, not 1.47 MB — same invocation-cost
- *    argument, weaker bandwidth payoff. Not part of step 5.
+ *  - the remaining HTML routes (`/explore/*`, the hubs). ~40 KB each, not
+ *    1.47 MB — same invocation-cost argument, weaker bandwidth payoff.
  *
  * ⚠️ Matcher semantics here were MEASURED, not read, and the bundled docs are
  * wrong about them. `node_modules/next/dist/docs/…/proxy.md` says sources are
@@ -279,5 +261,13 @@ export function proxy(request: NextRequest) {
  * ignores computed ones), so this list cannot be derived from a constant.
  */
 export const config = {
-  matcher: ["/admin/:path*", "/api/:path*", "/map", "/data", "/table"],
+  matcher: [
+    "/admin/:path*",
+    "/api/:path*",
+    "/map",
+    "/data",
+    "/table",
+    "/facilities/:path*",
+    "/embed/:path*",
+  ],
 };

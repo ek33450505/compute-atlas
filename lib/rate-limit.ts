@@ -1,7 +1,9 @@
 import { createHash } from "node:crypto";
+import { isIPv6 } from "node:net";
 import { and, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
+import { hasValidEdgeSecret } from "@/lib/edge-secret";
 import {
   submissionNotifyRequestsTable,
   submissionNotifySendsTable,
@@ -24,7 +26,10 @@ export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
  * limiter keyed on that naive extraction's result entirely.
  *
  * Precedence, most to least trusted:
- *  1. `cf-connecting-ip` — on the production path (Cloudflare in front of
+ *  1. `cf-connecting-ip` — ONLY when the same request carries a valid edge
+ *     shared secret (`hasValidEdgeSecret`; unset `EDGE_SHARED_SECRET` means
+ *     never trusted), so this no longer depends solely on `proxy.ts` gating
+ *     /api and /admin. On the production path (Cloudflare in front of
  *     Vercel), Cloudflare always overwrites this header with the real
  *     connecting client's IP rather than passing through a client-supplied
  *     value, so it's trustworthy there. It is NOT unspoofable in general: a
@@ -61,8 +66,9 @@ export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
  *
  * The `cf-connecting-ip` precedence is a strict improvement for every
  * existing caller (`app/api/contact/route.ts`, `app/admin/login/actions.ts`)
- * too — it only takes effect on requests that are actually behind
- * Cloudflare, and when present it is strictly more trustworthy than
+ * too — it only takes effect on requests that carry a valid edge secret,
+ * i.e. that actually traversed Cloudflare, and when present it is strictly
+ * more trustworthy than
  * `x-real-ip`/XFF, so no caller becomes less safe.
  *
  * Takes `Headers` directly (not a `Request`) so both a route handler
@@ -71,7 +77,11 @@ export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
  * `Headers`) can call this without wrapping or casting.
  */
 export function extractTrustedClientIp(headers: Headers): string {
-  const cfConnectingIp = headers.get("cf-connecting-ip");
+  // Only honour cf-connecting-ip on a request that also proves it traversed
+  // Cloudflare; a direct-to-origin caller can set the header to anything.
+  const cfConnectingIp = hasValidEdgeSecret(headers)
+    ? headers.get("cf-connecting-ip")
+    : null;
   if (cfConnectingIp) {
     const trimmed = cfConnectingIp.trim();
     if (trimmed) return trimmed;
@@ -91,8 +101,6 @@ export function extractTrustedClientIp(headers: Headers): string {
   }
   return "unknown";
 }
-
-const IPV4_MAPPED_IPV6 = /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/i;
 
 /**
  * Collapses an IPv6 address to its /64 network prefix for use as a rate-limit
@@ -119,25 +127,40 @@ const IPV4_MAPPED_IPV6 = /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/i;
 export function normaliseIpForBucketing(ip: string): string {
   if (!ip.includes(":")) return ip; // IPv4, or the "unknown" sentinel
 
-  const mapped = ip.match(IPV4_MAPPED_IPV6);
-  if (mapped) return mapped[1];
-
   const withoutZone = ip.split("%")[0]; // strip zone id (e.g. "%eth0")
 
+  // Canonical form first, so `2001:DB8::1`, `2001:0db8::1` and `2001:db8::1`
+  // share one bucket. An embedded dotted-quad tail becomes two hex groups.
+  let text = withoutZone.toLowerCase();
+  const dotted = text.match(/^(.*:)(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (dotted) {
+    const o = dotted.slice(2).map(Number);
+    if (o.some((n) => n > 255)) return text; // not an address; leave as-is
+    const hex = (hi: number, lo: number) => ((hi << 8) | lo).toString(16);
+    text = `${dotted[1]}${hex(o[0], o[1])}:${hex(o[2], o[3])}`;
+  }
+  if (!isIPv6(text)) return text; // unparseable: no bucketing guarantee, but never throw
+
   let groups: string[];
-  if (withoutZone.includes("::")) {
-    const [headPart, tailPart] = withoutZone.split("::");
-    const head = headPart ? headPart.split(":").filter((p) => p.length > 0) : [];
-    const tail = tailPart ? tailPart.split(":").filter((p) => p.length > 0) : [];
+  if (text.includes("::")) {
+    const [headPart, tailPart] = text.split("::");
+    const head = headPart ? headPart.split(":") : [];
+    const tail = tailPart ? tailPart.split(":") : [];
     const missing = Math.max(0, 8 - head.length - tail.length);
     groups = [...head, ...Array(missing).fill("0"), ...tail];
   } else {
-    groups = withoutZone.split(":").filter((p) => p.length > 0);
+    groups = text.split(":");
+  }
+  groups = groups.map((g) => g.replace(/^0+(?=.)/, "")); // drop leading zeros per group
+
+  // IPv4-mapped (::ffff:a.b.c.d, in either notation) is the plain IPv4 bucket.
+  if (groups.slice(0, 5).every((g) => g === "0") && groups[5] === "ffff") {
+    const hi = parseInt(groups[6], 16);
+    const lo = parseInt(groups[7], 16);
+    return `${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`;
   }
 
-  const prefix =
-    groups.length >= 4 ? groups.slice(0, 4) : [...groups, ...Array(4 - groups.length).fill("0")];
-  return prefix.join(":");
+  return groups.slice(0, 4).join(":");
 }
 
 const FALLBACK_CONTRIBUTE_IP_SALT = "compute-atlas-contribute-v1";
@@ -287,6 +310,58 @@ export async function checkIntakeRateLimit(
       )
     );
   return rateLimitDecision(Number(rows[0]?.c ?? 0));
+}
+
+/**
+ * Admin-login budget: 5 FAILED attempts per 15 minutes per IP hash, durable
+ * and shared across serverless instances (the in-memory bucket in
+ * `app/admin/login/login-guards.ts` is only a secondary bound).
+ *
+ * RESERVE-THEN-COUNT, not check-then-record. Each login first INSERTs an
+ * attempt row (committed, autocommit) and then counts the window INCLUDING that
+ * row; it is admitted only if the count is <= max. A request's count covers
+ * every row committed before its count started, which includes its own and all
+ * earlier committers', so its count is at least its commit rank: at most the first
+ * `max` committers can be admitted, however many run concurrently (a simultaneous
+ * burst may refuse all of them, since each sees the others' rows: over-refusal,
+ * never over-admission). The old
+ * check-then-record let N parallel guesses all read the same low count.
+ * The caller deletes the reserved row on SUCCESS (`releaseAdminLoginAttempt`),
+ * so the persisted rows are failed attempts only; a refused request deletes its
+ * own row too, so refusals do not extend the window. If that delete fails the
+ * row stays and counts as a failure (conservative).
+ */
+export const ADMIN_LOGIN_BUDGET = { max: 5, windowMs: 15 * 60 * 1000 } as const;
+
+export async function reserveAdminLoginAttempt(
+  ipHash: string
+): Promise<{ ok: boolean; id: string }> {
+  const db = getDb();
+  const [row] = await db
+    .insert(intakeAttemptsTable)
+    .values({ surface: "admin-login", submitterIpHash: ipHash })
+    .returning({ id: intakeAttemptsTable.id });
+  const windowStart = new Date(Date.now() - ADMIN_LOGIN_BUDGET.windowMs);
+  const rows = await db
+    .select({ c: sql<number>`count(*)::int` })
+    .from(intakeAttemptsTable)
+    .where(
+      and(
+        eq(intakeAttemptsTable.surface, "admin-login"),
+        gt(intakeAttemptsTable.createdAt, windowStart),
+        eq(intakeAttemptsTable.submitterIpHash, ipHash)
+      )
+    );
+  const ok = Number(rows[0]?.c ?? 0) <= ADMIN_LOGIN_BUDGET.max;
+  if (!ok) {
+    await releaseAdminLoginAttempt(row.id);
+  }
+  return { ok, id: row.id };
+}
+
+/** Deletes one reserved admin-login attempt row (successful login, or a refused reservation). */
+export async function releaseAdminLoginAttempt(id: string): Promise<void> {
+  await getDb().delete(intakeAttemptsTable).where(eq(intakeAttemptsTable.id, id));
 }
 
 /**

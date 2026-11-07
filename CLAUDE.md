@@ -169,9 +169,12 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
   `WATCH_AREAS_ENABLED` (`lib/watch-target-types.ts`).
 - **Admin/pipeline writes** require a bearer token, but not all the same one.
   `POST /api/submissions` — staging only — accepts EITHER `API_INTAKE_TOKEN` or
-  `API_ADMIN_TOKEN` (`requireIntake`). The intake split is not activated: it was
-  declined 2026-10-28 (see `docs/maintainers.md`) because the discovery pipeline
-  also holds the owner `DATABASE_URL`, so it submits with `API_ADMIN_TOKEN`. `GET
+  `API_ADMIN_TOKEN` (`requireIntake`). The scheduled discovery pipeline submits with
+  `API_INTAKE_TOKEN` only (`DISCOVERY_REQUIRE_INTAKE_TOKEN=1`, with the token set in Vercel
+  production and `.env.local`); manual runs may still fall back to `API_ADMIN_TOKEN`. The split
+  was declined 2026-10-28 (see `docs/maintainers.md`) because the pipeline also holds the owner
+  `DATABASE_URL`; that still holds for the leads lane's writes, retention-prune and
+  publish-heartbeat, so this narrows submissions, not the whole pipeline. `GET
   /api/submissions` and approve/reject require `API_ADMIN_TOKEN`. Do not widen
   `requireIntake` past that one handler. The admin pages use a lightweight
   single-secret cookie gate — there is intentionally **no user-account system**
@@ -408,8 +411,9 @@ tool, not part of the deployed app.
   bandwidth or abuse control** — it enforces intent against compliant clients and is decorative
   against anyone who tries. `proxy.ts` enforces a Cloudflare-injected shared-secret header to close
   this; it has been **fail-closed on production since 2026-10-15** (unsetting `EDGE_SHARED_SECRET`
-  403s `/admin`, `/api` except cron, `/map`, `/data` and `/table`; rotation procedure in
-  `docs/maintainers.md` §9), and `/api/cron/*` is exempt because Vercel Cron may reach the deployment without traversing Cloudflare.
+  403s `/admin`, `/api` except cron, `/map`, `/data`, `/table`, `/facilities/*` and `/embed/*`;
+  rotation procedure in `docs/maintainers.md` §9), and `/api/cron/*` is exempt because Vercel Cron
+  may reach the deployment without traversing Cloudflare.
 - **`app/robots.ts` is the source of truth for blocked crawlers; the Cloudflare rules are a second
   copy.** Posture (Ed, 2026-10-15; supersedes 2026-10-14's "block AI agents incl. retrieval"): **allow
   classic SEARCH engines (Googlebot, Bingbot, Applebot, DuckDuckBot), archives (archive.org_bot), AI

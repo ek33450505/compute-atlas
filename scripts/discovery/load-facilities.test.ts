@@ -93,6 +93,28 @@ describe("read-role resolution", () => {
     expect(stderrText()).not.toContain("ownerpw-xyz");
   });
 
+  it("DISCOVERY_REQUIRE_READER=1 throws instead of using the owner URL", async () => {
+    vi.stubEnv("DATABASE_URL", OWNER);
+    vi.stubEnv("DISCOVERY_REQUIRE_READER", "1");
+
+    expect(() => resolveReadUrl()).toThrow(/DISCOVERY_READ_DATABASE_URL is required.*refusing the owner credential/);
+    const readDb = vi.fn(async () => [DB_FACILITY]);
+    await expect(loadFacilities({ readDb, cacheDir, sleep: noSleep })).rejects.toThrow(/refusing the owner credential/);
+    expect(readDb).not.toHaveBeenCalled();
+  });
+
+  it("DISCOVERY_REQUIRE_READER=1 still uses the reader URL when set", () => {
+    vi.stubEnv("DISCOVERY_REQUIRE_READER", "1");
+    vi.stubEnv("DISCOVERY_READ_DATABASE_URL", READER);
+    expect(resolveReadUrl()).toEqual({ url: READER, role: "reader" });
+  });
+
+  it("only the exact value 1 enables strict mode", () => {
+    vi.stubEnv("DATABASE_URL", OWNER);
+    vi.stubEnv("DISCOVERY_REQUIRE_READER", "true");
+    expect(resolveReadUrl()).toEqual({ url: OWNER, role: "owner" });
+  });
+
   it("falls back to DATABASE_URL with exactly one NOTICE per process", async () => {
     vi.resetModules();
     const fresh = await import("./load-facilities");

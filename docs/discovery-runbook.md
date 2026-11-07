@@ -209,9 +209,15 @@ default, 60 s statement timeout. To rotate it, set the new password as the owner
 keeps no history: `psql` with `\password discovery_reader` prompts for it and sends it hashed, so
 nothing lands in shell history (avoid a literal `ALTER ROLE ... PASSWORD '...'` on the command
 line). Then update the URL in `.env.local`. The 30-minute snapshot cache is unaffected by a rotation:
-it is keyed on host + database only. If the variable is missing, discovery currently falls back to
-`DATABASE_URL` (owner) and prints a NOTICE on stderr; this is planned to tighten to refusing once a
-scheduled run logs `(reader)`.
+it is keyed on host + database only. Scheduled runs set `DISCOVERY_REQUIRE_READER=1`: if
+`DISCOVERY_READ_DATABASE_URL` is missing they refuse the owner `DATABASE_URL` and fail loudly instead of
+falling back. Manual runs, with the flag unset or set to `0`, still fall back to `DATABASE_URL` (owner)
+and print a NOTICE on stderr; set `DISCOVERY_REQUIRE_READER=0` in the environment to opt a manual run out
+when the scheduled environment exports `1`.
+
+Likewise, scheduled runs set `DISCOVERY_REQUIRE_INTAKE_TOKEN=1`, so `submit-candidates.ts` presents
+`API_INTAKE_TOKEN` (in `.env.local`) and never falls back to `API_ADMIN_TOKEN`; with the token missing it
+exits 1. `DISCOVERY_REQUIRE_INTAKE_TOKEN=0` opts a manual run out and restores the admin fallback.
 
 Check source liveness (read-only, generates report):
 

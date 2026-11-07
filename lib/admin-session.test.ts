@@ -5,19 +5,20 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   SESSION_MAX_AGE_SECONDS,
   createSessionValue,
+  deriveSessionKey,
   verifySessionCookie,
 } from "./admin-session";
 
 const TOKEN = "secret-admin-token";
 
 /**
- * Issues a v2 cookie as if `createSessionValue` had been called at
+ * Issues a v3 cookie as if `createSessionValue` had been called at
  * `issuedAtMs`, without actually sleeping — fake-time the clock for the
  * single call that reads it, then restore real time immediately so the
  * rest of the test (and `verifySessionCookie`'s own expiry check) sees the
  * real "now".
  */
-function makeV2CookieAt(issuedAtMs: number, token = TOKEN): string {
+function makeV3CookieAt(issuedAtMs: number, token = TOKEN): string {
   vi.useFakeTimers();
   vi.setSystemTime(issuedAtMs);
   try {
@@ -55,6 +56,7 @@ describe("admin-session", () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    delete process.env.ADMIN_SESSION_EPOCH;
     if (ORIGINAL_TOKEN === undefined) {
       delete process.env.API_ADMIN_TOKEN;
     } else {
@@ -62,22 +64,22 @@ describe("admin-session", () => {
     }
   });
 
-  describe("v2 cookies", () => {
+  describe("v3 cookies", () => {
     it("verifies a freshly issued cookie", () => {
       const cookie = createSessionValue(TOKEN);
-      expect(cookie.startsWith("v2.")).toBe(true);
+      expect(cookie.startsWith("v3.")).toBe(true);
       expect(verifySessionCookie(cookie)).toBe(true);
     });
 
     it("rejects an expired cookie (issuedAt older than the max age)", () => {
       const issuedAtMs = Date.now() - (SESSION_MAX_AGE_SECONDS * 1000 + 60_000);
-      const cookie = makeV2CookieAt(issuedAtMs);
+      const cookie = makeV3CookieAt(issuedAtMs);
       expect(verifySessionCookie(cookie)).toBe(false);
     });
 
     it("accepts a cookie safely inside the max age window", () => {
       const issuedAtMs = Date.now() - (SESSION_MAX_AGE_SECONDS * 1000 - 60_000);
-      const cookie = makeV2CookieAt(issuedAtMs);
+      const cookie = makeV3CookieAt(issuedAtMs);
       expect(verifySessionCookie(cookie)).toBe(true);
     });
 
@@ -111,13 +113,13 @@ describe("admin-session", () => {
 
     it("rejects a future-dated cookie beyond clock-skew tolerance", () => {
       const issuedAtMs = Date.now() + 60 * 60 * 1000; // 1 hour ahead
-      const cookie = makeV2CookieAt(issuedAtMs);
+      const cookie = makeV3CookieAt(issuedAtMs);
       expect(verifySessionCookie(cookie)).toBe(false);
     });
 
     it("accepts a cookie within clock-skew tolerance", () => {
       const issuedAtMs = Date.now() + 60 * 1000; // 1 minute ahead
-      const cookie = makeV2CookieAt(issuedAtMs);
+      const cookie = makeV3CookieAt(issuedAtMs);
       expect(verifySessionCookie(cookie)).toBe(true);
     });
 
@@ -141,8 +143,8 @@ describe("admin-session", () => {
     });
 
     it("rejects malformed values with the wrong number of parts", () => {
-      expect(verifySessionCookie("v2.123.abc")).toBe(false);
-      expect(verifySessionCookie("v2.123.abc.def.extra")).toBe(false);
+      expect(verifySessionCookie("v3.123.abc")).toBe(false);
+      expect(verifySessionCookie("v3.123.abc.def.extra")).toBe(false);
     });
 
     it("rejects a well-formed cookie signed with a different token", () => {
@@ -158,13 +160,65 @@ describe("admin-session", () => {
       // is the signing key — this rules out the rejection above being a
       // vacuous pass from a format/length mismatch rather than the HMAC
       // comparison actually doing its job.
-      const realHmac = createHmac("sha256", TOKEN)
+      const realHmac = createHmac("sha256", deriveSessionKey(TOKEN))
         .update(`${version}.${issuedAtRaw}.${nonce}`)
         .digest("hex");
       const realCookie = `${version}.${issuedAtRaw}.${nonce}.${realHmac}`;
 
       expect(verifySessionCookie(realCookie)).toBe(true);
       expect(verifySessionCookie(attackerCookie)).toBe(false);
+    });
+  });
+
+  describe("key separation, epoch and retired v2", () => {
+    function signWith(key: string | Buffer, version: string, issuedAt: number, nonce: string): string {
+      const hmac = createHmac("sha256", key).update(`${version}.${issuedAt}.${nonce}`).digest("hex");
+      return `${version}.${issuedAt}.${nonce}.${hmac}`;
+    }
+    const NONCE = "0123456789abcdef0123456789abcdef";
+
+    it("rejects a cookie HMAC'd with the raw token as key (regression guard for key separation)", () => {
+      const raw = signWith(TOKEN, "v3", Date.now(), NONCE);
+      expect(verifySessionCookie(raw)).toBe(false);
+      // Control: same input signed with the derived key verifies.
+      expect(verifySessionCookie(signWith(deriveSessionKey(TOKEN), "v3", Date.now(), NONCE))).toBe(true);
+    });
+
+    it("rejects a v2 cookie signed the old way (raw token key)", () => {
+      expect(verifySessionCookie(signWith(TOKEN, "v2", Date.now(), NONCE))).toBe(false);
+    });
+
+    it("invalidates outstanding sessions when ADMIN_SESSION_EPOCH changes", () => {
+      const cookie = createSessionValue(TOKEN);
+      expect(verifySessionCookie(cookie)).toBe(true);
+      process.env.ADMIN_SESSION_EPOCH = "1";
+      expect(verifySessionCookie(cookie)).toBe(false);
+      const fresh = createSessionValue(TOKEN);
+      expect(verifySessionCookie(fresh)).toBe(true);
+      process.env.ADMIN_SESSION_EPOCH = "2";
+      expect(verifySessionCookie(fresh)).toBe(false);
+      delete process.env.ADMIN_SESSION_EPOCH;
+      expect(verifySessionCookie(cookie)).toBe(true); // unset === "0"
+    });
+
+    it("treats unset, empty and whitespace epoch as the default", () => {
+      const base = deriveSessionKey(TOKEN);
+      process.env.ADMIN_SESSION_EPOCH = "  ";
+      expect(deriveSessionKey(TOKEN).equals(base)).toBe(true);
+      process.env.ADMIN_SESSION_EPOCH = "0";
+      expect(deriveSessionKey(TOKEN).equals(base)).toBe(true);
+    });
+
+    it("rejects a non-canonical issuedAt (leading zeros) even with a valid HMAC", () => {
+      const now = Date.now();
+      const padded = `0${now}`;
+      expect(verifySessionCookie(signWith(deriveSessionKey(TOKEN), "v3", padded as unknown as number, NONCE))).toBe(false);
+      expect(verifySessionCookie(signWith(deriveSessionKey(TOKEN), "v3", now, NONCE))).toBe(true);
+    });
+
+    it("derives a key that differs from the token bytes", () => {
+      expect(deriveSessionKey(TOKEN).equals(Buffer.from(TOKEN))).toBe(false);
+      expect(deriveSessionKey(TOKEN)).toHaveLength(32);
     });
   });
 
@@ -192,10 +246,10 @@ describe("admin-session", () => {
     });
 
     it("rejects both cookie formats when API_ADMIN_TOKEN is unset", () => {
-      const v2Cookie = createSessionValue(TOKEN);
+      const v3Cookie = createSessionValue(TOKEN);
       const v1Cookie = legacyHash(TOKEN);
       delete process.env.API_ADMIN_TOKEN;
-      expect(verifySessionCookie(v2Cookie)).toBe(false);
+      expect(verifySessionCookie(v3Cookie)).toBe(false);
       expect(verifySessionCookie(v1Cookie)).toBe(false);
     });
   });

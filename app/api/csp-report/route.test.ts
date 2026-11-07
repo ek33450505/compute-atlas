@@ -212,6 +212,28 @@ describe("POST /api/csp-report", () => {
       expect((await POST(request)).status).toBe(413);
     });
 
+    it("rejects an oversized streamed body with no content-length, stopping the read", async () => {
+      let pulls = 0;
+      const stream = new ReadableStream<Uint8Array>({
+        pull(controller) {
+          pulls += 1;
+          controller.enqueue(new Uint8Array(4096).fill(0x20));
+          if (pulls > 1000) controller.close();
+        },
+      });
+      const request = new Request("http://localhost/api/csp-report", {
+        method: "POST",
+        headers: { "x-real-ip": "203.0.113.10" },
+        body: stream,
+        duplex: "half",
+      } as RequestInit);
+
+      const res = await POST(request);
+
+      expect(res.status).toBe(413);
+      expect(pulls).toBeLessThan(100);
+    });
+
     it("rejects malformed JSON without throwing", async () => {
       const res = await POST(req(null, { raw: "{not json" }));
 

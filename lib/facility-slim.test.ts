@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { facilitiesSchema, type Facility } from "@/lib/schema";
-import { toMapFacility, toMapPoint, toPopupSummary, toTableRow } from "@/lib/facility-slim";
+import { toMapFacility, toMapPoint, toMiniMapFacility, toPopupSummary, toTableRow } from "@/lib/facility-slim";
 
 // A record with every field the projector may carry, one per facility type.
 const SOURCES = [
@@ -118,7 +118,6 @@ describe("toTableRow", () => {
     const [dc, mining, power] = FULL.map(toTableRow);
     const common = [
       "capacityMw",
-      "announcedDate",
       "confidence",
       "facilityType",
       "id",
@@ -126,25 +125,12 @@ describe("toTableRow", () => {
       "location",
       "name",
       "operator",
-      "sourceCount",
-      "sources",
       "status",
     ];
     expect(Object.keys(dc).sort()).toEqual([...common, "aiClassification"].sort());
-    expect(Object.keys(mining).sort()).toEqual(
-      [...common, "aiClassification", "environmental", "mining"].sort()
-    );
+    expect(Object.keys(mining).sort()).toEqual([...common, "aiClassification"].sort());
     expect(Object.keys(power).sort()).toEqual([...common].sort());
-    expect(Object.keys(dc.location).sort()).toEqual(
-      ["city", "county", "multiSite", "precision", "state"].sort()
-    );
-    expect(Object.keys(dc.sources[0]).sort()).toEqual(["label", "url"]);
-  });
-
-  it("carries the real source count and only the first source", () => {
-    const row = toTableRow(FULL[0]);
-    expect(row.sourceCount).toBe(2);
-    expect(row.sources).toEqual([{ url: "https://example.com/a", label: "A" }]);
+    expect(Object.keys(dc.location).sort()).toEqual(["city", "state"]);
   });
 
   it("carries no coordinates", () => {
@@ -153,23 +139,47 @@ describe("toTableRow", () => {
     expect(json).not.toContain("31.12");
   });
 
-  it("drops heavy fields", () => {
+  it("drops fields the table does not render", () => {
     const json = JSON.stringify(FULL.map(toTableRow));
-    for (const k of ["statusHistory", "community", "notes", "secret prose", "street", "postalCode", "example.com/b"]) {
+    for (const k of [
+      "statusHistory",
+      "community",
+      "notes",
+      "street",
+      "postalCode",
+      "sources",
+      "sourceCount",
+      "announcedDate",
+      "county",
+      "precision",
+      "multiSite",
+      "offtaker",
+      "mining",
+      "environmental",
+    ]) {
+      expect(json).not.toContain(`"${k}"`);
+    }
+    expect(json).not.toContain("secret prose");
+    expect(json).not.toContain("example.com");
+  });
+});
+
+describe("toMiniMapFacility", () => {
+  it("emits only name, status and the location the map needs", () => {
+    const m = toMiniMapFacility(FULL[0]);
+    expect(Object.keys(m).sort()).toEqual(["location", "name", "status"]);
+    expect(Object.keys(m.location).sort()).toEqual(["city", "lat", "lon", "state"]);
+    const json = JSON.stringify(m);
+    for (const k of ["statusHistory", "notes", "secret prose", "retrievedAt", "postalCode", "street", "county", "sources", "capacityMw"]) {
       expect(json).not.toContain(k);
     }
   });
 
-  it("carries a power plant's offtaker and nothing else from generation", () => {
-    const [plant] = facilitiesSchema.parse([
-      {
-        ...BASE,
-        facilityType: "power_generation",
-        generation: { offtaker: "Acme Cloud", fuel: "gas" },
-      },
-    ]);
-    const row = toTableRow(plant);
-    expect("generation" in row && row.generation).toEqual({ offtaker: "Acme Cloud" });
+  it("omits city when absent", () => {
+    const noCity: Record<string, unknown> = { ...BASE.location };
+    delete noCity.city;
+    const [f] = facilitiesSchema.parse([{ ...BASE, location: noCity, facilityType: "power_generation" }]);
+    expect("city" in toMiniMapFacility(f).location).toBe(false);
   });
 });
 

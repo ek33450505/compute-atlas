@@ -1,8 +1,8 @@
-// Build targets.json from the committed snapshot, not hand-typed. Run via tsx
+// Build targets.json from the local data snapshot, not hand-typed. Run via tsx
 // (`npx tsx scripts/discovery/bench/build-targets.mjs`). It reads the guarded
 // data/facilities.json snapshot (via readFacilitiesSnapshot, repo root taken from
 // this file's location), NOT Neon: bench ground truth must be reproducible and this
-// script overwrites the committed targets.json.
+// script overwrites the local (gitignored) targets.json.
 // Ground truth must come from the record, and the record's shape is
 // capacityMw:{planned,operational} + energy:{source,utility,onSiteGenerationMw}.
 // Keeps the original 7 (already hand-labeled, carry known traps) and adds a
