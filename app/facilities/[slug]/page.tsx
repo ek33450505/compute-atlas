@@ -8,6 +8,7 @@ import { previewSubset } from "@/lib/build-params";
 import { getOperatorOwnership } from "@/lib/operator-ownership";
 import { getSitingContext } from "@/lib/siting-context";
 import { getStatusMeta } from "@/lib/status";
+import { toMiniMapFacility } from "@/lib/facility-slim";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import {
   formatCapacity,
@@ -472,7 +473,7 @@ export default async function FacilityPage({
         <h2 id="map-heading" className="font-display text-xl text-foreground mb-4">
           Location
         </h2>
-        <FacilityMiniMapDynamic facility={facility} />
+        <FacilityMiniMapDynamic facility={toMiniMapFacility(facility)} />
       </section>
 
       <Separator />

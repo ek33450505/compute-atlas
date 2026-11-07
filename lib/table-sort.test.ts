@@ -10,8 +10,6 @@ function row(over: Partial<TableRow> & { id: string; name: string }): TableRow {
     confidence: "confirmed",
     facilityType: "data_center",
     location: { state: "TX" },
-    sources: [],
-    sourceCount: 0,
     lastUpdated: "2026-01-01",
     ...over,
   } as TableRow;

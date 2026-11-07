@@ -6,6 +6,7 @@ import { Explorer } from "./explorer";
 import type { Facility } from "@/lib/schema";
 import { toMapPoint, toTableRow } from "@/lib/facility-slim";
 import { getFilterOptions } from "@/lib/filters";
+import { queryTable } from "@/lib/table-query";
 import * as nav from "next/navigation";
 
 // jsdom can't render the real FacilityMap (MapLibre/WebGL — see the
@@ -118,6 +119,7 @@ const tableProps = {
   mode: "table" as const,
   rows: fixtures,
   filteredCount: 4,
+  reachableCount: 4,
   totalCount: 4,
   page: 1,
   pageCount: 1,
@@ -152,8 +154,52 @@ describe("Explorer — table mode", () => {
   });
 
   it("announces the range on the current page", () => {
-    renderTable({ rows: fixtures.slice(0, 2), filteredCount: 1240, totalCount: 2000, page: 2, pageCount: 25 });
+    renderTable({ rows: fixtures.slice(0, 2), filteredCount: 1240, reachableCount: 500, totalCount: 2000, page: 2, pageCount: 25 });
     expect(screen.getByRole("status")).toHaveTextContent("Showing 51–52 of 1,240 facilities");
+  });
+
+  it("states the cap when results exceed it, and not otherwise", () => {
+    const { unmount } = renderTable({ filteredCount: 2500, reachableCount: 500, pageCount: 10, totalCount: 2800 });
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "of 2,500 facilities. Only the first 500 are listed; narrow the filters or search to see the rest."
+    );
+    unmount();
+    renderTable();
+    expect(screen.getByRole("status")).not.toHaveTextContent(/Only the first/);
+  });
+
+  it("shows no cap notice at exactly 500 results, with 10 pages", () => {
+    renderTable({ filteredCount: 500, reachableCount: 500, pageCount: 10, page: 10, totalCount: 2800 });
+    expect(screen.getByRole("status")).not.toHaveTextContent(/Only the first/);
+    expect(screen.getByRole("link", { name: "Page 10" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Page 11" })).not.toBeInTheDocument();
+  });
+
+  it("shows the cap notice at 501 results, still with 10 pages", () => {
+    renderTable({ filteredCount: 501, reachableCount: 500, pageCount: 10, page: 10, totalCount: 2800 });
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "of 501 facilities. Only the first 500 are listed"
+    );
+    expect(screen.getByRole("link", { name: "Page 10" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Page 11" })).not.toBeInTheDocument();
+  });
+
+  it("applies the cap end to end from a real queryTable result", () => {
+    const many = Array.from({ length: 501 }, (_, i) => ({
+      ...facilityA,
+      id: `cap-${String(i).padStart(3, "0")}`,
+      name: `Cap ${String(i).padStart(3, "0")}`,
+    }));
+    const result = queryTable(many, {
+      status: [], state: [], operator: [], facilityType: [], minMw: 0, q: "",
+      sort: "capacity", dir: "desc", page: 99,
+    });
+    renderTable(result);
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Showing 451–500 of 501 facilities. Only the first 500 are listed"
+    );
+    expect(screen.getByRole("link", { name: "Page 10" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Page 11" })).not.toBeInTheDocument();
   });
 
   it("announces an empty result", () => {

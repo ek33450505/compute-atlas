@@ -7,10 +7,10 @@ import { mapLib } from "@/lib/maplibre-csp";
 import { BASEMAP_STYLE_URL } from "@/lib/map";
 import { getStatusColor } from "@/lib/status";
 import { formatLocation } from "@/lib/format";
-import type { Facility } from "@/lib/schema";
+import type { MiniMapFacility } from "@/lib/facility-slim";
 
 interface FacilityMiniMapProps {
-  facility: Facility;
+  facility: MiniMapFacility;
 }
 
 /**

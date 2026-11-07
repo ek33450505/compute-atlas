@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 
 import { facilitiesSchema, type Facility } from "@/lib/schema";
 import { MAX_SEARCH_QUERY_LEN } from "@/lib/search-limits";
-import { PAGE_SIZE, queryTable, type TableQueryParams } from "@/lib/table-query";
+import { MAX_PAGES, MAX_ROWS, PAGE_SIZE, queryTable, type TableQueryParams } from "@/lib/table-query";
 
 function make(i: number, over: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -37,6 +37,41 @@ const P: TableQueryParams = {
   dir: "desc",
   page: 1,
 };
+
+describe("queryTable page cap", () => {
+  const BIG: Facility[] = facilitiesSchema.parse(
+    Array.from({ length: MAX_ROWS + 120 }, (_, k) => make(k))
+  );
+
+  it("exports a 10-page, 500-row cap", () => {
+    expect(MAX_PAGES).toBe(10);
+    expect(MAX_ROWS).toBe(500);
+  });
+
+  it("clamps a page past the cap to the last allowed page, still reporting the real total", () => {
+    const r = queryTable(BIG, { ...P, page: 11 });
+    expect(r.page).toBe(MAX_PAGES);
+    expect(r.pageCount).toBe(MAX_PAGES);
+    expect(r.rows).toHaveLength(PAGE_SIZE);
+    expect(r.filteredCount).toBe(BIG.length);
+    expect(r.reachableCount).toBe(MAX_ROWS);
+    expect(r.rows).toEqual(queryTable(BIG, { ...P, page: MAX_PAGES }).rows);
+  });
+
+  it("caps a filter-only query too, so no row beyond 500 is reachable", () => {
+    const seen = new Set<string>();
+    for (let page = 1; page <= MAX_PAGES + 3; page++) {
+      for (const row of queryTable(BIG, { ...P, facilityType: ["data_center"], page }).rows) seen.add(row.id);
+    }
+    expect(seen.size).toBe(MAX_ROWS);
+  });
+
+  it("does not cap a result set within the limit", () => {
+    const r = queryTable(ALL, P);
+    expect(r.reachableCount).toBe(ALL.length);
+    expect(r.pageCount).toBe(3);
+  });
+});
 
 describe("queryTable", () => {
   it("paginates at PAGE_SIZE and reports counts", () => {

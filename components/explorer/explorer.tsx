@@ -37,6 +37,7 @@ interface TableModeProps {
   mode: "table";
   rows: TableRow[];
   filteredCount: number;
+  reachableCount: number;
   totalCount: number;
   page: number;
   pageCount: number;
@@ -204,7 +205,7 @@ export function Explorer(props: ExplorerProps) {
   // Shares the nuqs URL schema with /map; the "View map" cross-link copies the
   // filter params (not page/sort/search) so filters carry between the views.
   // -------------------------------------------------------------------------
-  const { rows, filteredCount, page, pageCount, options, sort, dir, q } = props;
+  const { rows, filteredCount, reachableCount, page, pageCount, options, sort, dir, q } = props;
   const query = searchParams.toString();
   const mapParams = new URLSearchParams(query);
   for (const k of ["page", "sort", "dir", "q"]) mapParams.delete(k);
@@ -214,7 +215,11 @@ export function Explorer(props: ExplorerProps) {
   const summary =
     filteredCount === 0
       ? "No facilities match these filters"
-      : `Showing ${BASE_NUMBER(first)}–${BASE_NUMBER(first + rows.length - 1)} of ${BASE_NUMBER(filteredCount)} facilities`;
+      : `Showing ${BASE_NUMBER(first)}–${BASE_NUMBER(first + rows.length - 1)} of ${BASE_NUMBER(filteredCount)} facilities${
+          filteredCount > reachableCount
+            ? `. Only the first ${BASE_NUMBER(reachableCount)} are listed; narrow the filters or search to see the rest.`
+            : ""
+        }`;
 
   return (
     <div className="space-y-4">

@@ -40,7 +40,8 @@ export default async function TablePage({
             Data center data table
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Facilities are listed 50 to a page, filterable and sortable. Filters
+            Facilities are listed 50 to a page, up to 500 per search, filterable and
+            sortable. Filters
             are shared with the map — the URL carries them between the two
             views. Each row links to its detail plate.
           </p>

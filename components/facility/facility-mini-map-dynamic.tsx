@@ -13,7 +13,7 @@
 
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Facility } from "@/lib/schema";
+import type { MiniMapFacility } from "@/lib/facility-slim";
 
 const FacilityMiniMapInner = dynamic(
   () =>
@@ -27,7 +27,7 @@ const FacilityMiniMapInner = dynamic(
 );
 
 interface FacilityMiniMapDynamicProps {
-  facility: Facility;
+  facility: MiniMapFacility;
 }
 
 export function FacilityMiniMapDynamic({ facility }: FacilityMiniMapDynamicProps) {
