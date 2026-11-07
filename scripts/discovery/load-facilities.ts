@@ -126,10 +126,20 @@ let ownerFallbackNoticed = false;
  * The URL for the facility read: the read-only discovery_reader role when
  * DISCOVERY_READ_DATABASE_URL is set, else the owner DATABASE_URL (one stderr
  * notice per process). Null when neither is set. Never logs the URL.
+ *
+ * DISCOVERY_REQUIRE_READER=1 (set by the scheduled run) is strict mode: there
+ * is no owner fallback and no null, it THROWS when the reader URL is unset, so
+ * a scheduled read can never use the owner credential. Every caller reaches
+ * this outside a try/catch that would swallow it, so the failure stays loud.
  */
 export function resolveReadUrl(): { url: string; role: ReadRole } | null {
   const reader = process.env.DISCOVERY_READ_DATABASE_URL;
   if (reader) return { url: reader, role: "reader" };
+  if (process.env.DISCOVERY_REQUIRE_READER === "1") {
+    throw new Error(
+      "DISCOVERY_READ_DATABASE_URL is required when DISCOVERY_REQUIRE_READER=1; refusing the owner credential"
+    );
+  }
   const owner = process.env.DATABASE_URL;
   if (!owner) return null;
   if (!ownerFallbackNoticed) {

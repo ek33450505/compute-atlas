@@ -7,6 +7,22 @@ facility, or correctly return null.
     node scripts/discovery/bench/run.mjs <model-tag>     # writes result-<model>.json
     node scripts/discovery/bench/rescore.mjs             # re-scores ALL results against verified truth
 
+**Local-only corpus.** `pages.json`, `targets.json` and `truth.json` hold real facility
+records (as do the `result-*.json` files) and are gitignored (untracked 2026-11-07, like `data/`). A fresh clone has none
+of them: `run.mjs`, `rescore.mjs` and `label-aid.mjs` need them and will not run, and
+the two parity tests that read `pages.json` (`html-parity.test.ts`, `quote-parity.test.ts`)
+skip their full-corpus loops and canaries. The curated cases run everywhere: they read
+the tracked `curated-snippets.json` (short verbatim excerpts of public source pages, page
+text only, no dataset fields). `fields.test.ts` and `fetch-pages.test.ts` need none of
+the local files either. To rebuild: `npm run db:export`, then
+`npx tsx scripts/discovery/bench/build-targets.mjs` (rewrites `targets.json` from the
+snapshot), then `npx tsx scripts/discovery/bench/fetch-pages.mjs` (rewrites `pages.json`).
+`truth.json` is hand-labeled and nothing regenerates it. The `result-*.json` files (and
+`baseline-preGW/`) are local-only too, since they carry per-facility values and quotes.
+Back all of it up under `~/Backups/compute-atlas-local/` (a backup was taken 2026-11-07
+at `~/Backups/compute-atlas-local/bench-2026-11-07/`). Git history keeps the versions
+committed before 2026-11-07.
+
 (Both are also runnable from inside this directory — `cd scripts/discovery/bench && node run.mjs <model-tag>`.)
 
 `rescore.mjs` holds the ground truth and is the file to trust — `run.mjs`'s inline
@@ -57,7 +73,7 @@ not invalidated by this change — a full re-check of every real model quote in
 every result file against the decoded text found 0 verdict flips — but a
 fresh fetch from here forward will not match them byte-for-byte.
 
-## Why this is version-controlled
+## Why this is version-controlled (the harness; the corpus is local-only)
 
 This directory is the calibration evidence behind the shipped Track 5 tool's
 (`scripts/discovery/extract-fields.ts`) headline claim — PRECISION 90% / RECALL
@@ -66,9 +82,11 @@ pages. (The corpus is now 69 pages; those headline numbers come from the four
 NUMERIC fields, which are labeled on the original 31 only — the 38 pages added
 for `coolingType` carry a coolingType label and nothing else, and `rescore.mjs`
 excludes and names every unlabeled cell rather than scoring it as an abstention.) A claim like that is only worth anything if the harness that produced it
-stays inspectable and re-runnable, so `pages.json`, `truth.json`,
-`result-gpt-oss_20b.json`, and the scoring/fetch/build scripts all live here in
-git rather than in a gitignored scratch directory.
+stays inspectable and re-runnable, so the
+scoring/fetch/build scripts live here in git rather than in a gitignored scratch
+directory. `pages.json`, `truth.json`, `targets.json` and the `result-*.json` files were committed until
+2026-11-07; they hold real facility records, so they are now local-only (see the top
+of this file).
 
 `quote.mjs` is a deliberate exception to "don't duplicate logic": it is an
 independent JS port of the exact same quote-grounding gate that

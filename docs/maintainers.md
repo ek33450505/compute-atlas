@@ -140,7 +140,7 @@ See `.env.example`.
 |---|---|
 | `DATABASE_URL` | Neon Postgres connection string: the pooled one (`-pooler` host) on Vercel production; the direct one in `.env.local`; the GitHub Actions secret holds the least-privilege `ci_monitor` URL (see "CI database role"). The app's `neon-http` driver accepts either; `drizzle.config.ts` (`db:migrate`) reads the same variable |
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
-| `API_INTAKE_TOKEN` | Staging-only bearer; `POST /api/submissions` accepts it alongside `API_ADMIN_TOKEN`. Optional. Unset, the discovery pipeline submits with `API_ADMIN_TOKEN`. The pipeline's `.env.local` does not set it: the split was declined 2026-10-28 (see the `API_INTAKE_TOKEN` section below). **If set, it must be an independent value** |
+| `API_INTAKE_TOKEN` | Staging-only bearer; `POST /api/submissions` accepts it alongside `API_ADMIN_TOKEN`. Required by the scheduled discovery run (`DISCOVERY_REQUIRE_INTAKE_TOKEN=1`); a manual run with it unset falls back to `API_ADMIN_TOKEN`. Set in Vercel production and the pipeline's `.env.local` (see the `API_INTAKE_TOKEN` section below). **If set, it must be an independent value** |
 | `CRON_SECRET` | Bearer secret authenticating Vercel Cron to `/api/cron/*`. **Set in production since 2026-09-14**, with the state digest; unset means every cron-path caller is rejected (fail-closed). **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
 | `STATE_DIGEST_ENABLED` | Kill switch for the monthly state digest. **Set to `"true"` in production since 2026-09-14.** Unsetting it (or any value but `"true"`) stops all digest mail, but only once a new deployment is live: Vercel applies env changes to new deployments only, so follow with `npx vercel redeploy --target production <url>` |
 | `SUBMISSION_NOTIFY_ENABLED` | Kill switch for "email me when my submission is reviewed". **Set to `"true"` in production since 2026-09-14.** Same kill semantics (redeploy required), plus a Cloudflare purge for the form field: see "Turning it off" below |
@@ -216,21 +216,33 @@ by `scripts/retention-prune.ts` after 90 days for submissions nobody ever review
 ⚠️ **`.env.local` quoting.** `vercel env add` keeps surrounding quotes, and a quoted
 `DATABASE_URL` is invalid and fails *silently* — there is no fallback. Strip the quotes.
 
-### `API_INTAKE_TOKEN`: the intake/admin split (declined 2026-10-28)
+### `API_INTAKE_TOKEN`: the intake/admin split (declined 2026-10-28, narrowed for submissions)
 
 `POST /api/submissions` accepts either `API_INTAKE_TOKEN` or `API_ADMIN_TOKEN` (`requireIntake` in
-`lib/api-auth.ts`). The split is **not activated**. Ed declined it on 2026-10-28: the discovery
-pipeline runs every tool with `--env-file=.env.local`, and that file holds `DATABASE_URL` as the
-`neondb_owner` role, which can write any row, including a live facility. Removing the pipeline's
-admin token would narrow nothing that matters while the least-privilege DB split stays deferred (see
-"Secret rotation" step 1). `.env.local` has no `API_INTAKE_TOKEN`, so the pipeline submits with
-`API_ADMIN_TOKEN`.
+`lib/api-auth.ts`). The full split was declined on 2026-10-28: the discovery pipeline runs every tool
+with `--env-file=.env.local`, and that file holds `DATABASE_URL` as the `neondb_owner` role, which can
+write any row, including a live facility. Removing the pipeline's admin token alone narrowed nothing
+that matters while the least-privilege DB split stays deferred (see "Secret rotation" step 1).
+
+The scheduled run now submits with `API_INTAKE_TOKEN` only: `run.sh` sets
+`DISCOVERY_REQUIRE_INTAKE_TOKEN=1`, `submit-candidates.ts` then refuses the admin fallback and exits 1
+if the intake token is missing, and the token is set in Vercel production and `.env.local`. A manual
+run with the flag unset (or `0`) still falls back to `API_ADMIN_TOKEN`. This narrows submissions, not
+the whole pipeline.
+
+Which pipeline tools still hold the owner credential (`scripts/discovery/db-client-import-guard.test.ts`
+enforces the list): the leads lane writes (`createSubmission`, `updateLeadStatus`, `promoteLead`, all via
+`lib/db/client` `getDb()` on `DATABASE_URL`), `publish-heartbeat.ts` upserts the heartbeat row, and
+`scripts/retention-prune.ts` deletes. `check-heartbeat.ts` and `check-digest-status.ts` also use
+`getDb()`, but run in CI (`discovery-watchdog.yml`) on the `DATABASE_URL` Actions secret, which is moving to
+the read-only `ci_monitor` role. A scoped staging role for the leads lane is a possible follow-up, not
+planned.
 
 A revisit needs both: a scoped Neon role for the pipeline, and `run.sh` reading its own env file,
 because `.env.local` is shared with `npm run submissions` (which needs `API_ADMIN_TOKEN` for every
 subcommand) and with `db:sync --apply`'s tag bust.
 
-⚠️ If `API_INTAKE_TOKEN` is ever set, it must be an independent value. Equal to `API_ADMIN_TOKEN`, it
+⚠️ `API_INTAKE_TOKEN` must be an independent value. Equal to `API_ADMIN_TOKEN`, it
 gives no separation at all.
 
 ## Secret rotation
@@ -301,15 +313,16 @@ CLAUDE.md), and `grep -c -- -pooler ~/.rot/pooled` shows `1` (the same check on 
 show `0`). Delete `~/.rot` when done.
 
 **2. `API_ADMIN_TOKEN`.** Grants every admin write route, the admin UI, the cron recovery path, and
-discovery staging writes too (the intake split was declined 2026-10-28). ⚠️ **Rotating it invalidates
+manual discovery staging writes too (the scheduled run submits with `API_INTAKE_TOKEN`). ⚠️ **Rotating it invalidates
 every live `admin_session` cookie**, because the cookie HMAC key is HKDF-derived from the token
 (`lib/admin-session.ts`, `deriveSessionKey`). There is **no overlap window** — the code compares against
 exactly one value, so it is a hard cutover.
 Order: Vercel production → **redeploy** → `.env.local` (the `submissions` CLI, `sync-to-neon.ts` and
 `submit-candidates.ts` all read it) → log in to `/admin` again.
 Do it when **no nightly `run.sh` discovery run is in flight**.
-The discovery pipeline also submits with `API_ADMIN_TOKEN` (the intake split was declined 2026-10-28), so
-its `.env.local` is part of this rotation, and the in-flight-run caveat above applies.
+The scheduled discovery run submits with `API_INTAKE_TOKEN`, but its `.env.local` still holds
+`API_ADMIN_TOKEN` for manual runs and the other CLIs, so it is part of this rotation, and the
+in-flight-run caveat above applies.
 
 **Sign out everywhere (without rotating the token).** The session cookie (`v3.<issuedAtMs>.<nonce>.<hmac>`) is
 signed with an HKDF-SHA256 key derived from `API_ADMIN_TOKEN` plus the optional env `ADMIN_SESSION_EPOCH`

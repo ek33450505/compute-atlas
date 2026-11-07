@@ -193,6 +193,13 @@ EOF
 	# disables it so the pre-existing tests keep asserting what they always did.
 	# The suspect_short tests set the threshold they need explicitly.
 	export DISCOVERY_MIN_CLAUDE_SECS=0
+
+	# Strict-credential preflight reads this file for KEY names only. Default
+	# fixture carries both required keys (dummy values); preflight tests swap it.
+	ENV_FIXTURE="$TEST_TMP/env-fixture"
+	printf 'DISCOVERY_READ_DATABASE_URL=dummy-reader-value\nAPI_INTAKE_TOKEN=dummy-intake-value\n' >"$ENV_FIXTURE"
+	export DISCOVERY_ENV_FILE="$ENV_FIXTURE" DISCOVERY_TEST_MODE=1
+	unset DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN
 }
 
 teardown() {
@@ -3199,4 +3206,93 @@ EOF
 	# retention-prune runs AFTER the liveness step; it must not have been skipped
 	grep -q "retention-prune.ts" "$NPX_CALL_LOG"
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+}
+
+# --- strict credential modes (DISCOVERY_REQUIRE_READER / _INTAKE_TOKEN) -------
+# A shim that records the flags as seen by a tsx step proves they are EXPORTED,
+# not just set in run.sh's own shell.
+_env_probe_npx() {
+	cat >"$BIN_DIR/npx" <<PROBE
+#!/usr/bin/env bash
+case "\$*" in
+*check-sources.ts*) echo "reader=\${DISCOVERY_REQUIRE_READER-UNSET} intake=\${DISCOVERY_REQUIRE_INTAKE_TOKEN-UNSET}" >"$TEST_TMP/probe.txt" ;;
+esac
+exit 0
+PROBE
+	chmod +x "$BIN_DIR/npx"
+}
+
+@test "strict credential flags are exported to tsx steps by default" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_env_probe_npx
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(cat "$TEST_TMP/probe.txt")" = "reader=1 intake=1" ]
+}
+
+@test "an explicit 0 override of the strict flags is respected" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	export DISCOVERY_REQUIRE_READER=0 DISCOVERY_REQUIRE_INTAKE_TOKEN=0
+	: >"$DISCOVERY_ENV_FILE"
+	_env_probe_npx
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(cat "$TEST_TMP/probe.txt")" = "reader=0 intake=0" ]
+	[[ "$output" != *"preflight failed"* ]]
+}
+
+@test "preflight aborts naming DISCOVERY_READ_DATABASE_URL when it is missing" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	printf 'API_INTAKE_TOKEN=dummy-intake-value\nDATABASE_URL=dummy-owner-value\n' >"$DISCOVERY_ENV_FILE"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"strict credential preflight failed: DISCOVERY_READ_DATABASE_URL missing"* ]]
+	[[ "$output" != *"API_INTAKE_TOKEN missing"* ]]
+	[[ "$output" != *"dummy-"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+@test "preflight aborts naming API_INTAKE_TOKEN when it is empty" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	printf 'DISCOVERY_READ_DATABASE_URL=dummy-reader-value\nAPI_INTAKE_TOKEN=\n' >"$DISCOVERY_ENV_FILE"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"strict credential preflight failed: API_INTAKE_TOKEN missing"* ]]
+	[[ "$output" != *"DISCOVERY_READ_DATABASE_URL missing"* ]]
+	[[ "$output" != *"dummy-"* ]]
+}
+
+@test "preflight names both keys when both are missing and the file is absent" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	rm -f "$DISCOVERY_ENV_FILE"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"DISCOVERY_READ_DATABASE_URL API_INTAKE_TOKEN missing"* ]]
+}
+
+@test "preflight passes with both keys present and never echoes their values" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"preflight failed"* ]]
+	[[ "$output" != *"dummy-"* ]]
+}
+
+@test "a non 0/1 strict flag value is refused, not treated as off" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	export DISCOVERY_REQUIRE_READER=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"DISCOVERY_REQUIRE_READER='true' must be 0 or 1 - refusing to run"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+@test "DISCOVERY_ENV_FILE is ignored without DISCOVERY_TEST_MODE" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	unset DISCOVERY_TEST_MODE
+	# fixture has both keys; the real (absent) worktree .env.local does not
+	if [ -f "$REPO_ROOT/.env.local" ]; then skip "repo has a real .env.local"; fi
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"strict credential preflight failed: DISCOVERY_READ_DATABASE_URL API_INTAKE_TOKEN missing"* ]]
 }

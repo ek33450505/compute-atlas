@@ -24,9 +24,10 @@
  * for exactly when it runs and when it is skipped.
  *
  * Run via: tsx scripts/discovery/submit-candidates.ts <candidates.json> [flags]
- * Requires API_INTAKE_TOKEN — or, as a fallback, API_ADMIN_TOKEN — in the
- * environment (e.g. via --env-file=.env.local). See `submissionToken`: staging
- * is the only capability this lane needs, so prefer the intake token.
+ * Requires API_INTAKE_TOKEN — or, as a fallback, API_ADMIN_TOKEN unless
+ * DISCOVERY_REQUIRE_INTAKE_TOKEN=1 — in the environment (e.g. via
+ * --env-file=.env.local). See `submissionToken`: staging is the only
+ * capability this lane needs, so prefer the intake token.
  *
  * Uses relative imports throughout, matching scripts/seed.ts and scripts/submissions.ts.
  */
@@ -59,20 +60,24 @@ type EnvLike = Record<string, string | undefined>;
  * The bearer token this lane presents to `POST /api/submissions`.
  *
  * Prefers `API_INTAKE_TOKEN` — the least-privilege, staging-only credential
- * accepted by that one route (see `requireIntake` in lib/api-auth.ts) — and
- * falls back to `API_ADMIN_TOKEN`, which the route still accepts. The fallback
- * is load-bearing, not tidiness: `API_INTAKE_TOKEN` does not exist in
- * production until it is set there, and without the fallback merging this
- * would break the nightly run. The split itself was declined on 2026-10-28:
- * the pipeline's `.env.local` also holds `DATABASE_URL` as the owner role, so
- * removing its admin token would not stop it writing a live facility. The
- * pipeline therefore submits with `API_ADMIN_TOKEN` (see docs/maintainers.md).
+ * accepted by that one route (see `requireIntake` in lib/api-auth.ts) — and by
+ * default falls back to `API_ADMIN_TOKEN`, which the route still accepts, so
+ * manual runs keep working where the intake token is not configured.
+ *
+ * `DISCOVERY_REQUIRE_INTAKE_TOKEN=1` (set by the scheduled run) is strict mode:
+ * `API_INTAKE_TOKEN` only, never the admin token, so the scheduled run opts out
+ * of the fallback. Note this limits the token, not the pipeline: its
+ * `.env.local` still holds the owner `DATABASE_URL`, which the leads lane
+ * (createSubmission, updateLeadStatus, promoteLead via lib/db/client), retention
+ * prune and publish-heartbeat use for writes (see docs/maintainers.md). The CI
+ * watchdog checks run on the `ci_monitor` Actions secret instead.
  *
  * Returns `undefined` (never the string "undefined") when neither is set, so
  * `main()`'s preflight can refuse to run rather than sending
  * `Authorization: Bearer undefined` and reading the 401s as submit errors.
  */
 export function submissionToken(env: EnvLike = process.env): string | undefined {
+  if (env.DISCOVERY_REQUIRE_INTAKE_TOKEN === "1") return env.API_INTAKE_TOKEN || undefined;
   return env.API_INTAKE_TOKEN || env.API_ADMIN_TOKEN || undefined;
 }
 
@@ -1464,8 +1469,10 @@ export function exitCodeForSummary(summary: Pick<RunSubmitSummary, "errors">): n
 export async function main(): Promise<void> {
   if (!submissionToken()) {
     console.error(
-      "Neither API_INTAKE_TOKEN nor API_ADMIN_TOKEN is set. Configure API_INTAKE_TOKEN " +
-        "(staging-only, preferred) before running the discovery pipeline."
+      process.env.DISCOVERY_REQUIRE_INTAKE_TOKEN === "1"
+        ? "API_INTAKE_TOKEN is required when DISCOVERY_REQUIRE_INTAKE_TOKEN=1; refusing to fall back to API_ADMIN_TOKEN."
+        : "Neither API_INTAKE_TOKEN nor API_ADMIN_TOKEN is set. Configure API_INTAKE_TOKEN " +
+            "(staging-only, preferred) before running the discovery pipeline."
     );
     process.exit(1);
   }
