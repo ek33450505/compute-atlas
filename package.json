@@ -33,7 +33,7 @@
     "check:googlebot": "tsx scripts/check-googlebot-access.ts",
     "nhd:debt": "tsx scripts/update-nhd-debt.ts",
     "backfill:siting": "tsx --env-file-if-exists=.env.local scripts/backfill-siting-to-neon.ts",
-    "backfill:ownership": "tsx --env-file-if-exists=.env.local scripts/backfill-ownership-to-neon.ts",
+    "ownership:apply": "tsx --env-file-if-exists=.env.local scripts/apply-ownership.ts",
     "siting:apply": "tsx --env-file-if-exists=.env.local scripts/apply-siting-context.ts",
     "siting:refresh": "npm run build:mapdata && tsx --env-file-if-exists=.env.local scripts/check-siting-additive.mjs && npm run siting:apply",
     "indexnow": "tsx scripts/indexnow.ts",

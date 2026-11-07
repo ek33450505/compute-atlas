@@ -55,6 +55,12 @@ describe("bustTags", () => {
 describe("bustTags error recording", () => {
   const opts = { baseUrl: "https://x.test", token: "t" };
 
+  it("never follows a redirect with the admin bearer", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue({ ok: true, status: 200 });
+    await bustTags(["facilities"], { ...opts, fetchImpl });
+    expect(fetchImpl.mock.calls[0][1]).toMatchObject({ redirect: "error" });
+  });
+
   it("stores a fixed network error string, never the raw fetch message", async () => {
     const fetchImpl = vi.fn().mockRejectedValue(new Error("connect ECONNREFUSED https://x.test/api/revalidate"));
     const r = await bustTags(["facilities"], { ...opts, fetchImpl });

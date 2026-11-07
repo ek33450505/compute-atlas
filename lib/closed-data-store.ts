@@ -136,6 +136,69 @@ export async function syncKeyed(opts: {
   return { sourceCount: source.size, plan, applied: true };
 }
 
+export interface ApplyReport {
+  sourceCount: number;
+  /** null when no store was available (dry run without DATABASE_URL). */
+  plan: UpsertPlan | null;
+  /** Keys in the store but not in the source; never deleted, in any mode. */
+  removals: string[];
+  applied: boolean;
+}
+
+/**
+ * Publishes a curated `source` to `store`: inserts missing keys and overwrites
+ * changed ones (ON CONFLICT DO UPDATE), then reads back and refuses unless every
+ * source row deep-equals its stored row. A key present in the store but absent
+ * from the source (a REMOVAL) is refused in every mode: a dry run reports it, --apply
+ * throws before writing anything. There is deliberately no delete path and no flag.
+ * A null store is a dry run only.
+ */
+export async function applyKeyed(opts: {
+  source: Map<string, unknown>;
+  store: KeyedStore | null;
+  apply: boolean;
+  label: string;
+}): Promise<ApplyReport> {
+  const { source, store, apply, label } = opts;
+  if (store === null) {
+    if (apply) throw new RefusalError(`${label}: --apply needs DATABASE_URL`);
+    return { sourceCount: source.size, plan: null, removals: [], applied: false };
+  }
+  const current = await store.readAll();
+  const plan = planUpsert(source, current);
+  const removals = [...current.keys()].filter((k) => !source.has(k));
+  if (!apply) return { sourceCount: source.size, plan, removals, applied: false };
+
+  if (removals.length > 0) {
+    throw new RefusalError(
+      `${label}: Neon holds ${removals.length} row(s) the file does not (first: ${removals.slice(0, 5).join(", ")}); ` +
+        "removals are never applied; nothing was written",
+    );
+  }
+  const rows = [...plan.insert, ...plan.update].map((r) => ({ ...r, onConflict: "update" as const }));
+  // Unchanged rows are counted, not re-read-verified: same trade-off as having no compare-and-set.
+  if (rows.length > 0) {
+    await store.upsert(rows);
+    const after = await verifyRows(store, new Map(rows.map((r) => [r.key, r.data])), label);
+    if (after.size !== source.size) {
+      throw new RefusalError(
+        `${label}: row count after write is ${after.size}, source has ${source.size}; refusing (investigate extra or missing rows)`,
+      );
+    }
+  }
+  return { sourceCount: source.size, plan, removals, applied: true };
+}
+
+export function formatApplyReport(label: string, r: ApplyReport): string {
+  if (r.plan === null) return `${label}: source ${r.sourceCount}; no DATABASE_URL, cannot compare with Neon`;
+  const verb = r.applied ? "applied" : "dry run";
+  const warn =
+    !r.applied && r.removals.length > 0
+      ? `; WARNING ${r.removals.length} Neon row(s) are not in the file (first: ${r.removals.slice(0, 5).join(", ")}); --apply would REFUSE`
+      : "";
+  return `${label} (${verb}): source ${r.sourceCount}; insert ${r.plan.insert.length}, update ${r.plan.update.length}, unchanged ${r.plan.unchanged}${warn}`;
+}
+
 export function formatReport(label: string, r: SyncReport): string {
   if (r.plan === null) return `${label}: source ${r.sourceCount}; no DATABASE_URL, would upsert ${r.sourceCount}`;
   const verb = r.applied ? "applied" : "dry run";
