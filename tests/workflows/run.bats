@@ -136,3 +136,51 @@ setup() {
 	[ "$status" -eq 0 ]
 	[ "$output" = "detector-broken" ]
 }
+
+# ---------------------------------------------------------------------------
+# schema-check.yml shape. The daily schema guard must stay fail-closed: the
+# secret is step-level only (npm ci runs install scripts) and nothing may mask
+# a failure. Comments are stripped first so the header prose cannot satisfy
+# or trip a check.
+# ---------------------------------------------------------------------------
+
+_schema_check_code() {
+	[ -f "$REPO_ROOT/.github/workflows/schema-check.yml" ] || return 99
+	sed -e 's/[[:space:]]*#.*$//' "$REPO_ROOT/.github/workflows/schema-check.yml"
+}
+
+@test "schema-check.yml: permissions is contents: read only" {
+	[ -f "$REPO_ROOT/.github/workflows/schema-check.yml" ]
+	run bash -c "$(declare -f _schema_check_code); REPO_ROOT='$REPO_ROOT'; _schema_check_code | awk '/^permissions:/{p=1;next} p&&/^[^ ]/{p=0} p&&NF{print}'"
+	[ "$status" -eq 0 ]
+	[ "$output" = "  contents: read" ]
+}
+
+@test "schema-check.yml: DATABASE_URL appears only under a step-level env" {
+	[ -f "$REPO_ROOT/.github/workflows/schema-check.yml" ]
+	run bash -c "$(declare -f _schema_check_code); REPO_ROOT='$REPO_ROOT'; _schema_check_code | grep -n 'DATABASE_URL'"
+	[ "$status" -eq 0 ]
+	# exactly one occurrence, indented as a step env key (10 spaces), not a job env key (6)
+	[ "$(printf '%s\n' "$output" | wc -l | tr -d ' ')" -eq 1 ]
+	[[ "$output" =~ ^[0-9]+:\ {10}DATABASE_URL: ]]
+}
+
+@test "schema-check.yml: no continue-on-error, no check:schema script, no --env-file" {
+	[ -f "$REPO_ROOT/.github/workflows/schema-check.yml" ]
+	run bash -c "$(declare -f _schema_check_code); REPO_ROOT='$REPO_ROOT'; _schema_check_code | grep -E 'continue-on-error|check:schema|--env-file'"
+	[ "$status" -eq 1 ]
+}
+
+@test "schema-check.yml: concurrency and timeout-minutes are set" {
+	[ -f "$REPO_ROOT/.github/workflows/schema-check.yml" ]
+	run bash -c "$(declare -f _schema_check_code); REPO_ROOT='$REPO_ROOT'; _schema_check_code | grep -E '^concurrency:|^    timeout-minutes: [0-9]+'"
+	[ "$status" -eq 0 ]
+	[ "$(printf '%s\n' "$output" | wc -l | tr -d ' ')" -eq 2 ]
+}
+
+@test "schema-check.yml: the run line is exactly npx tsx scripts/check-schema-drift.ts" {
+	[ -f "$REPO_ROOT/.github/workflows/schema-check.yml" ]
+	run bash -c "$(declare -f _schema_check_code); REPO_ROOT='$REPO_ROOT'; _schema_check_code | grep -E 'check-schema-drift'"
+	[ "$status" -eq 0 ]
+	[ "$output" = "        run: npx tsx scripts/check-schema-drift.ts" ]
+}

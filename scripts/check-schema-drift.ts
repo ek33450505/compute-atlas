@@ -184,6 +184,11 @@ async function main(): Promise<void> {
   // specifically because "can't check" was silently treated as "nothing to
   // see" at the request-path layer. It must not repeat that here.
   if (!hasDatabaseUrl()) {
+    if (process.env.GITHUB_ACTIONS === "true") {
+      console.error(
+        "::error::DATABASE_URL is not set; the schema check cannot verify the deployed schema."
+      );
+    }
     console.error(
       "DATABASE_URL is not set. Configure it in .env.local (see .env.example). This check fails " +
         "closed rather than skipping — unlike the retired drift check, an unconfigured/unreachable " +

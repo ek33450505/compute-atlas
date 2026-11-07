@@ -71,6 +71,12 @@ export const MONITORED_WORKFLOWS: WorkflowConfig[] = [
     staleAfterHours: 36,
   },
   {
+    file: "schema-check.yml",
+    name: "schema-check",
+    cronDescription: "0 22 * * * (daily 22:00 UTC)",
+    staleAfterHours: 36,
+  },
+  {
     file: "release-please.yml",
     name: "release-please",
     cronDescription: "0 9 * * 1 (Mondays 09:00 UTC)",
