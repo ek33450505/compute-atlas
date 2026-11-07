@@ -161,10 +161,6 @@ async function rows<T>(sql: Sql, text: string): Promise<T[]> {
   return (await sql.query(text)) as T[];
 }
 
-function errCode(err: unknown): string {
-  return redactedErrorCode(err);
-}
-
 export interface VerifyResult {
   name: string;
   ok: boolean;
@@ -177,7 +173,7 @@ export async function verifyRole(sql: Sql, expectedTables: number): Promise<Veri
     try {
       results.push({ name, ok: await fn() });
     } catch (err) {
-      console.error(`verify step "${name}" errored (${errCode(err)})`);
+      console.error(`verify step "${name}" errored (${redactedErrorCode(err)})`);
       results.push({ name, ok: false });
     }
   };
@@ -195,7 +191,7 @@ export async function verifyRole(sql: Sql, expectedTables: number): Promise<Veri
     } catch (err) {
       // 42501 insufficient_privilege; 25006 read_only_sql_transaction (the
       // role-level read-only default can fire first). Either means refused.
-      const code = errCode(err);
+      const code = redactedErrorCode(err);
       return code === "42501" || code === "25006";
     }
   });
@@ -352,7 +348,7 @@ export async function run(
       // best effort
     }
     deps.error(
-      `${err instanceof UsageError ? err.message : `database error (${errCode(err)})`}; removed the --out file.`
+      `${err instanceof UsageError ? err.message : `database error (${redactedErrorCode(err)})`}; removed the --out file.`
     );
     return 1;
   }
@@ -367,7 +363,7 @@ export async function runGuarded(
   try {
     return await run(argv, env, deps);
   } catch (err) {
-    deps.error(`unexpected failure (${errCode(err)})`);
+    deps.error(`unexpected failure (${redactedErrorCode(err)})`);
     return 1;
   }
 }
