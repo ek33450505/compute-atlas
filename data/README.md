@@ -1,8 +1,9 @@
 # Compute Atlas data
 
-`facilities.json` is the final open edition of the Compute Atlas dataset, in one file. It is
-frozen and no longer updated. `facilities.meta.json` records when it was generated (`asOf`) and
-how many records it holds. For current records, see the live site at
+The JSON files in this directory are gitignored local exports of the live database, written by
+`npm run db:export`; they are not committed. The final open edition (3,025 records) remains
+available at older commits. `facilities.meta.json` records when a snapshot was generated (`asOf`)
+and how many records it holds. For current records, see the live site at
 [www.compute-atlas.com](https://www.compute-atlas.com).
 
 ## License and attribution

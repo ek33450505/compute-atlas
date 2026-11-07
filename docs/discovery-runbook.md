@@ -200,7 +200,7 @@ npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state=T
 
 When Neon cannot be read, the loader falls back to `data/facilities.json` only if that snapshot is consistent:
 a missing `facilities.meta.json`, a `recordCount` mismatch, fewer than 1000 records or a schema failure aborts
-the run instead of deduping against it. Fix it by restoring Neon access; once Neon is reachable, `npm run db:export` refreshes the local snapshot. That refresh is local only: while `data/facilities.json` is still tracked it must not be committed (the public file is frozen at 3,025 records).
+the run instead of deduping against it. Fix it by restoring Neon access; once Neon is reachable, `npm run db:export` refreshes the local snapshot. The data files are gitignored, so the refresh is local only and there is nothing to commit.
 `DISCOVERY_ALLOW_SMALL_SNAPSHOT=1` waives the size floor but is honoured only under Vitest.
 
 Discovery's facility read (the loader and the leads lane's duplicate check) uses

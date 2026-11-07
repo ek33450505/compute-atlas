@@ -5,37 +5,76 @@ Contributors don't need any of it — see [CONTRIBUTING.md](../CONTRIBUTING.md) 
 
 ## The one rule: the database is the source of truth
 
-`data/facilities.json` is a **generated artifact**. It is never hand-edited to publish a
-change. The site reads Neon live, so a data correction does not need — and should not
-wait for — a deploy.
-
-Editing the JSON and shipping it through git makes every correction a Vercel deploy and
-leaves drift to be detected and repaired afterwards. Publishing to the database first
-makes that drift structurally impossible, which is what turns `check:drift` into a real
-invariant rather than a report.
+The data files under `data/` (`facilities.json`, `facilities.meta.json`, `siting-context.json`,
+`operator-ownership.json`, `nhd-backfill-debt.json`) and the hero outputs
+(`components/home/hero-plate-paths.ts`, `public/data/hero-points.json`,
+`public/data/pipeline-history.json`) are gitignored local files, never committed and never
+hand-edited to publish a change. The site reads Neon live, so a data correction does not need a
+deploy. Old commits still serve the frozen open edition (3,025 records).
 
 ## A data wave, in order
 
 ```bash
-npm run db:sync              # 1. DRY RUN by default — prints the plan, writes nothing
-npm run db:sync -- --apply   # 2. publish adds + updates, write history, bust cache tags
-npm run db:sync -- --apply --skip-notify   # 2b. publish without emailing facility subscribers
-npm run db:export            # 3. regenerate data/facilities.json from the live DB
-npm run build:mapdata        # 4. rebuild map overlays + per-facility siting context
-                             # 5. commit the regenerated files
+npm run db:export            # 1. write the local data files from Neon
+                             # 2. research and edit the local snapshot
+npm run test:dataset         # 3. real-snapshot invariants; its `pretest:dataset` hook runs `npm run prebuild`
+npm run db:sync              # 4. DRY RUN by default — prints the plan, writes nothing
+npm run db:sync -- --apply   # 5. publish adds + updates, write history, bust cache tags
+npm run db:sync -- --apply --skip-notify   # 5b. publish without emailing facility subscribers
 ```
 
-**Step 4 is part of the wave, not an optional extra.** A new facility has no entry in
-`data/siting-context.json` until it runs, so its page silently renders without the
-"Siting context" panel — no error, just a missing section. Use the full run, not
-`--skip-nhd`: that flag reuses existing `nearestWater` / `nearestTransmission` values,
-which is exactly what new records lack. If the full pass fails (usually a degraded USGS NHD),
-the automated sync falls back to `--skip-nhd` and the nightly backfill pays the resulting debt; a hand-run wave that
-falls back must record it with `npm run nhd:debt -- --note "<why>"`.
+There is no data commit. `db:sync` refuses a snapshot below the export floor (2,900 records)
+or whose `facilities.meta.json` `recordCount` disagrees, in dry run and `--apply`, before any
+database access ("looks like the test fixture; run `npm run db:export` first").
+
+A fresh clone has no data files: run `npm run prebuild` (fixture mode outside Vercel; CI sets
+`ALLOW_FIXTURE_SNAPSHOT=1` on its Seed step and the Playwright `webServer` only) before typecheck
+and tests. Vercel builds export the snapshot from Neon and fail closed in production.
+`docs/media/map.svg` is a frozen committed asset; `build:heroplate` no longer writes it.
+
+### Local siting refresh
+
+A new facility has no siting context until this runs, so its page renders without the "Siting
+context" panel, with no error.
+
+```bash
+npm run db:export
+npm run siting:refresh       # DRY RUN: build:mapdata -> additive guard vs Neon -> siting:apply dry run
+npm run siting:apply -- --apply
+```
+
+`siting:refresh` cannot pass `--skip-nhd` or `--backfill-nhd`; run those `build:mapdata` steps by
+hand. The additive guard refuses an empty Neon baseline ("run `npm run backfill:siting -- --apply` first"), and a
+confirmed-NHD-absence clear fails it, so that clear needs a deliberate maintainer apply (an
+allowlist is a follow-up). Use the full run, not `--skip-nhd`: that flag reuses existing
+`nearestWater` / `nearestTransmission` values, which is exactly what new records lack. If a degraded
+USGS NHD forces `--skip-nhd`, record it with `npm run nhd:debt -- --note "<why>"` (`-- --ledger-db`
+mirrors it to Neon `maintenance_ledger`) and pay it later with `build:mapdata -- --backfill-nhd`.
+`data/nhd-backfill-debt.json` is a local file that `db:export` does not recreate; the dataset ratchet
+fails (does not skip) when it is missing.
 
 **Diff-read the result.** It should be additive — fills and new entries. Any
 `value → null` is data loss, not a refresh. A clean exit code is not evidence the work
-was done; the diff-read is the only thing that catches a partial rebuild.
+was done.
+
+### Ownership
+
+Edit the local `data/operator-ownership.json` (from `db:export`), then `npm run ownership:apply`
+(dry run) and `npm run ownership:apply -- --apply`. It inserts and updates, reads back and checks
+the count, and always refuses removals: a removal is a reviewed manual Neon edit plus a revalidate.
+It busts `operator:<slug>` and `facilities`, and needs `API_BASE_URL` and `API_ADMIN_TOKEN` unless
+`--skip-revalidate`.
+
+### Refresh site
+
+The admin "Refresh site" button busts the `facilities` tag only. It does not regenerate the hero
+plate, hero points or as-of date; the next build does. By decision (Ed, 2026-11-06), the button does not call a deploy hook.
+
+### Pulling this change into a tree that has the data files
+
+The pull deletes them. Back them up first (the NHD ledger has no other copy: the Neon row from `npm run nhd:debt -- --ledger-db` is a durable record of the count, but no command restores the local file from it; keep the backup, or re-record the current count with `npm run nhd:debt -- --note "<why>"`, which resets the ceiling to today's count), then run
+`npm run db:export` (discovery's loader reads Neon first and aborts loudly on a bad snapshot).
+Merge or pull only outside Mon/Wed/Fri 13:00.
 
 ## What each write path actually does
 
@@ -45,7 +84,7 @@ was done; the diff-read is the only thing that catches a partial rebuild.
 | `db:seed` | ✅ | — | — | — |
 | `db:seed -- --force` | ✅ | ❌ **silently drops** | ❌ | ❌ |
 
-`db:sync` refuses to overwrite a Neon row that has moved ahead of the JSON's basis (the
+`db:sync` refuses to overwrite a Neon row that has moved ahead of the snapshot's basis (the
 `asOf` in `data/facilities.meta.json`), so it cannot clobber a production approval.
 
 **`--skip-notify` flag for metadata-only publishes.** Use it when a wave touches
@@ -70,7 +109,7 @@ populates them.
 `db:sync` cannot reach the search index behind the global ⌘K palette; that is an
 untagged 24-hour timer and refreshes on its own schedule.
 
-A public correction can target a field a record marks `notRecorded` (the contributor may have a source). Approving it returns a 400, because a field cannot be both set and marked; remove the mark in `data/facilities.json`, run `db:sync`, then approve.
+A public correction can target a field a record marks `notRecorded` (the contributor may have a source). Approving it returns a 400, because a field cannot be both set and marked; remove the mark in the local `data/facilities.json`, run `db:sync`, then approve.
 
 ## Scripts
 
@@ -78,10 +117,12 @@ A public correction can target a field a record marks `notRecorded` (the contrib
 |---|---|
 | `npm run db:generate` | Generate a Drizzle migration from schema changes |
 | `npm run db:migrate` | Apply pending migrations |
-| `npm run db:sync` | Diff JSON against Neon and print the plan; `-- --apply` publishes |
-| `npm run db:export` | Write the live database back to `data/facilities.json` |
+| `npm run db:sync` | Diff the local snapshot against Neon and print the plan; `-- --apply` publishes |
+| `npm run db:export` | Write the live database to the local gitignored data files |
 | `npm run build:mapdata` | Rebuild static map overlays and siting context |
-| `npm run check:drift` | Read-only JSON ↔ Neon drift report |
+| `npm run siting:refresh` | Dry run: `build:mapdata`, additive guard vs Neon, `siting:apply` dry run; `npm run siting:apply -- --apply` writes |
+| `npm run ownership:apply` | Dry run of `data/operator-ownership.json` against Neon; `-- --apply` writes (removals refused) |
+| `npm run test:dataset` | Vitest against the real snapshot (runs `prebuild` first) |
 | `npm run check:schema` | Fail-closed schema-drift guard: exits 1 if the live database is missing a table the code expects, or if `DATABASE_URL` is unset or unreachable |
 | `npm run db:seed` | Bootstrap-only: populate an empty database |
 | `npm run submissions -- list pending` | Review the staging queue |
@@ -157,8 +198,7 @@ Two things were true before it was set to `"true"`, and stay true for any future
 1. **The migrations must be applied.** `drizzle/0011_*` and `drizzle/0012_*` create
    `submission_notify_requests` and `submission_notify_sends`. Nothing in CI runs
    `db:migrate`, and `scripts/check-schema-drift.ts` derives its expected-table list from the
-   `pgTable` exports — so `drift-alert.yml` (22:00 UTC daily) goes red until Neon has both.
-   That red is correct, not a false alarm.
+   `pgTable` exports — so `schema-check.yml` (daily) goes red until Neon has both tables; `npm run check:schema` runs the same check by hand.
 2. **Understand what the two caps do, because they are not the same control.**
    `checkSubmissionNotifyCap` bounds how many notify requests may be *outstanding* per address
    (5/hour). It does NOT bound mail volume: the request row is deleted at review time, so
@@ -230,9 +270,9 @@ To rotate the credential without the privilege split: reset `neondb_owner`'s pas
 update Vercel production `DATABASE_URL` (the **pooled** string, `-pooler` host) and
 `DATABASE_URL_UNPOOLED` (the **direct** string) → **redeploy** → update `.env.local` (direct) → update
 the GitHub `DATABASE_URL` secret (direct) → delete any Neon child branch created before the reset
-(below) → `npm run check:drift` to confirm the workflows still connect.
-Breaks if you do it out of order: `db:sync`, `db:export`, `check:drift`, `drift-alert.yml`,
-`discovery-watchdog.yml`, `neon-sync.yml` and CI's DB test, all at once.
+(below) → `npm run check:schema` to confirm the connection.
+Breaks if you do it out of order: `db:sync`, `db:export`, `check:schema`,
+`discovery-watchdog.yml` and `schema-check.yml`, all at once.
 
 ⚠️ **No code reads `DATABASE_URL_UNPOOLED`** (the Neon integration creates it). It is a second copy
 of the same credential — rotate it in lockstep or remove it. Being integration-managed, it refuses
@@ -270,21 +310,9 @@ Do it when **no nightly `run.sh` discovery run is in flight**.
 The discovery pipeline also submits with `API_ADMIN_TOKEN` (the intake split was declined 2026-10-28), so
 its `.env.local` is part of this rotation, and the in-flight-run caveat above applies.
 
-**3. `NEON_SYNC_PAT`.** Contents and Pull requests RW only. Do **not** grant `Workflows` (decided
-2026-10-26). The current token, "Compute-atlas-neon-sync", **expires 2026-12-04**. Two workflows use
-it and both run `gh pr merge --squash --auto`: `neon-sync.yml` (daily and on dispatch) and
-`nhd-backfill.yml` (every night at 04:23 UTC, unattended: credential guard, write preflight, Create
-PR, auto-merge). A leaked value can push a branch and auto-merge it to `main` → production; without
-`Workflows`, GitHub refuses its pushes that change `.github/workflows/`. Mint a new **fine-grained**
-PAT (this repo only, Contents RW + Pull requests RW, with an expiry) → update the secret →
-`gh workflow run neon-sync.yml` **and** `gh workflow run nhd-backfill.yml` → watch the "Preflight —
-verify the PR token can still write" step in each. (At NHD debt 0 the backfill is a no-op, but it
-still runs the credential guard and that preflight, so a dispatch is enough to exercise the new token.)
-⚠️ That preflight proves `Contents: write` only. A push whose `.github/workflows/` differs from
-`main`'s is refused for this token (neon-sync run 133, 2026-10-26: a Dependabot workflow bump merged
-mid-run); the "Rebase generated changes onto live main" step now prevents that. If a run fails with
-"refusing to allow a Personal Access Token to create or update workflow", re-dispatch it on current
-`main`; do not grant `Workflows`. Revoke the old PAT after one green run of each.
+**3. `NEON_SYNC_PAT`.** Unused: no surviving workflow reads it (`neon-sync` and `nhd-backfill` were
+deleted). Revoke it in GitHub when convenient. (It was used only by `neon-sync.yml` and `nhd-backfill.yml`, both deleted in PR C; it had no Workflows scope by design and was due to expire 2026-12-04.) The `DATABASE_URL` Actions secret is still used by
+`discovery-watchdog.yml` and `schema-check.yml`; do not remove it.
 
 **4. `RESEND_API_KEY`.** Can send as `alerts@compute-atlas.com` (reputational, not data — the key is
 verified send-only: Resend answers `401 restricted_api_key` to key/domain/email reads). New
@@ -386,8 +414,9 @@ The project follows [Semantic Versioning](https://semver.org). Releases are publ
 [GitHub Releases](https://github.com/ek33450505/compute-atlas/releases) and automated with
 release-please; see [CHANGELOG.md](../CHANGELOG.md).
 
-`data/facilities.json` is the final open edition and is frozen. Its `asOf` timestamp in
-`data/facilities.meta.json` records when it was generated.
+The final open edition (`data/facilities.json`, 3,025 records) is frozen at older commits; the
+file is no longer tracked. Its `asOf` timestamp in `data/facilities.meta.json` records when a
+snapshot was generated.
 
 ## Accepted dependency advisories
 
@@ -423,14 +452,11 @@ publishing by hand, but not a compromised CI pipeline.
 ## Builds are gated, production included
 
 `vercel.json` runs `scripts/vercel-ignore-build.sh` as Vercel's Ignored Build Step. Any
-deployment whose diff touches only `data/facilities.json`, `data/facilities.meta.json`, `docs/`,
-`.github/`, `*.md`, `LICENSE` or `LICENSE-DATA` is skipped — production too, because `db:sync`
-puts data live in Neon before the commit recording it is ever merged. Other `data/` files, such
-as `data/siting-context.json`, still build.
-
-The one thing a production build still refreshes on a data-only merge is the
-`withJsonFallback` snapshot bundled from `data/facilities.json`. That rides the next code
-deploy, or `npx vercel redeploy --target production` on demand.
+deployment whose diff touches only `docs/`, `.github/`, `*.md`, `LICENSE` or `LICENSE-DATA` is
+skipped — production too, because `db:sync` puts data live in Neon before any commit is merged. No
+`data/` file is allowlisted (the data files are untracked), so a diff touching `data/` builds. Changed
+paths are listed with `--no-renames`, so a rename of code into `docs/` still builds. A production
+build can be forced with `npx vercel redeploy --target production`.
 
 If you touch that script, verify it by reading the real build log
 (`npx vercel inspect --logs <url> | grep vercel-ignore`), never by local probes alone. It
@@ -536,6 +562,6 @@ cache behaviour with the colo in hand. The `/data` CSV and JSON downloads do cac
 GETs read `HIT` at NRT, and an earlier reading of `MISS` on every repeat was not reproducible.
 
 ⚠️ Locally, a restart does **not** clear `.next/cache`, so a "fresh" dev server can replay
-an ISR-cached page from before the last publish. That looks exactly like JSON ↔ Neon drift
-but isn't — `check:drift` compares *data* and cannot see a stale *render*. Run
+an ISR-cached page from before the last publish. That looks exactly like a stale data
+snapshot but isn't — comparing data cannot see a stale *render*. Run
 `rm -rf .next/cache` and re-fetch before concluding anything.
