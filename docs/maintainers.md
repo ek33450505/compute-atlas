@@ -124,6 +124,7 @@ A public correction can target a field a record marks `notRecorded` (the contrib
 | `npm run ownership:apply` | Dry run of `data/operator-ownership.json` against Neon; `-- --apply` writes (removals refused) |
 | `npm run test:dataset` | Vitest against the real snapshot (runs `prebuild` first) |
 | `npm run check:schema` | Fail-closed schema-drift guard: exits 1 if the live database is missing a table the code expects, or if `DATABASE_URL` is unset or unreachable |
+| `npm run ops:ci-monitor-role` | Dry run of the `ci_monitor` least-privilege role plan; `-- --apply --out <path> [--rotate]` creates/rotates it and writes its URL to `<path>` (see "CI database role") |
 | `npm run db:seed` | Bootstrap-only: populate an empty database |
 | `npm run submissions -- list pending` | Review the staging queue |
 | `npm run submissions -- approve <id> "note"` | Promote a pending submission to live. Refuses (exit 2) when the facility it writes has confirmed watchers, because approving emails them; `list pending` marks those rows |
@@ -137,7 +138,7 @@ See `.env.example`.
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | Neon Postgres connection string: the pooled one (`-pooler` host) on Vercel production; the direct one in `.env.local` and the GitHub Actions secret (as of 2026-10-27, matching what `.env.local` held before). The app's `neon-http` driver accepts either; `drizzle.config.ts` (`db:migrate`) reads the same variable |
+| `DATABASE_URL` | Neon Postgres connection string: the pooled one (`-pooler` host) on Vercel production; the direct one in `.env.local`; the GitHub Actions secret holds the least-privilege `ci_monitor` URL (see "CI database role"). The app's `neon-http` driver accepts either; `drizzle.config.ts` (`db:migrate`) reads the same variable |
 | `API_ADMIN_TOKEN` | Bearer token for admin write endpoints |
 | `API_INTAKE_TOKEN` | Staging-only bearer; `POST /api/submissions` accepts it alongside `API_ADMIN_TOKEN`. Optional. Unset, the discovery pipeline submits with `API_ADMIN_TOKEN`. The pipeline's `.env.local` does not set it: the split was declined 2026-10-28 (see the `API_INTAKE_TOKEN` section below). **If set, it must be an independent value** |
 | `CRON_SECRET` | Bearer secret authenticating Vercel Cron to `/api/cron/*`. **Set in production since 2026-09-14**, with the state digest; unset means every cron-path caller is rejected (fail-closed). **MUST NOT equal `API_ADMIN_TOKEN`** — see that route's header for why an equal value silently disables the admin recovery path |
@@ -576,3 +577,23 @@ GETs read `HIT` at NRT, and an earlier reading of `MISS` on every repeat was not
 an ISR-cached page from before the last publish. That looks exactly like a stale data
 snapshot but isn't — comparing data cannot see a stale *render*. Run
 `rm -rf .next/cache` and re-fetch before concluding anything.
+
+## CI database role (`ci_monitor`)
+
+The `DATABASE_URL` GitHub Actions secret must hold the `ci_monitor` URL, not the owner credential. The role is `LOGIN`, read-only by default (`default_transaction_read_only`, 30s `statement_timeout`) and holds `SELECT` on `api_daily_usage`, `discovery_heartbeat` and `state_digest_runs` only: exactly what `schema-check` and `discovery-watchdog` read. `schema-check` lists tables through `pg_catalog.pg_tables`, because `information_schema` hides tables a role has no privilege on.
+
+To (re)create or rotate it, with the owner `DATABASE_URL` in `.env.local`:
+
+```bash
+npm run ops:ci-monitor-role                      # dry run: prints the SQL plan, connects to nothing
+F="$(mktemp "$HOME/.ci-monitor-url.XXXXXX")"; rm "$F"   # unpredictable path; the tool refuses to overwrite
+npm run ops:ci-monitor-role -- --apply --out "$F"        # add --rotate if the role exists
+gh secret set DATABASE_URL -R ek33450505/compute-atlas < "$F"
+rm "$F"
+```
+
+The URL file has no trailing newline (so `gh secret set < file` stores the URL exactly). The tool installs a client-computed SCRAM-SHA-256 verifier, writes the URL only to `--out` (mode 0600, never overwritten), prints only fixed strings and error codes, and sets `NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS NOINHERIT CONNECTION LIMIT 5` on create and rotate. If a workflow starts reading another table, add it to `GRANTED_TABLES` in `scripts/ops/create-ci-monitor-role.ts` and re-run with `--rotate`.
+
+After applying, the tool connects as `ci_monitor` and checks the boundary instead of trusting the grants: the SELECT-able public relations are exactly the three granted tables (computed from `pg_class` oids), `ci_monitor` has no `CREATE` on schema `public` and belongs to no role, and an INSERT is refused. These checks exist because the boundary also depends on what PUBLIC and default ACLs grant. Measured on Neon (PG 18.6, 2026-11-07, read-only probe): PUBLIC has no `CREATE` on schema `public`, there are no public-schema functions, and both `pg_default_acl` rows grant only to `neon_superuser`; `TEMP` on the database comes via PUBLIC and is left in place (nothing is revoked from PUBLIC).
+
+A rotate that fails after `ALTER ROLE ... PASSWORD` leaves the CI secret dead (the old password no longer works and the new URL file is removed on failure). Recovery: re-run with `--rotate`, then set the secret again.

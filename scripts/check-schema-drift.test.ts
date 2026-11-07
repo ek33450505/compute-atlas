@@ -119,6 +119,32 @@ describe("runSchemaDriftCheck", () => {
     expect((err as SchemaDriftError).report.presentTables).toEqual(ALL_TABLES);
   });
 
+  it("reports no missing tables under a least-privilege role, where information_schema would hide them", async () => {
+    // Isolated instance: SET ROLE must not leak into the shared one.
+    const isolated = await makeTestDb();
+    try {
+      await isolated.client.exec(`
+        CREATE ROLE ci_probe NOLOGIN;
+        GRANT USAGE ON SCHEMA public TO ci_probe;
+        GRANT SELECT ON api_daily_usage TO ci_probe;
+        SET ROLE ci_probe;
+      `);
+
+      // The old bug: information_schema lists only tables the role can touch.
+      const legacy = await isolated.client.query<{ table_name: string }>(
+        `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'`
+      );
+      expect(legacy.rows.length).toBeLessThan(ALL_TABLES.length);
+
+      vi.mocked(dbClient.getDb).mockReturnValueOnce(isolated.db as never);
+      const report = await runSchemaDriftCheck();
+      expect(report.missingTables).toEqual([]);
+      expect(report.presentTables).toEqual(ALL_TABLES);
+    } finally {
+      await isolated.client.close();
+    }
+  });
+
   it("throws SchemaDriftError when a table the code expects is dropped from the live database — reproduces the PR #222 incident directly", async () => {
     // Use a dedicated PGlite instance for this test only: dropping a table
     // is not something tdb.reset()'s TRUNCATE can undo, and every other test
