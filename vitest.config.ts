@@ -26,9 +26,9 @@ export default defineConfig({
       "**/node_modules/**",
       "**/e2e/**",
       "**/.next/**",
-      ...(realDataset ? [] : ["**/*.dataset.test.ts"]),
+      ...(realDataset ? [] : ["**/*.dataset.test.{ts,tsx}"]),
     ],
-    ...(realDataset ? { include: ["**/*.dataset.test.ts"] } : {}),
+    ...(realDataset ? { include: ["**/*.dataset.test.{ts,tsx}"] } : {}),
     // Vitest does not clear mock call history between tests by default, and
     // most files calling vi.mock never cleared one by hand (39 of 66 when this
     // was added). That let an assertion match a PREVIOUS test's call and pass

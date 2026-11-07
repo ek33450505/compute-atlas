@@ -10,7 +10,7 @@ itself.
     python3 scripts/make-banner.py            # writes docs/media/banner.svg
     node scripts/render-banner.mjs            # rasterises it to banner.png
 
-Reads `public/data/hero-points.json`, which `npm run build:mapdata` produces.
+Reads `public/data/hero-points.json`, which `npm run build:heropoints` produces.
 Stdlib only — no pip installs.
 """
 

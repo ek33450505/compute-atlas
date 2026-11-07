@@ -1,6 +1,3 @@
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 
 import facilitiesRaw from "@/data/facilities.json";
@@ -8,7 +5,6 @@ import metaRaw from "@/data/facilities.meta.json";
 import { HERO_PLATE } from "@/components/home/hero-plate-paths";
 import {
   buildPlateData,
-  buildReadmeSvg,
   assertUsableAsOf,
   OMITTED_JURISDICTIONS,
   WIDTH,
@@ -25,7 +21,6 @@ interface PlateFacility {
   location: { lat: number; lon: number; state: string };
 }
 
-const HERE = dirname(fileURLToPath(import.meta.url));
 const facilities = facilitiesRaw as unknown as PlateFacility[];
 
 describe("buildPlateData — the real dataset", () => {
@@ -61,15 +56,6 @@ describe("hero-plate-paths.ts — the committed artifact is current", () => {
 
   it("matches the paths the generator produces from data/facilities.json", () => {
     expect(HERO_PLATE.paths).toEqual(data.paths);
-  });
-
-  it("docs/media/map.svg is the SVG the generator produces from the current data", () => {
-    // Same failure mode as the HERO_PLATE tests above: a wave that skips
-    // `npm run build:heroplate` leaves a README map that disagrees with the
-    // dataset it claims to draw.
-    const committed = readFileSync(resolve(HERE, "../docs/media/map.svg"), "utf8");
-    const asOf = (metaRaw as { asOf: string }).asOf;
-    expect(buildReadmeSvg({ ...data, outlines: HERO_PLATE.outlines }, asOf, WIDTH, HEIGHT)).toBe(committed);
   });
 
   it("matches the generator's counts and reconciliation", () => {

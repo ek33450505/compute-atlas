@@ -47,6 +47,12 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Seed snapshot and generate hero artifacts
+        run: npm run prebuild
+        env:
+          # Non-secret: lets ensure-data-snapshot fill data/ from the fixture.
+          # Step-scoped so no later step (e.g. test:dataset) can silently run on it.
+          ALLOW_FIXTURE_SNAPSHOT: "1"
       - run: npm run typecheck
       - run: npm run lint
 

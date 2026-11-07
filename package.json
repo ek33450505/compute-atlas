@@ -6,9 +6,9 @@
     "node": "22.x"
   },
   "scripts": {
-    "predev": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts",
+    "predev": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts && npm run build:heroplate && npm run build:heropoints && npm run build:pipelinehistory",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts",
+    "prebuild": "node scripts/copy-maplibre-worker.mjs && tsx scripts/ensure-data-snapshot.ts && npm run build:heroplate && npm run build:heropoints && npm run build:pipelinehistory",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

@@ -142,8 +142,9 @@
  * `purge_everything`). If the consumer IMPORTS it at build time instead, the
  * edge cache is irrelevant and it ships with the deploy.
  *
- * Runs as part of `npm run build:mapdata` (including under --skip-nhd, since
- * it does no network I/O) and standalone via `npm run build:pipelinehistory`.
+ * Runs in `prebuild`/`predev` (after ensure-data-snapshot), as part of
+ * `npm run build:mapdata` (including under --skip-nhd, since it does no
+ * network I/O) and standalone via `npm run build:pipelinehistory`.
  *
  * Usage: node scripts/build-pipeline-history.mjs
  */
