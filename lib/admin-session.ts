@@ -153,3 +153,21 @@ export function verifySessionCookie(cookieValue: string | undefined): boolean {
 
   return verifyV2SessionCookie(cookieValue, expected);
 }
+
+/**
+ * Whether the current request carries a valid admin session cookie. For
+ * server actions and server components; `proxy.ts` has the cookie on the
+ * request and uses `verifySessionCookie` directly. `proxy.ts` also imports this
+ * module, so the `next/headers` import stays lazy. Any throw (e.g. `cookies()`
+ * outside a request scope) reads as "no session": it can only return true from
+ * a verified cookie, and callers that gate fail closed on false.
+ */
+export async function hasAdminSession(): Promise<boolean> {
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    return verifySessionCookie(cookieStore.get(SESSION_COOKIE_NAME)?.value);
+  } catch {
+    return false;
+  }
+}
