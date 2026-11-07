@@ -31,7 +31,7 @@ import {
 } from "../lib/closed-data-store";
 import { formatFatalError } from "../lib/db-error";
 import { hasDatabaseUrl } from "../lib/db/client";
-import { operatorOwnershipFileSchema } from "../lib/operator-ownership";
+import { operatorOwnershipFileSchema } from "../lib/operator-ownership-schema";
 import { operatorSlug } from "../lib/operator-slug";
 import { assertValidTags, bustAfterUpserts, resolveRevalidate } from "./bust-tags";
 import { isEntrypoint } from "./is-entrypoint";

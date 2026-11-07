@@ -7,6 +7,7 @@ import sitingContextRaw from "@/data/siting-context.json";
 import { getDb, readsUseDatabase } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
 import { sitingContextTable } from "@/lib/db/schema";
+import { sitingContextSchema, waterStressSchema } from "@/lib/siting-context-schema";
 
 /**
  * Nearest named surface-water feature to a facility, straight-line distance.
@@ -68,6 +69,10 @@ export interface SitingContext {
   groundwaterDecline?: GroundwaterDecline;
   aquifer?: Aquifer;
 }
+
+// The zod schemas live in a JSON-free module (scripts/export.ts loads them before
+// data/siting-context.json exists); re-exported so importers are unchanged.
+export { sitingContextSchema };
 
 // Pure formatters live in a JSON-free module so client components (the map
 // popup) can use them without bundling data/siting-context.json.
@@ -142,20 +147,6 @@ function warnFallback(what: string, err: unknown): void {
     `[siting-context] Neon ${what} failed, falling back to bundled JSON snapshot (sqlstate: ${redactedErrorCode(err)})`
   );
 }
-
-// Mirrors the interfaces above, typed as the renderers and formatters read each
-// field (`splitRiskLabel(label)`, `distanceMi.toFixed`). Loose objects: an extra
-// key is accepted and kept, so downstream readers see the exact stored shape.
-const waterStressSchema = z.looseObject({ cat: z.number(), label: z.string() });
-export const sitingContextSchema = z.looseObject({
-  nearestWater: z
-    .looseObject({ name: z.string(), kind: z.enum(["river", "lake"]), distanceMi: z.number() })
-    .nullish(),
-  nearestTransmission: z.looseObject({ voltageKv: z.number(), distanceMi: z.number() }).nullish(),
-  waterStress: waterStressSchema.nullish(),
-  groundwaterDecline: waterStressSchema.nullish(),
-  aquifer: z.looseObject({ name: z.string(), rock: z.string() }).nullish(),
-});
 
 /** A JSON null on a field means the same as absent: drop the key so the stored shape matches `SitingContext`. */
 function withoutNulls(parsed: z.infer<typeof sitingContextSchema>): SitingContext {
