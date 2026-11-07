@@ -1,11 +1,11 @@
 // @vitest-environment node
-import { createHmac } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  assertSafePassword,
   buildCiUrl,
   buildPlan,
   generatePassword,
@@ -13,8 +13,6 @@ import {
   parseCliArgs,
   run,
   runGuarded,
-  scramKeys,
-  scramSha256Verifier,
   verifyRole,
   type RunDeps,
   type Sql,
@@ -48,41 +46,6 @@ describe("parseCliArgs", () => {
   });
 });
 
-describe("scramSha256Verifier", () => {
-  // RFC 7677 example: password "pencil", salt W22ZaJ0SNY7soEsUEjb6gQ==, i=4096.
-  // StoredKey/ServerKey were derived independently (python hashlib.pbkdf2_hmac).
-  const salt = Buffer.from("W22ZaJ0SNY7soEsUEjb6gQ==", "base64");
-  it("matches a known vector", () => {
-    expect(scramSha256Verifier("pencil", salt)).toBe(
-      "SCRAM-SHA-256$4096:W22ZaJ0SNY7soEsUEjb6gQ==$WG5d8oPm3OtcPnkdi4Uo7BkeZkBFzpcXkuLmtbsT4qY=:wfPLwcE6nTWhTAmQ7tl2KeoiWGPlZqQxSrmfPwDl2dU=",
-    );
-  });
-  it("ServerKey reproduces the RFC 7677 server signature", () => {
-    const serverKey = Buffer.from(
-      scramSha256Verifier("pencil", salt).split(":")[2],
-      "base64",
-    );
-    const authMessage =
-      "n=user,r=rOprNGfwEbeRWgbNEkqO,r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0," +
-      "s=W22ZaJ0SNY7soEsUEjb6gQ==,i=4096,c=biws,r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0";
-    expect(
-      createHmac("sha256", serverKey).update(authMessage).digest("base64"),
-    ).toBe("6rriTRBi23WpRR/wtup+mMhUZUn/dB5nLTJRsjl95G4=");
-  });
-  it("ClientKey/StoredKey reproduce the RFC 7677 client proof", () => {
-    const { clientKey, storedKey } = scramKeys("pencil", salt, 4096);
-    const authMessage =
-      "n=user,r=rOprNGfwEbeRWgbNEkqO,r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0," +
-      "s=W22ZaJ0SNY7soEsUEjb6gQ==,i=4096,c=biws,r=rOprNGfwEbeRWgbNEkqO%hvYDpWUa2RaTCAfuxFIlj)hNlF$k0";
-    const sig = createHmac("sha256", storedKey).update(authMessage).digest();
-    const proof = Buffer.from(clientKey.map((b, i) => b ^ sig[i]));
-    expect(proof.toString("base64")).toBe("dHzbZapWIk4jUhN+Ute9ytag9zjfMHgsqmmiz7AndVQ=");
-  });
-  it("uses a fresh salt per call", () => {
-    expect(scramSha256Verifier("a")).not.toBe(scramSha256Verifier("a"));
-  });
-});
-
 describe("buildCiUrl", () => {
   it("keeps host, db and params; swaps credentials", () => {
     const url = new URL(
@@ -98,18 +61,36 @@ describe("buildCiUrl", () => {
     expect(url.searchParams.get("sslmode")).toBe("require");
     expect(url.toString()).not.toContain("ownerpw");
   });
-  it("generates URL-safe 43-char passwords", () => {
-    expect(generatePassword()).toMatch(/^[A-Za-z0-9_-]{43}$/);
+  it("generates URL-safe, SQL-literal-safe passwords with all character classes", () => {
+    const pw = generatePassword();
+    expect(pw).toMatch(/^[A-Za-z0-9_-]{43}-Aa1$/);
+    expect(pw).toMatch(/[A-Z]/);
+    expect(pw).toMatch(/[a-z]/);
+    expect(pw).toMatch(/[0-9]/);
+    expect(generatePassword()).not.toBe(pw);
   });
 });
 
+describe("assertSafePassword", () => {
+  it("accepts a generated password", () => {
+    expect(() => assertSafePassword(generatePassword())).not.toThrow();
+  });
+  it.each(["a'b".padEnd(45, "x"), `${"x".repeat(45)}'; DROP ROLE x; --`, "short", "x".repeat(45) + "\\"])(
+    "rejects %s",
+    (bad) => {
+      expect(() => assertSafePassword(bad)).toThrow(/unexpected shape/);
+    },
+  );
+});
+
+const SAFE_PW = "x".repeat(43) + "-Aa1";
+
 describe("buildPlan", () => {
-  it("lists the privilege statements and only the redacted verifier", () => {
-    const plan = buildPlan(
-      '"neondb"',
-      "<scram-verifier-redacted>",
-      "unknown",
-    ).join("\n");
+  it("refuses to interpolate an unchecked password", () => {
+    expect(() => buildPlan('"d"', `${SAFE_PW}'; DROP ROLE x; --`, false)).toThrow(/unexpected shape/);
+  });
+  it("lists the privilege statements and only the redacted password", () => {
+    const plan = buildPlan('"neondb"', "<redacted>", "unknown").join("\n");
     expect(plan).toContain(
       "REVOKE ALL ON ALL TABLES IN SCHEMA public FROM ci_monitor",
     );
@@ -120,13 +101,13 @@ describe("buildPlan", () => {
     );
     expect(plan).toContain("default_transaction_read_only = on");
     expect(plan).toContain("statement_timeout = '30s'");
-    expect(plan).toContain("<scram-verifier-redacted>");
+    expect(plan).toContain("PASSWORD '<redacted>'");
   });
   it("creates or alters depending on role existence", () => {
-    expect(buildPlan('"d"', "v", false)[0]).toMatch(
+    expect(buildPlan('"d"', SAFE_PW, false)[0]).toMatch(
       /^CREATE ROLE ci_monitor LOGIN/,
     );
-    expect(buildPlan('"d"', "v", true)[0]).toMatch(
+    expect(buildPlan('"d"', SAFE_PW, true)[0]).toMatch(
       /^ALTER ROLE ci_monitor LOGIN/,
     );
   });
@@ -199,7 +180,7 @@ describe("run", () => {
     const h = harness({});
     expect(await run([], {}, h.deps)).toBe(0);
     expect(h.connectedUrls).toEqual([]);
-    expect(h.out.join("\n")).toContain("<scram-verifier-redacted>");
+    expect(h.out.join("\n")).toContain("PASSWORD '<redacted>'");
   });
 
   it("apply: writes a 0600 URL file with no trailing newline and never prints it", async () => {
@@ -213,8 +194,11 @@ describe("run", () => {
     const printed = [...h.out, ...h.err].join("\n");
     expect(printed).not.toContain(new URL(url).password);
     expect(printed).not.toContain(SENTINEL);
-    expect(h.statements.some((s) => s.startsWith("CREATE ROLE ci_monitor"))).toBe(true);
-    expect(h.out.filter((l) => l.startsWith("PASS")).length).toBeGreaterThanOrEqual(8);
+    const create = h.statements.find((s) => s.startsWith("CREATE ROLE ci_monitor"));
+    expect(create).toContain(`PASSWORD '${new URL(url).password}'`);
+    expect(create).not.toContain("SCRAM-SHA-256$");
+    expect(h.out.filter((l) => l.startsWith("PASS"))).toHaveLength(10);
+    expect(h.out.filter((l) => l.startsWith("FAIL"))).toEqual([]);
   });
 
   it("refuses to overwrite an existing --out file and touches no SQL", async () => {
@@ -243,10 +227,37 @@ describe("run", () => {
     expect(existsSync(out)).toBe(true);
   });
 
+  it("a driver error echoing the plaintext password prints only the code", async () => {
+    let password = "";
+    const h = harness({ failOn: /^CREATE ROLE/ });
+    const real = h.deps.connect;
+    h.deps.connect = (url) => {
+      const sql = real(url);
+      return {
+        query: async (text: string) => {
+          try {
+            return await sql.query(text);
+          } catch {
+            password = /PASSWORD '([^']+)'/.exec(text)?.[1] ?? "";
+            throw Object.assign(new Error(`Failed query: ${text}`), { code: "XX000" });
+          }
+        },
+      };
+    };
+    const out = tmpOut();
+    expect(await run(["--apply", "--out", out], { DATABASE_URL: OWNER }, h.deps)).toBe(1);
+    expect(password.length).toBeGreaterThan(40);
+    expect(existsSync(out)).toBe(false);
+    const printed = [...h.out, ...h.err].join("\n");
+    expect(printed).toContain("XX000");
+    expect(printed).not.toContain(password);
+    expect(printed).not.toContain("PASSWORD");
+  });
+
   it("SQL failure removes the file and prints only the code, never the statement", async () => {
     const h = harness({
       failOn: /^GRANT CONNECT/,
-      failWith: Object.assign(new Error("Failed query: ALTER ... PASSWORD 'SCRAM-SHA-256$4096:LEAK'"), {
+      failWith: Object.assign(new Error("Failed query: GRANT ... LEAK"), {
         code: "42501",
       }),
     });
@@ -256,7 +267,20 @@ describe("run", () => {
     const printed = h.err.join("\n");
     expect(printed).toContain("42501");
     expect(printed).not.toContain("LEAK");
-    expect(printed).not.toContain("SCRAM");
+  });
+
+  it("an unsafe generated password fails before any SQL, with no secret in the output", async () => {
+    const h = harness({});
+    const bad = `${"x".repeat(45)}'; DROP ROLE x; --`;
+    h.deps.generatePassword = () => bad;
+    const out = tmpOut();
+    expect(await run(["--apply", "--out", out], { DATABASE_URL: OWNER }, h.deps)).toBe(1);
+    expect(h.statements).toEqual([]);
+    expect(h.connectedUrls).toEqual([]);
+    expect(existsSync(out)).toBe(false);
+    const printed = [...h.out, ...h.err].join("\n");
+    expect(printed).not.toContain("DROP ROLE");
+    expect(printed).not.toContain(SENTINEL);
   });
 
   it("a malformed DATABASE_URL never echoes the input", async () => {

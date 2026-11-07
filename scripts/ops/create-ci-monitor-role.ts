@@ -12,11 +12,15 @@
  *   npx tsx --env-file=.env.local scripts/ops/create-ci-monitor-role.ts --apply --out <path>
  *
  * The new connection URL goes ONLY to `--out` (mode 0600, never overwritten);
- * neither it nor the password is ever printed. The password is installed as a
- * client-computed SCRAM-SHA-256 verifier (RFC 5802/7677, what psql's \\password
- * does), so the plaintext never appears in SQL or server logs.
+ * neither it nor the password is ever printed. Neon rejects hashed (SCRAM)
+ * passwords, so the password goes as a plain-text literal in CREATE/ALTER ROLE,
+ * inside the TLS connection; Neon stores it encrypted. Driver errors can echo
+ * the statement, so no error text is ever printed, only redactedErrorCode().
+ * Whether Neon's server-side statement logging could capture the literal is not
+ * verifiable from here, which is why the role is least-privilege and rotatable
+ * with --rotate.
  */
-import { createHash, createHmac, pbkdf2Sync, randomBytes } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { unlinkSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
@@ -39,8 +43,7 @@ export const GRANTED_TABLES = [
   "state_digest_runs",
 ] as const;
 
-const SCRAM_ITERATIONS = 4096;
-const REDACTED = "<scram-verifier-redacted>";
+const REDACTED = "<redacted>";
 
 /** Fixed-message errors that are safe to print verbatim (they never embed input). */
 export class UsageError extends Error {}
@@ -89,27 +92,25 @@ export function parseCliArgs(argv: string[]): CliOptions {
   return opts;
 }
 
-/** RFC 5802 key derivation (SaltedPassword, ClientKey, StoredKey, ServerKey). */
-export function scramKeys(password: string, salt: Buffer, iterations: number) {
-  const salted = pbkdf2Sync(password.normalize("NFKC"), salt, iterations, 32, "sha256");
-  const clientKey = createHmac("sha256", salted).update("Client Key").digest();
-  const storedKey = createHash("sha256").update(clientKey).digest();
-  const serverKey = createHmac("sha256", salted).update("Server Key").digest();
-  return { clientKey, storedKey, serverKey };
-}
-
-/** RFC 5802 / 7677 verifier in Postgres's stored format. */
-export function scramSha256Verifier(
-  password: string,
-  salt: Buffer = randomBytes(16),
-  iterations: number = SCRAM_ITERATIONS
-): string {
-  const { storedKey, serverKey } = scramKeys(password, salt, iterations);
-  return `SCRAM-SHA-256$${iterations}:${salt.toString("base64")}$${storedKey.toString("base64")}:${serverKey.toString("base64")}`;
-}
+/**
+ * Neon requires a plain-text password in CREATE/ALTER ROLE (min 60 bits of
+ * entropy; hashed passwords are rejected, https://neon.com/docs/manage/roles)
+ * and stores it encrypted. 32 random bytes is 256 bits. The fixed suffix only
+ * guarantees upper, lower, digit and symbol classes in case a checker wants
+ * character diversity; it adds no entropy and is not relied on.
+ */
+const PASSWORD_SUFFIX = "-Aa1";
+const PASSWORD_SHAPE = /^[A-Za-z0-9_-]{40,}$/;
 
 export function generatePassword(): string {
-  return randomBytes(32).toString("base64url");
+  return randomBytes(32).toString("base64url") + PASSWORD_SUFFIX;
+}
+
+/** Interpolation guard: the alphabet has no quote or backslash, so a literal is injection-safe. */
+export function assertSafePassword(password: string): void {
+  if (!PASSWORD_SHAPE.test(password)) {
+    throw new UsageError("generated password has an unexpected shape; refusing to build SQL");
+  }
 }
 
 /** Same host/database/params as the owner URL; only the credentials change. */
@@ -128,16 +129,16 @@ export function buildCiUrl(ownerUrl: string, password: string): string {
 
 /**
  * The write plan, in order. `quotedDb` must already be a quoted identifier
- * (quote_ident(current_database())). The verifier is the only credential-derived
+ * (quote_ident(current_database())). The password is the only credential-derived
  * value in the SQL; dry runs pass a placeholder.
  */
 export function buildPlan(
   quotedDb: string,
-  verifier: string,
+  password: string,
   roleExists: boolean | "unknown",
 ): string[] {
-  const password = `PASSWORD '${verifier}'`;
-  const attrs = `LOGIN ${ROLE_ATTRS} ${password}`;
+  if (password !== REDACTED) assertSafePassword(password);
+  const attrs = `LOGIN ${ROLE_ATTRS} PASSWORD '${password}'`;
   const first =
     roleExists === "unknown"
       ? `CREATE ROLE ${ROLE} ${attrs}  -- or ALTER ROLE ... when the role exists (requires --rotate)`
@@ -167,13 +168,17 @@ export interface VerifyResult {
 }
 
 /** Connects AS ci_monitor and checks the grants actually bite. No secrets in results. */
-export async function verifyRole(sql: Sql, expectedTables: number): Promise<VerifyResult[]> {
+export async function verifyRole(
+  sql: Sql,
+  expectedTables: number,
+  error: (line: string) => void = (line) => console.error(line),
+): Promise<VerifyResult[]> {
   const results: VerifyResult[] = [];
   const check = async (name: string, fn: () => Promise<boolean>) => {
     try {
       results.push({ name, ok: await fn() });
     } catch (err) {
-      console.error(`verify step "${name}" errored (${redactedErrorCode(err)})`);
+      error(`verify step "${name}" errored (${redactedErrorCode(err)})`);
       results.push({ name, ok: false });
     }
   };
@@ -249,6 +254,8 @@ export interface RunDeps {
   connect: (url: string) => Sql;
   log: (line: string) => void;
   error: (line: string) => void;
+  /** Injectable for tests; defaults to generatePassword. */
+  generatePassword?: () => string;
 }
 
 const defaultDeps: RunDeps = {
@@ -260,7 +267,7 @@ const defaultDeps: RunDeps = {
 /**
  * Returns the process exit code. Everything printed is a fixed string, a
  * redactedErrorCode() value or an fs errno code: never an error message, which
- * could carry the owner URL (URL parse errors) or the SCRAM verifier (driver
+ * could carry the owner URL (URL parse errors) or the plaintext password (driver
  * errors echo the statement).
  */
 export async function run(
@@ -292,15 +299,15 @@ export async function run(
     return 1;
   }
 
-  const password = generatePassword();
+  const password = (deps.generatePassword ?? generatePassword)();
   let ciUrl: string;
   try {
+    assertSafePassword(password);
     ciUrl = buildCiUrl(ownerUrl, password);
   } catch (err) {
     deps.error(err instanceof UsageError ? err.message : "DATABASE_URL could not be used");
     return 1;
   }
-  const verifier = scramSha256Verifier(password);
   const out = opts.out as string;
 
   // Persist the credential BEFORE touching the database: if the write to disk
@@ -322,14 +329,14 @@ export async function run(
     if (roleExists && !opts.rotate) {
       throw new UsageError(`role ${ROLE} already exists; pass --rotate to set a new password`);
     }
-    for (const stmt of buildPlan(db.q, verifier, roleExists)) {
+    for (const stmt of buildPlan(db.q, password, roleExists)) {
       await sql.query(stmt);
     }
     const [{ n }] = await rows<{ n: number }>(
       sql,
       "SELECT count(*)::int AS n FROM pg_catalog.pg_tables WHERE schemaname = 'public'"
     );
-    const results = await verifyRole(deps.connect(ciUrl), n);
+    const results = await verifyRole(deps.connect(ciUrl), n, deps.error);
     for (const r of results) deps.log(`${r.ok ? "PASS" : "FAIL"}  ${r.name}`);
     if (results.some((r) => !r.ok)) {
       deps.error(
