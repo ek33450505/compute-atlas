@@ -13,8 +13,8 @@
  * GitHub Actions on its own schedule so a missed run is detected even if the
  * Mac stays asleep indefinitely.
  *
- * Unlike `scripts/check-neon-drift.ts` (deliberately non-blocking, always
- * exits 0), and much like `scripts/check-schema-drift.ts`, this script FAILS
+ * Unlike the retired check-neon-drift.ts (deliberately non-blocking, always
+ * exited 0), and much like `scripts/check-schema-drift.ts`, this script FAILS
  * CLOSED on purpose:
  *   - DATABASE_URL unset                                  -> exit 1
  *   - DISCOVERY_STALE_HOURS set but unparseable            -> exit 1
@@ -265,7 +265,7 @@ function printHealthy(report: HeartbeatFreshnessReport): void {
 async function main(): Promise<void> {
   // Fail CLOSED — an unconfigured database is a failure to verify, not a
   // skip. Same posture as check-schema-drift.ts, deliberately the opposite
-  // of check-neon-drift.ts's graceful exit-0.
+  // of the retired check-neon-drift.ts's graceful exit-0.
   if (!hasDatabaseUrl()) {
     console.error(
       "::error::DATABASE_URL is not set. Configure it in .env.local (see .env.example) for a local " +
@@ -301,7 +301,7 @@ async function main(): Promise<void> {
     }
     // Log only the message (not the raw error object) so a Neon/pg connection
     // error can't echo the DB host/DSN into this public repo's Actions logs —
-    // same precaution as check-neon-drift.ts / check-schema-drift.ts.
+    // same precaution as check-schema-drift.ts.
     console.error(
       "::error::heartbeat health check errored:",
       formatErrorSummary(err)

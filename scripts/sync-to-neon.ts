@@ -54,8 +54,8 @@
  *          npm run db:sync -- --apply --skip-revalidate
  *
  * Requires DATABASE_URL, plus API_ADMIN_TOKEN and API_BASE_URL when applying
- * (unless `--skip-revalidate`). Afterwards run `npm run db:export` so the JSON
- * is regenerated FROM Neon and `npm run check:drift` is clean.
+ * (unless `--skip-revalidate`). Afterwards run `npm run db:export` so the local JSON
+ * snapshot is regenerated FROM Neon.
  *
  * Uses relative imports throughout, matching the other scripts in this folder.
  */
@@ -84,6 +84,7 @@ import {
 import { notifySubscribersOfChanges } from "../lib/notify";
 import { redactedErrorCode } from "../lib/db-error";
 import { isEntrypoint } from "./is-entrypoint";
+import { MIN_FACILITIES } from "./export";
 import { formatFatalError } from "../lib/db-error";
 
 /**
@@ -148,9 +149,9 @@ export interface SyncPlan {
  * `jsonFacilities` must already be parsed through `facilitySchema` so schema
  * defaults are materialized — otherwise a record that Neon stored WITH
  * defaults would look "changed" against a JSON record without them. This is
- * the same normalization `scripts/check-neon-drift.ts` applies, deliberately:
- * the two tools must agree on what "changed" means or the drift checker would
- * flag rows this tool considers identical, forever.
+ * the same normalization `scripts/export.ts` round-trips, deliberately:
+ * the two tools must agree on what "changed" means or rows this tool
+ * considers identical would look changed, forever.
  */
 export function planSync(
   jsonFacilities: Facility[],
@@ -517,6 +518,78 @@ export function readBasis(metaPath: string): BasisResult {
   };
 }
 
+/**
+ * Refuses a snapshot that is not the real exported dataset. After the data files
+ * were untracked, a pull deletes them and a local prebuild fills the ~68-record
+ * test fixture; publishing (or even planning) against that would diff the whole
+ * of Neon as removals/updates. Same floor `db:export` enforces. `metaCount` is
+ * `facilities.meta.json`'s `recordCount` (undefined when absent or not a number).
+ * Returns the refusal message, or null when the snapshot is acceptable.
+ */
+export function snapshotSizeRefusal(
+  count: number,
+  metaCount: unknown,
+  floor: number = MIN_FACILITIES,
+): string | null {
+  if (count < floor) {
+    return `db:sync refuses a snapshot of ${count} records (floor ${floor}): this looks like the test fixture; run \`npm run db:export\` first`;
+  }
+  if (typeof metaCount !== "number") {
+    return "db:sync refuses a snapshot with no numeric recordCount in data/facilities.meta.json (missing or malformed); run `npm run db:export` first";
+  }
+  if (metaCount !== count) {
+    return `db:sync refuses a snapshot whose facilities.meta.json recordCount (${String(metaCount)}) does not match data/facilities.json (${count} records); run \`npm run db:export\` first`;
+  }
+  return null;
+}
+
+export type SnapshotLoad =
+  | { ok: true; facilities: unknown[]; metaCount: unknown }
+  | { ok: false; message: string };
+
+/**
+ * Reads the JSON snapshot and its meta for the size guard, reducing every
+ * failure to a fixed message (no stack, no parser text). `read` is injected so
+ * tests need no files. A missing meta is not a load failure: it yields
+ * `metaCount: undefined` and `snapshotSizeRefusal` names the meta file.
+ */
+export function loadSnapshotForSync(
+  read: (p: string) => string,
+  jsonPath: string,
+  metaPath: string,
+): SnapshotLoad {
+  let raw: string;
+  try {
+    raw = read(jsonPath);
+  } catch {
+    return { ok: false, message: "db:sync: data/facilities.json not found: run `npm run db:export` first" };
+  }
+  let facilities: unknown;
+  try {
+    facilities = JSON.parse(raw);
+  } catch {
+    return { ok: false, message: "data/facilities.json: not valid JSON: run `npm run db:export`" };
+  }
+  if (!Array.isArray(facilities)) {
+    return { ok: false, message: "data/facilities.json is not an array" };
+  }
+  let metaRaw: string | null = null;
+  try {
+    metaRaw = read(metaPath);
+  } catch {
+    metaRaw = null;
+  }
+  let metaCount: unknown;
+  if (metaRaw !== null) {
+    try {
+      metaCount = (JSON.parse(metaRaw) as { recordCount?: unknown } | null)?.recordCount;
+    } catch {
+      return { ok: false, message: "data/facilities.meta.json: not valid JSON: run `npm run db:export`" };
+    }
+  }
+  return { ok: true, facilities, metaCount };
+}
+
 // ---------------------------------------------------------------------------
 // CLI
 // ---------------------------------------------------------------------------
@@ -615,6 +688,22 @@ export function printPlan(plan: SyncPlan, jsonCount: number, neonCount: number, 
 async function main(): Promise<void> {
   const options = parseCliArgs(process.argv.slice(2));
 
+  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
+  const metaPath = path.join(path.dirname(jsonPath), "facilities.meta.json");
+
+  // Size guard first: before DATABASE_URL, any DB read, and in dry run too.
+  const snapshot = loadSnapshotForSync((p) => readFileSync(p, "utf-8"), jsonPath, metaPath);
+  if (!snapshot.ok) {
+    console.error(snapshot.message);
+    process.exit(1);
+  }
+  const rawFacilities = snapshot.facilities;
+  const sizeRefusal = snapshotSizeRefusal(rawFacilities.length, snapshot.metaCount);
+  if (sizeRefusal !== null) {
+    console.error(sizeRefusal);
+    process.exit(1);
+  }
+
   if (!process.env.DATABASE_URL) {
     console.error(
       "DATABASE_URL is not set. Configure it in .env.local (see .env.example) before syncing."
@@ -643,10 +732,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const jsonPath = path.join(process.cwd(), "data", "facilities.json");
-  const metaPath = path.join(path.dirname(jsonPath), "facilities.meta.json");
-
-  const facilities = facilitiesSchema.parse(JSON.parse(readFileSync(jsonPath, "utf-8")));
+  const facilities = facilitiesSchema.parse(rawFacilities);
   const { basis, description: basisDesc } = readBasis(metaPath);
 
   const db = getDb();

@@ -67,12 +67,6 @@ docs/media/banner.svg
 # scripts/copy-maplibre-worker.mjs on prebuild/predev — generated, never edited
 /public/maplibre/
 
-# Static dataset downloads for /data, generated from data/facilities.json by
-# scripts/build-data-exports.ts, run only by `npm run build:exports` (no longer part
-# prebuild/predev) — generated, never edited
-/public/data/facilities.csv
-/public/data/facilities.json
-
 # Wave scratch artifacts — research working dirs, not part of the app
 wave-*/
 
@@ -90,3 +84,11 @@ data/*.tmp-*
 /components/home/hero-plate-paths.ts
 /public/data/hero-points.json
 /public/data/pipeline-history.json
+
+# Data snapshot exported from Neon by ensure-data-snapshot / `npm run db:export`;
+# never commit (Neon is the only home of this data)
+/data/facilities.json
+/data/facilities.meta.json
+/data/siting-context.json
+/data/operator-ownership.json
+/data/nhd-backfill-debt.json

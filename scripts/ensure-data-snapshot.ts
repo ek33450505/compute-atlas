@@ -126,9 +126,8 @@ export async function ensureDataSnapshot(
 
   if (deps.env.VERCEL === "1") {
     if (await tryExport()) {
-      // The export must have produced all four files. Vacuous while the data
-      // files are tracked in git (they exist regardless); it becomes meaningful
-      // when PR C untracks them.
+      // The export must have produced all four files (they are untracked, so a
+      // missing one means the export really did not write it).
       const missing = SNAPSHOT_FILES.filter((f) => !deps.fs.existsSync(path.join(deps.root, f.snapshot)));
       if (missing.length > 0) {
         deps.warn(`ensure-data-snapshot: export reported success but ${missing.map((f) => f.snapshot).join(", ")} missing`);

@@ -21,7 +21,7 @@
  * Run: npm run retention:prune               (dry run — read-only, safe anytime)
  *      npm run retention:prune -- --apply    (writes — see safety contract above)
  *
- * Uses relative imports, matching scripts/check-neon-drift.ts and scripts/export.ts.
+ * Uses relative imports, matching scripts/export.ts.
  */
 import { appendFileSync, mkdirSync, statSync } from "node:fs";
 import path from "node:path";

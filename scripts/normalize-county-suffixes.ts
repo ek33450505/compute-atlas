@@ -45,16 +45,16 @@
  *   npm run db:export                                       # 5. regenerate the JSON from Neon
  *
  * Step 4 writes facility_history, busts cache tags, and can fire subscriber
- * notification email. Do not run it on someone else's behalf. Committing the
- * output of step 2 WITHOUT step 4 is the failure mode: neon-sync.yml would
- * then run db:export and open an auto-merged PR reverting the correction.
+ * notification email. Do not run it on someone else's behalf. Skipping step 4
+ * is the failure mode: the next db:export would overwrite the corrected JSON
+ * with Neon's uncorrected values.
  *
  * Idempotent — after the publish and re-export this becomes a no-op and exits 0.
  *
  * Run: npx tsx scripts/normalize-county-suffixes.ts           (dry run — default)
  *      npx tsx scripts/normalize-county-suffixes.ts --write   (rewrites the file)
  *
- * Uses relative imports, matching scripts/check-neon-drift.ts and scripts/export.ts.
+ * Uses relative imports, matching scripts/export.ts.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 

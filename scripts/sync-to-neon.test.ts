@@ -1,9 +1,11 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } from "vitest";
 import { eq } from "drizzle-orm";
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { spawnSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
 // Hoisted above the imports by Vitest — swaps the real Neon client for the
 // PGlite instance below, so applySync()'s internal getDb() resolves to it.
@@ -29,6 +31,8 @@ import {
   planSync,
   applySync,
   readBasis,
+  snapshotSizeRefusal,
+  loadSnapshotForSync,
   parseCliArgs,
   printPlan,
   tagsForChanges,
@@ -711,5 +715,108 @@ describe("parseCliArgs", () => {
 
   it("rejects an unknown argument instead of silently ignoring a typo", () => {
     expect(() => parseCliArgs(["--aply"])).toThrow(/Unknown argument/);
+  });
+});
+
+describe("snapshotSizeRefusal", () => {
+  it("refuses a fixture-sized snapshot", () => {
+    expect(snapshotSizeRefusal(68, 68)).toMatch(/refuses a snapshot of 68 records \(floor 2900\).*db:export/);
+  });
+
+  it("refuses a meta recordCount that does not match", () => {
+    expect(snapshotSizeRefusal(3000, 68)).toMatch(/recordCount \(68\).*3000 records/);
+    expect(snapshotSizeRefusal(3000, undefined)).toMatch(/facilities\.meta\.json.*missing or malformed/);
+  });
+
+  it("accepts a real-size snapshot whose meta matches", () => {
+    expect(snapshotSizeRefusal(3025, 3025)).toBeNull();
+  });
+
+  it("takes the floor as a parameter so small inputs stay testable", () => {
+    expect(snapshotSizeRefusal(5, 5, 5)).toBeNull();
+    expect(snapshotSizeRefusal(4, 4, 5)).not.toBeNull();
+  });
+});
+
+describe("db:sync CLI size guard", () => {
+  const script = join(process.cwd(), "scripts/sync-to-neon.ts");
+  const run = (dir: string, args: string[]) =>
+    spawnSync(process.execPath, ["--import", pathToFileURL(join(process.cwd(), "node_modules/tsx/dist/loader.mjs")).href, script, ...args], {
+      cwd: dir,
+      // No DATABASE_URL: reaching the DB check would print a different message.
+      env: { NODE_ENV: "test", PATH: process.env.PATH ?? "", TSX_TSCONFIG_PATH: join(process.cwd(), "tsconfig.json") },
+      encoding: "utf8",
+    });
+
+  it("a missing data/facilities.json exits 1 with a fixed message and no stack", () => {
+    const dir = mkdtempSync(join(tmpdir(), "sync-guard-"));
+    try {
+      const r = run(dir, []);
+      expect(r.status).toBe(1);
+      expect(r.stderr).toContain("db:sync: data/facilities.json not found: run `npm run db:export` first");
+      expect(r.stderr).not.toContain("ENOENT");
+      expect(r.stderr).not.toContain("    at ");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }, 30_000);
+
+  it.each([[[]], [["--apply"]]])("refuses a tiny snapshot before touching the DB (%j)", (args) => {
+    const dir = mkdtempSync(join(tmpdir(), "sync-guard-"));
+    try {
+      mkdirSync(join(dir, "data"));
+      writeFileSync(join(dir, "data/facilities.json"), JSON.stringify(Array.from({ length: 3 }, (_, i) => ({ id: `x${i}` }))));
+      writeFileSync(join(dir, "data/facilities.meta.json"), JSON.stringify({ recordCount: 3, asOf: "2026-01-01T00:00:00.000Z" }));
+      const r = run(dir, args);
+      expect(r.status).toBe(1);
+      expect(r.stderr).toContain("db:sync refuses a snapshot of 3 records (floor 2900)");
+      expect(r.stderr).not.toContain("DATABASE_URL");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }, 30_000);
+});
+
+describe("loadSnapshotForSync", () => {
+  const files = (m: Record<string, string>) => (p: string) => {
+    if (!(p in m)) throw new Error("ENOENT secret/path");
+    return m[p];
+  };
+  const J = "data/facilities.json";
+  const M = "data/facilities.meta.json";
+
+  it("a missing facilities.json gives a fixed message", () => {
+    expect(loadSnapshotForSync(files({}), J, M)).toEqual({
+      ok: false,
+      message: "db:sync: data/facilities.json not found: run `npm run db:export` first",
+    });
+  });
+
+  it("unparseable JSON gives a fixed message without parser text", () => {
+    const r = loadSnapshotForSync(files({ [J]: "{oops" }), J, M);
+    expect(r).toEqual({ ok: false, message: "data/facilities.json: not valid JSON: run `npm run db:export`" });
+    const m = loadSnapshotForSync(files({ [J]: "[]", [M]: "{oops" }), J, M);
+    expect(m).toEqual({ ok: false, message: "data/facilities.meta.json: not valid JSON: run `npm run db:export`" });
+  });
+
+  it("a non-array facilities.json is reported as such", () => {
+    expect(loadSnapshotForSync(files({ [J]: "{}" }), J, M)).toEqual({
+      ok: false,
+      message: "data/facilities.json is not an array",
+    });
+  });
+
+  it("a missing meta is not a load failure; the size check then names the meta file", () => {
+    const r = loadSnapshotForSync(files({ [J]: "[]" }), J, M);
+    expect(r).toEqual({ ok: true, facilities: [], metaCount: undefined });
+    expect(snapshotSizeRefusal(3000, undefined)).toMatch(/data\/facilities\.meta\.json/);
+  });
+
+  it("returns the facilities and recordCount when both files are fine", () => {
+    expect(loadSnapshotForSync(files({ [J]: "[1,2]", [M]: '{"recordCount":2}' }), J, M)).toEqual({
+      ok: true,
+      facilities: [1, 2],
+      metaCount: 2,
+    });
   });
 });

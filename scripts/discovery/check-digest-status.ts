@@ -23,7 +23,7 @@
  *
  * Run: npx tsx --env-file=.env.local scripts/discovery/check-digest-status.ts
  *      (local, reads .env.local; there is no package.json shortcut for this
- *      script yet, unlike check:drift/check:heartbeat)
+ *      script yet, unlike check:heartbeat)
  * Or:  npx tsx scripts/discovery/check-digest-status.ts (CI, reads DATABASE_URL
  *       from env)
  *

@@ -1,6 +1,7 @@
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, it, expect } from "vitest";
 import facilitiesRaw from "@/data/facilities.json";
-import nhdDebtLedgerRaw from "@/data/nhd-backfill-debt.json";
 import sitingContextRaw from "@/data/siting-context.json";
 import {
   missingNearestWaterOffenders,
@@ -149,7 +150,22 @@ describe("data-integrity: NHD backfill debt", () => {
   // all 2,328). The additive guard (then git-based) reported 0 lost, 0 nulled, 4 changed — the two
   // moved GA pins (Bunkhouse, Springbank) re-queried at their corrected
   // coordinates. All 52 owed CONUS ids now carry nearestWater.
-  const NHD_BACKFILL_DEBT_CEILING = parseLedger(nhdDebtLedgerRaw).ceiling;
+  //
+  // The ledger file is gitignored (a local maintainer file, like the rest of data/)
+  // and is deleted by a pull that untracks it, so it is read from disk and its
+  // absence FAILS the ratchet tests rather than skipping them: a ratchet that
+  // silently skips is dead after every fresh clone. Neon's maintenance_ledger row
+  // (`nhd:debt -- --ledger-db`) is the durable copy.
+  const LEDGER_PATH = path.join(process.cwd(), "data/nhd-backfill-debt.json");
+  const debtCeiling = (): number => {
+    if (!existsSync(LEDGER_PATH)) {
+      throw new Error(
+        "no local NHD-debt ledger: run `npm run nhd:debt -- --note \"<why>\"` to record the current count " +
+          "(and `-- --ledger-db` to mirror it to Neon)",
+      );
+    }
+    return parseLedger(JSON.parse(readFileSync(LEDGER_PATH, "utf8"))).ceiling;
+  };
 
   const realOffenders = () =>
     missingNearestWaterOffenders(
@@ -163,6 +179,7 @@ describe("data-integrity: NHD backfill debt", () => {
 
   it("does not silently exceed the NHD backfill debt ceiling", () => {
     const offenders = realOffenders();
+    const NHD_BACKFILL_DEBT_CEILING = debtCeiling();
 
     if (ratchetVerdict(offenders.length, NHD_BACKFILL_DEBT_CEILING) === "grew") {
       throw new Error(
@@ -179,6 +196,7 @@ describe("data-integrity: NHD backfill debt", () => {
 
   it("flags when debt is paid down, so the ceiling can be ratcheted lower", () => {
     const offenders = realOffenders();
+    const NHD_BACKFILL_DEBT_CEILING = debtCeiling();
 
     if (ratchetVerdict(offenders.length, NHD_BACKFILL_DEBT_CEILING) === "paid_down") {
       throw new Error(

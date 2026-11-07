@@ -4,7 +4,8 @@
 // Pure helpers only (no fs, no JSON imports) so the ratchet test in
 // lib/siting-context.test.ts, scripts/update-nhd-debt.ts and the automation that
 // calls that script all share one definition of "debt". Callers inject the data.
-// The recorded ceiling lives in data/nhd-backfill-debt.json.
+// The recorded ceiling lives in the gitignored local file data/nhd-backfill-debt.json
+// (mirrored to Neon maintenance_ledger by `nhd:debt -- --ledger-db`).
 
 // NHD, HIFLD, WRI Aqueduct and the USGS principal aquifers are all CONUS-only,
 // so these jurisdictions can never match and are not debt.
