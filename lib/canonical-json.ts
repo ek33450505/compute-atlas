@@ -13,9 +13,9 @@
  * `sourceIndex` references that point into `sources` are all meaningfully
  * ordered, so a reordered array IS a change.
  *
- * `scripts/check-neon-drift.ts` (which reports drift) and
- * `scripts/sync-to-neon.ts` (which repairs it) MUST agree on this, or the
- * drift checker would flag rows the sync tool considers identical — forever.
+ * `scripts/sync-to-neon.ts` (which diffs JSON against Neon and repairs drift) and
+ * `scripts/export.ts` (which writes the JSON from Neon) MUST agree on this, or
+ * a row the sync tool considers identical would look changed — forever.
  * That shared invariant is why this lives in `lib/` rather than inline in
  * either script.
  */

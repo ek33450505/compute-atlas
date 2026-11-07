@@ -1,5 +1,6 @@
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { mkdtempSync, readFileSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 
@@ -12,11 +13,9 @@ import {
   buildPlateData,
   renderModule,
   assertUsableAsOf,
-  buildReadmeSvg,
+  buildHeroPlate,
   buildOutlines,
   OUTLINE_BYTE_BUDGET,
-  README_PLATE_HEIGHT,
-  STATUS_STYLE,
   OMITTED_JURISDICTIONS,
   STATUS_ORDER,
   WIDTH,
@@ -397,7 +396,7 @@ describe("buildPlateData — fails loudly rather than shipping a wrong plate", (
 });
 
 // Whether the committed artifact is CURRENT against the real dataset (paths,
-// counts, docs/media/map.svg, asOf) is asserted in
+// counts, asOf) is asserted in
 // build-hero-plate.dataset.test.ts: the fixture cannot reproduce a plate drawn
 // from the full data. Here, only what holds of the artifact on its own.
 describe("hero-plate-paths.ts — the committed artifact is self-consistent", () => {
@@ -439,6 +438,22 @@ describe("hero-plate-paths.ts — the committed artifact is self-consistent", ()
       0,
     );
     expect(pathBytes).toBeLessThan(40_000);
+  });
+});
+
+describe("buildHeroPlate — leaves the frozen README map alone", () => {
+  it("does not write docs/media/map.svg", () => {
+    const svgPath = resolve(HERE, "../docs/media/map.svg");
+    const before = statSync(svgPath);
+    const bytesBefore = readFileSync(svgPath, "utf8");
+    const outPath = resolve(mkdtempSync(join(tmpdir(), "hero-plate-")), "hero-plate-paths.ts");
+    const result = buildHeroPlate({ outPath });
+    const after = statSync(svgPath);
+    expect(after.mtimeMs).toBe(before.mtimeMs);
+    expect(readFileSync(svgPath, "utf8")).toBe(bytesBefore);
+    expect(result).not.toHaveProperty("svgPath");
+    expect(result.outPath).toBe(outPath);
+    expect(readFileSync(outPath, "utf8")).toContain("GENERATED FILE");
   });
 });
 
@@ -511,114 +526,6 @@ describe("assertUsableAsOf — a corrupt meta file must not emit a broken module
 
   it("names the offending value in the error, so the fix is obvious", () => {
     expect(() => assertUsableAsOf("2026-09-15")).toThrow(/"2026-09-15"/);
-  });
-});
-
-describe("buildReadmeSvg — standalone README map", () => {
-  const asOf = "2026-10-13T18:16:14.189Z";
-  const data = { ...buildPlateData(facilities, WIDTH, HEIGHT), outlines: HERO_PLATE.outlines };
-  const svg = buildReadmeSvg(data, asOf, WIDTH, HEIGHT);
-
-  it("is a well-formed SVG with role=img, a title and a desc", () => {
-    expect(svg.startsWith("<svg ")).toBe(true);
-    expect(svg.trimEnd().endsWith("</svg>")).toBe(true);
-    expect(svg).toMatch(/<svg[^>]* role="img"/);
-    expect(svg).toMatch(/<title>[^<]+<\/title>/);
-    expect(svg).toMatch(/<desc>[^<]+<\/desc>/);
-    const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
-    expect(doc.getElementsByTagName("parsererror")).toHaveLength(0);
-    expect(doc.documentElement.nodeName).toBe("svg");
-  });
-
-  it("draws one path per status, with its colour, round caps and a stroke width", () => {
-    // The last STATUS_ORDER.length paths are the marks; outlines come first.
-    const pathTags = (svg.match(/<path [^>]*>/g) ?? []).slice(-STATUS_ORDER.length);
-    expect(pathTags).toHaveLength(STATUS_ORDER.length);
-    STATUS_ORDER.forEach((status: string, i: number) => {
-      const tag = pathTags[i];
-      expect(tag).toContain(`d="${data.paths[status]}"`);
-      expect(tag).toContain(`stroke="${STATUS_STYLE[status as keyof typeof STATUS_STYLE].color}"`);
-      expect(tag).toContain('stroke-linecap="round"');
-      expect(tag).toMatch(/stroke-width="[1-9]\d*"/);
-      expect(tag).toContain('fill="none"');
-    });
-  });
-
-  it("keeps STATUS_STYLE colours in step with app/globals.css tokens", () => {
-    const css = readFileSync(resolve(HERE, "../app/globals.css"), "utf8");
-    for (const status of STATUS_ORDER) {
-      const token = `--status-${status.replace(/_/g, "-")}`;
-      const m = css.match(new RegExp(`${token}:\\s*(#[0-9A-Fa-f]{6})`));
-      expect({ status, hex: m?.[1].toUpperCase() }).toEqual({
-        status,
-        hex: STATUS_STYLE[status as keyof typeof STATUS_STYLE].color.toUpperCase(),
-      });
-    }
-  });
-
-  it("throws on a malformed or injecting asOf instead of interpolating it", () => {
-    for (const bad of ['2026-10-13"><script>', "2026-10-13", "", undefined, '</text><script>x</script>T00:00:00Z']) {
-      expect(() => buildReadmeSvg(data, bad as unknown as string)).toThrow(/no usable `asOf`/);
-    }
-  });
-
-  it("draws the outlines beneath the marks, and crops no mark or outline", () => {
-    const first = svg.indexOf(`d="${data.outlines.borders}"`);
-    expect(first).toBeGreaterThan(-1);
-    expect(first).toBeLessThan(svg.indexOf(`d="${data.paths.operational}"`));
-    const ys = [...data.paths.operational.matchAll(/M\d+ (\d+)h/g)].map((m) => Number(m[1]));
-    expect(Math.max(...ys)).toBeLessThan(README_PLATE_HEIGHT - 7);
-    for (const pts of [outlinePoints(HERO_PLATE.outlines.nation), outlinePoints(HERO_PLATE.outlines.borders)]) {
-      expect(Math.max(...pts.map((p) => p[1]))).toBeLessThan(README_PLATE_HEIGHT);
-    }
-  });
-
-  it("legend names every status", () => {
-    for (const status of STATUS_ORDER) {
-      expect(svg).toContain(`>${STATUS_STYLE[status as keyof typeof STATUS_STYLE].label}</text>`);
-    }
-  });
-
-  it("has nothing GitHub would strip or that needs the network", () => {
-    expect(svg).not.toMatch(/<script|foreignObject|var\(--|@import|<image|href=/i);
-  });
-
-  it("is deterministic", () => {
-    expect(buildReadmeSvg(data, asOf, WIDTH, HEIGHT)).toBe(svg);
-  });
-
-  it("states the dataset date, and only that date", () => {
-    expect(svg).toContain("2026-10-13");
-    expect(svg.match(/\d{4}-\d{2}-\d{2}/g)).toEqual(["2026-10-13", "2026-10-13"]);
-    expect(buildReadmeSvg(data, "2026-01-02T00:00:00.000Z")).toContain("2026-01-02");
-  });
-
-  it("prints no marks-count as a facility count", () => {
-    // Scans the <text>, <title> and <desc> CONTENT, minus the dataset date.
-    // HEAD also scanned the <text> tags' attribute values; that is dropped on
-    // purpose, because those are layout (x/y coordinates, font-size, #RRGGBB
-    // colours), not printed counts, and a small fixture count collides with them
-    // (a count of 5 matched the colour #5C5344). Trade: a count leaking into an
-    // attribute value is no longer caught; the printed text is what a reader sees.
-    const elements = [...svg.matchAll(/<(text|title|desc)[^>]*>([^<]*)<\/\1>/g)];
-    // The scanner skips any element with child markup (e.g. a <tspan>). Every
-    // opening tag must have been matched, so such an element fails loudly here
-    // instead of silently leaving its text unscanned.
-    const openingTags = svg.match(/<(?:text|title|desc)[\s>]/g) ?? [];
-    expect(elements.length).toBeGreaterThan(0);
-    expect(elements).toHaveLength(openingTags.length);
-    const text = elements.map((m) => m[2].replace(/\d{4}-\d{2}-\d{2}/g, "")).join(" ");
-    for (const n of [data.plotted, data.total, data.total - data.omitted, ...Object.values(data.counts) as number[]]) {
-      expect(text).not.toMatch(new RegExp(`(^|\\D)${n}(\\D|$)`));
-    }
-    // The word check stays on the drawn <text> labels only, as at HEAD: the
-    // title/desc legitimately describe the map as tracking facilities.
-    const labels = [...svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(" ");
-    expect(labels).not.toMatch(/facilit/i);
-  });
-
-  it("stays small", () => {
-    expect(Buffer.byteLength(svg)).toBeLessThan(60_000);
   });
 });
 

@@ -54,6 +54,10 @@ export default defineConfig({
   ],
   webServer: {
     command: "npm run build && npm run start",
+    // `npm run build` runs prebuild (ensure-data-snapshot + hero builders) via
+    // npm's pre-hook; the snapshot guard refuses to fill from the fixture in CI
+    // unless this is set. Playwright merges env over process.env.
+    env: { ALLOW_FIXTURE_SNAPSHOT: "1" },
     url: "http://localhost:3000",
     // Deliberately NOT reusing an existing server. On 2026-09-07 a stale
     // next-server left running from an earlier session served ~2-day-old

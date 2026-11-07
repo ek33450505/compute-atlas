@@ -9,35 +9,28 @@ vi.mock("@/app/admin/login/actions", () => ({
   logout: mockLogout,
 }));
 
+// The slot is an async server component (reads cookies), which RTL cannot
+// render; it is tested on its own. Stand in a plain button here.
+vi.mock("@/app/admin/refresh-site-slot", () => ({
+  RefreshSiteSlot: () => <button type="button">Refresh site</button>,
+}));
+
 import AdminLayout from "./layout";
 
 describe("AdminLayout", () => {
-  it("renders a 'Publish snapshot' link to the neon-sync workflow", () => {
+  it("renders a 'Refresh site' button", () => {
     render(<AdminLayout>{null}</AdminLayout>);
 
-    const link = screen.getByRole("link", { name: /opens in new tab/i });
-    expect(link).toHaveAttribute(
-      "href",
-      "https://github.com/ek33450505/compute-atlas/actions/workflows/neon-sync.yml"
-    );
+    expect(screen.getByRole("button", { name: "Refresh site" })).toBeInTheDocument();
   });
 
-  it("opens the publish snapshot link in a new tab safely", () => {
+  it("no longer links out to a workflow", () => {
     render(<AdminLayout>{null}</AdminLayout>);
 
-    const link = screen.getByRole("link", { name: /opens in new tab/i });
-    expect(link).toHaveAttribute("target", "_blank");
-    const rel = link.getAttribute("rel") ?? "";
-    expect(rel).toContain("noopener");
-    expect(rel).toContain("noreferrer");
-  });
-
-  it("gives the publish snapshot link an accessible name mentioning it opens in a new tab", () => {
-    render(<AdminLayout>{null}</AdminLayout>);
-
-    expect(
-      screen.getByRole("link", { name: /publish snapshot.*opens in new tab/i })
-    ).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /publish snapshot|opens in new tab/i })).toBeNull();
+    for (const link of screen.getAllByRole("link")) {
+      expect(link.getAttribute("href") ?? "").not.toMatch(/workflows|github\.com/);
+    }
   });
 
   it("still renders the four existing nav links", () => {

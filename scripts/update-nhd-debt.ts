@@ -21,7 +21,7 @@
  * Counting rules (orphans and non-CONUS states are not debt) live in
  * lib/nhd-debt.ts. Uses relative imports, matching the other scripts here.
  */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -124,6 +124,7 @@ export function run(argv: string[], root: string, today: string): void {
   if (count > 0) console.log(`Per-state breakdown: ${perStateBreakdown(offenders)}`);
 
   if (plan.next !== null) {
+    mkdirSync(path.dirname(ledgerPath), { recursive: true });
     writeFileSync(ledgerPath, `${JSON.stringify(plan.next, null, 2)}\n`);
     console.log(`Wrote ${LEDGER_RELATIVE_PATH}: ceiling ${plan.previous ?? "missing"} -> ${count}`);
   }

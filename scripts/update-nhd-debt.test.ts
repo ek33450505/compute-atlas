@@ -19,7 +19,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeStore } from "./fake-keyed-store";
 import { LEDGER_DB_KEY, LEDGER_RELATIVE_PATH, parseArgs, run, runWithLedgerDb } from "./update-nhd-debt";
 
-// The workflows (neon-sync.yml, nhd-backfill.yml) parse this script's stdout
+// Callers (the former neon-sync/nhd-backfill workflows, now maintainer runs) parse this script's stdout
 // with `^[0-9]+$` and rely on it writing the ledger only when the count moves,
 // so those two contracts are pinned here against a temp tree, never data/.
 

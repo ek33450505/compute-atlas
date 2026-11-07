@@ -1,14 +1,34 @@
 import { cache as reactCache } from "react";
 import { unstable_cache } from "next/cache";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
 
 import ownershipRaw from "@/data/operator-ownership.json";
 import { getDb, readsUseDatabase } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
 import { operatorOwnershipTable } from "@/lib/db/schema";
 import { operatorSlug } from "@/lib/operator-slug";
-import { sourceSchema, stakeholderKindEnum } from "@/lib/schema";
+import {
+  byOperator,
+  operatorOwnerRoleEnum,
+  operatorOwnerSchema,
+  operatorOwnershipFileSchema,
+  operatorOwnershipSchema,
+  parseOperatorOwnership,
+  type OperatorOwner,
+  type OperatorOwnership,
+} from "@/lib/operator-ownership-schema";
+
+// The schema half lives in a JSON-free module so scripts/export.ts can load it before
+// data/operator-ownership.json exists; re-exported so every importer is unchanged.
+export {
+  byOperator,
+  operatorOwnerRoleEnum,
+  operatorOwnerSchema,
+  operatorOwnershipFileSchema,
+  operatorOwnershipSchema,
+  parseOperatorOwnership,
+};
+export type { OperatorOwner, OperatorOwnership };
 
 /**
  * Operator-level ownership: who owns a whole operating company (Blackstone owns
@@ -23,53 +43,6 @@ import { sourceSchema, stakeholderKindEnum } from "@/lib/schema";
  * the loaders below); the bundled JSON is parsed at module load and is only the
  * fallback, so a bad snapshot still fails the build and the tests.
  */
-
-export const operatorOwnerRoleEnum = z.enum(["controlling_owner", "investor"]);
-
-const yearOrMonthSchema = z
-  .string()
-  .regex(/^\d{4}(-(0[1-9]|1[0-2]))?$/, "since must be YYYY or YYYY-MM");
-
-export const operatorOwnerSchema = z
-  .object({
-    /** One organization or person per row. */
-    name: z.string().min(1),
-    kind: stakeholderKindEnum,
-    /** The group this owner belongs to, e.g. "BlackRock" for Global Infrastructure Partners. */
-    parent: z.string().min(1).nullish(),
-    role: operatorOwnerRoleEnum,
-    stakePct: z.number().min(0).max(100).nullish(),
-    since: yearOrMonthSchema.nullish(),
-    /** One neutral sentence stating the documented relationship. */
-    note: z.string().max(300).nullish(),
-    source: sourceSchema,
-    asOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "asOf must be an ISO date (YYYY-MM-DD)"),
-  })
-  .superRefine((o, ctx) => {
-    if (o.kind === "person" && o.parent) {
-      ctx.addIssue({
-        code: "custom",
-        message: "a person cannot have a parent",
-        path: ["parent"],
-      });
-    }
-  });
-
-export const operatorOwnershipSchema = z.object({
-  /** EXACT `facility.operator` string. */
-  operator: z.string().min(1),
-  owners: z.array(operatorOwnerSchema).min(1),
-});
-
-export const operatorOwnershipFileSchema = z.array(operatorOwnershipSchema);
-
-export type OperatorOwner = z.infer<typeof operatorOwnerSchema>;
-export type OperatorOwnership = z.infer<typeof operatorOwnershipSchema>;
-
-/** Parses and validates an ownership array; throws a ZodError on invalid data. */
-export function parseOperatorOwnership(raw: unknown): OperatorOwnership[] {
-  return operatorOwnershipFileSchema.parse(raw);
-}
 
 /** Owners of `operator` (exact match), or `[]`. Pure half of `getOperatorOwners`. */
 export function ownersFor(ownership: OperatorOwnership[], operator: string): OperatorOwner[] {
@@ -93,15 +66,6 @@ export function groupByOwner(ownership: OperatorOwnership[]): Map<string, OwnedO
   }
   return byOwner;
 }
-
-/**
- * Plain code-unit order by operator, the order `scripts/export.ts` writes. A
- * deterministic order keeps the first-wins owner-name slug map in lib/data.ts
- * (`slugToPerson`, which iterates ownership order) stable across builds; it
- * does not govern other names.
- */
-export const byOperator = (a: OperatorOwnership, b: OperatorOwnership) =>
-  a.operator < b.operator ? -1 : a.operator > b.operator ? 1 : 0;
 
 /**
  * The validated bundled snapshot of data/operator-ownership.json. ONLY the

@@ -200,3 +200,48 @@ describe("admin-session", () => {
     });
   });
 });
+
+const { mockGetCookie } = vi.hoisted(() => ({ mockGetCookie: vi.fn() }));
+
+describe("hasAdminSession", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.doMock("next/headers", () => ({
+      cookies: vi.fn(async () => ({ get: mockGetCookie })),
+    }));
+    process.env.API_ADMIN_TOKEN = TOKEN;
+    mockGetCookie.mockReset();
+  });
+
+  afterEach(() => {
+    vi.doUnmock("next/headers");
+    delete process.env.API_ADMIN_TOKEN;
+  });
+
+  function load() {
+    return import("./admin-session");
+  }
+
+  it("is true for a valid session cookie", async () => {
+    const { createSessionValue, hasAdminSession } = await load();
+    mockGetCookie.mockReturnValue({ value: createSessionValue(TOKEN) });
+    expect(await hasAdminSession()).toBe(true);
+  });
+
+  it("is false when the cookie is missing", async () => {
+    mockGetCookie.mockReturnValue(undefined);
+    expect(await (await load()).hasAdminSession()).toBe(false);
+  });
+
+  it("is false for an invalid cookie", async () => {
+    mockGetCookie.mockReturnValue({ value: "garbage" });
+    expect(await (await load()).hasAdminSession()).toBe(false);
+  });
+
+  it("is false when cookies() throws", async () => {
+    mockGetCookie.mockImplementation(() => {
+      throw new Error("outside request scope");
+    });
+    expect(await (await load()).hasAdminSession()).toBe(false);
+  });
+});

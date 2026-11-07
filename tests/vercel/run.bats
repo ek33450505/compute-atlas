@@ -80,14 +80,27 @@ assert_skip() {
 
 # --- the change this suite exists to protect -------------------------------
 
-@test "production: data-only merge is SKIPPED (data reaches prod via db:sync, not the build)" {
+@test "production: docs-only merge is SKIPPED" {
+	export VERCEL_ENV="production"
+	export VERCEL_GIT_COMMIT_REF="main"
+	commit_change "docs/notes.md"
+
+	run bash "$SCRIPT"
+	assert_skip
+	[[ "$output" == *"production"* ]]
+}
+
+@test "production: a data-file-only change BUILDS (no data/ file is allowlisted)" {
+	# facilities.json / facilities.meta.json were once skippable because the
+	# site read Neon live. They are no longer tracked, so a diff touching them
+	# is a code change and must fall through to a build.
 	export VERCEL_ENV="production"
 	export VERCEL_GIT_COMMIT_REF="main"
 	commit_change "data/facilities.json"
 
 	run bash "$SCRIPT"
-	assert_skip
-	[[ "$output" == *"production"* ]]
+	assert_build
+	[[ "$output" == *"data/facilities.json"* ]]
 }
 
 @test "production: a code change still BUILDS" {
@@ -124,17 +137,40 @@ assert_skip() {
 
 # --- preview behaviour (pre-existing, must not regress) --------------------
 
-@test "preview: data-only diff is SKIPPED" {
-	commit_change "data/facilities.json"
+@test "a code file renamed into docs/ BUILDS (rename detection must not hide the source side)" {
+	mkdir -p lib
+	echo "export const x = 1;" >lib/x.ts
+	commit_change "lib/x.ts"
+	export VERCEL_GIT_PREVIOUS_SHA="$(git rev-parse HEAD)"
+	git mv lib/x.ts docs/x.ts
+	git commit --quiet -m "move code into docs"
+
+	run bash "$SCRIPT"
+	assert_build
+	[[ "$output" == *"lib/x.ts"* ]]
+}
+
+@test "a pure rename within docs/ still SKIPS (both sides are docs-only)" {
+	commit_change "docs/old.md"
+	export VERCEL_GIT_PREVIOUS_SHA="$(git rev-parse HEAD)"
+	git mv docs/old.md docs/new.md
+	git commit --quiet -m "rename within docs"
 
 	run bash "$SCRIPT"
 	assert_skip
 }
 
+@test "preview: data-only diff BUILDS" {
+	commit_change "data/facilities.meta.json"
+
+	run bash "$SCRIPT"
+	assert_build
+	[[ "$output" == *"data/facilities.meta.json"* ]]
+}
+
 @test "data/siting-context.json BUILDS — it is bundled into the app, not read from Neon" {
 	# lib/siting-context.ts imports this file directly and every facility page
-	# renders it. Unlike facilities.json (which is only withJsonFallback's
-	# outage snapshot), skipping a commit that regenerates this ships stale
+	# renders it. Skipping a commit that regenerates this would ship stale
 	# content with no Neon path to self-heal.
 	export VERCEL_ENV="production"
 	export VERCEL_GIT_COMMIT_REF="main"
@@ -203,11 +239,11 @@ assert_skip() {
 
 @test "fails open (BUILD) when VERCEL_GIT_PREVIOUS_SHA names a commit not in the clone" {
 	export VERCEL_GIT_PREVIOUS_SHA="0000000000000000000000000000000000000000"
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 
 	run bash "$SCRIPT"
 	# A SHA absent from the shallow clone must not crash the gate: it falls
-	# back to HEAD^ and evaluates the diff normally (data-only => SKIP).
+	# back to HEAD^ and evaluates the diff normally (docs-only => SKIP).
 	assert_skip
 	[[ "$output" == *"HEAD^"* ]]
 }
@@ -216,7 +252,7 @@ assert_skip() {
 	# Same well-formed-but-missing SHA as the test above; this one pins the new
 	# diagnostic line the #364 preview log lacked, without changing the outcome.
 	export VERCEL_GIT_PREVIOUS_SHA="dddddddddddddddddddddddddddddddddddddddd"
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 
 	run bash "$SCRIPT"
 	assert_skip
@@ -225,7 +261,7 @@ assert_skip() {
 
 @test "an unset VERCEL_GIT_PREVIOUS_SHA is logged as such, not silently swallowed" {
 	unset VERCEL_GIT_PREVIOUS_SHA
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 
 	run bash "$SCRIPT"
 	assert_skip
@@ -276,7 +312,7 @@ assert_skip() {
 	# The accumulation property: a code change followed by a data change must
 	# still build, because the base is the last DEPLOYED commit.
 	commit_change "lib/data.ts"
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 
 	run bash "$SCRIPT"
 	assert_build
@@ -286,8 +322,8 @@ assert_skip() {
 # --- stale VERCEL_GIT_PREVIOUS_SHA: ancestry, not mere existence ------------
 #
 # `git cat-file -e` proves an object exists, not that it is on this branch's
-# history. neon-sync.yml deletes its PR branch every wave (create-pull-request
-# with delete-branch: true), so Vercel hands the script the PREVIOUS wave's
+# history. A bot workflow (the retired neon-sync.yml) deleted its PR branch
+# every wave (create-pull-request with delete-branch: true), so Vercel hands the script the PREVIOUS wave's
 # commit — an orphan. Measured on deployment compute-atlas-92y4j4zw6, which
 # built on `components/home/hero-plate-paths.ts`, a file in no commit of that
 # PR. These tests pin all three outcomes of the ancestry check.
@@ -297,7 +333,7 @@ assert_skip() {
 	# every unrelated change merged to main in between, so the gate always
 	# finds code and never skips a data wave.
 	git checkout --quiet -b automated/neon-sync-wave-1
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 	local orphan_sha
 	orphan_sha="$(git rev-parse HEAD)"
 
@@ -306,7 +342,7 @@ assert_skip() {
 	git branch -D automated/neon-sync-wave-1 >/dev/null  # ref gone; the object is not
 
 	git checkout --quiet -b automated/neon-sync-wave-2
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 	export VERCEL_GIT_PREVIOUS_SHA="$orphan_sha"
 
 	run bash "$SCRIPT"
@@ -321,7 +357,7 @@ assert_skip() {
 	# Behaviour on main must be unchanged, accumulation property included:
 	# VERCEL_GIT_PREVIOUS_SHA is the baseline from setup(), a true ancestor.
 	commit_change "lib/data.ts"
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 
 	run bash "$SCRIPT"
 	assert_build
@@ -329,8 +365,8 @@ assert_skip() {
 	[[ "$output" == *"lib/data.ts"* ]]
 }
 
-@test "an ANCESTOR previous SHA still drives a data-only SKIP (not rerouted to HEAD^)" {
-	commit_change "data/facilities.json"
+@test "an ANCESTOR previous SHA still drives a docs-only SKIP (not rerouted to HEAD^)" {
+	commit_change "docs/notes.md"
 	commit_change "docs/README.md"
 
 	run bash "$SCRIPT"
@@ -342,7 +378,7 @@ assert_skip() {
 	# Outcome (b) reached the hard way: the negative answer is only trusted
 	# once history is complete, so --unshallow must run first.
 	commit_change "lib/data.ts"
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 
 	local clone="$TEST_TMP/shallow-ok"
 	git clone --quiet --depth=2 "file://$REPO" "$clone"
@@ -353,7 +389,7 @@ assert_skip() {
 
 	# A commit object that EXISTS in the clone but is on no branch — what a
 	# deleted-branch orphan looks like to `git cat-file -e`. Its tree is
-	# HEAD^'s, so a script that trusted it would see a data-only diff.
+	# HEAD^'s, so a script that trusted it would see a docs-only diff.
 	local orphan_sha
 	orphan_sha="$(git commit-tree "$(git rev-parse "HEAD^^{tree}")" -m orphan </dev/null)"
 	export VERCEL_GIT_PREVIOUS_SHA="$orphan_sha"
@@ -373,7 +409,7 @@ assert_skip() {
 	# Driven with a real shallow clone whose origin has been broken, so
 	# `git fetch --unshallow` genuinely fails and the repo stays shallow.
 	commit_change "lib/data.ts"
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 
 	local clone="$TEST_TMP/shallow-stuck"
 	git clone --quiet --depth=2 "file://$REPO" "$clone"
@@ -384,7 +420,7 @@ assert_skip() {
 	[ "$(git rev-parse --is-shallow-repository)" = "true" ]
 
 	# Same fabricated orphan: tree of HEAD^, so trusting it would read as a
-	# data-only diff and SKIP. The guard must BUILD instead.
+	# docs-only diff and SKIP. The guard must BUILD instead.
 	local orphan_sha
 	orphan_sha="$(git commit-tree "$(git rev-parse "HEAD^^{tree}")" -m orphan </dev/null)"
 	export VERCEL_GIT_PREVIOUS_SHA="$orphan_sha"
@@ -415,16 +451,16 @@ assert_skip() {
 	chmod +x "$bin/git"
 
 	# Same orphan topology as the deleted-branch test: without the guard this
-	# resolves to HEAD^ and SKIPs on a data-only tip commit.
+	# resolves to HEAD^ and SKIPs on a docs-only tip commit.
 	git checkout --quiet -b wave-1
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 	local orphan_sha
 	orphan_sha="$(git rev-parse HEAD)"
 	git checkout --quiet main
 	commit_change "lib/data.ts"
 	git branch -D wave-1 >/dev/null
 	git checkout --quiet -b wave-2
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 	export VERCEL_GIT_PREVIOUS_SHA="$orphan_sha"
 
 	PATH="$bin:$PATH" run bash "$SCRIPT"
@@ -441,13 +477,13 @@ assert_skip() {
 	export VERCEL_GIT_COMMIT_REF="main"
 
 	git checkout --quiet -b rewritten
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 	local orphan_sha
 	orphan_sha="$(git rev-parse HEAD)"
 	git checkout --quiet main
 	commit_change "lib/data.ts"
 	git branch -D rewritten >/dev/null
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 	export VERCEL_GIT_PREVIOUS_SHA="$orphan_sha"
 
 	run bash "$SCRIPT"
@@ -476,7 +512,7 @@ assert_skip() {
 
 	# Data-only tip commit: an untrusted rc that fell through to either the
 	# previous SHA or HEAD^ would SKIP here.
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 
 	PATH="$bin:$PATH" run bash "$SCRIPT"
 	assert_build
@@ -491,13 +527,13 @@ assert_skip() {
 	unset VERCEL_ENV
 
 	git checkout --quiet -b side-history
-	commit_change "data/facilities.json"
+	commit_change "docs/notes.md"
 	local orphan_sha
 	orphan_sha="$(git rev-parse HEAD)"
 	git checkout --quiet main
 	commit_change "lib/data.ts"
 	git branch -D side-history >/dev/null
-	commit_change "data/facilities.json" # allowlist-only tip: HEAD^ would SKIP
+	commit_change "docs/notes.md" # allowlist-only tip: HEAD^ would SKIP
 	export VERCEL_GIT_PREVIOUS_SHA="$orphan_sha"
 
 	run bash "$SCRIPT"

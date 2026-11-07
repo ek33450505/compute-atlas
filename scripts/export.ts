@@ -16,8 +16,8 @@ import { facilitiesSchema } from "../lib/schema";
 import { facilitiesTable, operatorOwnershipTable, sitingContextTable, type FacilityRow } from "../lib/db/schema";
 import { getDb } from "../lib/db/client";
 import { rowToFacility } from "../lib/db/serialize";
-import { byOperator, operatorOwnershipFileSchema } from "../lib/operator-ownership";
-import { sitingContextSchema } from "../lib/siting-context";
+import { byOperator, operatorOwnershipFileSchema } from "../lib/operator-ownership-schema";
+import { sitingContextSchema } from "../lib/siting-context-schema";
 import { isEntrypoint } from "./is-entrypoint";
 import { formatFatalError } from "../lib/db-error";
 

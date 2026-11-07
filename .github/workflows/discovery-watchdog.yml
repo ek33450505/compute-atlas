@@ -67,8 +67,6 @@
 # measured over the last 14 runs; the local run ends 13:25-15:30 local
 # normally, so the watchdog still reads a finished heartbeat. Re-measure with
 # `gh run list --limit 30 --workflow=discovery-watchdog.yml --json createdAt`.
-# Deliberately one hour after drift-alert.yml's 22:00 so the two failure emails
-# stay distinguishable.
 #
 # STALENESS BUDGET: 84h, not 36h. It is check-heartbeat.ts's
 # DISCOVERY_STALE_HOURS_DEFAULT, matched by run.sh and by automation-health's
@@ -84,7 +82,7 @@
 # run.sh's local check at the next run, which needs the Mac awake and run.sh
 # reaching that check, so it is the weaker of the two signals.
 #
-# Requires: DATABASE_URL as a repo secret (already configured for neon-sync).
+# Requires: DATABASE_URL as a repo secret (already configured).
 #
 # DIGEST CRASH CHECK (added 2026-09-13):
 # The state digest feature (LIVE since 2026-09-14 — Vercel Cron, 0 9 1 * *)
@@ -137,7 +135,7 @@ jobs:
       - run: npm ci
 
       # Invoked as `npx tsx <script>` rather than the `check:heartbeat` npm
-      # script, matching ci.yml and neon-sync.yml. The npm script carries
+      # script, matching ci.yml. The npm script carries
       # `--env-file=.env.local`, which does not exist on a runner; here
       # DATABASE_URL arrives from this step's own `env:`.
       - name: Check discovery heartbeat status

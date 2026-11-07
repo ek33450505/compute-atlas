@@ -83,6 +83,15 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+// `omitted` is generated per snapshot (0 on the fixture, 9 on the real data),
+// so pin it: this suite tests that the page wires the number through, not what
+// the dataset happens to omit. Real-data coverage lives in
+// components/home/hero-plate.dataset.test.tsx.
+vi.mock("@/components/home/hero-plate-paths", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/components/home/hero-plate-paths")>();
+  return { ...original, HERO_PLATE: { ...original.HERO_PLATE, omitted: 12 } };
+});
+
 import HomePage from "./page";
 import { HERO_PLATE } from "@/components/home/hero-plate-paths";
 
@@ -304,9 +313,8 @@ describe("HomePage hero", () => {
   // on desktop the disclosure was announced or not depending on timing. The
   // provenance rule is on the page in every state, at every viewport.
   it("discloses on the provenance rule what the static map cannot place", async () => {
-    // Precondition for the plural branch — a wave that dropped this to 1 would
-    // render "1 in a U.S. territory" and should fail loudly here, not silently
-    // stop matching.
+    // HERO_PLATE.omitted is pinned by the mock above, so the plural branch is
+    // exercised on any snapshot (the 68-record fixture omits nothing).
     expect(HERO_PLATE.omitted).toBeGreaterThan(1);
 
     render(await HomePage());

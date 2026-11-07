@@ -760,7 +760,7 @@ export type DiscoveryHeartbeatRow = typeof discoveryHeartbeatTable.$inferSelect;
 /**
  * Closed-data tables (open-code/closed-data refactor): the curated datasets that
  * used to ship as repo JSON now live in Neon. All three are keyed JSON blobs,
- * written only by maintainer scripts (`backfill:siting`, `backfill:ownership`,
+ * written only by maintainer scripts (`backfill:siting`, `ownership:apply`,
  * `siting:apply`, `nhd:debt --ledger-db`). No public path WRITES them. The app reads
  * `siting_context` (lib/siting-context.ts) and `operator_ownership`
  * (lib/operator-ownership.ts) server-side only, falling back to the bundled JSON.

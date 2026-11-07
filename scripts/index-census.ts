@@ -172,7 +172,7 @@ import { isEntrypoint } from "./is-entrypoint";
 const HOST = "www.compute-atlas.com";
 export const SITEMAP_INDEX_URL = `https://${HOST}/sitemap.xml`;
 
-export const OUTPUT_PATH = join(process.cwd(), "data", "index-census.json");
+export const OUTPUT_PATH = join(process.cwd(), "ops", "index-census", "index-census.json");
 
 /** URL Inspection API ceilings, per property (shared with check:googlebot's 6/day). */
 export const DAILY_QUOTA = 2000;

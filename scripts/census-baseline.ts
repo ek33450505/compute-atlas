@@ -1,7 +1,7 @@
 /**
- * Freezes the CURRENT index census (`data/index-census.json`, written by
+ * Freezes the CURRENT index census (`ops/index-census/index-census.json`, written by
  * `scripts/index-census.ts`) as the comparison baseline
- * (`data/index-census-baseline.json`) that `scripts/census-diff.ts` diffs
+ * (`ops/index-census/index-census-baseline.json`) that `scripts/census-diff.ts` diffs
  * every later census against.
  *
  * Why a separate freeze step, rather than always diffing against "the last
@@ -14,7 +14,7 @@
  * measurement started, with no way to recover it. Pass --replace once that
  * is a deliberate choice, not a default.
  *
- * This never modifies `data/index-census.json` — it only reads it and copies
+ * This never modifies `ops/index-census/index-census.json` — it only reads it and copies
  * its exact bytes to the baseline path, so the baseline is a byte-identical
  * freeze, not a re-serialization.
  *

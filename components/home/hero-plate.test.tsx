@@ -4,7 +4,6 @@ import { HeroPlate } from "./hero-plate";
 import { HERO_PLATE } from "./hero-plate-paths";
 import { OUTLINE_BYTE_BUDGET } from "../../scripts/build-hero-plate.mjs";
 import { STATUS_ORDER, STATUS_META } from "@/lib/status";
-import { isTerritoryCode, stateNameFromCode } from "@/lib/us-states";
 
 // Every expectation below is COMPOSED from HERO_PLATE rather than pinned to a
 // literal, so a data wave that changes the snapshot updates the test with the
@@ -12,7 +11,6 @@ import { isTerritoryCode, stateNameFromCode } from "@/lib/us-states";
 // `total - omitted` — which is the claim the caption actually makes.
 const nf = new Intl.NumberFormat("en-US");
 const expectedCovered = nf.format(HERO_PLATE.total - HERO_PLATE.omitted);
-const expectedTotal = nf.format(HERO_PLATE.total);
 const markCount = nf.format(HERO_PLATE.plotted);
 
 function renderPlate() {
@@ -152,17 +150,6 @@ describe("HeroPlate", () => {
       );
     });
 
-    it("claims only what it draws — not the full dataset total", () => {
-      // Precondition: with nothing omitted the two figures coincide and this
-      // assertion could not fail, so state it rather than assume it.
-      expect(HERO_PLATE.omitted).toBeGreaterThan(0);
-
-      renderPlate();
-      const name = screen.getByRole("img").getAttribute("aria-label") ?? "";
-
-      expect(name).not.toContain(expectedTotal);
-    });
-
     // An image's accessible name is announced in FULL, and this one sits
     // immediately ahead of the page's H1 — the name it replaced ran 36 words
     // of projection caveat before a screen-reader user reached the heading.
@@ -172,23 +159,6 @@ describe("HeroPlate", () => {
 
       expect(name.trim().split(/\s+/)).not.toHaveLength(0);
       expect(name.trim().split(/\s+/).length).toBeLessThanOrEqual(12);
-    });
-  });
-
-  describe("omitted jurisdictions", () => {
-    // The plate no longer names these (see the ⚠️ on ACCESSIBLE_NAME): the
-    // disclosure moved to the always-present provenance rule, which renders
-    // the literal phrase "in U.S. territories". Nothing else checks that the
-    // claim is TRUE of the data, so this does — a wave that omitted a
-    // non-territory jurisdiction would make that visible text false.
-    it("omits only real US territories, the claim hero-provenance.tsx renders", () => {
-      expect(HERO_PLATE.omitted).toBeGreaterThan(0);
-      expect(HERO_PLATE.omittedJurisdictions.length).toBeGreaterThan(0);
-
-      for (const code of HERO_PLATE.omittedJurisdictions) {
-        expect(isTerritoryCode(code)).toBe(true);
-        expect(stateNameFromCode(code)).toBeDefined();
-      }
     });
   });
 

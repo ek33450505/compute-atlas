@@ -1,6 +1,6 @@
 /**
  * Cache-tag busting for tsx CLIs, shared by `db:sync` and the closed-data writers
- * (`siting:apply`, `backfill:siting`, `backfill:ownership`). A standalone process
+ * (`siting:apply`, `backfill:siting`, `ownership:apply`). A standalone process
  * has no Next runtime and cannot call `revalidateTag`, so it POSTs the
  * admin-bearer `/api/revalidate` route instead.
  *
@@ -44,6 +44,8 @@ export async function bustTags(
     try {
       const res = await doFetch(`${options.baseUrl.replace(/\/$/, "")}/api/revalidate`, {
         method: "POST",
+        // Never follow a redirect: it would replay the admin bearer to another host.
+        redirect: "error",
         headers: {
           Authorization: `Bearer ${options.token}`,
           "Content-Type": "application/json",

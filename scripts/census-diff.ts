@@ -1,7 +1,7 @@
 /**
  * Index-census diff — compares the CURRENT index census
- * (`data/index-census.json`, written by `scripts/index-census.ts`) against a
- * previously frozen baseline (`data/index-census-baseline.json`, written by
+ * (`ops/index-census/index-census.json`, written by `scripts/index-census.ts`) against a
+ * previously frozen baseline (`ops/index-census/index-census-baseline.json`, written by
  * `scripts/census-baseline.ts`) and reports per-family movement.
  *
  * Why this exists: a one-off census cannot distinguish "just regressed" from

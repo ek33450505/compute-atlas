@@ -1,0 +1,38 @@
+# Daily guard that the deployed Neon schema matches the code's Drizzle schema.
+# Exists because of the 2026-09-03 unapplied-migrations incident. The script
+# fails closed: a missing table, DATABASE_URL unset, or an unreachable DB all
+# exit non-zero. Replaces the schema step of the deleted drift-alert.yml.
+#
+# DATABASE_URL is step-level only because `npm ci` runs install scripts, which
+# must not see the secret. Never add continue-on-error: it would turn a real
+# drift into a green run.
+name: Schema Check
+
+on:
+  schedule:
+    - cron: "0 22 * * *"  # 22:00 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: schema-check
+  cancel-in-progress: false
+
+jobs:
+  schema-check:
+    name: Verify deployed schema matches code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Check deployed schema matches code
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx tsx scripts/check-schema-drift.ts

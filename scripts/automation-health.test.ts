@@ -8,6 +8,7 @@ import {
   buildCannotCheckReport,
   classifyWorkflow,
   emitOutcome,
+  MONITORED_WORKFLOWS,
   pickLatestSuccess,
   sortNewestFirst,
   type WorkflowConfig,
@@ -15,9 +16,9 @@ import {
 } from "./automation-health";
 
 const DAILY: WorkflowConfig = {
-  file: "drift-alert.yml",
-  name: "drift-alert",
-  cronDescription: "0 22 * * * (daily 22:00 UTC)",
+  file: "googlebot-canary.yml",
+  name: "googlebot-canary",
+  cronDescription: "0 6 * * * (daily 06:00 UTC)",
   staleAfterHours: 36,
 };
 
@@ -395,5 +396,27 @@ describe("sortNewestFirst", () => {
 
   it("returns an empty array for no runs", () => {
     expect(sortNewestFirst([])).toEqual([]);
+  });
+});
+
+describe("MONITORED_WORKFLOWS", () => {
+  it("monitors schema-check.yml daily with a 36h staleness budget", () => {
+    expect(MONITORED_WORKFLOWS).toContainEqual({
+      file: "schema-check.yml",
+      name: "schema-check",
+      cronDescription: "0 22 * * * (daily 22:00 UTC)",
+      staleAfterHours: 36,
+    });
+  });
+
+  it("schema-check cronDescription starts with the cron string in the workflow", () => {
+    const yml = readFileSync(
+      join(__dirname, "..", ".github", "workflows", "schema-check.yml"),
+      "utf8",
+    );
+    const cron = /^\s*-\s*cron:\s*["']?([^"'#\n]*[^"'#\s])/m.exec(yml)?.[1];
+    expect(cron).toBeTruthy();
+    const entry = MONITORED_WORKFLOWS.find((w) => w.file === "schema-check.yml");
+    expect(entry?.cronDescription.startsWith(cron as string)).toBe(true);
   });
 });

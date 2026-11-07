@@ -8,11 +8,9 @@
 #
 # Policy:
 #   1. ANY deployment — preview or production — is skipped when the diff
-#      touches ONLY the Neon-generated data snapshot, docs, or GitHub config.
-#      The site renders from Neon LIVE, so none of those change a byte a
-#      visitor can see. Note "data" here means two NAMED files, not all of
-#      data/ — see the allowlist comment below for why that distinction is
-#      load-bearing.
+#      touches ONLY docs or GitHub config, which change no byte a visitor can
+#      see. No data/ file is allowlisted any more (the facility data snapshot
+#      is untracked) — see the allowlist comment below.
 #   2. Everything else builds.
 #
 # ## Why production is no longer unconditional (reversed 2026-08-08)
@@ -22,17 +20,18 @@
 # data from the site.
 #
 # That is no longer how data ships. `npm run db:sync` writes Neon directly and
-# busts the affected cache tags, so a data change is already live *before* the
-# commit that records it is even merged — the commit is bookkeeping for the
-# CC-BY snapshot, not a deploy.
-#
-# The one thing a production build still refreshes on a data-only merge is the
-# `withJsonFallback` snapshot in `lib/data.ts`: `data/facilities.json` is
-# bundled as the fallback used only when a Neon read FAILS. That snapshot now
-# rides the next code deploy instead. Serving slightly older data during an
-# outage is a far smaller cost than one production build per data commit, and
-# it can be refreshed on demand at any time:
+# busts the affected cache tags, so a data change is already live before any
+# commit is merged. The facility, siting, ownership and NHD-debt data files are
+# no longer tracked in git, so no data/ file is allowlisted: a diff that touches
+# one is treated as a code change and BUILDS. Only docs and GitHub config skip.
+# A production build can still be forced on demand:
 #     npx vercel redeploy --target production
+#
+# Changed paths are listed with `--no-renames`, so a rename lists BOTH sides
+# (e.g. `lib/x.ts -> docs/x.ts` shows `lib/x.ts` and builds) instead of only
+# the destination. If a git ever rejected the flag, the command would exit non-zero
+# with stderr suppressed, the diff would read empty, and the gate would fail OPEN
+# (build).
 #
 # Fail-open by design: any uncertainty about the diff (no base ref, empty
 # diff, git error) proceeds with the build. A wasted build is cheap; a
@@ -239,7 +238,7 @@ if [[ -n "$non_ancestor_prev" ]]; then
 fi
 log "base=${how} (${range_base})"
 
-changed="$(git diff --name-only "$range_base" HEAD 2>/dev/null)"
+changed="$(git diff --name-only --no-renames "$range_base" HEAD 2>/dev/null)"
 if [[ -z "$changed" ]]; then
   build "empty diff (fail-open)"
 fi
@@ -247,25 +246,18 @@ fi
 # 3. Allowlist of skippable paths. Anything unrecognized triggers a build, so
 #    new source directories are safe by default.
 #
-#    The two data files are named INDIVIDUALLY, not globbed as `data/*`. Not
-#    everything under data/ is Neon-backed:
-#      - facilities.json / facilities.meta.json ARE. The site reads Neon live;
-#        the bundled copy is only `withJsonFallback`'s outage snapshot, so
-#        letting it age until the next code deploy is the accepted tradeoff.
-#      - data/siting-context.json is NOT. It is a static precompute from
-#        `npm run build:mapdata`, imported directly into the bundle by
-#        lib/siting-context.ts and rendered on every facility page. Skipping a
-#        commit that regenerates it would ship stale siting context to users
-#        with no Neon path to self-heal — so it must fall through to `build`.
-#    Listing files instead of globbing keeps that distinction from silently
-#    swallowing the next file someone drops into data/.
+#    No data/ file is allowlisted: facility, siting, ownership and NHD-debt
+#    data is no longer tracked in git (Neon is its only home), so a diff
+#    touching data/ is a code change (fixtures, ledger tooling, retained
+#    precomputes) and falls through to `build`. Naming files instead of
+#    globbing `data/*` keeps the next file someone drops there from being
+#    silently swallowed.
 #
 #    .github/* is here because CI/Actions config cannot influence the built
 #    site — it is not read by `next build` and ships in no bundle.
 while IFS= read -r file; do
   [[ -z "$file" ]] && continue
   case "$file" in
-    data/facilities.json | data/facilities.meta.json) continue ;;
     docs/* | .github/* | *.md | LICENSE | LICENSE-DATA) continue ;;
     *) build "code change: ${file}" ;;
   esac

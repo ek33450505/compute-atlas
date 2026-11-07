@@ -13,8 +13,8 @@
  * It was found by hand, by querying `information_schema`. This script is the
  * missing signal, meant to be run by hand or on a schedule.
  *
- * Unlike `scripts/check-neon-drift.ts` (deliberately non-blocking, always
- * exits 0, treats an unreachable DB as "nothing to report"), this script
+ * Unlike the retired JSON-vs-Neon drift check (non-blocking, always exited 0,
+ * treated an unreachable DB as "nothing to report"), this script
  * FAILS CLOSED on purpose:
  *   - an expected table missing from the live database -> hard failure, exit 1
  *   - DATABASE_URL unset, or the DB unreachable          -> hard failure, exit 1
@@ -179,14 +179,19 @@ function printMissingTables(report: SchemaDriftReport): void {
 }
 
 async function main(): Promise<void> {
-  // Fail CLOSED — deliberately the opposite of check-neon-drift.ts's graceful
-  // exit-0. That script is a non-blocking convenience diff; this one exists
+  // Fail CLOSED — deliberately the opposite of the retired check-neon-drift.ts's
+  // graceful exit-0 (a non-blocking convenience diff); this check exists
   // specifically because "can't check" was silently treated as "nothing to
   // see" at the request-path layer. It must not repeat that here.
   if (!hasDatabaseUrl()) {
+    if (process.env.GITHUB_ACTIONS === "true") {
+      console.error(
+        "::error::DATABASE_URL is not set; the schema check cannot verify the deployed schema."
+      );
+    }
     console.error(
       "DATABASE_URL is not set. Configure it in .env.local (see .env.example). This check fails " +
-        "closed rather than skipping — unlike `npm run check:drift`, an unconfigured/unreachable " +
+        "closed rather than skipping — unlike the retired drift check, an unconfigured/unreachable " +
         "database is treated as a failure to verify, not a pass."
     );
     process.exit(1);
@@ -204,7 +209,7 @@ async function main(): Promise<void> {
     }
     // Log only the message (not the raw error object) so a Neon/pg connection
     // error can't echo the DB host/DSN into this public repo's Actions logs —
-    // same precaution as check-neon-drift.ts. Unlike that script, this still
+    // same precaution as the retired check-neon-drift.ts. Unlike it, this still
     // exits non-zero: an unreachable DB is a real failure to check, not a no-op.
     console.error(
       "::error::schema drift check errored:",

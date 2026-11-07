@@ -65,6 +65,14 @@ const DRIFT_DURATION_MS = 2500;
 // settles into the visible band below the scrim instead.
 const HERO_SCRIM_HEIGHT_RATIO = 0.5;
 
+/** Makes maplibre's default focusable, labeled <canvas> non-tabbable; see the strip effect in HeroGlobe. */
+function stripDecorativeCanvas(canvas: HTMLElement): void {
+  // Guarded writes: a no-op when already stripped, so an observer that later watches attributes can't loop.
+  if (canvas.getAttribute("tabindex") !== "-1") canvas.setAttribute("tabindex", "-1");
+  if (canvas.hasAttribute("aria-label")) canvas.removeAttribute("aria-label");
+  if (canvas.hasAttribute("role")) canvas.removeAttribute("role");
+}
+
 /**
  * Lightweight, decorative "living globe" hero: every tracked facility plotted
  * as a single canvas circle layer on a globe-projection basemap, with a
@@ -216,6 +224,25 @@ export function HeroGlobe({
     return () => observer.disconnect();
   }, [applyScrimPadding]);
 
+  // Decorative canvas: strip the default focusable/labeled region maplibre
+  // sets on its <canvas>. The wrapper div is aria-hidden, and a focusable
+  // element inside an aria-hidden subtree is still a real keyboard tab stop
+  // (and an axe aria-hidden-focus / WCAG 4.1.2 violation). maplibre creates
+  // the canvas at construction, long before `load` (which waits on the style
+  // and tiles), so stripping only in handleLoad left a window, or forever if
+  // the style never loads, where the canvas was focusable. Watch for it here.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const strip = () => {
+      el.querySelectorAll<HTMLCanvasElement>("canvas").forEach(stripDecorativeCanvas);
+    };
+    strip();
+    const observer = new MutationObserver(strip);
+    observer.observe(el, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
   const handleLoad = useCallback(() => {
     try {
       mapRef.current?.getMap().setProjection({ type: "globe" });
@@ -223,17 +250,8 @@ export function HeroGlobe({
       // Globe projection unsupported (older maplibre) — fall back to mercator silently.
     }
 
-    // Decorative canvas: strip the default focusable/labeled region maplibre
-    // sets on its <canvas>. The wrapper div is already aria-hidden, but a
-    // focusable element inside an aria-hidden subtree is still a real
-    // keyboard tab stop (and an axe/WCAG 4.1.2 violation) even though it's
-    // invisible to assistive tech — so this still needs stripping.
     const canvas = mapRef.current?.getMap().getCanvas();
-    if (canvas) {
-      canvas.setAttribute("tabindex", "-1");
-      canvas.removeAttribute("aria-label");
-      canvas.removeAttribute("role");
-    }
+    if (canvas) stripDecorativeCanvas(canvas);
 
     // Re-assert the scrim padding at load time too, in addition to the
     // resize-observer effect above: that observer's own first callback can

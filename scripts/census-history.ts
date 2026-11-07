@@ -22,12 +22,12 @@ import { join } from "node:path";
 
 import type { IndexCensusReport } from "./index-census";
 
-export const HISTORY_PATH = join(process.cwd(), "data", "index-census-history.jsonl");
+export const HISTORY_PATH = join(process.cwd(), "ops", "index-census", "index-census-history.jsonl");
 
 // Single source for the baseline path — imported by scripts/census-baseline.ts
 // and scripts/census-diff.ts, mirroring how scripts/index-census.ts is the
 // single source for OUTPUT_PATH. Pure hoist: the path value is unchanged.
-export const BASELINE_PATH = join(process.cwd(), "data", "index-census-baseline.json");
+export const BASELINE_PATH = join(process.cwd(), "ops", "index-census", "index-census-baseline.json");
 
 export interface CensusHistoryFamilyEntry {
   inspected: number;

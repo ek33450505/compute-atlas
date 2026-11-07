@@ -283,3 +283,14 @@ test("a11y: /about with the support banner — zero serious/critical violations"
     ),
   ).toBe("");
 });
+
+// Regression: the hero globe's aria-hidden canvas must be non-focusable from the moment maplibre
+// creates it, not only after `load`. With the basemap requests failing, `load` never fires, so a
+// strip that only ran on load left a focusable canvas inside aria-hidden (axe aria-hidden-focus).
+test("a11y: / — hero globe canvas is never focusable, even if the basemap never loads", async ({ page }) => {
+  await page.route(/\/basemap\//, (route) => route.abort());
+  await page.goto("/");
+  const canvas = page.locator("canvas.maplibregl-canvas").first();
+  await expect(canvas).toBeAttached();
+  await expect(canvas).toHaveAttribute("tabindex", "-1");
+});

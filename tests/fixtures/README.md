@@ -9,7 +9,7 @@ A ~68-record sample of the public dataset. Vitest aliases `@/data/*.json` to the
 | `siting-context.fixture.json` | `data/siting-context.json` (fixture ids only) |
 | `operator-ownership.fixture.json` | `data/operator-ownership.json` (fixture operators only) |
 
-`scripts/ensure-data-snapshot.ts` also copies these into `data/` when no snapshot exists and no Neon export is available.
+`scripts/ensure-data-snapshot.ts` also copies these into `data/` when no snapshot exists and no Neon export is available (outside Vercel; CI sets `ALLOW_FIXTURE_SNAPSHOT=1`).
 
 ## Source
 

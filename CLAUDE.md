@@ -21,16 +21,19 @@ bats tests/discovery/run.bats   # shell tests for the discovery harness
 # Database (Neon Postgres + Drizzle) — all read .env.local
 npm run db:generate    # generate a migration from schema changes
 npm run db:migrate     # apply migrations
-npm run db:sync        # DRY RUN: diff data/facilities.json against Neon, print the plan
+npm run db:sync        # DRY RUN: diff the local data/facilities.json snapshot against Neon, print the plan
 npm run db:sync -- --apply   # publish adds + updates, write history, bust cache tags
 npm run db:sync -- --apply --skip-notify   # publish without emailing facility subscribers
-npm run db:export      # export live facilities back to data/facilities.json (Neon → JSON)
-npm run check:drift    # report JSON↔Neon drift (read-only, non-blocking)
+npm run db:export      # write the local gitignored data files from Neon (Neon → JSON)
+npm run test:dataset   # vitest against the real snapshot (pretest:dataset runs prebuild)
+npm run ownership:apply   # DRY RUN: apply data/operator-ownership.json to Neon (-- --apply to write)
 npm run db:seed        # BOOTSTRAP ONLY: insert NEW facilities into an empty DB
 npm run db:seed -- --force   # legacy bulk overwrite — writes NO history, busts NO tags
 
 # Map data
 npm run build:mapdata                 # build static map overlays and siting-context from public sources
+npm run siting:refresh                # DRY RUN: build:mapdata → additive guard vs Neon → siting:apply dry run
+npm run siting:apply -- --apply       # write siting context to Neon
 
 # Data operations
 npm run submissions -- list pending          # review the staging queue
@@ -40,13 +43,14 @@ npm run submissions -- reject <id> "note"
 npm run check-sources                        # source-liveness report (read-only)
 ```
 
-**CI:** nine workflows live in `.github/workflows/` (as of 2026-10-04:
-`automation-health`, `ci`, `codeql`, `discovery-watchdog`, `drift-alert`,
-`googlebot-canary`, `neon-sync`, `nhd-backfill`, `release-please`). `ci.yml` is the PR gate and
+**CI:** seven workflows live in `.github/workflows/` (`automation-health`, `ci`, `codeql`,
+`discovery-watchdog`, `googlebot-canary`, `release-please`, `schema-check`). `ci.yml` is the PR gate and
 runs three jobs — `typecheck · lint · test` (tsc, eslint, vitest), `BATS tests`
-(the discovery, vercel ignore-gate and drift-classifier shell suites), and
+(the discovery, vercel ignore-gate and workflows shell suites), and
 `Playwright e2e` (a11y + e2e). CodeQL scans on every PR and push to `main` plus
 weekly. The Vercel preview build is an additional gate. (Phase 1, 2026-11-05: `neon-sync`, `nhd-backfill` and `release-please` are `disabled_manually`; see Gotchas.)
+
+Now: `neon-sync`, `nhd-backfill` and `drift-alert` are deleted (`schema-check` replaces drift-alert's schema check); `release-please` is still disabled.
 
 ⚠️ **Exactly three status checks are *required* on `main`, and their names are
 load-bearing: `typecheck · lint · test`, `BATS tests`, `Playwright e2e`.** Branch
@@ -87,7 +91,7 @@ opening a PR.
   named surface water and ≥230 kV transmission line, plus the surrounding basin's
   water stress / groundwater trend (WRI Aqueduct 4.0) and underlying principal
   aquifer (USGS) — framed as regional context, not measured facility water use.
-  `data/facilities.json` is the seed/export artifact, not the live source.
+  `data/facilities.json` is a gitignored local export of Neon, not the live source.
 - **UI:** Tailwind v4, Base UI + shadcn primitives, a parchment/ink "atlas" design
   system in `app/globals.css :root`.
 - **SEO:** `lib/seo.ts` builds JSON-LD (`Dataset` on the homepage; `Place` +
@@ -118,7 +122,7 @@ ways data goes live, and both put a person in front of it:
    (`scripts/sync-to-neon.ts`). A maintainer publishing records they have already
    reviewed *is* the human gate — staging their own work for their own approval
    would be ceremony, not safety. The gate lives in the explicit `--apply`
-   (dry run is the default), the fail-closed drift guard, and the fact that only
+   (dry run is the default), the fail-closed stale-basis guard, and the fact that only
    the maintainer holds `DATABASE_URL`.
 
 ⚠️ Do not "fix" `db:sync` into routing through `submissions` — that reading of this
@@ -176,107 +180,58 @@ section is what this wording exists to prevent (Ed, 2026-08-08).
   fabricate coordinates, capacity, operators, or dates — omit unknown fields. See
   `CONTRIBUTING.md` and the data model in `lib/schema.ts`.
 
-## Data waves: the DB is the source of truth, the JSON is generated
+## Data waves: Neon is the source of truth, the data files are local
 
-⚠️ **Suspended while `neon-sync` is disabled (Ed, 2026-11-05).** The `db:export` → `build:mapdata` → commit steps below do NOT run; a wave is `npm run db:sync -- --apply` only. See the Gotchas bullet "Bulk exits are closed". The procedure below is the normal path, to be restored when the open-code/closed-data refactor lands.
+`data/facilities.json`, `data/facilities.meta.json`, `data/siting-context.json`,
+`data/operator-ownership.json` and `data/nhd-backfill-debt.json` are gitignored local files, as are
+the hero outputs (`components/home/hero-plate-paths.ts`, `public/data/hero-points.json`,
+`public/data/pipeline-history.json`). `npm run db:export` writes them from Neon. Old commits still
+serve the frozen open edition (3,025 records). A wave never produces a data commit:
 
-Research → **`npm run db:sync`** (dry run, review the plan) → `-- --apply` →
-`npm run db:export` → **`npm run build:mapdata`** → commit the regenerated JSON.
-`data/facilities.json` is never hand-edited as the *publish* step; it is an artifact of the DB.
+`npm run db:export` → research → **`npm run test:dataset`** (its `pretest:dataset` hook runs
+`npm run prebuild`, so the hero artifacts regenerate from the snapshot; it fails on a fixture
+snapshot) → **`npm run db:sync`** (dry run, review the plan) → `npm run db:sync -- --apply`.
 
-⚠️ **`build:mapdata` is part of the wave, not an optional extra.** New facilities have no entry
-in `data/siting-context.json` until it runs, so their pages silently render without the
-"Siting context" panel — no error, just a missing section. Skipping it let that gap reach 65 of
-934 records before anyone noticed (2026-08-08). Use the full run, not `--skip-nhd`: that flag
-reuses existing nearestWater/nearestTransmission values, which is precisely what new records
-lack. Diff-read the result — it should be additive (fills and new entries), and any
-`value → null` is data loss, not a refresh.
+`db:sync` refuses a snapshot below the export floor (2,900 records) or whose meta `recordCount`
+disagrees, in dry run and `--apply`, before any DB access ("looks like the test fixture; run
+`npm run db:export` first"). A fresh clone has no data files: run `npm run prebuild` (fixture mode
+outside Vercel; CI sets `ALLOW_FIXTURE_SNAPSHOT=1` on its Seed step and the Playwright `webServer`
+only) before typecheck and tests. Vercel builds export the snapshot from Neon and fail closed in
+production. `docs/media/map.svg` is a frozen committed asset; `build:heroplate` no longer writes it.
 
-Forgetting it is now caught rather than discovered later: `lib/siting-context.test.ts` asserts
-every id in `data/facilities.json` has an entry in `data/siting-context.json`, so a wave that
-skips `build:mapdata` turns the required `typecheck · lint · test` check red instead of shipping
-silently. This covers the **manual** path specifically — `neon-sync.yml`'s additive guard only
-ever ran inside the automated workflow, so a maintainer syncing by hand bypassed it entirely.
-The reverse direction is deliberately NOT asserted: retiring a facility needs a raw Neon delete
-and legitimately leaves a stale siting entry behind. That orphan survives `--skip-nhd` runs (which
-union in every existing id) but is pruned by the next full or `--backfill-nhd` run, whose id set is
-facilities + computed results only. `check-siting-additive.mjs` classifies a dropped id that is
-ALSO absent from `data/facilities.json` as `pruned` (reported, does not fail); a dropped id that still
-has a facility is `removed` and fails. It fails closed if `facilities.json` is unreadable or empty,
-since an empty list would make every removal look like a prune. (First seen 2026-09-29:
-`galaxy-helios-dickens-tx`, retired in #352, read as `removed: 1` and exited 1 before this split.)
+**Local siting refresh** (new facilities have no siting context until it runs, so their pages render
+without the "Siting context" panel, with no error): `npm run db:export`, then
+`npm run siting:refresh` (dry run: `build:mapdata` → additive guard against Neon → `siting:apply` dry
+run), then `npm run siting:apply -- --apply`. `siting:refresh` cannot pass `--skip-nhd` or
+`--backfill-nhd`; run those steps by hand. The guard refuses an empty Neon baseline ("run
+`npm run backfill:siting -- --apply` first"), and a confirmed-NHD-absence clear fails it, so that clear needs a
+deliberate maintainer apply (an allowlist is a follow-up). Diff-read the result: it should be
+additive, and any `value → null` is data loss, not a refresh. Use the full run rather than
+`--skip-nhd` (which reuses existing nearestWater/nearestTransmission values, exactly what new
+records lack) except when USGS NHD is degraded rather than down: the failure budget counts failures
+and is blind to latency, so 200-OK responses at 30x slow keep a full pass grinding. Then run
+`build:mapdata -- --skip-nhd` now and `-- --backfill-nhd` later (it fills only entries lacking
+`nearestWater`; mutually exclusive with `--skip-nhd`). Record the shortfall with
+`npm run nhd:debt -- --note "<why>"` (`-- --ledger-db` mirrors it to Neon `maintenance_ledger`).
+The ledger `data/nhd-backfill-debt.json` is a local file that `db:export` does not recreate, and the
+dataset ratchet in `lib/siting-context.dataset.test.ts` FAILS (does not skip) when it is missing.
+`npm run nhd:debt -- --count` prints the live integer; the non-CONUS exclusion (AK, HI, GU, MP, PR,
+VI: NHD is CONUS-only) is required or the count never reaches 0. `resolveNearestWater` carries a
+prior `nearestWater` forward on every unconfirmed NHD failure; only a confirmed absence clears it,
+which is why a full run is the right tool for re-querying a facility whose coordinates were corrected.
 
-⚠️ **The ONE sanctioned `--skip-nhd` exception, and its price** (2026-09-22). When USGS NHD is
-*degraded rather than down*, the full pass neither finishes nor aborts: `build-map-data.mjs`'s
-`NHD_CONSECUTIVE_FAILURE_BUDGET = 10` counts **failures** and is blind to **latency**, so 200-OK
-responses arriving 30x slow keep it grinding (measured 473ms..14.5s on identical queries; the run
-was cancelled at 2h05m against a 6h job cap).
-In that case publish in two stages: (1) `build:mapdata -- --skip-nhd` now — that branch seeds every
-id and merges `{...existing[id], ...envContext[id]}`, so it is *structurally* additive and new
-records still get waterStress/aquifer/groundwaterDecline; (2) `build:mapdata -- --backfill-nhd` once
-NHD is healthy — it restricts the NHD pass to only the facilities whose existing
-`data/siting-context.json` entry lacks `nearestWater` (201 on 2026-09-29, not a full 2,268-record re-pass) and
-carries every other entry forward untouched. `--skip-nhd` and `--backfill-nhd` are mutually exclusive
-and error out together.
+**Ownership:** edit the local `data/operator-ownership.json` (from `db:export`), then
+`npm run ownership:apply` (dry run) and `npm run ownership:apply -- --apply`. It inserts and
+updates, reads back and checks the count, and ALWAYS REFUSES removals (a removal is a reviewed manual
+Neon edit plus a revalidate). It busts `operator:<slug>` and `facilities`, and needs `API_BASE_URL`
+and `API_ADMIN_TOKEN` unless `--skip-revalidate`.
 
-⚠️ **Automated since 2026-10-04.** `neon-sync.yml` no longer stops at a failed full pass: when the
-full `build:mapdata` fails (usually a degraded USGS NHD, where the pre-flight or throughput guard
-aborts it; any other failure, e.g. an HIFLD truncation, also lands here) it falls back to
-`build:mapdata -- --skip-nhd`, runs the additive guard on whichever path succeeded, updates the
-debt ledger, and auto-merges — the artifacts are additive and the debt is recorded. A run whose
-artifacts are discarded still holds for a human. `nhd-backfill.yml` (daily 04:23 UTC) pays the debt
-off-peak: a no-op at debt 0, otherwise `build:mapdata -- --backfill-nhd`, the additive guard, a
-ledger update, and an auto-merging PR carrying ONLY `data/siting-context.json` and
-`data/nhd-backfill-debt.json` (overlays are reverted — untrusted upstream, not covered by the
-guard). It defers while a same-repo neon-sync PR is open, and fails RED once one has been open >24h,
-which `automation-health` surfaces. Basis: every daytime neon-sync dispatch 2026-09-25 → 10-02
-failed the NHD pre-flight (6/6), while off-peak runs were healthy (2026-09-29 23:22Z; 2026-10-04
-~21:30Z). A hand-run wave should still try the full pass first and, if it falls back to
-`--skip-nhd`, must run `npm run nhd:debt -- --note "<why>"` in the same change.
+**Admin "Refresh site"** busts the `facilities` tag only. It does not regenerate the hero plate,
+hero points or as-of date; the next build does. By decision (Ed, 2026-11-06), the button does not call a deploy hook.
 
-⚠️ **CORRECTION (2026-09-29): the "finishing would not have helped" claim formerly in this section was
-false, and the false claim was expensive.** It read: *"the full path rebuilds `computeSitingContext`
-from scratch and never merges the existing file, so scattered timeouts null `nearestWater` on EXISTING
-records and the additive guard discards everything."* Verified false in source: `resolveNearestWater`
-**carries a prior `nearestWater` forward** on every unconfirmed/partial/total NHD failure — its gate
-is `absenceConfirmed !== true`. Only a genuinely confirmed absence (both NHD layers answered and found
-nothing) clears an existing value, and that's deliberate: it's what lets a corrected coordinate clear
-stale data. The false warning made a full run look destructive, so it was avoided for **seven
-consecutive data waves** while the debt grew (141 → 155 → 158 → 177) — a false deterrent costs more
-than a false assertion, because nothing ever tests the action you didn't take. Note: `mergeSitingContextEntry`
-takes an explicit `nhdRan` flag rather than inferring it, because `resolveNearestWater` signals "clear
-this stale value" by *omitting* the key, and an object spread cannot delete an omitted key — an
-unconditional existing-first merge would make a confirmed absence unable to ever clear a stale value on
-the default full-run path. That was a real regression, caught in review on this branch. The full path
-remains the right tool for exactly one case: re-querying a facility whose coordinates were corrected,
-because only it can *clear* a stale value — `--backfill-nhd` only fills gaps, it never re-checks a
-facility that already has an entry.
-
-⛔ **Stage 2 is not test-covered by an entry-shape check** — `siting-context.test.ts` asserts an ENTRY
-exists, not that it carries NHD fields — but the outstanding count is now covered by a separate
-ratchet in `lib/siting-context.test.ts` against the ledger `data/nhd-backfill-debt.json`
-(`{ceiling, asOf, note}`, maintained by `npm run nhd:debt -- --note "<why>"`; `--count` prints the
-live integer) that fails if the debt grows *or* silently shrinks. It is mutation-tested: on 2026-10-04,
-with the live debt at 52, a ledger ceiling of 51 failed the "exceed" test and 53 failed the "paid down"
-test; restored, both pass. Track the raw count explicitly and verify with
-```bash
-python3 -c "
-import json
-s=json.load(open('data/siting-context.json'))
-f={x['id']:x for x in json.load(open('data/facilities.json'))}
-off={'HI','AK','GU','MP','PR','VI'}
-print(sum(1 for i,v in s.items() if 'nearestWater' not in v
-          and f.get(i,{}).get('location',{}).get('state') not in off))"
-```
-Stage 2 ran on 2026-09-29 and took it **177 → 0** in ~5 min (NHD healthy). Four degraded `--skip-nhd`
-waves (#370, #372, #374, #375) re-grew it to 52 (FL/DE/DC/CT/CO/GA), and a full run on 2026-10-04 (#377)
-took it back to **0**, re-querying the 2 moved GA pins on the way. Expect **0**; anything higher is debt
-the nightly backfill has not paid yet, and it must match the ledger or the ratchet fails. ⚠️ The non-CONUS exclusion is REQUIRED: 24 facilities
-(AK 9 · HI 6 · GU 4 · MP 2 · PR 2 · VI 1) legitimately have no NHD match because NHD is CONUS-only,
-so an unscoped count reads 201 and can never reach 0.
-Do NOT treat this as general permission to
-use `--skip-nhd` on a hand-run wave — the paragraph above is still the rule there; the automation
-applies it only after the full pass has failed.
+**Maintainer note for pulling PR C into a tree that has the data files:** the pull deletes them.
+Back them up first (the NHD ledger has no other copy: the Neon row from `npm run nhd:debt -- --ledger-db` is a durable record of the count, but no command restores the local file from it; keep the backup, or re-record the current count with `npm run nhd:debt -- --note "<why>"`, which resets the ceiling to today's count), then run `npm run db:export` (discovery's
+loader reads Neon first and aborts loudly on a bad snapshot). Merge or pull only outside Mon/Wed/Fri 13:00.
 
 ⚠️ **Data-source decision (2026-09-29): keep the live NHD query service, do not migrate to bulk
 download.** Evaluated and rejected replacing the per-facility ArcGIS queries (`nhdQueryLayer`,
@@ -312,12 +267,6 @@ single transient empty page would have published ~6,000 of 10,490 (~43% loss) in
 `public/data/power.geojson` and every `nearestTransmission`, with nothing failing. Consequence:
 `nearestTransmission` needs no carry-forward, unlike `nearestWater` — a `null` there is now
 authoritative, and adding a carry-forward would destroy the ability to ever clear a stale value.
-
-Why it matters: the site reads Neon live, so data never needed a build. Editing the
-file and shipping it through git made every correction a Vercel deploy, and left
-drift (`check:drift`, the `neon-sync` workflow) to be detected and repaired
-afterwards. Syncing first makes drift structurally impossible instead, and
-`check:drift` becomes a true invariant that should always pass.
 
 `db:sync` writes `facility_history` for every change (so `/activity` sees it) and busts the cache tags for affected scopes (`facility:<id>`, `state:<XX>`, `operator:<slug>`, ±`power-generation`), plus unconditionally adds the `"facilities"` tag to keep aggregate pages fresh. A notes-only update (only `notes`/`note` text differs, at any depth) is recorded as `editorial`, which /activity, its feed, contributor credits, the quarterly summary and the state digest all exclude; facility watchers are still notified unless `--skip-notify` is passed. It cannot reach the untagged search index (86400s timer only). `db:seed --force` does neither — it is bootstrap-only, kept for filling an empty database.
 
@@ -391,9 +340,9 @@ tool, not part of the deployed app.
   - `GET /api/facilities` (list), `GET /api/facilities/{id}` and the full shape of `/api/search` are admin-bearer only and `no-store` (#528, #529). The public palette search (`/api/search?…&shape=palette`) stays.
   - Cloudflare custom rule `d0286981a37e4076ad52eb840601683f` ("Pause bulk dataset exits", Block) uses the 5th of 5 Free-plan custom-rule slots. It blocks `lower(path)` in {`/api/facilities`, `/api/facilities/`, `/data/facilities.csv`, `/data/facilities.json`}, GET/HEAD on `starts_with(lower(path), "/api/facilities/")`, and `/api/search` unless `args["shape"][0] eq "palette"`.
   - ⚠️ Always `lower()` paths in this site's CF rules: the origin matched `/API/facilities/<id>` to the route while a case-sensitive rule let it through.
-  - ⚠️ Each CF edit needs Ed's explicit go. The rule also blocks the discovery loader's authenticated `/api/facilities` read, so discovery dedupes against the frozen `data/facilities.json` until that is fixed.
+  - ⚠️ Each CF edit needs Ed's explicit go. The rule also blocks the discovery loader's authenticated `/api/facilities` read, so discovery reads Neon directly via `DISCOVERY_READ_DATABASE_URL`, falling back to the owner `DATABASE_URL` when that is unset.
   - `/map` and `/embed/states/[state]` ship only `MapPoint` (id, facilityType, status, lat/lon rounded to 2 dp, state) plus server-computed filter options. Popup details come from `GET /api/map/facility/[id]`; operator/minMw filters from `GET /api/map/match` (#532). `public/data/hero-points.json` is anonymous, de-duplicated `{lat, lon, status}` at 2 dp (#533). `data/siting-context.json` no longer reaches the client bundle (an import-graph test guards it).
-  - `data/facilities.json` is frozen at 3,025 records as the final open edition. Until the planned open-code/closed-data refactor lands: a publish wave is `db:sync -- --apply` ONLY, with NO `db:export`/`build:mapdata` commit to the public repo; new records lack siting context until then; the NHD-debt ratchet and `siting-context.json` are frozen.
+  - `data/facilities.json` is no longer in the repo (gitignored local export; see Data waves). Old commits still serve the frozen 3,025-record open edition.
 - **`.env.local` quoting:** `vercel env add` keeps surrounding quotes; a quoted
   `DATABASE_URL` is invalid and fails *silently* (no fallback). Strip quotes.
   Two sibling traps in the same family, both silent:
@@ -410,13 +359,11 @@ tool, not part of the deployed app.
     with `tail -c1`, or append a leading `\n`.
 - **Builds are gated, production included.** `vercel.json` runs
   `scripts/vercel-ignore-build.sh` as Vercel's Ignored Build Step: **any**
-  deployment whose diff touches only `data/facilities.json`, `data/facilities.meta.json`, `docs/`,
-  `.github/`, `*.md` (or `LICENSE`, `LICENSE-DATA`) is skipped — production too, since `db:sync`
-  puts data live in Neon before the commit recording it is ever merged. Other `data/` files, such as
-  `data/siting-context.json`, still build. The one thing a prod build still refreshes
-  on a data-only merge is the `withJsonFallback` snapshot bundled from
-  `data/facilities.json`; that now rides the next code deploy (or
-  `npx vercel redeploy --target production` on demand). Covered by
+  deployment whose diff touches only `docs/`, `.github/`, `*.md`, `LICENSE` or `LICENSE-DATA` is
+  skipped — production too, since `db:sync` puts data live in Neon before any commit is merged.
+  No `data/` file is allowlisted (the data files are untracked), so a diff touching `data/` builds.
+  Changed paths are listed with `--no-renames`, so a rename of code into `docs/` still builds.
+  A production build can be forced with `npx vercel redeploy --target production`. Covered by
   `tests/vercel/run.bats`. Note Vercel builds *every push to every branch, PR or
   not* — batching commits on a long-lived branch saves nothing on its own.
   Three traps if you touch this script: Vercel's build container has a
@@ -431,7 +378,7 @@ tool, not part of the deployed app.
 - **Prod cache & bulk go-live:** The site has three independent cache tiers:
   - **Aggregate pages** (home/map/stats/explore) read `loadFacilities` with a **24h ISR timer** (`revalidate: 86400`, lowered from 1h on 2026-10-13 to cut ISR Writes) and carry the `"facilities"` tag. Freshness comes from tag busts: `db:sync --apply` busts `"facilities"`, and an approve/reject that leaves the pending queue empty busts it once (`lib/submissions.ts`); single writes bust only scoped tags. Home (which also reads untagged `getRecentActivity`/`getQuarterlyPipelineSummary`), `/activity`, its feed and `/contributors` read untagged direct-DB data and stay on 3600. `/table` is no longer an ISR aggregate page: it is dynamic and server-paginated (50 rows/page; filter, sort and `q` on the server), reading through the 24h-cached `getAllFacilities` loader, so it carries no ISR timer of its own (#531).
   - **Scoped pages**: `/facilities/[slug]` (2,241 routes) carries only scoped tags — `facility:<id>`, `operator:<slug>`, `state:<XX>`, plus `power-generation` where relevant — and no longer carries the global `"facilities"` tag; it declares `export const revalidate = 86400` itself (the root layout no longer reads `loadNavFacets`, so nothing inherits a floor). The jurisdiction/operator/metro/county hubs (55 states / 1,018 operators / 27 metros / 847 counties, the county hubs behind a `/counties` index) **do** still carry `"facilities"` on a 86400s timer, so they self-heal daily as well as on a bust. There is no `metro:` or `county:` tag — metro and county hubs are covered by `"facilities"` alone.
-    ⚠️ Those five figures are a **snapshot, not a constant** — read from the production build log of `6515815` on **2026-09-28** (4,330 prerendered routes in total; `npm run check:drift` confirmed JSON and Neon agreed at 2,241 facilities that day). Every data wave grows them. Re-read a real build log before citing any of them; do not trust the numbers on this line.
+    ⚠️ Those five figures are a **snapshot, not a constant** — read from the production build log of `6515815` on **2026-09-28** (4,330 prerendered routes in total; `npm run check:drift` (a check since retired) confirmed JSON and Neon agreed at 2,241 facilities that day). Every data wave grows them. Re-read a real build log before citing any of them; do not trust the numbers on this line.
   - **Search index** (global ⌘K palette: operator/state facets via `loadNavFacets`, fetched lazily on first open from `GET /api/nav-index`, cached at the edge `s-maxage=86400`; no longer in any page's HTML or the root layout) has **two untagged staleness layers**: the 24h `unstable_cache` on `loadNavFacets`, then the edge `s-maxage=86400` + `stale-while-revalidate=604800` on `/api/nav-index`. A new operator or state can take up to ~2 days to appear (24h origin + 24h edge, worst case); SWR adds at most one stale response after edge expiry. No tag bust affects it; `db:sync --apply` cannot refresh it. The root layout reads no cached data (`SiteFooter` uses the static `facilities.meta.json`), so no route inherits a floor from it.
   
   Pages inherit the longest timer from any reader in their render tree; the tag-only detail/state/embed-state pages declare `revalidate = 86400` explicitly. The tag vocabulary (`facility:<id>`, `state:<XX>`, `operator:<slug>`, `power-generation`, `facilities`) is centralized in `lib/cache-tags.ts` and shared by `lib/facility-write.ts` and `POST /api/revalidate` so producer and validator can't drift apart. `db:sync --apply` and the approve-on-prod path bust affected tags for you. Only a **raw** Neon write (`db:seed --force`, an ad-hoc upsert) leaves them un-busted — then hit the admin-bearer `POST /api/revalidate` yourself with the affected tags (e.g. `{"tags":["facilities","state:CA"]}`); brand-new facility ids need no bust (cache-miss populates them).
@@ -498,20 +445,19 @@ tool, not part of the deployed app.
   `ENOTFOUND` is this project's outage-vs-link-rot discriminator.
   ⚠️ A regex is the wrong tool for finding these sites: `[^)]*` breaks on a `)` inside a format string
   and an end-of-line anchor misses a multi-line call. Both happened; use a paren-balanced scan.
-- **JSON ↔ Neon — Neon is truth, and `db:sync` is the only bulk write path.**
+- **Neon is truth, and `db:sync` is the only bulk write path.**
   `db:sync` applies adds *and* updates, writes history, busts tags, and refuses to
-  overwrite a Neon row that moved ahead of the JSON's basis (`facilities.meta.json`'s
+  overwrite a Neon row that moved ahead of the snapshot's basis (`facilities.meta.json`'s
   `asOf`) — so it can't clobber a prod approval. `db:seed --force` publishes adds but
   **silently drops every correction to an existing row, writes no history, and busts
-  no tags** — it is bootstrap-only. After syncing, `db:export` regenerates the JSON
-  from Neon so `check:drift` is clean (⚠️ suspended since 2026-11-05, Phase 1; see Data waves).
+  no tags** — it is bootstrap-only.
 - **Local-only docs:** some maintainer notes under `docs/` are gitignored working
   files — check `.gitignore` before adding a doc, and never commit those.
 - **Dev server:** don't run `next build`/`start` while `next dev` is live (it
   corrupts `.next`); a long-running dev server can also serve stale `globals.css`.
   A restart does **not** clear `.next/cache`, so a "fresh" server can replay an
   ISR-cached page from before the last data publish — that looks exactly like
-  JSON↔Neon drift but isn't (`check:drift` compares data and cannot see a stale
+  a stale data snapshot but isn't (comparing data cannot see a stale
   *render*). `rm -rf .next/cache` and re-fetch before concluding anything.
 - **JSX drops a leading space when the text chunk contains an HTML entity.** If a
   text chunk *follows an interpolation* `{...}` **and** contains `&apos;`,

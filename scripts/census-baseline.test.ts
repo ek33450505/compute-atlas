@@ -12,7 +12,7 @@ const { mockExistsSync, mockReadFileSync, mockWriteFileSync, mockAppendFileSync 
 
 // ⛔ This suite must never touch real files under data/ — every fs call is
 // mocked. A live index-coverage census may be running concurrently and
-// writes data/index-census.json directly; this file must never read or
+// writes ops/index-census/index-census.json directly; this file must never read or
 // write it for real.
 vi.mock("node:fs", async (importOriginal) => {
   const actual = await importOriginal<typeof import("node:fs")>();

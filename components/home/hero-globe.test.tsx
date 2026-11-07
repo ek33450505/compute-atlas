@@ -31,6 +31,8 @@ const fakeMapInstance = {
   setProjection: vi.fn(),
   setPadding: vi.fn(),
   getCanvas: vi.fn(() => ({
+    getAttribute: vi.fn(() => null),
+    hasAttribute: vi.fn(() => false),
     setAttribute: vi.fn(),
     removeAttribute: vi.fn(),
   })),

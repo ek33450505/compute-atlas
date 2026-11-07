@@ -38,8 +38,6 @@
  *                                             build-hero-points.mjs; local, no network)
  *   components/home/hero-plate-paths.ts     (homepage hero static Albers USA dot plate —
  *                                             see build-hero-plate.mjs; local, no network)
- *   docs/media/map.svg                      (README map, emitted by the same
- *                                             build-hero-plate.mjs run)
  *   public/data/pipeline-history.json       (per-quarter status composition — see
  *                                             build-pipeline-history.mjs; local, no network)
  *
@@ -175,8 +173,9 @@ const NHD_SKIP_FALLBACK_GUIDANCE = [
   'PRICE OF --skip-nhd: it leaves nearestWater/nearestTransmission UNSET on',
   'new records. Record that debt in the same change with',
   '`npm run nhd:debt -- --note "<why>"`, or the ratchet in',
-  'lib/siting-context.test.ts fails CI. The nightly nhd-backfill workflow',
-  'pays it off-peak (--backfill-nhd). A FULL build:mapdata is still the only',
+  'lib/siting-context.test.ts fails CI. A maintainer-run',
+  '`npm run build:mapdata -- --backfill-nhd` (ideally off-peak, when USGS NHD is',
+  'healthy) pays it off. A FULL build:mapdata is still the only',
   'way to re-query a facility whose coordinates were corrected.',
 ];
 

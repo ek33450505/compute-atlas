@@ -263,7 +263,7 @@ const RETIRED_FACILITY_REDIRECTS = [
     // release names "the Lancium Clean Campus in Abilene" as the site), so
     // the campus was counted twice. stargate-abilene-tx is the successor:
     // Google had it indexed at the 2026-09-26 inspection
-    // (data/index-census.json). Before retirement, this record's Lancium-era
+    // (ops/index-census/index-census.json). Before retirement, this record's Lancium-era
     // history (the December 2021 Clean Compute Campus announcement) and its
     // five sources were merged into the survivor, and
     // crusoe-abilene-onsite-generation-tx's poweredFacilityIds was repointed.
