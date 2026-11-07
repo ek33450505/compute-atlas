@@ -353,6 +353,42 @@ describe("proxy — edge shared-secret gate", () => {
   });
 });
 
+describe("proxy — edge gate on facility and embed pages", () => {
+  beforeEach(() => {
+    process.env.VERCEL_ENV = "production";
+    process.env.EDGE_SHARED_SECRET = EDGE_SECRET;
+  });
+
+  const paths = ["/facilities/x", "/facilities/x/opengraph-image", "/embed/states/texas"];
+
+  it("403s without the edge header", () => {
+    for (const pathname of paths) {
+      expect(proxy(makeRequest(pathname)).status).toBe(403);
+    }
+  });
+
+  it("403s with the wrong edge header", () => {
+    for (const pathname of paths) {
+      expect(proxy(makeRequest(pathname, { edgeHeader: "wrong-secret" })).status).toBe(403);
+    }
+  });
+
+  it("passes with the edge header, and never redirects to admin login", () => {
+    for (const pathname of paths) {
+      const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
+      expect(response.status).toBe(200);
+      expect(response.headers.get("location")).toBeNull();
+    }
+  });
+
+  it("passes without the header outside production", () => {
+    delete process.env.VERCEL_ENV;
+    for (const pathname of paths) {
+      expect(proxy(makeRequest(pathname)).status).toBe(200);
+    }
+  });
+});
+
 describe("proxy — edge gate rollout posture", () => {
   it("FAILS CLOSED when EDGE_SHARED_SECRET is unset in production", () => {
     process.env.VERCEL_ENV = "production";
@@ -414,8 +450,26 @@ describe("proxy — edge gate rollout posture", () => {
 });
 
 describe("proxy — matcher scope, compiled by the installed Next", () => {
-  it("is exactly the admin and API prefixes plus the three heavy pages", () => {
-    expect(config.matcher).toEqual(["/admin/:path*", "/api/:path*", "/map", "/data", "/table"]);
+  it("is exactly the admin and API prefixes, the three heavy pages, and facility/embed pages", () => {
+    expect(config.matcher).toEqual([
+      "/admin/:path*",
+      "/api/:path*",
+      "/map",
+      "/data",
+      "/table",
+      "/facilities/:path*",
+      "/embed/:path*",
+    ]);
+  });
+
+  it("covers facility pages, their OG images and the embeds", () => {
+    for (const pathname of [
+      "/facilities/x",
+      "/facilities/x/opengraph-image",
+      "/embed/states/texas",
+    ]) {
+      expect(isMatched(config.matcher, pathname)).toBe(true);
+    }
   });
 
   it("covers every admin route, including the ones rendering contributor PII", () => {
@@ -444,7 +498,8 @@ describe("proxy — matcher scope, compiled by the installed Next", () => {
   it("leaves CDN-served assets and ordinary pages out", () => {
     for (const pathname of [
       "/",
-      "/facilities/some-slug",
+      "/states/texas",
+      "/operators",
       "/explore/states/tx",
       "/data/facilities.geojson",
       "/basemap/style.json",

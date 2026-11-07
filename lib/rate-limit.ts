@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { and, eq, gt, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
+import { hasValidEdgeSecret } from "@/lib/edge-secret";
 import {
   submissionNotifyRequestsTable,
   submissionNotifySendsTable,
@@ -24,7 +25,10 @@ export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
  * limiter keyed on that naive extraction's result entirely.
  *
  * Precedence, most to least trusted:
- *  1. `cf-connecting-ip` — on the production path (Cloudflare in front of
+ *  1. `cf-connecting-ip` — ONLY when the same request carries a valid edge
+ *     shared secret (`hasValidEdgeSecret`; unset `EDGE_SHARED_SECRET` means
+ *     never trusted), so this no longer depends solely on `proxy.ts` gating
+ *     /api and /admin. On the production path (Cloudflare in front of
  *     Vercel), Cloudflare always overwrites this header with the real
  *     connecting client's IP rather than passing through a client-supplied
  *     value, so it's trustworthy there. It is NOT unspoofable in general: a
@@ -61,8 +65,9 @@ export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
  *
  * The `cf-connecting-ip` precedence is a strict improvement for every
  * existing caller (`app/api/contact/route.ts`, `app/admin/login/actions.ts`)
- * too — it only takes effect on requests that are actually behind
- * Cloudflare, and when present it is strictly more trustworthy than
+ * too — it only takes effect on requests that carry a valid edge secret,
+ * i.e. that actually traversed Cloudflare, and when present it is strictly
+ * more trustworthy than
  * `x-real-ip`/XFF, so no caller becomes less safe.
  *
  * Takes `Headers` directly (not a `Request`) so both a route handler
@@ -71,7 +76,11 @@ export const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
  * `Headers`) can call this without wrapping or casting.
  */
 export function extractTrustedClientIp(headers: Headers): string {
-  const cfConnectingIp = headers.get("cf-connecting-ip");
+  // Only honour cf-connecting-ip on a request that also proves it traversed
+  // Cloudflare; a direct-to-origin caller can set the header to anything.
+  const cfConnectingIp = hasValidEdgeSecret(headers)
+    ? headers.get("cf-connecting-ip")
+    : null;
   if (cfConnectingIp) {
     const trimmed = cfConnectingIp.trim();
     if (trimmed) return trimmed;

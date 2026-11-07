@@ -48,10 +48,15 @@ import { POST } from "./route";
 
 const seedDoc = facilitiesRaw[0] as unknown as Facility; // xai-colossus-memphis-tn
 
+// cf-connecting-ip is honoured only alongside a valid edge secret
+// (lib/edge-secret.ts), so these tests present one like Cloudflare would.
+process.env.EDGE_SHARED_SECRET = "test-edge-secret";
+const EDGE_HEADER = { "x-edge-shared-secret": "test-edge-secret" };
+
 function req(body: unknown, headers?: HeadersInit): Request {
   return new Request("http://localhost/api/subscribe", {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...headers },
+    headers: { "Content-Type": "application/json", ...EDGE_HEADER, ...headers },
     body: JSON.stringify(body),
   });
 }

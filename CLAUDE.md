@@ -408,8 +408,9 @@ tool, not part of the deployed app.
   bandwidth or abuse control** — it enforces intent against compliant clients and is decorative
   against anyone who tries. `proxy.ts` enforces a Cloudflare-injected shared-secret header to close
   this; it has been **fail-closed on production since 2026-10-15** (unsetting `EDGE_SHARED_SECRET`
-  403s `/admin`, `/api` except cron, `/map`, `/data` and `/table`; rotation procedure in
-  `docs/maintainers.md` §9), and `/api/cron/*` is exempt because Vercel Cron may reach the deployment without traversing Cloudflare.
+  403s `/admin`, `/api` except cron, `/map`, `/data`, `/table`, `/facilities/*` and `/embed/*`;
+  rotation procedure in `docs/maintainers.md` §9), and `/api/cron/*` is exempt because Vercel Cron
+  may reach the deployment without traversing Cloudflare.
 - **`app/robots.ts` is the source of truth for blocked crawlers; the Cloudflare rules are a second
   copy.** Posture (Ed, 2026-10-15; supersedes 2026-10-14's "block AI agents incl. retrieval"): **allow
   classic SEARCH engines (Googlebot, Bingbot, Applebot, DuckDuckBot), archives (archive.org_bot), AI

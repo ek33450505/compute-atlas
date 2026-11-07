@@ -147,7 +147,7 @@ See `.env.example`.
 | `VERIFY_SOURCES_ENABLED` | Kill switch for the discovery pipeline's mechanical source-verification gate (local Ollama). **Polarity is the opposite of the two switches above:** the gate is ON by default and only the exact string `"false"` disables it, so a typo leaves verification enabled |
 | `API_ADMIN_TOKEN_SALT` | PBKDF2 salt for the admin-UI password login (`app/admin/login/actions.ts`). Required — login fails closed, rejecting every attempt, if unset |
 | `CONTRIBUTE_IP_SALT` | Salt for hashing submitter IPs for public-contribution rate limiting. **Required in production** — `hashIp()` throws on Vercel production rather than hash with the repo-public default; dev, tests and previews fall back to it. Since 2026-09-27 it has a second consumer: `lib/subscribe-consent.ts` derives the subscribe-consent cookie's HMAC key from it, under its own key domain. Rotating it invalidates every stored IP hash **and** every outstanding consent cookie. Since the email-send ledger it also salts every `email_sends` address hash (`hashAddress` calls `hashNotifyEmail`, the same function as the notify-email hashes), so rotation makes past ledger rows unfindable by address. The CLI and `/admin/email-sends` print only an 8-character hash prefix, never the address |
-| `EDGE_SHARED_SECRET` | Shared secret proving a request actually traversed Cloudflare: a Transform Rule injects it as `x-edge-shared-secret` and `proxy.ts` compares digests. **Fails closed on production since 2026-10-15**: unset or empty 403s every matched path (`/admin`, `/api` except `/api/cron/*`, `/map`, `/data`, `/table`). Checked only when `VERCEL_ENV === "production"`; `/api/cron/*` is exempt unconditionally. There is no safe two-step rotation — see §9 below |
+| `EDGE_SHARED_SECRET` | Shared secret proving a request actually traversed Cloudflare: a Transform Rule injects it as `x-edge-shared-secret` and `proxy.ts` compares digests. **Fails closed on production since 2026-10-15**: unset or empty 403s every matched path (`/admin`, `/api` except `/api/cron/*`, `/map`, `/data`, `/table`, `/facilities/*`, `/embed/*`). Checked only when `VERCEL_ENV === "production"`; `/api/cron/*` is exempt unconditionally. There is no safe two-step rotation — see §9 below |
 
 ✅ **The monthly state digest is LIVE as of 2026-09-14** (Ed's decision). Both switches that
 held it off are flipped: `vercel.json` carries
@@ -352,7 +352,7 @@ a second way: the code is fail-closed.
 - **FAIL-CLOSED** (since 2026-10-15, activation step 4): `if (!expected) return false;`. Unsetting or
   emptying the variable on production does not disarm anything; it 403s every matched path.
 - **Matched paths** (activation step 5, same day): `/admin`, `/api` (except `/api/cron/*`), `/map`,
-  `/data`, `/table`. A 403 on `/map` is a user-visible outage, not a quiet API failure.
+  `/data`, `/table`, `/facilities/*`, `/embed/*`. A 403 on `/map` is a user-visible outage, not a quiet API failure.
 
 `isEdgeOriginAllowed` compares the presented header against **one** value. So:
 - Change the Cloudflare rule first ⇒ presented(new) ≠ expected(old) ⇒ **403**.

@@ -46,10 +46,15 @@ import { RATE_LIMIT_MAX, hashIp, normaliseIpForBucketing } from "@/lib/rate-limi
 // Imported after the mocks above so the mocked modules are in effect.
 import { POST } from "./route";
 
+// cf-connecting-ip is honoured only alongside a valid edge secret
+// (lib/edge-secret.ts), so these tests present one like Cloudflare would.
+process.env.EDGE_SHARED_SECRET = "test-edge-secret";
+const EDGE_HEADER = { "x-edge-shared-secret": "test-edge-secret" };
+
 function req(body: unknown, headers?: HeadersInit): Request {
   return new Request("http://localhost/api/contact", {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...headers },
+    headers: { "Content-Type": "application/json", ...EDGE_HEADER, ...headers },
     body: JSON.stringify(body),
   });
 }

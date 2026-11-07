@@ -21,7 +21,18 @@ describe("rateLimitDecision", () => {
   });
 });
 
+const EDGE = { "x-edge-shared-secret": "test-edge-secret" };
+const ORIGINAL_EDGE_SECRET = process.env.EDGE_SHARED_SECRET;
+
 describe("extractTrustedClientIp", () => {
+  beforeEach(() => {
+    process.env.EDGE_SHARED_SECRET = "test-edge-secret";
+  });
+  afterEach(() => {
+    if (ORIGINAL_EDGE_SECRET === undefined) delete process.env.EDGE_SHARED_SECRET;
+    else process.env.EDGE_SHARED_SECRET = ORIGINAL_EDGE_SECRET;
+  });
+
   it("prefers x-real-ip over x-forwarded-for when both are present", () => {
     const headers = new Headers({
       "x-real-ip": "203.0.113.9",
@@ -71,6 +82,7 @@ describe("extractTrustedClientIp", () => {
   it("prefers cf-connecting-ip over a spoofed leftmost x-forwarded-for entry", () => {
     const trusted = "203.0.113.9";
     const headers = new Headers({
+      ...EDGE,
       "cf-connecting-ip": trusted,
       "x-forwarded-for": "1.2.3.4, 198.51.100.1",
     });
@@ -79,6 +91,7 @@ describe("extractTrustedClientIp", () => {
 
   it("prefers cf-connecting-ip over x-real-ip when both are present", () => {
     const headers = new Headers({
+      ...EDGE,
       "cf-connecting-ip": "203.0.113.9",
       "x-real-ip": "198.51.100.1",
     });
@@ -102,11 +115,41 @@ describe("extractTrustedClientIp", () => {
   it("prefers cf-connecting-ip when cf-connecting-ip, x-real-ip, and x-forwarded-for are all present", () => {
     const trusted = "203.0.113.9";
     const headers = new Headers({
+      ...EDGE,
       "cf-connecting-ip": trusted,
       "x-real-ip": "198.51.100.1",
       "x-forwarded-for": "1.2.3.4, 198.51.100.2",
     });
     expect(extractTrustedClientIp(headers)).toBe(trusted);
+  });
+
+  // cf-connecting-ip is client-settable on a direct-to-origin request, so it
+  // counts only alongside a valid edge secret.
+  it("ignores a spoofed cf-connecting-ip with no edge secret header", () => {
+    const headers = new Headers({
+      "cf-connecting-ip": "6.6.6.6",
+      "x-real-ip": "203.0.113.9",
+    });
+    expect(extractTrustedClientIp(headers)).toBe("203.0.113.9");
+  });
+
+  it("ignores a spoofed cf-connecting-ip with a wrong edge secret header", () => {
+    const headers = new Headers({
+      "x-edge-shared-secret": "wrong",
+      "cf-connecting-ip": "6.6.6.6",
+      "x-real-ip": "203.0.113.9",
+    });
+    expect(extractTrustedClientIp(headers)).toBe("203.0.113.9");
+  });
+
+  it("does not trust cf-connecting-ip when EDGE_SHARED_SECRET is unset", () => {
+    delete process.env.EDGE_SHARED_SECRET;
+    const headers = new Headers({
+      ...EDGE,
+      "cf-connecting-ip": "6.6.6.6",
+      "x-real-ip": "203.0.113.9",
+    });
+    expect(extractTrustedClientIp(headers)).toBe("203.0.113.9");
   });
 });
 
