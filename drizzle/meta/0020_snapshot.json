@@ -1,5 +1,5 @@
 {
-  "id": "f4d777b7-3bc1-4986-b133-773504447e04",
+  "id": "78ef4ace-1ab1-404c-9590-329ce92c433a",
   "prevId": "622085f3-6eaa-438b-8992-0d0260d9614d",
   "version": "7",
   "dialect": "postgresql",
@@ -527,6 +527,22 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "dataset_access_grants_open_email_idx": {
+          "name": "dataset_access_grants_open_email_idx",
+          "columns": [
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"dataset_access_grants\".\"status\" in ('unverified', 'pending_review', 'active')",
           "concurrently": false,
           "method": "btree",
           "with": {}

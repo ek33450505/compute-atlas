@@ -8,6 +8,7 @@ import {
   DATASET_DOWNLOAD_OUTCOMES,
   DATASET_EDITION_STATUSES,
   DATASET_GRANT_STATUSES,
+  DATASET_OPEN_GRANT_STATUSES,
   datasetAccessGrantsTable,
   datasetDownloadsTable,
   datasetEditionsTable,
@@ -254,6 +255,58 @@ describe("dataset_access_grants", () => {
       .values(grantValues({ lastNoticeEditionId: orphan }))
       .returning();
     expect(row.lastNoticeEditionId).toBe(orphan);
+  });
+});
+
+describe("dataset_access_grants: one OPEN row per email (dataset_access_grants_open_email_idx)", () => {
+  const OPEN = DATASET_OPEN_GRANT_STATUSES;
+  const CLOSED = ["rejected", "revoked", "expired"] as const;
+  const EMAIL = "same-person@example.com";
+
+  it("the open and closed lists together cover the status vocabulary exactly, with no overlap", () => {
+    expect([...OPEN, ...CLOSED].sort()).toEqual([...DATASET_GRANT_STATUSES].sort());
+  });
+
+  // Every ordered pair (including a status with itself) drawn from the open statuses.
+  const OPEN_PAIRS = OPEN.flatMap((a) => OPEN.map((b) => [a, b] as const));
+
+  it.each(OPEN_PAIRS)("rejects a second open row with the same email (%s then %s) with 23505", async (first, second) => {
+    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, status: first }));
+    const code = await sqlState(
+      tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, status: second }))
+    );
+    expect(code).toBe("23505");
+    expect(await countRows("dataset_access_grants")).toBe(1);
+  });
+
+  it.each(CLOSED)("allows an open row alongside a %s row with the same email, in either insert order", async (closed) => {
+    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, status: closed }));
+    for (const open of OPEN) {
+      await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: `${open}-${EMAIL}`, status: open }));
+      await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: `${open}-${EMAIL}`, status: closed }));
+    }
+    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, status: "unverified" }));
+    expect(await countRows("dataset_access_grants")).toBe(1 + OPEN.length * 2 + 1);
+  });
+
+  it("allows any number of closed rows with the same email", async () => {
+    for (const status of [...CLOSED, ...CLOSED]) {
+      await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, status }));
+    }
+    expect(await countRows("dataset_access_grants")).toBe(CLOSED.length * 2);
+  });
+
+  it("a row that leaves the open set frees the email for a new open row", async () => {
+    const [row] = await tdb.db
+      .insert(datasetAccessGrantsTable)
+      .values(grantValues({ email: EMAIL, status: "active" }))
+      .returning();
+    expect(
+      await sqlState(tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL })))
+    ).toBe("23505");
+    await tdb.client.query(`UPDATE dataset_access_grants SET status = 'revoked' WHERE id = $1`, [row.id]);
+    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL }));
+    expect(await countRows("dataset_access_grants")).toBe(2);
   });
 });
 

@@ -724,6 +724,17 @@ export const DATASET_GRANT_STATUSES = [
 
 export type DatasetGrantStatus = (typeof DATASET_GRANT_STATUSES)[number];
 
+/**
+ * Statuses that count as an OPEN grant for an email: the single source for the predicate of the partial
+ * unique index `dataset_access_grants_open_email_idx` below and for the matching `ON CONFLICT ... WHERE`
+ * target in lib/dataset-grants.ts. Changing it changes the index, so it needs a migration.
+ */
+export const DATASET_OPEN_GRANT_STATUSES = [
+  "unverified",
+  "pending_review",
+  "active",
+] as const satisfies readonly DatasetGrantStatus[];
+
 export const DATASET_CATEGORIES = [
   "journalist",
   "academic",
@@ -764,6 +775,12 @@ export type DatasetDownloadOutcome = (typeof DATASET_DOWNLOAD_OUTCOMES)[number];
  * Deliberately separate from `apiAccessGrantsTable`: lib/api-daily-limit.ts
  * honors an active `api_access_grants` bearer to raise the public API
  * ceilings, and a dataset token must never do that.
+ *
+ * At most one OPEN (`unverified` | `pending_review` | `active`) row may exist
+ * per email, enforced by the partial unique index
+ * `dataset_access_grants_open_email_idx`; that is what gives the request path
+ * (lib/dataset-grants.ts) a race-free dedupe. Rows that are `expired`,
+ * `revoked` or `rejected` do not count, so a re-request inserts a new row.
  *
  * `lastNoticeEditionId` is the authoritative per-grant weekly-notice marker.
  * It remembers only the LAST edition claimed, so this is the CONTRACT the (not
@@ -825,6 +842,11 @@ export const datasetAccessGrantsTable = pgTable(
   (table) => [
     index("dataset_access_grants_status_idx").on(table.status),
     index("dataset_access_grants_email_idx").on(table.email),
+    uniqueIndex("dataset_access_grants_open_email_idx")
+      .on(table.email)
+      // `sql.raw` over the constant's quoted literals (fixed values in this file, never input): the index
+      // predicate must be literal text, and this emits the same SQL as the migration's hand-readable form.
+      .where(sql`${table.status} in (${sql.raw(DATASET_OPEN_GRANT_STATUSES.map((status) => `'${status}'`).join(", "))})`),
     index("dataset_access_grants_expires_at_idx").on(table.expiresAt),
     uniqueIndex("dataset_access_grants_verify_token_hash_idx").on(table.verifyTokenHash),
     uniqueIndex("dataset_access_grants_access_token_hash_idx").on(table.accessTokenHash),

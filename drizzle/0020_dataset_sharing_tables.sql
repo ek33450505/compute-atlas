@@ -56,6 +56,7 @@ ALTER TABLE "dataset_downloads" ADD CONSTRAINT "dataset_downloads_grant_id_datas
 ALTER TABLE "dataset_downloads" ADD CONSTRAINT "dataset_downloads_edition_id_dataset_editions_id_fk" FOREIGN KEY ("edition_id") REFERENCES "public"."dataset_editions"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "dataset_access_grants_status_idx" ON "dataset_access_grants" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "dataset_access_grants_email_idx" ON "dataset_access_grants" USING btree ("email");--> statement-breakpoint
+CREATE UNIQUE INDEX "dataset_access_grants_open_email_idx" ON "dataset_access_grants" USING btree ("email") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');--> statement-breakpoint
 CREATE INDEX "dataset_access_grants_expires_at_idx" ON "dataset_access_grants" USING btree ("expires_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "dataset_access_grants_verify_token_hash_idx" ON "dataset_access_grants" USING btree ("verify_token_hash");--> statement-breakpoint
 CREATE UNIQUE INDEX "dataset_access_grants_access_token_hash_idx" ON "dataset_access_grants" USING btree ("access_token_hash");--> statement-breakpoint
