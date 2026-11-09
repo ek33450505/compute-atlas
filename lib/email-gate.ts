@@ -1,20 +1,30 @@
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 
-import { subscriptionsTable } from "@/lib/db/schema";
+import { datasetAccessGrantsTable, subscriptionsTable } from "@/lib/db/schema";
+import { liveGrant, renewalPendingGrant } from "@/lib/dataset-grants";
 import { redactedErrorCode } from "@/lib/db-error";
 import { normalizeEmail } from "@/lib/email-address";
 import type { SendOutcome } from "@/lib/email";
 import {
   CONFIRM_CAP_MAX,
   CONFIRM_CAP_WINDOW_MS,
+  DATASET_ADMIN_NOTICE_CAP_MAX,
+  DATASET_ADMIN_NOTICE_CAP_WINDOW_MS,
+  DATASET_REQUESTER_CAP_KINDS,
+  DATASET_REQUESTER_CAP_MAX,
+  DATASET_REQUESTER_CAP_WINDOW_MS,
+  DATASET_SEND_KINDS,
   completeSend,
   countRecentConfirmSends,
+  countRecentSends,
   recordSendAttempt,
   recordSkip,
   settleSkip,
   type EmailSendBase,
+  type DatasetSendKind,
   type EmailSendKind,
   type EmailSendsDb,
+  type SubscriptionSendKind,
 } from "@/lib/email-sends";
 import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type SuppressionScope, type SuppressionStatus } from "@/lib/suppressions";
 
@@ -81,6 +91,31 @@ import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type Supp
  * NEVER throws for DB errors; the HTTP response must not depend on the
  * outcome (capped, suppressed and DB-down look identical to the requester),
  * so callers inside `after()` only need the result for tests and logs.
+ *
+ * DATASET MAIL has two more doors, mirroring this one (same claim-first order,
+ * outcome mapping, never-throws contract and RESIDUAL RACE). `sendGated` itself
+ * REFUSES a dataset kind (`skipped_unconfirmed`, recorded): that is a caller bug.
+ *
+ *   `sendGrantGated` (mail to the requester; rows anchor on the grant, not a
+ *   subscription: `subscription_id` null, target `dataset`/grantId). The grant
+ *   is re-read BY ID with its `live` and `renewalPending` flags projected in the
+ *   same SELECT (strict `=== true`, never a bare `status === "active"`). Gates:
+ *   address match; suppression of the grant's own address (global scope for
+ *   every kind; `dataset_edition_notice` uses target `dataset_edition`/`weekly`,
+ *   which a global row also blocks); required state: `dataset_verify` needs
+ *   `unverified`, `dataset_rejected` needs `rejected`, `dataset_already_active`
+ *   needs live OR renewal-pending (never lapsed), and approved / link_reissued /
+ *   renewal_reminder / edition_notice need live. An edition notice also needs an
+ *   `editionId` (row target `dataset_edition`/`<editionId>:<grantId>`). The
+ *   requester kinds `dataset_verify` + `dataset_already_active` share ONE
+ *   per-address budget (DATASET_REQUESTER_CAP_*), counted AFTER the claim.
+ *
+ *   `sendDatasetAdminNoticeGated` (maintainer alert, `dataset_admin_new_request`).
+ *   The grant must be `pending_review`. NO suppression check: a requester's
+ *   opt-out must not hide a request from review. One GLOBAL cap
+ *   (DATASET_ADMIN_NOTICE_CAP_*), claim first; a capped request still sits in
+ *   the admin queue. An empty recipient sends nothing and writes no row
+ *   (`gate_error`: a configuration fault, not a decision about the request).
  */
 
 export type GateDisposition =
@@ -114,7 +149,7 @@ export interface GatedSend {
   coveredSubscriptionIds?: string[];
 }
 
-const REQUIRED_STATUS: Record<EmailSendKind, "pending" | "confirmed"> = {
+const REQUIRED_STATUS: Record<SubscriptionSendKind, "pending" | "confirmed"> = {
   confirm: "pending",
   watch_started: "confirmed",
   facility_change: "confirmed",
@@ -122,6 +157,9 @@ const REQUIRED_STATUS: Record<EmailSendKind, "pending" | "confirmed"> = {
   state_digest: "confirmed",
   area_digest: "confirmed",
 };
+
+const isDatasetKind = (kind: EmailSendKind): kind is DatasetSendKind =>
+  (DATASET_SEND_KINDS as readonly string[]).includes(kind);
 
 function scopeForRow(row: { targetType: string; targetId: string | null }): SuppressionScope {
   if (row.targetType === "all" || !row.targetId) return { kind: "global" };
@@ -141,7 +179,7 @@ function outcomeFor(
   row: SubscriptionRow | undefined,
   suppression: SuppressionStatus | undefined,
   email: string,
-  kind: EmailSendKind
+  kind: SubscriptionSendKind
 ): SkipOutcome | null {
   if (!row || suppression === undefined || normalizeEmail(row.email) !== normalizeEmail(email)) {
     return "skipped_unconfirmed";
@@ -163,6 +201,18 @@ export async function sendGated(
   send: () => Promise<SendOutcome>
 ): Promise<GateResult> {
   const none = (disposition: GateDisposition): GateResult => ({ sent: false, disposition });
+
+  // Dataset mail has its own gates; reaching this one with a dataset kind is a caller bug. Fail closed.
+  const kind = opts.kind;
+  if (isDatasetKind(kind)) {
+    try {
+      await recordSkip(db, { kind, email: opts.email, runId: opts.runId ?? null }, "skipped_unconfirmed");
+    } catch (err) {
+      logGateError("could not record skip", err);
+      return none("gate_error");
+    }
+    return none("skipped_unconfirmed");
+  }
 
   // 1. Re-read the row by id.
   let row: SubscriptionRow | undefined;
@@ -213,7 +263,7 @@ export async function sendGated(
       ? await isSuppressed(db, row.email, scopeForRow(row))
       : undefined,
     opts.email,
-    opts.kind
+    kind
   );
   if (anchorSkip) return skip(anchorSkip);
 
@@ -236,7 +286,7 @@ export async function sendGated(
     );
     const statuses = await suppressionStatuses(db, opts.email, present.map(scopeForRow));
     const statusOf = new Map(present.map((r, i) => [r, statuses[i]]));
-    const failures = coveredRows.map((r) => outcomeFor(r, r && statusOf.get(r), opts.email, opts.kind));
+    const failures = coveredRows.map((r) => outcomeFor(r, r && statusOf.get(r), opts.email, kind));
     const worst = SKIP_SEVERITY.find((o) => failures.includes(o));
     if (worst) return skip(worst, { row: coveredRows[failures.indexOf(worst)] });
   }
@@ -250,7 +300,7 @@ export async function sendGated(
     return none("gate_error");
   }
 
-  if (opts.kind === "confirm") {
+  if (kind === "confirm") {
     let used: number;
     try {
       used = await countRecentConfirmSends(db, row.email, CONFIRM_CAP_WINDOW_MS);
@@ -275,4 +325,226 @@ export async function sendGated(
   await completeSend(db, id, outcome);
   if (outcome.sent) return { sent: true, disposition: "sent" };
   return none("skipped" in outcome && outcome.skipped === "no_key" ? "skipped_no_key" : "send_failed");
+}
+
+/** Every dataset kind mailed to the requester (the admin alert has its own gate). */
+export type DatasetRequesterKind = Exclude<DatasetSendKind, "dataset_admin_new_request">;
+
+const isRequesterKind = (kind: unknown): kind is DatasetRequesterKind =>
+  typeof kind === "string" &&
+  kind !== "dataset_admin_new_request" &&
+  (DATASET_SEND_KINDS as readonly string[]).includes(kind);
+
+export interface GrantGatedSend {
+  kind: DatasetRequesterKind;
+  grantId: string;
+  /** Plaintext address of the send; must match the grant's, else nothing is sent. */
+  email: string;
+  /** Required for `dataset_edition_notice`; ignored otherwise. */
+  editionId?: string;
+  runId?: string | null;
+}
+
+/** Claim already made: optionally count (cap), then send and settle. Shared by both dataset gates. */
+async function claimCountSend(
+  db: EmailSendsDb,
+  base: EmailSendBase,
+  cap: { count: () => Promise<number>; max: number } | null,
+  send: () => Promise<SendOutcome>
+): Promise<GateResult> {
+  const none = (disposition: GateDisposition): GateResult => ({ sent: false, disposition });
+  let id: string;
+  try {
+    id = await recordSendAttempt(db, base);
+  } catch (err) {
+    logGateError("could not record send attempt", err);
+    return none("gate_error");
+  }
+
+  if (cap) {
+    let used: number;
+    try {
+      used = await cap.count();
+    } catch (err) {
+      logGateError("dataset cap lookup failed", err);
+      // Fail closed; the claim stays counted (outcome error), as for confirm.
+      await completeSend(db, id, { sent: false, errorCode: "cap_check_failed" });
+      return none("gate_error");
+    }
+    if (used > cap.max) {
+      await settleSkip(db, id, "skipped_capped");
+      return none("skipped_capped");
+    }
+  }
+
+  let outcome: SendOutcome;
+  try {
+    outcome = await send();
+  } catch {
+    outcome = { sent: false, errorCode: "send_threw" };
+  }
+  await completeSend(db, id, outcome);
+  if (outcome.sent) return { sent: true, disposition: "sent" };
+  return none("skipped" in outcome && outcome.skipped === "no_key" ? "skipped_no_key" : "send_failed");
+}
+
+/** The requester-mail door; see the DATASET MAIL note in the doc comment at the top of this file. */
+export async function sendGrantGated(
+  db: EmailSendsDb,
+  opts: GrantGatedSend,
+  send: () => Promise<SendOutcome>
+): Promise<GateResult> {
+  const none = (disposition: GateDisposition): GateResult => ({ sent: false, disposition });
+  const kind: unknown = opts.kind;
+  if (!isRequesterKind(kind)) {
+    console.error("email gate: sendGrantGated refused a non-requester kind");
+    return none("skipped_unconfirmed");
+  }
+
+  // (a) Re-read by id; the lifecycle flags are projected in the same SELECT as the row.
+  const now = new Date();
+  let grant:
+    | { id: string; email: string; status: string; live: boolean; renewalPending: boolean }
+    | undefined;
+  try {
+    [grant] = await db
+      .select({
+        id: datasetAccessGrantsTable.id,
+        email: datasetAccessGrantsTable.email,
+        status: datasetAccessGrantsTable.status,
+        live: sql<boolean>`${liveGrant(now)}`,
+        renewalPending: sql<boolean>`${renewalPendingGrant()}`,
+      })
+      .from(datasetAccessGrantsTable)
+      .where(eq(datasetAccessGrantsTable.id, opts.grantId))
+      .limit(1);
+  } catch (err) {
+    logGateError("dataset grant lookup failed", err);
+    return none("gate_error");
+  }
+
+  const editionId = opts.editionId?.trim() ?? "";
+  const base: EmailSendBase = {
+    kind,
+    email: opts.email,
+    subscriptionId: null,
+    targetType: kind === "dataset_edition_notice" && editionId ? "dataset_edition" : "dataset",
+    targetId: kind === "dataset_edition_notice" && editionId ? `${editionId}:${opts.grantId}` : opts.grantId,
+    runId: opts.runId ?? null,
+  };
+  const skip = async (outcome: SkipOutcome): Promise<GateResult> => {
+    try {
+      await recordSkip(db, base, outcome);
+    } catch (err) {
+      logGateError("could not record skip", err);
+      return none("gate_error");
+    }
+    return none(outcome);
+  };
+
+  // (b) Gone, or another address.
+  if (!grant || normalizeEmail(grant.email) !== normalizeEmail(opts.email)) return skip("skipped_unconfirmed");
+
+  // (c) Suppression of the grant's own address.
+  const scope: SuppressionScope =
+    kind === "dataset_edition_notice"
+      ? { kind: "target", targetType: "dataset_edition", targetId: "weekly" }
+      : { kind: "global" };
+  const suppression = await isSuppressed(db, grant.email, scope);
+  if (!mayEmail(suppression)) return skip(isLookupFailure(suppression) ? "skipped_check_failed" : "skipped_suppressed");
+
+  // (d) Required state. Strict `=== true` on the projected flags: never truthiness, never a bare status check.
+  const live = grant.live === true;
+  const renewalPending = grant.renewalPending === true;
+  let stateOk: boolean;
+  switch (kind) {
+    case "dataset_verify":
+      stateOk = grant.status === "unverified";
+      break;
+    case "dataset_rejected":
+      stateOk = grant.status === "rejected";
+      break;
+    case "dataset_already_active":
+      stateOk = live || renewalPending;
+      break;
+    default:
+      stateOk = live;
+  }
+  if (!stateOk) return skip("skipped_unconfirmed");
+
+  // (e) An edition notice names its edition.
+  if (kind === "dataset_edition_notice" && !editionId) return skip("skipped_unconfirmed");
+
+  // (f) + (g) Claim, count (requester-cap kinds), send.
+  const capped = (DATASET_REQUESTER_CAP_KINDS as readonly string[]).includes(kind);
+  return claimCountSend(
+    db,
+    base,
+    capped
+      ? {
+          count: () =>
+            countRecentSends(db, {
+              kinds: DATASET_REQUESTER_CAP_KINDS,
+              email: grant.email,
+              windowMs: DATASET_REQUESTER_CAP_WINDOW_MS,
+            }),
+          max: DATASET_REQUESTER_CAP_MAX,
+        }
+      : null,
+    send
+  );
+}
+
+/** The maintainer-alert door; see the DATASET MAIL note in the doc comment at the top of this file. */
+export async function sendDatasetAdminNoticeGated(
+  db: EmailSendsDb,
+  opts: { grantId: string; recipient: string },
+  send: () => Promise<SendOutcome>
+): Promise<GateResult> {
+  const none = (disposition: GateDisposition): GateResult => ({ sent: false, disposition });
+  const recipient = opts.recipient.trim();
+  if (!recipient) {
+    console.error("email gate: dataset admin notice has no recipient");
+    return none("gate_error");
+  }
+
+  let grant: { status: string } | undefined;
+  try {
+    [grant] = await db
+      .select({ status: datasetAccessGrantsTable.status })
+      .from(datasetAccessGrantsTable)
+      .where(eq(datasetAccessGrantsTable.id, opts.grantId))
+      .limit(1);
+  } catch (err) {
+    logGateError("dataset grant lookup failed", err);
+    return none("gate_error");
+  }
+
+  const base: EmailSendBase = {
+    kind: "dataset_admin_new_request",
+    email: recipient,
+    subscriptionId: null,
+    targetType: "dataset",
+    targetId: opts.grantId,
+  };
+  if (grant?.status !== "pending_review") {
+    try {
+      await recordSkip(db, base, "skipped_unconfirmed");
+    } catch (err) {
+      logGateError("could not record skip", err);
+      return none("gate_error");
+    }
+    return none("skipped_unconfirmed");
+  }
+
+  return claimCountSend(
+    db,
+    base,
+    {
+      count: () =>
+        countRecentSends(db, { kinds: ["dataset_admin_new_request"], windowMs: DATASET_ADMIN_NOTICE_CAP_WINDOW_MS }),
+      max: DATASET_ADMIN_NOTICE_CAP_MAX,
+    },
+    send
+  );
 }

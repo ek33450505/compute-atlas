@@ -573,10 +573,10 @@ export async function checkAccessGrantEmailSendCap(email: string): Promise<{ ok:
  * window. It does NOT bound verify MAIL volume: re-requesting an unverified
  * address rotates its existing row (no new row, spaced by
  * `DATASET_ROTATION_COOLDOWN_MS`) and mails again, and an active address is
- * re-mailed `dataset_already_active`. U2b's send gate is planned to cap every
- * dataset mail per recipient (not built yet: lib/email-gate.ts has no dataset
- * kinds today). `email` is expected pre-normalized (lowercased/trimmed) by the
- * caller.
+ * re-mailed `dataset_already_active`. `sendGrantGated` (lib/email-gate.ts) caps
+ * those two mails per recipient (one shared budget of 5 per hour) once the
+ * route (U3a, not built yet) sends through it.
+ * `email` is expected pre-normalized (lowercased/trimmed) by the caller.
  */
 export async function checkDatasetRequestEmailCap(email: string): Promise<{ ok: boolean }> {
   const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);

@@ -118,14 +118,15 @@ export const lapsedGrant = (now: Date): SQL =>
  *   MINT, not from delivery.
  * - A double submit inside the cooldown sends nothing new, and the first link still works.
  * - Rotations are spaced 20 minutes apart: at most 4 in any closed hour (3 per rolling hour), so the
- *   planned U2b per-recipient cap of 5 per hour can never starve them.
+ *   per-recipient cap of 5 per hour in `sendGrantGated` (lib/email-gate.ts) does not starve them. That cap
+ *   is one budget shared with `dataset_already_active`, which only an address with an active row draws.
  * - A stranger can still replace the request's content once the cooldown has passed. A stranger who
  *   re-requests an address about every 20 minutes can keep pre-empting the owner's own submission. The owner's
  *   only link is then the one the stranger's request triggered, which carries the stranger's content until the
- *   planned U2b verify mail echoes the submitted name and intended use, so the owner sees what is being
- *   verified.
+ *   planned verify mail template (U2c, not built yet) echoes the submitted name and intended use, so the
+ *   owner sees what is being verified.
  * - No token or data is exposed: the response to the requester is the same generic success either way.
- * - U3a must not go live before U2b's echo and send cap exist.
+ * - U3a must not go live before U2b's send cap and U2c's echo exist.
  */
 export const DATASET_ROTATION_COOLDOWN_MS = 20 * 60 * 1000;
 
@@ -168,10 +169,11 @@ const genericSuccess = (): DatasetRequestResult => ({ ok: true, publicResult: { 
  *
  * Mail volume: the per-address cap below bounds NEW ROWS per address per window,
  * not mails. Rotation and `dataset_already_active` can mail again for an existing
- * row. Rotation is spaced by `DATASET_ROTATION_COOLDOWN_MS`; U2b's send gate is
- * planned to cap every dataset mail per recipient (5 per address per hour) and is
- * deliberately not duplicated here (not built yet: lib/email-gate.ts has no
- * dataset kinds today).
+ * row. Rotation is spaced by `DATASET_ROTATION_COOLDOWN_MS`. The mail itself is
+ * capped in `sendGrantGated` (lib/email-gate.ts), where `dataset_verify` and
+ * `dataset_already_active` share one budget of 5 per address per hour; the cap
+ * applies once the route (U3a, not built yet) sends through that gate. It is
+ * deliberately not duplicated here.
  */
 export async function requestDatasetAccess(
   rawInput: unknown,
@@ -279,8 +281,8 @@ export async function requestDatasetAccess(
     // pick the branch that mails. Every other value takes the lapsed branch below, whose UPDATE is
     // SQL-guarded by `lapsedGrant`, so a live row is left intact and the INSERT meets the partial index.
     if (open.lapsed === false) {
-      // The already-active mail is planned to be bounded by U2b's per-recipient send-gate cap
-      // (5 per address per hour; not built yet); no cap is added here.
+      // The already-active mail is bounded by the per-recipient cap in `sendGrantGated` (lib/email-gate.ts;
+      // 5 per address per hour, shared with dataset_verify) once U3a sends through it; no cap is added here.
       return mailable
         ? { ok: true, publicResult: { ok: true }, mail: { kind: "dataset_already_active", grantId: open.id, email } }
         : genericSuccess();

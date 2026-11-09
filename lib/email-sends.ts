@@ -1,4 +1,4 @@
-import { and, eq, gte, notInArray, sql } from "drizzle-orm";
+import { and, eq, gte, inArray, notInArray, sql } from "drizzle-orm";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 
 import * as schema from "@/lib/db/schema";
@@ -16,7 +16,8 @@ import { hashNotifyEmail } from "@/lib/rate-limit";
  * fail-closed policy.
  */
 
-export const EMAIL_SEND_KINDS = [
+/** Subscription mail, gated by `sendGated` (lib/email-gate.ts). */
+export const SUBSCRIPTION_SEND_KINDS = [
   "confirm",
   "watch_started",
   "facility_change",
@@ -24,6 +25,22 @@ export const EMAIL_SEND_KINDS = [
   "state_digest",
   "area_digest",
 ] as const;
+export type SubscriptionSendKind = (typeof SUBSCRIPTION_SEND_KINDS)[number];
+
+/** Dataset-sharing mail, gated by `sendGrantGated` / `sendDatasetAdminNoticeGated`; never by `sendGated`. */
+export const DATASET_SEND_KINDS = [
+  "dataset_verify",
+  "dataset_already_active",
+  "dataset_admin_new_request",
+  "dataset_approved",
+  "dataset_rejected",
+  "dataset_edition_notice",
+  "dataset_renewal_reminder",
+  "dataset_link_reissued",
+] as const;
+export type DatasetSendKind = (typeof DATASET_SEND_KINDS)[number];
+
+export const EMAIL_SEND_KINDS = [...SUBSCRIPTION_SEND_KINDS, ...DATASET_SEND_KINDS] as const;
 export type EmailSendKind = (typeof EMAIL_SEND_KINDS)[number];
 
 export const EMAIL_SEND_SKIP_OUTCOMES = [
@@ -47,6 +64,18 @@ export type EmailSendOutcome = (typeof EMAIL_SEND_OUTCOMES)[number];
 /** Per-address cap on `confirm` sends: CONFIRM_CAP_MAX per CONFIRM_CAP_WINDOW_MS (Ed, 10 per 30 days). */
 export const CONFIRM_CAP_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 export const CONFIRM_CAP_MAX = 10;
+
+/**
+ * Requester-facing dataset mail that spends ONE shared per-address budget:
+ * DATASET_REQUESTER_CAP_MAX per DATASET_REQUESTER_CAP_WINDOW_MS (Ed, 2026-11-09: 5 per address per hour).
+ */
+export const DATASET_REQUESTER_CAP_KINDS: readonly DatasetSendKind[] = ["dataset_verify", "dataset_already_active"];
+export const DATASET_REQUESTER_CAP_MAX = 5;
+export const DATASET_REQUESTER_CAP_WINDOW_MS = 60 * 60 * 1000;
+
+/** Maintainer new-request alerts: DATASET_ADMIN_NOTICE_CAP_MAX per rolling 24 h across ALL requests (Ed, 2026-11-09). */
+export const DATASET_ADMIN_NOTICE_CAP_MAX = 25;
+export const DATASET_ADMIN_NOTICE_CAP_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 /** Any drizzle pg database (neon-http in prod, PGlite in tests); same shape as `SuppressionDb`. */
 export type EmailSendsDb = PgDatabase<PgQueryResultHKT, typeof schema>;
@@ -177,6 +206,37 @@ export async function countRecentConfirmSends(
       and(
         eq(emailSendsTable.kind, "confirm"),
         eq(emailSendsTable.emailHash, hashAddress(email)),
+        gte(emailSendsTable.createdAt, since),
+        notInArray(emailSendsTable.outcome, ["skipped_no_key", ...EMAIL_SEND_SKIP_OUTCOMES])
+      )
+    );
+  return row?.n ?? 0;
+}
+
+/**
+ * Kind-parameterized sibling of `countRecentConfirmSends`: counts rows of the
+ * given kinds since `now - windowMs`, excluding every `skipped_*` outcome
+ * (`skipped_no_key` included); `attempted` and `error` DO count. Filters on the
+ * address hash only when `email` is given (the global admin cap omits it).
+ * THROWS on DB error.
+ *
+ * RESERVE-THEN-COUNT: the caller must claim its own `attempted` row first and
+ * then count, so the count includes the claim and concurrent callers see each
+ * other's claims. Count-then-insert would let a burst all read a count under
+ * the cap.
+ */
+export async function countRecentSends(
+  db: EmailSendsDb,
+  opts: { kinds: readonly EmailSendKind[]; email?: string; windowMs: number; now?: Date }
+): Promise<number> {
+  const since = new Date((opts.now ?? new Date()).getTime() - opts.windowMs);
+  const [row] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(emailSendsTable)
+    .where(
+      and(
+        inArray(emailSendsTable.kind, [...opts.kinds]),
+        opts.email === undefined ? undefined : eq(emailSendsTable.emailHash, hashAddress(opts.email)),
         gte(emailSendsTable.createdAt, since),
         notInArray(emailSendsTable.outcome, ["skipped_no_key", ...EMAIL_SEND_SKIP_OUTCOMES])
       )
