@@ -394,3 +394,30 @@ describe("POST /api/contact — attempts, not outcomes (Finding 1) + honeypot sy
     expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(0);
   });
 });
+
+describe("POST /api/contact — an un-coercible website value is a tripped honeypot, never a 500", () => {
+  const INVALID = { ...VALID, email: "not-an-email" };
+
+  // A fresh DB per call: every call gets a full rate-limit budget and no state
+  // from the one before, so the paired responses differ only in `website`.
+  async function answer(body: unknown) {
+    await tdb.reset();
+    pendingAfter = undefined;
+    const res = await POST(req(body));
+    await flushAfter();
+    return { status: res.status, body: (await res.json()) as unknown };
+  }
+
+  it("website {toString:'x'} answers exactly like website 'x', never a 500", async () => {
+    // `String({toString:"x"})` throws; JSON.stringify keeps the own property.
+    const body = { ...VALID, website: { toString: "x" } };
+    expect(JSON.parse(JSON.stringify(body)).website.toString).toBe("x");
+    const tripped = await answer({ ...VALID, website: "x" });
+    expect(tripped.status).toBe(201);
+    expect(await answer(body)).toEqual(tripped);
+    const trippedInvalid = await answer({ ...INVALID, website: "x" });
+    expect(trippedInvalid.status).toBe(201);
+    expect(await answer({ ...INVALID, website: { toString: "x" } })).toEqual(trippedInvalid);
+    expect(await tdb.db.select().from(contactMessagesTable)).toHaveLength(0);
+  });
+});

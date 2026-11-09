@@ -35,11 +35,8 @@ export const datasetRequestInputSchema = z.object({
   links: z.array(httpUrlSchema).max(3).default([]),
   attributionAck: z.literal(true),
   termsAccepted: z.literal(true),
-  // Honeypot — real users never fill this. The honeypot already ran on the RAW input before this schema,
-  // and `isHoneypotTripped` treats null, false and "" as "not filled in" (and trims), so the schema must
-  // NOT validate this field's type or length: any type check here would answer 400 for a value the
-  // honeypot let through, an oracle on the honeypot. The 64 KiB body cap bounds its size.
-  website: z.unknown().optional(),
+  // Deliberately unbounded: isHoneypotTripped trims, so a whitespace-only value over a max would skip the honeypot and 400 (an oracle); the 64 KiB body cap bounds it.
+  website: z.string().optional(), // honeypot — real users never fill this; checked on the RAW input before this schema runs
 });
 
 export type DatasetRequestInput = z.infer<typeof datasetRequestInputSchema>;
@@ -180,11 +177,14 @@ export async function requestDatasetAccess(
   rawInput: unknown,
   ipHash: string
 ): Promise<DatasetRequestResult> {
-  // Honeypot FIRST, against the RAW input, before the schema runs. The schema
-  // types `website` as `z.unknown().optional()` so it never validates that
-  // field: a typed check would answer 400 for a null/false/non-string value
-  // that `isHoneypotTripped` lets through while a filled string answered
-  // generic success, an oracle on the honeypot (see requestAccessGrant).
+  // Honeypot FIRST, against the RAW input, before the schema runs (see
+  // requestAccessGrant). It runs on the raw value so that every non-empty
+  // type, a number or an object as well as a string, answers the same generic
+  // success. `null`, `false` and `[]` are "present but not filled in": they
+  // are not tripped and go through normal validation, so the schema answers
+  // 400 for them exactly as it does for a non-string value in any other
+  // optional string field (e.g. `organization: null`). That 400 is not an
+  // oracle, because every optional string field rejects them the same way.
   if (
     isHoneypotTripped(
       rawInput && typeof rawInput === "object"

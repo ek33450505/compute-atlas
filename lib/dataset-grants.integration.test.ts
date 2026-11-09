@@ -329,13 +329,26 @@ describe("requestDatasetAccess", () => {
     expect(await allRows()).toHaveLength(0);
   });
 
-  it("honeypot: null, false, empty and whitespace `website` are 'not filled in', answered exactly like an omitted one", async () => {
-    // A filled honeypot is silent; these are the values isHoneypotTripped lets through.
-    // The schema must not 400 on them (an oracle on the honeypot): a valid body is a normal new request...
+  it("honeypot: an un-coercible `website` ({toString:'x'}) answers the same generic success as 'x', never a throw", async () => {
+    // `String({toString: "x"})` throws "Cannot convert object to primitive value", and the body is
+    // attacker-controlled JSON, so parse it the way the route would.
+    const website = JSON.parse('{"toString":"x"}') as unknown;
+    expect(() => String(website)).toThrow(TypeError);
+    const tripped = await requestDatasetAccess(body({ website: "x" }), "iphash-15");
+    expect(tripped).toEqual({ ok: true, publicResult: { ok: true } });
+    await expect(requestDatasetAccess(body({ website }), "iphash-15")).resolves.toEqual(tripped);
+    // Still generic when every other field is garbage, exactly like a filled string.
+    await expect(requestDatasetAccess({ website, email: "bad" }, "iphash-15")).resolves.toEqual(tripped);
+    expect(await allRows()).toHaveLength(0);
+  });
+
+  it("honeypot: empty and whitespace `website` (even over-long) are 'not filled in', answered exactly like an omitted one", async () => {
+    // A filled honeypot is silent; these are values isHoneypotTripped lets through. `website` is deliberately
+    // unbounded, so a whitespace-only value over any max cannot skip the honeypot and 400. A valid body is a normal new request...
     const omitted = await requestDatasetAccess(body({ email: "omitted@example.com" }), "iphash-11");
     expect(omitted.ok && omitted.mail?.kind).toBe("dataset_verify");
     let expectedRows = 1;
-    for (const [i, website] of [null, false, "", "   "].entries()) {
+    for (const [i, website] of ["", "   ", " ".repeat(300)].entries()) {
       const result = await requestDatasetAccess(body({ email: `absent-${i}@example.com`, website }), "iphash-11");
       expect(result.ok).toBe(true);
       if (!result.ok) return;
@@ -348,12 +361,33 @@ describe("requestDatasetAccess", () => {
     const rowsBefore = (await allRows()).length;
     const invalidOmitted = await requestDatasetAccess({ email: "bad" }, "iphash-11");
     expect(invalidOmitted.ok).toBe(false);
-    for (const website of [null, false, "", "   "]) {
+    for (const website of ["", "   ", " ".repeat(300)]) {
       const invalid = await requestDatasetAccess({ email: "bad", website }, "iphash-11");
       expect(invalid).toStrictEqual(invalidOmitted);
       expect(JSON.stringify(invalid)).not.toContain("website");
     }
     expect(await allRows()).toHaveLength(rowsBefore);
+  });
+
+  it("honeypot: null and false `website` are 'present but not filled in', so they get the same 400 as a non-string value in any other optional string field", async () => {
+    // isHoneypotTripped lets null and false through, so they are validated normally. `website` is a plain
+    // optional string, so they are rejected exactly as `organization: null` / `organization: false` are.
+    // That 400 is not an oracle: every optional string field answers the same way.
+    for (const value of [null, false]) {
+      const control = await requestDatasetAccess(body({ organization: value }), "iphash-11");
+      expect(control).toMatchObject({ ok: false, status: 400, error: "Invalid request" });
+      const result = await requestDatasetAccess(body({ website: value }), "iphash-11");
+      expect(result).toMatchObject({ ok: false, status: 400, error: "Invalid request" });
+      if (result.ok || control.ok) throw new Error("expected a 400");
+      // Same shape: one issue with the same Zod code and message; only the field path differs.
+      const strip = (issues: unknown) =>
+        (issues as Array<{ path: unknown[] }>).map(({ path, ...rest }) => ({ path: path.length, ...rest }));
+      expect(strip(result.issues)).toEqual(strip(control.issues));
+      expect(result.issues as Array<{ path: unknown[] }>).toHaveLength(1);
+      expect((result.issues as Array<{ path: unknown[] }>)[0].path).toEqual(["website"]);
+      expect((control.issues as Array<{ path: unknown[] }>)[0].path).toEqual(["organization"]);
+    }
+    expect(await allRows()).toHaveLength(0);
   });
 
   it("enumeration safety: publicResult is the same object shape on every success path", async () => {
@@ -364,9 +398,6 @@ describe("requestDatasetAccess", () => {
     // honeypot: string and non-string
     results.push(await requestDatasetAccess(body({ website: "x" }), "ip"));
     results.push(await requestDatasetAccess(body({ website: 1 }), "ip"));
-    // null / false are "not filled in": a normal request, same publicResult as an omitted `website`
-    results.push(await requestDatasetAccess(body({ email: "nullhp@example.com", website: null }), "ip"));
-    results.push(await requestDatasetAccess(body({ email: "falsehp@example.com", website: false }), "ip"));
     // over the cap
     for (let i = 0; i < EMAIL_SEND_CAP_MAX; i++) await insertGrant({ email: "capped@example.com", status: "rejected" });
     results.push(await requestDatasetAccess(body({ email: "capped@example.com" }), "ip"));
@@ -402,7 +433,7 @@ describe("requestDatasetAccess", () => {
     expect(rejRows).toHaveLength(2);
     expect(rejRows.some((r) => r.id === rejected.id)).toBe(true);
 
-    expect(results).toHaveLength(14);
+    expect(results).toHaveLength(12);
     for (const result of results) {
       expect(result.ok).toBe(true);
       if (result.ok) expect(result.publicResult).toStrictEqual({ ok: true });

@@ -790,3 +790,44 @@ describe("POST /api/contribute — 'email me when reviewed' (SUBMISSION_NOTIFY_E
     }
   });
 });
+
+describe("POST /api/contribute — an un-coercible website value is a tripped honeypot, never a 500", () => {
+  const INVALID ={ ...validCreateBody, sourceUrl: "not-a-valid-url" };
+  const CORRECTION = {
+    kind: "correction" as const,
+    targetFacilityId: seedDoc.id,
+    field: "operator",
+    value: "Corrected Operator",
+    sourceUrl: "https://example.com/correction",
+  };
+  const INVALID_CORRECTION = { ...CORRECTION, sourceUrl: "not-a-valid-url" };
+
+  // A fresh DB per call: every call gets a full rate-limit budget and no state
+  // from the one before, so the paired responses differ only in `website`.
+  async function answer(body: unknown) {
+    await tdb.reset();
+    await seedFacility(tdb.db, seedDoc);
+    pendingAfter = undefined;
+    const res = await POST(req(body));
+    await flushAfter();
+    return { status: res.status, body: (await res.json()) as unknown };
+  }
+
+  describe.each([
+    ["create", validCreateBody, INVALID],
+    ["correction", CORRECTION, INVALID_CORRECTION],
+  ])("kind: %s", (_kind, valid, invalid) => {
+    it("website {toString:'x'} answers exactly like website 'x', never a 500", async () => {
+      // `String({toString:"x"})` throws; JSON.stringify keeps the own property.
+      const body = { ...valid, website: { toString: "x" } };
+      expect(JSON.parse(JSON.stringify(body)).website.toString).toBe("x");
+      const tripped = await answer({ ...valid, website: "x" });
+      expect(tripped.status).toBe(201);
+      expect(await answer(body)).toEqual(tripped);
+      const trippedInvalid = await answer({ ...invalid, website: "x" });
+      expect(trippedInvalid.status).toBe(201);
+      expect(await answer({ ...invalid, website: { toString: "x" } })).toEqual(trippedInvalid);
+      expect(await tdb.db.select().from(submissionsTable)).toHaveLength(0);
+    });
+  });
+});

@@ -76,7 +76,19 @@ describe("isHoneypotTripped", () => {
     ["an empty object", {}],
     ["a non-empty array", ["x"]],
     ["a whitespace-padded string", "  x  "],
+    ["a one-character string", "x"],
   ])("trips on %s (non-empty after coercion)", (_label, website) => {
+    expect(isHoneypotTripped({ website })).toBe(true);
+  });
+
+  // `String({toString: "x"})` throws "Cannot convert object to primitive value"
+  // (a non-callable own `toString` and an object `valueOf`), and the body is
+  // attacker-controlled JSON. An unguarded throw is a 500 that only a honeypot
+  // value can produce, so a coercion failure must count as TRIPPED instead.
+  it("trips, without throwing, on a value whose coercion to string throws", () => {
+    const website = JSON.parse('{"toString":"x"}') as unknown;
+    expect(() => String(website)).toThrow(TypeError);
+    expect(() => isHoneypotTripped({ website })).not.toThrow();
     expect(isHoneypotTripped({ website })).toBe(true);
   });
 
