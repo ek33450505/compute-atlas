@@ -17,13 +17,17 @@
  *   3. The mutation re-applies the SAME WHERE predicate used for the
  *      candidate select (never "delete the ids selected earlier"), so a row
  *      that changed between select and mutate isn't wrongly hit.
+ *   4. The backup files themselves are deleted once their FILENAME timestamp
+ *      is older than RETENTION_BACKUP_RETENTION_DAYS (immediate entries of the
+ *      backup dir only, regular files matching this script's own naming; a
+ *      symlink or directory is never touched).
  *
  * Run: npm run retention:prune               (dry run — read-only, safe anytime)
  *      npm run retention:prune -- --apply    (writes — see safety contract above)
  *
  * Uses relative imports, matching scripts/export.ts.
  */
-import { appendFileSync, mkdirSync, statSync } from "node:fs";
+import { appendFileSync, lstatSync, mkdirSync, readdirSync, statSync, unlinkSync } from "node:fs";
 import path from "node:path";
 
 import { and, eq, inArray, isNotNull, lt, ne, or, sql } from "drizzle-orm";
@@ -69,6 +73,7 @@ export const DATASET_ENDED_RETENTION_DAYS = 365; // dataset_access_grants: delet
 export const DATASET_REQUEST_IP_HASH_RETENTION_DAYS = 90; // dataset_access_grants: null submitterIpHash this many days after reviewedAt, whatever the status — the row itself stays
 export const DATASET_DOWNLOADS_RETENTION_DAYS = 365; // dataset_downloads: delete rows older than this many days (by createdAt)
 export const DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS = 90; // dataset_downloads: null ipHash on rows older than this many days (by createdAt) — the row itself stays
+export const RETENTION_BACKUP_RETENTION_DAYS = 30; // discovery-logs/retention-backups/*.jsonl: delete backup files whose FILENAME timestamp is older than this many days — the dataset privacy notice states it (pinned by a test)
 
 function daysAgo(now: Date, days: number): Date {
   return new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
@@ -96,10 +101,17 @@ export interface RetentionRunOptions {
   backupDir?: string;
 }
 
+export interface RetentionBackupsOutcome {
+  candidates: number;
+  deleted: number;
+  error?: string;
+}
+
 export interface RetentionRunSummary {
   dryRun: boolean;
   backupPath: string | null;
   tables: RetentionTableOutcome[];
+  backups: RetentionBackupsOutcome;
   ok: boolean;
 }
 
@@ -412,6 +424,54 @@ function buildSteps(now: Date): RetentionStep[] {
   ];
 }
 
+const BACKUP_NAME_RE = /^retention-(\d{4}-\d{2}-\d{2})T(\d{2})-(\d{2})-(\d{2})-(\d{3})Z\.jsonl$/;
+
+/**
+ * Deletes retention backup files older than RETENTION_BACKUP_RETENTION_DAYS.
+ * Fail-closed scope: immediate entries only; names must match exactly what
+ * runRetentionPrune writes; the age comes from the name, never mtime; only
+ * regular files (lstat — a symlink or directory is never deleted). Never throws.
+ */
+export function pruneRetentionBackups(backupDir: string, now: Date, apply: boolean): RetentionBackupsOutcome {
+  let names: string[];
+  try {
+    const dirStat = lstatSync(backupDir);
+    if (dirStat.isSymbolicLink() || !dirStat.isDirectory()) {
+      return {
+        candidates: 0,
+        deleted: 0,
+        error: "retention backup dir is a symlink or not a directory; refusing to prune",
+      };
+    }
+    names = readdirSync(backupDir);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return { candidates: 0, deleted: 0 };
+    return { candidates: 0, deleted: 0, error: err instanceof Error ? err.message : String(err) };
+  }
+  const cutoff = daysAgo(now, RETENTION_BACKUP_RETENTION_DAYS).getTime();
+  let candidates = 0;
+  let deleted = 0;
+  const errors: string[] = [];
+  for (const name of names) {
+    const m = BACKUP_NAME_RE.exec(name);
+    if (!m) continue;
+    const ts = new Date(`${m[1]}T${m[2]}:${m[3]}:${m[4]}.${m[5]}Z`).getTime();
+    if (Number.isNaN(ts) || !(ts < cutoff)) continue;
+    const file = path.join(backupDir, name);
+    try {
+      if (!lstatSync(file).isFile()) continue;
+      candidates += 1;
+      if (apply) {
+        unlinkSync(file);
+        deleted += 1;
+      }
+    } catch (err) {
+      errors.push(`${name}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+  return errors.length > 0 ? { candidates, deleted, error: errors.join("; ") } : { candidates, deleted };
+}
+
 /**
  * Core, DB-agnostic entry point — testable against PGlite (see
  * retention-prune.integration.test.ts) because it only ever calls `getDb()`,
@@ -431,11 +491,14 @@ export async function runRetentionPrune(options: RetentionRunOptions): Promise<R
     tables.push(await runStep(step, { apply, backupPath }));
   }
 
+  const backups = pruneRetentionBackups(backupDir, now, apply);
+
   return {
     dryRun: !apply,
     backupPath,
     tables,
-    ok: tables.every((t) => t.error === undefined),
+    backups,
+    ok: tables.every((t) => t.error === undefined) && backups.error === undefined,
   };
 }
 
@@ -455,6 +518,9 @@ function printSummary(summary: RetentionRunSummary): void {
       console.log(`    sample ids: ${t.sampleIds.join(", ")}`);
     }
   }
+  const b = summary.backups;
+  const bLine = `  retention-backups [delete files older than ${RETENTION_BACKUP_RETENTION_DAYS}d]: ${b.candidates} candidate(s), ${b.deleted} deleted`;
+  console.log(b.error ? `${bLine} — FAILED: ${b.error}` : bLine);
   console.log(summary.ok ? "\nOK" : "\nFAILED — see per-table errors above.");
 }
 

@@ -22,10 +22,10 @@ function TermsDetails({ summary, paragraphs }: { summary: string; paragraphs: re
   return (
     <details className="rounded-lg border border-input p-4">
       <summary className="cursor-pointer text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm">
-        {summary} (draft)
+        {summary}
       </summary>
       <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
-        <p className="text-xs">Terms version {DATASET_TERMS_VERSION}. Draft text, pending review.</p>
+        <p className="text-xs">Terms version {DATASET_TERMS_VERSION}.</p>
         {paragraphs.map((p) => (
           <p key={p}>{p}</p>
         ))}

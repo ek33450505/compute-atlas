@@ -1,6 +1,16 @@
 // @vitest-environment node
 import { randomUUID } from "node:crypto";
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -41,6 +51,8 @@ import {
   DATASET_REQUEST_IP_HASH_RETENTION_DAYS,
   DATASET_UNVERIFIED_RETENTION_DAYS,
   EMAIL_SENDS_RETENTION_DAYS,
+  pruneRetentionBackups,
+  RETENTION_BACKUP_RETENTION_DAYS,
   runRetentionPrune,
 } from "./retention-prune";
 
@@ -526,6 +538,7 @@ describe("runRetentionPrune — backup failure is back-up-or-abort", () => {
     const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
 
     expect(summary.ok).toBe(false);
+    expect(summary.backups.error).toBeDefined();
     const contactOutcome = summary.tables.find((t) => t.table === "contact_messages")!;
     expect(contactOutcome.candidates).toBe(1);
     expect(contactOutcome.applied).toBe(0);
@@ -625,6 +638,8 @@ describe("dataset retention — windows match the public privacy notice", () => 
     expect(notice).toContain(`Download records are deleted after ${DATASET_DOWNLOADS_RETENTION_DAYS} days`);
     expect(notice).toContain(`their hashed IPs are cleared after ${DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS} days`);
     expect(notice).toContain(`Email logs are deleted after ${EMAIL_SENDS_RETENTION_DAYS} days`);
+    expect(notice).toContain(`that backup is deleted after ${RETENTION_BACKUP_RETENTION_DAYS} days`);
+    expect(notice).toContain("including cleared hashed IPs");
   });
 });
 
@@ -1002,5 +1017,89 @@ describe("dataset retention — run-level behaviour", () => {
     for (const d of before) expect(after.has(d.id)).toBe(true); // nothing younger than the window was lost
     expect(after).toEqual(new Set([young]));
     expect(await grantIds()).toEqual([live]);
+  });
+});
+
+describe("retention backups — 30-day file TTL", () => {
+  const nameAt = (d: Date): string => `retention-${d.toISOString().replace(/[:.]/g, "-")}.jsonl`;
+
+  function seedDir(): { oldFile: string; survivors: string[]; outside: string } {
+    mkdirSync(backupDir, { recursive: true });
+    const oldFile = nameAt(daysBefore(31));
+    writeFileSync(path.join(backupDir, oldFile), "{}\n");
+    const survivors = [
+      nameAt(daysBefore(10)),
+      nameAt(daysBefore(RETENTION_BACKUP_RETENTION_DAYS)), // exactly at the cutoff
+      "notes.txt",
+      "retention-foo.jsonl",
+      "retention-2020-01-01T00-00-00-000Z.jsonl.bak",
+    ];
+    for (const f of survivors) writeFileSync(path.join(backupDir, f), "keep\n");
+    const outside = path.join(tmpBase, "outside-target.txt");
+    writeFileSync(outside, "keep\n");
+    const link = `retention-2020-01-01T00-00-00-001Z.jsonl`;
+    symlinkSync(outside, path.join(backupDir, link));
+    const dir = `retention-2020-01-01T00-00-00-002Z.jsonl`;
+    mkdirSync(path.join(backupDir, dir));
+    survivors.push(link, dir);
+    return { oldFile, survivors, outside };
+  }
+
+  it("dry run counts the one old regular file and deletes nothing", () => {
+    const { oldFile, survivors } = seedDir();
+    const out = pruneRetentionBackups(backupDir, NOW, false);
+    expect(out).toEqual({ candidates: 1, deleted: 0 });
+    expect(existsSync(path.join(backupDir, oldFile))).toBe(true);
+    for (const f of survivors) expect(lstatSync(path.join(backupDir, f))).toBeTruthy();
+  });
+
+  it("apply deletes only the old regular matching file", () => {
+    const { oldFile, survivors, outside } = seedDir();
+    const out = pruneRetentionBackups(backupDir, NOW, true);
+    expect(out).toEqual({ candidates: 1, deleted: 1 });
+    expect(existsSync(path.join(backupDir, oldFile))).toBe(false);
+    for (const f of survivors) expect(lstatSync(path.join(backupDir, f))).toBeTruthy();
+    expect(existsSync(outside)).toBe(true);
+  });
+
+  it("a missing directory is a no-op with no error", () => {
+    expect(pruneRetentionBackups(path.join(tmpBase, "nope"), NOW, true)).toEqual({ candidates: 0, deleted: 0 });
+  });
+
+  it("never treats an invalid-date name as a candidate", () => {
+    mkdirSync(backupDir, { recursive: true });
+    const bad = "retention-2026-13-01T00-00-00-000Z.jsonl";
+    writeFileSync(path.join(backupDir, bad), "keep\n");
+    expect(pruneRetentionBackups(backupDir, NOW, true)).toEqual({ candidates: 0, deleted: 0 });
+    expect(existsSync(path.join(backupDir, bad))).toBe(true);
+  });
+
+  it("refuses a backup dir that is a symlink: deletes nothing, reports an error, run is not ok", async () => {
+    const real = path.join(tmpBase, "real-dir");
+    mkdirSync(real);
+    const oldFile = path.join(real, nameAt(daysBefore(31)));
+    writeFileSync(oldFile, "keep\n");
+    symlinkSync(real, backupDir);
+
+    const out = pruneRetentionBackups(backupDir, NOW, true);
+    expect(out.deleted).toBe(0);
+    expect(out.error).toMatch(/symlink or not a directory/);
+    expect(existsSync(oldFile)).toBe(true);
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(false);
+    expect(existsSync(oldFile)).toBe(true);
+  });
+
+  it("runRetentionPrune apply removes the old backup and reports it; dry run leaves it", async () => {
+    const { oldFile } = seedDir();
+    const dry = await runRetentionPrune({ apply: false, now: NOW, backupDir });
+    expect(dry.backups).toEqual({ candidates: 1, deleted: 0 });
+    expect(existsSync(path.join(backupDir, oldFile))).toBe(true);
+
+    const applied = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(applied.backups).toEqual({ candidates: 1, deleted: 1 });
+    expect(applied.ok).toBe(true);
+    expect(existsSync(path.join(backupDir, oldFile))).toBe(false);
   });
 });

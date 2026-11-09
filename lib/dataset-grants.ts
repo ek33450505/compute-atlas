@@ -18,8 +18,8 @@ import { checkDatasetRequestEmailCap } from "@/lib/rate-limit";
 import { isSuppressed, mayEmail } from "@/lib/suppressions";
 import { hashToken } from "@/lib/token-hash";
 
-/** The access terms text lands in lib/dataset-terms.ts later; this is the single source of the version string a grant records. */
-export const DATASET_TERMS_VERSION = "2026-11-draft";
+/** The single source of the version string a grant records. The final terms text is in lib/dataset-terms.ts; bump this version whenever that text changes. */
+export const DATASET_TERMS_VERSION = "2026-11-09";
 
 /** Shape of every raw dataset token (`generateToken`: 256 bits, base64url, 43 chars). Checked before any DB call. */
 export const DATASET_TOKEN_RE = /^[A-Za-z0-9_-]{43}$/;
