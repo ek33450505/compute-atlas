@@ -131,6 +131,14 @@ describe("requestDatasetAccess", () => {
       grantId: expect.any(String),
       email: "reporter@example.com",
       verifyToken: expect.stringMatching(/^[A-Za-z0-9_-]{43}$/),
+      echo: {
+        name: "Pat Reporter",
+        organization: "The Gazette",
+        role: "Data editor",
+        category: "journalist",
+        intendedUse: "Cross-checking siting announcements for a story.",
+        links: ["https://example.com/story"],
+      },
     });
 
     const rows = await allRows();
@@ -614,7 +622,9 @@ describe("requestDatasetAccess: one open request per email", () => {
       grantId: squat.id,
       email: "reporter@example.com",
       verifyToken: expect.stringMatching(DATASET_TOKEN_RE),
+      echo: { name: "Pat Reporter", organization: null, role: null, category: "journalist", intendedUse: "Cross-checking siting announcements for a story.", links: ["https://example.com/story"] },
     });
+    expect(JSON.stringify(result.mail.echo)).not.toMatch(/Attacker|Evil Corp|evil\.example/);
     const newToken = result.mail.verifyToken;
     expect(newToken).not.toBe(attackerToken);
 
@@ -726,6 +736,37 @@ describe("requestDatasetAccess: one open request per email", () => {
       expect(await allRows()).toHaveLength(1);
       expect(await verifyDatasetRequest(first.verifyToken)).toStrictEqual({ outcome: "invalid" });
       expect(await verifyDatasetRequest(second.mail.verifyToken)).toMatchObject({ outcome: "verified" });
+    });
+
+    it("a rotation with different content echoes the NEW content, the same that was stored with the new token", async () => {
+      await newRequest();
+
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(Date.now() + 21 * MINUTE_MS);
+      const second = await requestDatasetAccess(
+        body({
+          name: "A Stranger",
+          organization: "",
+          role: "Analyst",
+          category: "commercial",
+          intendedUse: "Some other use.",
+          links: ["https://example.org/other"],
+        }),
+        "stranger-ip"
+      );
+
+      if (!second.ok || second.mail?.kind !== "dataset_verify") throw new Error("expected a verify intent");
+      expect(second.mail.echo).toEqual({
+        name: "A Stranger",
+        organization: null,
+        role: "Analyst",
+        category: "commercial",
+        intendedUse: "Some other use.",
+        links: ["https://example.org/other"],
+      });
+      const [row] = await allRows();
+      expect(row.name).toBe("A Stranger");
+      expect(row.intendedUse).toBe("Some other use.");
     });
 
     it("the boundary is inclusive: a row exactly 20 minutes old rotates, one a millisecond younger does not", async () => {

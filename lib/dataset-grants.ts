@@ -8,6 +8,7 @@ import {
   DATASET_CATEGORIES,
   DATASET_OPEN_GRANT_STATUSES,
   datasetAccessGrantsTable,
+  type DatasetCategory,
   type DatasetGrantStatus,
 } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
@@ -60,12 +61,35 @@ export function canTransition(from: DatasetGrantStatus, to: DatasetGrantStatus):
 }
 
 /**
+ * What the verify mail shows back to the address owner: the request content exactly as stored with that
+ * token, so a stranger's re-request that rotated the token and substituted content is visible to the owner.
+ */
+export type DatasetRequestEcho = {
+  name: string;
+  organization: string | null;
+  role: string | null;
+  category: DatasetCategory;
+  intendedUse: string;
+  links: string[];
+};
+
+/** Built from the SAME `requestFields` object written to the row, so the echo is what was stored. */
+const echoOf = (fields: DatasetRequestEcho): DatasetRequestEcho => ({
+  name: fields.name,
+  organization: fields.organization,
+  role: fields.role,
+  category: fields.category,
+  intendedUse: fields.intendedUse,
+  links: fields.links,
+});
+
+/**
  * A mail the CALLER should send. The functions in this file never send: the
  * route schedules the gated sender via `after()` so response latency cannot
  * tell a sending path from a generic-success one.
  */
 export type DatasetMailIntent =
-  | { kind: "dataset_verify"; grantId: string; email: string; verifyToken: string } // raw token, for the link only
+  | { kind: "dataset_verify"; grantId: string; email: string; verifyToken: string; echo: DatasetRequestEcho } // raw token, for the link only
   | { kind: "dataset_already_active"; grantId: string; email: string } // no token, no rotation
   | { kind: "dataset_admin_new_request"; grantId: string } // to the maintainer
   | { kind: "dataset_approved"; grantId: string; email: string; accessToken: string } // raw access token, for the link only
@@ -123,10 +147,10 @@ export const lapsedGrant = (now: Date): SQL =>
  * - A stranger can still replace the request's content once the cooldown has passed. A stranger who
  *   re-requests an address about every 20 minutes can keep pre-empting the owner's own submission. The owner's
  *   only link is then the one the stranger's request triggered, which carries the stranger's content until the
- *   planned verify mail template (U2c, not built yet) echoes the submitted name and intended use, so the
- *   owner sees what is being verified.
+ *   verify mail (`buildDatasetVerifyEmail` / `sendDatasetVerifyEmail`, lib/email.ts) echoes the submitted
+ *   request content, so the owner sees what is being verified.
  * - No token or data is exposed: the response to the requester is the same generic success either way.
- * - U3a must not go live before U2b's send cap and U2c's echo exist.
+ * - U3a must send this mail through `sendGrantGated` (lib/email-gate.ts; the per-recipient cap) with `sendDatasetVerifyEmail` (lib/email.ts; the echo), and must not go live until it does.
  */
 export const DATASET_ROTATION_COOLDOWN_MS = 20 * 60 * 1000;
 
@@ -270,7 +294,7 @@ export async function requestDatasetAccess(
     return {
       ok: true,
       publicResult: { ok: true },
-      mail: { kind: "dataset_verify", grantId: rotated.id, email, verifyToken },
+      mail: { kind: "dataset_verify", grantId: rotated.id, email, verifyToken, echo: echoOf(requestFields) },
     };
   }
 
@@ -335,7 +359,7 @@ export async function requestDatasetAccess(
   return {
     ok: true,
     publicResult: { ok: true },
-    mail: { kind: "dataset_verify", grantId: row.id, email, verifyToken },
+    mail: { kind: "dataset_verify", grantId: row.id, email, verifyToken, echo: echoOf(requestFields) },
   };
 }
 

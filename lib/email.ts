@@ -1,7 +1,22 @@
 import { randomBytes } from "node:crypto";
 import { Resend } from "resend";
 
+import {
+  buildDatasetAdminNewRequestEmail,
+  buildDatasetAlreadyActiveEmail,
+  buildDatasetApprovedEmail,
+  buildDatasetEditionNoticeEmail,
+  buildDatasetLinkReissuedEmail,
+  buildDatasetRejectedEmail,
+  buildDatasetRenewalReminderEmail,
+  buildDatasetVerifyEmail,
+} from "@/lib/dataset-email-templates";
+import type { DatasetRequestEcho } from "@/lib/dataset-grants";
+import { escapeHtml } from "@/lib/html-escape";
 import { siteConfig } from "@/lib/site";
+
+// Re-exported so existing importers of `escapeHtml` from "@/lib/email" keep working.
+export { escapeHtml } from "@/lib/html-escape";
 
 /**
  * 256-bit random token, base64url-encoded (~43 chars, URL-safe, no padding).
@@ -32,15 +47,6 @@ function linkBase(): string {
 function getResend(): Resend | null {
   const key = process.env.RESEND_API_KEY;
   return key ? new Resend(key) : null;
-}
-
-export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 /**
@@ -471,6 +477,157 @@ export async function sendAreaDigestEmail(
       html,
       headers: {
         "List-Unsubscribe": `<${unsubUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    },
+  );
+}
+
+/**
+ * Dataset-sharing senders. The templates own all text and HTML
+ * (lib/dataset-email-templates.ts); each sender here only resolves the
+ * recipient and site URL and sends. The seven requester senders go through
+ * `sendGrantGated` and the maintainer alert through `sendDatasetAdminNoticeGated`
+ * (lib/email-gate.ts); the guard test pairs each name with its gate.
+ */
+export async function sendDatasetVerifyEmail(input: {
+  email: string;
+  verifyToken: string;
+  echo: DatasetRequestEcho;
+}): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetVerifyEmail({
+    siteUrl: linkBase(),
+    verifyToken: input.verifyToken,
+    echo: input.echo,
+  });
+  return sendViaResend(
+    "sendDatasetVerifyEmail",
+    "RESEND_API_KEY not set — skipping dataset verify email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+export async function sendDatasetAlreadyActiveEmail(input: { email: string }): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetAlreadyActiveEmail({ siteUrl: linkBase() });
+  return sendViaResend(
+    "sendDatasetAlreadyActiveEmail",
+    "RESEND_API_KEY not set — skipping dataset already-active email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+// The `recipient` passed to `sendDatasetAdminNoticeGated` must be this same CONTACT_TO_EMAIL value (the gate logs it; this sender mails it).
+export async function sendDatasetAdminNewRequestEmail(input: {
+  name: string;
+  organization: string | null;
+}): Promise<SendOutcome> {
+  const to = process.env.CONTACT_TO_EMAIL;
+  if (!to) {
+    // The grant row is already stored and shows in /admin/access; log so the gap is visible.
+    console.warn("CONTACT_TO_EMAIL not set — skipping dataset admin notice send");
+    return { sent: false };
+  }
+  const { subject, text, html } = buildDatasetAdminNewRequestEmail({
+    siteUrl: linkBase(),
+    name: input.name,
+    organization: input.organization,
+  });
+  // No `replyTo`, for the reason given in sendContactEmail; and no requester email or intended use in the body.
+  return sendViaResend(
+    "sendDatasetAdminNewRequestEmail",
+    "RESEND_API_KEY not set — skipping dataset admin notice send",
+    { from: fromAddress(), to, subject, text, html },
+  );
+}
+
+export async function sendDatasetApprovedEmail(input: {
+  email: string;
+  accessToken: string;
+}): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetApprovedEmail({
+    siteUrl: linkBase(),
+    accessToken: input.accessToken,
+  });
+  return sendViaResend(
+    "sendDatasetApprovedEmail",
+    "RESEND_API_KEY not set — skipping dataset approved email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+export async function sendDatasetRejectedEmail(input: {
+  email: string;
+  rejectionNote: string | null;
+}): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetRejectedEmail({
+    siteUrl: linkBase(),
+    rejectionNote: input.rejectionNote,
+  });
+  return sendViaResend(
+    "sendDatasetRejectedEmail",
+    "RESEND_API_KEY not set — skipping dataset rejected email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+export async function sendDatasetLinkReissuedEmail(input: {
+  email: string;
+  accessToken: string;
+}): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetLinkReissuedEmail({
+    siteUrl: linkBase(),
+    accessToken: input.accessToken,
+  });
+  return sendViaResend(
+    "sendDatasetLinkReissuedEmail",
+    "RESEND_API_KEY not set — skipping dataset link reissued email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+export async function sendDatasetRenewalReminderEmail(input: {
+  email: string;
+  renewToken: string;
+  expiresAt: Date;
+}): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetRenewalReminderEmail({
+    siteUrl: linkBase(),
+    renewToken: input.renewToken,
+    expiresAt: input.expiresAt,
+  });
+  return sendViaResend(
+    "sendDatasetRenewalReminderEmail",
+    "RESEND_API_KEY not set — skipping dataset renewal reminder email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+/**
+ * Edition notice: carries NO access token and no personal link (the recipient's existing link already serves
+ * the new edition). The unsubscribe token is the low-value raw token by design.
+ */
+export async function sendDatasetEditionNoticeEmail(input: {
+  email: string;
+  editionDate: string;
+  unsubscribeToken: string;
+}): Promise<SendOutcome> {
+  const base = linkBase();
+  const { subject, text, html, unsubscribeUrl } = buildDatasetEditionNoticeEmail({
+    siteUrl: base,
+    editionDate: input.editionDate,
+    unsubscribeToken: input.unsubscribeToken,
+  });
+  return sendViaResend(
+    "sendDatasetEditionNoticeEmail",
+    "RESEND_API_KEY not set — skipping dataset edition notice email send",
+    {
+      from: fromAddress(),
+      to: input.email,
+      subject,
+      text,
+      html,
+      headers: {
+        "List-Unsubscribe": `<${unsubscribeUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
     },
