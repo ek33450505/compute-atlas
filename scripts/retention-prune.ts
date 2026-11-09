@@ -33,6 +33,8 @@ import {
   apiAccessGrantsTable,
   apiDailyUsageTable,
   contactMessagesTable,
+  datasetAccessGrantsTable,
+  datasetDownloadsTable,
   intakeAttemptsTable,
   leadsTable,
   submissionsTable,
@@ -59,6 +61,14 @@ export const SUBMISSION_NOTIFY_SENDS_RETENTION_DAYS = 60; // submission_notify_s
 export const EMAIL_SENDS_RETENTION_DAYS = 180; // email_sends: delete rows older than this many days (by createdAt) — at least 3x the 30-day CONFIRM_CAP_WINDOW_MS (lib/email-sends.ts, pinned by a test), so pruning can never shorten the confirm cap
 export const API_ACCESS_GRANTS_RETENTION_DAYS = 90; // api_access_grants: delete revoked-or-expired rows older than this many days (by revokedAt/expiresAt)
 export const API_DAILY_USAGE_RETENTION_DAYS = 35; // api_daily_usage: delete daily per-IP counters older than this many days (by the `day` text column)
+// Dataset sharing. These six figures are the public privacy notice (DATASET_PRIVACY_NOTICE in
+// lib/dataset-terms.ts), pinned by a test: change the notice and the number together or not at all.
+export const DATASET_UNVERIFIED_RETENTION_DAYS = 7; // dataset_access_grants: delete `unverified` rows older than this many days (by createdAt, which every verification-link rotation resets)
+export const DATASET_REJECTED_RETENTION_DAYS = 180; // dataset_access_grants: delete `rejected` rows this many days after reviewedAt
+export const DATASET_ENDED_RETENTION_DAYS = 365; // dataset_access_grants: delete `revoked` rows this many days after revokedAt and `expired` rows after expiresAt (their downloads cascade)
+export const DATASET_REQUEST_IP_HASH_RETENTION_DAYS = 90; // dataset_access_grants: null submitterIpHash this many days after reviewedAt, whatever the status — the row itself stays
+export const DATASET_DOWNLOADS_RETENTION_DAYS = 365; // dataset_downloads: delete rows older than this many days (by createdAt)
+export const DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS = 90; // dataset_downloads: null ipHash on rows older than this many days (by createdAt) — the row itself stays
 
 function daysAgo(now: Date, days: number): Date {
   return new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
@@ -93,7 +103,7 @@ export interface RetentionRunSummary {
   ok: boolean;
 }
 
-// Non-generic on purpose: buildSteps() below returns ten table-specific
+// Non-generic on purpose: buildSteps() below returns table-specific
 // steps in a uniform array, and runStep() only ever touches `.id` (the full
 // row still flows through to appendBackup() as `unknown[]` for the JSON
 // backup). Making this generic over each table's Row type forces TypeScript
@@ -222,6 +232,45 @@ function buildSteps(now: Date): RetentionStep[] {
   const apiDailyUsageCutoffDay = utcDateString(daysAgo(now, API_DAILY_USAGE_RETENTION_DAYS));
   const apiDailyUsagePredicate = () => lt(apiDailyUsageTable.day, apiDailyUsageCutoffDay);
 
+  // Dataset sharing. `active` and `pending_review` grants are never selected for deletion: every
+  // delete rule below names its own end status AND the timestamp that status sets, so a NULL
+  // timestamp compares as NULL (not true) and the row survives.
+  const datasetUnverifiedCutoff = daysAgo(now, DATASET_UNVERIFIED_RETENTION_DAYS);
+  const datasetRejectedCutoff = daysAgo(now, DATASET_REJECTED_RETENTION_DAYS);
+  const datasetEndedCutoff = daysAgo(now, DATASET_ENDED_RETENTION_DAYS);
+  const datasetGrantsDeletePredicate = () =>
+    or(
+      // `unverified` is aged on createdAt even though a verification-link rotation resets it. That does not
+      // stretch the notice's "deleted after 7 days" (lib/dataset-terms.ts): the rotation UPDATE replaces EVERY
+      // request field (`requestFields` in lib/dataset-grants.ts) with the new submission's values, so no stored
+      // data from an earlier request outlives that request's own 7 days; the row id is not request data.
+      // Pinned by "a rotation replaces every request field…" in scripts/retention-prune.integration.test.ts.
+      and(
+        eq(datasetAccessGrantsTable.status, "unverified"),
+        lt(datasetAccessGrantsTable.createdAt, datasetUnverifiedCutoff)
+      ),
+      and(
+        eq(datasetAccessGrantsTable.status, "rejected"),
+        lt(datasetAccessGrantsTable.reviewedAt, datasetRejectedCutoff)
+      ),
+      and(eq(datasetAccessGrantsTable.status, "revoked"), lt(datasetAccessGrantsTable.revokedAt, datasetEndedCutoff)),
+      and(eq(datasetAccessGrantsTable.status, "expired"), lt(datasetAccessGrantsTable.expiresAt, datasetEndedCutoff))
+    );
+
+  const datasetRequestIpHashCutoff = daysAgo(now, DATASET_REQUEST_IP_HASH_RETENTION_DAYS);
+  const datasetGrantsStripPredicate = () =>
+    and(
+      isNotNull(datasetAccessGrantsTable.submitterIpHash),
+      lt(datasetAccessGrantsTable.reviewedAt, datasetRequestIpHashCutoff)
+    );
+
+  const datasetDownloadsCutoff = daysAgo(now, DATASET_DOWNLOADS_RETENTION_DAYS);
+  const datasetDownloadsDeletePredicate = () => lt(datasetDownloadsTable.createdAt, datasetDownloadsCutoff);
+
+  const datasetDownloadIpHashCutoff = daysAgo(now, DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS);
+  const datasetDownloadsStripPredicate = () =>
+    and(isNotNull(datasetDownloadsTable.ipHash), lt(datasetDownloadsTable.createdAt, datasetDownloadIpHashCutoff));
+
   return [
     {
       table: "contact_messages",
@@ -319,6 +368,46 @@ function buildSteps(now: Date): RetentionStep[] {
       action: "delete",
       selectCandidates: () => getDb().select().from(apiDailyUsageTable).where(apiDailyUsagePredicate()),
       mutate: () => getDb().delete(apiDailyUsageTable).where(apiDailyUsagePredicate()).returning(),
+    },
+    // Dataset sharing. ORDER MATTERS: downloads are deleted BEFORE the grants that own them, so a
+    // download a grant delete would cascade away has already been backed up by its own step. An ended
+    // grant is >= 365 d past its end and downloads are only logged while a grant is active, so every
+    // cascaded download is itself >= 365 d old — the cascade never removes a log row younger than the
+    // notice promises (pinned by the invariant test). The two strip steps run last so they only see
+    // rows that survived the deletes.
+    {
+      table: "dataset_downloads",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(datasetDownloadsTable).where(datasetDownloadsDeletePredicate()),
+      mutate: () => getDb().delete(datasetDownloadsTable).where(datasetDownloadsDeletePredicate()).returning(),
+    },
+    {
+      table: "dataset_access_grants",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(datasetAccessGrantsTable).where(datasetGrantsDeletePredicate()),
+      mutate: () => getDb().delete(datasetAccessGrantsTable).where(datasetGrantsDeletePredicate()).returning(),
+    },
+    {
+      table: "dataset_downloads",
+      action: "strip-ip-hash",
+      selectCandidates: () => getDb().select().from(datasetDownloadsTable).where(datasetDownloadsStripPredicate()),
+      mutate: () =>
+        getDb()
+          .update(datasetDownloadsTable)
+          .set({ ipHash: null })
+          .where(datasetDownloadsStripPredicate())
+          .returning(),
+    },
+    {
+      table: "dataset_access_grants",
+      action: "strip-ip-hash",
+      selectCandidates: () => getDb().select().from(datasetAccessGrantsTable).where(datasetGrantsStripPredicate()),
+      mutate: () =>
+        getDb()
+          .update(datasetAccessGrantsTable)
+          .set({ submitterIpHash: null })
+          .where(datasetGrantsStripPredicate())
+          .returning(),
     },
   ];
 }

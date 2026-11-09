@@ -5,6 +5,11 @@ import os from "node:os";
 import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("next/cache", () => ({
+  revalidateTag: vi.fn(),
+  revalidatePath: vi.fn(),
+  unstable_cache: (fn: unknown) => fn,
+}));
 vi.mock("../lib/db/client");
 
 import * as dbClient from "../lib/db/client";
@@ -13,6 +18,8 @@ import {
   apiAccessGrantsTable,
   apiDailyUsageTable,
   contactMessagesTable,
+  datasetAccessGrantsTable,
+  datasetDownloadsTable,
   intakeAttemptsTable,
   leadsTable,
   submissionsTable,
@@ -23,7 +30,19 @@ import {
   subscriptionsTable,
 } from "../lib/db/schema";
 import { CONFIRM_CAP_WINDOW_MS } from "../lib/email-sends";
-import { EMAIL_SENDS_RETENTION_DAYS, runRetentionPrune } from "./retention-prune";
+import { DATASET_ROTATION_COOLDOWN_MS, DATASET_TERMS_VERSION, requestDatasetAccess } from "../lib/dataset-grants";
+import { DATASET_PRIVACY_NOTICE } from "../lib/dataset-terms";
+import type { DatasetGrantStatus } from "../lib/db/schema";
+import {
+  DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS,
+  DATASET_DOWNLOADS_RETENTION_DAYS,
+  DATASET_ENDED_RETENTION_DAYS,
+  DATASET_REJECTED_RETENTION_DAYS,
+  DATASET_REQUEST_IP_HASH_RETENTION_DAYS,
+  DATASET_UNVERIFIED_RETENTION_DAYS,
+  EMAIL_SENDS_RETENTION_DAYS,
+  runRetentionPrune,
+} from "./retention-prune";
 
 let tdb: TestDbHandle;
 let tmpBase: string;
@@ -48,6 +67,7 @@ function readBackupLines(): { table: string; action: string; row: { id: string }
 beforeAll(async () => {
   tdb = await makeTestDb();
   vi.mocked(dbClient.getDb).mockReturnValue(tdb.db as never);
+  vi.mocked(dbClient.hasDatabaseUrl).mockReturnValue(true);
 });
 
 beforeEach(async () => {
@@ -541,5 +561,446 @@ describe("runRetentionPrune — email_sends (outbound send log)", () => {
 
   it("retention is at least 3x the confirm-cap window, so pruning can never shorten the cap", () => {
     expect(EMAIL_SENDS_RETENTION_DAYS * 86_400_000).toBeGreaterThanOrEqual(3 * CONFIRM_CAP_WINDOW_MS);
+  });
+});
+
+// --- dataset sharing (dataset_access_grants / dataset_downloads) --------------
+// Every window below is pinned to the public privacy notice (DATASET_PRIVACY_NOTICE
+// in lib/dataset-terms.ts): the notice is binding, so a constant that drifts from
+// it fails here rather than silently over- or under-retaining personal data.
+const MS = 1;
+
+let grantSeq = 0;
+async function insertGrant(
+  status: DatasetGrantStatus,
+  dates: Partial<{
+    createdAt: Date;
+    reviewedAt: Date | null;
+    revokedAt: Date | null;
+    expiresAt: Date | null;
+    submitterIpHash: string | null;
+  }> = {}
+): Promise<string> {
+  grantSeq += 1;
+  const [row] = await tdb.db
+    .insert(datasetAccessGrantsTable)
+    .values({
+      email: `grant-${grantSeq}@example.com`,
+      name: "Grant Person",
+      category: "journalist",
+      intendedUse: "reporting",
+      attributionAckAt: daysBefore(1000),
+      termsVersion: "test",
+      verifyTokenHash: randomUUID(),
+      status,
+      ...dates,
+    })
+    .returning({ id: datasetAccessGrantsTable.id });
+  return row.id;
+}
+
+async function insertDownload(grantId: string, createdAt: Date, ipHash: string | null = null): Promise<string> {
+  const [row] = await tdb.db
+    .insert(datasetDownloadsTable)
+    .values({ grantId, file: "facilities.csv", outcome: "served", createdAt, ipHash })
+    .returning({ id: datasetDownloadsTable.id });
+  return row.id;
+}
+
+const grantIds = async () => (await tdb.db.select().from(datasetAccessGrantsTable)).map((r) => r.id);
+const downloadIds = async () => (await tdb.db.select().from(datasetDownloadsTable)).map((r) => r.id);
+
+describe("dataset retention — windows match the public privacy notice", () => {
+  const notice = DATASET_PRIVACY_NOTICE.join(" ");
+
+  it("pins each constant to the figure the notice states", () => {
+    expect(notice).toContain(`Unverified requests are deleted after ${DATASET_UNVERIFIED_RETENTION_DAYS} days`);
+    expect(notice).toContain(`Rejected requests are deleted ${DATASET_REJECTED_RETENTION_DAYS} days after review`);
+    expect(notice).toContain(
+      `Revoked or expired grants are deleted ${DATASET_ENDED_RETENTION_DAYS} days after revocation or expiry`
+    );
+    expect(notice).toContain(
+      `hashed IP on a request is cleared ${DATASET_REQUEST_IP_HASH_RETENTION_DAYS} days after review`
+    );
+    expect(notice).toContain(`Download records are deleted after ${DATASET_DOWNLOADS_RETENTION_DAYS} days`);
+    expect(notice).toContain(`their hashed IPs are cleared after ${DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS} days`);
+    expect(notice).toContain(`Email logs are deleted after ${EMAIL_SENDS_RETENTION_DAYS} days`);
+  });
+});
+
+describe("dataset retention — dataset_access_grants deletes", () => {
+  it("unverified: deleted strictly after 7 days (by createdAt); exactly at the cutoff survives", async () => {
+    const cutoff = daysBefore(DATASET_UNVERIFIED_RETENTION_DAYS);
+    const atCutoff = await insertGrant("unverified", { createdAt: cutoff });
+    const pastCutoff = await insertGrant("unverified", { createdAt: new Date(cutoff.getTime() - MS) });
+    const fresh = await insertGrant("unverified", { createdAt: daysBefore(1) });
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    expect(new Set(await grantIds())).toEqual(new Set([atCutoff, fresh]));
+    expect(readBackupLines().map((l) => l.row.id)).toEqual([pastCutoff]);
+  });
+
+  it("rejected: deleted strictly after 180 days from reviewedAt, not createdAt", async () => {
+    const cutoff = daysBefore(DATASET_REJECTED_RETENTION_DAYS);
+    const atCutoff = await insertGrant("rejected", { createdAt: daysBefore(400), reviewedAt: cutoff });
+    const pastCutoff = await insertGrant("rejected", {
+      createdAt: daysBefore(400),
+      reviewedAt: new Date(cutoff.getTime() - MS),
+    });
+    // Old createdAt but recently reviewed: the clock runs from review.
+    const recentlyReviewed = await insertGrant("rejected", { createdAt: daysBefore(400), reviewedAt: daysBefore(10) });
+
+    await runRetentionPrune({ apply: true, now: NOW, backupDir });
+
+    expect(new Set(await grantIds())).toEqual(new Set([atCutoff, recentlyReviewed]));
+    expect(readBackupLines().map((l) => l.row.id)).toEqual([pastCutoff]);
+  });
+
+  it("revoked: deleted strictly after 365 days from revokedAt", async () => {
+    const cutoff = daysBefore(DATASET_ENDED_RETENTION_DAYS);
+    const atCutoff = await insertGrant("revoked", { revokedAt: cutoff });
+    const pastCutoff = await insertGrant("revoked", { revokedAt: new Date(cutoff.getTime() - MS) });
+
+    await runRetentionPrune({ apply: true, now: NOW, backupDir });
+
+    expect(await grantIds()).toEqual([atCutoff]);
+    expect(readBackupLines().map((l) => l.row.id)).toEqual([pastCutoff]);
+  });
+
+  it("expired: deleted strictly after 365 days from expiresAt; a NULL expiresAt is never selected", async () => {
+    const cutoff = daysBefore(DATASET_ENDED_RETENTION_DAYS);
+    const atCutoff = await insertGrant("expired", { expiresAt: cutoff });
+    const pastCutoff = await insertGrant("expired", { expiresAt: new Date(cutoff.getTime() - MS) });
+    const nullExpiry = await insertGrant("expired", { expiresAt: null, createdAt: daysBefore(2000) });
+
+    await runRetentionPrune({ apply: true, now: NOW, backupDir });
+
+    expect(new Set(await grantIds())).toEqual(new Set([atCutoff, nullExpiry]));
+    expect(readBackupLines().map((l) => l.row.id)).toEqual([pastCutoff]);
+  });
+
+  it("each rule keys on its own status: a revoked row is not caught by the expired clock and vice versa", async () => {
+    // revoked with an ancient expiresAt but a recent revokedAt; expired with an ancient revokedAt but a recent expiresAt.
+    const revoked = await insertGrant("revoked", { revokedAt: daysBefore(5), expiresAt: daysBefore(900) });
+    const expired = await insertGrant("expired", { expiresAt: daysBefore(5), revokedAt: daysBefore(900) });
+    // rejected / unverified rows with an ancient revokedAt/expiresAt are not caught by the ended rule.
+    const rejected = await insertGrant("rejected", { reviewedAt: daysBefore(5), expiresAt: daysBefore(900) });
+    const unverified = await insertGrant("unverified", { createdAt: daysBefore(1), revokedAt: daysBefore(900) });
+
+    await runRetentionPrune({ apply: true, now: NOW, backupDir });
+
+    expect(new Set(await grantIds())).toEqual(new Set([revoked, expired, rejected, unverified]));
+  });
+
+  it("never selects active or pending_review rows, however old, including an active row past its expiry", async () => {
+    const ancient = daysBefore(2000);
+    const active = await insertGrant("active", {
+      createdAt: ancient,
+      reviewedAt: ancient,
+      revokedAt: ancient,
+      expiresAt: ancient,
+    });
+    // A renewal-pending grant: active, past expiresAt, renewal requested. Must survive.
+    const renewalPending = await insertGrant("active", { createdAt: ancient, reviewedAt: ancient, expiresAt: daysBefore(400) });
+    const pending = await insertGrant("pending_review", {
+      createdAt: ancient,
+      reviewedAt: ancient,
+      revokedAt: ancient,
+      expiresAt: ancient,
+    });
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    const grants = summary.tables.filter((t) => t.table === "dataset_access_grants" && t.action === "delete");
+    expect(grants).toHaveLength(1);
+    expect(grants[0]).toMatchObject({ candidates: 0, applied: 0 });
+    expect(new Set(await grantIds())).toEqual(new Set([active, renewalPending, pending]));
+  });
+
+  it("deleting an ended grant cascades its downloads", async () => {
+    const ended = await insertGrant("revoked", { revokedAt: daysBefore(400) });
+    await insertDownload(ended, daysBefore(500));
+    const kept = await insertGrant("active", { reviewedAt: daysBefore(10) });
+    const keptDownload = await insertDownload(kept, daysBefore(1));
+
+    await runRetentionPrune({ apply: true, now: NOW, backupDir });
+
+    expect(await grantIds()).toEqual([kept]);
+    expect(await downloadIds()).toEqual([keptDownload]);
+  });
+});
+
+describe("dataset retention — unverified clock vs. verification-link rotation", () => {
+  const MINUTE_MS = 60 * 1000;
+  const requestA = {
+    email: "rotator@example.com",
+    name: "Alice Anderson",
+    organization: "Alpha Organization",
+    role: "Alpha Role",
+    category: "academic",
+    intendedUse: "Alpha intended use: a thesis on cooling water.",
+    links: ["https://alpha.example/one", "https://alpha.example/two"],
+    attributionAck: true,
+    termsAccepted: true,
+  };
+  const requestB = {
+    email: "ROTATOR@example.com", // same address, different case: normalized to the same row
+    name: "Bruno Baker",
+    category: "journalist",
+    intendedUse: "Beta intended use: a story on siting.",
+    links: ["https://beta.example/story"],
+    attributionAck: true,
+    termsAccepted: true,
+    // no organization or role: B must NULL out A's, not leave them behind
+  };
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("a rotation replaces every request field, so no earlier request's data outlives its 7 days: the unverified clock restarts with the new request, not with the row", async () => {
+    const first = await requestDatasetAccess(requestA, "iphash-A");
+    if (!first.ok || first.mail?.kind !== "dataset_verify") throw new Error("expected a verify intent");
+    const [rowA] = await tdb.db.select().from(datasetAccessGrantsTable);
+    expect(rowA).toMatchObject({
+      name: "Alice Anderson",
+      organization: "Alpha Organization",
+      role: "Alpha Role",
+      category: "academic",
+      submitterIpHash: "iphash-A",
+    });
+
+    // Re-request after the rotation cooldown. Age the row (createdAt and the acknowledgement stamp)
+    // so the rotation is visibly what moves them.
+    const aged = new Date(Date.now() - 2 * DATASET_ROTATION_COOLDOWN_MS);
+    await tdb.db
+      .update(datasetAccessGrantsTable)
+      .set({ createdAt: aged, attributionAckAt: aged, termsVersion: "terms-acknowledged-with-A" });
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(Date.now() + 21 * MINUTE_MS);
+    const second = await requestDatasetAccess(requestB, "iphash-B");
+    vi.useRealTimers();
+    if (!second.ok || second.mail?.kind !== "dataset_verify") throw new Error("expected a rotation verify intent");
+    expect(second.mail.grantId).toBe(first.mail.grantId); // the SAME row
+
+    const rows = await tdb.db.select().from(datasetAccessGrantsTable);
+    expect(rows).toHaveLength(1);
+    const row = rows[0];
+
+    // Every request field now holds B's value (the ones B left empty are NULL, not A's)...
+    // (`requestFields` in lib/dataset-grants.ts: name, organization, role, category, intendedUse, links,
+    // attributionAckAt, termsVersion, submitterIpHash.)
+    expect(row).toMatchObject({
+      id: first.mail.grantId,
+      status: "unverified",
+      name: "Bruno Baker",
+      organization: null,
+      role: null,
+      category: "journalist",
+      intendedUse: "Beta intended use: a story on siting.",
+      links: ["https://beta.example/story"],
+      submitterIpHash: "iphash-B",
+    });
+    expect(row.attributionAckAt.getTime()).toBeGreaterThan(aged.getTime());
+    expect(row.termsVersion).toBe(DATASET_TERMS_VERSION);
+    expect(row.createdAt.getTime()).toBeGreaterThan(aged.getTime());
+    expect(row.verifyTokenHash).not.toBe(rowA.verifyTokenHash);
+
+    // ...and nothing of A survives anywhere in the stored row.
+    const stored = JSON.stringify(row);
+    for (const fromA of ["Alice", "Anderson", "Alpha", "alpha.example", "iphash-A", "thesis", "academic"]) {
+      expect(stored).not.toContain(fromA);
+    }
+
+    // Retention: the 7 days run from B (the rotated createdAt), strictly.
+    const cutoffAtB = new Date(row.createdAt.getTime() + DATASET_UNVERIFIED_RETENTION_DAYS * DAY_MS);
+    const dry = await runRetentionPrune({ apply: false, now: cutoffAtB, backupDir });
+    expect(dry.tables.find((t) => t.table === "dataset_access_grants" && t.action === "delete")).toMatchObject({
+      candidates: 0, // exactly 7 d after B: survives
+    });
+    const dryLater = await runRetentionPrune({
+      apply: false,
+      now: new Date(cutoffAtB.getTime() + 1),
+      backupDir,
+    });
+    expect(dryLater.tables.find((t) => t.table === "dataset_access_grants" && t.action === "delete")).toMatchObject({
+      candidates: 1, // a millisecond past 7 d after B: deleted
+    });
+    // (Measured from A's request the row would already be 7 d past; A's data is gone either way.)
+    const applied = await runRetentionPrune({ apply: true, now: new Date(cutoffAtB.getTime() + 1), backupDir });
+    expect(applied.ok).toBe(true);
+    expect(await grantIds()).toEqual([]);
+  });
+});
+
+describe("dataset retention — dataset_downloads", () => {
+  it("deletes strictly after 365 days; exactly at the cutoff survives", async () => {
+    const grant = await insertGrant("active", { reviewedAt: daysBefore(10) });
+    const cutoff = daysBefore(DATASET_DOWNLOADS_RETENTION_DAYS);
+    const atCutoff = await insertDownload(grant, cutoff);
+    const pastCutoff = await insertDownload(grant, new Date(cutoff.getTime() - MS));
+    const fresh = await insertDownload(grant, daysBefore(30));
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    expect(new Set(await downloadIds())).toEqual(new Set([atCutoff, fresh]));
+    expect(readBackupLines().filter((l) => l.table === "dataset_downloads").map((l) => l.row.id)).toEqual([pastCutoff]);
+  });
+
+  it("strips the IP hash strictly after 90 days, leaving the row and its other columns", async () => {
+    const grant = await insertGrant("active", { reviewedAt: daysBefore(10) });
+    const cutoff = daysBefore(DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS);
+    const atCutoff = await insertDownload(grant, cutoff, "hash-at");
+    const pastCutoff = await insertDownload(grant, new Date(cutoff.getTime() - MS), "hash-past");
+    const noHash = await insertDownload(grant, daysBefore(200), null);
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    // Only the row that is past the cutoff AND still carries a hash is a candidate.
+    const outcome = summary.tables.find((t) => t.table === "dataset_downloads" && t.action === "strip-ip-hash")!;
+    expect(outcome).toMatchObject({ candidates: 1, applied: 1 });
+
+    const rows = await tdb.db.select().from(datasetDownloadsTable);
+    expect(rows).toHaveLength(3);
+    const byId = Object.fromEntries(rows.map((r) => [r.id, r]));
+    expect(byId[atCutoff].ipHash).toBe("hash-at");
+    expect(byId[pastCutoff].ipHash).toBeNull();
+    expect(byId[pastCutoff]).toMatchObject({ file: "facilities.csv", outcome: "served", grantId: grant });
+    expect(byId[noHash].ipHash).toBeNull();
+    expect(readBackupLines().filter((l) => l.action === "strip-ip-hash").map((l) => l.row.id)).toEqual([pastCutoff]);
+  });
+});
+
+describe("dataset retention — dataset_access_grants IP-hash strip", () => {
+  it("clears submitterIpHash strictly after 90 days from reviewedAt, for any reviewed status, and keeps the row", async () => {
+    const cutoff = daysBefore(DATASET_REQUEST_IP_HASH_RETENTION_DAYS);
+    const atCutoff = await insertGrant("active", { reviewedAt: cutoff, submitterIpHash: "h-at" });
+    const pastActive = await insertGrant("active", { reviewedAt: new Date(cutoff.getTime() - MS), submitterIpHash: "h-active" });
+    const pastRevoked = await insertGrant("revoked", {
+      reviewedAt: daysBefore(100),
+      revokedAt: daysBefore(50),
+      submitterIpHash: "h-revoked",
+    });
+    // Never reviewed: the clock has not started, so the hash stays however old the request is.
+    const unreviewed = await insertGrant("pending_review", { createdAt: daysBefore(500), reviewedAt: null, submitterIpHash: "h-unrev" });
+    const alreadyNull = await insertGrant("active", { reviewedAt: daysBefore(200), submitterIpHash: null });
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    const outcome = summary.tables.find((t) => t.table === "dataset_access_grants" && t.action === "strip-ip-hash")!;
+    expect(outcome).toMatchObject({ candidates: 2, applied: 2 });
+
+    const rows = await tdb.db.select().from(datasetAccessGrantsTable);
+    expect(rows).toHaveLength(5); // strip never deletes
+    const byId = Object.fromEntries(rows.map((r) => [r.id, r]));
+    expect(byId[atCutoff].submitterIpHash).toBe("h-at");
+    expect(byId[pastActive].submitterIpHash).toBeNull();
+    expect(byId[pastActive]).toMatchObject({ status: "active", email: expect.stringContaining("@example.com") });
+    expect(byId[pastRevoked].submitterIpHash).toBeNull();
+    expect(byId[unreviewed].submitterIpHash).toBe("h-unrev");
+    expect(byId[alreadyNull].submitterIpHash).toBeNull();
+  });
+});
+
+describe("dataset retention — run-level behaviour", () => {
+  async function seedDatasetRows() {
+    const unverified = await insertGrant("unverified", { createdAt: daysBefore(8) });
+    const ended = await insertGrant("revoked", { revokedAt: daysBefore(400), reviewedAt: daysBefore(500) });
+    const endedDownload = await insertDownload(ended, daysBefore(450), "h-ended");
+    const live = await insertGrant("active", { reviewedAt: daysBefore(120), submitterIpHash: "h-live" });
+    const oldDownload = await insertDownload(live, daysBefore(400), "h-old");
+    const midDownload = await insertDownload(live, daysBefore(100), "h-mid");
+    return { unverified, ended, endedDownload, live, oldDownload, midDownload };
+  }
+
+  it("dry run reports candidates for all four dataset steps and changes nothing", async () => {
+    await seedDatasetRows();
+
+    const summary = await runRetentionPrune({ apply: false, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    const find = (table: string, action: string) => summary.tables.find((t) => t.table === table && t.action === action)!;
+    expect(find("dataset_downloads", "delete")).toMatchObject({ candidates: 2, applied: 0 }); // endedDownload + oldDownload
+    expect(find("dataset_access_grants", "delete")).toMatchObject({ candidates: 2, applied: 0 }); // unverified + ended
+    expect(find("dataset_downloads", "strip-ip-hash")).toMatchObject({ candidates: 3, applied: 0 }); // every seeded download is >90 d old and carries a hash
+    expect(find("dataset_access_grants", "strip-ip-hash")).toMatchObject({ candidates: 1, applied: 0 }); // only `live` still holds a hash
+
+    expect(() => readdirSync(backupDir)).toThrow(); // no backup dir in a dry run
+    expect(await grantIds()).toHaveLength(3);
+    expect(await downloadIds()).toHaveLength(3);
+    const live = (await tdb.db.select().from(datasetAccessGrantsTable)).filter((g) => g.status === "active");
+    expect(live[0].submitterIpHash).toBe("h-live");
+  });
+
+  it("backs up every dataset row before mutating, including rows a cascade removes", async () => {
+    const ids = await seedDatasetRows();
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    const lines = readBackupLines();
+    const has = (table: string, action: string, id: string) =>
+      lines.some((l) => l.table === table && l.action === action && l.row.id === id);
+    expect(has("dataset_access_grants", "delete", ids.unverified)).toBe(true);
+    expect(has("dataset_access_grants", "delete", ids.ended)).toBe(true);
+    // The cascaded download is in the backup because the downloads step runs before the grants delete.
+    expect(has("dataset_downloads", "delete", ids.endedDownload)).toBe(true);
+    expect(has("dataset_downloads", "delete", ids.oldDownload)).toBe(true);
+    expect(has("dataset_access_grants", "strip-ip-hash", ids.live)).toBe(true);
+    expect(has("dataset_downloads", "strip-ip-hash", ids.midDownload)).toBe(true);
+
+    expect(await grantIds()).toEqual([ids.live]);
+    expect(await downloadIds()).toEqual([ids.midDownload]);
+    const [midRow] = await tdb.db.select().from(datasetDownloadsTable);
+    expect(midRow.ipHash).toBeNull();
+  });
+
+  it("skips every dataset mutation when the backup cannot be written", async () => {
+    writeFileSync(backupDir, "not a directory");
+    const ids = await seedDatasetRows();
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+
+    expect(summary.ok).toBe(false);
+    for (const t of summary.tables.filter((x) => x.table.startsWith("dataset_"))) {
+      expect(t.applied).toBe(0);
+    }
+    expect(new Set(await grantIds())).toEqual(new Set([ids.unverified, ids.ended, ids.live]));
+    expect(await downloadIds()).toHaveLength(3);
+  });
+
+  it("invariant: no download younger than 365 days is ever cascade-deleted by a grant delete", async () => {
+    // A grant only ends (revoked/expired) after its last logged download, because downloads are logged
+    // for active, unexpired grants only. So a grant ≥365 d past its end has only downloads ≥365 d old.
+    const endedRevoked = await insertGrant("revoked", { reviewedAt: daysBefore(800), revokedAt: daysBefore(400) });
+    const endedExpired = await insertGrant("expired", { reviewedAt: daysBefore(800), expiresAt: daysBefore(400) });
+    // Boundary: ended exactly one ms past the cutoff, last download a moment before it ended.
+    const justEnded = await insertGrant("revoked", {
+      reviewedAt: daysBefore(800),
+      revokedAt: new Date(daysBefore(DATASET_ENDED_RETENTION_DAYS).getTime() - MS),
+    });
+    await insertDownload(endedRevoked, daysBefore(401));
+    await insertDownload(endedExpired, daysBefore(401));
+    await insertDownload(justEnded, new Date(daysBefore(DATASET_ENDED_RETENTION_DAYS).getTime() - 2 * MS));
+    // Downloads of a live grant, including one exactly at the 365-day boundary, are untouched.
+    const live = await insertGrant("active", { reviewedAt: daysBefore(800) });
+    const young = await insertDownload(live, daysBefore(DATASET_DOWNLOADS_RETENTION_DAYS));
+
+    const before = (await tdb.db.select().from(datasetDownloadsTable)).filter(
+      (d) => d.createdAt.getTime() >= daysBefore(DATASET_DOWNLOADS_RETENTION_DAYS).getTime()
+    );
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    const after = new Set(await downloadIds());
+    for (const d of before) expect(after.has(d.id)).toBe(true); // nothing younger than the window was lost
+    expect(after).toEqual(new Set([young]));
+    expect(await grantIds()).toEqual([live]);
   });
 });
