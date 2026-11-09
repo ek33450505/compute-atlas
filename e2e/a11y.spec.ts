@@ -11,6 +11,10 @@ const ROUTES = [
   "/support",
   "/facilities/meta-prineville-or",
   "/contact",
+  "/access",
+  "/access/confirm?token=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "/access/renew?token=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "/access/confirmed",
   "/methodology",
   "/data",
   // Chrome-free layout shape (no header/footer, full-height map + a single

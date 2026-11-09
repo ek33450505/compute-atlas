@@ -38,6 +38,8 @@ const ROUTES = [
   "/stats",
   "/about",
   "/contact",
+  "/access",
+  "/access/confirmed",
   "/facilities/meta-prineville-or",
   "/states/texas",
   "/operators/google",
