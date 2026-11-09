@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
 
+import { hasAdminSession } from "@/lib/admin-session";
 import { listSubmissionsWithWatchers } from "@/lib/submissions";
 import { REVIEW_STATUSES } from "@/lib/submissions";
 import { SubmissionList } from "@/app/admin/submissions/submission-list";
@@ -20,6 +22,9 @@ export default async function AdminSubmissionsPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
+  // Defense in depth: do not rely on the proxy alone.
+  if (!(await hasAdminSession())) redirect("/admin/login");
+
   const { status: rawStatus } = await searchParams;
   const status = normalizeStatus(rawStatus);
   const submissions = await listSubmissionsWithWatchers(status);

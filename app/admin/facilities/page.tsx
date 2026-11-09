@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
+import { hasAdminSession } from "@/lib/admin-session";
 import { loadFacilities } from "@/lib/data";
 import { FacilityAdminTable } from "@/app/admin/facilities/facility-table";
 
@@ -22,6 +24,9 @@ export const metadata: Metadata = {
  * needs that the public `/table` view does not.
  */
 export default async function AdminFacilitiesPage() {
+  // Defense in depth: do not rely on the proxy alone.
+  if (!(await hasAdminSession())) redirect("/admin/login");
+
   const facilities = await loadFacilities();
 
   return (

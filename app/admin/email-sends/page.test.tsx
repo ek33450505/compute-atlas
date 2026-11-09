@@ -3,6 +3,8 @@ import { render, screen, within } from "@testing-library/react";
 
 const { mockList, mockCount } = vi.hoisted(() => ({ mockList: vi.fn(), mockCount: vi.fn() }));
 
+// The page gates itself (defense in depth); these cases exercise the signed-in render.
+vi.mock("@/lib/admin-session", () => ({ hasAdminSession: async () => true }));
 vi.mock("@/lib/db/client", () => ({ getDb: () => ({}) }));
 vi.mock("@/app/admin/email-sends/actions", () => ({ lookupEmailSendsAction: vi.fn() }));
 vi.mock("@/lib/email-sends-query", async (orig) => ({

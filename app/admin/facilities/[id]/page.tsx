@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { hasAdminSession } from "@/lib/admin-session";
 import { loadFacilities } from "@/lib/data";
 import { FacilityForm } from "@/app/admin/facilities/facility-form";
 import { facilityToFormState } from "@/app/admin/facilities/facility-form-state";
@@ -31,6 +32,10 @@ export async function generateMetadata({
  * power itself).
  */
 export default async function EditFacilityPage({ params }: EditFacilityPageProps) {
+  // Defense in depth: Vercel matches dynamic routes case-insensitively, so
+  // /ADMIN/... can skip proxy.ts's case-sensitive matcher.
+  if (!(await hasAdminSession())) redirect("/admin/login");
+
   const { id } = await params;
   const facilities = await loadFacilities();
   const facility = facilities.find((f) => f.id === id);
