@@ -12,6 +12,7 @@ import {
   revokeDatasetGrant,
 } from "@/lib/dataset-grants";
 import { hasRecentLinkReissue } from "@/lib/dataset-admin";
+import { buildEdition, type EditionBuildResult } from "@/lib/dataset-edition-builder";
 import { deliverDatasetReviewMail } from "@/lib/dataset-mail";
 import { redactedErrorCode } from "@/lib/db-error";
 import type { GateDisposition } from "@/lib/email-gate";
@@ -53,6 +54,7 @@ const NOT_ELIGIBLE_ERROR =
 const REISSUE_COOLDOWN_ERROR =
   "A new link was emailed to this requester less than 10 minutes ago. Wait before sending another.";
 const UPDATE_FAILED_ERROR = "Could not update the grant. Try again.";
+const BUILD_FAILED_ERROR = "The edition build failed.";
 
 const notEligible = (): DatasetAdminActionError => ({ ok: false, error: NOT_ELIGIBLE_ERROR });
 const updateFailed = (): DatasetAdminActionError => ({ ok: false, error: UPDATE_FAILED_ERROR });
@@ -188,4 +190,34 @@ export async function extendDatasetGrantAction(
 
   revalidatePath("/admin/access");
   return { ok: true };
+}
+
+/**
+ * Builds today's dataset edition now ("Build now" on the Editions panel). Runs whether or not
+ * DATASET_SHARING_ENABLED is on: Ed pre-builds before flipping the flag, and the files are private until a
+ * grant downloads them. The builder is idempotent per UTC day and never throws; the return is built from
+ * scratch so no edition id or storage path reaches the client, only the outcome, date, count and failure code.
+ */
+export async function buildEditionNowAction(): Promise<
+  | { ok: true; outcome: EditionBuildResult["outcome"]; editionDate: string; recordCount?: number }
+  | { ok: false; error: string; code?: string }
+> {
+  await assertAdminSession();
+
+  let result: EditionBuildResult;
+  try {
+    result = await buildEdition();
+  } catch (err) {
+    // Contract says never; a thrown error would still carry bound params, so log the code only.
+    logFailure("buildEditionNowAction", err);
+    revalidatePath("/admin/access");
+    return { ok: false, error: BUILD_FAILED_ERROR, code: redactedErrorCode(err) };
+  }
+  revalidatePath("/admin/access");
+
+  if (result.outcome === "failed") return { ok: false, error: BUILD_FAILED_ERROR, code: result.code };
+  if (result.outcome === "published") {
+    return { ok: true, outcome: "published", editionDate: result.editionDate, recordCount: result.recordCount };
+  }
+  return { ok: true, outcome: result.outcome, editionDate: result.editionDate };
 }

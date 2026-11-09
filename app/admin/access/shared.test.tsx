@@ -34,6 +34,14 @@ describe("ResultRegion", () => {
     expect(screen.getByRole("alert")).toBeEmptyDOMElement();
   });
 
+  it("puts a neutral info in the status region with no prefix", () => {
+    render(<ResultRegion result={{ tone: "info", text: "Already running." }} />);
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("Already running.");
+    expect(status).not.toHaveTextContent(/Done\.|Not delivered\.|Error\./);
+    expect(screen.getByRole("alert")).toBeEmptyDOMElement();
+  });
+
   it("puts undelivered mail in the alert region with a text marker", () => {
     render(<ResultRegion result={{ tone: "warning", text: "No link sent." }} />);
     const alert = screen.getByRole("alert");

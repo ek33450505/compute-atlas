@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 
 export const TEXTAREA_CLASS =
   "min-h-16 w-full rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-transparent disabled:cursor-not-allowed disabled:opacity-50";
@@ -37,30 +37,37 @@ export function DateText({ value }: { value: Date | string }) {
   );
 }
 
-export type QueueResult = { tone: "success" | "warning" | "error"; text: string };
+/** `info` is neutral: nothing was done and nothing failed, so it carries no visible prefix. */
+export type QueueResult = { tone: "success" | "info" | "warning" | "error"; text: string };
 
-const RESULT_LABEL: Record<QueueResult["tone"], string> = {
+const RESULT_LABEL: Record<QueueResult["tone"], string | null> = {
   success: "Done.",
+  info: null,
   warning: "Not delivered.",
   error: "Error.",
 };
 
 function ResultMessage({ result }: { result: QueueResult }) {
+  const neutral = result.tone === "success" || result.tone === "info";
+  const label = RESULT_LABEL[result.tone];
   return (
     <p
       className={
-        result.tone === "success"
+        neutral
           ? "flex items-start gap-2 rounded-lg border border-border p-3 text-sm"
           : "flex items-start gap-2 rounded-lg border border-destructive bg-destructive/10 p-3 text-sm text-destructive"
       }
     >
       {result.tone === "success" ? (
         <CheckCircle2 className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+      ) : result.tone === "info" ? (
+        <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
       ) : (
         <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
       )}
       <span>
-        <span className="font-semibold">{RESULT_LABEL[result.tone]}</span> {result.text}
+        {label ? <span className="font-semibold">{label} </span> : null}
+        {result.text}
       </span>
     </p>
   );
@@ -98,19 +105,19 @@ export function useResultReporter() {
  * Lives at list level, not in the row: a successful action refreshes the page and the row may leave,
  * so anything held in row state would vanish with it. Two regions, both always mounted, so assistive
  * tech has registered each before text lands in it (changing one region's aria-live in the same
- * render as its text is unreliable): `status` (polite) takes success, `alert` (assertive) takes
+ * render as its text is unreliable): `status` (polite) takes success and info, `alert` (assertive) takes
  * undelivered mail and errors. The visible "Not delivered." / "Error." prefix keeps the meaning off color.
  * The regions carry the announcement; they are not a focus target (see `useResultReporter`).
  */
 export function ResultRegion({ result, seq = 0 }: { result: QueueResult | null; seq?: number }) {
-  const isSuccess = result?.tone === "success";
+  const isPolite = result?.tone === "success" || result?.tone === "info";
   return (
     <div>
       <div role="status">
-        {result && isSuccess ? <ResultMessage key={seq} result={result} /> : null}
+        {result && isPolite ? <ResultMessage key={seq} result={result} /> : null}
       </div>
       <div role="alert">
-        {result && !isSuccess ? <ResultMessage key={seq} result={result} /> : null}
+        {result && !isPolite ? <ResultMessage key={seq} result={result} /> : null}
       </div>
     </div>
   );

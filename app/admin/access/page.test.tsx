@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-const { mockQueue, mockList, mockLog, mockHasSession, mockRedirect, queueProps, listProps } = vi.hoisted(() => ({
+const { mockQueue, mockList, mockLog, mockEditions, mockHasSession, mockRedirect, queueProps, listProps } = vi.hoisted(() => ({
   mockQueue: vi.fn(),
   mockList: vi.fn(),
   mockLog: vi.fn(),
+  mockEditions: vi.fn(),
   mockHasSession: vi.fn(),
   mockRedirect: vi.fn(),
   queueProps: vi.fn(),
@@ -26,6 +27,10 @@ vi.mock("@/lib/dataset-admin", async (orig) => ({
   listDatasetReviewQueue: mockQueue,
   listDatasetGrantsForAdmin: mockList,
   getDatasetDownloadLog: mockLog,
+  listRecentEditions: mockEditions,
+}));
+vi.mock("@/app/admin/access/editions-panel", () => ({
+  EditionsPanel: (props: { editions: unknown[] }) => <div>editions size {props.editions.length}</div>,
 }));
 vi.mock("@/app/admin/access/access-queue", () => ({
   AccessQueue: (props: { grants: unknown[] }) => {
@@ -45,7 +50,7 @@ vi.mock("@/app/admin/access/grants-list", () => ({
 }));
 
 import type { AdminDatasetGrant } from "@/lib/dataset-admin";
-import AdminAccessPage, { dynamic } from "./page";
+import AdminAccessPage, { dynamic, maxDuration } from "./page";
 
 const log = {
   grant: {
@@ -134,10 +139,15 @@ describe("AdminAccessPage", () => {
     mockQueue.mockResolvedValue([fullGrant, fullGrant]);
     mockList.mockResolvedValue([fullGrant]);
     mockLog.mockResolvedValue(log);
+    mockEditions.mockResolvedValue([{ id: "e1" }, { id: "e2" }, { id: "e3" }]);
   });
 
   it("renders on demand", () => {
     expect(dynamic).toBe("force-dynamic");
+  });
+
+  it("allows a long edition build: maxDuration covers the Build now server action", () => {
+    expect(maxDuration).toBe(300);
   });
 
   it("redirects to the login page and reads nothing without an admin session", async () => {
@@ -149,6 +159,7 @@ describe("AdminAccessPage", () => {
     expect(mockQueue).not.toHaveBeenCalled();
     expect(mockList).not.toHaveBeenCalled();
     expect(mockLog).not.toHaveBeenCalled();
+    expect(mockEditions).not.toHaveBeenCalled();
   });
 
   it("does not redirect with a session", async () => {
@@ -181,6 +192,17 @@ describe("AdminAccessPage", () => {
     expect(screen.getByText("queue size 2")).toBeInTheDocument();
     expect(screen.getByText("list size 1 status active")).toBeInTheDocument();
     expect(mockList).toHaveBeenCalledWith("active");
+  });
+
+  it("renders the Editions panel with the recent editions, after the review queue", async () => {
+    await renderPage({});
+
+    expect(mockEditions).toHaveBeenCalledTimes(1);
+    const queue = screen.getByText(/queue size/);
+    const editions = screen.getByText("editions size 3");
+    const list = screen.getByText(/list size/);
+    expect(queue.compareDocumentPosition(editions) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(editions.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("falls back to active for an unknown status", async () => {
