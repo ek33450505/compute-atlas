@@ -34,6 +34,14 @@ describe("DataPage request-access line", () => {
     expect(screen.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/access?from=data");
   });
 
+  it("places the request-access link before the Citing a facility page heading", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(DataPage());
+    const link = screen.getByRole("link", { name: "Request access" });
+    const heading = screen.getByRole("heading", { name: "Citing a facility page" });
+    expect(link.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it.each([["false"], [""]])("renders no request-access text when the flag is %j", (value) => {
     vi.stubEnv("DATASET_SHARING_ENABLED", value);
     render(DataPage());
