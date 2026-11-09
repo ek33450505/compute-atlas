@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { SiteFooter } from "./site-footer";
@@ -25,6 +25,26 @@ vi.mock("next/link", () => ({
 
 describe("SiteFooter", () => {
   beforeEach(() => {
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("shows the Request data access link while dataset sharing is enabled", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(<SiteFooter />);
+    expect(
+      screen.getByRole("link", { name: "Request data access" })
+    ).toHaveAttribute("href", "/access");
+  });
+
+  it("hides the Request data access link while dataset sharing is off", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    render(<SiteFooter />);
+    expect(
+      screen.queryByRole("link", { name: "Request data access" })
+    ).toBeNull();
   });
 
   it("renders the wordmark/home link with an accessible name that includes its visible text", () => {
