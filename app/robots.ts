@@ -120,7 +120,13 @@ export default function robots(): MetadataRoute.Robots {
       // /api/... (facilities, stats, search, contribute, submissions) but
       // not the bare "/api" path, which is a permanent redirect to /data
       // (app/api/page.tsx) and is not in the sitemap.
-      disallow: ["/admin/", "/api/"],
+      //
+      // "/access/dataset" (no trailing slash) is the personal download page: its URL
+      // carries a live access token. The disallow keeps compliant crawlers from
+      // fetching it at all; the page's noindex + X-Robots-Tag cover a crawler
+      // that arrives via a link anyway. The public request page "/access" is not
+      // a prefix of it and stays crawlable.
+      disallow: ["/admin/", "/api/", "/access/dataset"],
       // Content-Signal (contentsignals.org): search indexing yes, AI input
       // (grounding / retrieval / citation) yes, training no. This is the
       // 2026-10-15 decision (Ed) and matches the User-Agent blocks below, which

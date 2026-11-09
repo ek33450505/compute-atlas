@@ -10,7 +10,12 @@ vi.mock("@/lib/db/client");
 
 import * as dbClient from "@/lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
-import { datasetAccessGrantsTable, datasetDownloadsTable, emailSendsTable } from "@/lib/db/schema";
+import {
+  datasetAccessGrantsTable,
+  datasetDownloadsTable,
+  datasetEditionsTable,
+  emailSendsTable,
+} from "@/lib/db/schema";
 import { hashToken } from "@/lib/token-hash";
 
 // Imported after the mocks above so its transitive import of lib/db/client resolves against the mock.
@@ -22,6 +27,7 @@ import {
   hasRecentLinkReissue,
   listDatasetGrantsForAdmin,
   listDatasetReviewQueue,
+  listRecentEditions,
   toAdminGrant,
 } from "@/lib/dataset-admin";
 
@@ -426,5 +432,96 @@ describe("toAdminGrant", () => {
     expect(() => toAdminGrant({ ...(row as object), renewalPending: bad } as never)).toThrow(
       "expected a boolean lifecycle flag"
     );
+  });
+});
+
+describe("listRecentEditions", () => {
+  const file = (name: string, bytes: number) => ({
+    name,
+    pathname: `private/editions/secret-${name}`,
+    bytes,
+    sha256: "a".repeat(64),
+  });
+
+  async function insertEdition(editionDate: string, over: Partial<typeof datasetEditionsTable.$inferInsert> = {}) {
+    await tdb.db.insert(datasetEditionsTable).values({ editionDate, status: "published", ...over });
+  }
+
+  it("lists newest edition date first and honors the limit", async () => {
+    await insertEdition("2026-10-26");
+    await insertEdition("2026-11-09");
+    await insertEdition("2026-11-02");
+
+    expect((await listRecentEditions()).map((e) => e.editionDate)).toEqual(["2026-11-09", "2026-11-02", "2026-10-26"]);
+    expect((await listRecentEditions(2)).map((e) => e.editionDate)).toEqual(["2026-11-09", "2026-11-02"]);
+  });
+
+  it("defaults to the 8 retained editions", async () => {
+    for (let day = 1; day <= 10; day++) await insertEdition(`2026-10-${String(day).padStart(2, "0")}`);
+
+    expect(await listRecentEditions()).toHaveLength(8);
+  });
+
+  it("projects files to name and bytes only, never a storage path or hash", async () => {
+    await insertEdition("2026-11-09", {
+      recordCount: 3000,
+      files: [file("facilities.csv", 1234), file("README.md", 99)],
+    });
+
+    const [edition] = await listRecentEditions();
+
+    expect(edition.files).toEqual([
+      { name: "facilities.csv", bytes: 1234 },
+      { name: "README.md", bytes: 99 },
+    ]);
+    expect(edition.recordCount).toBe(3000);
+    expect(edition.status).toBe("published");
+    expect(edition.builtAt).toBeInstanceOf(Date);
+    const serialized = JSON.stringify(edition);
+    expect(serialized).not.toContain("pathname");
+    expect(serialized).not.toContain("secret-");
+    expect(serialized).not.toContain("sha256");
+    expect(Object.keys(edition).sort()).toEqual(["builtAt", "changes", "editionDate", "files", "id", "recordCount", "status"]);
+  });
+
+  it("reads the changelog counts and never passes headlines through", async () => {
+    await insertEdition("2026-11-09", {
+      changelogSummary: { added: 5, updated: 2, removed: 1, headlines: [{ evil: "<script>" }] },
+    });
+
+    const [edition] = await listRecentEditions();
+
+    expect(edition.changes).toEqual({ added: 5, updated: 2, removed: 1 });
+    expect(JSON.stringify(edition)).not.toContain("evil");
+  });
+
+  it.each([
+    ["null", null],
+    ["a string", "nope"],
+    ["an array", [1, 2, 3]],
+    ["missing counts", { headlines: [] }],
+    ["a non-number count", { added: "5", updated: 2, removed: 1 }],
+    ["a negative count", { added: -1, updated: 2, removed: 1 }],
+    ["a fractional count", { added: 1.5, updated: 2, removed: 1 }],
+  ])("reads a malformed changelogSummary (%s) as null counts", async (_label, summary) => {
+    await insertEdition("2026-11-09", { changelogSummary: summary });
+
+    const [edition] = await listRecentEditions();
+
+    expect(edition.changes).toBeNull();
+  });
+
+  it("drops malformed file entries instead of passing them through", async () => {
+    await insertEdition("2026-11-09", {
+      files: [file("ok.csv", 10), { name: 7, bytes: "x" }, null] as never,
+    });
+
+    const [edition] = await listRecentEditions();
+
+    expect(edition.files).toEqual([{ name: "ok.csv", bytes: 10 }]);
+  });
+
+  it("returns an empty list when there are no editions", async () => {
+    expect(await listRecentEditions()).toEqual([]);
   });
 });

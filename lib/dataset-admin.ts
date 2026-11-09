@@ -5,9 +5,11 @@ import { getDb } from "@/lib/db/client";
 import {
   datasetAccessGrantsTable,
   datasetDownloadsTable,
+  datasetEditionsTable,
   emailSendsTable,
   type DatasetCategory,
   type DatasetDownloadOutcome,
+  type DatasetEditionStatus,
   type DatasetGrantStatus,
 } from "@/lib/db/schema";
 import { liveGrant, renewalPendingGrant } from "@/lib/dataset-grants";
@@ -206,4 +208,67 @@ export async function hasRecentLinkReissue(grantId: string, now: Date = new Date
     )
     .limit(1);
   return rows.length > 0;
+}
+
+/** What the admin UI may see of an edition. Deliberately NO storage pathname, file hash or headlines. */
+export type AdminDatasetEdition = {
+  id: string;
+  editionDate: string;
+  builtAt: Date;
+  status: DatasetEditionStatus;
+  recordCount: number | null;
+  files: { name: string; bytes: number }[];
+  /** Null when the edition has no (or a malformed) changelog summary. */
+  changes: { added: number; updated: number; removed: number } | null;
+};
+
+export const ADMIN_EDITIONS_LIMIT = 8;
+
+const isCount = (value: unknown): value is number => typeof value === "number" && Number.isInteger(value) && value >= 0;
+
+/** `changelogSummary` is opaque jsonb: take the three counts if all are present and sane, nothing else. */
+function toChangeCounts(summary: unknown): AdminDatasetEdition["changes"] {
+  if (typeof summary !== "object" || summary === null || Array.isArray(summary)) return null;
+  const { added, updated, removed } = summary as Record<string, unknown>;
+  if (!isCount(added) || !isCount(updated) || !isCount(removed)) return null;
+  return { added, updated, removed };
+}
+
+/** `files` is jsonb typed by `$type` only: keep well-formed entries, and only their name and size. */
+function toFileSizes(files: unknown): AdminDatasetEdition["files"] {
+  if (!Array.isArray(files)) return [];
+  const sizes: AdminDatasetEdition["files"] = [];
+  for (const entry of files as unknown[]) {
+    if (typeof entry !== "object" || entry === null) continue;
+    const { name, bytes } = entry as Record<string, unknown>;
+    if (typeof name === "string" && isCount(bytes)) sizes.push({ name, bytes });
+  }
+  return sizes;
+}
+
+/**
+ * The newest editions by `editionDate`, for the admin "Editions" panel. Explicit projection: `files` carries
+ * the private storage pathname and sha256 of each file, so it is mapped down to name and size here and the
+ * raw jsonb never leaves this function. Every status is listed, so a failed or stuck build is visible.
+ */
+export async function listRecentEditions(limit: number = ADMIN_EDITIONS_LIMIT): Promise<AdminDatasetEdition[]> {
+  const db = getDb();
+  const rows = await db
+    .select({
+      id: datasetEditionsTable.id,
+      editionDate: datasetEditionsTable.editionDate,
+      builtAt: datasetEditionsTable.builtAt,
+      status: datasetEditionsTable.status,
+      recordCount: datasetEditionsTable.recordCount,
+      files: datasetEditionsTable.files,
+      changelogSummary: datasetEditionsTable.changelogSummary,
+    })
+    .from(datasetEditionsTable)
+    .orderBy(desc(datasetEditionsTable.editionDate))
+    .limit(limit);
+  return rows.map(({ files, changelogSummary, ...row }) => ({
+    ...row,
+    files: toFileSizes(files),
+    changes: toChangeCounts(changelogSummary),
+  }));
 }

@@ -21,7 +21,18 @@ describe("robots", () => {
     const rule = Array.isArray(rules) ? rules[0] : rules;
     expect(rule.userAgent).toBe("*");
     expect(rule.allow).toBe("/");
-    expect(rule.disallow).toEqual(["/admin/", "/api/"]);
+    expect(rule.disallow).toEqual(["/admin/", "/api/", "/access/dataset"]);
+  });
+
+  it("disallows the token-bearing download page but not the public /access request page", () => {
+    const { rules } = robots();
+    const rule = Array.isArray(rules) ? rules[0] : rules;
+    const disallowList = Array.isArray(rule.disallow) ? rule.disallow : [rule.disallow];
+    const blocked = (path: string) => disallowList.some((p) => !!p && path.startsWith(p));
+    expect(blocked("/access/dataset")).toBe(true);
+    expect(blocked("/access/dataset?t=abc")).toBe(true);
+    expect(blocked("/access")).toBe(false);
+    expect(blocked("/access/confirm")).toBe(false);
   });
 
   it("disallow /api/ (trailing slash) does not match the bare /api redirect path", () => {
@@ -262,7 +273,7 @@ describe("robots", () => {
 
     expect(wildcard.userAgent).toBe("*");
     expect(wildcard.allow).toBe("/");
-    expect(wildcard.disallow).toEqual(["/admin/", "/api/"]);
+    expect(wildcard.disallow).toEqual(["/admin/", "/api/", "/access/dataset"]);
   });
 
   it("carries the citation and licence comments on the '*' rule, keyed with a leading '#'", () => {
@@ -325,7 +336,7 @@ describe("robots", () => {
 
     expect(wildcard.userAgent).toBe("*");
     expect(wildcard.allow).toBe("/");
-    expect(wildcard.disallow).toEqual(["/admin/", "/api/"]);
+    expect(wildcard.disallow).toEqual(["/admin/", "/api/", "/access/dataset"]);
 
     // Exact set AND order of every non-"*" rule -- catches a stray added or
     // dropped crawler rule that the per-entry check below wouldn't. AI

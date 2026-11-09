@@ -10,6 +10,21 @@ function isAdminPath(pathname: string): boolean {
 }
 
 /**
+ * True for the personal dataset download page and the variants the matcher
+ * compiles for it (trailing slash, `.json`/`.rsc`). The matcher entry is an
+ * exact literal, so nothing else under `/access/dataset*` reaches `proxy()`;
+ * `/access/datasets` and `/access/dataset/x` are NOT this page and are not
+ * matched (pinned in `proxy.test.ts`).
+ */
+function isDatasetLandingPath(pathname: string): boolean {
+  return (
+    pathname === "/access/dataset" ||
+    pathname === "/access/dataset/" ||
+    pathname.startsWith("/access/dataset.")
+  );
+}
+
+/**
  * True for `/api/cron` and everything under it — see `isEdgeOriginAllowed`.
  *
  * Refuses any pathname containing a `%`, so this — the gate's one
@@ -57,7 +72,8 @@ function isCronPath(pathname: string): boolean {
  *
  * Operational consequence: unsetting `EDGE_SHARED_SECRET` on production (or a
  * deploy that drops it) now 403s every matched path — `/admin`, `/api` except
- * `/api/cron/*`, `/map`, `/data`, `/table`, `/facilities/*`, `/embed/*` — instead of disarming the gate.
+ * `/api/cron/*`, `/map`, `/data`, `/table`, `/access/dataset`, `/facilities/*`,
+ * `/embed/*` — instead of disarming the gate.
  * Rotation therefore cannot start by unsetting it; see `docs/maintainers.md`
  * §9.
  *
@@ -75,7 +91,8 @@ function isCronPath(pathname: string): boolean {
  *      secret you are about to set, on all incoming requests. A mismatch between the rule's
  *      header name and this file 403s EVERY matched path the moment step 3
  *      lands — `/admin`, `/api` except `/api/cron/*`, `/map`, `/data`, `/table`,
- *      `/facilities/*` and `/embed/*` — so copy the string, don't retype it.
+ *      `/access/dataset`, `/facilities/*` and `/embed/*` — so copy the string,
+ *      don't retype it.
  *   2. Set `EDGE_SHARED_SECRET` in the Vercel project, production scope, to
  *      that same value. Still inert — the running deployment cannot see it.
  *   3. Redeploy. This is the enforcing step. Verify with `curl --resolve
@@ -177,6 +194,31 @@ export function proxy(request: NextRequest) {
     });
   }
 
+  if (isDatasetLandingPath(pathname)) {
+    // The URL carries a live access token in its query and the page is rendered
+    // per grant, so it must never be stored by a shared cache (the Cloudflare
+    // cache rule caches every non-/admin GET), indexed, or leak the token via
+    // Referer. The page also sets these in its own metadata; the headers here
+    // also cover a render that fails. The compiled matcher additionally matches
+    // `.rsc`/`.json` suffixes; no such routes exist, so the headers are harmless
+    // there.
+    const response = NextResponse.next();
+    for (const [name, value] of Object.entries(NO_STORE_HEADERS)) {
+      response.headers.set(name, value);
+    }
+    // Cloudflare Web Analytics is auto-injected at the edge into HTML responses,
+    // and its beacon reports the page URL, which here includes `?t=<token>`: a
+    // live download credential sent to a third party. Cloudflare does not inject
+    // into responses carrying `Cache-Control: no-transform`, so add it for this
+    // path only (NO_STORE_HEADERS stays unchanged globally). Must be verified on
+    // production (O8): `curl -s '<prod>/access/dataset?t=x' | grep -c
+    // cloudflareinsights` must print 0.
+    response.headers.set("Cache-Control", "no-store, no-transform");
+    response.headers.set("Referrer-Policy", "no-referrer");
+    response.headers.set("X-Robots-Tag", "noindex");
+    return response;
+  }
+
   if (!isAdminPath(pathname)) {
     return NextResponse.next();
   }
@@ -234,6 +276,22 @@ export function proxy(request: NextRequest) {
  *    is covered too; social crawlers arrive through Cloudflare. There is no
  *    bare `/facilities` index route.
  *
+ *  - `/access/dataset` — added 2026-11-09 (dataset sharing). An exact literal
+ *    for the personal download page, which carries a live access token in its
+ *    query string and renders per grant. Two reasons it is here: (1) the
+ *    edge-origin gate covers it like `/data` and `/table`, so it cannot be
+ *    reached around Cloudflare; (2) `proxy()` stamps `Cache-Control:
+ *    no-store, no-transform` (no-transform also stops Cloudflare injecting
+ *    its analytics beacon, which would report the tokened URL),
+ *    `CDN-Cache-Control: no-store`, `Referrer-Policy: no-referrer` and
+ *    `X-Robots-Tag: noindex` on it, because the Cloudflare cache rule makes
+ *    every non-/admin GET cache-eligible and a cached copy would be a
+ *    cached token. The sibling `/access/*` pages (confirm, renew, ...) are
+ *    NOT matched: they are single-use interstitials that already render
+ *    `force-dynamic` + noindex, and the file route they link to is under
+ *    `/api` (matched). Being an exact literal, `/access`, `/access/dataset/x`
+ *    and `/access/datasets` stay out.
+ *
  * Also deliberately NOT matched:
  *  - `/_next/static`, `/_next/image` and the `public/` asset prefixes
  *    (`/data/*`, `/basemap/*`, `/fonts/*`). They are served from Vercel's
@@ -267,6 +325,7 @@ export const config = {
     "/map",
     "/data",
     "/table",
+    "/access/dataset",
     "/facilities/:path*",
     "/embed/:path*",
   ],

@@ -13,6 +13,7 @@ const {
   mockExtend,
   mockDeliver,
   mockHasRecentReissue,
+  mockBuildEdition,
 } = vi.hoisted(() => ({
   mockGetCookie: vi.fn(),
   mockVerifySessionCookie: vi.fn(),
@@ -24,6 +25,7 @@ const {
   mockExtend: vi.fn(),
   mockDeliver: vi.fn(),
   mockHasRecentReissue: vi.fn(),
+  mockBuildEdition: vi.fn(),
 }));
 
 vi.mock("next/headers", () => ({
@@ -43,9 +45,11 @@ vi.mock("@/lib/dataset-grants", () => ({
 }));
 vi.mock("@/lib/dataset-admin", () => ({ hasRecentLinkReissue: mockHasRecentReissue }));
 vi.mock("@/lib/dataset-mail", () => ({ deliverDatasetReviewMail: mockDeliver }));
+vi.mock("@/lib/dataset-edition-builder", () => ({ buildEdition: mockBuildEdition }));
 
 import {
   approveDatasetGrantAction,
+  buildEditionNowAction,
   extendDatasetGrantAction,
   reissueDatasetLinkAction,
   rejectDatasetGrantAction,
@@ -61,6 +65,8 @@ const NOT_ELIGIBLE = {
     "This grant is no longer in a state this action applies to. The list has been refreshed; check it before retrying.",
 };
 const UPDATE_FAILED = { ok: false, error: "Could not update the grant. Try again." };
+
+const EDITION_ID = "9d1c2e4f-0b3a-4f6d-8a7e-1c2b3d4e5f60";
 
 const approvedIntent = { kind: "dataset_approved", grantId: ID, email: EMAIL, accessToken: TOKEN };
 const rejectedIntent = { kind: "dataset_rejected", grantId: ID, email: EMAIL, rejectionNote: "Out of scope." };
@@ -87,6 +93,12 @@ beforeEach(() => {
   mockExtend.mockResolvedValue({ ok: true });
   mockDeliver.mockResolvedValue({ sent: true, disposition: "sent" });
   mockHasRecentReissue.mockResolvedValue(false);
+  mockBuildEdition.mockResolvedValue({
+    outcome: "published",
+    editionId: EDITION_ID,
+    editionDate: "2026-11-09",
+    recordCount: 3012,
+  });
   consoleSpies = [
     vi.spyOn(console, "error").mockImplementation(() => {}),
     vi.spyOn(console, "log").mockImplementation(() => {}),
@@ -314,4 +326,58 @@ describe("untrusted input", () => {
       }
     }
   );
+});
+
+describe("buildEditionNowAction", () => {
+  it("rejects Unauthorized and builds nothing without a valid session", async () => {
+    mockVerifySessionCookie.mockReturnValue(false);
+
+    await expect(buildEditionNowAction()).rejects.toThrow("Unauthorized");
+
+    expect(mockBuildEdition).not.toHaveBeenCalled();
+    expect(mockRevalidatePath).not.toHaveBeenCalled();
+  });
+
+  it("builds once and reports a published edition without its id", async () => {
+    const result = await buildEditionNowAction();
+
+    expect(mockBuildEdition).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ ok: true, outcome: "published", editionDate: "2026-11-09", recordCount: 3012 });
+    expect(JSON.stringify(result)).not.toContain(EDITION_ID);
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it.each(["alreadyPublished", "inProgress"] as const)("maps %s to an ok result with no record count", async (outcome) => {
+    mockBuildEdition.mockResolvedValue({ outcome, editionId: EDITION_ID, editionDate: "2026-11-09" });
+
+    const result = await buildEditionNowAction();
+
+    expect(result).toEqual({ ok: true, outcome, editionDate: "2026-11-09" });
+    expect(JSON.stringify(result)).not.toContain(EDITION_ID);
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("maps a failed build to an error carrying only the fixed code", async () => {
+    mockBuildEdition.mockResolvedValue({
+      outcome: "failed",
+      editionId: EDITION_ID,
+      editionDate: "2026-11-09",
+      code: "below_floor",
+    });
+
+    const result = await buildEditionNowAction();
+
+    expect(result).toEqual({ ok: false, error: "The edition build failed.", code: "below_floor" });
+    expect(JSON.stringify(result)).not.toContain(EDITION_ID);
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("returns a failure rather than throwing if the builder breaks its never-throws contract", async () => {
+    mockBuildEdition.mockRejectedValue(new Error("Failed query: select ... params: secret@example.org"));
+
+    const result = await buildEditionNowAction();
+
+    expect(result).toEqual({ ok: false, error: "The edition build failed.", code: "unknown" });
+    expect(consoleOutput(consoleSpies)).not.toContain("secret@example.org");
+  });
 });
