@@ -637,6 +637,7 @@ and the constants together. Summary:
 | Revoked or expired grants, with their download rows | 365 days after revocation or expiry |
 | Hashed IP on a request | cleared 90 days after review |
 | Download rows | 365 days |
+| Retention backup files (deleted rows) | 30 days |
 | Hashed IP on a download row | cleared 90 days after the download |
 | Email send log (`email_sends`) | 180 days |
 
@@ -644,15 +645,14 @@ and the constants together. Summary:
   runs Mon/Wed/Fri at 13:00 local, and only when `DISCOVERY_ENABLED=true` (`run.sh` exits before any lane
   otherwise). A deletion lands on the first run that reaches the prune step after its period: up to 3 days
   late when runs complete, later if a run exits early (e.g. a config check in `run.sh`).
-- ⚠️ **Deleted rows are copied, not destroyed.** Before each deletion the prune writes the candidate rows as
-  JSON lines to `discovery-logs/retention-backups/` (`appendBackup` in `scripts/retention-prune.ts`). The
-  dataset steps go through the same path, so those copies can include request emails and names. Nothing in
-  the repo deletes the backup files, so they outlive the periods above. This is an open question for Ed,
-  not a settled decision: until it is decided, the backup directory's own retention is not covered by the
-  privacy notice.
+- ⚠️ **Deleted rows are copied, then the copies expire.** Before each deletion or hashed-IP clearing the prune writes the
+  candidate rows (cleared-IP rows included, and the notice says so) as JSON lines to `discovery-logs/retention-backups/` (`appendBackup` in `scripts/retention-prune.ts`); those copies can
+  include request emails and names. The same prune run deletes backup files 30 days after their creation
+  (`RETENTION_BACKUP_RETENTION_DAYS`, by the filename timestamp, regular files matching the run's own naming only),
+  and the privacy notice says so (Ed, 2026-11-09).
 - A download-log write failure does not block the download. The log fails **open** (`lib/dataset-download.ts`).
 - Per-address mail caps: `lib/email-gate.ts`, with the limits in `lib/email-sends.ts`.
-- Both the terms and the privacy notice are **DRAFT, pending lawyer review** (Ed-gated op O6).
+- The terms and privacy notice are final (version `2026-11-09`). Ed decided on 2026-11-09 not to seek legal review. Bump `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts` whenever their text changes.
 
 ### Tracing a leaked file
 
