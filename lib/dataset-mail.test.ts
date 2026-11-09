@@ -10,6 +10,9 @@ vi.mock("@/lib/email", () => ({
   sendDatasetVerifyEmail: vi.fn(),
   sendDatasetAlreadyActiveEmail: vi.fn(),
   sendDatasetAdminNewRequestEmail: vi.fn(),
+  sendDatasetApprovedEmail: vi.fn(),
+  sendDatasetRejectedEmail: vi.fn(),
+  sendDatasetLinkReissuedEmail: vi.fn(),
 }));
 
 import { getDb } from "@/lib/db/client";
@@ -17,9 +20,16 @@ import { sendDatasetAdminNoticeGated, sendGrantGated } from "@/lib/email-gate";
 import {
   sendDatasetAdminNewRequestEmail,
   sendDatasetAlreadyActiveEmail,
+  sendDatasetApprovedEmail,
+  sendDatasetLinkReissuedEmail,
+  sendDatasetRejectedEmail,
   sendDatasetVerifyEmail,
 } from "@/lib/email";
-import { deliverDatasetAdminNotice, deliverDatasetRequestMail } from "@/lib/dataset-mail";
+import {
+  deliverDatasetAdminNotice,
+  deliverDatasetRequestMail,
+  deliverDatasetReviewMail,
+} from "@/lib/dataset-mail";
 
 const DB = { db: true };
 const SENT = { sent: true, disposition: "sent" } as const;
@@ -102,5 +112,76 @@ describe("deliverDatasetAdminNotice", () => {
     await expect(deliverDatasetAdminNotice(intent)).resolves.toEqual({ sent: false, disposition: "gate_error" });
     expect(sendDatasetAdminNoticeGated).not.toHaveBeenCalled();
     expect(sendDatasetAdminNewRequestEmail).not.toHaveBeenCalled();
+  });
+});
+
+describe("deliverDatasetReviewMail", () => {
+  const reviewSenders = [
+    sendDatasetApprovedEmail,
+    sendDatasetRejectedEmail,
+    sendDatasetLinkReissuedEmail,
+  ];
+
+  it("routes dataset_approved through sendGrantGated and sends the access token", async () => {
+    const intent = { kind: "dataset_approved" as const, grantId: "g4", email: "a@b.co", accessToken: "acc" };
+    expect(await deliverDatasetReviewMail(intent)).toEqual(SENT);
+
+    const [db, opts, send] = vi.mocked(sendGrantGated).mock.calls[0];
+    expect(db).toBe(DB);
+    expect(opts).toEqual({ kind: "dataset_approved", grantId: "g4", email: "a@b.co" });
+    expect(sendDatasetApprovedEmail).not.toHaveBeenCalled();
+    await send();
+    expect(sendDatasetApprovedEmail).toHaveBeenCalledWith({ email: "a@b.co", accessToken: "acc" });
+    expect(sendDatasetRejectedEmail).not.toHaveBeenCalled();
+    expect(sendDatasetLinkReissuedEmail).not.toHaveBeenCalled();
+  });
+
+  it("routes dataset_rejected through sendGrantGated and sends the rejection note", async () => {
+    const intent = {
+      kind: "dataset_rejected" as const,
+      grantId: "g5",
+      email: "c@d.co",
+      rejectionNote: "Out of scope.",
+    };
+    await deliverDatasetReviewMail(intent);
+
+    const [db, opts, send] = vi.mocked(sendGrantGated).mock.calls[0];
+    expect(db).toBe(DB);
+    expect(opts).toEqual({ kind: "dataset_rejected", grantId: "g5", email: "c@d.co" });
+    expect(sendDatasetRejectedEmail).not.toHaveBeenCalled();
+    await send();
+    expect(sendDatasetRejectedEmail).toHaveBeenCalledWith({ email: "c@d.co", rejectionNote: "Out of scope." });
+    expect(sendDatasetApprovedEmail).not.toHaveBeenCalled();
+    expect(sendDatasetLinkReissuedEmail).not.toHaveBeenCalled();
+  });
+
+  it("passes a null rejection note through", async () => {
+    await deliverDatasetReviewMail({ kind: "dataset_rejected", grantId: "g5", email: "c@d.co", rejectionNote: null });
+    await vi.mocked(sendGrantGated).mock.calls[0][2]();
+    expect(sendDatasetRejectedEmail).toHaveBeenCalledWith({ email: "c@d.co", rejectionNote: null });
+  });
+
+  it("routes dataset_link_reissued through sendGrantGated and sends the new token", async () => {
+    const intent = { kind: "dataset_link_reissued" as const, grantId: "g6", email: "e@f.co", accessToken: "new" };
+    await deliverDatasetReviewMail(intent);
+
+    const [db, opts, send] = vi.mocked(sendGrantGated).mock.calls[0];
+    expect(db).toBe(DB);
+    expect(opts).toEqual({ kind: "dataset_link_reissued", grantId: "g6", email: "e@f.co" });
+    expect(sendDatasetLinkReissuedEmail).not.toHaveBeenCalled();
+    await send();
+    expect(sendDatasetLinkReissuedEmail).toHaveBeenCalledWith({ email: "e@f.co", accessToken: "new" });
+    expect(sendDatasetApprovedEmail).not.toHaveBeenCalled();
+    expect(sendDatasetRejectedEmail).not.toHaveBeenCalled();
+  });
+
+  it("returns gate_error without sending or throwing when getDb throws", async () => {
+    vi.mocked(getDb).mockImplementation(() => {
+      throw new Error("DATABASE_URL is not set");
+    });
+    const intent = { kind: "dataset_approved" as const, grantId: "g4", email: "a@b.co", accessToken: "acc" };
+    await expect(deliverDatasetReviewMail(intent)).resolves.toEqual({ sent: false, disposition: "gate_error" });
+    expect(sendGrantGated).not.toHaveBeenCalled();
+    for (const sender of reviewSenders) expect(sender).not.toHaveBeenCalled();
   });
 });
