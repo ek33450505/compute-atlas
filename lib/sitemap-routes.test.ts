@@ -51,7 +51,7 @@ describe("sitemap", () => {
     // /contact is an indexable landing page that was missing from the sitemap
     // entirely — GSC reported "URL is unknown to Google" (2026-09-03).
     expect(urls).toContain(`${siteConfig.url}/contact`);
-    // /access redirects to /contact and must not be advertised.
+    // /access is the dataset request form (dark until DATASET_SHARING_ENABLED) and must not be advertised.
     expect(urls).not.toContain(`${siteConfig.url}/access`);
   });
 

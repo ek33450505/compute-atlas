@@ -338,7 +338,7 @@ tool, not part of the deployed app.
 ## Gotchas
 
 - **Bulk exits are closed (Phase 1, Ed 2026-11-05).** The data stays CC BY 4.0 (all records, future ones too). Protection is ACCESS-only: no bulk download, no bulk API, no per-record JSON. Site copy says nothing about pausing or bulk.
-  - `/data` is now the "How to cite Compute Atlas" page (nav label "Cite") with no downloads; `/access*` 308 → `/contact`.
+  - `/data` is now the "How to cite Compute Atlas" page (nav label "Cite") with no downloads. While `DATASET_SHARING_ENABLED` is unset, the `/access*` pages render a noindexed "not open yet" page; they 308'd to `/contact` before dataset-sharing PR A. Keep the flag unset until PR B ships `/access/dataset`, because approval mails link there.
   - The `/api` documentation page redirects to `/data`; nothing on the site or in the README advertises an API (Ed, 2026-11-06).
   - `GET /api/facilities` (list), `GET /api/facilities/{id}` and the full shape of `/api/search` are admin-bearer only and `no-store` (#528, #529). The public palette search (`/api/search?…&shape=palette`) stays.
   - Cloudflare custom rule `d0286981a37e4076ad52eb840601683f` ("Pause bulk dataset exits", Block) uses the 5th of 5 Free-plan custom-rule slots. It blocks `lower(path)` in {`/api/facilities`, `/api/facilities/`, `/data/facilities.csv`, `/data/facilities.json`}, GET/HEAD on `starts_with(lower(path), "/api/facilities/")`, and `/api/search` unless `args["shape"][0] eq "palette"`.

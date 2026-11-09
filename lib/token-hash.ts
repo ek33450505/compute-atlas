@@ -12,8 +12,9 @@ import { createHash } from "node:crypto";
  * value; each call site also carries a legacy raw-equality fallback that
  * upgrades a matched row to its hash as part of the same request, and
  * `scripts/hash-tokens-backfill.ts` sweeps any rows that never get another
- * lookup. `subscriptions.unsubscribe_token` is the one deliberate exception —
- * it is never hashed (see its column comment in lib/db/schema.ts).
+ * lookup. `subscriptions.unsubscribe_token` and
+ * `dataset_access_grants.unsubscribe_token` are the deliberate exceptions —
+ * they are never hashed (see their column comments in lib/db/schema.ts).
  */
 export function hashToken(raw: string): string {
   return createHash("sha256").update(raw).digest("hex");

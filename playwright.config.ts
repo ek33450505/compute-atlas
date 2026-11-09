@@ -57,7 +57,9 @@ export default defineConfig({
     // `npm run build` runs prebuild (ensure-data-snapshot + hero builders) via
     // npm's pre-hook; the snapshot guard refuses to fill from the fixture in CI
     // unless this is set. Playwright merges env over process.env.
-    env: { ALLOW_FIXTURE_SNAPSHOT: "1" },
+    // DATASET_SHARING_ENABLED: e2e exercises the enabled /access pages; the
+    // flag-off state is covered by vitest.
+    env: { ALLOW_FIXTURE_SNAPSHOT: "1", DATASET_SHARING_ENABLED: "true" },
     url: "http://localhost:3000",
     // Deliberately NOT reusing an existing server. On 2026-09-07 a stale
     // next-server left running from an earlier session served ~2-day-old

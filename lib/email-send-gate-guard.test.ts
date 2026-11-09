@@ -6,16 +6,21 @@ import { describe, expect, it } from "vitest";
 import ts from "typescript";
 
 /**
- * Every outbound subscription email must pass through `sendGated`
- * (lib/email-gate.ts). Structural rules, enforced on the TypeScript AST of
- * every production file:
+ * Every outbound subscription email must pass through `sendGated`, every
+ * requester-facing dataset-sharing email through `sendGrantGated`, and the
+ * maintainer's dataset alert through `sendDatasetAdminNoticeGated`, all in
+ * lib/email-gate.ts. Each gate has its OWN set of senders (GATE_SENDERS): a
+ * sender inside another gate's callback is a violation, because each gate
+ * re-checks different state (a subscription row vs a grant row) before it
+ * sends. Structural rules, enforced on the TypeScript AST of every production
+ * file:
  *
  *  (a) Any access to Resend's `emails.send` / `emails["send"]` (a call, an
  *      alias, or `.call`/`.bind`/`.apply` on it) appears only inside
  *      `sendViaResend` in lib/email.ts, and `api.resend.com` is named nowhere
  *      else, so nothing can mail around the public senders.
- *  (b) A gated sender is referenced only as (or inside) an argument of a
- *      `sendGated(...)` call. A direct call, an alias (`const f = send...`),
+ *  (b) A gated sender is referenced only as (or inside) an argument of ITS
+ *      gate's call (the innermost enclosing gate call decides). A direct call, an alias (`const f = send...`),
  *      a renaming import/export (`import { send... as f }`), a string-keyed
  *      access (`m["send..."]`) or a destructure from `import()`/`require`
  *      fails.
@@ -28,9 +33,17 @@ import ts from "typescript";
  * or any path without a recognisable name or receiver. The real controls are
  * code review and the gate's own runtime re-checks.
  *
- * TO GATE ANOTHER SENDER: move its name from PENDING_SENDERS to
- * GATED_SENDERS and route its call sites through `sendGated`. The test below
- * fails on a stale PENDING_SENDERS entry, so the list cannot rot.
+ *  (c) Every exported `send*` function in lib/email.ts is registered: in a
+ *      gate's set in GATE_SENDERS, or in UNGATED_SENDERS with its reason, so a
+ *      new sender cannot ship without a decision about its gate.
+ *
+ * TO GATE ANOTHER SENDER: add its name to the set of the gate it goes through
+ * in GATE_SENDERS (`sendGated`: subscription mail; `sendGrantGated`: dataset
+ * mail to a requester; `sendDatasetAdminNoticeGated`: the maintainer's dataset
+ * alert), and route its call sites through that gate. A sender not yet gated
+ * goes in PENDING_SENDERS until it is, usable only in its listed files and
+ * never inside a gate callback; the test below fails on a stale
+ * PENDING_SENDERS entry, so the list cannot rot.
  */
 
 const ROOT = process.cwd();
@@ -41,29 +54,55 @@ const SKIP_DIRS = new Set([
   "test-results",
   "playwright-report",
 ]);
-const GATE_FN = "sendGated";
 const GATE_FILE = join("lib", "email-gate.ts");
 const RESEND_OWNER = { file: join("lib", "email.ts"), fn: "sendViaResend" };
 
 /**
- * Routed through `sendGated` today: usable ONLY inside a gate callback. The
- * two notify.ts digest senders are module-private and call `sendViaResend`
- * directly, so naming them here is what stops a direct call from slipping past.
+ * Gate -> the senders it may carry: usable ONLY inside THAT gate's callback.
+ * The digest senders are named here so a direct call cannot slip past.
  */
-const GATED_SENDERS = new Set([
-  "sendConfirmEmail",
-  "sendWatchStartedEmail",
-  "sendChangeNotification",
-  "sendChangeDigestEmail",
-  "sendAreaDigestEmail",
+const GATE_SENDERS: Record<string, ReadonlySet<string>> = {
+  // Subscription mail.
+  sendGated: new Set([
+    "sendConfirmEmail",
+    "sendWatchStartedEmail",
+    "sendChangeNotification",
+    "sendChangeDigestEmail",
+    "sendAreaDigestEmail",
+  ]),
+  // Dataset mail to a requester (the grant row is re-read before each send).
+  sendGrantGated: new Set([
+    "sendDatasetVerifyEmail",
+    "sendDatasetAlreadyActiveEmail",
+    "sendDatasetApprovedEmail",
+    "sendDatasetRejectedEmail",
+    "sendDatasetLinkReissuedEmail",
+    "sendDatasetRenewalReminderEmail",
+    "sendDatasetEditionNoticeEmail",
+  ]),
+  // The maintainer's alert about a new dataset request.
+  sendDatasetAdminNoticeGated: new Set(["sendDatasetAdminNewRequestEmail"]),
+};
+const GATE_FNS = Object.keys(GATE_SENDERS);
+const GATED_SENDERS = new Set(Object.values(GATE_SENDERS).flatMap((names) => [...names]));
+
+/**
+ * Exported senders in lib/email.ts that deliberately bypass every gate. Each
+ * answers a message the recipient (or the maintainer) is already part of, so
+ * there is no subscription or grant row to re-check.
+ */
+const UNGATED_SENDERS = new Set([
+  "sendContactEmail", // to the maintainer, about a contact-form message already stored
+  "sendContactReply", // the maintainer's reply to a contact-form message
+  "sendSubmissionReviewedEmail", // one transactional send to a submitter on review; no subscription involved
 ]);
 
 /**
- * Not gated YET. Each may be used inside a gate callback, or in its listed
- * files and nowhere else. TO GATE ANOTHER SENDER: move its name from
- * PENDING_SENDERS to GATED_SENDERS and route its call sites through
- * `sendGated`; the test fails on a stale PENDING_SENDERS entry.
- * Currently empty.
+ * Not gated YET. Each may be used only in its listed files, never inside a
+ * gate callback (it belongs to no gate yet). TO GATE ANOTHER SENDER: move its
+ * name from PENDING_SENDERS into the set of the gate its call sites will go
+ * through (GATE_SENDERS), and route those call sites through that gate; the
+ * test fails on a stale PENDING_SENDERS entry. Currently empty.
  */
 const PENDING_SENDERS: Record<string, string[]> = {};
 
@@ -174,19 +213,47 @@ function insideFunctionNamed(node: ts.Node, name: string): boolean {
   return false;
 }
 
-function insideGateArgument(node: ts.Node): boolean {
+/**
+ * True when `name` sits in an argument of the INNERMOST enclosing gate call and
+ * that gate's set carries it. (A pending sender is handled by `checkUse`, by file.)
+ */
+function insideGateArgument(node: ts.Node, name: string): boolean {
   for (let cur: ts.Node = node; cur.parent; cur = cur.parent) {
     const p = cur.parent;
     if (
       ts.isCallExpression(p) &&
       ts.isIdentifier(unwrapTransparent(p.expression)) &&
-      (unwrapTransparent(p.expression) as ts.Identifier).text === GATE_FN &&
+      GATE_FNS.includes((unwrapTransparent(p.expression) as ts.Identifier).text) &&
       p.arguments.includes(cur as ts.Expression)
     ) {
-      return true;
+      const gate = (unwrapTransparent(p.expression) as ts.Identifier).text;
+      return GATE_SENDERS[gate].has(name);
     }
   }
   return false;
+}
+
+/** Gates whose set carries `name`, for messages. */
+const gatesFor = (name: string): string[] => GATE_FNS.filter((g) => GATE_SENDERS[g].has(name));
+
+/** Names of the `send[A-Z]*` functions a module exports (declarations, consts and export specifiers). */
+export function exportedSenderNames(source: string, fileName: string): Set<string> {
+  const names = new Set<string>();
+  const isSender = (n: string) => /^send[A-Z]/.test(n);
+  const exported = (n: ts.Node) =>
+    ts.canHaveModifiers(n) && (ts.getModifiers(n) ?? []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
+  for (const stmt of parse(source, fileName).statements) {
+    if (ts.isFunctionDeclaration(stmt) && stmt.name && exported(stmt) && isSender(stmt.name.text)) {
+      names.add(stmt.name.text);
+    } else if (ts.isVariableStatement(stmt) && exported(stmt)) {
+      for (const d of stmt.declarationList.declarations) {
+        if (ts.isIdentifier(d.name) && isSender(d.name.text)) names.add(d.name.text);
+      }
+    } else if (ts.isExportDeclaration(stmt) && stmt.exportClause && ts.isNamedExports(stmt.exportClause)) {
+      for (const el of stmt.exportClause.elements) if (isSender(el.name.text)) names.add(el.name.text);
+    }
+  }
+  return names;
 }
 
 /** Identifier is a declaration/import/export name, not a use. */
@@ -225,14 +292,16 @@ export function findGateViolations(source: string, fileName: string): string[] {
     out.push(`${fileName}:${lineOf(sf, n)} ${msg}`);
 
   const checkUse = (node: ts.Node, name: string) => {
-    if (insideGateArgument(node)) return;
+    if (insideGateArgument(node, name)) return;
     if (name in PENDING_SENDERS && PENDING_SENDERS[name].includes(fileName))
       return;
-    const where =
-      name in PENDING_SENDERS
-        ? `${GATE_FN}() or ${PENDING_SENDERS[name].join(", ")}`
-        : `a ${GATE_FN}() callback`;
-    flag(node, `${name} used outside ${where}: route it through ${GATE_FN}`);
+    const gates = gatesFor(name);
+    if (name in PENDING_SENDERS) {
+      flag(node, `${name} is not gated yet: use it only in ${PENDING_SENDERS[name].join(", ")}, never inside a gate callback`);
+      return;
+    }
+    const where = gates.length > 0 ? `a ${gates.join("()/")}() callback` : "a gate callback";
+    flag(node, `${name} used outside ${where}: route it through ${gates.length > 0 ? gates.join("/") : "its gate"} (a sender inside another gate's callback is a violation)`);
   };
 
   const visit = (node: ts.Node) => {
@@ -325,7 +394,7 @@ function* productionFiles(dir: string): Generator<string> {
 }
 
 describe("email send gate guard", () => {
-  it("no production file mails around sendGated", () => {
+  it("no production file mails around its gate", () => {
     const violations: string[] = [];
     const usedIn = new Map<string, Set<string>>();
     let scanned = 0;
@@ -338,8 +407,8 @@ describe("email send gate guard", () => {
       if (rel === RESEND_OWNER.file && source.includes("emails.send("))
         sawResend = true;
       if (
-        source.includes(`${GATE_FN}(`) &&
-        /sendConfirmEmail/.test(source) &&
+        GATE_FNS.some((gate) => source.includes(`${gate}(`)) &&
+        [...GATED_SENDERS].some((name) => source.includes(name)) &&
         rel !== GATE_FILE
       )
         sawGatedCall = true;
@@ -369,7 +438,40 @@ describe("email send gate guard", () => {
     }
   });
 
+  it("keeps the gate sender sets pairwise disjoint, and disjoint from UNGATED_SENDERS", () => {
+    const seen = new Map<string, string>();
+    const sets: Array<[string, ReadonlySet<string>]> = [...Object.entries(GATE_SENDERS), ["UNGATED_SENDERS", UNGATED_SENDERS]];
+    for (const [setName, names] of sets) {
+      for (const n of names) {
+        expect(seen.has(n), `${n} is in both ${seen.get(n)} and ${setName}`).toBe(false);
+        seen.set(n, setName);
+      }
+    }
+  });
+
+  it("registers every exported send* function in lib/email.ts: gated in some gate's set, or ungated with a reason", () => {
+    const exportedNames = exportedSenderNames(readFileSync(join(ROOT, RESEND_OWNER.file), "utf-8"), RESEND_OWNER.file);
+    // Non-vacuity: the parser sees the known senders.
+    expect(exportedNames.has("sendConfirmEmail")).toBe(true);
+    expect(exportedNames.has("sendDatasetVerifyEmail")).toBe(true);
+
+    const unregistered = [...exportedNames].filter((n) => !GATED_SENDERS.has(n) && !UNGATED_SENDERS.has(n));
+    expect(unregistered, "add each to its gate's set in GATE_SENDERS, or to UNGATED_SENDERS with a reason").toEqual([]);
+    for (const n of UNGATED_SENDERS) {
+      expect(exportedNames.has(n), `${n} is in UNGATED_SENDERS but no longer exported`).toBe(true);
+      expect(GATED_SENDERS.has(n), `${n} is both gated and ungated`).toBe(false);
+    }
+  });
+
   describe("detector (mutation fixtures)", () => {
+    it("exportedSenderNames reads declarations, consts and export specifiers, not private or non-send names", () => {
+      const names = exportedSenderNames(
+        "export async function sendA() {}\nexport const sendB = () => 1;\nfunction sendPrivate() {}\nexport function sender() {}\nexport function sendC() {}\nexport { sendC as sendD };",
+        "lib/x.ts",
+      );
+      expect([...names].sort()).toEqual(["sendA", "sendB", "sendC", "sendD"]);
+    });
+
     const flagged = (code: string, file = "lib/x.ts") =>
       findGateViolations(code, file);
 
@@ -454,6 +556,29 @@ describe("email send gate guard", () => {
           join("lib", "notify.ts"),
         ),
       ).toHaveLength(0);
+    });
+
+    it("allows each dataset sender only inside its own gate, and flags it beside the gate", () => {
+      const pairs = [
+        ["sendGrantGated", "sendDatasetVerifyEmail"],
+        ["sendDatasetAdminNoticeGated", "sendDatasetAdminNewRequestEmail"],
+      ];
+      for (const [gate, sender] of pairs) {
+        const inside = `await ${gate}(db, o, () => ${sender}(x));`;
+        expect(flagged(inside, join("lib", "notify.ts"))).toHaveLength(0);
+        expect(flagged(`${inside}\nawait ${sender}(x);`, join("lib", "notify.ts"))).toHaveLength(1);
+      }
+    });
+
+    it.each([
+      ["a subscription sender inside sendGrantGated", "sendGrantGated(db, o, () => sendChangeNotification(x));"],
+      ["a subscription sender inside the admin gate", "sendDatasetAdminNoticeGated(db, o, () => sendConfirmEmail(x));"],
+      ["a dataset sender inside sendGated", "sendGated(db, o, () => sendDatasetVerifyEmail(x));"],
+      ["the admin sender inside sendGrantGated", "sendGrantGated(db, o, () => sendDatasetAdminNewRequestEmail(x));"],
+      ["a requester dataset sender inside the admin gate", "sendDatasetAdminNoticeGated(db, o, () => sendDatasetApprovedEmail(x));"],
+      ["a sender in the innermost wrong gate of a nested pair", "sendGated(db, o, () => sendGrantGated(db, o, () => sendConfirmEmail(x)));"],
+    ])("flags %s", (_label, code) => {
+      expect(flagged(code, join("lib", "notify.ts"))).toHaveLength(1);
     });
 
     it.each([

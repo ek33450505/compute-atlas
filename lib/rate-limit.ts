@@ -11,6 +11,7 @@ import {
   subscribeAttemptsTable,
   intakeAttemptsTable,
   apiAccessGrantsTable,
+  datasetAccessGrantsTable,
   type IntakeSurface,
 } from "@/lib/db/schema";
 
@@ -562,5 +563,25 @@ export async function checkAccessGrantEmailSendCap(email: string): Promise<{ ok:
     .select({ c: sql<number>`count(*)::int` })
     .from(apiAccessGrantsTable)
     .where(and(gt(apiAccessGrantsTable.createdAt, windowStart), eq(apiAccessGrantsTable.email, email)));
+  return { ok: Number(rows[0]?.c ?? 0) < EMAIL_SEND_CAP_MAX };
+}
+
+/**
+ * Per-address cap on NEW dataset-access request rows, independent of the
+ * per-IP rate limit (the route's job) — bounds how many rows one address can
+ * accumulate across IPs. Counts `dataset_access_grants` rows created in the
+ * window. It does NOT bound verify MAIL volume: re-requesting an unverified
+ * address rotates its existing row (no new row, spaced by
+ * `DATASET_ROTATION_COOLDOWN_MS`) and mails again, and an active address is
+ * re-mailed `dataset_already_active`. `sendGrantGated` (lib/email-gate.ts) caps
+ * those two mails per recipient (one shared budget: 5 per hour and 10 per 24 h).
+ * `email` is expected pre-normalized (lowercased/trimmed) by the caller.
+ */
+export async function checkDatasetRequestEmailCap(email: string): Promise<{ ok: boolean }> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  const rows = await getDb()
+    .select({ c: sql<number>`count(*)::int` })
+    .from(datasetAccessGrantsTable)
+    .where(and(gt(datasetAccessGrantsTable.createdAt, windowStart), eq(datasetAccessGrantsTable.email, email)));
   return { ok: Number(rows[0]?.c ?? 0) < EMAIL_SEND_CAP_MAX };
 }

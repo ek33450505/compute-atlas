@@ -53,4 +53,10 @@ describe("AdminLayout", () => {
       "/admin/contact"
     );
   });
+
+  it("links to the dataset access page", () => {
+    render(<AdminLayout>{null}</AdminLayout>);
+
+    expect(screen.getByRole("link", { name: "Access" })).toHaveAttribute("href", "/admin/access");
+  });
 });

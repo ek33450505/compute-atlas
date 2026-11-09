@@ -122,7 +122,11 @@ export type CorrectionContributeInput = z.infer<typeof correctionSchema>;
  * must answer identically, so the check coerces instead of narrowing.
  *
  * Tripped by any PRESENT value that is non-empty after `String(v).trim()`:
- * `"x"`, `" x "`, `1`, `0`, `true`, `{}`, `["x"]`.
+ * `"x"`, `" x "`, `1`, `0`, `true`, `{}`, `["x"]` — and `{"toString":"x"}`, whose
+ * coercion THROWS ("Cannot convert object to primitive value"). The body is
+ * attacker-controlled JSON, so an uncaught throw would be a 500 that only a
+ * honeypot value can produce; a throw counts as tripped instead (the value was
+ * present and was not a "no value" spelling).
  *
  * NOT tripped by `undefined` (absent), `null`, `false`, `""`, `"   "` or `[]` —
  * "present but not filled in." `""` is the load-bearing one: a real browser
@@ -134,7 +138,11 @@ export type CorrectionContributeInput = z.infer<typeof correctionSchema>;
 export function isHoneypotTripped(input: { website?: unknown }): boolean {
   const value = input.website;
   if (value === undefined || value === null || value === false) return false;
-  return String(value).trim().length > 0;
+  try {
+    return String(value).trim().length > 0;
+  } catch {
+    return true;
+  }
 }
 
 /**

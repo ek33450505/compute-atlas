@@ -49,6 +49,12 @@ export default function AdminLayout({
               Contact
             </Link>
             <Link
+              href="/admin/access"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Access
+            </Link>
+            <Link
               href="/admin/email-sends"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
