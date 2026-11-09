@@ -652,7 +652,7 @@ describe("requestDatasetAccess: one open request per email", () => {
     expect((await allRows())[0].status).toBe("unverified");
     expect(await verifyDatasetRequest(newToken)).toMatchObject({
       outcome: "verified",
-      mail: { kind: "dataset_admin_new_request", grantId: squat.id },
+      mail: { kind: "dataset_admin_new_request", grantId: squat.id, name: "Pat Reporter", organization: null },
     });
     expect((await allRows())[0].status).toBe("pending_review");
   });
@@ -1024,7 +1024,7 @@ describe("verifyDatasetRequest", () => {
 
     expect(result).toStrictEqual({
       outcome: "verified",
-      mail: { kind: "dataset_admin_new_request", grantId },
+      mail: { kind: "dataset_admin_new_request", grantId, name: "Pat Reporter", organization: "The Gazette" },
     });
     const [row] = await allRows();
     expect(row.status).toBe("pending_review");

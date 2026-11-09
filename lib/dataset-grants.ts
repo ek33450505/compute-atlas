@@ -91,7 +91,7 @@ const echoOf = (fields: DatasetRequestEcho): DatasetRequestEcho => ({
 export type DatasetMailIntent =
   | { kind: "dataset_verify"; grantId: string; email: string; verifyToken: string; echo: DatasetRequestEcho } // raw token, for the link only
   | { kind: "dataset_already_active"; grantId: string; email: string } // no token, no rotation
-  | { kind: "dataset_admin_new_request"; grantId: string } // to the maintainer
+  | { kind: "dataset_admin_new_request"; grantId: string; name: string; organization: string | null } // to the maintainer
   | { kind: "dataset_approved"; grantId: string; email: string; accessToken: string } // raw access token, for the link only
   | { kind: "dataset_rejected"; grantId: string; email: string; rejectionNote: string | null }
   | { kind: "dataset_link_reissued"; grantId: string; email: string; accessToken: string } // the NEW raw access token
@@ -405,11 +405,20 @@ export async function verifyDatasetRequest(rawToken: string): Promise<VerifyData
         gt(datasetAccessGrantsTable.createdAt, new Date(now.getTime() - DATASET_VERIFY_TTL_MS))
       )
     )
-    .returning({ id: datasetAccessGrantsTable.id });
+    .returning({
+      id: datasetAccessGrantsTable.id,
+      name: datasetAccessGrantsTable.name,
+      organization: datasetAccessGrantsTable.organization,
+    });
   if (verified) {
     return {
       outcome: "verified",
-      mail: { kind: "dataset_admin_new_request", grantId: verified.id },
+      mail: {
+        kind: "dataset_admin_new_request",
+        grantId: verified.id,
+        name: verified.name,
+        organization: verified.organization,
+      },
     };
   }
 
@@ -442,7 +451,7 @@ export function normalizeDatasetNote(note: string | null | undefined): string | 
   return cleaned ? Array.from(cleaned).slice(0, NOTE_MAX_CODE_POINTS).join("") : null;
 }
 
-type MailOf<K extends DatasetMailIntent["kind"]> = Extract<DatasetMailIntent, { kind: K }>;
+export type MailOf<K extends DatasetMailIntent["kind"]> = Extract<DatasetMailIntent, { kind: K }>;
 
 /** Failure of every admin mutator: a missing row, the wrong status, or an id that is not a UUID. */
 export type DatasetGrantNotEligible = { ok: false; reason: "not_eligible" };

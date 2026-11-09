@@ -46,7 +46,7 @@ function expectTokenOnlyInLink(mail: DatasetEmail, link: string) {
 }
 
 describe("buildDatasetVerifyEmail", () => {
-  const link = `${SITE}/api/access/confirm?token=${ENCODED}`;
+  const link = `${SITE}/access/confirm?token=${ENCODED}`;
   const mail = buildDatasetVerifyEmail({ siteUrl: SITE, verifyToken: TOKEN, echo });
 
   it("carries the token only in its encoded link, with a fixed subject", () => {

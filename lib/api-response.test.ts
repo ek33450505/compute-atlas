@@ -71,6 +71,8 @@ function sourceFiles(): string[] {
  * is also RED, so the list cannot go quietly stale.
  */
 const EXPECTED_ROUTE_SCOPES: Record<string, CorsScope> = {
+  "app/api/access/confirm/route.ts": "public-write",
+  "app/api/access/renew/route.ts": "public-write",
   "app/api/access/request/route.ts": "public-write",
   "app/api/contact/route.ts": "public-write",
   "app/api/contribute/route.ts": "public-write",

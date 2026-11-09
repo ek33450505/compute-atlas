@@ -109,7 +109,7 @@ describe("dataset sender payloads", () => {
     await sendDatasetVerifyEmail({ email: "a@b.test", verifyToken: TOKEN, echo });
     const p = payload();
     expect(p.subject).toBe("Confirm your Compute Atlas dataset access request");
-    expect(p.text).toContain(`https://example.test/api/access/confirm?token=${ENCODED}`);
+    expect(p.text).toContain(`https://example.test/access/confirm?token=${ENCODED}`);
     expect(p.html).not.toContain(TOKEN);
   });
 

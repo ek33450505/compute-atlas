@@ -84,7 +84,7 @@ export function buildDatasetVerifyEmail(input: {
   echo: DatasetRequestEcho;
 }): DatasetEmail {
   const { echo } = input;
-  const url = `${input.siteUrl}/api/access/confirm?token=${encodeURIComponent(input.verifyToken)}`;
+  const url = `${input.siteUrl}/access/confirm?token=${encodeURIComponent(input.verifyToken)}`;
   const subject = "Confirm your Compute Atlas dataset access request";
 
   const rows: Array<[string, string]> = [
