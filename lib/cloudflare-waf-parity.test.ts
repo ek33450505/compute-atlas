@@ -5,6 +5,7 @@ import {
   BLOCKED_BY_EDITORIAL_CHOICE,
   BLOCKED_BULK_EXTRACTORS,
   BLOCKED_SEO_CRAWLERS,
+  BLOCKED_TO_MIRROR_EDGE,
 } from "@/app/robots";
 
 /**
@@ -49,11 +50,9 @@ import {
  *
  *   - Rule 0cfdbaf2d09342f2ad93a0025bf9ff57: the AI Crawl Control rule, 22 UAs,
  *     matched by `http.user_agent contains`. MEASURED: read via the Cloudflare
- *     API 2026-11-09 ~23:20Z, when it held 23 (this list plus
- *     Arquivo-web-crawler). Ed removes Arquivo-web-crawler in the dashboard;
- *     that removal is PENDING his toggle, and this ledger records the
- *     post-removal state (22). Until the toggle lands, the LIVE edge still
- *     403s Arquivo while robots.txt allows it: this test certifies the repo
+ *     API 2026-11-09 ~23:55Z (ruleset v288). Arquivo-web-crawler was removed
+ *     via the API that day (live probe: 200); keep the dashboard toggle on
+ *     Allow or a toggle save may re-add it. This test certifies the repo
  *     ledger, not the edge. Cloudflare regenerates the rule from
  *     its own dashboard crawler toggles, and a dashboard save does not keep
  *     manual additions. The four SEO crawlers it carried on 2026-09-27 were
@@ -85,8 +84,8 @@ const WAF_RULE_UA_COUNT_AS_REPORTED = 22 + 8;
  * human last looked, and nothing in this repo can keep it true.
  */
 export const EXPECTED_WAF_BLOCKED_UAS = [
-  // AI Crawl Control rule, 22 UAs (measured via the API, 2026-11-09 ~23:20Z,
-  // post Arquivo-web-crawler removal, which is pending Ed's dashboard toggle).
+  // AI Crawl Control rule, 22 UAs (measured via the API, 2026-11-09 ~23:55Z,
+  // v288, after Arquivo-web-crawler was removed via the API).
   "Amazonbot",
   "Anchor Browser",
   "Applebot",
@@ -122,20 +121,12 @@ export const EXPECTED_WAF_BLOCKED_UAS = [
 ] as const;
 
 /**
- * Edge entries with no robots.txt counterpart. They are NOT to be added to
- * robots.txt without Ed's call; they are recorded so the ledger stays a true
- * transcript of the rule. "Anchor Browser" is a browser-automation product with
- * no robots token; the others were found on the AI Crawl Control rule on
- * 2026-11-09 and robots.txt does not carry them.
+ * Edge entries with no robots.txt counterpart. "Anchor Browser" is a
+ * browser-automation product with no robots token. Baiduspider, Manus-User,
+ * meta-externalfetcher, MistralAI-User and Terracotta were edge-only until Ed
+ * decided on 2026-11-09 to block them in robots.txt too.
  */
-const EDGE_ONLY_UAS = [
-  "Anchor Browser",
-  "Baiduspider",
-  "Manus-User",
-  "meta-externalfetcher",
-  "MistralAI-User",
-  "Terracotta",
-] as const;
+const EDGE_ONLY_UAS = ["Anchor Browser"] as const;
 
 /**
  * There is currently no robots-only exemption (every robots token is edge
@@ -160,6 +151,7 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
     ...BLOCKED_BULK_EXTRACTORS,
     ...BLOCKED_SEO_CRAWLERS,
     ...BLOCKED_BY_EDITORIAL_CHOICE,
+    ...BLOCKED_TO_MIRROR_EDGE,
   ];
 
   /**

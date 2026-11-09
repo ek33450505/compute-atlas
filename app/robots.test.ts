@@ -10,6 +10,7 @@ import robots, {
   BLOCKED_BY_EDITORIAL_CHOICE,
   BLOCKED_BULK_EXTRACTORS,
   BLOCKED_SEO_CRAWLERS,
+  BLOCKED_TO_MIRROR_EDGE,
 } from "@/app/robots";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 import { SITEMAP_FAMILY_IDS, SITEMAP_INDEX_URL, sitemapChildUrl } from "@/lib/sitemap-families";
@@ -176,6 +177,19 @@ describe("robots", () => {
     }
   });
 
+  it("disallows the five edge-mirrored UAs (Ed, 2026-11-09), pinned against a hardcoded list", () => {
+    const { rules } = robots();
+    const ruleList = Array.isArray(rules) ? rules : [rules];
+    const expected = ["Baiduspider", "Manus-User", "meta-externalfetcher", "MistralAI-User", "Terracotta"];
+    expect([...BLOCKED_TO_MIRROR_EDGE]).toEqual(expected);
+    for (const agent of expected) {
+      const rule = ruleList.find((r) => r.userAgent === agent);
+      expect(rule, `${agent} must have a rule`).toBeDefined();
+      expect(rule?.disallow).toBe("/");
+      expect(rule?.allow).toBeUndefined();
+    }
+  });
+
   it("does NOT disallow web archives (Arquivo-web-crawler is arquivo.pt, Portugal's national web archive; archive.org_bot)", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];
@@ -224,6 +238,7 @@ describe("robots", () => {
       ...BLOCKED_BULK_EXTRACTORS,
       ...BLOCKED_SEO_CRAWLERS,
       ...BLOCKED_BY_EDITORIAL_CHOICE,
+      ...BLOCKED_TO_MIRROR_EDGE,
     ].map((ua) => ua.toLowerCase());
     expect(new Set(all).size).toBe(all.length);
   });
@@ -360,6 +375,7 @@ describe("robots", () => {
       ...BLOCKED_BULK_EXTRACTORS,
       ...BLOCKED_SEO_CRAWLERS,
       ...BLOCKED_BY_EDITORIAL_CHOICE,
+      ...BLOCKED_TO_MIRROR_EDGE,
     ]);
     for (const rule of ruleList.slice(1)) {
       expect(rule.disallow).toBe("/");

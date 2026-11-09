@@ -35,14 +35,14 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 // assist (DuckAssistBot) and Google-Extended. BLOCKED: AI TRAINING crawlers,
 // bulk dataset extractors, SEO-resale crawlers, and the three tokens in
 // BLOCKED_BY_EDITORIAL_CHOICE (ChatGPT-User, OAI-SearchBot, Applebot; Ed,
-// 2026-11-09). The 2026-10-15 posture had allowed those three.
+// 2026-11-09), and the five tokens in BLOCKED_TO_MIRROR_EDGE (Ed, 2026-11-09).
+// The 2026-10-15 posture had allowed the first three.
 //
 // Cloudflare enforces the same set at the edge (out of repo). This file is the
 // source of truth and must mirror the edge, because a UA blocked at the edge but
 // allowed here (or the reverse) makes a compliant crawler read one thing and get
-// another. Known deltas: "Anchor Browser" is edge-only (a browser product with
-// no robots token), and Baiduspider, Manus-User, meta-externalfetcher,
-// MistralAI-User and Terracotta are edge-only pending Ed's decision.
+// another. Known delta: "Anchor Browser" is edge-only (a browser product with
+// no robots token).
 // Applebot-Extended is no longer robots-only: the edge matches
 // `contains "Applebot"` and so blocks it too.
 //
@@ -133,6 +133,20 @@ export const BLOCKED_BY_EDITORIAL_CHOICE = [
   "Applebot",
 ] as const;
 
+// Blocked to mirror the edge (Ed, 2026-11-09, "block them"): the Cloudflare AI
+// Crawl Control rule already 403s these five (live probe, 2026-11-09 23:55Z:
+// all five 403 on /about), so without a robots.txt entry a
+// compliant crawler reads `Allow: /` and then gets a 403. Distinct from
+// BLOCKED_BY_EDITORIAL_CHOICE: that list is a stance on companies; this one only
+// keeps robots.txt and the edge in agreement.
+export const BLOCKED_TO_MIRROR_EDGE = [
+  "Baiduspider",
+  "Manus-User",
+  "meta-externalfetcher",
+  "MistralAI-User",
+  "Terracotta",
+] as const;
+
 export default function robots(): MetadataRoute.Robots {
   const rules: MetadataRoute.Robots["rules"] = [
     {
@@ -193,6 +207,10 @@ export default function robots(): MetadataRoute.Robots {
       disallow: "/",
     })),
     ...BLOCKED_BY_EDITORIAL_CHOICE.map((userAgent) => ({
+      userAgent,
+      disallow: "/",
+    })),
+    ...BLOCKED_TO_MIRROR_EDGE.map((userAgent) => ({
       userAgent,
       disallow: "/",
     })),
