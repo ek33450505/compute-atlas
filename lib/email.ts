@@ -610,12 +610,16 @@ export async function sendDatasetEditionNoticeEmail(input: {
   email: string;
   editionDate: string;
   unsubscribeToken: string;
+  recordCount: number | null;
+  summary?: { added: number; updated: number; removed: number; headlines: string[] };
 }): Promise<SendOutcome> {
   const base = linkBase();
   const { subject, text, html, unsubscribeUrl } = buildDatasetEditionNoticeEmail({
     siteUrl: base,
     editionDate: input.editionDate,
     unsubscribeToken: input.unsubscribeToken,
+    recordCount: input.recordCount,
+    summary: input.summary,
   });
   return sendViaResend(
     "sendDatasetEditionNoticeEmail",

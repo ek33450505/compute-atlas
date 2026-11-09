@@ -4,6 +4,7 @@ import { DatasetBlobError, DATASET_EDITION_FILES, deleteEditionPrefix, putEditio
 import {
   claimEdition,
   clearEditionFiles,
+  editionNeedsNotices,
   EDITIONS_KEPT,
   editionsToPrune,
   failEdition,
@@ -14,6 +15,8 @@ import {
   staleBuildsToSweep,
 } from "@/lib/dataset-editions";
 import { expireDueGrants } from "@/lib/dataset-grants";
+import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
+import { DATASET_NOTICE_DEADLINE_MS, makePacer, sendEditionNotices, sendRenewalReminders } from "@/lib/dataset-notices";
 import { buildReadme } from "@/lib/dataset-readme";
 import { buildSnapshotBodies, DEFAULT_FLOORS, neonSource, type SnapshotFloors, type SnapshotSource } from "@/lib/dataset-snapshot";
 import type { DatasetEditionFile } from "@/lib/db/schema";
@@ -34,10 +37,20 @@ import { redactedErrorCode } from "@/lib/db-error";
 
 export { EDITIONS_KEPT };
 
+/**
+ * How the weekly notice pass ended, so a cut-short pass is visible to the cron log and the admin panel. Absent
+ * when no pass ran (sharing disabled, or an `inProgress` claim). `complete: false` also covers a budget spent
+ * before the pass began and a pass that threw; a same-day "Build now" resumes it.
+ */
+export interface NoticesStatus {
+  complete: boolean;
+  sent: number;
+}
+
 export type EditionBuildResult =
-  | { outcome: "published"; editionId: string; editionDate: string; recordCount: number }
+  | { outcome: "published"; editionId: string; editionDate: string; recordCount: number; notices?: NoticesStatus }
   // "inProgress" also covers "a failed build was retried within the last 5 minutes" (retry cooldown).
-  | { outcome: "alreadyPublished" | "inProgress"; editionId: string; editionDate: string }
+  | { outcome: "alreadyPublished" | "inProgress"; editionId: string; editionDate: string; notices?: NoticesStatus }
   | { outcome: "failed"; editionId?: string; editionDate: string; code: string };
 
 export interface BuildEditionOptions {
@@ -76,6 +89,7 @@ function blobConfigured(): boolean {
 }
 
 export async function buildEdition(opts: BuildEditionOptions = {}): Promise<EditionBuildResult> {
+  const startedAt = Date.now();
   const now = opts.now ?? new Date();
   const editionDate = now.toISOString().slice(0, 10);
   let step = "claim";
@@ -92,6 +106,11 @@ export async function buildEdition(opts: BuildEditionOptions = {}): Promise<Edit
 
   try {
     const claim = await claimEdition(editionDate, now, { ignoreRetryCooldown: opts.ignoreRetryCooldown });
+    if (claim.kind === "alreadyPublished") {
+      // A same-day rerun (cron or admin "Build now") finishes a send pass the deadline cut short.
+      const notices = await resumeNotices(claim.id, startedAt);
+      return { outcome: claim.kind, editionId: claim.id, editionDate, ...(notices && { notices }) };
+    }
     if (claim.kind !== "claimed") return { outcome: claim.kind, editionId: claim.id, editionDate };
     claimed = { id: claim.id, builtAt: now };
 
@@ -158,9 +177,8 @@ export async function buildEdition(opts: BuildEditionOptions = {}): Promise<Edit
       return { outcome: "failed", editionId: claim.id, editionDate, code: "claim_lost" };
     }
 
-    // U8: weekly notices and renewal reminders go here, after publish.
-    await afterPublish(now);
-    return { outcome: "published", editionId: claim.id, editionDate, recordCount };
+    const notices = await afterPublish(now, claim.id, startedAt);
+    return { outcome: "published", editionId: claim.id, editionDate, recordCount, ...(notices && { notices }) };
   } catch (err) {
     const code = failureCode(err);
     logFailure(step, code);
@@ -175,13 +193,68 @@ export async function buildEdition(opts: BuildEditionOptions = {}): Promise<Edit
   }
 }
 
+/** Notices and reminders share this much of the function's 300 s, counted from the start of the build. */
+const NOTICE_BUDGET_MS = DATASET_NOTICE_DEADLINE_MS;
+
 /**
- * Post-publish housekeeping. Nothing here can un-publish the edition, so every step is contained.
+ * The renewal reminders (a small set, so they cannot starve), then the weekly notice, each given what is left of
+ * the budget. A spent budget skips the step; a cut-short notice pass is finished by a same-day rerun, see
+ * `resumeNotices`. One pacer serves both passes so the API rate limit holds across the seam between them.
+ * Contained: neither can change the build outcome, so a throw (they are built not to) is one
+ * `reminders failed` / `notices failed` line.
+ *
+ * Admin "Build now" runs whether or not DATASET_SHARING_ENABLED is set (to pre-build an edition), but mail must
+ * not go out while the flag is off: both passes are skipped then. Returns how the notice pass ended, or
+ * undefined when it was not attempted for that reason.
+ */
+async function sendScheduledMail(editionId: string, startedAt: number): Promise<NoticesStatus | undefined> {
+  if (!isDatasetSharingEnabled()) {
+    console.info("dataset edition: mail skipped, sharing is disabled");
+    return undefined;
+  }
+  const remaining = () => NOTICE_BUDGET_MS - (Date.now() - startedAt);
+  const pacer = makePacer();
+
+  try {
+    if (remaining() > 0) await sendRenewalReminders({ deadlineMs: remaining(), pacer });
+  } catch (err) {
+    logFailure("reminders", failureCode(err));
+  }
+
+  const notices: NoticesStatus = { complete: false, sent: 0 };
+  try {
+    if (remaining() > 0) {
+      const res = await sendEditionNotices(editionId, { deadlineMs: remaining(), pacer });
+      notices.complete = res.complete;
+      notices.sent = res.sent;
+    }
+  } catch (err) {
+    logFailure("notices", failureCode(err));
+  }
+  return notices;
+}
+
+/** On `alreadyPublished`: only the newest published edition with `notice_sent_at` still null is worth a pass. */
+async function resumeNotices(editionId: string, startedAt: number): Promise<NoticesStatus | undefined> {
+  try {
+    if (!(await editionNeedsNotices(editionId))) return undefined;
+  } catch (err) {
+    logFailure("notices", failureCode(err));
+    return undefined;
+  }
+  return sendScheduledMail(editionId, startedAt);
+}
+
+/**
+ * Post-publish work, in order: housekeeping, then the renewal reminders and weekly notice. Housekeeping is fast DB
+ * work plus a few Blob prefix deletes, so it goes first: the mail passes can run to their 240 s budget (about 262 s
+ * with the in-flight overrun, against a 300 s maxDuration) and must not starve it. Nothing here can un-publish
+ * the edition, so every step is contained.
  * It runs only after a SUCCESSFUL publish: a build killed at maxDuration leaves a `building` row
  * (shown as "building" in /admin/access) and orphan blobs until the next successful publish,
  * whose sweep below cleans them up.
  */
-async function afterPublish(now: Date): Promise<void> {
+async function afterPublish(now: Date, editionId: string, startedAt: number): Promise<NoticesStatus | undefined> {
   try {
     await expireDueGrants(now);
   } catch (err) {
@@ -217,4 +290,6 @@ async function afterPublish(now: Date): Promise<void> {
   } catch (err) {
     logFailure("sweep", failureCode(err));
   }
+
+  return sendScheduledMail(editionId, startedAt);
 }

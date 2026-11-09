@@ -768,8 +768,8 @@ export type DatasetDownloadOutcome = (typeof DATASET_DOWNLOAD_OUTCOMES)[number];
  * their owner and must never be stored. The one exception is `unsubscribeToken`,
  * kept raw by the `subscriptionsTable` precedent: its blast radius is
  * unsubscribing the one grant from the weekly notice, nothing else. It is minted
- * on approval and is null until then. The weekly-notice sender (not yet built)
- * must mail only active grants whose `expiresAt` is set and later than now();
+ * on approval and is null until then. The weekly-notice sender (lib/dataset-notices.ts)
+ * mails only active grants whose `expiresAt` is set and later than now();
  * see the `lastNoticeEditionId` contract below.
  *
  * Deliberately separate from `apiAccessGrantsTable`: lib/api-daily-limit.ts
@@ -783,9 +783,9 @@ export type DatasetDownloadOutcome = (typeof DATASET_DOWNLOAD_OUTCOMES)[number];
  * `revoked` or `rejected` do not count, so a re-request inserts a new row.
  *
  * `lastNoticeEditionId` is the authoritative per-grant weekly-notice marker.
- * It remembers only the LAST edition claimed, so this is the CONTRACT the (not
- * yet built) sender must meet: claim first, and mail only if a row came back,
- * with
+ * It remembers only the LAST edition claimed, so this is the CONTRACT the
+ * sender (lib/dataset-notices.ts `sendEditionNotices`, run by the edition
+ * build) meets: claim first, and mail only if a row came back, with
  *   UPDATE dataset_access_grants SET last_notice_edition_id = $e
  *   WHERE id = $g AND status = 'active' AND expires_at > now()
  *     AND last_notice_edition_id IS DISTINCT FROM $e

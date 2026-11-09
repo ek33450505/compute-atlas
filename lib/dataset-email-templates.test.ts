@@ -13,6 +13,8 @@ import {
   type DatasetEmail,
 } from "@/lib/dataset-email-templates";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
+import { buildReadme } from "@/lib/dataset-readme";
+import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
 const SITE = "https://example.test";
 // Characters that encodeURIComponent changes, so "raw token appears only in its link" is a real check.
@@ -348,7 +350,12 @@ describe("buildDatasetRenewalReminderEmail", () => {
 });
 
 describe("buildDatasetEditionNoticeEmail", () => {
-  const mail = buildDatasetEditionNoticeEmail({ siteUrl: SITE, editionDate: "2026-12-01", unsubscribeToken: TOKEN });
+  const mail = buildDatasetEditionNoticeEmail({
+    siteUrl: SITE,
+    editionDate: "2026-12-01",
+    unsubscribeToken: TOKEN,
+    recordCount: 2300,
+  });
 
   it("carries only the unsubscribe token, in its link, and no access link", () => {
     const url = `${SITE}/api/dataset/unsubscribe?token=${ENCODED}`;
@@ -361,5 +368,67 @@ describe("buildDatasetEditionNoticeEmail", () => {
       expect(body).toContain("most recent");
     }
     expect(mail.subject).toBe("A new edition of the Compute Atlas dataset");
+  });
+
+  it("states the record count, the attribution reminder and a contact link for a lost link", () => {
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("2,300 records");
+      expect(body).toContain("CC BY 4.0");
+      expect(body).toContain(`${SITE}/contact`);
+      expect(body).toContain("Lost your link?");
+    }
+    // The attribution wording is the README's: same line, so the two cannot drift.
+    const attribution = `Data from Compute Atlas by Edward Kubiak (${siteConfig.url}), licensed under CC BY 4.0 (${DATASET_LICENSE_URL}).`;
+    expect(buildDatasetEditionNoticeEmail({ siteUrl: siteConfig.url, editionDate: "2026-12-01", unsubscribeToken: TOKEN, recordCount: 1 }).text).toContain(attribution);
+    expect(buildReadme({ editionDate: "2026-12-01", editionId: "e", recordCount: 1, initial: true })).toContain(attribution);
+  });
+
+  it("omits the counts line and the list when there is no summary (initial edition)", () => {
+    for (const body of [mail.text, mail.html]) {
+      expect(body).not.toMatch(/added/);
+      expect(body).not.toContain("<ul>");
+    }
+  });
+
+  it("renders the counts line and up to 10 headlines when a summary is present", () => {
+    const headlines = Array.from({ length: 12 }, (_, i) => `Headline ${i + 1}`);
+    const withSummary = buildDatasetEditionNoticeEmail({
+      siteUrl: SITE,
+      editionDate: "2026-12-08",
+      unsubscribeToken: TOKEN,
+      recordCount: 3,
+      summary: { added: 2, updated: 5, removed: 1, headlines },
+    });
+    for (const body of [withSummary.text, withSummary.html]) {
+      expect(body).toContain("+2 added, 5 updated, 1 removed");
+      expect(body).toContain("Headline 10");
+      expect(body).not.toContain("Headline 11");
+    }
+    expect(withSummary.html).toContain("<ul>");
+    expect(withSummary.text).toContain("- Headline 1\n");
+  });
+
+  it("escapes a hostile headline in html, keeps it on one line in text, and never carries the token elsewhere", () => {
+    const hostile = buildDatasetEditionNoticeEmail({
+      siteUrl: SITE,
+      editionDate: "2026-12-08",
+      unsubscribeToken: TOKEN,
+      recordCount: 3,
+      summary: { added: 1, updated: 0, removed: 0, headlines: [XSS[0], `${XSS[1]}\nforged line`] },
+    });
+    expect(hostile.html).not.toContain("<img");
+    expect(hostile.html).not.toContain("<script");
+    expect(hostile.html).toContain("&lt;img src=x onerror=alert(1)&gt;");
+    expect(hostile.text).toContain(XSS[0]);
+    expect(hostile.text).toContain(`${XSS[1]} forged line`);
+    expectTokenOnlyInLink(hostile, `${SITE}/api/dataset/unsubscribe?token=${ENCODED}`);
+  });
+
+  it("refuses an edition date that is not YYYY-MM-DD", () => {
+    for (const editionDate of ["2026-12-1", "2026-12-01<b>", "", "December 1"]) {
+      expect(() =>
+        buildDatasetEditionNoticeEmail({ siteUrl: SITE, editionDate, unsubscribeToken: TOKEN, recordCount: 1 })
+      ).toThrow(/edition date/);
+    }
   });
 });

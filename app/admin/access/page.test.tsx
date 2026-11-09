@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-const { mockQueue, mockList, mockLog, mockEditions, mockHasSession, mockRedirect, queueProps, listProps } = vi.hoisted(() => ({
+const { mockQueue, mockList, mockLog, mockEditions, mockSharingEnabled, mockHasSession, mockRedirect, queueProps, listProps } = vi.hoisted(() => ({
   mockQueue: vi.fn(),
   mockList: vi.fn(),
   mockLog: vi.fn(),
   mockEditions: vi.fn(),
+  mockSharingEnabled: vi.fn(),
   mockHasSession: vi.fn(),
   mockRedirect: vi.fn(),
   queueProps: vi.fn(),
@@ -22,6 +23,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@/lib/db/client", () => ({ getDb: () => ({}) }));
+vi.mock("@/lib/dataset-flag", () => ({ isDatasetSharingEnabled: mockSharingEnabled }));
 vi.mock("@/lib/dataset-admin", async (orig) => ({
   ...(await orig<typeof import("@/lib/dataset-admin")>()),
   listDatasetReviewQueue: mockQueue,
@@ -30,7 +32,11 @@ vi.mock("@/lib/dataset-admin", async (orig) => ({
   listRecentEditions: mockEditions,
 }));
 vi.mock("@/app/admin/access/editions-panel", () => ({
-  EditionsPanel: (props: { editions: unknown[] }) => <div>editions size {props.editions.length}</div>,
+  EditionsPanel: (props: { editions: unknown[]; mailEnabled: boolean }) => (
+    <div>
+      editions size {props.editions.length} mail {String(props.mailEnabled)}
+    </div>
+  ),
 }));
 vi.mock("@/app/admin/access/access-queue", () => ({
   AccessQueue: (props: { grants: unknown[] }) => {
@@ -140,6 +146,7 @@ describe("AdminAccessPage", () => {
     mockList.mockResolvedValue([fullGrant]);
     mockLog.mockResolvedValue(log);
     mockEditions.mockResolvedValue([{ id: "e1" }, { id: "e2" }, { id: "e3" }]);
+    mockSharingEnabled.mockReturnValue(true);
   });
 
   it("renders on demand", () => {
@@ -199,10 +206,18 @@ describe("AdminAccessPage", () => {
 
     expect(mockEditions).toHaveBeenCalledTimes(1);
     const queue = screen.getByText(/queue size/);
-    const editions = screen.getByText("editions size 3");
+    const editions = screen.getByText("editions size 3 mail true");
     const list = screen.getByText(/list size/);
     expect(queue.compareDocumentPosition(editions) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(editions.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("passes mailEnabled=false to the Editions panel while dataset sharing is off", async () => {
+    mockSharingEnabled.mockReturnValue(false);
+
+    await renderPage({});
+
+    expect(screen.getByText("editions size 3 mail false")).toBeInTheDocument();
   });
 
   it("falls back to active for an unknown status", async () => {

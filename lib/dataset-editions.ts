@@ -191,6 +191,21 @@ export async function latestPublishedEdition(): Promise<PublishedEdition | null>
 }
 
 /**
+ * True when `id` is the newest published edition and its weekly notice has not been marked done
+ * (`notice_sent_at` null). This is the resume test for a same-day rerun: only the newest published edition can
+ * still be completed (a notice for an older one claims nothing), so only it is worth another send pass.
+ */
+export async function editionNeedsNotices(id: string): Promise<boolean> {
+  const latest = await latestPublishedEdition();
+  if (latest?.id !== id) return false;
+  const [row] = await getDb()
+    .select({ noticeSentAt: datasetEditionsTable.noticeSentAt })
+    .from(datasetEditionsTable)
+    .where(eq(datasetEditionsTable.id, id));
+  return row !== undefined && row.noticeSentAt === null;
+}
+
+/**
  * History rows in `(prevBuiltAt, upTo]` for the changelog. Selects only the four
  * columns the changelog builder accepts, NEVER `source` (actor / submitter
  * provenance). The first edition has no window and needs no history, so a null

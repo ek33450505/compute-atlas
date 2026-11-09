@@ -154,6 +154,52 @@ describe("GET /api/cron/dataset-edition", () => {
       expect(infoSpy).toHaveBeenCalledWith(`dataset edition cron: ${outcome} 2026-11-14`);
     });
 
+    it("logs one error line when the notice pass was cut short, and leaves the response body unchanged", async () => {
+      buildEditionMock.mockResolvedValue({
+        outcome: "published",
+        editionId: "ed-1",
+        editionDate: "2026-11-14",
+        recordCount: 2300,
+        notices: { complete: false, sent: 42 },
+      });
+      const res = await GET(req(bearer));
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({
+        ok: true,
+        outcome: "published",
+        editionId: "ed-1",
+        editionDate: "2026-11-14",
+        recordCount: 2300,
+      });
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+      expect(errorSpy).toHaveBeenCalledWith("dataset edition cron: notices incomplete 2026-11-14 (sent: 42)");
+    });
+
+    it("an incomplete resume pass (alreadyPublished) is logged the same way", async () => {
+      buildEditionMock.mockResolvedValue({
+        outcome: "alreadyPublished",
+        editionId: "ed-2",
+        editionDate: "2026-11-14",
+        notices: { complete: false, sent: 3 },
+      });
+      await GET(req(bearer));
+      expect(errorSpy).toHaveBeenCalledWith("dataset edition cron: notices incomplete 2026-11-14 (sent: 3)");
+    });
+
+    it("stays quiet when the notice pass completed or did not run", async () => {
+      buildEditionMock.mockResolvedValue({
+        outcome: "published",
+        editionId: "ed-1",
+        editionDate: "2026-11-14",
+        recordCount: 2300,
+        notices: { complete: true, sent: 5 },
+      });
+      await GET(req(bearer));
+      buildEditionMock.mockResolvedValue({ outcome: "published", editionId: "ed-1", editionDate: "2026-11-14", recordCount: 2300 });
+      await GET(req(bearer));
+      expect(errorSpy).not.toHaveBeenCalled();
+    });
+
     it("failed: 500 with the code and no message, stack or extra keys", async () => {
       buildEditionMock.mockResolvedValue({
         outcome: "failed",

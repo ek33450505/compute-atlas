@@ -26,6 +26,7 @@ function makeEdition(overrides: Partial<AdminDatasetEdition> = {}): AdminDataset
     builtAt: new Date("2026-11-09T13:05:00Z"),
     status: "published",
     recordCount: 3012,
+    noticeSentAt: new Date("2026-11-09T13:40:00Z"),
     files: [
       { name: "facilities.csv", bytes: 1_048_576 },
       { name: "README.md", bytes: 1024 },
@@ -70,6 +71,7 @@ describe("EditionsPanel: listing", () => {
           makeEdition({ id: "b", editionDate: "2026-11-09" }),
           makeEdition({ id: "a", editionDate: "2026-11-02", recordCount: 2990 }),
         ]}
+        mailEnabled
       />
     );
 
@@ -85,7 +87,7 @@ describe("EditionsPanel: listing", () => {
   });
 
   it("shows status as text, record count, file count with total size, and change counts", () => {
-    render(<EditionsPanel editions={[makeEdition()]} />);
+    render(<EditionsPanel editions={[makeEdition()]} mailEnabled />);
 
     const row = screen.getAllByRole("row")[1];
     expect(within(row).getByText("published")).toBeInTheDocument();
@@ -101,23 +103,132 @@ describe("EditionsPanel: listing", () => {
     render(
       <EditionsPanel
         editions={[makeEdition({ status: "failed", recordCount: null, files: [], changes: null })]}
+        mailEnabled
       />
     );
 
     const row = screen.getAllByRole("row")[1];
     expect(within(row).getByText("failed")).toBeInTheDocument();
     expect(within(row).getByText("None")).toBeInTheDocument();
-    expect(within(row).getAllByText("—")).toHaveLength(2);
+    // Records and Changes, plus Notices (a failed edition sends none).
+    expect(within(row).getAllByText("—")).toHaveLength(3);
+  });
+
+  it("adds a Notices column header with column scope", () => {
+    render(<EditionsPanel editions={[makeEdition()]} mailEnabled />);
+
+    expect(screen.getByRole("columnheader", { name: "Notices" })).toHaveAttribute("scope", "col");
+  });
+
+  it("shows Sent with the send time for a published edition whose notices finished", () => {
+    render(<EditionsPanel editions={[makeEdition()]} mailEnabled />);
+
+    const row = screen.getAllByRole("row")[1];
+    expect(within(row).getByText(/Sent/)).toBeInTheDocument();
+    const time = within(row).getByText("2026-11-09 13:40 UTC");
+    expect(time.tagName).toBe("TIME");
+    expect(time).toHaveAttribute("dateTime", "2026-11-09T13:40:00.000Z");
+    expect(within(row).queryByText(/Incomplete/)).toBeNull();
+    expect(within(row).queryByText("Build now resumes them")).toBeNull();
+  });
+
+  it("shows Incomplete as text for a published edition with no noticeSentAt", () => {
+    render(<EditionsPanel editions={[makeEdition({ noticeSentAt: null })]} mailEnabled />);
+
+    const row = screen.getAllByRole("row")[1];
+    expect(within(row).getByText(/Incomplete/)).toBeInTheDocument();
+    expect(within(row).queryByText(/Sent/)).toBeNull();
+  });
+
+  it.each(["building", "failed"] as const)("shows an em dash in Notices for a %s edition", (status) => {
+    render(<EditionsPanel editions={[makeEdition({ status, noticeSentAt: null })]} mailEnabled />);
+
+    const row = screen.getAllByRole("row")[1];
+    const cells = within(row).getAllByRole("cell");
+    expect(cells[cells.length - 1]).toHaveTextContent("—");
+    expect(within(row).queryByText(/Incomplete/)).toBeNull();
+  });
+
+  it("hints 'Build now resumes them' only on the newest published incomplete row", () => {
+    render(
+      <EditionsPanel
+        editions={[
+          makeEdition({ id: "new", editionDate: "2026-11-09", noticeSentAt: null }),
+          makeEdition({ id: "old", editionDate: "2026-11-02", noticeSentAt: null }),
+        ]}
+        mailEnabled
+      />
+    );
+
+    const rows = screen.getAllByRole("row").slice(1);
+    expect(within(rows[0]).getByText("Build now resumes them")).toBeInTheDocument();
+    expect(within(rows[1]).getByText(/Incomplete/)).toBeInTheDocument();
+    expect(within(rows[1]).queryByText("Build now resumes them")).toBeNull();
+    expect(screen.getAllByText("Build now resumes them")).toHaveLength(1);
+  });
+
+  it("skips a non-published newer row when picking the newest published edition for the hint", () => {
+    render(
+      <EditionsPanel
+        editions={[
+          makeEdition({ id: "fail", editionDate: "2026-11-09", status: "failed", noticeSentAt: null }),
+          makeEdition({ id: "pub", editionDate: "2026-11-02", noticeSentAt: null }),
+        ]}
+        mailEnabled
+      />
+    );
+
+    const rows = screen.getAllByRole("row").slice(1);
+    expect(within(rows[0]).queryByText("Build now resumes them")).toBeNull();
+    expect(within(rows[1]).getByText("Build now resumes them")).toBeInTheDocument();
+  });
+
+  it("gives no hint when the newest published edition's notices were sent, even if an older one is incomplete", () => {
+    render(
+      <EditionsPanel
+        editions={[
+          makeEdition({ id: "new", editionDate: "2026-11-09" }),
+          makeEdition({ id: "old", editionDate: "2026-11-02", noticeSentAt: null }),
+        ]}
+        mailEnabled
+      />
+    );
+
+    expect(screen.queryByText("Build now resumes them")).toBeNull();
+  });
+
+  it("while sharing is off, says notices are paused instead of the resume hint, on the same row", () => {
+    render(
+      <EditionsPanel
+        editions={[
+          makeEdition({ id: "new", editionDate: "2026-11-09", noticeSentAt: null }),
+          makeEdition({ id: "old", editionDate: "2026-11-02", noticeSentAt: null }),
+        ]}
+        mailEnabled={false}
+      />
+    );
+
+    const rows = screen.getAllByRole("row").slice(1);
+    expect(within(rows[0]).getByText("Notices are paused while dataset sharing is off.")).toBeInTheDocument();
+    expect(within(rows[1]).queryByText("Notices are paused while dataset sharing is off.")).toBeNull();
+    expect(screen.queryByText("Build now resumes them")).toBeNull();
+  });
+
+  it("gives neither text for a published edition whose notices were sent, with mail off", () => {
+    render(<EditionsPanel editions={[makeEdition()]} mailEnabled={false} />);
+
+    expect(screen.queryByText("Build now resumes them")).toBeNull();
+    expect(screen.queryByText(/Notices are paused/)).toBeNull();
   });
 
   it("uses the singular for a single file", () => {
-    render(<EditionsPanel editions={[makeEdition({ files: [{ name: "a.csv", bytes: 500 }] })]} />);
+    render(<EditionsPanel editions={[makeEdition({ files: [{ name: "a.csv", bytes: 500 }] })]} mailEnabled />);
 
     expect(screen.getByText("1 file, 500 B")).toBeInTheDocument();
   });
 
   it("says so when there are no editions, and still offers Build now", () => {
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
 
     expect(screen.getByText("No editions yet.")).toBeInTheDocument();
     expect(screen.queryByRole("table")).toBeNull();
@@ -129,7 +240,7 @@ describe("EditionsPanel: listing", () => {
       ...makeEdition({ id: "edition-uuid-1234" }),
       files: [{ name: "facilities.csv", bytes: 10, pathname: "private/secret-path", sha256: "f".repeat(64) }],
     };
-    const { container } = render(<EditionsPanel editions={[leaky]} />);
+    const { container } = render(<EditionsPanel editions={[leaky]} mailEnabled />);
 
     expect(container.textContent).not.toContain("private/secret-path");
     expect(container.textContent).not.toContain("f".repeat(64));
@@ -142,7 +253,7 @@ describe("EditionsPanel: Build now", () => {
     const user = userEvent.setup();
     const build = deferred<unknown>();
     mockBuild.mockReturnValue(build.promise);
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
     const button = screen.getByRole("button", { name: "Build now" });
     const panel = screen.getByRole("region", { name: "Editions" });
     const controls = button.parentElement as HTMLElement;
@@ -174,7 +285,7 @@ describe("EditionsPanel: Build now", () => {
     const user = userEvent.setup();
     const build = deferred<unknown>();
     mockBuild.mockReturnValue(build.promise);
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
     const button = screen.getByRole("button", { name: "Build now" });
 
     await user.click(button);
@@ -197,7 +308,7 @@ describe("EditionsPanel: Build now", () => {
     const user = userEvent.setup();
     const build = deferred<unknown>();
     mockBuild.mockReturnValue(build.promise);
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
     const button = screen.getByRole("button", { name: "Build now" });
     await user.click(button);
     const first = within(screen.getByRole("status")).getByText(/Build started/);
@@ -213,7 +324,7 @@ describe("EditionsPanel: Build now", () => {
   });
 
   it("right-aligns the numeric columns", () => {
-    render(<EditionsPanel editions={[makeEdition()]} />);
+    render(<EditionsPanel editions={[makeEdition()]} mailEnabled />);
 
     const table = screen.getByRole("table");
     for (const name of ["Records", "Files", "Changes"]) {
@@ -228,7 +339,7 @@ describe("EditionsPanel: Build now", () => {
   it("announces a published build in the status region", async () => {
     const user = userEvent.setup();
     mockBuild.mockResolvedValue({ ok: true, outcome: "published", editionDate: "2026-11-09", recordCount: 3012 });
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
 
     await user.click(screen.getByRole("button", { name: "Build now" }));
 
@@ -240,7 +351,7 @@ describe("EditionsPanel: Build now", () => {
   it("announces an already-published day in the status region", async () => {
     const user = userEvent.setup();
     mockBuild.mockResolvedValue({ ok: true, outcome: "alreadyPublished", editionDate: "2026-11-09" });
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
 
     await user.click(screen.getByRole("button", { name: "Build now" }));
 
@@ -253,7 +364,7 @@ describe("EditionsPanel: Build now", () => {
   it("announces a build already running in the status region", async () => {
     const user = userEvent.setup();
     mockBuild.mockResolvedValue({ ok: true, outcome: "inProgress", editionDate: "2026-11-09" });
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
 
     await user.click(screen.getByRole("button", { name: "Build now" }));
 
@@ -268,7 +379,7 @@ describe("EditionsPanel: Build now", () => {
   it("announces a failed build with its code in the alert region", async () => {
     const user = userEvent.setup();
     mockBuild.mockResolvedValue({ ok: false, error: "The edition build failed.", code: "below_floor" });
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
 
     await user.click(screen.getByRole("button", { name: "Build now" }));
 
@@ -281,7 +392,7 @@ describe("EditionsPanel: Build now", () => {
   it("never reads an ok result carrying the failed outcome as a success", async () => {
     const user = userEvent.setup();
     mockBuild.mockResolvedValue({ ok: true, outcome: "failed", editionDate: "2026-11-09" });
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
 
     await user.click(screen.getByRole("button", { name: "Build now" }));
 
@@ -292,7 +403,7 @@ describe("EditionsPanel: Build now", () => {
   it("reports a rejected action as an error, refreshes, and unlocks the button", async () => {
     const user = userEvent.setup();
     mockBuild.mockRejectedValue(new Error("Unauthorized"));
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
     const button = screen.getByRole("button", { name: "Build now" });
 
     await user.click(button);
@@ -307,7 +418,7 @@ describe("EditionsPanel: Build now", () => {
   it("leaves focus on the Build now button after a result: it is still there", async () => {
     const user = userEvent.setup();
     mockBuild.mockResolvedValue({ ok: true, outcome: "alreadyPublished", editionDate: "2026-11-09" });
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
     const button = screen.getByRole("button", { name: "Build now" });
 
     await user.click(button);
@@ -320,7 +431,7 @@ describe("EditionsPanel: Build now", () => {
     const user = userEvent.setup();
     const build = deferred<unknown>();
     mockBuild.mockReturnValue(build.promise);
-    render(<EditionsPanel editions={[]} />);
+    render(<EditionsPanel editions={[]} mailEnabled />);
     await user.click(screen.getByRole("button", { name: "Build now" }));
     act(() => (document.activeElement as HTMLElement).blur());
 

@@ -629,7 +629,8 @@ export async function extendDatasetGrant(id: string): Promise<{ ok: true } | Dat
  * Mints the renewal-link token for a LIVE grant (a renewal is requested before
  * expiry), replacing any earlier one (the old link stops working). Only the
  * hash is stored. Deliberately does NOT set `renewalRemindedAt`: the reminder
- * cron (planned: U8 cron) sets it after a confirmed send, so a failed send is retried.
+ * pass (lib/dataset-notices.ts `sendRenewalReminders`, run by the weekly edition build) claims it before the
+ * send and releases the claim when the send does not go out, so a failed send is retried.
  * Delivery lives in the caller.
  */
 export async function issueRenewalToken(

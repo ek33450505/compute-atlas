@@ -481,7 +481,7 @@ describe("listRecentEditions", () => {
     expect(serialized).not.toContain("pathname");
     expect(serialized).not.toContain("secret-");
     expect(serialized).not.toContain("sha256");
-    expect(Object.keys(edition).sort()).toEqual(["builtAt", "changes", "editionDate", "files", "id", "recordCount", "status"]);
+    expect(Object.keys(edition).sort()).toEqual(["builtAt", "changes", "editionDate", "files", "id", "noticeSentAt", "recordCount", "status"]);
   });
 
   it("reads the changelog counts and never passes headlines through", async () => {
@@ -519,6 +519,17 @@ describe("listRecentEditions", () => {
     const [edition] = await listRecentEditions();
 
     expect(edition.files).toEqual([{ name: "ok.csv", bytes: 10 }]);
+  });
+
+  it("projects noticeSentAt: the timestamp when the notice loop finished, null while it has not", async () => {
+    const sentAt = new Date("2026-11-09T13:40:00Z");
+    await insertEdition("2026-11-09", { noticeSentAt: sentAt });
+    await insertEdition("2026-11-02");
+
+    const [newest, older] = await listRecentEditions();
+
+    expect(newest.noticeSentAt).toEqual(sentAt);
+    expect(older.noticeSentAt).toBeNull();
   });
 
   it("returns an empty list when there are no editions", async () => {
