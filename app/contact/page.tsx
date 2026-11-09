@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { ContactForm } from "@/components/contact/contact-form";
+import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -55,6 +56,19 @@ export default function ContactPage() {
         instead, so a fix is faster and every submission is checked against
         the source before anything is published.
       </p>
+
+      {isDatasetSharingEnabled() && (
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Need the full dataset for reporting or research?{" "}
+          <Link
+            href="/access?from=data"
+            className="underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+          >
+            Request access
+          </Link>
+          .
+        </p>
+      )}
 
       <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
         Messages are stored with your name, email, and a salted hash of your IP address (used

@@ -61,6 +61,10 @@ export default function AccessPage() {
         <h2 id="access-how" className="text-lg font-medium">
           How it works
         </h2>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Each request is reviewed by hand, so the full dataset goes to people who use it, not
+          to crawlers or automated scrapers.
+        </p>
         <ol className="max-w-2xl list-decimal space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
           <li>Submit the form below.</li>
           <li>Confirm your address from the email. The link is valid for 7 days.</li>

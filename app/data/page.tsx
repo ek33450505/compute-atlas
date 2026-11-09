@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
+import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
@@ -141,6 +142,15 @@ export default function DataPage() {
           Each record lists its own public sources. Cite those directly when a claim
           depends on them.
         </p>
+        {isDatasetSharingEnabled() && (
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Need the full dataset for reporting or research?{" "}
+            <Link href="/access?from=data" className={LINK_CLASS}>
+              Request access
+            </Link>
+            .
+          </p>
+        )}
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           If it saved you time,{" "}
           <Link href="/support" className={LINK_CLASS}>
