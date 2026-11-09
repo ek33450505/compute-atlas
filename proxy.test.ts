@@ -389,6 +389,70 @@ describe("proxy — edge gate on facility and embed pages", () => {
   });
 });
 
+describe("proxy — dataset download page /access/dataset", () => {
+  const PAGE = "/access/dataset";
+
+  beforeEach(() => {
+    process.env.VERCEL_ENV = "production";
+    process.env.EDGE_SHARED_SECRET = EDGE_SECRET;
+  });
+
+  it("is matched by the literal entry and by nothing near it", () => {
+    for (const pathname of [PAGE, `${PAGE}/`]) {
+      expect(isMatched(config.matcher, pathname)).toBe(true);
+    }
+    for (const pathname of ["/access", "/access/", "/access/dataset/x", "/access/datasets", "/access/confirm", "/Access/dataset"]) {
+      expect(isMatched(config.matcher, pathname)).toBe(false);
+    }
+    // And in isolation, so a sibling entry cannot be what makes these pass.
+    expect(isMatched(["/access/dataset"], "/access/dataset")).toBe(true);
+    expect(isMatched(["/access/dataset"], "/access")).toBe(false);
+    expect(isMatched(["/access/dataset"], "/access/dataset/x")).toBe(false);
+    expect(isMatched(["/access/dataset"], "/access/datasets")).toBe(false);
+  });
+
+  it("403s in production without the edge header, like /data and /table", () => {
+    expect(proxy(makeRequest(PAGE)).status).toBe(403);
+    expect(proxy(makeRequest(PAGE, { edgeHeader: "wrong-secret" })).status).toBe(403);
+  });
+
+  it("sets the no-store, no-referrer, noindex headers on a pass-through, query string included", () => {
+    for (const pathname of [PAGE, `${PAGE}?t=${"A".repeat(43)}`]) {
+      const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
+      expectPassThrough(response);
+      // no-transform stops Cloudflare injecting the Web Analytics beacon, which
+      // would report this URL (and its ?t= token) to a third party.
+      expect(response.headers.get("cache-control")).toBe("no-store, no-transform");
+      expect(response.headers.get("cdn-cache-control")).toBe("no-store");
+      expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+      expect(response.headers.get("x-robots-tag")).toBe("noindex");
+    }
+  });
+
+  it("sets the headers on the .rsc / .json variants the matcher also compiles", () => {
+    for (const pathname of [`${PAGE}.rsc`, `${PAGE}.json`]) {
+      expect(isMatched(config.matcher, pathname)).toBe(true);
+      const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
+      expect(response.headers.get("cache-control")).toBe("no-store, no-transform");
+      expect(response.headers.get("x-robots-tag")).toBe("noindex");
+    }
+  });
+
+  it("does not set them on /access or on another matched page", () => {
+    for (const pathname of ["/access", "/data", "/facilities/x"]) {
+      const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
+      expect(response.headers.get("x-robots-tag")).toBeNull();
+      expect(response.headers.get("referrer-policy")).toBeNull();
+      expect(response.headers.get("cache-control")).toBeNull();
+    }
+  });
+
+  it("never redirects to the admin login", () => {
+    const response = proxy(makeRequest(PAGE, { edgeHeader: EDGE_SECRET }));
+    expect(response.headers.get("location")).toBeNull();
+  });
+});
+
 describe("proxy — edge gate rollout posture", () => {
   it("FAILS CLOSED when EDGE_SHARED_SECRET is unset in production", () => {
     process.env.VERCEL_ENV = "production";
@@ -450,13 +514,14 @@ describe("proxy — edge gate rollout posture", () => {
 });
 
 describe("proxy — matcher scope, compiled by the installed Next", () => {
-  it("is exactly the admin and API prefixes, the three heavy pages, and facility/embed pages", () => {
+  it("is exactly the admin and API prefixes, the three heavy pages, the dataset download page, and facility/embed pages", () => {
     expect(config.matcher).toEqual([
       "/admin/:path*",
       "/api/:path*",
       "/map",
       "/data",
       "/table",
+      "/access/dataset",
       "/facilities/:path*",
       "/embed/:path*",
     ]);
