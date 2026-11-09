@@ -9,7 +9,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import AccessPage, { metadata } from "./page";
+import AccessPage, { generateMetadata } from "./page";
 import ConfirmedPage, { metadata as confirmedMeta } from "./confirmed/page";
 import InvalidPage, { metadata as invalidMeta } from "./invalid/page";
 import RenewedPage, { metadata as renewedMeta } from "./renewed/page";
@@ -18,7 +18,6 @@ import RenewPage, { dynamic as renewDynamic, metadata as renewMeta } from "./ren
 
 const TOKEN = "A".repeat(43);
 const NOINDEX = { index: false, follow: false };
-
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -52,10 +51,20 @@ describe("/access", () => {
     expect(screen.queryByText(/bulk|paus/i)).not.toBeInTheDocument();
   });
 
-  it("is indexable with /access as canonical", () => {
+  it("is indexable with /access as canonical when the flag is on", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    const metadata = generateMetadata();
     expect(metadata.alternates?.canonical).toBe("/access");
     expect(metadata.title).toBe("Dataset access");
     expect(metadata.robots).toBeUndefined();
+  });
+
+  it("is noindex with /access as canonical when the flag is off", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    const metadata = generateMetadata();
+    expect(metadata.alternates?.canonical).toBe("/access");
+    expect(metadata.title).toBe("Dataset access");
+    expect(metadata.robots).toEqual(NOINDEX);
   });
 });
 

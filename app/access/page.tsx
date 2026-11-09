@@ -8,11 +8,15 @@ import { DATASET_ACCESS_TERMS, DATASET_PRIVACY_NOTICE } from "@/lib/dataset-term
 import { AccessRequestForm } from "./access-request-form";
 import { ACCESS_LINK_CLASS, AccessNotOpen, AccessShell } from "./not-open";
 
-export const metadata: Metadata = {
-  title: "Dataset access",
-  description: "Request a personal link to the full Compute Atlas dataset.",
-  alternates: { canonical: "/access" },
-};
+// While the flag is off the page is a thin "not open yet" notice, so keep it out of the index.
+export function generateMetadata(): Metadata {
+  return {
+    title: "Dataset access",
+    description: "Request a personal link to the full Compute Atlas dataset.",
+    alternates: { canonical: "/access" },
+    ...(isDatasetSharingEnabled() ? {} : { robots: { index: false, follow: false } }),
+  };
+}
 
 function TermsDetails({ summary, paragraphs }: { summary: string; paragraphs: readonly string[] }) {
   return (
