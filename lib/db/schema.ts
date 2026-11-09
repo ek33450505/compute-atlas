@@ -709,6 +709,202 @@ export const apiAccessGrantsTable = pgTable(
 export type ApiAccessGrantRow = typeof apiAccessGrantsTable.$inferSelect;
 
 /**
+ * Vocabularies for the approved-access dataset-sharing tables below. String
+ * literals in plain text columns, not pg enums or CHECK constraints: adding a
+ * value must not need a migration (same call as INTAKE_SURFACES above).
+ */
+export const DATASET_GRANT_STATUSES = [
+  "unverified",
+  "pending_review",
+  "active",
+  "expired",
+  "revoked",
+  "rejected",
+] as const;
+
+export type DatasetGrantStatus = (typeof DATASET_GRANT_STATUSES)[number];
+
+export const DATASET_CATEGORIES = [
+  "journalist",
+  "academic",
+  "nonprofit",
+  "government",
+  "commercial",
+  "other",
+] as const;
+
+export type DatasetCategory = (typeof DATASET_CATEGORIES)[number];
+
+export const DATASET_EDITION_STATUSES = ["building", "published", "failed"] as const;
+
+export type DatasetEditionStatus = (typeof DATASET_EDITION_STATUSES)[number];
+
+export const DATASET_DOWNLOAD_OUTCOMES = ["served", "denied_rate", "error"] as const;
+
+export type DatasetDownloadOutcome = (typeof DATASET_DOWNLOAD_OUTCOMES)[number];
+
+/**
+ * A requester's approved-access grant to the weekly dataset editions — NOT a
+ * user account. Lifecycle: `unverified` (request made, email not yet proven)
+ * -> `pending_review` (email verified, awaiting the maintainer) -> `active`
+ * (approved; `accessTokenHash` set) -> `expired` / `revoked`, or `rejected`
+ * from review. The row also carries the request itself (who, why, the
+ * attribution acknowledgement and the terms version it was made against), so
+ * the maintainer reviews from this one table.
+ *
+ * Every token column stores ONLY a sha256 hash of the raw token (see
+ * lib/token-hash.ts); the raw access/verify/renew tokens are shown once to
+ * their owner and must never be stored. The one exception is `unsubscribeToken`,
+ * kept raw by the `subscriptionsTable` precedent: its blast radius is
+ * unsubscribing the one grant from the weekly notice, nothing else. It is minted
+ * on approval and is null until then. The weekly-notice sender (not yet built)
+ * must mail only active grants whose `expiresAt` is set and later than now();
+ * see the `lastNoticeEditionId` contract below.
+ *
+ * Deliberately separate from `apiAccessGrantsTable`: lib/api-daily-limit.ts
+ * honors an active `api_access_grants` bearer to raise the public API
+ * ceilings, and a dataset token must never do that.
+ *
+ * `lastNoticeEditionId` is the authoritative per-grant weekly-notice marker.
+ * It remembers only the LAST edition claimed, so this is the CONTRACT the (not
+ * yet built) sender must meet: claim first, and mail only if a row came back,
+ * with
+ *   UPDATE dataset_access_grants SET last_notice_edition_id = $e
+ *   WHERE id = $g AND status = 'active' AND expires_at > now()
+ *     AND last_notice_edition_id IS DISTINCT FROM $e
+ *     AND $e = (SELECT id FROM dataset_editions WHERE status = 'published'
+ *               ORDER BY edition_date DESC LIMIT 1)
+ *   RETURNING id
+ * The newest-edition predicate is what makes it at-most-once: claiming an
+ * older edition after a newer one would otherwise re-claim and re-mail it.
+ * Under that contract, and while a published edition is never un-published, a
+ * grant is mailed each edition's notice at most once. Claim-before-send means a
+ * send that fails after its claim is not retried for that (grant, edition): the
+ * grant misses that week's notice instead. `dataset_editions.notice_sent_at`
+ * is only the edition-level marker (see there). It has NO foreign key to
+ * `dataset_editions` on purpose: it is a claim marker, not a relation, and an
+ * FK would force a drop order on rollback and block pruning old editions.
+ *
+ * Rollback (children first): DROP TABLE dataset_downloads; DROP TABLE
+ * dataset_editions; DROP TABLE dataset_access_grants;
+ */
+export const datasetAccessGrantsTable = pgTable(
+  "dataset_access_grants",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    email: text("email").notNull(), // stored lowercased + trimmed
+    name: text("name").notNull(),
+    organization: text("organization"),
+    role: text("role"),
+    category: text("category").$type<DatasetCategory>().notNull(), // journalist | academic | nonprofit | government | commercial | other
+    intendedUse: text("intended_use").notNull(),
+    links: jsonb("links").$type<string[]>().notNull().default([]), // requester-supplied supporting URLs
+    attributionAckAt: timestamp("attribution_ack_at", { withTimezone: true }).notNull(),
+    termsVersion: text("terms_version").notNull(), // the terms the requester acknowledged
+    status: text("status").$type<DatasetGrantStatus>().notNull().default("unverified"), // unverified | pending_review | active | expired | revoked | rejected
+    verifyTokenHash: text("verify_token_hash").notNull(), // sha256 hash (64 hex) of the raw single-use email-verification token — see lib/token-hash.ts
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    accessTokenHash: text("access_token_hash"), // sha256 hash (64 hex) of the raw bearer token; set on approval, null until active — see lib/token-hash.ts
+    renewTokenHash: text("renew_token_hash"), // sha256 hash (64 hex) of the raw renewal-link token — see lib/token-hash.ts
+    unsubscribeToken: text("unsubscribe_token"), // RAW by the subscriptions precedent: unsubscribe-only blast radius
+    approvedAt: timestamp("approved_at", { withTimezone: true }),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    reviewNote: text("review_note"),
+    rejectionNote: text("rejection_note"),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    revokeReason: text("revoke_reason"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    renewalRemindedAt: timestamp("renewal_reminded_at", { withTimezone: true }),
+    renewalRequestedAt: timestamp("renewal_requested_at", { withTimezone: true }),
+    lastDownloadAt: timestamp("last_download_at", { withTimezone: true }),
+    lastNoticeEditionId: uuid("last_notice_edition_id"), // newest-edition weekly-notice claim (contract in the table doc); deliberately NO foreign key
+    downloadCount: integer("download_count").notNull().default(0),
+    submitterIpHash: text("submitter_ip_hash"),
+  },
+  (table) => [
+    index("dataset_access_grants_status_idx").on(table.status),
+    index("dataset_access_grants_email_idx").on(table.email),
+    index("dataset_access_grants_expires_at_idx").on(table.expiresAt),
+    uniqueIndex("dataset_access_grants_verify_token_hash_idx").on(table.verifyTokenHash),
+    uniqueIndex("dataset_access_grants_access_token_hash_idx").on(table.accessTokenHash),
+    uniqueIndex("dataset_access_grants_renew_token_hash_idx").on(table.renewTokenHash),
+    uniqueIndex("dataset_access_grants_unsubscribe_token_idx").on(table.unsubscribeToken),
+  ]
+);
+
+export type DatasetAccessGrantRow = typeof datasetAccessGrantsTable.$inferSelect;
+
+/** One file inside a built dataset edition, as recorded in `dataset_editions.files`. */
+export interface DatasetEditionFile {
+  name: string;
+  pathname: string;
+  bytes: number;
+  sha256: string;
+}
+
+/**
+ * One weekly dataset build. `editionDate` is a plain "YYYY-MM-DD" string,
+ * unique, matching `apiDailyUsageTable.day` (this file's date-only-as-text
+ * convention). `status` runs `building` -> `published` | `failed`. `files`
+ * records what was built (name, storage pathname, size, sha256). `noticeSentAt`
+ * must be set only after the send loop has claimed, and attempted to mail,
+ * every active, unexpired grant for this edition (`lastNoticeEditionId` on the
+ * grants table is the authoritative per-grant marker). A partial run leaves it
+ * null. A rerun completes the edition only while it is still the newest
+ * published edition; after a newer edition publishes, the rerun claims
+ * nothing, so grants it had not yet claimed miss this edition's notice.
+ */
+export const datasetEditionsTable = pgTable(
+  "dataset_editions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    editionDate: text("edition_date").notNull(),
+    builtAt: timestamp("built_at", { withTimezone: true }).defaultNow().notNull(),
+    status: text("status").$type<DatasetEditionStatus>().notNull().default("building"), // building | published | failed
+    recordCount: integer("record_count"),
+    files: jsonb("files").$type<DatasetEditionFile[]>().notNull().default([]),
+    changelogSummary: jsonb("changelog_summary"), // opaque summary of what changed vs the previous edition
+    noticeSentAt: timestamp("notice_sent_at", { withTimezone: true }),
+  },
+  (table) => [uniqueIndex("dataset_editions_edition_date_idx").on(table.editionDate)]
+);
+
+export type DatasetEditionRow = typeof datasetEditionsTable.$inferSelect;
+
+/**
+ * Log of dataset download attempts by an ACTIVE, unexpired grant: one row per
+ * attempt, including rate-limit denials and errors (`outcome`). Attempts that
+ * do not resolve to an active, unexpired grant (unknown, malformed or revoked
+ * token; expired, pending or rejected grant) are NOT logged here, so that
+ * unauthenticated requests never write rows; the download route must bound
+ * them with a per-IP rate limit applied before the token lookup. Deleting a
+ * grant deletes its rows (cascade); deleting an edition keeps them and nulls
+ * `editionId` (set null). The IP is stored only as a hash, never raw.
+ */
+export const datasetDownloadsTable = pgTable(
+  "dataset_downloads",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    grantId: uuid("grant_id")
+      .notNull()
+      .references(() => datasetAccessGrantsTable.id, { onDelete: "cascade" }),
+    editionId: uuid("edition_id").references(() => datasetEditionsTable.id, { onDelete: "set null" }),
+    file: text("file").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    ipHash: text("ip_hash"),
+    outcome: text("outcome").$type<DatasetDownloadOutcome>().notNull(), // served | denied_rate | error
+  },
+  (table) => [
+    index("dataset_downloads_grant_created_idx").on(table.grantId, table.createdAt.desc()),
+    index("dataset_downloads_edition_idx").on(table.editionId),
+    index("dataset_downloads_created_idx").on(table.createdAt),
+  ]
+);
+
+export type DatasetDownloadRow = typeof datasetDownloadsTable.$inferSelect;
+
+/**
  * Durable per-IP daily request counter for the public facilities-family read
  * API (`GET /api/facilities`, `/api/search`, `/api/stats`, `/api/schema`)
  * and the gate on `/api/facilities/[id]` (admin-bearer only now, but the

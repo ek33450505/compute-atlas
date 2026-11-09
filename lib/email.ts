@@ -9,7 +9,8 @@ import { siteConfig } from "@/lib/site";
  * confirm/access/unsubscribe email) and is never itself the value compared on
  * lookup — confirm and access tokens are stored as a sha256 hash (see
  * `lib/token-hash.ts` and the per-column comments in `lib/db/schema.ts`); the
- * unsubscribe token is the one deliberate exception and stays raw in storage.
+ * unsubscribe tokens (subscriptions and dataset grants) are the deliberate
+ * exception and stay raw in storage.
  */
 export function generateToken(): string {
   return randomBytes(32).toString("base64url");
