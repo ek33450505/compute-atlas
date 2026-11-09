@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+
+import { hasAdminSession } from "@/lib/admin-session";
 import { listContactMessagesForAdmin } from "@/lib/contact";
 import { ContactMessageList } from "@/app/admin/contact/contact-message-list";
 
@@ -7,6 +10,9 @@ import { ContactMessageList } from "@/app/admin/contact/contact-message-list";
 export const dynamic = "force-dynamic";
 
 export default async function AdminContactPage() {
+  // Defense in depth: do not rely on the proxy alone.
+  if (!(await hasAdminSession())) redirect("/admin/login");
+
   const messages = await listContactMessagesForAdmin();
 
   return (

@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+
+import { hasAdminSession } from "@/lib/admin-session";
 import { getDb } from "@/lib/db/client";
 import { EMAIL_SEND_KINDS, EMAIL_SEND_OUTCOMES } from "@/lib/email-sends";
 import {
@@ -21,6 +24,9 @@ export default async function AdminEmailSendsPage({
 }: {
   searchParams: Promise<Record<string, Param>>;
 }) {
+  // Defense in depth: do not rely on the proxy alone.
+  if (!(await hasAdminSession())) redirect("/admin/login");
+
   const filter = filterFromSearchParams(await searchParams);
   const db = getDb();
   const [rows, counts] = await Promise.all([

@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+
+import { hasAdminSession } from "@/lib/admin-session";
 import {
   listLeadsForAdmin,
   listLeadSubmissionOutcomes,
@@ -20,6 +23,9 @@ export default async function AdminLeadsPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
+  // Defense in depth: do not rely on the proxy alone.
+  if (!(await hasAdminSession())) redirect("/admin/login");
+
   const { status: rawStatus } = await searchParams;
   const status = normalizeStatus(rawStatus);
   const leads = await listLeadsForAdmin(status);

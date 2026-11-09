@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
+import { hasAdminSession } from "@/lib/admin-session";
 import { loadFacilities } from "@/lib/data";
 import { FacilityForm } from "@/app/admin/facilities/facility-form";
 import { emptyFacilityFormState } from "@/app/admin/facilities/facility-form-state";
@@ -24,6 +26,9 @@ export const metadata: Metadata = {
  * facility of its own yet.
  */
 export default async function NewFacilityPage() {
+  // Defense in depth: do not rely on the proxy alone.
+  if (!(await hasAdminSession())) redirect("/admin/login");
+
   const facilities = await loadFacilities();
   const availableFacilities = facilities.map((f) => ({ id: f.id, name: f.name }));
 
