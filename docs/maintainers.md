@@ -568,7 +568,8 @@ unsubscribe at `/api/dataset/unsubscribe`. A grant runs 365 days (`DATASET_GRANT
 - Unset `DATASET_SHARING_ENABLED` (any value but `"true"` is also off) and redeploy with
   `npx vercel redeploy --target production <url>`. Vercel applies env changes to new deployments only.
 - `/access`, `/data` and `/contact` read the flag at build time (`app/access/page.tsx` says so; `/data` and
-  `/contact` show the "Request access" link only when it is on), so a flip takes effect with the redeploy's
+  `/contact` show the "Request access" link only when it is on, and so does the site footer's "Request data
+  access" link on every page, `components/site-footer.tsx`), so a flip takes effect with the redeploy's
   build; ISR revalidation alone never picks it up, because the old deployment never sees the new value. The
   `/access/*` token pages are dynamic and read it per request, except the unsubscribe pages
   (`/access/unsubscribe`, `/access/unsubscribed`), which never read it so an opt-out works with the flag off.

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import { siteConfig } from "@/lib/site";
 import { Wordmark } from "@/components/wordmark";
 
@@ -90,6 +91,13 @@ export function SiteFooter() {
                   Cite
                 </Link>
               </li>
+              {isDatasetSharingEnabled() && (
+                <li>
+                  <Link href="/access" className={NAV_LINK_CLASS}>
+                    Request data access
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/contact" className={NAV_LINK_CLASS}>
                   Contact
