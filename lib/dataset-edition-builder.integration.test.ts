@@ -90,6 +90,9 @@ let warnSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(async () => {
   await tdb.reset();
+  // buildEdition fails fast without Blob credentials; the Blob wrapper itself is mocked below.
+  vi.stubEnv("BLOB_READ_WRITE_TOKEN", "test-token");
+  vi.stubEnv("BLOB_STORE_ID", "");
   puts = [];
   vi.mocked(putEditionFile).mockReset();
   vi.mocked(putEditionFile).mockImplementation(async (date, name, body) => {
@@ -104,6 +107,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   errorSpy.mockRestore();
   warnSpy.mockRestore();
 });
@@ -187,6 +191,43 @@ describe("buildEdition happy path", () => {
     expect(changelog.editionWindow.from).toBe(firstBuiltAt.toISOString());
     expect(changelog.updated.map((e: { id: string }) => e.id)).toEqual(["alpha-mine"]);
     expect(JSON.stringify(changelog)).not.toContain("admin-direct");
+  });
+});
+
+describe("buildEdition blob credentials", () => {
+  const readSpy = () => {
+    const source = makeSource();
+    return { source, facilities: vi.spyOn(source, "facilities") };
+  };
+
+  it("fails fast with blob_not_configured when neither credential is set: no claim, no Neon read, no Blob call", async () => {
+    vi.stubEnv("BLOB_READ_WRITE_TOKEN", "");
+    vi.stubEnv("BLOB_STORE_ID", "  ");
+    const { source, facilities } = readSpy();
+
+    const res = await buildEdition({ now: NOW, source, floors });
+
+    expect(res).toEqual({ outcome: "failed", editionDate: "2026-11-09", code: "blob_not_configured" });
+    expect(await allEditions()).toHaveLength(0);
+    expect(facilities).not.toHaveBeenCalled();
+    expect(putEditionFile).not.toHaveBeenCalled();
+    expect(deleteEditionPrefix).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith("dataset edition: blob store not configured (code: blob_not_configured)");
+  });
+
+  it("proceeds with only BLOB_READ_WRITE_TOKEN set", async () => {
+    vi.stubEnv("BLOB_READ_WRITE_TOKEN", "test-token");
+    vi.stubEnv("BLOB_STORE_ID", "");
+    const res = await buildEdition({ now: NOW, source: makeSource(), floors });
+    expect(res).toMatchObject({ outcome: "published" });
+  });
+
+  it("proceeds with only BLOB_STORE_ID set (the OIDC path)", async () => {
+    vi.stubEnv("BLOB_READ_WRITE_TOKEN", "");
+    vi.stubEnv("BLOB_STORE_ID", "store_abc123");
+    const res = await buildEdition({ now: NOW, source: makeSource(), floors });
+    expect(res).toMatchObject({ outcome: "published" });
   });
 });
 

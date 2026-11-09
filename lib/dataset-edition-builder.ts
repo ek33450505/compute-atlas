@@ -60,6 +60,21 @@ function logFailure(step: string, code: string): void {
   console.error(`dataset edition: ${step} failed (code: ${code})`);
 }
 
+/**
+ * True when the Blob SDK has a credential source. Resolution order in @vercel/blob 2.8.2
+ * (node_modules/@vercel/blob/dist/chunk-XKVPKJPO.js:160-206): an explicit `token` option (never
+ * passed by lib/dataset-blob.ts), then an OIDC token (`VERCEL_OIDC_TOKEN` or the request-context
+ * header) paired with env `BLOB_STORE_ID`, then env `BLOB_READ_WRITE_TOKEN`. The OIDC token itself
+ * is deliberately NOT inspected: on Vercel it can come from the request context, so an env check
+ * could false-fail a working deployment. `BLOB_STORE_ID` is the env half the SDK needs for OIDC.
+ * Values are only tested for presence, never logged.
+ */
+function blobConfigured(): boolean {
+  return (
+    (process.env.BLOB_READ_WRITE_TOKEN ?? "").trim() !== "" || (process.env.BLOB_STORE_ID ?? "").trim() !== ""
+  );
+}
+
 export async function buildEdition(opts: BuildEditionOptions = {}): Promise<EditionBuildResult> {
   const now = opts.now ?? new Date();
   const editionDate = now.toISOString().slice(0, 10);
@@ -67,6 +82,13 @@ export async function buildEdition(opts: BuildEditionOptions = {}): Promise<Edit
   let claimed: { id: string; builtAt: Date } | null = null;
   // Declared out here so a failure mid-upload can record what already reached Blob.
   const files: DatasetEditionFile[] = [];
+
+  // Before the claim and the Neon read (the main cost driver): a deployment with no Blob
+  // credentials would otherwise burn a full snapshot and report a vague blob_put_failed.
+  if (!blobConfigured()) {
+    console.error("dataset edition: blob store not configured (code: blob_not_configured)");
+    return { outcome: "failed", editionDate, code: "blob_not_configured" };
+  }
 
   try {
     const claim = await claimEdition(editionDate, now, { ignoreRetryCooldown: opts.ignoreRetryCooldown });

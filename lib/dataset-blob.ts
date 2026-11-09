@@ -22,8 +22,9 @@ import { BlobNotFoundError, del, get, list, put } from "@vercel/blob";
  *   mapped to null defensively.
  * - `list({ prefix, cursor })` — paginated via `hasMore`/`cursor`.
  * - `del(pathnames[])` — batch delete by pathname.
- * Auth is the `BLOB_READ_WRITE_TOKEN` env Vercel injects; the token is never
- * read, passed or logged here.
+ * Auth is resolved by the SDK from env, never passed, read or logged here: either
+ * `BLOB_READ_WRITE_TOKEN`, or OIDC (a Vercel-issued OIDC token plus the
+ * `BLOB_STORE_ID` env, since no `storeId` option is passed).
  *
  * Errors surface as `DatasetBlobError` with a fixed `code` and NO SDK text
  * (it can carry store URLs and tokens). Nothing here logs; callers log `code`.
