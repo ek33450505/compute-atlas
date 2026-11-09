@@ -286,7 +286,8 @@ describe("sendGrantGated: requester cap", () => {
     const g = await seedGrant({ lifecycle: "live" });
     for (let i = 0; i < 10; i++) await backdate(5, "dataset_verify", g.email, "skipped_suppressed");
     for (let i = 0; i < 10; i++) await backdate(5, "dataset_verify", g.email, "skipped_unconfirmed");
-    for (let i = 0; i < 10; i++) await backdate(61, "dataset_verify", g.email);
+    // 5 (not 10): these still count toward the 24 h cap, so 5 + the 5 sends below stays within it.
+    for (let i = 0; i < 5; i++) await backdate(61, "dataset_verify", g.email);
     for (let i = 0; i < DATASET_REQUESTER_CAP_MAX; i++) {
       expect((await grantGate("dataset_already_active", g.id, g.email, sender())).disposition).toBe("sent");
     }
@@ -324,6 +325,52 @@ describe("sendGrantGated: requester cap", () => {
     const send = sender();
     const res = await grantGate("dataset_already_active", g.id, g.email, send);
     vi.restoreAllMocks();
+    expect(res.disposition).toBe("gate_error");
+    expect(send).not.toHaveBeenCalled();
+    expect(await rows()).toHaveLength(1);
+    expect((await rows())[0]).toMatchObject({ outcome: "error", errorCode: "cap_check_failed" });
+  });
+
+  it("daily cap: 10 in 24 h (only 2 in the last hour) caps the next send, shared across verify + already_active", async () => {
+    const g = await seedGrant({ lifecycle: "live" });
+    for (let i = 0; i < 4; i++) await backdate(20 * 60, "dataset_verify", g.email);
+    for (let i = 0; i < 4; i++) await backdate(10 * 60, "dataset_already_active", g.email);
+    for (let i = 0; i < 2; i++) await backdate(30, "dataset_verify", g.email);
+    const activeSend = sender();
+    expect((await grantGate("dataset_already_active", g.id, g.email, activeSend)).disposition).toBe("skipped_capped");
+    expect(activeSend).not.toHaveBeenCalled();
+    await tdb.db.update(datasetAccessGrantsTable).set({ status: "unverified" }).where(eq(datasetAccessGrantsTable.id, g.id));
+    const verifySend = sender();
+    expect((await grantGate("dataset_verify", g.id, g.email, verifySend)).disposition).toBe("skipped_capped");
+    expect(verifySend).not.toHaveBeenCalled();
+    const capped = (await rows()).filter((r) => r.outcome === "skipped_capped");
+    expect(capped).toHaveLength(2);
+  });
+
+  it("daily cap: rows older than 24 h and skipped rows do not count", async () => {
+    const g = await seedGrant({ lifecycle: "live" });
+    for (let i = 0; i < 10; i++) await backdate(25 * 60, "dataset_verify", g.email);
+    for (let i = 0; i < 10; i++) await backdate(10 * 60, "dataset_verify", g.email, "skipped_suppressed");
+    const send = sender();
+    expect((await grantGate("dataset_already_active", g.id, g.email, send)).disposition).toBe("sent");
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("a daily count failure fails closed: gate_error, claim settles error/cap_check_failed, nothing sent", async () => {
+    const g = await seedGrant({ lifecycle: "live" });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const orig = tdb.db.select.bind(tdb.db);
+    let counts = 0;
+    vi.spyOn(tdb.db, "select").mockImplementation(((...args: unknown[]) => {
+      const fields = args[0] as Record<string, unknown> | undefined;
+      // The hourly count (first) passes; only the 24-h count (second) throws.
+      if (fields && "n" in fields && ++counts === 2) throw new Error("boom");
+      return (orig as (...a: unknown[]) => unknown)(...args);
+    }) as never);
+    const send = sender();
+    const res = await grantGate("dataset_already_active", g.id, g.email, send);
+    // The spy is restored by the file's afterEach, so a failed assertion cannot leak it.
+    expect(counts).toBe(2);
     expect(res.disposition).toBe("gate_error");
     expect(send).not.toHaveBeenCalled();
     expect(await rows()).toHaveLength(1);

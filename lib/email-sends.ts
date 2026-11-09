@@ -66,12 +66,22 @@ export const CONFIRM_CAP_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 export const CONFIRM_CAP_MAX = 10;
 
 /**
- * Requester-facing dataset mail that spends ONE shared per-address budget:
- * DATASET_REQUESTER_CAP_MAX per DATASET_REQUESTER_CAP_WINDOW_MS (Ed, 2026-11-09: 5 per address per hour).
+ * Requester-facing dataset mail that spends ONE shared per-address budget, with two caps (Ed, 2026-11-09):
+ * DATASET_REQUESTER_CAP_MAX per DATASET_REQUESTER_CAP_WINDOW_MS (5 per address per hour) AND
+ * DATASET_REQUESTER_DAILY_CAP_MAX per DATASET_REQUESTER_DAILY_CAP_WINDOW_MS (10 per address per rolling 24 h).
  */
 export const DATASET_REQUESTER_CAP_KINDS: readonly DatasetSendKind[] = ["dataset_verify", "dataset_already_active"];
 export const DATASET_REQUESTER_CAP_MAX = 5;
 export const DATASET_REQUESTER_CAP_WINDOW_MS = 60 * 60 * 1000;
+
+/**
+ * The daily cap counts the same kinds, shares the same budget across them, and is counted after the claim.
+ * Accepted trade-off (Ed, 2026-11-09): a stranger who keeps re-requesting an owner's address (one rotation
+ * per 20 minutes) uses up the daily budget in about 3 hours, and the owner's own verify mail is then refused
+ * for the rest of that 24 h window.
+ */
+export const DATASET_REQUESTER_DAILY_CAP_MAX = 10;
+export const DATASET_REQUESTER_DAILY_CAP_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 /** Maintainer new-request alerts: DATASET_ADMIN_NOTICE_CAP_MAX per rolling 24 h across ALL requests (Ed, 2026-11-09). */
 export const DATASET_ADMIN_NOTICE_CAP_MAX = 25;

@@ -144,13 +144,16 @@ export const lapsedGrant = (now: Date): SQL =>
  * - Rotations are spaced 20 minutes apart: at most 4 in any closed hour (3 per rolling hour), so the
  *   per-recipient cap of 5 per hour in `sendGrantGated` (lib/email-gate.ts) does not starve them. That cap
  *   is one budget shared with `dataset_already_active`, which only an address with an active row draws.
+ *   The second cap, 10 per 24 h, CAN be exhausted: a stranger rotating every 20 minutes uses it up in about
+ *   3 hours, after which the owner's verify mail is refused for the rest of that window (accepted, Ed 2026-11-09).
  * - A stranger can still replace the request's content once the cooldown has passed. A stranger who
  *   re-requests an address about every 20 minutes can keep pre-empting the owner's own submission. The owner's
  *   only link is then the one the stranger's request triggered, which carries the stranger's content until the
  *   verify mail (`buildDatasetVerifyEmail` / `sendDatasetVerifyEmail`, lib/email.ts) echoes the submitted
  *   request content, so the owner sees what is being verified.
  * - No token or data is exposed: the response to the requester is the same generic success either way.
- * - U3a must send this mail through `sendGrantGated` (lib/email-gate.ts; the per-recipient cap) with `sendDatasetVerifyEmail` (lib/email.ts; the echo), and must not go live until it does.
+ * - The request route (app/api/access/request/route.ts) sends this mail through `sendGrantGated` (lib/email-gate.ts;
+ *   the per-recipient caps) with `sendDatasetVerifyEmail` (lib/email.ts; the echo), via lib/dataset-mail.ts.
  */
 export const DATASET_ROTATION_COOLDOWN_MS = 20 * 60 * 1000;
 
@@ -163,8 +166,8 @@ const genericSuccess = (): DatasetRequestResult => ({ ok: true, publicResult: { 
  * safety follows `requestAccessGrant` (lib/access-grants.ts): every path that
  * sends the requester nothing new returns the same `publicResult` `{ok:true}`,
  * and the mail intent travels beside it, never in it, so the response body never
- * reveals which case applied. The per-IP limit and the `after()` send are planned to
- * live in the route (U3a, not built yet), not here.
+ * reveals which case applied. The per-IP limit and the `after()` send live in the
+ * route (app/api/access/request/route.ts), not here.
  *
  * Order: honeypot (RAW input) -> parse -> per-address cap -> global suppression
  * (`mayEmail`) -> open-row lookup, then, by the one OPEN row for the address (the
@@ -195,8 +198,8 @@ const genericSuccess = (): DatasetRequestResult => ({ ok: true, publicResult: { 
  * not mails. Rotation and `dataset_already_active` can mail again for an existing
  * row. Rotation is spaced by `DATASET_ROTATION_COOLDOWN_MS`. The mail itself is
  * capped in `sendGrantGated` (lib/email-gate.ts), where `dataset_verify` and
- * `dataset_already_active` share one budget of 5 per address per hour; the cap
- * applies once the route (U3a, not built yet) sends through that gate. It is
+ * `dataset_already_active` share one budget of 5 per address per hour and 10 per
+ * address per 24 h; the route sends through that gate, so both caps apply. They are
  * deliberately not duplicated here.
  */
 export async function requestDatasetAccess(
@@ -306,7 +309,7 @@ export async function requestDatasetAccess(
     // SQL-guarded by `lapsedGrant`, so a live row is left intact and the INSERT meets the partial index.
     if (open.lapsed === false) {
       // The already-active mail is bounded by the per-recipient cap in `sendGrantGated` (lib/email-gate.ts;
-      // 5 per address per hour, shared with dataset_verify) once U3a sends through it; no cap is added here.
+      // 5 per address per hour and 10 per 24 h, shared with dataset_verify); no cap is added here.
       return mailable
         ? { ok: true, publicResult: { ok: true }, mail: { kind: "dataset_already_active", grantId: open.id, email } }
         : genericSuccess();
@@ -657,7 +660,7 @@ export async function issueRenewalToken(
  * "invalid": a renewal must be requested BEFORE expiry. The idempotent repeat is
  * the exception: a grant that already has a renewal request (RENEWAL_PENDING)
  * reads "requested" even past expiry, because that request was made in time.
- * The per-IP limit and the page copy are planned to live in the route (U3b, not built yet).
+ * The per-IP limit lives in app/api/access/renew/route.ts; the renewal page is planned for U3b (not built yet).
  */
 export async function requestRenewal(
   rawRenewToken: string

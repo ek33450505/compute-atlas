@@ -13,6 +13,8 @@ import {
   DATASET_REQUESTER_CAP_KINDS,
   DATASET_REQUESTER_CAP_MAX,
   DATASET_REQUESTER_CAP_WINDOW_MS,
+  DATASET_REQUESTER_DAILY_CAP_MAX,
+  DATASET_REQUESTER_DAILY_CAP_WINDOW_MS,
   DATASET_SEND_KINDS,
   completeSend,
   countRecentConfirmSends,
@@ -108,7 +110,8 @@ import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type Supp
  *   renewal_reminder / edition_notice need live. An edition notice also needs an
  *   `editionId` (row target `dataset_edition`/`<editionId>:<grantId>`). The
  *   requester kinds `dataset_verify` + `dataset_already_active` share ONE
- *   per-address budget (DATASET_REQUESTER_CAP_*), counted AFTER the claim.
+ *   per-address budget with two caps (DATASET_REQUESTER_CAP_*: 5 per hour;
+ *   DATASET_REQUESTER_DAILY_CAP_*: 10 per rolling 24 h), each counted AFTER the claim.
  *
  *   `sendDatasetAdminNoticeGated` (maintainer alert, `dataset_admin_new_request`).
  *   The grant must be `pending_review`. NO suppression check: a requester's
@@ -345,11 +348,11 @@ export interface GrantGatedSend {
   runId?: string | null;
 }
 
-/** Claim already made: optionally count (cap), then send and settle. Shared by both dataset gates. */
+/** One claim, then every cap in order (empty = none), then send and settle. Shared by both dataset gates. */
 async function claimCountSend(
   db: EmailSendsDb,
   base: EmailSendBase,
-  cap: { count: () => Promise<number>; max: number } | null,
+  caps: ReadonlyArray<{ count: () => Promise<number>; max: number }>,
   send: () => Promise<SendOutcome>
 ): Promise<GateResult> {
   const none = (disposition: GateDisposition): GateResult => ({ sent: false, disposition });
@@ -361,7 +364,7 @@ async function claimCountSend(
     return none("gate_error");
   }
 
-  if (cap) {
+  for (const cap of caps) {
     let used: number;
     try {
       used = await cap.count();
@@ -481,16 +484,27 @@ export async function sendGrantGated(
     db,
     base,
     capped
-      ? {
-          count: () =>
-            countRecentSends(db, {
-              kinds: DATASET_REQUESTER_CAP_KINDS,
-              email: grant.email,
-              windowMs: DATASET_REQUESTER_CAP_WINDOW_MS,
-            }),
-          max: DATASET_REQUESTER_CAP_MAX,
-        }
-      : null,
+      ? [
+          {
+            count: () =>
+              countRecentSends(db, {
+                kinds: DATASET_REQUESTER_CAP_KINDS,
+                email: grant.email,
+                windowMs: DATASET_REQUESTER_CAP_WINDOW_MS,
+              }),
+            max: DATASET_REQUESTER_CAP_MAX,
+          },
+          {
+            count: () =>
+              countRecentSends(db, {
+                kinds: DATASET_REQUESTER_CAP_KINDS,
+                email: grant.email,
+                windowMs: DATASET_REQUESTER_DAILY_CAP_WINDOW_MS,
+              }),
+            max: DATASET_REQUESTER_DAILY_CAP_MAX,
+          },
+        ]
+      : [],
     send
   );
 }
@@ -540,11 +554,13 @@ export async function sendDatasetAdminNoticeGated(
   return claimCountSend(
     db,
     base,
-    {
-      count: () =>
-        countRecentSends(db, { kinds: ["dataset_admin_new_request"], windowMs: DATASET_ADMIN_NOTICE_CAP_WINDOW_MS }),
-      max: DATASET_ADMIN_NOTICE_CAP_MAX,
-    },
+    [
+      {
+        count: () =>
+          countRecentSends(db, { kinds: ["dataset_admin_new_request"], windowMs: DATASET_ADMIN_NOTICE_CAP_WINDOW_MS }),
+        max: DATASET_ADMIN_NOTICE_CAP_MAX,
+      },
+    ],
     send
   );
 }

@@ -574,8 +574,7 @@ export async function checkAccessGrantEmailSendCap(email: string): Promise<{ ok:
  * address rotates its existing row (no new row, spaced by
  * `DATASET_ROTATION_COOLDOWN_MS`) and mails again, and an active address is
  * re-mailed `dataset_already_active`. `sendGrantGated` (lib/email-gate.ts) caps
- * those two mails per recipient (one shared budget of 5 per hour) once the
- * route (U3a, not built yet) sends through it.
+ * those two mails per recipient (one shared budget: 5 per hour and 10 per 24 h).
  * `email` is expected pre-normalized (lowercased/trimmed) by the caller.
  */
 export async function checkDatasetRequestEmailCap(email: string): Promise<{ ok: boolean }> {
