@@ -389,57 +389,90 @@ describe("proxy — edge gate on facility and embed pages", () => {
   });
 });
 
-describe("proxy — dataset download page /access/dataset", () => {
-  const PAGE = "/access/dataset";
+describe("proxy — token-bearing /access pages", () => {
+  const PAGES = ["/access/dataset", "/access/confirm", "/access/renew", "/access/unsubscribe"];
+  // Result pages carry no token in their URL, so they stay out of the matcher.
+  const NEARBY = [
+    "/access",
+    "/access/",
+    "/access/datasets",
+    "/access/confirmed",
+    "/access/renewed",
+    "/access/unsubscribed",
+    "/access/invalid",
+    "/access/dataset/x",
+    "/access/confirm/x",
+    "/access/renew/x",
+    "/access/unsubscribe/x",
+    "/Access/dataset",
+  ];
 
   beforeEach(() => {
     process.env.VERCEL_ENV = "production";
     process.env.EDGE_SHARED_SECRET = EDGE_SECRET;
   });
 
-  it("is matched by the literal entry and by nothing near it", () => {
-    for (const pathname of [PAGE, `${PAGE}/`]) {
-      expect(isMatched(config.matcher, pathname)).toBe(true);
+  it("is matched by the literal entries and by nothing near them", () => {
+    for (const page of PAGES) {
+      expect(isMatched(config.matcher, page)).toBe(true);
+      expect(isMatched(config.matcher, `${page}/`)).toBe(true);
     }
-    for (const pathname of ["/access", "/access/", "/access/dataset/x", "/access/datasets", "/access/confirm", "/Access/dataset"]) {
+    for (const pathname of NEARBY) {
       expect(isMatched(config.matcher, pathname)).toBe(false);
     }
     // And in isolation, so a sibling entry cannot be what makes these pass.
-    expect(isMatched(["/access/dataset"], "/access/dataset")).toBe(true);
-    expect(isMatched(["/access/dataset"], "/access")).toBe(false);
-    expect(isMatched(["/access/dataset"], "/access/dataset/x")).toBe(false);
-    expect(isMatched(["/access/dataset"], "/access/datasets")).toBe(false);
+    for (const page of PAGES) {
+      expect(isMatched([page], page)).toBe(true);
+      expect(isMatched([page], "/access")).toBe(false);
+      expect(isMatched([page], `${page}/x`)).toBe(false);
+      expect(isMatched([page], `${page}ed`)).toBe(false);
+      expect(isMatched([page], `${page}s`)).toBe(false);
+    }
   });
 
   it("403s in production without the edge header, like /data and /table", () => {
-    expect(proxy(makeRequest(PAGE)).status).toBe(403);
-    expect(proxy(makeRequest(PAGE, { edgeHeader: "wrong-secret" })).status).toBe(403);
+    for (const page of PAGES) {
+      expect(proxy(makeRequest(page)).status).toBe(403);
+      expect(proxy(makeRequest(page, { edgeHeader: "wrong-secret" })).status).toBe(403);
+    }
   });
 
   it("sets the no-store, no-referrer, noindex headers on a pass-through, query string included", () => {
-    for (const pathname of [PAGE, `${PAGE}?t=${"A".repeat(43)}`]) {
-      const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
-      expectPassThrough(response);
-      // no-transform stops Cloudflare injecting the Web Analytics beacon, which
-      // would report this URL (and its ?t= token) to a third party.
-      expect(response.headers.get("cache-control")).toBe("no-store, no-transform");
-      expect(response.headers.get("cdn-cache-control")).toBe("no-store");
-      expect(response.headers.get("referrer-policy")).toBe("no-referrer");
-      expect(response.headers.get("x-robots-tag")).toBe("noindex");
+    for (const page of PAGES) {
+      for (const pathname of [page, `${page}?t=${"A".repeat(43)}`, `${page}?token=${"A".repeat(43)}`]) {
+        const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
+        expectPassThrough(response);
+        // no-transform stops Cloudflare injecting the Web Analytics beacon, which
+        // would report this URL (and its token) to a third party.
+        expect(response.headers.get("cache-control")).toBe("no-store, no-transform");
+        expect(response.headers.get("cdn-cache-control")).toBe("no-store");
+        expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+        expect(response.headers.get("x-robots-tag")).toBe("noindex");
+      }
     }
   });
 
   it("sets the headers on the .rsc / .json variants the matcher also compiles", () => {
-    for (const pathname of [`${PAGE}.rsc`, `${PAGE}.json`]) {
-      expect(isMatched(config.matcher, pathname)).toBe(true);
-      const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
-      expect(response.headers.get("cache-control")).toBe("no-store, no-transform");
-      expect(response.headers.get("x-robots-tag")).toBe("noindex");
+    for (const page of PAGES) {
+      for (const pathname of [`${page}.rsc`, `${page}.json`]) {
+        expect(isMatched(config.matcher, pathname)).toBe(true);
+        const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
+        expect(response.headers.get("cache-control")).toBe("no-store, no-transform");
+        expect(response.headers.get("x-robots-tag")).toBe("noindex");
+      }
     }
   });
 
-  it("does not set them on /access or on another matched page", () => {
-    for (const pathname of ["/access", "/data", "/facilities/x"]) {
+  it("does not set them on /access, the result pages or another matched page", () => {
+    for (const pathname of [
+      "/access",
+      "/access/confirmed",
+      "/access/renewed",
+      "/access/unsubscribed",
+      "/access/invalid",
+      "/data",
+      "/facilities/x",
+    ]) {
       const response = proxy(makeRequest(pathname, { edgeHeader: EDGE_SECRET }));
       expect(response.headers.get("x-robots-tag")).toBeNull();
       expect(response.headers.get("referrer-policy")).toBeNull();
@@ -448,8 +481,10 @@ describe("proxy — dataset download page /access/dataset", () => {
   });
 
   it("never redirects to the admin login", () => {
-    const response = proxy(makeRequest(PAGE, { edgeHeader: EDGE_SECRET }));
-    expect(response.headers.get("location")).toBeNull();
+    for (const page of PAGES) {
+      const response = proxy(makeRequest(page, { edgeHeader: EDGE_SECRET }));
+      expect(response.headers.get("location")).toBeNull();
+    }
   });
 });
 
@@ -514,7 +549,7 @@ describe("proxy — edge gate rollout posture", () => {
 });
 
 describe("proxy — matcher scope, compiled by the installed Next", () => {
-  it("is exactly the admin and API prefixes, the three heavy pages, the dataset download page, and facility/embed pages", () => {
+  it("is exactly the admin and API prefixes, the three heavy pages, the token-bearing /access pages, and facility/embed pages", () => {
     expect(config.matcher).toEqual([
       "/admin/:path*",
       "/api/:path*",
@@ -522,6 +557,9 @@ describe("proxy — matcher scope, compiled by the installed Next", () => {
       "/data",
       "/table",
       "/access/dataset",
+      "/access/confirm",
+      "/access/renew",
+      "/access/unsubscribe",
       "/facilities/:path*",
       "/embed/:path*",
     ]);
