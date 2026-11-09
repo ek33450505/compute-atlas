@@ -123,6 +123,15 @@ export default function DataPage() {
           </a>
           ).
         </blockquote>
+        {isDatasetSharingEnabled() && (
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Need the full dataset for reporting or research?{" "}
+            <Link href="/access?from=data" className={LINK_CLASS}>
+              Request access
+            </Link>
+            .
+          </p>
+        )}
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           Link www.compute-atlas.com, Compute Atlas&apos;s home. Say if you changed
           anything (for example, filtered or joined the records). Compute Atlas is
@@ -142,15 +151,6 @@ export default function DataPage() {
           Each record lists its own public sources. Cite those directly when a claim
           depends on them.
         </p>
-        {isDatasetSharingEnabled() && (
-          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Need the full dataset for reporting or research?{" "}
-            <Link href="/access?from=data" className={LINK_CLASS}>
-              Request access
-            </Link>
-            .
-          </p>
-        )}
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           If it saved you time,{" "}
           <Link href="/support" className={LINK_CLASS}>
