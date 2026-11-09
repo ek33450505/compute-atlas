@@ -79,7 +79,8 @@ const senders: Array<[string, () => Promise<unknown>, string]> = [
   ],
   [
     "edition notice",
-    () => sendDatasetEditionNoticeEmail({ email: "a@b.test", editionDate: "2026-12-01", unsubscribeToken: TOKEN }),
+    () =>
+      sendDatasetEditionNoticeEmail({ email: "a@b.test", editionDate: "2026-12-01", unsubscribeToken: TOKEN, recordCount: 10 }),
     "a@b.test",
   ],
 ];
@@ -134,7 +135,7 @@ describe("dataset sender payloads", () => {
   });
 
   it("edition notice: both List-Unsubscribe headers and no access link", async () => {
-    await sendDatasetEditionNoticeEmail({ email: "a@b.test", editionDate: "2026-12-01", unsubscribeToken: TOKEN });
+    await sendDatasetEditionNoticeEmail({ email: "a@b.test", editionDate: "2026-12-01", unsubscribeToken: TOKEN, recordCount: 10 });
     const p = payload();
     const url = `https://example.test/api/dataset/unsubscribe?token=${ENCODED}`;
     expect(p.headers).toEqual({
@@ -144,5 +145,20 @@ describe("dataset sender payloads", () => {
     expect(p.text).toContain(url);
     expect(p.html).toContain(url); // header URL === body URL
     expect(p.text + p.html).not.toMatch(/\/access\/dataset|\?t=/);
+  });
+
+  it("edition notice: record count and summary reach the body, escaped in html", async () => {
+    await sendDatasetEditionNoticeEmail({
+      email: "a@b.test",
+      editionDate: "2026-12-08",
+      unsubscribeToken: TOKEN,
+      recordCount: 2300,
+      summary: { added: 1, updated: 2, removed: 3, headlines: ["<b>Zeta</b> now operational"] },
+    });
+    const p = payload();
+    expect(p.text).toContain("+1 added, 2 updated, 3 removed");
+    expect(p.text).toContain("2,300 records");
+    expect(p.html).toContain("&lt;b&gt;Zeta&lt;/b&gt; now operational");
+    expect(p.html).not.toContain("<b>Zeta");
   });
 });

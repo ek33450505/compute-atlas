@@ -18,9 +18,19 @@ vi.mock("@/lib/dataset-grants", async (importOriginal) => {
   return { ...original, expireDueGrants: vi.fn(original.expireDueGrants) };
 });
 
+vi.mock("@/lib/dataset-notices", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/lib/dataset-notices")>();
+  return {
+    ...original,
+    sendEditionNotices: vi.fn(original.sendEditionNotices),
+    sendRenewalReminders: vi.fn(original.sendRenewalReminders),
+  };
+});
+
 import * as dbClient from "@/lib/db/client";
 import { DATASET_EDITION_FILES, DatasetBlobError, deleteEditionPrefix, putEditionFile } from "@/lib/dataset-blob";
 import { expireDueGrants } from "@/lib/dataset-grants";
+import { sendEditionNotices, sendRenewalReminders, type NoticeResult } from "@/lib/dataset-notices";
 import { buildEdition } from "@/lib/dataset-edition-builder";
 import { latestPublishedEdition } from "@/lib/dataset-editions";
 import type { SnapshotSource } from "@/lib/dataset-snapshot";
@@ -93,6 +103,7 @@ beforeEach(async () => {
   // buildEdition fails fast without Blob credentials; the Blob wrapper itself is mocked below.
   vi.stubEnv("BLOB_READ_WRITE_TOKEN", "test-token");
   vi.stubEnv("BLOB_STORE_ID", "");
+  vi.stubEnv("DATASET_SHARING_ENABLED", "true");
   puts = [];
   vi.mocked(putEditionFile).mockReset();
   vi.mocked(putEditionFile).mockImplementation(async (date, name, body) => {
@@ -102,6 +113,8 @@ beforeEach(async () => {
   vi.mocked(deleteEditionPrefix).mockReset();
   vi.mocked(deleteEditionPrefix).mockResolvedValue(0);
   vi.mocked(expireDueGrants).mockClear();
+  vi.mocked(sendEditionNotices).mockClear();
+  vi.mocked(sendRenewalReminders).mockClear();
   errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
   warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 });
@@ -558,5 +571,209 @@ describe("buildEdition post-publish", () => {
     expect(errorSpy).toHaveBeenCalledWith("dataset edition: prune failed (code: blob_delete_failed)");
     const oldest = (await allEditions()).find((r) => r.editionDate === "2026-10-01")!;
     expect(oldest.files).toHaveLength(1);
+  });
+});
+
+describe("buildEdition notices and reminders", () => {
+  const result = (over: Partial<NoticeResult> = {}): NoticeResult => ({
+    claimed: 0,
+    sent: 0,
+    skipped: 0,
+    failed: 0,
+    complete: true,
+    ...over,
+  });
+  const cut = () => result({ complete: false });
+
+  it("after a publish: the expiry housekeeping, then reminders, then notices for the NEW edition", async () => {
+    const res = await buildEdition({ now: NOW, source: makeSource(), floors });
+    expect(res.outcome).toBe("published");
+    const { editionId } = res as { editionId: string };
+
+    expect(sendEditionNotices).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(sendEditionNotices).mock.calls[0][0]).toBe(editionId);
+    expect(sendRenewalReminders).toHaveBeenCalledTimes(1);
+    const order = (fn: unknown) => vi.mocked(fn as never as typeof sendEditionNotices).mock.invocationCallOrder[0];
+    expect(order(expireDueGrants)).toBeLessThan(order(sendRenewalReminders));
+    expect(order(sendRenewalReminders)).toBeLessThan(order(sendEditionNotices));
+  });
+
+  it("gives both passes the SAME pacer (one per build), so the first notice waits after the last reminder", async () => {
+    await buildEdition({ now: NOW, source: makeSource(), floors });
+
+    const reminderPacer = vi.mocked(sendRenewalReminders).mock.calls[0][0]?.pacer;
+    const noticePacer = vi.mocked(sendEditionNotices).mock.calls[0][1]?.pacer;
+    expect(reminderPacer).toBeTypeOf("function");
+    expect(noticePacer).toBe(reminderPacer);
+  });
+
+  it("reports how the notice pass ended: complete and sent on a published build", async () => {
+    vi.mocked(sendEditionNotices).mockResolvedValueOnce(result({ sent: 7 }));
+    expect(await buildEdition({ now: NOW, source: makeSource(), floors })).toMatchObject({
+      outcome: "published",
+      notices: { complete: true, sent: 7 },
+    });
+  });
+
+  it("reports an incomplete pass (cut short, threw, or budget spent) as notices.complete false", async () => {
+    vi.mocked(sendEditionNotices).mockResolvedValueOnce(cut());
+    expect(await buildEdition({ now: NOW, source: makeSource(), floors })).toMatchObject({ notices: { complete: false, sent: 0 } });
+
+    await tdb.reset();
+    vi.mocked(sendEditionNotices).mockRejectedValueOnce(new Error("boom"));
+    expect(await buildEdition({ now: NOW, source: makeSource(), floors })).toMatchObject({ notices: { complete: false, sent: 0 } });
+  });
+
+  it("sends no mail at all while DATASET_SHARING_ENABLED is off, but still publishes and housekeeps", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "false");
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+
+    const res = await buildEdition({ now: NOW, source: makeSource(), floors });
+
+    expect(res.outcome).toBe("published");
+    expect(res).not.toHaveProperty("notices");
+    expect(sendEditionNotices).not.toHaveBeenCalled();
+    expect(sendRenewalReminders).not.toHaveBeenCalled();
+    expect(expireDueGrants).toHaveBeenCalledTimes(1);
+    expect(infoSpy.mock.calls.filter(([m]) => String(m).includes("mail skipped"))).toHaveLength(1);
+    infoSpy.mockRestore();
+  });
+
+  it("gives them the remainder of a 240 s budget measured from the start of the build", async () => {
+    let clock = 1_000_000_000;
+    vi.spyOn(Date, "now").mockImplementation(() => clock);
+    vi.mocked(sendRenewalReminders).mockImplementationOnce(async () => {
+      clock += 100_000;
+      return result();
+    });
+
+    await buildEdition({ now: NOW, source: makeSource(), floors });
+
+    expect(vi.mocked(sendRenewalReminders).mock.calls[0][0]).toMatchObject({ deadlineMs: 240_000 });
+    expect(vi.mocked(sendEditionNotices).mock.calls[0][1]).toMatchObject({ deadlineMs: 140_000 });
+  });
+
+  it("skips the notices when the reminders used the whole budget, and still publishes and housekeeps", async () => {
+    let clock = 1_000_000_000;
+    vi.spyOn(Date, "now").mockImplementation(() => clock);
+    vi.mocked(sendRenewalReminders).mockImplementationOnce(async () => {
+      clock += 250_000;
+      return cut();
+    });
+
+    const res = await buildEdition({ now: NOW, source: makeSource(), floors });
+
+    expect(res).toMatchObject({ outcome: "published", notices: { complete: false, sent: 0 } });
+    expect(sendEditionNotices).not.toHaveBeenCalled();
+    expect(expireDueGrants).toHaveBeenCalledTimes(1);
+  });
+
+  it("a notices failure never changes the outcome: logged as a code, housekeeping already ran, it goes first", async () => {
+    vi.mocked(sendEditionNotices).mockRejectedValueOnce(Object.assign(new Error("secret@example.com"), { code: "ECONNREFUSED" }));
+
+    const res = await buildEdition({ now: NOW, source: makeSource(), floors });
+
+    expect(res).toMatchObject({ outcome: "published", recordCount: 2 });
+    expect(errorSpy).toHaveBeenCalledWith("dataset edition: notices failed (code: ECONNREFUSED)");
+    expect(errorSpy.mock.calls.flat().join(" ")).not.toContain("secret@example.com");
+    expect(sendRenewalReminders).toHaveBeenCalledTimes(1);
+    expect(expireDueGrants).toHaveBeenCalledTimes(1);
+    expect((await allEditions())[0].status).toBe("published");
+  });
+
+  it("a reminders failure never changes the outcome either, and the notices still run", async () => {
+    vi.mocked(sendRenewalReminders).mockRejectedValueOnce(new Error("boom"));
+    const res = await buildEdition({ now: NOW, source: makeSource(), floors });
+    expect(res.outcome).toBe("published");
+    expect(errorSpy).toHaveBeenCalledWith("dataset edition: reminders failed (code: unknown)");
+    expect(sendEditionNotices).toHaveBeenCalledTimes(1);
+    expect(expireDueGrants).toHaveBeenCalledTimes(1);
+  });
+
+  it("a failed build sends nothing", async () => {
+    const source: SnapshotSource = {
+      ...makeSource(),
+      facilities: async () => {
+        throw new Error("nope");
+      },
+    };
+    expect((await buildEdition({ now: NOW, source, floors })).outcome).toBe("failed");
+    expect(sendEditionNotices).not.toHaveBeenCalled();
+    expect(sendRenewalReminders).not.toHaveBeenCalled();
+  });
+
+  describe("resume on a same-day rerun", () => {
+    it("alreadyPublished + newest + noticeSentAt null: the notices (and reminders) run again for that edition", async () => {
+      vi.mocked(sendEditionNotices).mockResolvedValueOnce(cut());
+      const first = (await buildEdition({ now: NOW, source: makeSource(), floors })) as { editionId: string };
+      expect((await allEditions())[0].noticeSentAt).toBeNull();
+      vi.mocked(sendEditionNotices).mockClear();
+      vi.mocked(sendRenewalReminders).mockClear();
+      puts = [];
+
+      const second = await buildEdition({ now: NOW, source: makeSource(), floors });
+
+      expect(second).toMatchObject({ outcome: "alreadyPublished", editionId: first.editionId, notices: { complete: true } });
+      expect(vi.mocked(sendEditionNotices).mock.calls.map(([id]) => id)).toEqual([first.editionId]);
+      expect(sendRenewalReminders).toHaveBeenCalledTimes(1);
+      expect(puts).toEqual([]);
+      // The real function ran with no grants: it completed and marked the edition.
+      expect((await allEditions())[0].noticeSentAt).toBeInstanceOf(Date);
+    });
+
+    it("does not resend once noticeSentAt is set", async () => {
+      await buildEdition({ now: NOW, source: makeSource(), floors });
+      expect((await allEditions())[0].noticeSentAt).toBeInstanceOf(Date);
+      vi.mocked(sendEditionNotices).mockClear();
+      vi.mocked(sendRenewalReminders).mockClear();
+
+      const again = await buildEdition({ now: NOW, source: makeSource(), floors });
+      expect(again.outcome).toBe("alreadyPublished");
+      expect(again).not.toHaveProperty("notices");
+      expect(sendEditionNotices).not.toHaveBeenCalled();
+      expect(sendRenewalReminders).not.toHaveBeenCalled();
+    });
+
+    it("a resume while sharing is disabled sends nothing and leaves the edition unmarked", async () => {
+      vi.mocked(sendEditionNotices).mockResolvedValueOnce(cut());
+      await buildEdition({ now: NOW, source: makeSource(), floors });
+      vi.mocked(sendEditionNotices).mockClear();
+      vi.mocked(sendRenewalReminders).mockClear();
+      vi.stubEnv("DATASET_SHARING_ENABLED", "false");
+      vi.spyOn(console, "info").mockImplementation(() => {});
+
+      expect((await buildEdition({ now: NOW, source: makeSource(), floors })).outcome).toBe("alreadyPublished");
+      expect(sendEditionNotices).not.toHaveBeenCalled();
+      expect(sendRenewalReminders).not.toHaveBeenCalled();
+      expect((await allEditions())[0].noticeSentAt).toBeNull();
+    });
+
+    it("does not resume an edition that a newer published edition has superseded", async () => {
+      vi.mocked(sendEditionNotices).mockResolvedValueOnce(cut());
+      await buildEdition({ now: NOW, source: makeSource(), floors });
+      await tdb.db.insert(datasetEditionsTable).values({ editionDate: "2026-11-10", status: "published" });
+      vi.mocked(sendEditionNotices).mockClear();
+
+      expect((await buildEdition({ now: NOW, source: makeSource(), floors })).outcome).toBe("alreadyPublished");
+      expect(sendEditionNotices).not.toHaveBeenCalled();
+    });
+
+    it("an inProgress claim never sends", async () => {
+      await tdb.db
+        .insert(datasetEditionsTable)
+        .values({ editionDate: "2026-11-09", builtAt: new Date(NOW.getTime() - 5 * MIN), status: "building" });
+      expect((await buildEdition({ now: NOW, source: makeSource(), floors })).outcome).toBe("inProgress");
+      expect(sendEditionNotices).not.toHaveBeenCalled();
+    });
+
+    it("a resume failure is contained: the outcome stays alreadyPublished", async () => {
+      vi.mocked(sendEditionNotices).mockResolvedValueOnce(cut());
+      await buildEdition({ now: NOW, source: makeSource(), floors });
+      vi.mocked(sendEditionNotices).mockRejectedValueOnce(new Error("x"));
+
+      const res = await buildEdition({ now: NOW, source: makeSource(), floors });
+      expect(res.outcome).toBe("alreadyPublished");
+      expect(errorSpy).toHaveBeenCalledWith("dataset edition: notices failed (code: unknown)");
+    });
   });
 });

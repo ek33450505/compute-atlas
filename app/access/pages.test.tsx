@@ -38,6 +38,16 @@ describe("/access", () => {
     expect(screen.getByRole("button", { name: /request access/i })).toBeInTheDocument();
   });
 
+  it("explains why requests are reviewed by hand when enabled", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(<AccessPage />);
+    expect(
+      screen.getByText(
+        "Each request is reviewed by hand, so the full dataset goes to people who use it, not to crawlers or automated scrapers.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it.each([["false"], [undefined]])("shows the not-open copy, no form and no terms, when the flag is %s", (value) => {
     if (value === undefined) vi.stubEnv("DATASET_SHARING_ENABLED", "");
     else vi.stubEnv("DATASET_SHARING_ENABLED", value);
@@ -49,6 +59,7 @@ describe("/access", () => {
     expect(screen.queryByRole("button", { name: /request access/i })).not.toBeInTheDocument();
     expect(screen.queryByText(/terms version/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/bulk|paus/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/reviewed by hand/i)).not.toBeInTheDocument();
   });
 
   it("is indexable with /access as canonical when the flag is on", () => {

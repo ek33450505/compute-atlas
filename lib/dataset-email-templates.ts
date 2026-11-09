@@ -1,5 +1,6 @@
 import { escapeHtml } from "@/lib/html-escape";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
+import { DATASET_LICENSE_URL } from "@/lib/site";
 
 /**
  * Pure builders for the dataset-sharing emails: each returns the complete `{ subject, text, html }` and reads
@@ -254,22 +255,63 @@ export function buildDatasetRenewalReminderEmail(input: {
   return { subject, text, html };
 }
 
-/** Carries the unsubscribe URL it built, so the sender's `List-Unsubscribe` header is the same value as the body link. */
+const EDITION_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const NOTICE_MAX_HEADLINES = 10;
+const NOTICE_HEADLINE_MAX_CODE_POINTS = 200;
+
+/**
+ * Carries the unsubscribe URL it built, so the sender's `List-Unsubscribe` header is the same value as the body link.
+ * `summary` is absent for the initial edition (there is nothing to compare against), which drops the counts line and
+ * the list. Headlines are facility names and status values from the database: escaped in the html, and collapsed to
+ * one line in the text so one cannot forge a line. The notice carries no personal link (the reader's existing link
+ * already serves the new edition); a lost link is recovered through /contact.
+ */
 export function buildDatasetEditionNoticeEmail(input: {
   siteUrl: string;
   editionDate: string;
   unsubscribeToken: string;
+  recordCount: number | null;
+  summary?: { added: number; updated: number; removed: number; headlines: string[] };
 }): DatasetEmail & { unsubscribeUrl: string } {
+  if (!EDITION_DATE_RE.test(input.editionDate)) throw new Error("buildDatasetEditionNoticeEmail: bad edition date");
   const unsubUrl = `${input.siteUrl}/api/dataset/unsubscribe?token=${encodeURIComponent(input.unsubscribeToken)}`;
+  const contactUrl = `${input.siteUrl}/contact`;
   const subject = "A new edition of the Compute Atlas dataset";
+  const intro = `A new edition of the Compute Atlas dataset is available. Your current personal link (from your approval email, or from the most recent new-link email if one was issued) now serves the edition of ${input.editionDate}.`;
+  const countLine = input.recordCount === null ? null : `This edition has ${input.recordCount.toLocaleString("en-US")} records.`;
+  const changesLine = input.summary
+    ? `Since the previous edition: +${input.summary.added} added, ${input.summary.updated} updated, ${input.summary.removed} removed.`
+    : null;
+  const headlines = (input.summary?.headlines ?? [])
+    .slice(0, NOTICE_MAX_HEADLINES)
+    .map((h) => truncateCodePoints(singleLine(h), NOTICE_HEADLINE_MAX_CODE_POINTS));
+  const attribution = `Attribution is required. Data from Compute Atlas by Edward Kubiak (${input.siteUrl}), licensed under CC BY 4.0 (${DATASET_LICENSE_URL}).`;
+  const lost = "Lost your link? Request a new one:";
+  const footer = "You receive this notice because you hold dataset access.";
+
   const text = [
-    `A new edition of the Compute Atlas dataset is available. Your current personal link (from your approval email, or from the most recent new-link email if one was issued) now serves the edition of ${input.editionDate}.`,
+    intro,
     "",
-    `You receive this notice because you hold dataset access. Unsubscribe from edition notices: ${unsubUrl}`,
+    ...(countLine ? [countLine] : []),
+    ...(changesLine ? [changesLine] : []),
+    ...(headlines.length > 0 ? ["", ...headlines.map((h) => `- ${h}`)] : []),
+    "",
+    attribution,
+    "",
+    `${lost} ${contactUrl}`,
+    "",
+    `${footer} Unsubscribe from edition notices: ${unsubUrl}`,
   ].join("\n");
   const html = paragraphs(
-    `A new edition of the Compute Atlas dataset is available. Your current personal link (from your approval email, or from the most recent new-link email if one was issued) now serves the edition of ${escapeHtml(input.editionDate)}.`,
-    `<span style="color:#666;font-size:0.85em;">You receive this notice because you hold dataset access. <a href="${escapeHtml(unsubUrl)}">Unsubscribe from edition notices</a></span>`,
-  );
+    escapeHtml(intro),
+    ...(countLine ? [escapeHtml(countLine)] : []),
+    ...(changesLine ? [escapeHtml(changesLine)] : []),
+  ) +
+    (headlines.length > 0 ? `<ul>${headlines.map((h) => `<li>${escapeHtml(h)}</li>`).join("")}</ul>` : "") +
+    paragraphs(
+      escapeHtml(attribution),
+      `${lost} <a href="${escapeHtml(contactUrl)}">${escapeHtml(contactUrl)}</a>`,
+      `<span style="color:#666;font-size:0.85em;">${footer} <a href="${escapeHtml(unsubUrl)}">Unsubscribe from edition notices</a></span>`,
+    );
   return { subject, text, html, unsubscribeUrl: unsubUrl };
 }

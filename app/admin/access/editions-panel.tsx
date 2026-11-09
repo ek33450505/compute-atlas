@@ -89,7 +89,37 @@ function describeBuild(result: Awaited<ReturnType<typeof buildEditionNowAction>>
   }
 }
 
-export function EditionsPanel({ editions }: { editions: AdminDatasetEdition[] }) {
+/** Notice state of one edition. "Incomplete" is text, not colour, and only the newest published row hints at the fix. */
+function NoticeStatus({
+  edition,
+  resumable,
+  mailEnabled,
+}: {
+  edition: AdminDatasetEdition;
+  resumable: boolean;
+  mailEnabled: boolean;
+}) {
+  if (edition.status !== "published") return <>—</>;
+  if (edition.noticeSentAt) {
+    return (
+      <>
+        Sent <time dateTime={edition.noticeSentAt.toISOString()}>{formatTime(edition.noticeSentAt)}</time>
+      </>
+    );
+  }
+  return (
+    <>
+      Incomplete
+      {resumable ? (
+        <span className="block text-xs text-muted-foreground">
+          {mailEnabled ? "Build now resumes them" : "Notices are paused while dataset sharing is off."}
+        </span>
+      ) : null}
+    </>
+  );
+}
+
+export function EditionsPanel({ editions, mailEnabled }: { editions: AdminDatasetEdition[]; mailEnabled: boolean }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const { state, report, headingRef } = useResultReporter();
@@ -111,6 +141,9 @@ export function EditionsPanel({ editions }: { editions: AdminDatasetEdition[] })
       router.refresh();
     });
   }
+
+  // The list is newest first, so the first published row is the edition a same-day "Build now" would resume.
+  const newestPublishedId = editions.find((edition) => edition.status === "published")?.id;
 
   return (
     <section aria-labelledby="editions-heading" className="flex flex-col gap-3">
@@ -153,6 +186,7 @@ export function EditionsPanel({ editions }: { editions: AdminDatasetEdition[] })
               <TableHead scope="col" className="text-right tabular-nums">Records</TableHead>
               <TableHead scope="col" className="text-right tabular-nums">Files</TableHead>
               <TableHead scope="col" className="text-right tabular-nums">Changes</TableHead>
+              <TableHead scope="col">Notices</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -168,6 +202,9 @@ export function EditionsPanel({ editions }: { editions: AdminDatasetEdition[] })
                 <TableCell className="text-right tabular-nums">{edition.recordCount ?? "—"}</TableCell>
                 <TableCell className="text-right tabular-nums">{filesSummary(edition.files)}</TableCell>
                 <TableCell className="text-right tabular-nums">{changesSummary(edition.changes)}</TableCell>
+                <TableCell>
+                  <NoticeStatus edition={edition} resumable={edition.id === newestPublishedId} mailEnabled={mailEnabled} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

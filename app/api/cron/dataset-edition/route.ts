@@ -54,6 +54,10 @@ export async function GET(request: Request): Promise<Response> {
   if (result.outcome !== "published") {
     console.info(`dataset edition cron: ${result.outcome} ${result.editionDate}`);
   }
+  // A cut-short notice pass is only finished by a same-day "Build now"; this line is how it gets noticed.
+  if (result.notices && !result.notices.complete) {
+    console.error(`dataset edition cron: notices incomplete ${result.editionDate} (sent: ${result.notices.sent})`);
+  }
   return jsonResponse({
     ok: true,
     outcome: result.outcome,

@@ -44,6 +44,7 @@
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
     "db:sync": "tsx --env-file=.env.local scripts/sync-to-neon.ts",
     "db:export": "tsx --env-file=.env.local scripts/export.ts",
+    "dataset:trace": "tsx --env-file=.env.local scripts/dataset-trace.ts",
     "retention:prune": "tsx --env-file=.env.local scripts/retention-prune.ts",
     "submissions": "tsx --env-file=.env.local scripts/submissions.ts",
     "email-sends": "tsx --env-file=.env.local scripts/email-sends.ts",

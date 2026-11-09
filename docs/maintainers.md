@@ -149,6 +149,9 @@ See `.env.example`.
 | `API_ADMIN_TOKEN_SALT` | PBKDF2 salt for the admin-UI password login (`app/admin/login/actions.ts`). Required — login fails closed, rejecting every attempt, if unset |
 | `CONTRIBUTE_IP_SALT` | Salt for hashing submitter IPs for public-contribution rate limiting. **Required in production** — `hashIp()` throws on Vercel production rather than hash with the repo-public default; dev, tests and previews fall back to it. Since 2026-09-27 it has a second consumer: `lib/subscribe-consent.ts` derives the subscribe-consent cookie's HMAC key from it, under its own key domain. Rotating it invalidates every stored IP hash **and** every outstanding consent cookie. Since the email-send ledger it also salts every `email_sends` address hash (`hashAddress` calls `hashNotifyEmail`, the same function as the notify-email hashes), so rotation makes past ledger rows unfindable by address. The CLI and `/admin/email-sends` print only an 8-character hash prefix, never the address |
 | `EDGE_SHARED_SECRET` | Shared secret proving a request actually traversed Cloudflare: a Transform Rule injects it as `x-edge-shared-secret` and `proxy.ts` compares digests. **Fails closed on production since 2026-10-15**: unset or empty 403s every matched path (`/admin`, `/api` except `/api/cron/*`, `/map`, `/data`, `/table`, `/facilities/*`, `/embed/*`). Checked only when `VERCEL_ENV === "production"`; `/api/cron/*` is exempt unconditionally. There is no safe two-step rotation — see §9 below |
+| `DATASET_SHARING_ENABLED` | Kill switch for approved-access dataset sharing. Only the exact string `"true"` enables it; unset is dark. Redeploy after a change. See "Approved-access dataset sharing" |
+| `DATASET_WATERMARK_SECRET` | Key for the per-grant watermark. At least 32 characters after trimming. **Never rotate it**: every shipped edition's grant order depends on it |
+| `BLOB_READ_WRITE_TOKEN`, `BLOB_STORE_ID` | Private Vercel Blob store for edition files: either the token, or OIDC with `BLOB_STORE_ID`. Keep the token in `.env.local` for local runs |
 
 ✅ **The monthly state digest is LIVE as of 2026-09-14** (Ed's decision). Both switches that
 held it off are flipped: `vercel.json` carries
@@ -546,6 +549,145 @@ immediate, bust `"facilities"` via the admin `POST /api/revalidate`, then purge 
 `purge_everything` (purge-by-URL does not evict here; see CLAUDE.md). Existing county and metro
 subscriptions are kept, not mailed: while the switch is off the monthly digest reads only state rows
 and logs one info line per run. Turning it back on is the same change in reverse.
+
+## Approved-access dataset sharing
+
+The lane is dark until `DATASET_SHARING_ENABLED` is exactly `"true"` (`lib/dataset-flag.ts`). Access is
+free, and Ed approves every grant by hand in `/admin/access`. It is the only sanctioned file route: public
+bulk download, bulk API and per-record JSON stay closed, and every file is watermarked to one grant.
+
+Flow: `/access` request form → `/access/confirm` (the verify step is a form POST to
+`/api/access/confirm`, so a mail scanner's GET prefetch cannot confirm) → `pending_review` → approve or
+reject in `/admin/access` → approval mail with the personal link `/access/dataset?t=…` → weekly edition
+(`vercel.json`) → downloads from `/api/dataset/file` → weekly notice mail → renewal reminders → one-click
+unsubscribe at `/api/dataset/unsubscribe`. A grant runs 365 days (`DATASET_GRANT_TERM_MS`,
+`lib/dataset-grants.ts`).
+
+### Kill switch and redeploy
+
+- Unset `DATASET_SHARING_ENABLED` (any value but `"true"` is also off) and redeploy with
+  `npx vercel redeploy --target production <url>`. Vercel applies env changes to new deployments only.
+- `/access`, `/data` and `/contact` read the flag at build time (`app/access/page.tsx` says so; `/data` and
+  `/contact` show the "Request access" link only when it is on), so a flip takes effect with the redeploy's
+  build; ISR revalidation alone never picks it up, because the old deployment never sees the new value. The
+  `/access/*` token pages are dynamic and read it per request, except the unsubscribe pages
+  (`/access/unsubscribe`, `/access/unsubscribed`), which never read it so an opt-out works with the flag off.
+- With the flag off:
+  - the cron route returns `skipped: disabled` and builds nothing (`app/api/cron/dataset-edition/route.ts`);
+  - admin "Build now" still builds an edition, but sends no mail (`sendScheduledMail` in
+    `lib/dataset-edition-builder.ts`);
+  - `/access` renders a noindexed "not open yet" page (`app/access/page.tsx`, `app/access/not-open.tsx`);
+  - `/api/dataset/unsubscribe` keeps working, because it does not check the flag. An opt-out must not depend
+    on a switch.
+
+### Blob store and secrets
+
+- Edition files live in a **private** Vercel Blob store (`lib/dataset-blob.ts`). Auth is either
+  `BLOB_READ_WRITE_TOKEN`, or OIDC with `BLOB_STORE_ID`. Keep `BLOB_READ_WRITE_TOKEN` set in
+  `.env.local` for local runs: without it the SDK's OIDC path reads the Vercel CLI's stored login
+  (`node_modules/@vercel/oidc/dist/token.js`).
+- `DATASET_WATERMARK_SECRET` must be at least 32 characters after trimming whitespace
+  (`lib/dataset-download.ts`, `MIN_WATERMARK_SECRET_LENGTH`). If it is missing or short, the two record
+  files are refused with a 503, never served unmarked.
+- **Never rotate `DATASET_WATERMARK_SECRET`, and never change the algorithm in
+  `lib/dataset-watermark.ts`.** The grant order is recomputed from the secret when a leak is traced. A new
+  secret or algorithm makes every shipped edition untraceable.
+- The watermark is a row-order permutation of `facilities.json` and `facilities.csv`. It is a design
+  limit that re-sorting a leaked file removes it: `scripts/dataset-trace.ts` measured a re-sorted file at
+  about 0.02 for every grant. `siting-context.json`, `changelog.json` and `README.txt` are not watermarked.
+- `CRON_SECRET` must have no surrounding whitespace in Vercel. The presented bearer is trimmed; the stored
+  secret is compared exactly (`lib/cron-auth.ts`).
+
+### Cron, builds and the Resend cap
+
+- The edition cron is `0 14 * * 6`: Saturday 14:00 UTC, `/api/cron/dataset-edition` (`vercel.json`).
+  The route and the `/admin/access` page both set `maxDuration = 300`. The route's own comment calls 300 s
+  the Pro-plan ceiling, so confirm the project's Vercel plan still allows it.
+- The cron ignores the 5-minute retry cooldown, but the schedule fires once a week and nothing reruns a
+  failed build. After a failed Saturday build, run **Build now** in `/admin/access`.
+- After a build, renewal reminders are sent first, then the weekly notice, paced 600 ms apart with a 240 s
+  budget and a 20 s timeout per send (`lib/dataset-notices.ts`).
+- **Resend Free allows 100 mails a day across all mail**, including verify, admin, approval, reminder and
+  notice mail. The notice file's own estimate is that with more than about 80 live grantees, some notices
+  hit the daily cap. A failed notice is not retried (the send is claimed first), so that grantee misses that
+  week's notice. Upgrading the Resend plan removes the ceiling; no code change is needed.
+- A notice pass cut short by the budget, or by a database error, shows **Incomplete** in the Editions panel.
+  **Build now** the same day, while that edition is still the newest published one, resumes it. Only
+  grantees not yet claimed are mailed.
+
+### Reviewing requests, reissue, revoke, extend
+
+- Approve or reject a request, or a renewal, in `/admin/access`. Approval mails the personal link. A renewal
+  approval sends no mail.
+- **Reissue** mails a new link and makes the old one stop working. Each grant has a 10-minute cooldown
+  (`DATASET_REISSUE_COOLDOWN_MS`, `lib/dataset-admin.ts`).
+- **Revoke** makes the link stop working and sends no mail (Ed, 2026-11-09: there is no revoke notice).
+- **Extend** gives a fresh 365-day term (`DATASET_GRANT_TERM_MS`, `lib/dataset-grants.ts`) and sends no mail.
+
+### Retention
+
+The retention periods are quoted to requesters in `DATASET_PRIVACY_NOTICE` (`lib/dataset-terms.ts`), and
+the `DATASET_*_RETENTION_DAYS` constants in `scripts/retention-prune.ts` implement them. Change the notice
+and the constants together. Summary:
+
+| Data | Kept for |
+|---|---|
+| Unverified requests | 7 days |
+| Rejected requests | 180 days after review |
+| Revoked or expired grants, with their download rows | 365 days after revocation or expiry |
+| Hashed IP on a request | cleared 90 days after review |
+| Download rows | 365 days |
+| Hashed IP on a download row | cleared 90 days after the download |
+| Email send log (`email_sends`) | 180 days |
+
+- The prune runs in the discovery lane (`scripts/discovery/run.sh`, `retention-prune.ts --apply`), which
+  runs Mon/Wed/Fri at 13:00 local, and only when `DISCOVERY_ENABLED=true` (`run.sh` exits before any lane
+  otherwise). A deletion lands on the first run that reaches the prune step after its period: up to 3 days
+  late when runs complete, later if a run exits early (e.g. a config check in `run.sh`).
+- ⚠️ **Deleted rows are copied, not destroyed.** Before each deletion the prune writes the candidate rows as
+  JSON lines to `discovery-logs/retention-backups/` (`appendBackup` in `scripts/retention-prune.ts`). The
+  dataset steps go through the same path, so those copies can include request emails and names. Nothing in
+  the repo deletes the backup files, so they outlive the periods above. This is an open question for Ed,
+  not a settled decision: until it is decided, the backup directory's own retention is not covered by the
+  privacy notice.
+- A download-log write failure does not block the download. The log fails **open** (`lib/dataset-download.ts`).
+- Per-address mail caps: `lib/email-gate.ts`, with the limits in `lib/email-sends.ts`.
+- Both the terms and the privacy notice are **DRAFT, pending lawyer review** (Ed-gated op O6).
+
+### Tracing a leaked file
+
+```bash
+npm run dataset:trace -- <file> --edition <YYYY-MM-DD|uuid>
+```
+
+`scripts/dataset-trace.ts` ranks each grant by how closely the file's row order matches that grant's
+watermark. It needs `DATABASE_URL`, `DATASET_WATERMARK_SECRET` and the Blob env in `.env.local`. It is
+read-only: the only database access is `select`. A score is evidence for a person to review, not proof.
+A re-sorted file scores near zero for every grant (see the watermark limit above).
+
+### Rollback SQL
+
+Run in this order, children first. This deletes every grant, edition and download record. It does not
+remove Blob objects. To stop the lane, use the kill switch, not this SQL.
+
+```sql
+DROP TABLE dataset_downloads;
+DROP TABLE dataset_editions;
+DROP TABLE dataset_access_grants;
+```
+
+`dataset_downloads` references both other tables, so it goes first. Migration `drizzle/0020_dataset_sharing_tables.sql`
+creates the three tables.
+
+### Production checks (O8)
+
+Run these after a deploy with the flag on:
+
+- `curl -s 'https://<prod>/access/dataset?t=x' | grep -c cloudflareinsights` must print `0`. The token pages
+  send `Cache-Control: no-store, no-transform` (`proxy.ts`), so Cloudflare does not inject its analytics
+  beacon, which would report the token-bearing URL.
+- One real download of `facilities.json` (6.6–8.8 MB, above Vercel's 4.5 MB non-streamed limit, so the
+  route streams it; see `lib/dataset-download.ts`) must complete.
 
 ## Caching, briefly
 

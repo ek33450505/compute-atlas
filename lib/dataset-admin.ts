@@ -217,6 +217,8 @@ export type AdminDatasetEdition = {
   builtAt: Date;
   status: DatasetEditionStatus;
   recordCount: number | null;
+  /** Set only when the weekly notice loop finished for this edition; null while it is cut short or not yet run. */
+  noticeSentAt: Date | null;
   files: { name: string; bytes: number }[];
   /** Null when the edition has no (or a malformed) changelog summary. */
   changes: { added: number; updated: number; removed: number } | null;
@@ -260,6 +262,7 @@ export async function listRecentEditions(limit: number = ADMIN_EDITIONS_LIMIT): 
       builtAt: datasetEditionsTable.builtAt,
       status: datasetEditionsTable.status,
       recordCount: datasetEditionsTable.recordCount,
+      noticeSentAt: datasetEditionsTable.noticeSentAt,
       files: datasetEditionsTable.files,
       changelogSummary: datasetEditionsTable.changelogSummary,
     })

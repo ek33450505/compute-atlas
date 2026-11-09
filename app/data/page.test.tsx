@@ -1,4 +1,4 @@
-import { vi, describe, it, expect } from "vitest";
+import { vi, describe, it, expect, afterEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -21,6 +21,34 @@ vi.mock("next/link", () => ({
 }));
 
 import DataPage, { metadata } from "./page";
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
+describe("DataPage request-access line", () => {
+  it("links to /access?from=data when dataset sharing is enabled", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(DataPage());
+    expect(screen.getByText(/need the full dataset for reporting or research\?/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/access?from=data");
+  });
+
+  it.each([["false"], [""]])("renders no request-access text when the flag is %j", (value) => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", value);
+    render(DataPage());
+    expect(screen.queryByText(/request access/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/full dataset/i)).not.toBeInTheDocument();
+  });
+
+  it.each([["true"], ["false"]])("keeps the forbidden-words and data-file-link guard when the flag is %s", (value) => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", value);
+    const { container } = render(DataPage());
+    expect(container.textContent ?? "").not.toMatch(/download|bulk|paused|programmatic|developer docs/i);
+    const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
+    expect(hrefs.some((h) => /facilities\.(csv|json)|^\/api/.test(h ?? ""))).toBe(false);
+  });
+});
 
 describe("DataPage", () => {
   it("renders the h1", () => {
