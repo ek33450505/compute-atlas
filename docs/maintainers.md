@@ -570,7 +570,8 @@ unsubscribe at `/api/dataset/unsubscribe`. A grant runs 365 days (`DATASET_GRANT
 - `/access`, `/data` and `/contact` read the flag at build time (`app/access/page.tsx` says so; `/data` and
   `/contact` show the "Request access" link only when it is on), so a flip takes effect with the redeploy's
   build; ISR revalidation alone never picks it up, because the old deployment never sees the new value. The
-  `/access/*` token pages are dynamic and read it per request.
+  `/access/*` token pages are dynamic and read it per request, except the unsubscribe pages
+  (`/access/unsubscribe`, `/access/unsubscribed`), which never read it so an opt-out works with the flag off.
 - With the flag off:
   - the cron route returns `skipped: disabled` and builds nothing (`app/api/cron/dataset-edition/route.ts`);
   - admin "Build now" still builds an edition, but sends no mail (`sendScheduledMail` in
