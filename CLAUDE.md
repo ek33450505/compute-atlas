@@ -420,21 +420,26 @@ tool, not part of the deployed app.
   rotation procedure in `docs/maintainers.md` §9), and `/api/cron/*` is exempt because Vercel Cron
   may reach the deployment without traversing Cloudflare.
 - **`app/robots.ts` is the source of truth for blocked crawlers; the Cloudflare rules are a second
-  copy.** Posture (Ed, 2026-10-15; supersedes 2026-10-14's "block AI agents incl. retrieval"): **allow
-  classic SEARCH engines (Googlebot, Bingbot, Applebot, DuckDuckBot), archives (archive.org_bot), AI
-  assistants (ChatGPT-User, Claude-User, Perplexity-User), AI search crawlers and indexers
-  (OAI-SearchBot, PerplexityBot, Claude-SearchBot, ExaSearchBot, Amzn-SearchBot) and AI search assist
-  (DuckAssistBot); block AI training crawlers, bulk dataset extractors and SEO-resale crawlers.**
-  `Google-Extended` stays allowed. Counts, each labelled with its side: **`app/robots.ts` = 14
-  `BLOCKED_AI_CRAWLERS` + 4 `BLOCKED_BULK_EXTRACTORS` + 4 `BLOCKED_SEO_CRAWLERS` = 22 tokens**;
-  **Cloudflare = a 14-UA AI Crawl Control rule (the 14 minus the robots-only Applebot-Extended = 13,
-  plus `Anchor Browser`; MEASURED via the Cloudflare API 2026-10-15 13:27Z) + a "Block bulk dataset
-  extractors" custom rule of 8 UAs (4 extractors + the 4 SEO crawlers; MEASURED via the same API,
-  2026-10-15 13:58Z, last_updated 13:57:34Z; it held 10 until ExaSearchBot and Amzn-SearchBot were
-  removed that day).** A live curl at ~13:58Z returned 200 for ExaSearchBot, Amzn-SearchBot,
-  Claude-User and Arquivo-web-crawler and 403 for GPTBot, CCBot and DotBot. `Anchor Browser` is on the Cloudflare side only, being a browser product with no
-  robots token; `Applebot-Extended` is robots-only. `Arquivo-web-crawler` (arquivo.pt, Portugal's
-  national web archive) is allowed on both sides as an archive. The AI Crawl Control rule is READABLE via the rulesets API,
+  copy.** Posture (Ed, 2026-10-15; supersedes 2026-10-14's "block AI agents incl. retrieval"; amended
+  2026-11-09): **allow classic SEARCH engines (Googlebot, Bingbot, DuckDuckBot), archives
+  (archive.org_bot, Arquivo-web-crawler), AI assistants (Claude-User, Perplexity-User), AI search
+  crawlers and indexers (PerplexityBot, Claude-SearchBot, ExaSearchBot, Amzn-SearchBot) and AI search
+  assist (DuckAssistBot); block AI training crawlers, bulk dataset extractors and SEO-resale
+  crawlers.** `Google-Extended` stays allowed. **2026-11-09 amendment (Ed: "block them - i dont
+  support those companies"): ChatGPT-User, OAI-SearchBot (OpenAI) and plain Applebot (Apple) are
+  blocked** (`BLOCKED_BY_EDITORIAL_CHOICE`, a company choice, not a training-crawler
+  classification; expected consequences (reasoned, not measured): no Siri/Spotlight surfacing via Applebot, and no ChatGPT retrieval or search citation). Counts, each labelled with its side: **`app/robots.ts` = 14 `BLOCKED_AI_CRAWLERS`
+  + 4 `BLOCKED_BULK_EXTRACTORS` + 4 `BLOCKED_SEO_CRAWLERS` + 3 `BLOCKED_BY_EDITORIAL_CHOICE` = 25
+  tokens**; **Cloudflare (MEASURED via the API 2026-11-09 ~23:20Z) = a 23-UA AI Crawl Control rule
+  matched by `http.user_agent contains` + a "Block bulk dataset extractors" custom rule of 8 UAs (4
+  extractors + the 4 SEO crawlers).** The 23 include Arquivo-web-crawler, whose removal is PENDING
+  Ed's dashboard toggle (22 after); `lib/cloudflare-waf-parity.test.ts` records the post-removal 22.
+  Because the match is `contains "Applebot"`, the edge also blocks `Applebot-Extended`, so it is no
+  longer robots-only. Edge-only entries robots.txt does not carry: Anchor Browser (a browser product
+  with no robots token), Baiduspider, Manus-User, meta-externalfetcher, MistralAI-User, Terracotta.
+  The custom rule also blocks HTTP-library UAs (python-requests, curl/, etc.) on `/facilities/*` and
+  `/table` since 2026-11-09; those are not robots tokens. `Arquivo-web-crawler` (arquivo.pt, Portugal's
+  national web archive) is allowed in robots.txt as an archive; until Ed's dashboard toggle removes it from AI Crawl Control, the live edge still 403s it. The AI Crawl Control rule is READABLE via the rulesets API,
   but its per-crawler toggles are dashboard-only and every toggle save regenerates the rule,
   overwriting manual edits. The four SEO crawlers were FOUND missing from it on 2026-10-14; the
   actual drop date is unknown (some dashboard save after 2026-09-27). They now live in the custom

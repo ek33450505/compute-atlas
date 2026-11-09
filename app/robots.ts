@@ -27,17 +27,24 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 // Keys keep their casing and values pass through verbatim, and the entry is
 // scoped to the User-Agent block it sits on -- so it rides the "*" rule.
 //
-// POLICY (Ed, 2026-10-15; supersedes the 2026-10-14 posture that also blocked
-// AI retrieval agents): allow classic SEARCH engines (Googlebot, Bingbot,
-// Applebot, DuckDuckBot), archives (archive.org_bot), AI assistants fetching on a
-// person's behalf (ChatGPT-User, Claude-User, Perplexity-User), AI search
-// crawlers and indexers (OAI-SearchBot, PerplexityBot, Claude-SearchBot,
-// ExaSearchBot, Amzn-SearchBot) and AI search assist (DuckAssistBot). Block AI
-// TRAINING crawlers, bulk dataset extractors and SEO-resale crawlers. Cloudflare
-// enforces the same set at the edge (out of repo), with known deltas:
-// Applebot-Extended is robots-only, and "Anchor Browser" is edge-only. This file is the source of truth and must mirror the
-// edge, because a UA blocked at the edge but allowed here (or the reverse) makes
-// a compliant crawler read one thing and get another.
+// POLICY (Ed, 2026-10-15, amended 2026-11-09). ALLOWED: classic SEARCH engines
+// (Googlebot, Bingbot, DuckDuckBot), archives (archive.org_bot,
+// Arquivo-web-crawler), AI assistants fetching on a person's behalf
+// (Claude-User, Perplexity-User), AI search crawlers and indexers
+// (PerplexityBot, Claude-SearchBot, ExaSearchBot, Amzn-SearchBot), AI search
+// assist (DuckAssistBot) and Google-Extended. BLOCKED: AI TRAINING crawlers,
+// bulk dataset extractors, SEO-resale crawlers, and the three tokens in
+// BLOCKED_BY_EDITORIAL_CHOICE (ChatGPT-User, OAI-SearchBot, Applebot; Ed,
+// 2026-11-09). The 2026-10-15 posture had allowed those three.
+//
+// Cloudflare enforces the same set at the edge (out of repo). This file is the
+// source of truth and must mirror the edge, because a UA blocked at the edge but
+// allowed here (or the reverse) makes a compliant crawler read one thing and get
+// another. Known deltas: "Anchor Browser" is edge-only (a browser product with
+// no robots token), and Baiduspider, Manus-User, meta-externalfetcher,
+// MistralAI-User and Terracotta are edge-only pending Ed's decision.
+// Applebot-Extended is no longer robots-only: the edge matches
+// `contains "Applebot"` and so blocks it too.
 //
 // Tokens below that were derived from a User-Agent string rather than
 // confirmed against vendor docs (unverified): Novellum,
@@ -111,6 +118,21 @@ export const BLOCKED_SEO_CRAWLERS = [
   "SERankingBacklinksBot",
 ] as const;
 
+// Blocked by editorial choice (Ed, 2026-11-09): retrieval and search agents
+// from companies Ed chooses not to support ("block them - i dont support those
+// companies"). This is NOT a training-crawler classification; it supersedes the
+// 2026-10-15 allowance for these three tokens only. Plain Applebot is the
+// search crawler (Applebot-Extended, the training control, is in
+// BLOCKED_AI_CRAWLERS).
+// Expected consequences of this choice (reasoned, not measured): blocking plain
+// Applebot removes the site from Siri/Spotlight surfacing, and blocking
+// ChatGPT-User/OAI-SearchBot stops ChatGPT retrieval and search citation.
+export const BLOCKED_BY_EDITORIAL_CHOICE = [
+  "ChatGPT-User",
+  "OAI-SearchBot",
+  "Applebot",
+] as const;
+
 export default function robots(): MetadataRoute.Robots {
   const rules: MetadataRoute.Robots["rules"] = [
     {
@@ -167,6 +189,10 @@ export default function robots(): MetadataRoute.Robots {
       disallow: "/",
     })),
     ...BLOCKED_SEO_CRAWLERS.map((userAgent) => ({
+      userAgent,
+      disallow: "/",
+    })),
+    ...BLOCKED_BY_EDITORIAL_CHOICE.map((userAgent) => ({
       userAgent,
       disallow: "/",
     })),
