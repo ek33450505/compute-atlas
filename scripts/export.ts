@@ -12,42 +12,26 @@
 import { lstatSync, mkdirSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { facilitiesSchema } from "../lib/schema";
-import { facilitiesTable, operatorOwnershipTable, sitingContextTable, type FacilityRow } from "../lib/db/schema";
-import { getDb } from "../lib/db/client";
-import { rowToFacility } from "../lib/db/serialize";
-import { byOperator, operatorOwnershipFileSchema } from "../lib/operator-ownership-schema";
-import { sitingContextSchema } from "../lib/siting-context-schema";
+import {
+  DEFAULT_FLOORS,
+  buildSnapshotBodies,
+  neonSource,
+  type SnapshotFloors,
+  type SnapshotSource,
+} from "../lib/dataset-snapshot";
 import { isEntrypoint } from "./is-entrypoint";
 import { formatFatalError } from "../lib/db-error";
 
-/** Bumped only when the Zod `facilitySchema` shape changes in a breaking way — mirrors the API's `X-API-Version`. */
-const SCHEMA_VERSION = 1;
-
-export interface ExportMeta {
-  asOf: string;
-  recordCount: number;
-  schemaVersion: number;
-}
-
-/**
- * Pure builder for the facilities.meta.json shape — kept separate from disk
- * I/O so it's testable without a DB or a package.json read (see export.test.ts).
- *
- * `now` should be the instant the DB read STARTED, not when the file was
- * written — see the comment at its call site in `main()`. The default exists
- * for tests and ad-hoc use; the CLI always passes an explicit value.
- */
-export function buildExportMeta(
-  recordCount: number,
-  now: Date = new Date()
-): ExportMeta {
-  return {
-    asOf: now.toISOString(),
-    recordCount,
-    schemaVersion: SCHEMA_VERSION,
-  };
-}
+// The snapshot builder lives in lib/ so the edition cron route can use it without importing from
+// scripts/. Re-exported so every existing importer of this module compiles unchanged.
+export {
+  MIN_FACILITIES,
+  MIN_OWNERSHIP_ROWS,
+  MIN_SITING_ROWS,
+  buildExportMeta,
+  type ExportMeta,
+  type SnapshotSource,
+} from "../lib/dataset-snapshot";
 
 /**
  * Output directory from `--dir=<path>` (default <cwd>/data). Must be `data/` or
@@ -117,25 +101,6 @@ export class MissingDatabaseUrlError extends Error {
   override name = "MissingDatabaseUrlError";
 }
 
-/**
- * Row-count floors: a read below one means a truncated, stale or wrong-branch
- * read, and a snapshot built from it must never replace the real files. Set
- * against what Neon held on 2026-11-06 (3,025 facilities, 3,025 siting rows,
- * 26 ownership rows): 2900 is about 96% of 3,025, 24 is about 92% of 26. That
- * catches a stale or branch-scoped DATABASE_URL.
- * Raise these as the dataset grows; a legitimate shrink below them needs a
- * deliberate edit here.
- */
-export const MIN_FACILITIES = 2900;
-export const MIN_SITING_ROWS = 2900;
-export const MIN_OWNERSHIP_ROWS = 24;
-
-export interface SnapshotSource {
-  facilities(): Promise<Array<Pick<FacilityRow, "doc">>>;
-  sitingContext(): Promise<Array<{ facilityId: string; data: unknown }>>;
-  operatorOwnership(): Promise<Array<{ data: unknown }>>;
-}
-
 export interface SnapshotOptions {
   /** Directory the four files are written into. Default: <cwd>/data. */
   dir?: string;
@@ -143,17 +108,7 @@ export interface SnapshotOptions {
   source?: SnapshotSource;
   warn?: (msg: string) => void;
   /** Override the floors (tests with small fixtures only). */
-  floors?: { facilities: number; siting: number; ownership: number };
-}
-
-function neonSource(): SnapshotSource {
-  const db = getDb();
-  return {
-    facilities: () => db.select().from(facilitiesTable),
-    sitingContext: () =>
-      db.select({ facilityId: sitingContextTable.facilityId, data: sitingContextTable.data }).from(sitingContextTable),
-    operatorOwnership: () => db.select({ data: operatorOwnershipTable.data }).from(operatorOwnershipTable),
-  };
+  floors?: SnapshotFloors;
 }
 
 export interface ExportResult {
@@ -165,12 +120,6 @@ export interface ExportResult {
   /** siting_context rows whose facility_id is not in facilities. Reported, still exported. */
   orphanSiting: number;
 }
-
-const json = (value: unknown) => JSON.stringify(value, null, 2) + "\n";
-
-/** A JSON null on a siting field means absent (same rule as lib/siting-context.ts withoutNulls). */
-const dropNulls = (entry: Record<string, unknown>) =>
-  Object.fromEntries(Object.entries(entry).filter(([, v]) => v !== null));
 
 /**
  * Reads facilities, siting_context and operator_ownership from Neon and writes
@@ -193,7 +142,7 @@ export async function exportSnapshot(opts: SnapshotOptions = {}): Promise<Export
   const dir = opts.dir ?? path.resolve(process.cwd(), "data");
   const source = opts.source ?? neonSource();
   const warn = opts.warn ?? ((m: string) => console.warn(m));
-  const floors = opts.floors ?? { facilities: MIN_FACILITIES, siting: MIN_SITING_ROWS, ownership: MIN_OWNERSHIP_ROWS };
+  const floors = opts.floors ?? DEFAULT_FLOORS;
 
   // Stamped BEFORE the read, deliberately. `asOf` is not decoration: it is the
   // basis `scripts/sync-to-neon.ts` compares each Neon row's `updatedAt`
@@ -212,55 +161,11 @@ export async function exportSnapshot(opts: SnapshotOptions = {}): Promise<Export
   // explanation and is cleared by re-running `db:export`); erring late costs
   // someone's approval.
   const readAt = new Date();
-  const [facilityRows, sitingRows, ownershipRows] = await Promise.all([
-    source.facilities(),
-    source.sitingContext(),
-    source.operatorOwnership(),
-  ]);
-
-  if (facilityRows.length < floors.facilities) {
-    throw new Error(`export refused: ${facilityRows.length} facilities is below the floor of ${floors.facilities}`);
-  }
-  if (sitingRows.length < floors.siting) {
-    throw new Error(`export refused: ${sitingRows.length} siting_context rows is below the floor of ${floors.siting}`);
-  }
-  if (ownershipRows.length < floors.ownership) {
-    throw new Error(`export refused: ${ownershipRows.length} operator_ownership rows is below the floor of ${floors.ownership}`);
-  }
-
-  // Re-validate everything before writing — the published snapshot must be
-  // schema-valid; this throws loudly on any invalid record, same as seed.ts.
-  const facilities = facilitiesSchema.parse(
-    facilityRows.map(rowToFacility).sort((a, b) => a.id.localeCompare(b.id))
-  );
-
-  // Keyed by facility_id in code-unit order, the committed file's order.
-  const siting: Record<string, unknown> = {};
-  for (const row of [...sitingRows].sort((a, b) => (a.facilityId < b.facilityId ? -1 : a.facilityId > b.facilityId ? 1 : 0))) {
-    siting[row.facilityId] = dropNulls(sitingContextSchema.parse(row.data));
-  }
-
-  // The committed file's order is hand-curated and Neon stores none, so rows
-  // are written in operator-name code-unit order (deterministic).
-  const ownership = operatorOwnershipFileSchema.parse(ownershipRows.map((r) => r.data)).sort(byOperator);
-
-  const missingSiting = facilities.filter((f) => !Object.hasOwn(siting, f.id)).length;
-  if (missingSiting > 0) {
-    warn(`export: ${missingSiting} facilities have no siting_context row (expected until a local siting refresh)`);
-  }
-
-  const facilityIds = new Set(facilities.map((f) => f.id));
-  const orphanSiting = Object.keys(siting).filter((id) => !facilityIds.has(id)).length;
-  if (orphanSiting > 0) {
-    warn(`export: ${orphanSiting} siting_context rows have no matching facility (exported anyway)`);
-  }
-
-  const outputs: Array<[string, string]> = [
-    ["facilities.json", json(facilities)],
-    ["facilities.meta.json", json(buildExportMeta(facilities.length, readAt))],
-    ["siting-context.json", json(siting)],
-    ["operator-ownership.json", json(ownership)],
-  ];
+  const { bodies: outputs, facilities, missingSiting, orphanSiting } = await buildSnapshotBodies(source, {
+    floors,
+    readAt,
+    warn,
+  });
   const files = outputs.map(([name]) => path.join(dir, name));
   const tmps = files.map((f) => `${f}.tmp-${process.pid}`);
   // `dir` already passed parseDirArg's confinement; creating it only now means a refused export makes nothing.
