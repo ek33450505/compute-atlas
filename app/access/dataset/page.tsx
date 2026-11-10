@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageMasthead } from "@/components/page-masthead";
+import { isCommercialTierEnabled } from "@/lib/commercial-flag";
 import { redactedErrorCode } from "@/lib/db-error";
 import { DATASET_EDITION_FILES, type DatasetEditionFileName } from "@/lib/dataset-blob";
 import { latestPublishedEdition, type PublishedEdition } from "@/lib/dataset-editions";
@@ -100,7 +101,35 @@ function PreparedFor({ grant }: { grant: DatasetActiveGrant }) {
   );
 }
 
-function NoEdition({ grant }: { grant: DatasetActiveGrant }) {
+/**
+ * "Manage billing" for a paying commercial grant holder. A native form POST so it works without JS;
+ * the token travels only in the hidden input (never a URL) to a route that re-checks everything.
+ * Renders nothing for free grants, so their page output is unchanged.
+ */
+function BillingSection({ grant, token }: { grant: DatasetActiveGrant; token: string }) {
+  if (grant.tier !== "commercial" || !grant.hasBillingAccount || !isCommercialTierEnabled()) return null;
+  return (
+    <section aria-labelledby="dl-billing" className="space-y-3">
+      <h2 id="dl-billing" className="text-lg font-medium">
+        Billing
+      </h2>
+      <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        Change your card, download invoices or cancel your subscription.
+      </p>
+      <form method="post" action="/api/access/billing-portal">
+        <input type="hidden" name="t" value={token} />
+        <button
+          type="submit"
+          className="rounded-sm border border-border px-3 py-1.5 text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          Manage billing
+        </button>
+      </form>
+    </section>
+  );
+}
+
+function NoEdition({ grant, token }: { grant: DatasetActiveGrant; token: string }) {
   return (
     <AccessShell>
       <PageMasthead eyebrow="Data" title="Your dataset download">
@@ -110,6 +139,7 @@ function NoEdition({ grant }: { grant: DatasetActiveGrant }) {
         No edition has been published yet. The first edition is built on Saturday; this link will
         work then.
       </p>
+      <BillingSection grant={grant} token={token} />
     </AccessShell>
   );
 }
@@ -197,6 +227,8 @@ function Edition({ grant, edition, token }: { grant: DatasetActiveGrant; edition
           </p>
         </div>
       </section>
+
+      <BillingSection grant={grant} token={token} />
     </AccessShell>
   );
 }
@@ -229,6 +261,6 @@ export default async function AccessDatasetPage({
   }
 
   if (resolved.state !== "active") return <InactiveLink />;
-  if (!edition) return <NoEdition grant={resolved.grant} />;
+  if (!edition) return <NoEdition grant={resolved.grant} token={t} />;
   return <Edition grant={resolved.grant} edition={edition} token={t} />;
 }

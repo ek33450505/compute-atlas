@@ -24,7 +24,7 @@ import AccessDatasetPage, { dynamic, metadata } from "./page";
 const TOKEN = "Zk3_-" + "A".repeat(38); // 43 chars, includes URL-significant characters
 const GRANT = {
   state: "active" as const,
-  grant: { id: "g1", name: "Pat Reporter", organization: "Daily Planet", expiresAt: new Date("2027-06-15T12:00:00Z") },
+  grant: { id: "g1", name: "Pat Reporter", organization: "Daily Planet", expiresAt: new Date("2027-06-15T12:00:00Z"), tier: "free" as const, hasBillingAccount: false },
 };
 const EDITION = {
   id: "e1",
@@ -250,5 +250,94 @@ describe("/access/dataset active grant with an edition", () => {
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(screen.getAllByRole("heading", { level: 2 }).length).toBeGreaterThanOrEqual(3);
     expect(screen.queryAllByRole("heading", { level: 3 })).toHaveLength(0);
+  });
+});
+
+describe("/access/dataset billing form", () => {
+  const paid = (over: Record<string, unknown>) => ({ ...GRANT, grant: { ...GRANT.grant, ...over } });
+
+  beforeEach(() => {
+    mockEdition.mockResolvedValue(EDITION);
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("shows a native POST form for an active commercial grant with a billing account", async () => {
+    mockGrant.mockResolvedValue(paid({ tier: "commercial", hasBillingAccount: true }));
+    const { container } = await renderPage();
+    const form = container.querySelector("form") as HTMLFormElement;
+    expect(form.getAttribute("method")).toBe("post");
+    expect(form.getAttribute("action")).toBe("/api/access/billing-portal");
+    expect(within(form).getByRole("button", { name: "Manage billing" })).toBeTruthy();
+    const hidden = form.querySelector('input[type="hidden"][name="t"]') as HTMLInputElement;
+    expect(hidden.value).toBe(TOKEN);
+  });
+
+  it("puts the token only in the hidden input and the file hrefs", async () => {
+    mockGrant.mockResolvedValue(paid({ tier: "commercial", hasBillingAccount: true }));
+    const { container } = await renderPage();
+    const stripped = container.innerHTML
+      .split(`t=${encodeURIComponent(TOKEN)}`)
+      .join("")
+      .split(`value="${TOKEN}"`)
+      .join("");
+    expect(stripped).not.toContain(TOKEN);
+  });
+
+  it("shows the form when no edition is published yet", async () => {
+    mockEdition.mockResolvedValue(null);
+    mockGrant.mockResolvedValue(paid({ tier: "commercial", hasBillingAccount: true }));
+    await renderPage();
+    expect(screen.getByRole("button", { name: "Manage billing" })).toBeTruthy();
+  });
+
+  it.each([
+    ["commercial without a billing account", { tier: "commercial", hasBillingAccount: false }],
+    ["free with a billing account", { tier: "free", hasBillingAccount: true }],
+    ["free without a billing account", { tier: "free", hasBillingAccount: false }],
+  ])("renders no billing markup at all for %s", async (_n, over) => {
+    mockGrant.mockResolvedValue(paid(over));
+    const { container } = await renderPage();
+    expect(container.querySelector("form")).toBeNull();
+    expect(container.querySelector('input[name="t"]')).toBeNull();
+    expect(container.innerHTML).not.toContain("/api/access/billing-portal");
+    expect(container.textContent).not.toContain("Manage billing");
+    expect(container.querySelector("#dl-billing")).toBeNull();
+  });
+
+  it("renders a free grant exactly as a commercial grant with the flag off (the pre-billing markup)", async () => {
+    mockGrant.mockResolvedValue(GRANT);
+    const free = (await renderPage()).container.innerHTML;
+    document.body.innerHTML = "";
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
+    mockGrant.mockResolvedValue(paid({ tier: "commercial", hasBillingAccount: true }));
+    const flagOff = (await renderPage()).container.innerHTML;
+    expect(flagOff).toBe(free);
+  });
+
+  it.each([
+    ["with an edition", EDITION],
+    ["without an edition", null],
+  ])("differs from the free render only by the billing section %s", async (_n, edition) => {
+    mockEdition.mockResolvedValue(edition);
+    mockGrant.mockResolvedValue(GRANT);
+    const free = (await renderPage()).container.innerHTML;
+    document.body.innerHTML = "";
+    mockGrant.mockResolvedValue(paid({ tier: "commercial", hasBillingAccount: true }));
+    const { container } = await renderPage();
+    const section = container.querySelector("section#dl-billing, section[aria-labelledby='dl-billing']");
+    expect(section).not.toBeNull();
+    const without = container.innerHTML.replace((section as Element).outerHTML, "");
+    expect(without).not.toBe(container.innerHTML);
+    expect(without).toBe(free);
+  });
+
+  it("shows no form while the commercial flag is off", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
+    mockGrant.mockResolvedValue(paid({ tier: "commercial", hasBillingAccount: true }));
+    const { container } = await renderPage();
+    expect(container.querySelector("form")).toBeNull();
   });
 });

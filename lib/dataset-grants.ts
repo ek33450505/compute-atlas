@@ -12,6 +12,7 @@ import {
   datasetAccessGrantsTable,
   type DatasetCategory,
   type DatasetGrantStatus,
+  type DatasetTier,
 } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
 import { normalizeEmail } from "@/lib/email-address";
@@ -763,7 +764,15 @@ export async function requestRenewal(
 }
 
 /** The only fields a download page may learn about a grant. Deliberately no hashes, email, IP hash or notes. */
-export type DatasetActiveGrant = { id: string; name: string; organization: string | null; expiresAt: Date };
+export type DatasetActiveGrant = {
+  id: string;
+  name: string;
+  organization: string | null;
+  expiresAt: Date;
+  tier: DatasetTier;
+  /** Whether a Stripe customer is on file. The customer id itself never leaves `getBillingCustomerId`. */
+  hasBillingAccount: boolean;
+};
 
 /**
  * Resolves a raw access token to its grant. "Active" means the grant is LIVE
@@ -799,6 +808,8 @@ export async function getGrantByAccessToken(
       organization: datasetAccessGrantsTable.organization,
       expiresAt: datasetAccessGrantsTable.expiresAt,
       status: datasetAccessGrantsTable.status,
+      tier: datasetAccessGrantsTable.tier,
+      hasBillingAccount: sql<boolean>`${datasetAccessGrantsTable.stripeCustomerId} is not null`,
       live: sql<boolean>`${liveGrant(now)}`, // the shared LIVE definition, evaluated in the same query
     })
     .from(datasetAccessGrantsTable)
@@ -812,7 +823,15 @@ export async function getGrantByAccessToken(
   if (row.live === true && row.expiresAt) {
     return {
       state: "active",
-      grant: { id: row.id, name: row.name, organization: row.organization, expiresAt: row.expiresAt },
+      grant: {
+        id: row.id,
+        name: row.name,
+        organization: row.organization,
+        expiresAt: row.expiresAt,
+        tier: row.tier,
+        // Strict `=== true`, like `live`: a computed projection the driver may hand back as a string.
+        hasBillingAccount: row.hasBillingAccount === true,
+      },
     };
   }
 
@@ -829,6 +848,26 @@ export async function getGrantByAccessToken(
     }
   }
   return { state: "inactive" };
+}
+
+/**
+ * Server-only read of a grant's Stripe customer id, for the billing-portal route. Returns it ONLY for a
+ * LIVE commercial grant (re-checked in the query, so a revoke between lookup and read wins); null otherwise.
+ * Never pass the result to a page or log it.
+ */
+export async function getBillingCustomerId(grantId: string): Promise<string | null> {
+  const [row] = await getDb()
+    .select({ customerId: datasetAccessGrantsTable.stripeCustomerId })
+    .from(datasetAccessGrantsTable)
+    .where(
+      and(
+        eq(datasetAccessGrantsTable.id, grantId),
+        eq(datasetAccessGrantsTable.tier, "commercial"),
+        liveGrant(new Date())
+      )
+    )
+    .limit(1);
+  return row?.customerId ?? null;
 }
 
 /**

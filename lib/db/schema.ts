@@ -306,6 +306,8 @@ export const INTAKE_SURFACES = [
   "access-request",
   // Commercial Checkout starts; per-IP, card-testing is the threat (app/api/access/checkout/route.ts).
   "commercial-checkout",
+  // Billing-portal opens for commercial grant holders; per-IP (app/api/access/billing-portal/route.ts).
+  "commercial-billing-portal",
   // Failed admin-login attempts only (app/admin/login/actions.ts); own budget, see ADMIN_LOGIN_* in lib/rate-limit.ts.
   "admin-login",
 ] as const;

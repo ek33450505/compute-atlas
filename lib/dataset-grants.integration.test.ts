@@ -34,6 +34,7 @@ import {
   approveDatasetGrant,
   expireDueGrants,
   extendDatasetGrant,
+  getBillingCustomerId,
   getGrantByAccessToken,
   issueRenewalToken,
   reissueDatasetLink,
@@ -1617,6 +1618,46 @@ describe("issueRenewalToken and requestRenewal", () => {
   });
 });
 
+describe("getBillingCustomerId", () => {
+  const commercial = (over: GrantInsert = {}) =>
+    activeGrant({
+      tier: "commercial",
+      category: "commercial",
+      paidThrough: daysFromNow(10),
+      stripeCustomerId: "cus_LIVE1",
+      ...over,
+    });
+
+  it("returns the customer id for a live commercial grant", async () => {
+    const { row } = await commercial();
+    expect(await getBillingCustomerId(row.id)).toBe("cus_LIVE1");
+  });
+
+  it("returns null for a free grant even when a customer id is set", async () => {
+    const { row } = await activeGrant({ stripeCustomerId: "cus_FREE1" });
+    expect(await getBillingCustomerId(row.id)).toBeNull();
+  });
+
+  it("returns null for a revoked commercial grant", async () => {
+    const { row } = await commercial({ status: "revoked", revokedAt: new Date() });
+    expect(await getBillingCustomerId(row.id)).toBeNull();
+  });
+
+  it("returns null for a commercial grant whose paid_through has passed", async () => {
+    const { row } = await commercial({ paidThrough: daysFromNow(-1) });
+    expect(await getBillingCustomerId(row.id)).toBeNull();
+  });
+
+  it("returns null for a commercial grant past its expiry", async () => {
+    const { row } = await commercial({ expiresAt: daysFromNow(-1) });
+    expect(await getBillingCustomerId(row.id)).toBeNull();
+  });
+
+  it("returns null for an unknown id", async () => {
+    expect(await getBillingCustomerId(crypto.randomUUID())).toBeNull();
+  });
+});
+
 describe("getGrantByAccessToken", () => {
   it("every inactive case returns the identical { state: 'inactive' }", async () => {
     const results: unknown[] = [await getGrantByAccessToken(generateToken())]; // unknown
@@ -1661,15 +1702,42 @@ describe("getGrantByAccessToken", () => {
     expect((await rowById(g.id)).status).toBe("expired");
   });
 
-  it("an active, unexpired grant resolves to its id, name, organization and expiry", async () => {
+  it("an active, unexpired grant resolves to its id, name, organization, expiry, tier and billing flag", async () => {
     const { row: g, accessToken } = await activeGrant({ name: "Pat Reporter", organization: "The Gazette" });
 
     const result = await getGrantByAccessToken(accessToken);
 
     expect(result).toStrictEqual({
       state: "active",
-      grant: { id: g.id, name: "Pat Reporter", organization: "The Gazette", expiresAt: g.expiresAt },
+      grant: {
+        id: g.id,
+        name: "Pat Reporter",
+        organization: "The Gazette",
+        expiresAt: g.expiresAt,
+        tier: "free",
+        hasBillingAccount: false,
+      },
     });
+  });
+
+  it("never returns the Stripe customer id, only a strict boolean saying one exists", async () => {
+    const { accessToken } = await activeGrant({
+      tier: "commercial",
+      category: "commercial",
+      paidThrough: daysFromNow(10),
+      stripeCustomerId: "cus_SECRET123",
+    });
+
+    const result = await getGrantByAccessToken(accessToken);
+
+    expect(result.state).toBe("active");
+    if (result.state !== "active") return;
+    expect(result.grant.tier).toBe("commercial");
+    expect(result.grant.hasBillingAccount).toBe(true);
+    const serialised = JSON.stringify(result);
+    for (const secret of ["cus_SECRET123", "cus_", "stripe_customer_id", "stripeCustomerId"]) {
+      expect(serialised).not.toContain(secret);
+    }
   });
 
   it("hands back exactly the DatasetActiveGrant keys: no hash, raw token, email, IP hash or note", async () => {
@@ -1686,8 +1754,9 @@ describe("getGrantByAccessToken", () => {
 
     expect(result.state).toBe("active");
     if (result.state !== "active") return;
-    expect(Object.keys(result.grant).sort()).toEqual(["expiresAt", "id", "name", "organization"]);
+    expect(Object.keys(result.grant).sort()).toEqual(["expiresAt", "hasBillingAccount", "id", "name", "organization", "tier"]);
     expect(result.grant.organization).toBeNull();
+    expect(result.grant.hasBillingAccount).toBe(false);
     const serialised = JSON.stringify(result);
     for (const secret of [g.email, g.accessTokenHash, g.verifyTokenHash, g.renewTokenHash, g.unsubscribeToken, "iphash-secret", "internal"]) {
       expect(serialised).not.toContain(secret as string);
