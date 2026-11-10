@@ -48,11 +48,11 @@ import {
  * The Cloudflare rules this file is reconciled against (zone ruleset
  * 2db189b07c9e4522bd6fc9b1fd5a4769); this file cannot re-read them.
  *
- *   - Rule 0cfdbaf2d09342f2ad93a0025bf9ff57: the AI Crawl Control rule, 22 UAs,
+ *   - Rule 0cfdbaf2d09342f2ad93a0025bf9ff57: the AI Crawl Control rule, 23 UAs,
  *     matched by `http.user_agent contains`. MEASURED: read via the Cloudflare
- *     API 2026-11-09 ~23:55Z (ruleset v288). Arquivo-web-crawler was removed
- *     via the API that day (live probe: 200); keep the dashboard toggle on
- *     Allow or a toggle save may re-add it. This test certifies the repo
+ *     API 2026-11-10 ~00:45Z (ruleset v289). Arquivo-web-crawler reappeared
+ *     when the rule changed at v289 (2026-11-10 00:09Z; cause not confirmed),
+ *     and Ed decided to block it in robots.txt too. This test certifies the repo
  *     ledger, not the edge. Cloudflare regenerates the rule from
  *     its own dashboard crawler toggles, and a dashboard save does not keep
  *     manual additions. The four SEO crawlers it carried on 2026-09-27 were
@@ -69,9 +69,9 @@ import {
  *     WAF matching is `contains` and case-sensitive, so Moz's crawler is entered
  *     as "DotBot" while this ledger keeps robots.txt's "dotbot".
  *
- * The two rules do not overlap, so the ledger below holds 22 + 8 entries.
+ * The two rules do not overlap, so the ledger below holds 23 + 8 entries.
  */
-const WAF_RULE_UA_COUNT_AS_REPORTED = 22 + 8;
+const WAF_RULE_UA_COUNT_AS_REPORTED = 23 + 8;
 
 /**
  * The UAs the edge is recorded as blocking, transcribed from the rules above.
@@ -84,11 +84,12 @@ const WAF_RULE_UA_COUNT_AS_REPORTED = 22 + 8;
  * human last looked, and nothing in this repo can keep it true.
  */
 export const EXPECTED_WAF_BLOCKED_UAS = [
-  // AI Crawl Control rule, 22 UAs (measured via the API, 2026-11-09 ~23:55Z,
-  // v288, after Arquivo-web-crawler was removed via the API).
+  // AI Crawl Control rule, 23 UAs (measured via the API, 2026-11-10 ~00:45Z,
+  // v289, which re-included Arquivo-web-crawler; cause not confirmed).
   "Amazonbot",
   "Anchor Browser",
   "Applebot",
+  "Arquivo-web-crawler",
   "Baiduspider",
   "Bytespider",
   "CCBot",
@@ -191,7 +192,7 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
 
   /**
    * Keeps the transcript honest about being a transcript. The live rules were
-   * reported at 30 UAs (22 + 8). A list that GREW past the reported count means
+   * reported at 31 UAs (23 + 8). A list that GREW past the reported count means
    * the count note is stale and must be re-verified before the extra entries
    * can be trusted — so this fails upward, not downward.
    */
@@ -217,7 +218,6 @@ describe("robots.txt ↔ Cloudflare WAF reconciliation (repo side only — canno
     const deliberatelyAllowed = [
       "Google-Extended",
       "Googlebot",
-      "Arquivo-web-crawler",
       "archive.org_bot",
       "AhrefsBot",
       "SemrushBot",

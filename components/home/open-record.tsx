@@ -8,6 +8,8 @@ import { SectionHeading } from "@/components/section-heading";
 export interface OpenRecordProps {
   sources: number;
   recentActivity: ActivityEntry[];
+  /** True while approved-access dataset sharing is on; adds the request link. */
+  datasetAccess?: boolean;
   className?: string;
 }
 
@@ -33,6 +35,7 @@ const TRAILING_LINK_CLASS =
 export function OpenRecord({
   sources,
   recentActivity,
+  datasetAccess = false,
   className,
 }: OpenRecordProps) {
   const facts: ProvenanceFact[] = [
@@ -49,7 +52,16 @@ export function OpenRecord({
     {
       label: "License",
       value: "CC BY 4.0",
-      sub: "Free to reuse with attribution. Code under MIT.",
+      sub: datasetAccess ? (
+        <>
+          Free to reuse with attribution. Code under MIT.{" "}
+          <Link href="/access" className={TRAILING_LINK_CLASS}>
+            Request dataset access
+          </Link>
+        </>
+      ) : (
+        "Free to reuse with attribution. Code under MIT."
+      ),
     },
     {
       label: "Citation",

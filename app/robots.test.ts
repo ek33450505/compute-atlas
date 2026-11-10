@@ -177,10 +177,10 @@ describe("robots", () => {
     }
   });
 
-  it("disallows the five edge-mirrored UAs (Ed, 2026-11-09), pinned against a hardcoded list", () => {
+  it("disallows the six edge-mirrored UAs (Ed, 2026-11-09), pinned against a hardcoded list", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];
-    const expected = ["Baiduspider", "Manus-User", "meta-externalfetcher", "MistralAI-User", "Terracotta"];
+    const expected = ["Arquivo-web-crawler", "Baiduspider", "Manus-User", "meta-externalfetcher", "MistralAI-User", "Terracotta"];
     expect([...BLOCKED_TO_MIRROR_EDGE]).toEqual(expected);
     for (const agent of expected) {
       const rule = ruleList.find((r) => r.userAgent === agent);
@@ -190,14 +190,14 @@ describe("robots", () => {
     }
   });
 
-  it("does NOT disallow web archives (Arquivo-web-crawler is arquivo.pt, Portugal's national web archive; archive.org_bot)", () => {
+  it("disallows Arquivo-web-crawler (mirrors the edge, Ed 2026-11-09) but NOT archive.org_bot", () => {
     const { rules } = robots();
     const ruleList = Array.isArray(rules) ? rules : [rules];
     const blocked = ruleList
       .filter((r) => r.disallow === "/")
       .flatMap((r) => [r.userAgent].flat())
       .map((ua) => String(ua).toLowerCase());
-    expect(blocked).not.toContain("arquivo-web-crawler");
+    expect(blocked).toContain("arquivo-web-crawler");
     expect(blocked).not.toContain("archive.org_bot");
   });
 

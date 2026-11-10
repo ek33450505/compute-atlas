@@ -28,14 +28,13 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 // scoped to the User-Agent block it sits on -- so it rides the "*" rule.
 //
 // POLICY (Ed, 2026-10-15, amended 2026-11-09). ALLOWED: classic SEARCH engines
-// (Googlebot, Bingbot, DuckDuckBot), archives (archive.org_bot,
-// Arquivo-web-crawler), AI assistants fetching on a person's behalf
+// (Googlebot, Bingbot, DuckDuckBot), archives (archive.org_bot), AI assistants fetching on a person's behalf
 // (Claude-User, Perplexity-User), AI search crawlers and indexers
 // (PerplexityBot, Claude-SearchBot, ExaSearchBot, Amzn-SearchBot), AI search
 // assist (DuckAssistBot) and Google-Extended. BLOCKED: AI TRAINING crawlers,
 // bulk dataset extractors, SEO-resale crawlers, and the three tokens in
 // BLOCKED_BY_EDITORIAL_CHOICE (ChatGPT-User, OAI-SearchBot, Applebot; Ed,
-// 2026-11-09), and the five tokens in BLOCKED_TO_MIRROR_EDGE (Ed, 2026-11-09).
+// 2026-11-09), and the six tokens in BLOCKED_TO_MIRROR_EDGE (Ed, 2026-11-09).
 // The 2026-10-15 posture had allowed the first three.
 //
 // Cloudflare enforces the same set at the edge (out of repo). This file is the
@@ -134,12 +133,16 @@ export const BLOCKED_BY_EDITORIAL_CHOICE = [
 ] as const;
 
 // Blocked to mirror the edge (Ed, 2026-11-09, "block them"): the Cloudflare AI
-// Crawl Control rule already 403s these five (live probe, 2026-11-09 23:55Z:
-// all five 403 on /about), so without a robots.txt entry a
-// compliant crawler reads `Allow: /` and then gets a 403. Distinct from
+// Crawl Control rule already 403s these (live probe, 2026-11-09 23:55Z: the
+// first five 403 on /about), so without a robots.txt entry a
+// compliant crawler reads `Allow: /` and then gets a 403. Arquivo-web-crawler
+// was added on the evening of 2026-11-09 (Ed) after the edge rule changed at
+// v289 (2026-11-10 00:09Z) and re-included it (live probe ~00:35Z: 403 on
+// /about); the cause of that change is not confirmed. Distinct from
 // BLOCKED_BY_EDITORIAL_CHOICE: that list is a stance on companies; this one only
 // keeps robots.txt and the edge in agreement.
 export const BLOCKED_TO_MIRROR_EDGE = [
+  "Arquivo-web-crawler",
   "Baiduspider",
   "Manus-User",
   "meta-externalfetcher",

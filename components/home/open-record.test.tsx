@@ -152,4 +152,19 @@ describe("OpenRecord", () => {
       screen.getByRole("heading", { level: 2, name: "A living record" })
     ).toBeInTheDocument();
   });
+
+  it("omits the dataset-access link by default", () => {
+    render(<OpenRecord sources={100} recentActivity={[]} />);
+    expect(screen.getByText("Free to reuse with attribution. Code under MIT.")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Request dataset access" })).toBeNull();
+  });
+
+  it("adds the dataset-access link when sharing is on", () => {
+    render(<OpenRecord sources={100} recentActivity={[]} datasetAccess />);
+    expect(screen.getByRole("link", { name: "Request dataset access" })).toHaveAttribute(
+      "href",
+      "/access"
+    );
+    expect(screen.getByText(/Free to reuse with attribution\. Code under MIT\./)).toBeInTheDocument();
+  });
 });

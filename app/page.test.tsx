@@ -7,6 +7,7 @@ const {
   mockGetStats,
   mockGetNotableFacilities,
   mockGetRecentActivity,
+  mockGetTopStates,
   mockGetAllFacilities,
   mockGetCommunityReceptionCounts,
   mockGetAiClassificationCounts,
@@ -22,6 +23,7 @@ const {
   mockGetStats: vi.fn(),
   mockGetNotableFacilities: vi.fn(),
   mockGetRecentActivity: vi.fn(),
+  mockGetTopStates: vi.fn(),
   mockGetAllFacilities: vi.fn(),
   mockGetCommunityReceptionCounts: vi.fn(),
   mockGetAiClassificationCounts: vi.fn(),
@@ -39,6 +41,7 @@ vi.mock("@/lib/data", () => ({
   getStats: mockGetStats,
   getNotableFacilities: mockGetNotableFacilities,
   getRecentActivity: mockGetRecentActivity,
+  getTopStates: mockGetTopStates,
   getAllFacilities: mockGetAllFacilities,
   getCommunityReceptionCounts: mockGetCommunityReceptionCounts,
   getAiClassificationCounts: mockGetAiClassificationCounts,
@@ -152,6 +155,10 @@ beforeEach(() => {
   });
   mockGetNotableFacilities.mockResolvedValue([]);
   mockGetRecentActivity.mockResolvedValue([]);
+  mockGetTopStates.mockResolvedValue([
+    { state: "TX", count: 9 },
+    { state: "OH", count: 4 },
+  ]);
   mockGetAllFacilities.mockResolvedValue(FACILITIES);
   mockGetCommunityReceptionCounts.mockResolvedValue({
     litigation: 2,
