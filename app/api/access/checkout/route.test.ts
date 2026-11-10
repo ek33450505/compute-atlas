@@ -42,6 +42,8 @@ function location(res: Response): URL {
 
 beforeEach(() => {
   vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+  vi.stubEnv("CONTACT_TO_EMAIL", "maintainer@example.test");
+  vi.stubEnv("RESEND_API_KEY", "re_test");
   checkLimit.mockResolvedValue({ ok: true });
   recordAttempt.mockResolvedValue(undefined);
   createSession.mockResolvedValue({ url: SESSION_URL, id: "cs_test_abc" });
@@ -61,6 +63,21 @@ describe("POST /api/access/checkout", () => {
     expect(checkLimit).not.toHaveBeenCalled();
     expect(createSession).not.toHaveBeenCalled();
   });
+
+  it.each([["CONTACT_TO_EMAIL"], ["RESEND_API_KEY"]])(
+    "refuses to start a checkout when %s is missing, before any rate-limit or Stripe work",
+    async (name) => {
+      vi.stubEnv(name, "  ");
+      const res = await POST(formRequest("monthly"));
+      expect(res.status).toBe(303);
+      noStore(res);
+      expect(location(res).search).toBe("?error=unavailable");
+      expect(res.headers.get("location")).not.toContain(name);
+      expect(checkLimit).not.toHaveBeenCalled();
+      expect(recordAttempt).not.toHaveBeenCalled();
+      expect(createSession).not.toHaveBeenCalled();
+    }
+  );
 
   it("answers GET with a no-store 405", async () => {
     const res = GET();

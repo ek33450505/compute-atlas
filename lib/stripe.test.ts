@@ -98,6 +98,8 @@ describe("createCommercialCheckoutSession", () => {
     const params = create.mock.calls[0][0];
     const metadata = { product: "compute_atlas_commercial_dataset", termsVersion: DATASET_TERMS_VERSION };
     expect(params.mode).toBe("subscription");
+    expect(params.allowed_payment_method_types).toEqual(["card"]);
+    expect(params).not.toHaveProperty("customer");
     expect(params.line_items).toEqual([{ price, quantity: 1 }]);
     expect(params.custom_fields).toEqual([
       { key: "organization", label: { type: "custom", custom: "Organization" }, type: "text", optional: false },

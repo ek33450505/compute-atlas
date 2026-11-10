@@ -102,6 +102,16 @@ describe("deliverDatasetAdminNotice", () => {
     expect(sendDatasetAdminNewRequestEmail).toHaveBeenCalledWith({ name: "Pat", organization: null });
   });
 
+  it("trims a padded CONTACT_TO_EMAIL, and treats all-whitespace as unset", async () => {
+    process.env.CONTACT_TO_EMAIL = "  ed@example.com \n";
+    await deliverDatasetAdminNotice(intent);
+    expect(vi.mocked(sendDatasetAdminNoticeGated).mock.calls[0][1]).toEqual({ grantId: "g3", recipient: "ed@example.com" });
+
+    process.env.CONTACT_TO_EMAIL = "   ";
+    await deliverDatasetAdminNotice(intent);
+    expect(vi.mocked(sendDatasetAdminNoticeGated).mock.calls[1][1]).toEqual({ grantId: "g3", recipient: "" });
+  });
+
   it("passes an empty recipient when CONTACT_TO_EMAIL is unset", async () => {
     await deliverDatasetAdminNotice(intent);
     expect(vi.mocked(sendDatasetAdminNoticeGated).mock.calls[0][1]).toEqual({ grantId: "g3", recipient: "" });

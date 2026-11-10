@@ -35,6 +35,8 @@ export const DATASET_SEND_KINDS = [
   "dataset_approved",
   "dataset_rejected",
   "dataset_commercial_redirect",
+  "dataset_subscription_active",
+  "dataset_admin_commercial_alert",
   "dataset_edition_notice",
   "dataset_renewal_reminder",
   "dataset_link_reissued",
@@ -48,6 +50,8 @@ export const EMAIL_SEND_SKIP_OUTCOMES = [
   "skipped_suppressed",
   "skipped_unconfirmed",
   "skipped_capped",
+  /** A deduped maintainer alert: an earlier `sent` row for the same target exists. */
+  "skipped_duplicate",
   /** The suppression lookup errored ("unknown"): not sent, but NOT a suppression. `outcome` is a plain text column, so no migration. */
   "skipped_check_failed",
 ] as const;

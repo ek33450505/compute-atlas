@@ -9,10 +9,13 @@ import {
   buildDatasetLinkReissuedEmail,
   buildDatasetRejectedEmail,
   buildDatasetCommercialRedirectEmail,
+  buildDatasetSubscriptionActiveEmail,
+  buildDatasetCommercialAlertEmail,
   buildDatasetRenewalReminderEmail,
   buildDatasetVerifyEmail,
   type DatasetEmail,
 } from "@/lib/dataset-email-templates";
+import { COMMERCIAL_SEATS } from "@/lib/commercial-plans";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
 import { buildReadme } from "@/lib/dataset-readme";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
@@ -345,6 +348,97 @@ describe("buildDatasetCommercialRedirectEmail", () => {
   it("escapes the site URL in the html part", () => {
     const evil = buildDatasetCommercialRedirectEmail({ siteUrl: `https://x.test/"><script>` });
     expect(evil.html).not.toContain("<script>");
+  });
+});
+
+describe("buildDatasetSubscriptionActiveEmail", () => {
+  const mail = buildDatasetSubscriptionActiveEmail({ siteUrl: SITE, accessToken: TOKEN });
+
+  it("carries the token only in its link, with a fixed subject", () => {
+    expectTokenOnlyInLink(mail, `${SITE}/access/dataset?t=${ENCODED}`);
+    expect(mail.subject).toBe("Your Compute Atlas commercial access is active");
+  });
+
+  it("states seats, weekly refresh, billing, cancellation and the CC BY credit", () => {
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain(`up to ${COMMERCIAL_SEATS} people`);
+      expect(body).toContain("refreshes weekly");
+      expect(body).toContain("Manage billing");
+      expect(body).toContain("access continues to the end of the period you have paid for");
+      expect(body).toContain("CC BY 4.0");
+      expect(body).toContain("Reply to this email");
+    }
+    expect(`${mail.subject} ${mail.text} ${mail.html}`.toLowerCase()).not.toContain("donat");
+  });
+
+  it("tells a non-purchaser how to reach us", () => {
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("If you did not make this purchase, contact us at");
+      expect(body).toContain(`${SITE}/contact`);
+    }
+  });
+
+  it("escapes the site URL in html", () => {
+    const evil = buildDatasetSubscriptionActiveEmail({ siteUrl: `https://x.test/"><script>`, accessToken: TOKEN });
+    expect(evil.html).not.toContain("<script>");
+  });
+});
+
+describe("buildDatasetCommercialAlertEmail", () => {
+  it("names reason, action and Stripe ids, escaped, with no token", () => {
+    const mail = buildDatasetCommercialAlertEmail({
+      reason: "revoked_buyer",
+      action: "cancelled_and_refunded",
+      subscriptionId: "sub_<b>x",
+      sessionId: "cs_1",
+      invoiceId: null,
+    });
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("revoked_buyer");
+      expect(body).toContain("cs_1");
+    }
+    expect(mail.text).toContain("refunded");
+    expect(mail.text).toContain("Invoice: (none)");
+    expect(mail.html).not.toContain("<b>");
+    expect(mail.html).toContain("sub_&lt;b&gt;x");
+  });
+
+  it("names the new reasons and their actions, with the grant id escaped", () => {
+    const superseded = buildDatasetCommercialAlertEmail({
+      reason: "superseded_session",
+      action: "no_action_person_decides",
+      subscriptionId: "sub_1",
+      sessionId: "cs_1",
+      invoiceId: null,
+      grantId: "g<i>1",
+    });
+    expect(superseded.text).toContain("superseded_session");
+    expect(superseded.text).toContain("NOT cancelled or refunded automatically");
+    expect(superseded.html).toContain("g&lt;i&gt;1");
+    expect(superseded.html).not.toContain("<i>");
+
+    const suppressed = buildDatasetCommercialAlertEmail({
+      reason: "welcome_mail_undeliverable",
+      action: "link_not_mailed_suppressed",
+      subscriptionId: null,
+      sessionId: null,
+      invoiceId: null,
+      grantId: "g1",
+    });
+    expect(suppressed.text).toContain("welcome_mail_undeliverable");
+    expect(suppressed.text).toContain("opted out of our email");
+    expect(suppressed.text).toContain("blocked by the same opt-out");
+
+    const unconfirmed = buildDatasetCommercialAlertEmail({
+      reason: "welcome_mail_undeliverable",
+      action: "link_not_mailed_unconfirmed",
+      subscriptionId: null,
+      sessionId: null,
+      invoiceId: null,
+      grantId: "g1",
+    });
+    expect(unconfirmed.text).toContain("grant was not live when the link was mailed");
+    expect(unconfirmed.text).not.toContain("opted out");
   });
 });
 

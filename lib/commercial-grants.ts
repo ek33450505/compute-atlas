@@ -1,4 +1,6 @@
-import { and, eq, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
+
+import { and, eq, inArray, isNotNull, isNull, ne, not, notExists, or, sql, type SQL } from "drizzle-orm";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import type Stripe from "stripe";
 
@@ -7,6 +9,7 @@ import { redactedErrorCode } from "@/lib/db-error";
 import {
   DATASET_OPEN_GRANT_STATUSES,
   datasetAccessGrantsTable,
+  stripeCheckoutDecisionsTable,
   stripeEventsTable,
   type DatasetAccessGrantRow,
 } from "@/lib/db/schema";
@@ -52,7 +55,7 @@ export type StripeEventOutcome =
   | { kind: "ignored"; reason: string }
   | { kind: "duplicate" }
   | { kind: "updated"; grantId: string }
-  | { kind: "activated"; grantId: string; mail: SubscriptionActiveMailIntent }
+  | { kind: "activated"; grantId: string; sessionId: string; mail: SubscriptionActiveMailIntent }
   /**
    * CONTRACT for the route (U5b). Auto cancel + refund happens ONLY for the two `checkout.session.completed`
    * conflicts below (`already_subscribed`, `revoked_buyer`), and the target is ALWAYS the signed session's
@@ -61,32 +64,47 @@ export type StripeEventOutcome =
    * cancel returns the same conflict, so the refund is retried safely). NEVER act on `existingSubscriptionId`
    * or on the revoked grant's subscription from these outcomes. Always alert the maintainer.
    *
+   * `amountTotal` (cents, 0 when Stripe sent none) is the session's total: when it is > 0 and the executor finds
+   * no refundable payment for `invoiceId`, it must report "refund needed" to the maintainer instead of
+   * treating the refund as done.
+   *
    * `already_subscribed`: the buyer already holds a LIVE commercial subscription (a different one). Nothing
-   * was changed and no token was minted.
+   * was changed and no token was minted. `grantId` and `existingSubscriptionId` are null once the named grant
+   * was deleted (retention prune, >= 365 d); the executor only logs them.
    */
   | {
       kind: "conflict";
       reason: "already_subscribed";
-      grantId: string;
-      existingSubscriptionId: string;
+      grantId: string | null;
+      existingSubscriptionId: string | null;
       newSubscriptionId: string;
       sessionId: string;
       invoiceId: string | null;
+      amountTotal: number;
     }
   /**
    * `revoked_buyer`: a checkout that would create a NEW subscription for a buyer whose commercial grant was
    * REVOKED (matched by email, Stripe customer id or card fingerprint). A revoke sticks on the paid tier:
-   * nothing was created or changed and no token was minted. `grantId` is the revoked grant. Auto cancel +
+   * nothing was created or changed and no token was minted. `grantId` is the revoked grant (null once pruned). Auto cancel +
    * refund of the new subscription, as above.
    */
   | {
       kind: "conflict";
       reason: "revoked_buyer";
-      grantId: string;
+      grantId: string | null;
       newSubscriptionId: string;
       sessionId: string;
       invoiceId: string | null;
+      amountTotal: number;
     }
+  /**
+   * `superseded_session`: this checkout session's stored decision is 'activate' (or it is linked to a grant)
+   * but it can no longer be activated: its grant was since moved to another session/subscription, or the
+   * buyer was revoked. That payment was legitimate, so there is NO cancel and NO refund. Alert the
+   * maintainer once; a person decides what to do with `sessionId` / `subscriptionId`. `grantId` is the grant
+   * the decision is linked to, else the grant that blocked it; null when neither is known.
+   */
+  | { kind: "conflict"; reason: "superseded_session"; grantId: string | null; sessionId: string; subscriptionId: string }
   /**
    * `revoked_still_billing`: `invoice.paid` or `customer.subscription.updated` for a subscription LINKED to a
    * revoked grant that is still active at Stripe. The revoke action should have cancelled it. Nothing was
@@ -103,7 +121,7 @@ export type StripeEventOutcome =
 type Resolution =
   | { kind: "ignored"; reason: string }
   | { kind: "updated"; grantId: string }
-  | { kind: "activated"; grantId: string; mail: SubscriptionActiveMailIntent }
+  | { kind: "activated"; grantId: string; sessionId: string; mail: SubscriptionActiveMailIntent }
   | Extract<StripeEventOutcome, { kind: "conflict" }>;
 
 const grantIdOf = (resolution: Resolution): string | null => ("grantId" in resolution ? resolution.grantId : null);
@@ -158,6 +176,10 @@ const timestamp = (value: Date) => sql`${value.toISOString()}::timestamptz`;
  * payment event, and `paidThrough` never moves backwards except on a subscription deletion. Free grants
  * are never touched by any branch. A revoked grant is never revived by any branch.
  *
+ * The webhook endpoint must subscribe to: checkout.session.completed, checkout.session.async_payment_succeeded,
+ * checkout.session.async_payment_failed, invoice.paid, customer.subscription.updated and
+ * customer.subscription.deleted.
+ *
  * CONTRACT FOR THE ROUTE (U5b): send the mail from `deps.beforeComplete`, which runs after the work and
  * BEFORE the event is marked processed. If it throws, the event stays unprocessed, the route returns
  * non-2xx and Stripe redelivers; the retry finds the session already activated by THIS unfinished event,
@@ -208,7 +230,10 @@ async function resolveEvent(
 ): Promise<Resolution> {
   switch (event.type) {
     case "checkout.session.completed":
+    case "checkout.session.async_payment_succeeded":
       return handleCheckoutCompleted(event.data.object, deps, now, isRetry);
+    case "checkout.session.async_payment_failed":
+      return ignored("async payment failed");
     case "invoice.paid":
       return handleInvoicePaid(event.data.object, deps);
     case "customer.subscription.updated":
@@ -245,6 +270,8 @@ async function revokedBuyer(
         or(...matches)
       )
     )
+    // Deterministic: this id feeds the durable conflict_grant_id. Most recently revoked first.
+    .orderBy(sql`${datasetAccessGrantsTable.revokedAt} desc nulls last`, datasetAccessGrantsTable.id)
     .limit(1);
   return revoked;
 }
@@ -255,6 +282,53 @@ function cardFingerprintHashOf(sub: Stripe.Subscription): string | null {
   const fingerprint = method && typeof method === "object" ? method.card?.fingerprint : null;
   return fingerprint ? hashToken(fingerprint) : null;
 }
+
+type DecisionRow = typeof stripeCheckoutDecisionsTable.$inferSelect;
+
+async function decisionOf(db: CommercialDb, sessionId: string): Promise<DecisionRow | undefined> {
+  const [row] = await db
+    .select()
+    .from(stripeCheckoutDecisionsTable)
+    .where(eq(stripeCheckoutDecisionsTable.sessionId, sessionId))
+    .limit(1);
+  return row;
+}
+
+/** The refund conflict a stored 'refuse' decision stands for. Built from the row alone, never from current state. */
+async function refundConflictOf(
+  db: CommercialDb,
+  row: DecisionRow
+): Promise<Extract<Resolution, { kind: "conflict"; reason: "already_subscribed" | "revoked_buyer" }>> {
+  // `grantId` is null only after the named grant was deleted (retention prune, >= 365 d); the executor only logs it.
+  const base = {
+    grantId: row.conflictGrantId,
+    newSubscriptionId: row.subscriptionId,
+    sessionId: row.sessionId,
+    invoiceId: row.invoiceId,
+    amountTotal: row.amountTotal,
+  };
+  if (row.reason === "revoked_buyer") return { kind: "conflict", reason: "revoked_buyer", ...base };
+  const [existing] = row.conflictGrantId
+    ? await db
+        .select({ stripeSubscriptionId: datasetAccessGrantsTable.stripeSubscriptionId })
+        .from(datasetAccessGrantsTable)
+        .where(eq(datasetAccessGrantsTable.id, row.conflictGrantId))
+        .limit(1)
+    : [];
+  // Informational only (never passed to Stripe): the winner's subscription as the grant reads now.
+  return { kind: "conflict", reason: "already_subscribed", existingSubscriptionId: existing?.stripeSubscriptionId ?? null, ...base };
+}
+
+const supersededSession = (
+  row: Pick<DecisionRow, "sessionId" | "subscriptionId" | "grantId">,
+  fallbackGrantId: string | null
+): Resolution => ({
+  kind: "conflict",
+  reason: "superseded_session",
+  grantId: row.grantId ?? fallbackGrantId,
+  sessionId: row.sessionId,
+  subscriptionId: row.subscriptionId,
+});
 
 async function handleCheckoutCompleted(
   session: Stripe.Checkout.Session,
@@ -281,7 +355,10 @@ async function handleCheckoutCompleted(
     .from(datasetAccessGrantsTable)
     .where(
       and(
-        eq(datasetAccessGrantsTable.stripeCheckoutSessionId, session.id),
+        or(
+          eq(datasetAccessGrantsTable.stripeCheckoutSessionId, session.id),
+          eq(datasetAccessGrantsTable.stripeSubscriptionId, sub.id)
+        ),
         eq(datasetAccessGrantsTable.tier, "commercial"),
         eq(datasetAccessGrantsTable.status, "revoked")
       )
@@ -289,43 +366,75 @@ async function handleCheckoutCompleted(
     .limit(1);
   if (ownRevoked) return ignored("grant revoked; billing is stopped by the revoke action");
 
-  // Conflicts come BEFORE the amount and status checks: a redelivery after the route already cancelled the
-  // new subscription must return the same conflict (so its refund is retried), never `ignored`.
   const customerId = idOf(session.customer);
   const fingerprintHash = cardFingerprintHashOf(sub);
-  const conflictBase = { sessionId: session.id, newSubscriptionId: sub.id, invoiceId: idOf(session.invoice) };
+  const invoiceId = idOf(session.invoice);
+  const amountTotal = typeof session.amount_total === "number" ? session.amount_total : 0;
 
-  // A revoke sticks: nothing is created, resubscribed or re-minted for a revoked buyer.
-  const revoked = await revokedBuyer(deps.db, { email, customerId, fingerprintHash });
-  if (revoked) return { kind: "conflict", reason: "revoked_buyer", grantId: revoked.id, ...conflictBase };
-
-  // Never overwrite a live subscription with a second one.
-  const [existing] = await deps.db
-    .select({ id: datasetAccessGrantsTable.id, stripeSubscriptionId: datasetAccessGrantsTable.stripeSubscriptionId })
-    .from(datasetAccessGrantsTable)
-    .where(
-      and(
-        eq(datasetAccessGrantsTable.tier, "commercial"),
-        eq(datasetAccessGrantsTable.email, email),
-        inArray(datasetAccessGrantsTable.status, [...DATASET_OPEN_GRANT_STATUSES]),
-        isNotNull(datasetAccessGrantsTable.stripeSubscriptionId),
-        ne(datasetAccessGrantsTable.stripeSubscriptionId, sub.id),
-        liveGrant(now)
-      )
-    )
-    .limit(1);
-  if (existing?.stripeSubscriptionId) {
-    return {
-      kind: "conflict",
-      reason: "already_subscribed",
-      grantId: existing.id,
-      existingSubscriptionId: existing.stripeSubscriptionId,
-      ...conflictBase,
+  // The DECISION for a session is made once and stored; every delivery of the session (completed, async
+  // payment succeeded, any retry) acts on the stored row, never on state read later. Refusals come BEFORE the
+  // amount and status checks so a conflict whose new subscription was already cancelled still refunds.
+  let decision = await decisionOf(deps.db, session.id);
+  let replayed = decision !== undefined;
+  if (!decision) {
+    const decide = async (): Promise<Pick<DecisionRow, "decision" | "reason" | "conflictGrantId"> | null> => {
+      // A revoke sticks: nothing is created, resubscribed or re-minted for a revoked buyer.
+      const revoked = await revokedBuyer(deps.db, { email, customerId, fingerprintHash });
+      if (revoked) return { decision: "refuse", reason: "revoked_buyer", conflictGrantId: revoked.id };
+      // Never overwrite a live subscription with a second one.
+      const [existing] = await deps.db
+        .select({ id: datasetAccessGrantsTable.id })
+        .from(datasetAccessGrantsTable)
+        .where(
+          and(
+            eq(datasetAccessGrantsTable.tier, "commercial"),
+            eq(datasetAccessGrantsTable.email, email),
+            inArray(datasetAccessGrantsTable.status, [...DATASET_OPEN_GRANT_STATUSES]),
+            isNotNull(datasetAccessGrantsTable.stripeSubscriptionId),
+            ne(datasetAccessGrantsTable.stripeSubscriptionId, sub.id),
+            liveGrant(now)
+          )
+        )
+        .limit(1);
+      if (existing) return { decision: "refuse", reason: "already_subscribed", conflictGrantId: existing.id };
+      if (!(amountTotal > 0)) return null;
+      if (!isPaying(sub)) return null;
+      return { decision: "activate", reason: null, conflictGrantId: null };
     };
+    const computed = await decide();
+    if (!computed) return ignored(amountTotal > 0 ? "subscription not in a paying status" : "zero-amount checkout");
+    // First writer wins: a concurrent delivery of this session inserted first and its row is what we act on,
+    // so when our insert wrote nothing this IS a replay and gets the replay checks below.
+    const [wrote] = await deps.db
+      .insert(stripeCheckoutDecisionsTable)
+      .values({ sessionId: session.id, subscriptionId: sub.id, invoiceId, amountTotal, ...computed })
+      .onConflictDoNothing()
+      .returning({ sessionId: stripeCheckoutDecisionsTable.sessionId });
+    replayed = !wrote;
+    decision = await decisionOf(deps.db, session.id);
+    if (!decision) throw new Error("checkout decision row missing after insert");
   }
 
-  if (!(typeof session.amount_total === "number" && session.amount_total > 0)) return ignored("zero-amount checkout");
-  if (!isPaying(sub)) return ignored("subscription not in a paying status");
+  if (decision.decision === "refuse") return refundConflictOf(deps.db, decision);
+
+  // Activation. A replay of a stored 'activate' never refunds; it either proceeds or reads as superseded.
+  if (replayed) {
+    // A subscription cancelled since mints and extends nothing (the decision stays; no refund either way).
+    if (!isPaying(sub)) return ignored("subscription not in a paying status");
+    if (decision.grantId) {
+      // Linked to a grant that no longer carries this session: it moved on (or was re-pointed). Never re-activate.
+      const [own] = await deps.db
+        .select({ id: datasetAccessGrantsTable.id })
+        .from(datasetAccessGrantsTable)
+        .where(and(eq(datasetAccessGrantsTable.stripeCheckoutSessionId, session.id), eq(datasetAccessGrantsTable.tier, "commercial")))
+        .limit(1);
+      if (!own) return supersededSession(decision, null);
+    } else {
+      // Nothing written yet (a crash before the grant write): a revoke since the decision must still stick.
+      const revoked = await revokedBuyer(deps.db, { email, customerId, fingerprintHash });
+      if (revoked) return supersededSession(decision, revoked.id);
+    }
+  }
 
   const organization = cleanText(
     session.custom_fields?.find((field) => field.key === "organization")?.text?.value,
@@ -346,13 +455,68 @@ async function handleCheckoutCompleted(
   for (let attempt = 0; attempt < MAX_ACTIVATION_ATTEMPTS; attempt++) {
     try {
       const resolution = await activate(buyer, deps.db, now, isRetry);
-      if (resolution) return resolution;
+      if (!resolution) continue;
+      if (resolution.kind === "blocked") return await refuseAfterLostWrite(deps.db, decision, resolution.grantId);
+      if (resolution.kind === "claim_lost") return await storedOutcome(deps.db, decision, null);
+      return resolution;
     } catch (err) {
       // A concurrent delivery won the open-email or session-id unique index: re-read and decide again.
       if (!isUniqueViolation(err)) throw err;
     }
   }
   throw new Error("commercial grant activation kept losing a unique-index race");
+}
+
+/**
+ * The grant write lost because ANOTHER session holds a live grant for this email (the same-email race: both
+ * first-time checkouts passed the `already_subscribed` precheck before either grant existed). Flip this
+ * session's decision to a refusal in ONE conditional statement, only while it is still 'activate' and not
+ * linked to a grant (belt and braces: and no grant carries its session or subscription). Whatever that
+ * statement did, the outcome is read back from the stored row: a concurrent delivery may have flipped it first.
+ *
+ * Exported for the integration test only (the conditional flip is otherwise reached only by a race).
+ *
+ * SERIALIZATION: the decision row is the one lock both sides take. Every grant write for a session
+ * (`writeGrant`) is a single statement that row-locks the decision (`FOR UPDATE`, re-checked after any wait),
+ * writes the grant and links `grant_id` in that same statement; this flip is conditioned on `grant_id IS NULL`
+ * on the same row. Whichever takes the row lock first wins, and the other's recheck (EvalPlanQual) sees the
+ * committed result and writes nothing. Remaining limits (see docs/maintainers.md): a revoke landing in the
+ * milliseconds between the decision and the grant write, and a lapsed-grant takeover (alert-only on replay).
+ */
+export async function refuseAfterLostWrite(
+  db: CommercialDb,
+  decision: DecisionRow,
+  winnerGrantId: string
+): Promise<Resolution> {
+  await db
+    .update(stripeCheckoutDecisionsTable)
+    .set({ decision: "refuse", reason: "already_subscribed", conflictGrantId: winnerGrantId })
+    .where(
+      and(
+        eq(stripeCheckoutDecisionsTable.sessionId, decision.sessionId),
+        eq(stripeCheckoutDecisionsTable.decision, "activate"),
+        isNull(stripeCheckoutDecisionsTable.grantId),
+        notExists(
+          db
+            .select({ one: sql`1` })
+            .from(datasetAccessGrantsTable)
+            .where(
+              or(
+                eq(datasetAccessGrantsTable.stripeCheckoutSessionId, decision.sessionId),
+                eq(datasetAccessGrantsTable.stripeSubscriptionId, decision.subscriptionId)
+              )
+            )
+        )
+      )
+    );
+  return storedOutcome(db, decision, winnerGrantId);
+}
+
+/** What the STORED decision says now: the refund conflict for a refusal, else the alert-only superseded session. */
+async function storedOutcome(db: CommercialDb, decision: DecisionRow, fallbackGrantId: string | null): Promise<Resolution> {
+  const current = await decisionOf(db, decision.sessionId);
+  if (current?.decision === "refuse") return refundConflictOf(db, current);
+  return supersededSession(current ?? decision, fallbackGrantId);
 }
 
 interface Buyer {
@@ -367,13 +531,19 @@ interface Buyer {
   sessionId: string;
 }
 
-/** One pass: already activated, upgrade an open grant, or insert. Null means a concurrent writer moved first; retry. */
+/**
+ * One pass: already activated, upgrade an open grant, or insert. Null means a concurrent writer moved first;
+ * retry. `claim_lost` means the session's decision row no longer permits a write (it was flipped to 'refuse', or
+ * linked to a different grant): nothing was written, and the caller reports the stored decision. `blocked` means another session's subscription holds a LIVE grant for this email, which is never
+ * overwritten: that condition is part of the upgrade's own WHERE (and the insert hits the (email, tier) open
+ * unique index), so it holds however the race interleaves.
+ */
 async function activate(
   buyer: Buyer,
   db: CommercialDb,
   now: Date,
   isRetry: boolean
-): Promise<Resolution | null> {
+): Promise<Resolution | { kind: "blocked"; grantId: string } | { kind: "claim_lost" } | null> {
   const [done] = await db
     .select({
       id: datasetAccessGrantsTable.id,
@@ -409,30 +579,32 @@ async function activate(
       ? {
           kind: "activated",
           grantId: done.id,
+          sessionId: buyer.sessionId,
           mail: { kind: "dataset_subscription_active", grantId: done.id, email: buyer.email, accessToken: fresh },
         }
       : { kind: "updated", grantId: done.id };
   }
 
   const accessToken = generateToken();
-  const commercialFields = {
-    tier: "commercial" as const,
-    status: "active" as const,
-    category: "commercial" as const,
-    paidThrough: buyer.paidThrough,
-    expiresAt: buyer.paidThrough,
-    stripeCustomerId: buyer.customerId,
-    stripeSubscriptionId: buyer.subscriptionId,
-    stripeCheckoutSessionId: buyer.sessionId,
-    ...(buyer.fingerprintHash ? { cardFingerprintHash: buyer.fingerprintHash } : {}),
-    accessTokenHash: hashToken(accessToken),
-    approvedAt: now,
-    reviewNote: REVIEW_NOTE,
-    renewalRequestedAt: null,
-  };
+  // Columns the INSERT and the upgrade both set (`writeGrant` builds the statement from these).
+  const commonColumns: Array<[string, SQL]> = [
+    ["tier", sql`'commercial'`],
+    ["status", sql`'active'`],
+    ["category", sql`'commercial'`],
+    ["paid_through", timestamp(buyer.paidThrough)],
+    ["expires_at", timestamp(buyer.paidThrough)],
+    ["stripe_customer_id", sql`${buyer.customerId}::text`],
+    ["stripe_subscription_id", sql`${buyer.subscriptionId}::text`],
+    ["stripe_checkout_session_id", sql`${buyer.sessionId}::text`],
+    ["access_token_hash", sql`${hashToken(accessToken)}::text`],
+    ["approved_at", timestamp(now)],
+    ["review_note", sql`${REVIEW_NOTE}::text`],
+    ["renewal_requested_at", sql`null::timestamptz`],
+  ];
   const activated = (grantId: string): Resolution => ({
     kind: "activated",
     grantId,
+    sessionId: buyer.sessionId,
     mail: { kind: "dataset_subscription_active", grantId, email: buyer.email, accessToken },
   });
 
@@ -445,6 +617,8 @@ async function activate(
   // Expired commercial rows are not "open", so a new purchase by that address INSERTS a new row; checkout
   // never revives an expired one. (`invoice.paid` / `subscription.updated` on the SAME subscription may
   // still revive its own expired row: see `extendPaidThrough`.)
+  // At most one open row per (email, tier) and one row per session id, so up to two rows can match: the
+  // session's own (lapsed) row wins, then the lowest id, so the choice never depends on plan order.
   const [open] = await db
     .select({
       id: datasetAccessGrantsTable.id,
@@ -465,49 +639,149 @@ async function activate(
         )
       )
     )
+    .orderBy(
+      sql`case when ${datasetAccessGrantsTable.stripeCheckoutSessionId} = ${buyer.sessionId} then 0 else 1 end`,
+      datasetAccessGrantsTable.id
+    )
     .limit(1);
 
   if (open) {
-    const [upgraded] = await db
-      .update(datasetAccessGrantsTable)
-      .set({
-        // A resubscribe keeps the row's name and organization: only the INSERT takes them from Checkout.
-        ...commercialFields,
-        verifiedAt: sql`coalesce(${datasetAccessGrantsTable.verifiedAt}, ${timestamp(now)})`,
-        unsubscribeToken: sql`coalesce(${datasetAccessGrantsTable.unsubscribeToken}, ${generateToken()})`,
-      })
-      .where(
-        and(
+    const upgraded = await writeGrant(db, buyer.sessionId, open.id, (lockDecision, linkDecision) => sql`
+      with ${lockDecision},
+      up as (
+        update dataset_access_grants set ${sql.join(
+          [
+            ...commonColumns.map(([column, value]) => sql`${sql.raw(column)} = ${value}`),
+            // A resubscribe keeps the row's name and organization: only the INSERT takes them from Checkout.
+            sql`card_fingerprint_hash = coalesce(${buyer.fingerprintHash}::text, card_fingerprint_hash)`,
+            sql`verified_at = coalesce(verified_at, ${timestamp(now)})`,
+            sql`unsubscribe_token = coalesce(unsubscribe_token, ${generateToken()}::text)`,
+          ],
+          sql`, `
+        )}
+        where ${and(
           eq(datasetAccessGrantsTable.id, open.id),
           eq(datasetAccessGrantsTable.tier, "commercial"),
+          // A revoke that landed after the open read must not be overwritten back to active.
+          ne(datasetAccessGrantsTable.status, "revoked"),
+          // Never take over a grant that is live with a DIFFERENT subscription (the same-email race).
+          not(
+            and(
+              isNotNull(datasetAccessGrantsTable.stripeSubscriptionId),
+              ne(datasetAccessGrantsTable.stripeSubscriptionId, buyer.subscriptionId),
+              liveGrant(now)
+            )!
+          ),
           // Atomic claim: only one delivery mints the token for this session.
           or(
             isNull(datasetAccessGrantsTable.stripeCheckoutSessionId),
             ne(datasetAccessGrantsTable.stripeCheckoutSessionId, buyer.sessionId),
             isNull(datasetAccessGrantsTable.accessTokenHash)
           )
+        )}
+        and exists (select 1 from lock_decision)
+        returning id
+      ),
+      ${linkDecision("up")}
+      select id from up`);
+    if (upgraded) return activated(upgraded);
+    const lost = await lostClaim(db, buyer.sessionId, open.id);
+    if (lost) return { kind: "claim_lost" };
+    // Revoked after the open read: no grant, and the retry loop must not insert a fresh row either.
+    const [nowRevoked] = await db
+      .select({ id: datasetAccessGrantsTable.id })
+      .from(datasetAccessGrantsTable)
+      .where(and(eq(datasetAccessGrantsTable.id, open.id), eq(datasetAccessGrantsTable.status, "revoked")))
+      .limit(1);
+    if (nowRevoked) return { kind: "claim_lost" };
+    const [blocker] = await db
+      .select({ id: datasetAccessGrantsTable.id })
+      .from(datasetAccessGrantsTable)
+      .where(
+        and(
+          eq(datasetAccessGrantsTable.id, open.id),
+          isNotNull(datasetAccessGrantsTable.stripeSubscriptionId),
+          ne(datasetAccessGrantsTable.stripeSubscriptionId, buyer.subscriptionId),
+          liveGrant(now)
         )
       )
-      .returning({ id: datasetAccessGrantsTable.id });
-    return upgraded ? activated(upgraded.id) : null;
+      .limit(1);
+    return blocker ? { kind: "blocked", grantId: blocker.id } : null;
   }
 
-  const [created] = await db
-    .insert(datasetAccessGrantsTable)
-    .values({
-      ...commercialFields,
-      email: buyer.email,
-      name: buyer.name,
-      organization: buyer.organization,
-      intendedUse: INTENDED_USE,
-      attributionAckAt: now,
-      termsVersion: buyer.termsVersion,
-      verifiedAt: now,
-      verifyTokenHash: hashToken(generateToken()), // never sent: the buyer proved the address by paying through Stripe
-      unsubscribeToken: generateToken(),
-    })
-    .returning({ id: datasetAccessGrantsTable.id });
-  return activated(created.id);
+  const newId = randomUUID();
+  const insertColumns: Array<[string, SQL]> = [
+    ["id", sql`${newId}::uuid`],
+    ...commonColumns,
+    ["card_fingerprint_hash", sql`${buyer.fingerprintHash}::text`],
+    ["email", sql`${buyer.email}::text`],
+    ["name", sql`${buyer.name}::text`],
+    ["organization", sql`${buyer.organization}::text`],
+    ["intended_use", sql`${INTENDED_USE}::text`],
+    ["attribution_ack_at", timestamp(now)],
+    ["terms_version", sql`${buyer.termsVersion}::text`],
+    ["verified_at", timestamp(now)],
+    ["verify_token_hash", sql`${hashToken(generateToken())}::text`], // never sent: the buyer proved the address by paying through Stripe
+    ["unsubscribe_token", sql`${generateToken()}::text`],
+  ];
+  const created = await writeGrant(db, buyer.sessionId, newId, (lockDecision, linkDecision) => sql`
+    with ${lockDecision},
+    ins as (
+      insert into dataset_access_grants (${sql.raw(insertColumns.map(([column]) => column).join(", "))})
+      select ${sql.join(
+        insertColumns.map(([, value]) => value),
+        sql`, `
+      )}
+      where exists (select 1 from lock_decision)
+      returning id
+    ),
+    ${linkDecision("ins")}
+    select id from ins`);
+  if (created) return activated(created);
+  // Nothing written: the lock found no 'activate' decision this write may claim.
+  return (await lostClaim(db, buyer.sessionId, newId)) ? { kind: "claim_lost" } : null;
+}
+
+/**
+ * The ONE statement that writes a grant for a checkout session, so the decision row is the serialization
+ * point against `refuseAfterLostWrite`. `build` receives two CTEs: `lock_decision` row-locks this session's
+ * decision (`FOR UPDATE`) while it is still 'activate' and unlinked (or already linked to `grantId`); Postgres
+ * re-checks that predicate after waiting out a concurrent flip, so a refused session locks nothing and
+ * `exists (select 1 from lock_decision)` keeps the grant write from happening. `linkDecision(cte)` sets
+ * `grant_id` in the same statement, only if the named write CTE returned a row (a data-modifying CTE runs
+ * whether or not it is read, so the link must depend on the write, never the reverse). Parameters are bound.
+ * Returns the written grant id, or undefined when nothing was written.
+ */
+async function writeGrant(
+  db: CommercialDb,
+  sessionId: string,
+  grantId: string,
+  build: (lockDecision: SQL, linkDecision: (writeCte: "up" | "ins") => SQL) => SQL
+): Promise<string | undefined> {
+  const lockDecision = sql`lock_decision as (
+    select 1 from stripe_checkout_decisions
+    where session_id = ${sessionId} and decision = 'activate' and (grant_id is null or grant_id = ${grantId}::uuid)
+    for update
+  )`;
+  const linkDecision = (writeCte: "up" | "ins") => sql`link as (
+    update stripe_checkout_decisions set grant_id = ${grantId}::uuid
+    where session_id = ${sessionId} and decision = 'activate' and exists (select 1 from ${sql.raw(writeCte)})
+    returning 1
+  )`;
+  const result = await db.execute(build(lockDecision, linkDecision));
+  // PgDatabase leaves the driver's result type open; both neon-http and PGlite return `{ rows }`.
+  return (result as unknown as { rows: Array<{ id: string }> }).rows[0]?.id;
+}
+
+/**
+ * True when the session's decision row definitely no longer permits a write: flipped to 'refuse', or linked to
+ * a grant other than `candidateGrantId`. False means the lock was fine and the grant write failed on its own
+ * conditions (a live grant with another subscription, a lost token claim) or the row is still claimable.
+ */
+async function lostClaim(db: CommercialDb, sessionId: string, candidateGrantId: string): Promise<boolean> {
+  const current = await decisionOf(db, sessionId);
+  if (!current) return false;
+  return current.decision === "refuse" || (current.grantId !== null && current.grantId !== candidateGrantId);
 }
 
 /** paidThrough = expiresAt = max(current, next), in one statement so both columns see the same old value. */

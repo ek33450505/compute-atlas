@@ -1,6 +1,6 @@
 import { escapeHtml } from "@/lib/html-escape";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
-import { COMMERCIAL_PATH, COMMERCIAL_PLANS, formatPlanPrice } from "@/lib/commercial-plans";
+import { COMMERCIAL_PATH, COMMERCIAL_PLANS, COMMERCIAL_SEATS, formatPlanPrice } from "@/lib/commercial-plans";
 import { DATASET_LICENSE_URL } from "@/lib/site";
 
 /**
@@ -229,6 +229,100 @@ export function buildDatasetCommercialRedirectEmail(input: { siteUrl: string }):
     `<a href="${escapeHtml(url)}">${escapeHtml(url)}</a>`,
     escapeHtml(reply),
   );
+  return { subject, text, html };
+}
+
+export function buildDatasetSubscriptionActiveEmail(input: { siteUrl: string; accessToken: string }): DatasetEmail {
+  const url = `${input.siteUrl}/access/dataset?t=${encodeURIComponent(input.accessToken)}`;
+  const dataUrl = `${input.siteUrl}/data`;
+  const subject = "Your Compute Atlas commercial access is active";
+  const refresh = "The dataset refreshes weekly.";
+  const seats = `One subscription covers internal use by up to ${COMMERCIAL_SEATS} people at your organization.`;
+  const billing =
+    'Billing, invoices and cancellation are handled from the "Manage billing" link on your dataset page. If you cancel, access continues to the end of the period you have paid for.';
+  const reply = "Reply to this email with any questions.";
+  const notYou = `If you did not make this purchase, contact us at ${input.siteUrl}/contact.`;
+  const text = [
+    "Thank you for subscribing to the Compute Atlas dataset. Your personal link:",
+    "",
+    url,
+    "",
+    "The link is personal: do not share it.",
+    refresh,
+    seats,
+    billing,
+    "",
+    `${ATTRIBUTION_TEXT} How to cite: ${dataUrl}`,
+    reply,
+    notYou,
+  ].join("\n");
+  const html = paragraphs(
+    "Thank you for subscribing to the Compute Atlas dataset.",
+    `<a href="${escapeHtml(url)}">Open your personal link</a>`,
+    "The link is personal: do not share it.",
+    escapeHtml(refresh),
+    escapeHtml(seats),
+    escapeHtml(billing),
+    `${escapeHtml(ATTRIBUTION_TEXT)} <a href="${escapeHtml(dataUrl)}">How to cite</a>.`,
+    escapeHtml(reply),
+    `If you did not make this purchase, contact us at <a href="${escapeHtml(`${input.siteUrl}/contact`)}">${escapeHtml(`${input.siteUrl}/contact`)}</a>.`,
+  );
+  return { subject, text, html };
+}
+
+export type CommercialAlertReason =
+  | "already_subscribed"
+  | "revoked_buyer"
+  | "revoked_still_billing"
+  | "orphaned_subscription"
+  | "superseded_session"
+  | "welcome_mail_undeliverable";
+
+/** What the webhook did about the conflict, in words the maintainer can act on. */
+export type CommercialAlertAction =
+  | "cancelled"
+  | "cancelled_and_refunded"
+  | "cancelled_refund_needed"
+  | "none"
+  | "no_action_person_decides"
+  | "link_not_mailed_suppressed"
+  | "link_not_mailed_unconfirmed";
+
+const ALERT_ACTION_TEXT: Record<CommercialAlertAction, string> = {
+  cancelled: "The new subscription was cancelled. No refund was due.",
+  cancelled_and_refunded: "The new subscription was cancelled and its first payment refunded.",
+  cancelled_refund_needed:
+    "The subscription was cancelled, but a paid first payment could not be identified for refund. Refund it by hand in Stripe.",
+  none: "No automatic action was taken. Check it in Stripe.",
+  no_action_person_decides:
+    "This checkout was already approved for activation (it may or may not have produced a grant yet), so it was NOT cancelled or refunded automatically. Check the grant and the subscription and decide by hand.",
+  link_not_mailed_suppressed:
+    "The buyer paid, but their address has opted out of our email, so the personal link was not sent. A reissue from /admin/access will be blocked by the same opt-out. Refund and cancel in Stripe, or reach the buyer through their Stripe receipt.",
+  link_not_mailed_unconfirmed:
+    "The buyer paid, but the grant was not live when the link was mailed (for example revoked or changed meanwhile). Check the grant in /admin/access; reissue the link there if it should be live, or refund and cancel in Stripe.",
+};
+
+export function buildDatasetCommercialAlertEmail(input: {
+  reason: CommercialAlertReason;
+  action: CommercialAlertAction;
+  subscriptionId: string | null;
+  sessionId: string | null;
+  invoiceId: string | null;
+  grantId?: string | null;
+}): DatasetEmail {
+  const subject = "Compute Atlas commercial subscription needs attention";
+  const rows: Array<[string, string]> = [
+    ["Reason", input.reason],
+    ["Action", ALERT_ACTION_TEXT[input.action]],
+    ["Subscription", input.subscriptionId ?? "(none)"],
+    ["Checkout session", input.sessionId ?? "(none)"],
+    ["Invoice", input.invoiceId ?? "(none)"],
+    ["Grant", input.grantId ?? "(none)"],
+  ].map(([k, v]) => [k, singleLine(v)] as [string, string]);
+  const text = ["A commercial subscription event needs your attention.", "", ...rows.map(([k, v]) => `${k}: ${v}`)].join("\n");
+  const html =
+    paragraphs("A commercial subscription event needs your attention.") +
+    `<ul>${rows.map(([k, v]) => `<li><strong>${escapeHtml(k)}:</strong> ${escapeHtml(v)}</li>`).join("")}</ul>`;
   return { subject, text, html };
 }
 

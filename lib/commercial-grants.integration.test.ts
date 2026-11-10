@@ -1,11 +1,12 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } from "vitest";
-import { eq } from "drizzle-orm";
+import { eq, type SQL } from "drizzle-orm";
+import { PgDialect } from "drizzle-orm/pg-core";
 import type Stripe from "stripe";
 
-import { processStripeEvent, type CommercialDb } from "@/lib/commercial-grants";
+import { processStripeEvent, refuseAfterLostWrite, type CommercialDb } from "@/lib/commercial-grants";
 import { liveGrant } from "@/lib/dataset-grants";
-import { datasetAccessGrantsTable, stripeEventsTable } from "@/lib/db/schema";
+import { datasetAccessGrantsTable, stripeCheckoutDecisionsTable, stripeEventsTable } from "@/lib/db/schema";
 import { hashToken } from "@/lib/token-hash";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 
@@ -270,6 +271,7 @@ describe("checkout.session.completed", () => {
       newSubscriptionId: "sub_2",
       sessionId: "cs_2",
       invoiceId: "in_1",
+      amountTotal: 90000,
     });
     const rows = await grants();
     expect(rows).toHaveLength(1);
@@ -612,6 +614,7 @@ describe("a revoke sticks on the paid tier", () => {
       newSubscriptionId: "sub_1",
       sessionId: "cs_1",
       invoiceId: "in_1",
+      amountTotal: 90000,
     });
     expect(await grants()).toEqual([revoked]);
     expect((await tdb.db.select().from(stripeEventsTable))[0].processedAt).not.toBeNull();
@@ -679,9 +682,15 @@ describe("a revoke sticks on the paid tier", () => {
     const revoked = await revokedCommercial({ stripeCustomerId: "cus_old", stripeSubscriptionId: "sub_old" });
     makeSub("sub_1");
     const event = checkoutEvent();
-    const first = await process(event);
-    expect(first).toMatchObject({ kind: "conflict", reason: "revoked_buyer" });
-    await tdb.db.update(stripeEventsTable).set({ processedAt: null });
+    const first = await processStripeEvent(event, {
+      db: db(),
+      stripe,
+      now: NOW,
+      beforeComplete: async () => {
+        throw new Error("cancel failed");
+      },
+    }).catch((e: Error) => e);
+    expect(first).toBeInstanceOf(Error);
     makeSub("sub_1", { status: "canceled", endedAt: NOW }); // the route cancelled it
     expect(await process(event)).toMatchObject({
       kind: "conflict",
@@ -698,7 +707,8 @@ describe("a revoke sticks on the paid tier", () => {
     makeSub("sub_2", { periodEnd: daysFromNow(60) });
     const event = checkoutEvent({}, { sessionId: "cs_2", subId: "sub_2" });
     expect((await process(event)).kind).toBe("conflict");
-    await tdb.db.update(stripeEventsTable).set({ processedAt: null }).where(eq(stripeEventsTable.id, event.id));
+    // A completed conflict never retries in production; model an unfinished one by clearing both columns.
+    await tdb.db.update(stripeEventsTable).set({ processedAt: null, grantId: null }).where(eq(stripeEventsTable.id, event.id));
     makeSub("sub_2", { status: "canceled", endedAt: NOW });
     expect(await process(event)).toMatchObject({ kind: "conflict", reason: "already_subscribed", newSubscriptionId: "sub_2" });
   });
@@ -776,26 +786,18 @@ describe("unique-index race", () => {
         expiresAt: daysFromNow(-1),
         paidThrough: daysFromNow(-1),
       });
-    // Delays the FIRST grant insert until a competitor has taken the (email, tier) open slot.
+    // Delays the FIRST grant write (one `execute`: the claim + INSERT statement) until a competitor has taken
+    // the (email, tier) open slot.
     const racing = new Proxy(db(), {
       get(target, key, receiver) {
         const value = Reflect.get(target, key, receiver);
-        if (key !== "insert") return typeof value === "function" ? value.bind(target) : value;
-        return (table: unknown) => {
-          const builder = target.insert(table as never);
-          if (table !== datasetAccessGrantsTable || raced) return builder;
-          raced = true;
-          return {
-            values: (v: never) => {
-              const q = builder.values(v);
-              return {
-                returning: (...args: never[]) => {
-                  const real = (q.returning as (...a: unknown[]) => PromiseLike<unknown>)(...args);
-                  return { then: (ok: never, bad: never) => competitor().then(() => real).then(ok, bad) };
-                },
-              };
-            },
-          };
+        if (key !== "execute") return typeof value === "function" ? value.bind(target) : value;
+        return async (query: SQL) => {
+          if (!raced && new PgDialect().sqlToQuery(query).sql.includes("insert into dataset_access_grants")) {
+            raced = true;
+            await competitor();
+          }
+          return target.execute(query);
         };
       },
     }) as CommercialDb;
@@ -808,6 +810,70 @@ describe("unique-index race", () => {
     expect(rows[0]).toMatchObject({ stripeSubscriptionId: "sub_1", status: "active" });
     if (out.kind === "activated") expect(rows[0].accessTokenHash).toBe(hashToken(out.mail.accessToken));
     expect(await isLive(rows[0].id)).toBe(true);
+  });
+});
+
+describe("a revoke landing between the open read and the upgrade write", () => {
+  it("is not overwritten back to active, and no fresh grant is inserted", async () => {
+    const open = await insertFree({
+      tier: "commercial",
+      category: "commercial",
+      status: "active",
+      accessTokenHash: null,
+      expiresAt: daysFromNow(-1),
+      paidThrough: daysFromNow(-1),
+    });
+    makeSub("sub_1", { periodEnd: daysFromNow(30) });
+    let revoked = false;
+    // Revokes the open row right before the upgrade statement runs, after the open-row SELECT.
+    const racing = new Proxy(db(), {
+      get(target, key, receiver) {
+        const value = Reflect.get(target, key, receiver);
+        if (key !== "execute") return typeof value === "function" ? value.bind(target) : value;
+        return async (query: SQL) => {
+          if (!revoked && new PgDialect().sqlToQuery(query).sql.includes("update dataset_access_grants")) {
+            revoked = true;
+            await tdb.db.update(datasetAccessGrantsTable).set({ status: "revoked", revokedAt: NOW });
+          }
+          return target.execute(query);
+        };
+      },
+    }) as CommercialDb;
+
+    const out = await processStripeEvent(checkoutEvent(), { db: racing, stripe, now: NOW });
+    expect(revoked).toBe(true);
+    expect(out).toMatchObject({ kind: "conflict", reason: "superseded_session" });
+    const rows = await grants();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ id: open.id, status: "revoked", stripeSubscriptionId: null });
+    expect(rows[0].accessTokenHash).toBeNull();
+  });
+});
+
+describe("stripe_checkout_decisions CHECK constraints", () => {
+  const base = { sessionId: "cs_x", subscriptionId: "sub_x", amountTotal: 100 };
+  const rejects = async (row: Record<string, unknown>, constraint: string) => {
+    await expect(tdb.client.query(
+      `insert into stripe_checkout_decisions (session_id, decision, reason, subscription_id, amount_total) values ($1, $2, $3, $4, $5)`,
+      [row.sessionId, row.decision, row.reason, row.subscriptionId, row.amountTotal]
+    )).rejects.toThrow(new RegExp(constraint));
+  };
+
+  it("rejects a refusal without a reason", async () => {
+    await rejects({ ...base, decision: "refuse", reason: null }, "stripe_checkout_decisions_reason_check");
+  });
+  it("rejects an activation that carries a reason", async () => {
+    await rejects({ ...base, decision: "activate", reason: "already_subscribed" }, "stripe_checkout_decisions_reason_check");
+  });
+  it("rejects an unknown decision", async () => {
+    await rejects({ ...base, decision: "x", reason: null }, "stripe_checkout_decisions_decision_check");
+  });
+  it("accepts the two valid shapes", async () => {
+    await tdb.db.insert(stripeCheckoutDecisionsTable).values({ ...base, decision: "activate" });
+    await tdb.db
+      .insert(stripeCheckoutDecisionsTable)
+      .values({ ...base, sessionId: "cs_y", decision: "refuse", reason: "revoked_buyer" });
+    expect(await tdb.db.select().from(stripeCheckoutDecisionsTable)).toHaveLength(2);
   });
 });
 
@@ -837,6 +903,367 @@ describe("customer.subscription.deleted", () => {
   it("an unknown subscription is ignored", async () => {
     const ended = makeSub("sub_nope", { endedAt: NOW });
     expect((await process(asEvent("customer.subscription.deleted", ended))).kind).toBe("ignored");
+  });
+});
+
+describe("refund-safety of retried checkout events", () => {
+  const throwing = {
+    beforeComplete: async () => {
+      throw new Error("side effects failed");
+    },
+  };
+  const attempt = (event: Stripe.Event, extra: object = {}) =>
+    processStripeEvent(event, { db: db(), stripe, now: NOW, ...extra });
+
+  it("ownRevoked also matches by subscription id (a later session on the same revoked subscription is ignored)", async () => {
+    makeSub("sub_1");
+    const first = await process(checkoutEvent({}, { sessionId: "cs_1" }));
+    if (first.kind !== "activated") throw new Error("expected activation");
+    await tdb.db.update(datasetAccessGrantsTable).set({ status: "revoked" });
+    const out = await process(checkoutEvent({}, { sessionId: "cs_other", subId: "sub_1" }));
+    expect(out).toEqual({ kind: "ignored", reason: "grant revoked; billing is stopped by the revoke action" });
+  });
+
+  it("amountTotal is 0 when the session carries no amount_total", async () => {
+    const revoked = await insertFree({
+      tier: "commercial",
+      category: "commercial",
+      status: "revoked",
+      accessTokenHash: "revoked-access",
+      unsubscribeToken: null,
+    });
+    makeSub("sub_1");
+    const out = await process(checkoutEvent({ amount_total: null }));
+    expect(out).toMatchObject({ reason: "revoked_buyer", grantId: revoked.id, amountTotal: 0 });
+  });
+
+  it("a FIRST-attempt conflict whose beforeComplete threw still returns the refund conflict on retry", async () => {
+    makeSub("sub_1", { periodEnd: daysFromNow(30) });
+    await process(checkoutEvent());
+    makeSub("sub_2", { periodEnd: daysFromNow(60) });
+    const event = checkoutEvent({}, { sessionId: "cs_2", subId: "sub_2" });
+    await expect(attempt(event, throwing)).rejects.toThrow("side effects failed");
+    expect(await attempt(event)).toMatchObject({ kind: "conflict", reason: "already_subscribed", amountTotal: 90000 });
+  });
+
+  const decisions = () => tdb.db.select().from(stripeCheckoutDecisionsTable);
+  const moveGrantToSecondSession = () => {
+    makeSub("sub_b", { periodEnd: daysFromNow(60) });
+    return tdb.db
+      .update(datasetAccessGrantsTable)
+      .set({ stripeCheckoutSessionId: "cs_2", stripeSubscriptionId: "sub_b", paidThrough: daysFromNow(60), expiresAt: daysFromNow(60) });
+  };
+  const insertDecision = (over: Partial<typeof stripeCheckoutDecisionsTable.$inferInsert>) =>
+    tdb.db.insert(stripeCheckoutDecisionsTable).values({
+      sessionId: "cs_2",
+      decision: "activate",
+      subscriptionId: "sub_2",
+      invoiceId: "in_1",
+      amountTotal: 90000,
+      ...over,
+    });
+
+  it("activation stores an 'activate' decision linked to the grant", async () => {
+    makeSub("sub_a");
+    const out = await process(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }));
+    expect(out).toMatchObject({ kind: "activated", sessionId: "cs_1" });
+    expect(await decisions()).toMatchObject([
+      { sessionId: "cs_1", decision: "activate", reason: null, subscriptionId: "sub_a", amountTotal: 90000, grantId: (await grants())[0].id },
+    ]);
+  });
+
+  it("an ignored (zero-amount) checkout stores no decision", async () => {
+    makeSub("sub_1");
+    await process(checkoutEvent({ amount_total: 0 }));
+    expect(await decisions()).toHaveLength(0);
+  });
+
+  it("W4: a stored refusal is replayed after the conflict cleared and the new subscription was cancelled", async () => {
+    makeSub("sub_1", { periodEnd: daysFromNow(30) });
+    const first = await process(checkoutEvent());
+    if (first.kind !== "activated") throw new Error("expected activation");
+    makeSub("sub_2", { periodEnd: daysFromNow(60) });
+    const event = checkoutEvent({}, { id: "evt_w4", sessionId: "cs_2", subId: "sub_2" });
+    await expect(attempt(event, throwing)).rejects.toThrow("side effects failed");
+    expect((await decisions()).find((r) => r.sessionId === "cs_2")).toMatchObject({ decision: "refuse", reason: "already_subscribed" });
+    // The route cancelled sub_2 but the refund threw; meanwhile the blocking grant lapsed.
+    makeSub("sub_2", { status: "canceled", endedAt: NOW });
+    await tdb.db.update(datasetAccessGrantsTable).set({ expiresAt: daysFromNow(-1), paidThrough: daysFromNow(-1) });
+    expect(await attempt(event)).toMatchObject({ kind: "conflict", reason: "already_subscribed", sessionId: "cs_2", newSubscriptionId: "sub_2", amountTotal: 90000 });
+    const later = asEvent("checkout.session.async_payment_succeeded", event.data.object, "evt_w4b");
+    expect(await process(later)).toMatchObject({ kind: "conflict", reason: "already_subscribed", sessionId: "cs_2" });
+    expect(await grants()).toHaveLength(1);
+  });
+
+  it("W3: a stored 'activate' is followed even when current state would compute a refusal", async () => {
+    makeSub("sub_a");
+    const event = checkoutEvent({}, { id: "evt_w3", sessionId: "cs_1", subId: "sub_a" });
+    await expect(attempt(event, throwing)).rejects.toThrow("side effects failed");
+    // A revoked commercial grant for the same customer now exists: a fresh computation would refuse.
+    await insertFree({ email: "other@example.com", tier: "commercial", category: "commercial", status: "revoked", stripeCustomerId: "cus_1", verifyTokenHash: "v-rev" });
+    const later = asEvent("checkout.session.async_payment_succeeded", event.data.object, "evt_w3b");
+    expect(await process(later)).toMatchObject({ kind: "updated" });
+  });
+
+  it("W3: an unlinked stored 'activate' for a buyer revoked since is superseded (alert), never a refund", async () => {
+    makeSub("sub_a");
+    await insertDecision({ sessionId: "cs_1", subscriptionId: "sub_a" });
+    const revoked = await insertFree({ tier: "commercial", category: "commercial", status: "revoked", verifyTokenHash: "v-rev" });
+    expect(await process(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }))).toMatchObject({
+      kind: "conflict",
+      reason: "superseded_session",
+      grantId: revoked.id,
+      sessionId: "cs_1",
+    });
+    expect((await grants()).filter((g) => g.status !== "revoked")).toHaveLength(0);
+  });
+
+  it("same-email race: a second session's 'activate' never overwrites the first session's live grant; it is refused", async () => {
+    makeSub("sub_1", { periodEnd: daysFromNow(30) });
+    const first = await process(checkoutEvent());
+    if (first.kind !== "activated") throw new Error("expected activation");
+    const before = (await grants())[0];
+    // S2 was decided 'activate' before S1's grant existed.
+    makeSub("sub_2", { periodEnd: daysFromNow(60) });
+    await insertDecision({});
+    const out = await process(checkoutEvent({}, { sessionId: "cs_2", subId: "sub_2" }));
+    expect(out).toMatchObject({
+      kind: "conflict",
+      reason: "already_subscribed",
+      grantId: before.id,
+      existingSubscriptionId: "sub_1",
+      newSubscriptionId: "sub_2",
+      sessionId: "cs_2",
+      amountTotal: 90000,
+    });
+    expect(await grants()).toEqual([before]);
+    const s2 = (await decisions()).find((r) => r.sessionId === "cs_2");
+    expect(s2).toMatchObject({ decision: "refuse", reason: "already_subscribed", conflictGrantId: before.id, grantId: null });
+  });
+
+  /** A db whose FIRST grant write (the claim + write statement) is preceded by `before`: a concurrent actor winning the race. */
+  const beforeGrantWrite = (before: () => Promise<unknown>): CommercialDb => {
+    let done = false;
+    return new Proxy(db(), {
+      get(target, key, receiver) {
+        const value = Reflect.get(target, key, receiver);
+        if (key !== "execute") return typeof value === "function" ? value.bind(target) : value;
+        return async (query: SQL) => {
+          if (!done && new PgDialect().sqlToQuery(query).sql.includes("lock_decision")) {
+            done = true;
+            await before();
+          }
+          return target.execute(query);
+        };
+      },
+    }) as CommercialDb;
+  };
+  const flipTo = (sessionId: string, conflictGrantId: string | null = null) =>
+    tdb.db
+      .update(stripeCheckoutDecisionsTable)
+      .set({ decision: "refuse", reason: "already_subscribed", conflictGrantId })
+      .where(eq(stripeCheckoutDecisionsTable.sessionId, sessionId));
+
+  it("W1: the INSERT claims the decision: a refusal that landed first means NO grant is written", async () => {
+    makeSub("sub_a");
+    const winner = await insertFree({ email: "winner@example.com", tier: "commercial", category: "commercial", verifyTokenHash: "v-w", stripeSubscriptionId: "sub_w", paidThrough: daysFromNow(30), expiresAt: daysFromNow(30) });
+    await insertDecision({ sessionId: "cs_1", subscriptionId: "sub_a" });
+    const racing = beforeGrantWrite(() => flipTo("cs_1", winner.id));
+    const out = await processStripeEvent(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }), { db: racing, stripe, now: NOW });
+    expect(out).toMatchObject({ kind: "conflict", reason: "already_subscribed", grantId: winner.id, sessionId: "cs_1", newSubscriptionId: "sub_a" });
+    expect((await grants()).map((g) => g.id)).toEqual([winner.id]);
+    expect(await decisions()).toMatchObject([{ decision: "refuse", grantId: null }]);
+  });
+
+  it("W1: the INSERT writes nothing when the decision is already linked to a different grant: superseded_session", async () => {
+    makeSub("sub_a");
+    const other = await insertFree({ email: "other@example.com", tier: "commercial", category: "commercial", verifyTokenHash: "v-o", stripeSubscriptionId: "sub_o", paidThrough: daysFromNow(30), expiresAt: daysFromNow(30) });
+    await insertDecision({ sessionId: "cs_1", subscriptionId: "sub_a" });
+    const racing = beforeGrantWrite(() => tdb.db.update(stripeCheckoutDecisionsTable).set({ grantId: other.id }));
+    const out = await processStripeEvent(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }), { db: racing, stripe, now: NOW });
+    expect(out).toMatchObject({ kind: "conflict", reason: "superseded_session", grantId: other.id, sessionId: "cs_1" });
+    expect((await grants()).map((g) => g.id)).toEqual([other.id]);
+  });
+
+  describe("W1: the upgrade of a lapsed row claims the decision too", () => {
+    const lapsed = () =>
+      insertFree({ tier: "commercial", category: "commercial", verifyTokenHash: "v-l", stripeSubscriptionId: "sub_old", paidThrough: daysFromNow(-3), expiresAt: daysFromNow(-3) });
+
+    it("links the decision to the upgraded row in the same statement", async () => {
+      makeSub("sub_a");
+      const row = await lapsed();
+      const out = await process(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }));
+      expect(out).toMatchObject({ kind: "activated", grantId: row.id });
+      expect(await decisions()).toMatchObject([{ sessionId: "cs_1", decision: "activate", grantId: row.id }]);
+      expect((await grants())[0]).toMatchObject({ stripeSubscriptionId: "sub_a", stripeCheckoutSessionId: "cs_1" });
+    });
+
+    it("a refusal that landed first leaves the lapsed row untouched", async () => {
+      makeSub("sub_a");
+      const row = await lapsed();
+      await insertDecision({ sessionId: "cs_1", subscriptionId: "sub_a" });
+      const racing = beforeGrantWrite(() => flipTo("cs_1", row.id));
+      const out = await processStripeEvent(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }), { db: racing, stripe, now: NOW });
+      expect(out).toMatchObject({ kind: "conflict", reason: "already_subscribed", sessionId: "cs_1" });
+      expect(await grants()).toEqual([row]);
+      expect(await decisions()).toMatchObject([{ decision: "refuse", grantId: null }]);
+    });
+
+    it("a blocked upgrade (another live subscription) does not link the decision", async () => {
+      makeSub("sub_2");
+      const blocker = await insertFree({ tier: "commercial", category: "commercial", verifyTokenHash: "v-b", stripeSubscriptionId: "sub_1", paidThrough: daysFromNow(30), expiresAt: daysFromNow(30) });
+      await insertDecision({});
+      const out = await process(checkoutEvent({}, { sessionId: "cs_2", subId: "sub_2" }));
+      expect(out).toMatchObject({ kind: "conflict", reason: "already_subscribed", grantId: blocker.id });
+      expect(await decisions()).toMatchObject([{ decision: "refuse", grantId: null }]);
+    });
+  });
+
+  it("W2: a decision row written by a concurrent winner is a replay and gets the replay checks", async () => {
+    makeSub("sub_a");
+    // Our delivery computes 'refuse' (a revoked buyer), but a concurrent delivery stored 'activate' first.
+    const revoked = await insertFree({ tier: "commercial", category: "commercial", status: "revoked", verifyTokenHash: "v-rev" });
+    const racing = new Proxy(db(), {
+      get(target, key, receiver) {
+        const value = Reflect.get(target, key, receiver);
+        if (key !== "insert") return typeof value === "function" ? value.bind(target) : value;
+        return (table: unknown) => {
+          const builder = target.insert(table as never);
+          if (table !== stripeCheckoutDecisionsTable) return builder;
+          return {
+            values: (v: never) => ({
+              onConflictDoNothing: () => ({
+                returning: (...args: never[]) => {
+                  const real = () => (builder.values(v).onConflictDoNothing().returning as (...a: unknown[]) => PromiseLike<unknown>)(...args);
+                  return {
+                    then: (ok: never, bad: never) =>
+                      insertDecision({ sessionId: "cs_1", subscriptionId: "sub_a" }).then(real).then(ok, bad),
+                  };
+                },
+              }),
+            }),
+          };
+        };
+      },
+    }) as CommercialDb;
+    const out = await processStripeEvent(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }), { db: racing, stripe, now: NOW });
+    expect(out).toMatchObject({ kind: "conflict", reason: "superseded_session", grantId: revoked.id, sessionId: "cs_1" });
+    expect((await grants()).filter((g) => g.status !== "revoked")).toHaveLength(0);
+  });
+
+  it("W3: a refusal whose named grant was deleted reports null ids, not sentinel strings", async () => {
+    makeSub("sub_a");
+    await insertDecision({ sessionId: "cs_1", subscriptionId: "sub_a", decision: "refuse", reason: "already_subscribed", conflictGrantId: null });
+    expect(await process(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }))).toMatchObject({
+      kind: "conflict",
+      reason: "already_subscribed",
+      grantId: null,
+      existingSubscriptionId: null,
+    });
+    await insertDecision({ sessionId: "cs_3", subscriptionId: "sub_a", decision: "refuse", reason: "revoked_buyer", conflictGrantId: null });
+    expect(await process(checkoutEvent({}, { sessionId: "cs_3", subId: "sub_a" }))).toMatchObject({
+      kind: "conflict",
+      reason: "revoked_buyer",
+      grantId: null,
+    });
+  });
+
+  it("S3: a lost write whose flip fails (a grant carries the session's subscription) reads as superseded_session, end to end", async () => {
+    makeSub("sub_2");
+    const blocker = await insertFree({ tier: "commercial", category: "commercial", verifyTokenHash: "v-b", stripeSubscriptionId: "sub_1", paidThrough: daysFromNow(30), expiresAt: daysFromNow(30) });
+    // Another row already carries this session's subscription, so the conditional flip (NOT EXISTS) matches nothing.
+    await insertFree({ email: "x@example.com", tier: "commercial", category: "commercial", verifyTokenHash: "v-x", accessTokenHash: "x-access", unsubscribeToken: "x-unsub", stripeSubscriptionId: "sub_2", status: "expired" });
+    await insertDecision({});
+    const out = await process(checkoutEvent({}, { sessionId: "cs_2", subId: "sub_2" }));
+    expect(out).toMatchObject({ kind: "conflict", reason: "superseded_session", grantId: blocker.id, sessionId: "cs_2", subscriptionId: "sub_2" });
+    expect(await decisions()).toMatchObject([{ decision: "activate", grantId: null }]);
+  });
+
+  it("the conditional flip is refused when the session is linked to a grant: superseded_session", async () => {
+    makeSub("sub_a");
+    const first = await process(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }));
+    if (first.kind !== "activated") throw new Error("expected activation");
+    const [row] = await decisions();
+    const out = await refuseAfterLostWrite(db(), row, "00000000-0000-0000-0000-000000000000");
+    expect(out).toMatchObject({ kind: "conflict", reason: "superseded_session", grantId: first.grantId, sessionId: "cs_1" });
+    expect((await decisions())[0].decision).toBe("activate");
+  });
+
+  it("the conditional flip is refused when a grant carries the session even though grant_id is unlinked", async () => {
+    makeSub("sub_a");
+    const first = await process(checkoutEvent({}, { sessionId: "cs_1", subId: "sub_a" }));
+    if (first.kind !== "activated") throw new Error("expected activation");
+    await tdb.db.update(stripeCheckoutDecisionsTable).set({ grantId: null });
+    const [row] = await decisions();
+    const out = await refuseAfterLostWrite(db(), row, first.grantId);
+    expect(out).toMatchObject({ reason: "superseded_session" });
+    expect((await decisions())[0].decision).toBe("activate");
+  });
+
+  it("superseded session: the retry of an activating event never becomes a refund conflict", async () => {
+    makeSub("sub_a");
+    const event = checkoutEvent({}, { id: "evt_s1", sessionId: "cs_1", subId: "sub_a" });
+    await expect(attempt(event, throwing)).rejects.toThrow("side effects failed");
+    const [g] = await grants();
+    await moveGrantToSecondSession();
+    expect(await attempt(event)).toEqual({
+      kind: "conflict",
+      reason: "superseded_session",
+      grantId: g.id,
+      sessionId: "cs_1",
+      subscriptionId: "sub_a",
+    });
+  });
+
+  it("superseded session: a DISTINCT event for the same session after the grant moved is never a refund", async () => {
+    makeSub("sub_a");
+    const first = checkoutEvent({}, { id: "evt_c1", sessionId: "cs_1", subId: "sub_a" });
+    const [g] = [(await process(first)) as { grantId: string }];
+    await moveGrantToSecondSession();
+    const later = asEvent("checkout.session.async_payment_succeeded", first.data.object, "evt_c2");
+    expect(await process(later)).toEqual({
+      kind: "conflict",
+      reason: "superseded_session",
+      grantId: g.grantId,
+      sessionId: "cs_1",
+      subscriptionId: "sub_a",
+    });
+  });
+
+  it("a first-attempt genuine conflict and its retry both stay refund conflicts", async () => {
+    makeSub("sub_1");
+    await process(checkoutEvent());
+    makeSub("sub_2", { periodEnd: daysFromNow(60) });
+    const event = checkoutEvent({}, { id: "evt_g", sessionId: "cs_2", subId: "sub_2" });
+    await expect(attempt(event, throwing)).rejects.toThrow("side effects failed");
+    expect(await attempt(event)).toMatchObject({ kind: "conflict", reason: "already_subscribed" });
+    expect((await decisions()).map((r) => `${r.sessionId}:${r.decision}`).sort()).toEqual(["cs_1:activate", "cs_2:refuse"]);
+  });
+
+  it("superseded session also covers a grant that moved and was then revoked", async () => {
+    makeSub("sub_a");
+    const event = checkoutEvent({}, { id: "evt_s2", sessionId: "cs_1", subId: "sub_a" });
+    await expect(attempt(event, throwing)).rejects.toThrow("side effects failed");
+    const [g] = await grants();
+    await tdb.db
+      .update(datasetAccessGrantsTable)
+      .set({ status: "revoked", stripeCheckoutSessionId: "cs_2", stripeSubscriptionId: "sub_b" });
+    expect(await attempt(event)).toMatchObject({ kind: "conflict", reason: "superseded_session", grantId: g.id });
+  });
+
+  it("checkout.session.async_payment_succeeded activates like completed", async () => {
+    makeSub("sub_1");
+    const base = checkoutEvent();
+    const event = asEvent("checkout.session.async_payment_succeeded", base.data.object);
+    expect((await process(event)).kind).toBe("activated");
+    expect(await grants()).toHaveLength(1);
+  });
+
+  it("checkout.session.async_payment_failed is ignored and writes no grant", async () => {
+    makeSub("sub_1");
+    const event = asEvent("checkout.session.async_payment_failed", checkoutEvent().data.object);
+    expect(await process(event)).toEqual({ kind: "ignored", reason: "async payment failed" });
+    expect(await grants()).toHaveLength(0);
   });
 });
 

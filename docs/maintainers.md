@@ -532,6 +532,7 @@ Outcomes (`EMAIL_SEND_OUTCOMES` in `lib/email-sends.ts`; meanings from `lib/emai
 | `skipped_no_key` | No API key: nothing was mailed |
 | `skipped_suppressed` | A global or per-target suppression covers the address |
 | `skipped_unconfirmed` | The row is missing, the address does not match, or the row is not in the state this mail requires (a confirmed row asked for a confirm mail lands here too) |
+| `skipped_duplicate` | A deduped maintainer alert: a `sent` row for the same reason and target already exists, so the alert was not mailed again |
 | `skipped_capped` | The per-address confirm cap (10 per 30 days) was exceeded: the 11th confirm attempt in the window is the first one skipped |
 | `skipped_check_failed` | The suppression lookup errored. Not sent, and NOT a suppression |
 
@@ -679,6 +680,8 @@ A re-sorted file scores near zero for every grant (see the watermark limit above
   only.
 - A buyer with a new email, a new card and a new Stripe customer can still buy. The per-grant watermark traces
   leaks: if the file leaks again, revoke the new grant.
+- Checkout refuses to start (the buyer is sent back to the page with `?error=unavailable`) unless both
+  `CONTACT_TO_EMAIL` and `RESEND_API_KEY` are set, so money is never taken while the maintainer alert cannot be sent.
 
 ### Rollback SQL
 
@@ -706,8 +709,28 @@ code needs the `tier` column, so it cannot go first. Between step 2 and the new 
 request form fails; downloads, notices and admin keep working. Do it at a quiet time and avoid Mon-Fri
 13:00-15:30 (the discovery runs).
 
+`stripe_checkout_decisions` is the durable decision record: one row per eligible Checkout session (session id,
+'activate' or 'refuse', the refusal reason, subscription and invoice ids, amount, the grant named by a refusal,
+the grant the session activated; no email or token), written once and never pruned. Every delivery of a session
+(`checkout.session.completed`, `async_payment_succeeded`, any retry) acts on the STORED decision, not on state
+read later, so: a refusal whose cancel succeeded but whose refund failed is refunded on retry even after the
+conflict cleared; two deliveries racing a state change cannot disagree; and an 'activate' is never refunded.
+An 'activate' that can no longer proceed (its grant moved to another session, or the buyer was revoked since)
+reads as the alert-only `superseded_session`, and a person decides. The one permitted change is 'activate' to
+'refuse' (`already_subscribed`), made by one conditional UPDATE when the grant write lost to another session's
+live subscription for the same email (the grant write itself never overwrites a grant that is live with a
+different subscription). The decision row is the serialization point between activation and refusal: every
+grant write for a session (the INSERT of a new grant and the upgrade of a lapsed row) is ONE statement that
+row-locks the decision (`FOR UPDATE`, re-checked after any wait), writes the grant and sets `grant_id`, and the
+refusal only matches while `grant_id IS NULL` on that same row. Whichever takes the row lock first wins and the
+other writes nothing (proved against a real Postgres 14 with two concurrent sessions, both orders; PGlite is
+single-connection and cannot show it). The limits that remain: a revoke landing in the milliseconds between
+the decision and the grant write (neon-http has no transactions), and a lapsed-grant takeover (an upgrade of a
+lapsed row that another session's decision later claims), which is alerted only as `superseded_session` on
+replay.
+
 To undo only that migration
-(keeps every grant; `stripe_events` references `dataset_access_grants`, so it goes first):
+(keeps every grant; `stripe_events` and `stripe_checkout_decisions` reference `dataset_access_grants`, so they go first):
 
 1. Revert the deploy first, then disable the webhook endpoint in the Stripe dashboard, so redelivered events
    are not reprocessed once `stripe_events` is gone.
@@ -726,6 +749,7 @@ To undo only that migration
 
 ```sql
 BEGIN;
+DROP TABLE IF EXISTS stripe_checkout_decisions;
 DROP TABLE IF EXISTS stripe_events;
 DROP INDEX IF EXISTS dataset_access_grants_open_email_tier_idx;
 CREATE UNIQUE INDEX "dataset_access_grants_open_email_idx" ON "dataset_access_grants" USING btree ("email") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');
@@ -739,7 +763,7 @@ ALTER TABLE dataset_access_grants
   DROP COLUMN IF EXISTS stripe_subscription_id,
   DROP COLUMN IF EXISTS stripe_checkout_session_id,
   DROP COLUMN IF EXISTS card_fingerprint_hash;
-DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794322439025;
+DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794326700162;
 COMMIT;
 ```
 

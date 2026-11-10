@@ -77,6 +77,8 @@ export async function createCommercialCheckoutSession({
   };
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
+    // API 2026-09-30 has no `payment_method_types`; this filter offers cards only (Apple Pay / Google Pay ride on cards). A delayed method would complete the session unpaid and leave a paying buyer with no grant.
+    allowed_payment_method_types: ["card"],
     line_items: [{ price, quantity: 1 }],
     custom_fields: [
       {

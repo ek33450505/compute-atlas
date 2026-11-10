@@ -32,6 +32,13 @@ export async function POST(request: Request) {
   // Kill switch first: no DB, Stripe or body work.
   if (!isCommercialTierEnabled()) return notAvailable();
 
+  // Money must not be taken while the maintainer alert cannot be sent: both the alert recipient and the
+  // mail key must be set. Checked before any rate-limit or Stripe work; the response never says which.
+  if (!process.env.CONTACT_TO_EMAIL?.trim() || !process.env.RESEND_API_KEY?.trim()) {
+    console.error("commercial-checkout refused: alert mail not configured");
+    return backWithError(request, "unavailable");
+  }
+
   // Defence in depth: a cross-site POST cannot burn a shared IP's hourly budget. An absent header
   // (older clients) is allowed; the rate limit below is the real control.
   if (request.headers.get("sec-fetch-site") === "cross-site") return backWithError(request, "plan");

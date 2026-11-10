@@ -93,7 +93,7 @@ export async function deliverDatasetAdminNotice(
   try {
     return await sendDatasetAdminNoticeGated(
       getDb(),
-      { grantId: intent.grantId, recipient: process.env.CONTACT_TO_EMAIL ?? "" },
+      { grantId: intent.grantId, recipient: (process.env.CONTACT_TO_EMAIL ?? "").trim() },
       () => sendDatasetAdminNewRequestEmail({ name: intent.name, organization: intent.organization })
     );
   } catch (err) {

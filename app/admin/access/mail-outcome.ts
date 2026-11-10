@@ -15,6 +15,8 @@ function describeCause(disposition: Exclude<GateDisposition, "sent">): string {
       return "the opt-out lookup failed, so nothing was sent";
     case "skipped_capped":
       return "a per-address email cap was reached";
+    case "skipped_duplicate":
+      return "an identical alert was already sent";
     case "skipped_no_key":
       return "RESEND_API_KEY is not set";
     case "send_failed":

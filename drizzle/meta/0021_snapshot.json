@@ -1,5 +1,5 @@
 {
-  "id": "582d63c3-4dc0-4319-847d-6966beb9731d",
+  "id": "533bbd63-4b4c-425c-8ab3-0632f53a3cf3",
   "prevId": "78ef4ace-1ab1-404c-9590-329ce92c433a",
   "version": "7",
   "dialect": "postgresql",
@@ -1873,6 +1873,110 @@
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.stripe_checkout_decisions": {
+      "name": "stripe_checkout_decisions",
+      "schema": "",
+      "columns": {
+        "session_id": {
+          "name": "session_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "decision": {
+          "name": "decision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subscription_id": {
+          "name": "subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invoice_id": {
+          "name": "invoice_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount_total": {
+          "name": "amount_total",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "conflict_grant_id": {
+          "name": "conflict_grant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "grant_id": {
+          "name": "grant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stripe_checkout_decisions_grant_id_dataset_access_grants_id_fk": {
+          "name": "stripe_checkout_decisions_grant_id_dataset_access_grants_id_fk",
+          "tableFrom": "stripe_checkout_decisions",
+          "tableTo": "dataset_access_grants",
+          "columnsFrom": [
+            "grant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "stripe_checkout_decisions_conflict_grant_fk": {
+          "name": "stripe_checkout_decisions_conflict_grant_fk",
+          "tableFrom": "stripe_checkout_decisions",
+          "tableTo": "dataset_access_grants",
+          "columnsFrom": [
+            "conflict_grant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "stripe_checkout_decisions_decision_check": {
+          "name": "stripe_checkout_decisions_decision_check",
+          "value": "\"stripe_checkout_decisions\".\"decision\" IN ('activate', 'refuse')"
+        },
+        "stripe_checkout_decisions_reason_check": {
+          "name": "stripe_checkout_decisions_reason_check",
+          "value": "(\"stripe_checkout_decisions\".\"decision\" = 'refuse') = (\"stripe_checkout_decisions\".\"reason\" IS NOT NULL)"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.stripe_events": {

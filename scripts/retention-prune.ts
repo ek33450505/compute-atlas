@@ -394,6 +394,9 @@ function buildSteps(now: Date): RetentionStep[] {
       selectCandidates: () => getDb().select().from(stripeEventsTable).where(stripeEventsPredicate()),
       mutate: () => getDb().delete(stripeEventsTable).where(stripeEventsPredicate()).returning(),
     },
+    // stripe_checkout_decisions is deliberately NOT pruned: it is the permanent record of what was decided for a
+    // checkout session, and deleting a row would let a late event for that session be decided afresh (a refund
+    // of an activated session, or an activation of a refunded one).
     // Dataset sharing. ORDER MATTERS: downloads are deleted BEFORE the grants that own them, so a
     // download a grant delete would cascade away has already been backed up by its own step. An ended
     // grant is >= 365 d past its end and downloads are only logged while a grant is active, so every

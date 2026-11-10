@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  foreignKey,
   customType,
   index,
   integer,
@@ -569,7 +570,7 @@ export type StateDigestRunRow = typeof stateDigestRunsTable.$inferSelect;
  * `kind`: confirm | watch_started | facility_change | facility_digest |
  * state_digest | area_digest. `outcome`: attempted | sent | error |
  * skipped_no_key | skipped_suppressed | skipped_check_failed |
- * skipped_unconfirmed | skipped_capped.
+ * skipped_unconfirmed | skipped_capped | skipped_duplicate.
  * Both are validated at the type level only (no CHECK constraint), so a new
  * value needs no migration.
  */
@@ -962,6 +963,44 @@ export const stripeEventsTable = pgTable(
 );
 
 export type StripeEventRow = typeof stripeEventsTable.$inferSelect;
+
+/**
+ * The durable DECISION for a Stripe Checkout session: 'activate' (it gets, or already has, a grant) or
+ * 'refuse' (cancel + refund its own subscription). Written once with `ON CONFLICT (session_id) DO NOTHING`
+ * the first time a session is evaluated, and every later delivery of that session acts on the STORED row, so
+ * the outcome cannot change with later state (retries, async-payment events, a cleared conflict, a cancelled
+ * subscription). The one permitted change is 'activate' -> 'refuse' (reason 'already_subscribed'), made by a
+ * single conditional UPDATE (only while `grant_id` is null) when the grant write lost to another live subscription
+ * for the same email and no grant carries this session. The row is also the lock every grant write for the
+ * session takes (one statement: lock, write, set `grant_id`), so activation and refusal cannot both win. CHECKs:
+ * `decision` is one of the two values, and a refusal always has a `reason` (and only a refusal does). `conflictGrantId` is the grant a refusal names; `grantId` the grant this session
+ * activated. Both are informational and null after the grant is deleted. Holds no email, token or other PII.
+ * Never pruned.
+ */
+export const stripeCheckoutDecisionsTable = pgTable(
+  "stripe_checkout_decisions",
+  {
+    sessionId: text("session_id").primaryKey(),
+    decision: text("decision").notNull().$type<"activate" | "refuse">(),
+    reason: text("reason").$type<"already_subscribed" | "revoked_buyer">(),
+    subscriptionId: text("subscription_id").notNull(),
+    invoiceId: text("invoice_id"),
+    amountTotal: integer("amount_total").notNull(),
+    conflictGrantId: uuid("conflict_grant_id"),
+    grantId: uuid("grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    foreignKey({
+      name: "stripe_checkout_decisions_conflict_grant_fk",
+      columns: [table.conflictGrantId],
+      foreignColumns: [datasetAccessGrantsTable.id],
+    }).onDelete("set null"),
+    check("stripe_checkout_decisions_decision_check", sql`${table.decision} IN ('activate', 'refuse')`),
+    // A refusal always names its reason, and only a refusal has one.
+    check("stripe_checkout_decisions_reason_check", sql`(${table.decision} = 'refuse') = (${table.reason} IS NOT NULL)`),
+  ]
+);
 
 /**
  * Durable per-IP daily request counter for the public facilities-family read
