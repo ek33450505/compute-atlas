@@ -48,7 +48,7 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.compute-atlas.discov
 launchctl print gui/$(id -u)/com.compute-atlas.discovery   # verify: state, runs, path
 ```
 
-The job runs Mon-Fri at 13:00 local, processing `STATES_PER_RUN` states per invocation (default 3 since 2026-10-09; it was 2 from 2026-08-14 — the rotation was expanded to all 50 states + DC on 2026-09-13 and the review cap raised 25 → 30, and `STATES_PER_RUN` was raised 2 → 3 on 2026-10-09 after zero overrun warnings since 2026-09-16; see `docs/discovery-pipeline.md` and the `STATES_PER_RUN` comment in `scripts/discovery/run.sh`) from a rotation cursor. It stays a no-op until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default).
+The job runs Mon/Wed/Fri at 13:00 local, processing `STATES_PER_RUN` states per invocation (default 3 since 2026-10-09; it was 2 from 2026-08-14 — the rotation was expanded to all 50 states + DC on 2026-09-13 and the review cap raised 25 → 30, and `STATES_PER_RUN` was raised 2 → 3 on 2026-10-09 after zero overrun warnings since 2026-09-16; see `docs/discovery-pipeline.md` and the `STATES_PER_RUN` comment in `scripts/discovery/run.sh`) from a rotation cursor. It stays a no-op until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default).
 
 Midday (rather than overnight) is deliberate: macOS `launchd` defers a missed `StartCalendarInterval` to the next wake, so an early-morning slot is simply skipped whenever the Mac is asleep. 13:00 assumes the machine is normally awake and lid-open then — if your usage differs, pick an hour when the Mac is reliably on, or move the job off the laptop entirely (e.g. a cron/CI runner with an API key instead of the subscription). Once a run *has* started, `run.sh` wraps the `claude -p` call in `caffeinate -i` (macOS only; a no-op elsewhere) so idle sleep can't suspend a long research call mid-run.
 
@@ -262,7 +262,7 @@ The argument for an off-machine monitor above is unaffected — it never depende
 - `DATABASE_URL` is not set
 - `DISCOVERY_STALE_HOURS` is set but unparseable as a positive number
 - No `discovery_heartbeat` row exists (expected only before the first run after this feature's deploy; any other time means the publisher is broken)
-- `last_run_at` is older than the configured threshold (default day-aware, 84h on Mon/Sat/Sun and 36h Tue-Fri by the America/New_York weekday, deliberately matching `run.sh`'s own stale-check threshold so both agree on what "stale" means) — *no* run happened
+- `last_run_at` is older than the configured threshold (default `DISCOVERY_STALE_HOURS=84`, deliberately matching `run.sh`'s own stale-check threshold so both agree on what "stale" means) — *no* run happened
 - `last_run_at` is FRESH but the recorded status is not `"ok"` (added 2026-09-28) — a run *did* happen and it failed
 
 Those last two are deliberately distinct error types (`HeartbeatStaleError` vs `HeartbeatDegradedError`) because their remedies share nothing: stale points at the schedule or the machine (launchd never fired), degraded points at that run's own output in `discovery-logs/` on the maintainer's Mac. Staleness is evaluated first, so a row that is both stale and degraded reports as stale.
