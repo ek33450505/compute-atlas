@@ -195,6 +195,45 @@ describe("requestDatasetAccess", () => {
     expect(await allRows()).toEqual([pending]);
   });
 
+  it("the free renewal levers (extend, renewal link, renewal request) refuse a live COMMERCIAL grant", async () => {
+    const renewToken = generateToken();
+    const paid = await insertGrant({
+      status: "active",
+      tier: "commercial",
+      category: "commercial",
+      accessTokenHash: hashToken("paid-access-2"),
+      renewTokenHash: hashToken(renewToken),
+      expiresAt: daysFromNow(10),
+      paidThrough: daysFromNow(10),
+    });
+
+    expect(await extendDatasetGrant(paid.id)).toEqual({ ok: false, reason: "not_eligible" });
+    expect(await issueRenewalToken(paid.id)).toEqual({ ok: false, reason: "not_eligible" });
+    expect(await requestRenewal(renewToken)).toEqual({ outcome: "invalid" });
+    expect(await allRows()).toEqual([paid]);
+  });
+
+  it("a live COMMERCIAL grant for the address is not an 'already active' free grant: a free request gets its own verify row", async () => {
+    const paid = await insertGrant({
+      status: "active",
+      tier: "commercial",
+      category: "commercial",
+      accessTokenHash: hashToken("paid-access"),
+      expiresAt: daysFromNow(30),
+      paidThrough: daysFromNow(30),
+    });
+
+    const result = await requestDatasetAccess(body(), "iphash-paid");
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.mail?.kind).toBe("dataset_verify");
+    const rows = await allRows();
+    expect(rows).toHaveLength(2);
+    expect(rows.find((r) => r.id === paid.id)).toEqual(paid);
+    expect(rows.find((r) => r.id !== paid.id)).toMatchObject({ tier: "free", status: "unverified" });
+  });
+
   it("existing active grant: already-active mail, no new row, access token untouched", async () => {
     const active = await insertGrant({
       status: "active",
@@ -794,7 +833,7 @@ describe("requestDatasetAccess: one open request per email", () => {
   });
 
   describe("the INSERT's conflict target", () => {
-    it("is the partial unique index: the emitted SQL names the email column and the open-status predicate", async () => {
+    it("is the partial unique index: the emitted SQL names the email and tier columns and the open-status predicate", async () => {
       const query = vi.spyOn(tdb.client, "query");
       try {
         const result = await requestDatasetAccess(body(), "iphash-sql");
@@ -805,7 +844,7 @@ describe("requestDatasetAccess: one open request per email", () => {
           .filter((text) => text.startsWith('insert into "dataset_access_grants"'));
         expect(inserts).toHaveLength(1);
         expect(inserts[0]).toContain(
-          `on conflict ("email") where "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active') do nothing`
+          `on conflict ("email","tier") where "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active') do nothing`
         );
       } finally {
         query.mockRestore();
@@ -1135,6 +1174,13 @@ describe("checkDatasetRequestEmailCap", () => {
 
     await insertGrant({ status: "rejected" });
     expect((await checkDatasetRequestEmailCap("reporter@example.com")).ok).toBe(false);
+  });
+
+  it("does not count commercial rows (a purchase under an address cannot use up its free-request cap)", async () => {
+    for (let i = 0; i < EMAIL_SEND_CAP_MAX; i++) {
+      await insertGrant({ status: "revoked", tier: "commercial", category: "commercial" });
+    }
+    expect((await checkDatasetRequestEmailCap("reporter@example.com")).ok).toBe(true);
   });
 
   it("counts only this address", async () => {

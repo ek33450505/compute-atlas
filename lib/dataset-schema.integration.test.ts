@@ -115,6 +115,7 @@ const EXPECTED_COLUMNS: Record<string, Record<string, string>> = {
     stripe_customer_id: "text NULL",
     stripe_subscription_id: "text NULL",
     stripe_checkout_session_id: "text NULL",
+    card_fingerprint_hash: "text NULL",
   },
   dataset_editions: {
     id: "uuid NOT NULL",
@@ -263,7 +264,7 @@ describe("dataset_access_grants", () => {
   });
 });
 
-describe("dataset_access_grants: one OPEN row per email (dataset_access_grants_open_email_idx)", () => {
+describe("dataset_access_grants: one OPEN row per (email, tier) (dataset_access_grants_open_email_tier_idx)", () => {
   const OPEN = DATASET_OPEN_GRANT_STATUSES;
   const CLOSED = ["rejected", "revoked", "expired"] as const;
   const EMAIL = "same-person@example.com";
@@ -299,6 +300,26 @@ describe("dataset_access_grants: one OPEN row per email (dataset_access_grants_o
       await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, status }));
     }
     expect(await countRows("dataset_access_grants")).toBe(CLOSED.length * 2);
+  });
+
+  it("an open free and an open commercial row may share an email; a second of the SAME tier may not", async () => {
+    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, tier: "free", status: "active" }));
+    await tdb.db
+      .insert(datasetAccessGrantsTable)
+      .values(grantValues({ email: EMAIL, tier: "commercial", status: "active" }));
+    expect(
+      await sqlState(
+        tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, tier: "free", status: "unverified" }))
+      )
+    ).toBe("23505");
+    expect(
+      await sqlState(
+        tdb.db
+          .insert(datasetAccessGrantsTable)
+          .values(grantValues({ email: EMAIL, tier: "commercial", status: "pending_review" }))
+      )
+    ).toBe("23505");
+    expect(await countRows("dataset_access_grants")).toBe(2);
   });
 
   it("a row that leaves the open set frees the email for a new open row", async () => {

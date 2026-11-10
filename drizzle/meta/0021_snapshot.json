@@ -1,5 +1,5 @@
 {
-  "id": "038ccd3a-1145-45fe-8153-86d1db1faf90",
+  "id": "582d63c3-4dc0-4319-847d-6966beb9731d",
   "prevId": "78ef4ace-1ab1-404c-9590-329ce92c433a",
   "version": "7",
   "dialect": "postgresql",
@@ -529,6 +529,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "card_fingerprint_hash": {
+          "name": "card_fingerprint_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -592,11 +598,32 @@
           "method": "btree",
           "with": {}
         },
-        "dataset_access_grants_open_email_idx": {
-          "name": "dataset_access_grants_open_email_idx",
+        "dataset_access_grants_card_fingerprint_hash_idx": {
+          "name": "dataset_access_grants_card_fingerprint_hash_idx",
+          "columns": [
+            {
+              "expression": "card_fingerprint_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "dataset_access_grants_open_email_tier_idx": {
+          "name": "dataset_access_grants_open_email_tier_idx",
           "columns": [
             {
               "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "tier",
               "isExpression": false,
               "asc": true,
               "nulls": "last"

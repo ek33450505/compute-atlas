@@ -49,8 +49,8 @@ afterAll(async () => {
 
 let seedCounter = 0;
 
-// Each seeded grant gets its own email: the partial unique index dataset_access_grants_open_email_idx
-// allows one open row (unverified / pending_review / active) per email.
+// Each seeded grant gets its own email: the partial unique index dataset_access_grants_open_email_tier_idx
+// allows one open row (unverified / pending_review / active) per (email, tier).
 async function insertGrant(over: Partial<typeof datasetAccessGrantsTable.$inferInsert> = {}) {
   const [row] = await tdb.db
     .insert(datasetAccessGrantsTable)

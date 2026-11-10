@@ -666,6 +666,20 @@ watermark. It needs `DATABASE_URL`, `DATASET_WATERMARK_SECRET` and the Blob env 
 read-only: the only database access is `select`. A score is evidence for a person to review, not proof.
 A re-sorted file scores near zero for every grant (see the watermark limit above).
 
+### Paid tier: revoke and refunds
+
+- A revoke on the paid tier sticks. A new checkout is refused if its email, its Stripe customer id or its card
+  fingerprint hash matches a revoked commercial grant.
+- A refused checkout is cancelled and refunded automatically (only the new subscription and its own first
+  payment), and the maintainer is alerted.
+- A colleague who pays with a revoked buyer's shared corporate card is refused the same way. This is an accepted
+  effect of matching on the card.
+- The fingerprint is captured at activation only (from the subscription's default payment method). A revoked
+  grant created before that, or one whose payment method exposed no fingerprint, matches on email and customer id
+  only.
+- A buyer with a new email, a new card and a new Stripe customer can still buy. The per-grant watermark traces
+  leaks: if the file leaks again, revoke the new grant.
+
 ### Rollback SQL
 
 Run in this order, children first. This deletes every grant, edition and download record. It does not
@@ -680,7 +694,19 @@ DROP TABLE dataset_access_grants;
 `dataset_downloads` references both other tables, so it goes first. Migration `drizzle/0020_dataset_sharing_tables.sql`
 creates the three tables.
 
-Migration `drizzle/0021_commercial_tier.sql` adds the commercial tier. To undo only that migration
+Migration `drizzle/0021_commercial_tier.sql` adds the commercial tier. **Applying it (forward), in this order:**
+
+1. The PR is approved and green.
+2. Run `npm run db:migrate` (one transaction through the Neon websocket migrator).
+3. Merge immediately and wait for the production build.
+
+Why the order matters: 0021 drops the old `dataset_access_grants_open_email_idx`, and the code that is live until
+step 3 finishes inserts free requests with `ON CONFLICT (email)`, which then fails with SQLSTATE 42P10. The new
+code needs the `tier` column, so it cannot go first. Between step 2 and the new build going live only the free
+request form fails; downloads, notices and admin keep working. Do it at a quiet time and avoid Mon-Fri
+13:00-15:30 (the discovery runs).
+
+To undo only that migration
 (keeps every grant; `stripe_events` references `dataset_access_grants`, so it goes first):
 
 1. Revert the deploy first, then disable the webhook endpoint in the Stripe dashboard, so redelivered events
@@ -688,19 +714,33 @@ Migration `drizzle/0021_commercial_tier.sql` adds the commercial tier. To undo o
 2. **Warning: once any commercial grant exists, this rollback destroys `paid_through` and the Stripe IDs.**
    Take a Neon branch first, or save the rows:
    `COPY (SELECT id, email, tier, paid_through, stripe_customer_id, stripe_subscription_id, stripe_checkout_session_id FROM dataset_access_grants WHERE tier='commercial') TO STDOUT`
-3. Run, in this order:
+3. **Check the old one-open-row-per-email index can be recreated.** 0021 replaced
+   `dataset_access_grants_open_email_idx` with `dataset_access_grants_open_email_tier_idx` (unique on
+   `(email, tier)`), so one address may now hold an open free AND an open commercial grant. Recreating the
+   old index fails while that is true. Find the addresses:
+   `SELECT email, array_agg(tier || ':' || status) FROM dataset_access_grants WHERE status IN ('unverified','pending_review','active') GROUP BY email HAVING count(*) > 1;`
+   For each, expire or revoke one of the two rows (usually the commercial one, after refunding in Stripe)
+   before continuing.
+4. Run, in this order, back-to-back with the deploy revert (the old code's `ON CONFLICT (email)` fails until the
+   old index is back):
 
 ```sql
+BEGIN;
 DROP TABLE IF EXISTS stripe_events;
+DROP INDEX IF EXISTS dataset_access_grants_open_email_tier_idx;
+CREATE UNIQUE INDEX "dataset_access_grants_open_email_idx" ON "dataset_access_grants" USING btree ("email") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');
 DROP INDEX IF EXISTS dataset_access_grants_stripe_subscription_id_idx;
 DROP INDEX IF EXISTS dataset_access_grants_stripe_checkout_session_id_idx;
+DROP INDEX IF EXISTS dataset_access_grants_card_fingerprint_hash_idx;
 ALTER TABLE dataset_access_grants
   DROP COLUMN IF EXISTS tier,
   DROP COLUMN IF EXISTS paid_through,
   DROP COLUMN IF EXISTS stripe_customer_id,
   DROP COLUMN IF EXISTS stripe_subscription_id,
-  DROP COLUMN IF EXISTS stripe_checkout_session_id;
-DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794318734667;
+  DROP COLUMN IF EXISTS stripe_checkout_session_id,
+  DROP COLUMN IF EXISTS card_fingerprint_hash;
+DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794322439025;
+COMMIT;
 ```
 
 The last statement removes the migration's record (`created_at` is the 0021 `when` value in

@@ -447,6 +447,18 @@ describe("sendRenewalReminders", () => {
     expect(reminderMock).toHaveBeenCalledTimes(1);
   });
 
+  it("never reminds, claims or mints a renew token for a live COMMERCIAL grant inside the window", async () => {
+    const g = await seedGrant({ tier: "commercial", expiresAt: soon(), paidThrough: soon() });
+
+    const res = await sendRenewalReminders({ paceMs: 0 });
+
+    expect(res).toMatchObject({ claimed: 0, sent: 0, complete: true });
+    expect(reminderMock).not.toHaveBeenCalled();
+    const after = await grantRow(g.id);
+    expect(after.renewalRemindedAt).toBeNull();
+    expect(after.renewTokenHash).toBeNull();
+  });
+
   it("a failed send leaves renewalRemindedAt null so the next run retries", async () => {
     const g = await seedGrant({ expiresAt: soon() });
     reminderMock.mockResolvedValueOnce(FAIL);

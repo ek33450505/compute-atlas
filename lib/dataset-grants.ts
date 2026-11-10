@@ -108,8 +108,8 @@ export type DatasetRequestResult =
 /**
  * The OPEN-grant predicate as SQL text, for the INSERT's `ON CONFLICT (email) WHERE ...` target. The statuses
  * come from `DATASET_OPEN_GRANT_STATUSES` (lib/db/schema.ts), the single source that also builds the predicate
- * of the partial unique index `dataset_access_grants_open_email_idx`: the index allows at most one open row
- * per email, which is what makes the INSERT below race-free. Postgres infers a partial unique index only when
+ * of the partial unique index `dataset_access_grants_open_email_tier_idx`: the index allows at most one open row
+ * per (email, tier), which is what makes the INSERT below race-free. Postgres infers a partial unique index only when
  * the clause's predicate implies the index's, and that proof needs literals: bound parameters (what
  * `inArray` emits) never match. The values are fixed constants, never input.
  */
@@ -278,9 +278,15 @@ export async function requestDatasetAccess(
     })
     .from(datasetAccessGrantsTable)
     .where(
-      and(eq(datasetAccessGrantsTable.email, email), inArray(datasetAccessGrantsTable.status, DATASET_OPEN_GRANT_STATUSES))
+      and(
+        eq(datasetAccessGrantsTable.email, email),
+        // The free lane sees only free rows: a paid grant never answers "already active" here, and the
+        // Checkout email (unverified by Stripe) can never influence a free request.
+        eq(datasetAccessGrantsTable.tier, "free"),
+        inArray(datasetAccessGrantsTable.status, DATASET_OPEN_GRANT_STATUSES)
+      )
     )
-    .limit(1); // the partial unique index guarantees at most one
+    .limit(1); // the partial unique index guarantees at most one per (email, tier)
 
   // Every request field comes from THIS submission; shared by the INSERT and the unverified rotation.
   const requestFields = {
@@ -363,7 +369,7 @@ export async function requestDatasetAccess(
     await db
       .select({ id: datasetAccessGrantsTable.id })
       .from(datasetAccessGrantsTable)
-      .where(eq(datasetAccessGrantsTable.email, email))
+      .where(and(eq(datasetAccessGrantsTable.email, email), eq(datasetAccessGrantsTable.tier, "free")))
       .limit(1);
     return genericSuccess();
   }
@@ -380,7 +386,10 @@ export async function requestDatasetAccess(
     })
     // A concurrent request took the one open slot. Scoped to that partial unique index, so a violation of
     // any other unique index (a token hash) is a real error, not silently swallowed as "someone else won".
-    .onConflictDoNothing({ target: datasetAccessGrantsTable.email, where: OPEN_GRANT_PREDICATE })
+    .onConflictDoNothing({
+      target: [datasetAccessGrantsTable.email, datasetAccessGrantsTable.tier],
+      where: OPEN_GRANT_PREDICATE,
+    })
     .returning({ id: datasetAccessGrantsTable.id });
   if (!row) return genericSuccess(); // that winner sends the one verify mail
 
@@ -668,7 +677,14 @@ export async function extendDatasetGrant(id: string): Promise<{ ok: true } | Dat
   const [extended] = await getDb()
     .update(datasetAccessGrantsTable)
     .set(extensionFields(now))
-    .where(and(eq(datasetAccessGrantsTable.id, id), or(liveGrant(now), renewalPendingGrant())))
+    // Free lane only: a commercial grant's term is its paid-through date, which Stripe moves.
+    .where(
+      and(
+        eq(datasetAccessGrantsTable.id, id),
+        eq(datasetAccessGrantsTable.tier, "free"),
+        or(liveGrant(now), renewalPendingGrant())
+      )
+    )
     .returning({ id: datasetAccessGrantsTable.id });
   return extended ? { ok: true } : NOT_ELIGIBLE;
 }
@@ -690,7 +706,7 @@ export async function issueRenewalToken(
   const [issued] = await getDb()
     .update(datasetAccessGrantsTable)
     .set({ renewTokenHash: hashToken(renewToken) })
-    .where(and(eq(datasetAccessGrantsTable.id, id), liveGrant(new Date())))
+    .where(and(eq(datasetAccessGrantsTable.id, id), eq(datasetAccessGrantsTable.tier, "free"), liveGrant(new Date())))
     .returning({ id: datasetAccessGrantsTable.id, email: datasetAccessGrantsTable.email });
   if (!issued) return NOT_ELIGIBLE;
 
@@ -729,6 +745,7 @@ export async function requestRenewal(
     .where(
       and(
         eq(datasetAccessGrantsTable.renewTokenHash, renewTokenHash),
+        eq(datasetAccessGrantsTable.tier, "free"),
         liveGrant(now),
         isNull(datasetAccessGrantsTable.renewalRequestedAt)
       )

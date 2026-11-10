@@ -727,8 +727,8 @@ export const DATASET_GRANT_STATUSES = [
 export type DatasetGrantStatus = (typeof DATASET_GRANT_STATUSES)[number];
 
 /**
- * Statuses that count as an OPEN grant for an email: the single source for the predicate of the partial
- * unique index `dataset_access_grants_open_email_idx` below and for the matching `ON CONFLICT ... WHERE`
+ * Statuses that count as an OPEN grant for an email and tier: the single source for the predicate of the partial
+ * unique index `dataset_access_grants_open_email_tier_idx` below and for the matching `ON CONFLICT ... WHERE`
  * target in lib/dataset-grants.ts. Changing it changes the index, so it needs a migration.
  */
 export const DATASET_OPEN_GRANT_STATUSES = [
@@ -783,8 +783,8 @@ export type DatasetDownloadOutcome = (typeof DATASET_DOWNLOAD_OUTCOMES)[number];
  * ceilings, and a dataset token must never do that.
  *
  * At most one OPEN (`unverified` | `pending_review` | `active`) row may exist
- * per email, enforced by the partial unique index
- * `dataset_access_grants_open_email_idx`; that is what gives the request path
+ * per (email, tier), enforced by the partial unique index
+ * `dataset_access_grants_open_email_tier_idx`; that is what gives the request path
  * (lib/dataset-grants.ts) a race-free dedupe. Rows that are `expired`,
  * `revoked` or `rejected` do not count, so a re-request inserts a new row.
  *
@@ -849,14 +849,19 @@ export const datasetAccessGrantsTable = pgTable(
     stripeCustomerId: text("stripe_customer_id"),
     stripeSubscriptionId: text("stripe_subscription_id"),
     stripeCheckoutSessionId: text("stripe_checkout_session_id"), // the Checkout session that created the grant, recorded by the webhook
+    cardFingerprintHash: text("card_fingerprint_hash"), // sha256 (lib/token-hash.ts) of the buyer's card fingerprint; matches a revoked buyer who returns under a new email. NEVER the raw fingerprint.
   },
   (table) => [
     index("dataset_access_grants_status_idx").on(table.status),
     uniqueIndex("dataset_access_grants_stripe_subscription_id_idx").on(table.stripeSubscriptionId),
     uniqueIndex("dataset_access_grants_stripe_checkout_session_id_idx").on(table.stripeCheckoutSessionId),
     index("dataset_access_grants_email_idx").on(table.email),
-    uniqueIndex("dataset_access_grants_open_email_idx")
-      .on(table.email)
+    index("dataset_access_grants_card_fingerprint_hash_idx").on(table.cardFingerprintHash),
+    // One open row per (email, tier): a free and a commercial grant may coexist for one address, but never
+    // two of the same tier. The tier split is what keeps a purchase (whose Checkout email nobody has
+    // verified) from ever touching somebody's free request.
+    uniqueIndex("dataset_access_grants_open_email_tier_idx")
+      .on(table.email, table.tier)
       // `sql.raw` over the constant's quoted literals (fixed values in this file, never input): the index
       // predicate must be literal text, and this emits the same SQL as the migration's hand-readable form.
       .where(sql`${table.status} in (${sql.raw(DATASET_OPEN_GRANT_STATUSES.map((status) => `'${status}'`).join(", "))})`),
