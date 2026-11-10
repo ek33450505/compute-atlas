@@ -1963,6 +1963,50 @@ EOF
 	grep -q "Missed runs" "$NOTIFY_CALL_LOG"
 }
 
+# Day-aware budget (84h Mon/Sat/Sun, 36h Tue-Fri). DISCOVERY_TEST_WEEKDAY is a
+# test seam honored only under DISCOVERY_TEST_MODE=1.
+@test "a 48h-old heartbeat warns on a Wednesday (36h budget)" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	export DISCOVERY_TEST_MODE=1
+	export DISCOVERY_TEST_WEEKDAY=3
+	old="$(date -j -v-48H '+%Y-%m-%dT%H:%M:%S%z' 2>/dev/null \
+		|| date -d '48 hours ago' '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$old" >"$LOG_DIR/heartbeat.json"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "a 48h-old heartbeat does not warn on a Monday (84h budget)" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	export DISCOVERY_TEST_MODE=1
+	export DISCOVERY_TEST_WEEKDAY=1
+	old="$(date -j -v-48H '+%Y-%m-%dT%H:%M:%S%z' 2>/dev/null \
+		|| date -d '48 hours ago' '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$old" >"$LOG_DIR/heartbeat.json"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "a 40h-old heartbeat does not warn on a Saturday (84h budget)" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	export DISCOVERY_TEST_MODE=1
+	export DISCOVERY_TEST_WEEKDAY=6
+	old="$(date -j -v-40H '+%Y-%m-%dT%H:%M:%S%z' 2>/dev/null \
+		|| date -d '40 hours ago' '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$old" >"$LOG_DIR/heartbeat.json"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+}
+
 @test "a fresh heartbeat does not report missed runs" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=true
