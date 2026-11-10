@@ -50,6 +50,10 @@ import { CSP_REPORT_PATH } from "./lib/csp-report";
  *     /contribute). That asymmetry is the point — a local harness is necessary
  *     but not sufficient for this header, because the proxy adds subresources
  *     the app never declares.
+ *   - https://checkout.stripe.com — `form-action` only: the 303 target of
+ *     POST /api/access/checkout (app/access/commercial/page.tsx forms).
+ *   - https://billing.stripe.com — `form-action` only: the 303 target of
+ *     POST /api/access/billing-portal (app/access/dataset/page.tsx).
  *
  * `frame-ancestors` is NOT in this shared list — it is supplied per scope by
  * `buildCsp` below. See that function for why leaving it here would have
@@ -82,7 +86,13 @@ const CSP_COMMON_DIRECTIVES = [
   "font-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
+  // Both Stripe origins are redirect targets of same-origin form POSTs: the
+  // checkout route answers 303 to checkout.stripe.com and the billing-portal
+  // route answers 303 to billing.stripe.com. `form-action` governs the whole
+  // post-submit redirect chain, so `'self'` alone blocked every purchase and
+  // "Manage billing" click. Measured 2026-11-10: Chromium reported a
+  // form-action violation on POST /api/access/checkout.
+  "form-action 'self' https://checkout.stripe.com https://billing.stripe.com",
 ];
 
 /**

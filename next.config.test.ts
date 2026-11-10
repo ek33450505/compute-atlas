@@ -222,6 +222,36 @@ describe("Content-Security-Policy header", () => {
   });
 
   /**
+   * The checkout and billing-portal routes answer a same-origin form POST with
+   * a 303 to Stripe, and `form-action` applies to that redirect. Without these
+   * two exact origins every purchase is blocked by the browser.
+   */
+  describe("form-action", () => {
+    const formActionSources = (value: string | undefined) => {
+      const directive = value
+        ?.split(";")
+        .map((d) => d.trim())
+        .find((d) => d.startsWith("form-action"));
+      return directive?.split(/\s+/).slice(1);
+    };
+    const expected = ["'self'", "https://checkout.stripe.com", "https://billing.stripe.com"];
+
+    it("allows exactly self plus the two Stripe redirect origins site-wide", async () => {
+      expect(formActionSources((await siteWideCsp())?.value)).toEqual(expected);
+    });
+
+    it("allows the same list on /admin, which shares the common directives", async () => {
+      const adminCsp = await headerOn("/admin/:path*", "Content-Security-Policy");
+      expect(formActionSources(adminCsp?.value)).toEqual(expected);
+    });
+
+    it("never uses a wildcard in form-action", async () => {
+      const sources = formActionSources((await siteWideCsp())?.value) ?? [];
+      expect(sources.some((s) => s.includes("*"))).toBe(false);
+    });
+  });
+
+  /**
    * `frame-src` must stay stated OUTRIGHT. Its fallback chain is `child-src`
    * first and `default-src` only after that — so with `child-src blob:` in
    * the policy and no `frame-src` entry, framing silently resolved to
