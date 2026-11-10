@@ -12,8 +12,6 @@ vi.mock("../../lib/db/client");
 import * as dbClient from "../../lib/db/client";
 import {
   DISCOVERY_STALE_HOURS_DEFAULT,
-  DISCOVERY_STALE_HOURS_WEEKDAY,
-  defaultStaleHoursFor,
   fetchHeartbeatRow,
   HeartbeatDegradedError,
   HeartbeatMissingError,
@@ -63,40 +61,14 @@ afterEach(() => {
 // non-row failure modes the widening was required not to disturb.
 // ---------------------------------------------------------------------------
 
-describe("defaultStaleHoursFor", () => {
-  it.each([
-    ["2026-11-10T02:00:00Z", "Mon 21:00 EST", 84],
-    ["2026-11-10T18:00:00Z", "Tue 13:00 EST", 36],
-    ["2026-11-11T02:00:00Z", "Tue 21:00 EST", 36],
-    ["2026-11-14T18:00:00Z", "Sat 13:00 EST", 84],
-    ["2026-11-15T18:00:00Z", "Sun 13:00 EST", 84],
-    ["2026-11-13T18:00:00Z", "Fri 13:00 EST", 36],
-    ["2026-07-07T02:30:00Z", "Mon 22:30 EDT", 84],
-    ["2026-07-08T02:30:00Z", "Tue 22:30 EDT", 36],
-  ])("%s (%s) -> %ih", (iso, _label, hours) => {
-    expect(defaultStaleHoursFor(new Date(iso))).toBe(hours);
-  });
-});
-
 describe("parseStaleHoursEnv", () => {
-  const WED = new Date("2026-11-11T18:00:00Z"); // Wednesday 13:00 EST
-
-  it("returns the day-aware default when unset", () => {
-    expect(parseStaleHoursEnv(undefined, WED)).toBe(DISCOVERY_STALE_HOURS_WEEKDAY);
-    expect(parseStaleHoursEnv(undefined, new Date("2026-11-09T18:00:00Z"))).toBe(
-      DISCOVERY_STALE_HOURS_DEFAULT
-    );
-    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBe(84); // must match run.sh's Mon/Sat/Sun literal
-    expect(DISCOVERY_STALE_HOURS_WEEKDAY).toBe(36); // must match run.sh's Tue-Fri literal
+  it("returns the default (84) when unset", () => {
+    expect(parseStaleHoursEnv(undefined)).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
+    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBe(84); // must match run.sh's own default
   });
 
-  it("returns the day-aware default when set to an empty string", () => {
-    expect(parseStaleHoursEnv("", WED)).toBe(DISCOVERY_STALE_HOURS_WEEKDAY);
-  });
-
-  it("a set value overrides uniformly on any weekday", () => {
-    expect(parseStaleHoursEnv("12", WED)).toBe(12);
-    expect(parseStaleHoursEnv("12", new Date("2026-11-09T18:00:00Z"))).toBe(12);
+  it("returns the default when set to an empty string", () => {
+    expect(parseStaleHoursEnv("")).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
   });
 
   it("respects a custom numeric threshold", () => {

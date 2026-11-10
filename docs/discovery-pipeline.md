@@ -9,7 +9,7 @@ approved/rejected by a human via the `submissions` CLI.
 ## Architecture
 
 ```
-run.sh (launchd, Mon-Fri)
+run.sh (launchd, Mon/Wed/Fri)
   1. kill switch check (fail-closed)
   2. pick next state from a rotation cursor
   3. fetch existing-facilities projection for state
@@ -354,7 +354,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   **The durable signal is the heartbeat row, read off-machine.** Every
   non-dry-run invocation publishes the heartbeat to a `discovery_heartbeat` row
   in Neon (`scripts/discovery/publish-heartbeat.ts`), and
-  `.github/workflows/discovery-watchdog.yml` reads that row Mon-Fri at 23:00 UTC
+  `.github/workflows/discovery-watchdog.yml` reads that row Mon/Wed/Fri at 23:00 UTC
   via `scripts/discovery/check-heartbeat.ts`. It fails when the row is missing,
   when `last_run_at` is stale — no run happened — and, **since 2026-09-28**,
   when the row is fresh but its status is not `ok` — a run happened and failed.
@@ -371,7 +371,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   runs. It cannot detect "launchd never fired at all" — that is the stale-row
   case the off-machine watchdog owns. `run.sh`'s stale-heartbeat check is the
   on-machine partial mitigation: on startup, a previous `lastRunAt` older than
-  `DISCOVERY_STALE_HOURS` (default: day-aware, 84 on Mon/Sat/Sun and 36 Tue-Fri) is logged as a WARN and passed to the
+  `DISCOVERY_STALE_HOURS` (default 84) is logged as a WARN and passed to the
   same best-effort `notify()`, so missed days surface in the run log of the next
   run that happens.
 - **The wall-clock cap is enforced, and its failure is detected.**
@@ -401,7 +401,7 @@ state, capped to `--max` submissions (new + updated combined, default 5).
 There is no fan-out, no multi-agent workflow, and no `/data-wave` invocation
 from this pipeline.
 
-**Cadence:** The combined-pass model runs Mon-Fri via launchd, processing
+**Cadence:** The combined-pass model runs Mon/Wed/Fri via launchd, processing
 `STATES_PER_RUN` states per invocation (default **3** since 2026-10-09; 2 from
 2026-08-14 until then) from a rotation cursor. Raising it to 3 was Ed's
 decision on 2026-10-09, based on zero OVERRUN warnings since 2026-09-16 and

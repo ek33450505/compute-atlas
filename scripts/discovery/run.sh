@@ -226,33 +226,12 @@ fi
 # than DISCOVERY_STALE_HOURS means scheduled runs were missed entirely (machine
 # asleep at 13:00, job unloaded, plist broken) — a different failure than "the
 # run happened and produced nothing", and invisible from claudeStatus alone.
-# The budget is DAY-AWARE (Mon-Fri 13:00 schedule); same rule as
-# check-heartbeat.ts's defaultStaleHoursFor, which schedule-parity.test.ts
-# pins. 84h on Monday/Saturday/Sunday, 36h Tuesday-Friday (by the local weekday
-# of this check). Monday looks back over Fri -> Mon (~70h from a Friday run's
-# end to Monday 13:00; lastRunAt is written at the END of a run) + 12h slack.
-# Tue-Fri look back ~22h; 36h = the old daily budget's 12h slack plus margin.
-# Sat/Sun cover manual runs/dispatches after Friday. So a single missed run on
-# any weekday warns on the next run (missed Tue..Fri ~45h > 36; missed Mon
-# Fri end -> Tue ~94h > 36; missed Fri Thu end -> Mon ~93h > 84). A set,
-# non-empty DISCOVERY_STALE_HOURS overrides uniformly. TEST SEAM:
-# DISCOVERY_TEST_WEEKDAY (date +%u: 1=Mon..7=Sun) is honored ONLY under
-# DISCOVERY_TEST_MODE=1.
-# Accepted edge: a run launchd defers past local midnight (Mac asleep through
-# 13:00 until after midnight) checks with the NEXT day's budget and can report
-# "MISSED" for the slot it slept through; that is accepted because the 13:00
-# slot was in fact missed.
-if [[ -z "${DISCOVERY_STALE_HOURS:-}" ]]; then
-  # America/New_York on both sides (check-heartbeat.ts uses the same zone).
-  _weekday="$(TZ=America/New_York date '+%u')"
-  if [[ "${DISCOVERY_TEST_MODE:-0}" == "1" && -n "${DISCOVERY_TEST_WEEKDAY:-}" ]]; then
-    _weekday="$DISCOVERY_TEST_WEEKDAY"
-  fi
-  case "$_weekday" in
-    1|6|7) DISCOVERY_STALE_HOURS=84 ;;
-    *) DISCOVERY_STALE_HOURS=36 ;;
-  esac
-fi
+# 84h: the longest normal gap is Fri -> Mon (~70h from a Friday run's end to
+# Monday's 13:00 start), plus the same 12h slack the old daily 36h (24+12)
+# carried, which absorbs a Monday start launchd deferred past a sleep. The
+# shortest gap a single missed run can leave is ~88h (a missed Wednesday after
+# a late-ending Monday run), so any single miss still warns.
+DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-84}"
 if [[ -f "$LOG_DIR/heartbeat.json" ]]; then
   _prev_iso="$(sed -n 's/.*"lastRunAt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$LOG_DIR/heartbeat.json" | head -1)"
   if [[ -n "$_prev_iso" ]]; then

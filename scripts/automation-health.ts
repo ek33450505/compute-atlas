@@ -50,7 +50,7 @@ export interface WorkflowConfig {
  * scheduled runs under load, worse when the repo is quiet). A tighter
  * budget would flap on scheduler jitter alone. Do not "tighten" this into a
  * flaky alarm — the slack is load-bearing. `discovery-watchdog` runs
- * Mon-Fri, so its 84h is its longest gap (Fri -> Mon, 72h) + the same 12h
+ * Mon/Wed/Fri, so its 84h is its longest gap (Fri -> Mon, 72h) + the same 12h
  * slack.
  *
  * release-please is weekly (Mondays), so its budget is days, not hours:
@@ -61,7 +61,7 @@ export const MONITORED_WORKFLOWS: WorkflowConfig[] = [
   {
     file: "discovery-watchdog.yml",
     name: "discovery-watchdog",
-    cronDescription: "0 23 * * 1,2,3,4,5 (Mon-Fri 23:00 UTC)",
+    cronDescription: "0 23 * * 1,3,5 (Mon/Wed/Fri 23:00 UTC)",
     staleAfterHours: 84,
   },
   {

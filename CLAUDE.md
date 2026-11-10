@@ -238,7 +238,7 @@ hero points or as-of date; the next build does. By decision (Ed, 2026-11-06), th
 
 **Maintainer note for pulling PR C into a tree that has the data files:** the pull deletes them.
 Back them up first (the NHD ledger has no other copy: the Neon row from `npm run nhd:debt -- --ledger-db` is a durable record of the count, but no command restores the local file from it; keep the backup, or re-record the current count with `npm run nhd:debt -- --note "<why>"`, which resets the ceiling to today's count), then run `npm run db:export` (discovery's
-loader reads Neon first and aborts loudly on a bad snapshot). Merge or pull only outside weekday (Mon-Fri) 13:00 runs.
+loader reads Neon first and aborts loudly on a bad snapshot). Merge or pull only outside Mon/Wed/Fri 13:00.
 
 ⚠️ **Data-source decision (2026-09-29): keep the live NHD query service, do not migrate to bulk
 download.** Evaluated and rejected replacing the per-facility ArcGIS queries (`nhdQueryLayer`,
@@ -325,7 +325,7 @@ The leads lane (`leads-lane.ts`: public URL tips → pending submissions) also r
 `run.sh`, after the field-extraction lane, bounded by `LEADS_LIMIT` (default 10).
 Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics
 (launchd, `ollama pull`, running it by hand): `docs/discovery-runbook.md`. It uses the Claude Code subscription (not the metered
-API) and runs via `launchd` on the maintainer's machine Mon-Fri at 13:00 local — treat it as an operator
+API) and runs via `launchd` on the maintainer's machine Mon/Wed/Fri at 13:00 local — treat it as an operator
 tool, not part of the deployed app.
 
 ## Conventions
