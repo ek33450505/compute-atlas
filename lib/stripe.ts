@@ -36,7 +36,8 @@ function requireEnv(name: string): string {
 
 let cachedClient: Stripe | null = null;
 
-function getClient(): Stripe {
+/** The shared Stripe client. Throws `StripeConfigError` when STRIPE_SECRET_KEY is missing. */
+export function getStripeClient(): Stripe {
   if (!cachedClient) {
     cachedClient = new Stripe(requireEnv("STRIPE_SECRET_KEY"), {
       apiVersion: STRIPE_API_VERSION,
@@ -70,7 +71,7 @@ export async function createCommercialCheckoutSession({
   client?: Stripe;
 }): Promise<{ url: string; id: string }> {
   const price = priceIdFor(plan);
-  const stripe = client ?? getClient();
+  const stripe = client ?? getStripeClient();
   const metadata = {
     product: "compute_atlas_commercial_dataset",
     termsVersion: DATASET_TERMS_VERSION,
@@ -111,7 +112,7 @@ export async function createBillingPortalSession({
   returnUrl: string;
   client?: Stripe;
 }): Promise<string> {
-  const stripe = client ?? getClient();
+  const stripe = client ?? getStripeClient();
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
     return_url: returnUrl,
@@ -120,18 +121,18 @@ export async function createBillingPortalSession({
 }
 
 /**
- * Verifies the raw request body against the Stripe-Signature header (default
+ * Verifies the raw request body (the exact bytes Stripe sent) against the Stripe-Signature header (default
  * 300 s tolerance). Fails closed: a missing header, missing secret or any
  * mismatch throws, and nothing is parsed before the signature holds.
  */
 export function verifyStripeWebhook(
-  rawBody: string,
+  rawBody: string | Uint8Array,
   signature: string | null,
   client?: Stripe,
 ): Stripe.Event {
   const secret = requireEnv("STRIPE_WEBHOOK_SECRET");
   if (!signature) throw new StripeSignatureError("Missing Stripe-Signature header");
-  const stripe = client ?? getClient();
+  const stripe = client ?? getStripeClient();
   try {
     // The SDK parses the body inside constructEvent, so a validly signed but
     // unparseable body also surfaces as StripeSignatureError (both are a 400).

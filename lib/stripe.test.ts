@@ -7,6 +7,7 @@ import {
   type CommercialPlan,
   createBillingPortalSession,
   createCommercialCheckoutSession,
+  getStripeClient,
   priceIdFor,
   StripeConfigError,
   StripeSignatureError,
@@ -190,4 +191,12 @@ describe("subscriptionPeriodEnd", () => {
       expect(() => subscriptionPeriodEnd(sub(items))).toThrow(/current_period_end/);
     },
   );
+});
+
+describe("getStripeClient", () => {
+  it("throws StripeConfigError without STRIPE_SECRET_KEY", () => {
+    vi.stubEnv("STRIPE_SECRET_KEY", "");
+    expect(() => getStripeClient()).toThrow(StripeConfigError);
+    vi.unstubAllEnvs();
+  });
 });
