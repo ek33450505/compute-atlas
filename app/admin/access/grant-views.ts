@@ -41,6 +41,9 @@ export type ListGrant = Pick<
   | "revokedAt"
   | "lastDownloadAt"
   | "downloadCount"
+  | "tier"
+  | "paidThrough"
+  | "subscriptionLinked"
   | "reviewNote"
   | "rejectionNote"
   | "revokeReason"
@@ -81,6 +84,9 @@ export function toListGrant(grant: AdminDatasetGrant): ListGrant {
     revokedAt: grant.revokedAt,
     lastDownloadAt: grant.lastDownloadAt,
     downloadCount: grant.downloadCount,
+    tier: grant.tier,
+    paidThrough: grant.paidThrough,
+    subscriptionLinked: grant.subscriptionLinked,
     reviewNote: grant.reviewNote,
     rejectionNote: grant.rejectionNote,
     revokeReason: grant.revokeReason,

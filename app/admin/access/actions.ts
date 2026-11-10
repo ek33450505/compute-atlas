@@ -12,6 +12,7 @@ import {
   rejectDatasetGrant,
   revokeDatasetGrant,
 } from "@/lib/dataset-grants";
+import { cancelSubscriptionForRevokedGrant } from "@/lib/commercial-revoke";
 import { hasRecentLinkReissue } from "@/lib/dataset-admin";
 import { buildEdition, type EditionBuildResult } from "@/lib/dataset-edition-builder";
 import { deliverDatasetReviewMail } from "@/lib/dataset-mail";
@@ -146,11 +147,16 @@ export async function redirectDatasetGrantToPaidAction(
   return { ok: true, mail: gate.disposition };
 }
 
-/** Revokes an active grant. Sends no mail. */
+/**
+ * Revokes an active grant. Sends no mail. For a commercial grant the DB revoke comes FIRST, then the Stripe
+ * subscription is cancelled (never refunded), so a failed cancel is still covered by the webhook backstop.
+ * `subscription` is present only when a Stripe cancel was attempted (or, "unknown", when the grant could not be
+ * read back to decide): a free grant returns plain `{ ok: true }`.
+ */
 export async function revokeDatasetGrantAction(
   id: string,
   reason?: string
-): Promise<{ ok: true } | DatasetAdminActionError> {
+): Promise<{ ok: true; subscription?: "cancelled" | "failed" | "unknown" } | DatasetAdminActionError> {
   await assertAdminSession();
   if (typeof id !== "string") return notEligible();
 
@@ -163,7 +169,11 @@ export async function revokeDatasetGrantAction(
   }
   if (!result.ok) return notEligible();
 
+  const cancel = await cancelSubscriptionForRevokedGrant(id);
   revalidatePath("/admin/access");
+  if (cancel.cancelled) return { ok: true, subscription: "cancelled" };
+  if (cancel.reason === "stripe_error") return { ok: true, subscription: "failed" };
+  if (cancel.reason === "lookup_failed") return { ok: true, subscription: "unknown" };
   return { ok: true };
 }
 

@@ -25,6 +25,9 @@ const full: AdminDatasetGrant = {
   renewalRequestedAt: null,
   lastDownloadAt: null,
   downloadCount: 3,
+  tier: "free",
+  paidThrough: null,
+  subscriptionLinked: false,
   live: true,
   renewalPending: false,
 };
@@ -75,6 +78,7 @@ describe("toListGrant", () => {
       "live",
       "name",
       "organization",
+      "paidThrough",
       "rejectionNote",
       "renewalPending",
       "renewalRequestedAt",
@@ -82,6 +86,8 @@ describe("toListGrant", () => {
       "revokedAt",
       "reviewNote",
       "status",
+      "subscriptionLinked",
+      "tier",
     ].sort());
   });
 

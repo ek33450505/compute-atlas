@@ -724,6 +724,10 @@ async function activate(
     ["verify_token_hash", sql`${hashToken(generateToken())}::text`], // never sent: the buyer proved the address by paying through Stripe
     ["unsubscribe_token", sql`${generateToken()}::text`],
   ];
+  // Defense in depth: the decision-time `revokedBuyer` check can race an admin revoke by milliseconds, so the
+  // INSERT repeats that predicate (same keys, all bound). This narrows the window but cannot close it: Postgres
+  // runs at read committed and the revoke is a separate statement, so a revoke committing in the same instant
+  // as this INSERT can still be missed (runbook: revoke again, docs/maintainers.md).
   const created = await writeGrant(db, buyer.sessionId, newId, (lockDecision, linkDecision) => sql`
     with ${lockDecision},
     ins as (
@@ -733,13 +737,28 @@ async function activate(
         sql`, `
       )}
       where exists (select 1 from lock_decision)
+      and not exists (
+        select 1 from dataset_access_grants g
+        where g.tier = 'commercial' and g.status = 'revoked'
+          and (
+            g.email = ${buyer.email}::text
+            or (g.stripe_customer_id is not null and g.stripe_customer_id = ${buyer.customerId}::text)
+            or (g.card_fingerprint_hash is not null and g.card_fingerprint_hash = ${buyer.fingerprintHash}::text)
+          )
+      )
       returning id
     ),
     ${linkDecision("ins")}
     select id from ins`);
   if (created) return activated(created);
-  // Nothing written: the lock found no 'activate' decision this write may claim.
-  return (await lostClaim(db, buyer.sessionId, newId)) ? { kind: "claim_lost" } : null;
+  // Nothing written: the lock found no 'activate' decision this write may claim, or the revoked-buyer guard
+  // above blocked the INSERT (a revoke that landed after the decision). The latter reads as a superseded
+  // session (alert only, no grant, no refund): claim_lost resolves through the stored 'activate' decision.
+  if (await lostClaim(db, buyer.sessionId, newId)) return { kind: "claim_lost" };
+  if (await revokedBuyer(db, { email: buyer.email, customerId: buyer.customerId, fingerprintHash: buyer.fingerprintHash })) {
+    return { kind: "claim_lost" };
+  }
+  return null;
 }
 
 /**

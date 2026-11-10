@@ -680,6 +680,20 @@ A re-sorted file scores near zero for every grant (see the watermark limit above
   only.
 - A buyer with a new email, a new card and a new Stripe customer can still buy. The per-grant watermark traces
   leaks: if the file leaks again, revoke the new grant.
+- **Admin revoke cancels the subscription (Ed, 2026-11-10).** Revoking a commercial grant in `/admin/access`
+  revokes it in the database first, then cancels its Stripe subscription at once. It never refunds: refund by
+  hand in Stripe if you want to. The result line says which happened. If it reads "could not be cancelled",
+  the grant is revoked but billing continues: cancel the subscription in the Stripe dashboard now. As a
+  backstop, the next `invoice.paid` or `customer.subscription.updated` for a subscription linked to a revoked
+  grant cancels it automatically (no refund) and alerts you, so the cost of a missed cancel is at most one
+  more payment.
+- **After a `superseded_session` or `welcome_mail_undeliverable` alert the buyer's subscription keeps billing**
+  until you act: no grant was created (or the buyer got no link), and nothing cancels or refunds for you. Open
+  the subscription in Stripe, then cancel it and refund as the case warrants.
+- **Remaining boundary:** the grant INSERT repeats the revoked-buyer check, which narrows the race with an admin
+  revoke but cannot close it (read committed, separate statements, no transactions on neon-http). A revoke in
+  the same milliseconds as that buyer's new checkout can still produce a grant: if the buyer shows up active
+  after you revoked them, revoke the new grant again (that cancels its subscription too).
 - Checkout refuses to start (the buyer is sent back to the page with `?error=unavailable`) unless both
   `CONTACT_TO_EMAIL` and `RESEND_API_KEY` are set, so money is never taken while the maintainer alert cannot be sent.
 

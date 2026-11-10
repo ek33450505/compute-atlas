@@ -421,10 +421,16 @@ describe("hasRecentLinkReissue", () => {
 });
 
 describe("toAdminGrant", () => {
-  const row = { id: "x", live: true, renewalPending: false } as never;
+  const row = { id: "x", live: true, renewalPending: false, subscriptionLinked: false } as never;
 
   it("passes real booleans through", () => {
-    expect(toAdminGrant(row)).toMatchObject({ live: true, renewalPending: false });
+    expect(toAdminGrant(row)).toMatchObject({ live: true, renewalPending: false, subscriptionLinked: false });
+  });
+
+  it("throws on a non-boolean subscriptionLinked", () => {
+    expect(() => toAdminGrant({ ...(row as object), subscriptionLinked: "t" } as never)).toThrow(
+      "expected a boolean lifecycle flag"
+    );
   });
 
   it.each(["t", 1, null, undefined])("throws on a non-boolean lifecycle flag (%j)", (bad) => {

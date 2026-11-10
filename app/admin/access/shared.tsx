@@ -38,7 +38,12 @@ export function DateText({ value }: { value: Date | string }) {
 }
 
 /** `info` is neutral: nothing was done and nothing failed, so it carries no visible prefix. */
-export type QueueResult = { tone: "success" | "info" | "warning" | "error"; text: string };
+export type QueueResult = {
+  tone: "success" | "info" | "warning" | "error";
+  text: string;
+  /** Overrides the tone's default prefix (the warning default is mail wording); `null` shows none. */
+  label?: string | null;
+};
 
 const RESULT_LABEL: Record<QueueResult["tone"], string | null> = {
   success: "Done.",
@@ -49,7 +54,7 @@ const RESULT_LABEL: Record<QueueResult["tone"], string | null> = {
 
 function ResultMessage({ result }: { result: QueueResult }) {
   const neutral = result.tone === "success" || result.tone === "info";
-  const label = RESULT_LABEL[result.tone];
+  const label = result.label !== undefined ? result.label : RESULT_LABEL[result.tone];
   return (
     <p
       className={

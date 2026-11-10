@@ -10,6 +10,7 @@ const {
   mockReject,
   mockRedirect,
   mockRevoke,
+  mockCancelSub,
   mockReissue,
   mockExtend,
   mockDeliver,
@@ -23,6 +24,7 @@ const {
   mockReject: vi.fn(),
   mockRedirect: vi.fn(),
   mockRevoke: vi.fn(),
+  mockCancelSub: vi.fn(),
   mockReissue: vi.fn(),
   mockExtend: vi.fn(),
   mockDeliver: vi.fn(),
@@ -46,6 +48,7 @@ vi.mock("@/lib/dataset-grants", () => ({
   reissueDatasetLink: mockReissue,
   extendDatasetGrant: mockExtend,
 }));
+vi.mock("@/lib/commercial-revoke", () => ({ cancelSubscriptionForRevokedGrant: mockCancelSub }));
 vi.mock("@/lib/dataset-admin", () => ({ hasRecentLinkReissue: mockHasRecentReissue }));
 vi.mock("@/lib/dataset-mail", () => ({ deliverDatasetReviewMail: mockDeliver }));
 vi.mock("@/lib/dataset-edition-builder", () => ({ buildEdition: mockBuildEdition }));
@@ -95,6 +98,7 @@ beforeEach(() => {
   mockReject.mockResolvedValue({ ok: true, mail: rejectedIntent });
   mockRedirect.mockResolvedValue({ ok: true, mail: redirectIntent });
   mockRevoke.mockResolvedValue({ ok: true });
+  mockCancelSub.mockResolvedValue({ cancelled: false, reason: "not_commercial" });
   mockReissue.mockResolvedValue({ ok: true, mail: reissuedIntent });
   mockExtend.mockResolvedValue({ ok: true });
   mockDeliver.mockResolvedValue({ sent: true, disposition: "sent" });
@@ -226,6 +230,36 @@ describe("revokeDatasetGrantAction", () => {
     expect(mockRevoke).toHaveBeenCalledWith(ID, { reason: "Misused." });
     expect(mockDeliver).not.toHaveBeenCalled();
     expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("returns plain { ok: true } for a free grant (no Stripe outcome)", async () => {
+    mockCancelSub.mockResolvedValue({ cancelled: false, reason: "no_subscription" });
+    expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true });
+  });
+
+  it("cancels the subscription AFTER the DB revoke and reports it", async () => {
+    mockCancelSub.mockResolvedValue({ cancelled: true });
+    expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true, subscription: "cancelled" });
+    expect(mockCancelSub).toHaveBeenCalledWith(ID);
+    expect(mockRevoke.mock.invocationCallOrder[0]).toBeLessThan(mockCancelSub.mock.invocationCallOrder[0]);
+  });
+
+  it("reports a failed cancel but still succeeds (the revoke stands)", async () => {
+    mockCancelSub.mockResolvedValue({ cancelled: false, reason: "stripe_error" });
+    expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true, subscription: "failed" });
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("reports unknown when the follow-up grant read failed (the revoke stands)", async () => {
+    mockCancelSub.mockResolvedValue({ cancelled: false, reason: "lookup_failed" });
+    expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true, subscription: "unknown" });
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("does not attempt a cancel when the revoke is refused", async () => {
+    mockRevoke.mockResolvedValue({ ok: false, reason: "not_eligible" });
+    await revokeDatasetGrantAction(ID);
+    expect(mockCancelSub).not.toHaveBeenCalled();
   });
 
   it("drops a non-string reason", async () => {

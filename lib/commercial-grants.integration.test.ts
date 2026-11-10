@@ -850,6 +850,105 @@ describe("a revoke landing between the open read and the upgrade write", () => {
   });
 });
 
+describe("a revoke landing between the decision and the grant INSERT", () => {
+  it("blocks the INSERT: no grant is created, the session reads as superseded (alert only, no refund)", async () => {
+    makeSub("sub_1", { periodEnd: daysFromNow(30) });
+    let revoked = false;
+    // Revokes the buyer right before the claim + INSERT statement, after the decision-time revokedBuyer read.
+    const racing = new Proxy(db(), {
+      get(target, key, receiver) {
+        const value = Reflect.get(target, key, receiver);
+        if (key !== "execute") return typeof value === "function" ? value.bind(target) : value;
+        return async (query: SQL) => {
+          if (!revoked && new PgDialect().sqlToQuery(query).sql.includes("insert into dataset_access_grants")) {
+            revoked = true;
+            await insertFree({
+              tier: "commercial",
+              category: "commercial",
+              status: "revoked",
+              revokedAt: NOW,
+              accessTokenHash: null,
+              verifyTokenHash: "verify-revoked-1",
+              // Matches the buyer on the Stripe customer id ONLY: a different email and no card fingerprint.
+              email: "old-address@example.com",
+              stripeCustomerId: "cus_1",
+              cardFingerprintHash: null,
+            });
+          }
+          return target.execute(query);
+        };
+      },
+    }) as CommercialDb;
+
+    const out = await processStripeEvent(checkoutEvent(), { db: racing, stripe, now: NOW });
+    expect(revoked).toBe(true);
+    expect(out).toMatchObject({ kind: "conflict", reason: "superseded_session" });
+    const rows = await grants();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ status: "revoked", stripeSubscriptionId: null });
+  });
+});
+
+describe("the INSERT's revoked-buyer guard, one key at a time", () => {
+  // Revokes a commercial grant right before the claim + INSERT statement, after the decision-time revokedBuyer
+  // read, so only the INSERT's own predicate can block. Each case sets the other keys to NON-matching values.
+  const raceRevoke = (over: Partial<typeof datasetAccessGrantsTable.$inferInsert>) => {
+    let fired = false;
+    const racing = new Proxy(db(), {
+      get(target, key, receiver) {
+        const value = Reflect.get(target, key, receiver);
+        if (key !== "execute") return typeof value === "function" ? value.bind(target) : value;
+        return async (query: SQL) => {
+          if (!fired && new PgDialect().sqlToQuery(query).sql.includes("insert into dataset_access_grants")) {
+            fired = true;
+            await insertFree({
+              tier: "commercial",
+              category: "commercial",
+              status: "revoked",
+              revokedAt: NOW,
+              accessTokenHash: null,
+              verifyTokenHash: "verify-revoked-guard",
+              email: "someone-else@example.com",
+              stripeCustomerId: "cus_other",
+              cardFingerprintHash: "fp-hash-other",
+              ...over,
+            });
+          }
+          return target.execute(query);
+        };
+      },
+    }) as CommercialDb;
+    return { racing, wasFired: () => fired };
+  };
+
+  it("email branch: blocks the INSERT when only the email matches", async () => {
+    makeSub("sub_1", { periodEnd: daysFromNow(30), fingerprint: "fp_buyer" });
+    const { racing, wasFired } = raceRevoke({ email: "buyer@example.com" });
+    const out = await processStripeEvent(checkoutEvent(), { db: racing, stripe, now: NOW });
+    expect(wasFired()).toBe(true);
+    expect(out).toMatchObject({ kind: "conflict", reason: "superseded_session" });
+    expect(await grants()).toHaveLength(1);
+  });
+
+  it("fingerprint branch: blocks the INSERT when only the card fingerprint matches", async () => {
+    makeSub("sub_1", { periodEnd: daysFromNow(30), fingerprint: "fp_buyer" });
+    const { racing, wasFired } = raceRevoke({ cardFingerprintHash: hashToken("fp_buyer") });
+    const out = await processStripeEvent(checkoutEvent(), { db: racing, stripe, now: NOW });
+    expect(wasFired()).toBe(true);
+    expect(out).toMatchObject({ kind: "conflict", reason: "superseded_session" });
+    expect(await grants()).toHaveLength(1);
+  });
+
+  it("NULL customer id and NULL fingerprint on the revoked row do not block an unrelated buyer whose fingerprint is also NULL", async () => {
+    makeSub("sub_1", { periodEnd: daysFromNow(30) }); // no card fingerprint: the buyer's fingerprint hash is NULL
+    const { racing, wasFired } = raceRevoke({ stripeCustomerId: null, cardFingerprintHash: null });
+    const out = await processStripeEvent(checkoutEvent(), { db: racing, stripe, now: NOW });
+    expect(wasFired()).toBe(true);
+    expect(out.kind).toBe("activated");
+    expect(await grants()).toHaveLength(2);
+  });
+});
+
 describe("stripe_checkout_decisions CHECK constraints", () => {
   const base = { sessionId: "cs_x", subscriptionId: "sub_x", amountTotal: 100 };
   const rejects = async (row: Record<string, unknown>, constraint: string) => {

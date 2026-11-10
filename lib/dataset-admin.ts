@@ -11,6 +11,7 @@ import {
   type DatasetDownloadOutcome,
   type DatasetEditionStatus,
   type DatasetGrantStatus,
+  type DatasetTier,
 } from "@/lib/db/schema";
 import { liveGrant, renewalPendingGrant } from "@/lib/dataset-grants";
 
@@ -37,6 +38,11 @@ export type AdminDatasetGrant = {
   renewalRequestedAt: Date | null;
   lastDownloadAt: Date | null;
   downloadCount: number;
+  tier: DatasetTier;
+  /** Commercial only: the end of the paid period; null for free grants and before the first payment. */
+  paidThrough: Date | null;
+  /** Whether a Stripe subscription is linked. The id itself never leaves the server. */
+  subscriptionLinked: boolean;
   /** liveGrant(now): active and expiresAt in the future. */
   live: boolean;
   /** renewalPendingGrant(): active with a renewal request outstanding (may be PAST expiry). */
@@ -87,6 +93,9 @@ const ADMIN_GRANT_COLUMNS = (now: Date) => ({
   renewalRequestedAt: datasetAccessGrantsTable.renewalRequestedAt,
   lastDownloadAt: datasetAccessGrantsTable.lastDownloadAt,
   downloadCount: datasetAccessGrantsTable.downloadCount,
+  tier: datasetAccessGrantsTable.tier,
+  paidThrough: datasetAccessGrantsTable.paidThrough,
+  subscriptionLinked: sql<boolean>`${datasetAccessGrantsTable.stripeSubscriptionId} is not null`,
   live: sql<boolean>`${liveGrant(now)}`,
   renewalPending: sql<boolean>`${renewalPendingGrant()}`,
 });
@@ -99,7 +108,12 @@ function assertBooleanFlag(value: unknown): boolean {
 
 /** Exported for its unit test only; callers go through the list functions. */
 export function toAdminGrant(row: AdminDatasetGrant): AdminDatasetGrant {
-  return { ...row, live: assertBooleanFlag(row.live), renewalPending: assertBooleanFlag(row.renewalPending) };
+  return {
+    ...row,
+    live: assertBooleanFlag(row.live),
+    renewalPending: assertBooleanFlag(row.renewalPending),
+    subscriptionLinked: assertBooleanFlag(row.subscriptionLinked),
+  };
 }
 
 /**
