@@ -7,6 +7,7 @@ import {
   getStats,
   getNotableFacilities,
   getRecentActivity,
+  getTopStates,
   getAllFacilities,
   getCommunityReceptionCounts,
   getAiClassificationCounts,
@@ -34,10 +35,15 @@ import { CostLedger } from "@/components/home/cost-ledger";
 import { PipelineComposition } from "@/components/home/pipeline-composition";
 import { RecordSpecimen } from "@/components/home/record-specimen";
 import { OpenRecord } from "@/components/home/open-record";
+import { ThisWeek, isActivityWindowTruncated } from "@/components/home/this-week";
+import { StateChips } from "@/components/home/state-chips";
+import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 
 export const revalidate = 3600;
 
 const ACTIVITY_TEASER_LIMIT = 5;
+// One activity fetch feeds both the teaser and the "This week" counts.
+const THIS_WEEK_FETCH_LIMIT = 100;
 
 /**
  * Compact cards rendered under the record specimen in "Notable sites".
@@ -131,7 +137,14 @@ export default async function HomePage() {
   // of these. Fetching NOTABLE_CARD_COUNT + 1 means removing it leaves at least
   // NOTABLE_CARD_COUNT either way — see `specimenCards`.
   const notable = await getNotableFacilities(NOTABLE_CARD_COUNT + 1);
-  const recentActivity = await getRecentActivity(ACTIVITY_TEASER_LIMIT);
+  const recentActivity = await getRecentActivity(THIS_WEEK_FETCH_LIMIT);
+  const topStates = await getTopStates(6);
+  const now = new Date();
+  const activityTruncated = isActivityWindowTruncated(
+    recentActivity,
+    THIS_WEEK_FETCH_LIMIT,
+    now
+  );
   const oppositionCases = await getNotableOppositionCases(3);
 
   // Max lastUpdated across the dataset, as an ISO string, for the Dataset
@@ -260,6 +273,18 @@ export default async function HomePage() {
             this fires on document navigation only, not on a <Link> click. */}
         <div className="hero-plate-vt relative order-2 sm:absolute sm:inset-0 sm:order-none">
           <HeroGlobe heightClass="h-full" plate={<HeroPlate />} />
+          {/* Phone-only tap target over the static plate (phones never load
+              MapLibre). `relative` on this wrapper keeps the `inset-0` link
+              contained, so it is not an escaping absolutely-positioned
+              descendant. `sm:hidden` removes it entirely on sm+. */}
+          <Link
+            href="/map"
+            className="absolute inset-0 z-10 sm:hidden focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+          >
+            <span className="absolute bottom-2 right-2 rounded-sm bg-background/85 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-foreground">
+              Open the map<span aria-hidden="true"> →</span>
+            </span>
+          </Link>
         </div>
 
         {/*
@@ -622,7 +647,19 @@ export default async function HomePage() {
           plotted={HERO_PLATE.total - HERO_PLATE.omitted}
           className="relative z-20 order-3 sm:order-none sm:mt-auto sm:mb-4 sm:w-fit sm:max-w-xs sm:shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_30%,transparent)]"
         />
+        {/* Phones only: last in the stack, after the key (`order-3`). */}
+        <StateChips
+          states={topStates}
+          className="relative z-20 order-4 px-1 pb-4 pt-2 sm:hidden"
+        />
       </div>
+
+      <ThisWeek
+        entries={recentActivity}
+        now={now}
+        truncated={activityTruncated}
+        className="mb-10"
+      />
 
       {/* Below the hero: stats + cross-links + primary CTA, grouped as one
           unit on the plain parchment page background — reads clearly as
@@ -790,7 +827,8 @@ export default async function HomePage() {
           inherited `--defer-h` is set here. */}
       <OpenRecord
         sources={sourcesCited}
-        recentActivity={recentActivity}
+        recentActivity={recentActivity.slice(0, ACTIVITY_TEASER_LIMIT)}
+        datasetAccess={isDatasetSharingEnabled()}
         className="mt-12 border-t border-border pt-10 plate-reveal [--defer-h:700px]"
       />
     </div>
