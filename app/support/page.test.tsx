@@ -5,6 +5,10 @@ vi.mock("@/lib/supporters", () => ({
   SUPPORTERS: [{ name: "Example University", kind: "institution" }],
 }));
 
+vi.mock("@/components/support-thanks", () => ({
+  SupportThanks: () => null,
+}));
+
 import SupportPage, { metadata } from "./page";
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency
@@ -35,12 +39,25 @@ describe("SupportPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders the Ko-fi funding link and no GitHub Sponsors link", () => {
+  it("renders no Stripe links, no payment section and no third-party funding service when none are configured", () => {
     const { container } = render(<SupportPage />);
-    expect(
-      screen.getByRole("link", { name: /Support on Ko-fi/i })
-    ).toHaveAttribute("href", "https://ko-fi.com/L2T725R7FV");
+    expect(container.querySelectorAll('a[href*="stripe.com"]')).toHaveLength(0);
+    expect(screen.queryByRole("heading", { name: /monthly|one-off/i })).not.toBeInTheDocument();
     expect(container.querySelectorAll('a[href*="github.com/sponsors"]')).toHaveLength(0);
+    expect(container.innerHTML).not.toMatch(/ko-?fi/i);
+  });
+
+  it("points organizations to /access/commercial", () => {
+    render(<SupportPage />);
+    expect(screen.getByRole("link", { name: "access for organizations" })).toHaveAttribute(
+      "href",
+      "/access/commercial"
+    );
+  });
+
+  it("never says donation or tax-deductible", () => {
+    const { container } = render(<SupportPage />);
+    expect(container.textContent).not.toMatch(/donat|tax-deductible/i);
   });
 
   it("renders the internal links to /contribute, /activity, and /about", () => {
@@ -186,26 +203,11 @@ describe("SupportPage — the personal sections", () => {
     expect(text).toMatch(/a person accepts or rejects each candidate by hand/);
   });
 
-  it("renders exactly one funding CTA, so its link keeps a unique accessible name", () => {
-    const { container } = render(<SupportPage />);
-    expect(
-      container.querySelectorAll('a[href="https://ko-fi.com/L2T725R7FV"]')
-    ).toHaveLength(1);
-  });
-
   it("drops the cost ranking and keeps the discovery-pipeline guarantee", () => {
     const { container } = render(<SupportPage />);
     const text = container.textContent ?? "";
     expect(text).not.toContain("largest");
     expect(text).toContain("It has never published a record.");
-  });
-
-  it("explains the Ko-fi institution membership without a DOI link", () => {
-    render(<SupportPage />);
-    expect(
-      screen.getByText(/Ko-fi has an institution membership/)
-    ).toBeInTheDocument();
-    expect(document.body.innerHTML).not.toMatch(/zenodo|10\.5281/i);
   });
 
   it("orders the guarantee, then supporters, then where I stand", () => {
@@ -219,16 +221,13 @@ describe("SupportPage — the personal sections", () => {
     expect(follows(supporters, stand)).toBe(true);
   });
 
-  it("puts the monthly-membership line before the Ko-fi link and mentions one-off tips after it", () => {
-    render(<SupportPage />);
-    const monthly = screen.getByText(/a monthly membership on Ko-fi goes furthest/);
-    const kofi = screen.getByRole("link", { name: /Support on Ko-fi/ });
-    expect(
-      Boolean(monthly.compareDocumentPosition(kofi) & Node.DOCUMENT_POSITION_FOLLOWING)
-    ).toBe(true);
-    const oneOff = screen.getByText(/One-off tips work too/);
-    expect(
-      Boolean(kofi.compareDocumentPosition(oneOff) & Node.DOCUMENT_POSITION_FOLLOWING)
-    ).toBe(true);
+  it("states the guarantee without claiming nothing is for sale", () => {
+    const { container } = render(<SupportPage />);
+    const text = container.textContent ?? "";
+    expect(text).toContain(
+      "Money never buys a record, an edit, a removal, or a place in a ranking."
+    );
+    expect(text).toContain("a commercial data subscription changes none of these");
+    expect(text).not.toContain("Nothing on this site is for sale");
   });
 });
