@@ -210,10 +210,9 @@ export default function SupportPage() {
         </p>
         <SupportLinks />
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          If a university, lab, newsroom or organization needs the data
-          itself, see{" "}
-          <Link href="/access/commercial" className={LINK_CLASS}>
-            access for organizations
+          If you need the data itself, see{" "}
+          <Link href="/data" className={LINK_CLASS}>
+            the data page
           </Link>
           . Citing the dataset helps too.
         </p>

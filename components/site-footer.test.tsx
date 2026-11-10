@@ -118,7 +118,7 @@ describe("SiteFooter", () => {
     ).toHaveAttribute("href", "/methodology");
     expect(screen.queryByRole("link", { name: "API" })).not.toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Get the data" })
+      screen.getByRole("link", { name: "Data" })
     ).toHaveAttribute("href", "/data");
     expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute(
       "href",

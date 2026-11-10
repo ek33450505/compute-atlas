@@ -88,7 +88,7 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link href="/data" className={NAV_LINK_CLASS}>
-                  Get the data
+                  Data
                 </Link>
               </li>
               {isDatasetSharingEnabled() && (

@@ -12,7 +12,7 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Get the data",
+  title: "Data",
   description:
     "How to get the Compute Atlas dataset, free for students, academics, journalists, nonprofits and government or paid for commercial use, and how to cite it.",
   alternates: { canonical: "/data" },
@@ -25,7 +25,7 @@ const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 /**
- * /data — the access hub ("Get the data"): the free and commercial access
+ * /data — the access hub ("Data"): the free and commercial access
  * cards, then how to cite the site and an individual facility page, the
  * license statement, and the access date. The route keeps its path for
  * inbound links. The page loads no facility data and revalidates
@@ -48,16 +48,16 @@ export default function DataPage() {
         dangerouslySetInnerHTML={{
           __html: breadcrumbJsonLdString([
             { name: "Home", url: "/" },
-            { name: "Get the data", url: "/data" },
+            { name: "Data", url: "/data" },
           ]),
         }}
       />
 
-      <Breadcrumb items={[{ label: "Get the data" }]} />
+      <Breadcrumb items={[{ label: "Data" }]} />
 
       <PageMasthead
         eyebrow="DATA"
-        title="Get the data"
+        title="Data"
         dek="Every record is source-cited and the dataset is refreshed weekly, under CC BY 4.0."
       />
 
@@ -91,13 +91,15 @@ export default function DataPage() {
                   Commercial
                 </h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  For companies, consultancies, investors and law firms.{" "}
-                  {formatPlanPrice("monthly")} or {formatPlanPrice("annual")}, plus applicable
-                  tax. For one named person. Need access for a team?{" "}
+                  For companies, consultancies, investors and law firms. The same weekly JSON
+                  and CSV files, licensed CC BY 4.0, through your own download link as soon as
+                  payment completes. {formatPlanPrice("monthly")} or{" "}
+                  {formatPlanPrice("annual")}, plus applicable tax. Cancel anytime. One link per
+                  subscription; for a team,{" "}
                   <Link href="/contact" className="underline underline-offset-2">
-                    Contact us
+                    contact us
                   </Link>
-                  . Access starts as soon as payment completes; cancel anytime.
+                  .
                 </p>
                 <Link href="/access/commercial" className={BUTTON_CLASS}>
                   See commercial plans
@@ -114,10 +116,11 @@ export default function DataPage() {
             Why a paid tier
           </h2>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            The map and every facility page stay free for everyone, and the data stays CC BY
-            4.0. Commercial users (companies, consultancies, investors, law firms) pay for
-            the research, discovery, weekly delivery and hosting that keep the data free for
-            education, journalism and the public interest.
+            A subscription pays for delivery, not a licence: the data is CC BY 4.0 for
+            everyone. The map and every facility page stay free for everyone. Commercial users
+            (companies, consultancies, investors, law firms) pay for the research, discovery,
+            weekly delivery and hosting that keep the data free for education, journalism and
+            the public interest.
           </p>
         </section>
       )}

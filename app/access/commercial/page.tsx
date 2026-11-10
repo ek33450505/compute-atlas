@@ -32,8 +32,7 @@ const PLAN_DETAIL: Record<CommercialPlanKey, { detail: string; button: string }>
 
 const INCLUDED = [
   "The full dataset, refreshed weekly (JSON and CSV)",
-  "A personal download link, sent by email after payment",
-  "One named person, through a personal link",
+  "One personal download link per subscription, sent by email after payment",
   "Receipts and invoices from Stripe",
 ] as const;
 
@@ -123,6 +122,11 @@ export default async function CommercialAccessPage({
             <li key={item}>{item}</li>
           ))}
         </ul>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          The data is CC BY 4.0 for everyone, and a subscription does not change that. It
+          pays for weekly delivery in ready-to-use files, and for the research, discovery
+          and hosting behind them.
+        </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Need access for a team?{" "}
           <Link href="/contact" className={ACCESS_LINK_CLASS}>

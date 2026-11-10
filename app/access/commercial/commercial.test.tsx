@@ -96,7 +96,15 @@ describe("/access/commercial", () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
-    expect(screen.getByText(/One named person, through a personal link/)).toBeInTheDocument();
+    expect(
+      screen.getByText("One personal download link per subscription, sent by email after payment")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("A personal download link, sent by email after payment")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/The data is CC BY 4\.0 for everyone, and a subscription does not change that\./)
+    ).toBeInTheDocument();
     expect(screen.getByText(/2 months free\./)).toBeInTheDocument();
   });
 

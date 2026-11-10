@@ -45,10 +45,15 @@ describe("DataPage access cards", () => {
     expect(screen.getByRole("heading", { level: 3, name: "Free" })).toBeInTheDocument();
     const card = screen.getByRole("heading", { level: 3, name: "Commercial" }).closest("section");
     expect(card).toHaveTextContent("$150/month or $1,500/year, plus applicable tax");
-    expect(card).toHaveTextContent("For one named person");
+    expect(card).toHaveTextContent("The same weekly JSON and CSV files, licensed CC BY 4.0");
+    expect(card).toHaveTextContent("One link per subscription; for a team, contact us.");
+    expect(card).toHaveTextContent(
+      "as soon as payment completes. $150/month or $1,500/year, plus applicable tax. Cancel anytime."
+    );
     expect(within(card as HTMLElement).getByRole("link", { name: "See commercial plans" })).toHaveAttribute("href", "/access/commercial");
-    expect(within(card as HTMLElement).getByRole("link", { name: "Contact us" })).toHaveAttribute("href", "/contact");
+    expect(within(card as HTMLElement).getByRole("link", { name: "contact us" })).toHaveAttribute("href", "/contact");
     expect(screen.getByRole("heading", { level: 2, name: "Why a paid tier" })).toBeInTheDocument();
+    expect(document.body.textContent).toContain("A subscription pays for delivery, not a licence");
     expect(document.body.textContent).not.toMatch(/donat|support us/i);
   });
 
@@ -90,7 +95,7 @@ describe("DataPage", () => {
   it("renders the h1", () => {
     const page = DataPage();
     render(page);
-    expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Data" })).toBeInTheDocument();
   });
 
   it("carries no download, bulk, or API wording and no data-file links", () => {
@@ -119,7 +124,7 @@ describe("DataPage", () => {
     try {
       const { default: FreshPage } = await import("./page");
       render(FreshPage());
-      expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { level: 1, name: "Data" })).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: "How to cite Compute Atlas" })).toBeInTheDocument();
     } finally {
       vi.doUnmock("@/lib/data");
@@ -127,7 +132,7 @@ describe("DataPage", () => {
   });
 
   it("describes citation in the meta description, within 160 characters", () => {
-    expect(metadata.title).toBe("Get the data");
+    expect(metadata.title).toBe("Data");
     expect(metadata.description).toMatch(/cite/i);
     expect(metadata.description).not.toMatch(/download|bulk|paused/i);
     expect((metadata.description ?? "").length).toBeLessThanOrEqual(160);
@@ -207,7 +212,7 @@ describe("DataPage", () => {
     expect(breadcrumb.itemListElement[1]).toEqual({
       "@type": "ListItem",
       position: 2,
-      name: "Get the data",
+      name: "Data",
       item: "https://www.compute-atlas.com/data",
     });
   });

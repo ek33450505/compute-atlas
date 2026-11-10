@@ -47,11 +47,11 @@ describe("SupportPage", () => {
     expect(container.innerHTML).not.toMatch(/ko-?fi/i);
   });
 
-  it("points organizations to /access/commercial", () => {
+  it("points data seekers to /data", () => {
     render(<SupportPage />);
-    expect(screen.getByRole("link", { name: "access for organizations" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "the data page" })).toHaveAttribute(
       "href",
-      "/access/commercial"
+      "/data"
     );
   });
 
