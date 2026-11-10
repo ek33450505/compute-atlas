@@ -1104,7 +1104,7 @@ export function selectRecordSpecimen(facilities: Facility[]): Facility | null {
  * facilities that sum past 2 GW is never penalized by this guard — only the
  * actual outlier record is excluded from the ranking helpers below.
  */
-function isUnverifiedMegaproject(f: Facility): boolean {
+export function isUnverifiedMegaproject(f: Facility): boolean {
   return (f.capacityMw?.planned ?? 0) > 2000 && f.confidence !== "confirmed";
 }
 
