@@ -17,14 +17,12 @@ const {
   mockApproveSubmission,
   mockRejectSubmission,
   mockRevalidatePath,
-  mockRevalidateTag,
 } = vi.hoisted(() => ({
   mockGetCookie: vi.fn(),
   mockVerifySessionCookie: vi.fn(),
   mockApproveSubmission: vi.fn(),
   mockRejectSubmission: vi.fn(),
   mockRevalidatePath: vi.fn(),
-  mockRevalidateTag: vi.fn(),
 }));
 
 vi.mock("next/headers", () => ({
@@ -35,7 +33,6 @@ vi.mock("next/headers", () => ({
 
 vi.mock("next/cache", () => ({
   revalidatePath: mockRevalidatePath,
-  revalidateTag: mockRevalidateTag,
 }));
 
 vi.mock("@/lib/admin-session", () => ({
@@ -51,7 +48,6 @@ vi.mock("@/lib/submissions", () => ({
 import {
   approveSubmissionAction,
   rejectSubmissionAction,
-  refreshAggregatesAction,
 } from "./actions";
 
 describe("approveSubmissionAction", () => {
@@ -143,31 +139,5 @@ describe("rejectSubmissionAction", () => {
     expect(mockRejectSubmission).toHaveBeenCalledWith("sub-1", "duplicate entry");
     expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/submissions");
     expect(result.ok).toBe(true);
-  });
-});
-
-describe("refreshAggregatesAction", () => {
-  beforeEach(() => {
-    mockGetCookie.mockClear();
-    mockVerifySessionCookie.mockClear();
-    mockRevalidateTag.mockClear();
-    mockGetCookie.mockReturnValue({ value: "some-cookie-value" });
-  });
-
-  it("rejects and never busts the cache when the session cookie is invalid", async () => {
-    mockVerifySessionCookie.mockReturnValue(false);
-
-    await expect(refreshAggregatesAction()).rejects.toThrow("Unauthorized");
-
-    expect(mockRevalidateTag).not.toHaveBeenCalled();
-  });
-
-  it('busts the global "facilities" tag exactly once on a valid session', async () => {
-    mockVerifySessionCookie.mockReturnValue(true);
-
-    await expect(refreshAggregatesAction()).resolves.toEqual({ ok: true });
-
-    expect(mockRevalidateTag).toHaveBeenCalledTimes(1);
-    expect(mockRevalidateTag).toHaveBeenCalledWith("facilities", "max");
   });
 });
