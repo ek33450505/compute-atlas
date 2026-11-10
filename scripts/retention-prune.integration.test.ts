@@ -37,6 +37,7 @@ import {
   submissionNotifySendsTable,
   emailSendsTable,
   subscribeAttemptsTable,
+  stripeEventsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
 import { CONFIRM_CAP_WINDOW_MS } from "../lib/email-sends";
@@ -54,6 +55,7 @@ import {
   pruneRetentionBackups,
   RETENTION_BACKUP_RETENTION_DAYS,
   runRetentionPrune,
+  STRIPE_EVENTS_RETENTION_DAYS,
 } from "./retention-prune";
 
 let tdb: TestDbHandle;
@@ -574,6 +576,31 @@ describe("runRetentionPrune — email_sends (outbound send log)", () => {
 
   it("retention is at least 3x the confirm-cap window, so pruning can never shorten the cap", () => {
     expect(EMAIL_SENDS_RETENTION_DAYS * 86_400_000).toBeGreaterThanOrEqual(3 * CONFIRM_CAP_WINDOW_MS);
+  });
+});
+
+describe("runRetentionPrune — stripe_events (webhook idempotency log)", () => {
+  it("deletes processed rows past the window; keeps recent and unprocessed rows; dry run changes nothing", async () => {
+    const cutoff = daysBefore(STRIPE_EVENTS_RETENTION_DAYS);
+    await tdb.db.insert(stripeEventsTable).values([
+      { id: "evt_old", type: "invoice.paid", receivedAt: daysBefore(200), processedAt: new Date(cutoff.getTime() - 1) },
+      { id: "evt_recent", type: "invoice.paid", receivedAt: daysBefore(10), processedAt: daysBefore(10) },
+      { id: "evt_unprocessed", type: "invoice.paid", receivedAt: daysBefore(200), processedAt: null },
+    ]);
+
+    const dry = await runRetentionPrune({ apply: false, now: NOW, backupDir });
+    expect(dry.tables.find((t) => t.table === "stripe_events")).toMatchObject({ candidates: 1, applied: 0 });
+    expect(await tdb.db.select().from(stripeEventsTable)).toHaveLength(3);
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.tables.find((t) => t.table === "stripe_events")).toMatchObject({
+      candidates: 1,
+      applied: 1,
+      action: "delete",
+    });
+    const remaining = (await tdb.db.select().from(stripeEventsTable)).map((r) => r.id).sort();
+    expect(remaining).toEqual(["evt_recent", "evt_unprocessed"]);
+    expect(readBackupLines().map((l) => l.table)).toEqual(["stripe_events"]);
   });
 });
 

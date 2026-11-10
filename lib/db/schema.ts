@@ -746,6 +746,10 @@ export const DATASET_CATEGORIES = [
 
 export type DatasetCategory = (typeof DATASET_CATEGORIES)[number];
 
+export const DATASET_TIERS = ["free", "commercial"] as const;
+
+export type DatasetTier = (typeof DATASET_TIERS)[number];
+
 export const DATASET_EDITION_STATUSES = ["building", "published", "failed"] as const;
 
 export type DatasetEditionStatus = (typeof DATASET_EDITION_STATUSES)[number];
@@ -838,9 +842,16 @@ export const datasetAccessGrantsTable = pgTable(
     lastNoticeEditionId: uuid("last_notice_edition_id"), // newest-edition weekly-notice claim (contract in the table doc); deliberately NO foreign key
     downloadCount: integer("download_count").notNull().default(0),
     submitterIpHash: text("submitter_ip_hash"),
+    tier: text("tier").$type<DatasetTier>().notNull().default("free"), // free | commercial; a commercial grant is live only while paid_through is in the future (liveGrant)
+    paidThrough: timestamp("paid_through", { withTimezone: true }), // set by the Stripe webhook; null until first payment
+    stripeCustomerId: text("stripe_customer_id"),
+    stripeSubscriptionId: text("stripe_subscription_id"),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id"), // the Checkout session that created the grant, recorded by the webhook
   },
   (table) => [
     index("dataset_access_grants_status_idx").on(table.status),
+    uniqueIndex("dataset_access_grants_stripe_subscription_id_idx").on(table.stripeSubscriptionId),
+    uniqueIndex("dataset_access_grants_stripe_checkout_session_id_idx").on(table.stripeCheckoutSessionId),
     index("dataset_access_grants_email_idx").on(table.email),
     uniqueIndex("dataset_access_grants_open_email_idx")
       .on(table.email)
@@ -925,6 +936,25 @@ export const datasetDownloadsTable = pgTable(
 );
 
 export type DatasetDownloadRow = typeof datasetDownloadsTable.$inferSelect;
+
+/**
+ * Idempotency log of Stripe webhook events: `id` is the Stripe event id, so a
+ * redelivered event hits the primary key. `processedAt` is null until the
+ * handler finishes. Deleting a grant keeps the row and nulls `grantId`.
+ */
+export const stripeEventsTable = pgTable(
+  "stripe_events",
+  {
+    id: text("id").primaryKey(),
+    type: text("type").notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true }).defaultNow().notNull(),
+    processedAt: timestamp("processed_at", { withTimezone: true }),
+    grantId: uuid("grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
+  },
+  (table) => [index("stripe_events_received_at_idx").on(table.receivedAt)]
+);
+
+export type StripeEventRow = typeof stripeEventsTable.$inferSelect;
 
 /**
  * Durable per-IP daily request counter for the public facilities-family read

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { eq } from "drizzle-orm";
+import { eq, ne } from "drizzle-orm";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/db/client");
@@ -64,6 +64,8 @@ type SeedGrant = {
   renewalRemindedAt?: Date | null;
   renewalRequestedAt?: Date | null;
   renewTokenHash?: string | null;
+  tier?: "free" | "commercial";
+  paidThrough?: Date | null;
 };
 
 /** A live grant by default (active, expires in 100 days). Ids are random uuids, so order is set by the query, not the insert. */
@@ -86,6 +88,8 @@ async function seedGrant(over: SeedGrant = {}) {
       renewalRemindedAt: over.renewalRemindedAt ?? null,
       renewalRequestedAt: over.renewalRequestedAt ?? null,
       renewTokenHash: over.renewTokenHash ?? null,
+      tier: over.tier ?? "free",
+      paidThrough: over.paidThrough ?? null,
     })
     .returning();
   return row;
@@ -198,6 +202,25 @@ describe("sendEditionNotices", () => {
     noticeMock.mockResolvedValue(OK);
     expect(await sendEditionNotices(e.id, { paceMs: 0 })).toMatchObject({ claimed: 0, sent: 0, complete: true });
     expect(noticeMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("a commercial grant whose paid_through lapses after the candidate read is not claimed or mailed", async () => {
+    const e = await seedEdition("2026-11-09");
+    await seedGrant({ tier: "commercial", paidThrough: new Date(Date.now() + 10 * DAY) });
+    await seedGrant({ tier: "commercial", paidThrough: new Date(Date.now() + 10 * DAY) });
+    // Both are candidates at read time. While the first is being mailed, the other one's payment lapses.
+    noticeMock.mockImplementation(async ({ email }) => {
+      await tdb.db
+        .update(datasetAccessGrantsTable)
+        .set({ paidThrough: new Date(Date.now() - DAY) })
+        .where(ne(datasetAccessGrantsTable.email, email));
+      return OK;
+    });
+
+    const res = await sendEditionNotices(e.id, { paceMs: 0 });
+
+    expect(noticeMock).toHaveBeenCalledTimes(1);
+    expect(res).toMatchObject({ claimed: 1, sent: 1, skipped: 1 });
   });
 
   it("two overlapping runs mail each grant once (claim BEFORE send)", async () => {

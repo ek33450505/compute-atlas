@@ -680,6 +680,32 @@ DROP TABLE dataset_access_grants;
 `dataset_downloads` references both other tables, so it goes first. Migration `drizzle/0020_dataset_sharing_tables.sql`
 creates the three tables.
 
+Migration `drizzle/0021_commercial_tier.sql` adds the commercial tier. To undo only that migration
+(keeps every grant; `stripe_events` references `dataset_access_grants`, so it goes first):
+
+1. Revert the deploy first, then disable the webhook endpoint in the Stripe dashboard, so redelivered events
+   are not reprocessed once `stripe_events` is gone.
+2. **Warning: once any commercial grant exists, this rollback destroys `paid_through` and the Stripe IDs.**
+   Take a Neon branch first, or save the rows:
+   `COPY (SELECT id, email, tier, paid_through, stripe_customer_id, stripe_subscription_id, stripe_checkout_session_id FROM dataset_access_grants WHERE tier='commercial') TO STDOUT`
+3. Run, in this order:
+
+```sql
+DROP TABLE IF EXISTS stripe_events;
+DROP INDEX IF EXISTS dataset_access_grants_stripe_subscription_id_idx;
+DROP INDEX IF EXISTS dataset_access_grants_stripe_checkout_session_id_idx;
+ALTER TABLE dataset_access_grants
+  DROP COLUMN IF EXISTS tier,
+  DROP COLUMN IF EXISTS paid_through,
+  DROP COLUMN IF EXISTS stripe_customer_id,
+  DROP COLUMN IF EXISTS stripe_subscription_id,
+  DROP COLUMN IF EXISTS stripe_checkout_session_id;
+DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794318734667;
+```
+
+The last statement removes the migration's record (`created_at` is the 0021 `when` value in
+`drizzle/meta/_journal.json`), so a later `npm run db:migrate` applies 0021 again.
+
 ### Production checks (O8)
 
 Run these after a deploy with the flag on:

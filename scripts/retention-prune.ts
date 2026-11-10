@@ -41,6 +41,7 @@ import {
   datasetDownloadsTable,
   intakeAttemptsTable,
   leadsTable,
+  stripeEventsTable,
   submissionsTable,
   submissionNotifyRequestsTable,
   submissionNotifySendsTable,
@@ -73,6 +74,7 @@ export const DATASET_ENDED_RETENTION_DAYS = 365; // dataset_access_grants: delet
 export const DATASET_REQUEST_IP_HASH_RETENTION_DAYS = 90; // dataset_access_grants: null submitterIpHash this many days after reviewedAt, whatever the status — the row itself stays
 export const DATASET_DOWNLOADS_RETENTION_DAYS = 365; // dataset_downloads: delete rows older than this many days (by createdAt)
 export const DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS = 90; // dataset_downloads: null ipHash on rows older than this many days (by createdAt) — the row itself stays
+export const STRIPE_EVENTS_RETENTION_DAYS = 90; // stripe_events: delete rows whose processedAt is older than this many days — unprocessed rows (processedAt null) are never pruned
 export const RETENTION_BACKUP_RETENTION_DAYS = 30; // discovery-logs/retention-backups/*.jsonl: delete backup files whose FILENAME timestamp is older than this many days — the dataset privacy notice states it (pinned by a test)
 
 function daysAgo(now: Date, days: number): Date {
@@ -283,6 +285,9 @@ function buildSteps(now: Date): RetentionStep[] {
   const datasetDownloadsStripPredicate = () =>
     and(isNotNull(datasetDownloadsTable.ipHash), lt(datasetDownloadsTable.createdAt, datasetDownloadIpHashCutoff));
 
+  const stripeEventsCutoff = daysAgo(now, STRIPE_EVENTS_RETENTION_DAYS);
+  const stripeEventsPredicate = () => lt(stripeEventsTable.processedAt, stripeEventsCutoff);
+
   return [
     {
       table: "contact_messages",
@@ -380,6 +385,14 @@ function buildSteps(now: Date): RetentionStep[] {
       action: "delete",
       selectCandidates: () => getDb().select().from(apiDailyUsageTable).where(apiDailyUsagePredicate()),
       mutate: () => getDb().delete(apiDailyUsageTable).where(apiDailyUsagePredicate()).returning(),
+    },
+    {
+      // Stripe webhook idempotency log (see stripeEventsTable's doc comment). A null processedAt
+      // never satisfies `lt`, so an event still in flight is kept.
+      table: "stripe_events",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(stripeEventsTable).where(stripeEventsPredicate()),
+      mutate: () => getDb().delete(stripeEventsTable).where(stripeEventsPredicate()).returning(),
     },
     // Dataset sharing. ORDER MATTERS: downloads are deleted BEFORE the grants that own them, so a
     // download a grant delete would cascade away has already been backed up by its own step. An ended

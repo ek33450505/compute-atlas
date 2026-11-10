@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, eq, gt, inArray, isNotNull, isNull, lte, or, sql, type SQL } from "drizzle-orm";
+import { and, eq, gt, inArray, isNotNull, isNull, lte, ne, or, sql, type SQL } from "drizzle-orm";
 
 import { isHoneypotTripped } from "@/lib/contribute";
 import { getDb } from "@/lib/db/client";
@@ -122,10 +122,20 @@ const OPEN_GRANT_PREDICATE = sql`${datasetAccessGrantsTable.status} in (${sql.ra
  *   approves (Ed, 2026-11-09).
  * - LAPSED: neither: expiry passed or NULL, and no renewal requested. NULL expiry is lapsed everywhere
  *   (approve always sets it, so such a row is unreachable, but every function must treat it the same way).
- * Every `active` row is LIVE, RENEWAL_PENDING (both, if a renewal was requested while live) or LAPSED.
+ * Every free-tier `active` row is LIVE, RENEWAL_PENDING (both, if a renewal was requested while live) or
+ * LAPSED.
+ *
+ * The payment gate lives here: a `commercial` tier grant is LIVE only while `paidThrough` is set and in
+ * the future, on top of the expiry test. Never test `status = 'active'` alone to mean "usable".
+ *
+ * A commercial row adds a fourth state, UNPAID: `paidThrough` NULL or past while `expiresAt` is still in
+ * the future. It is not LIVE (this predicate refuses it) and not LAPSED (its expiry has not passed). The
+ * contract for the Stripe webhook (a later unit; NOT yet enforced by any code) is to set `expiresAt` equal
+ * to `paidThrough` on every payment event, which makes a lapsed subscription an ordinary lapse and leaves
+ * UNPAID only as the window before that sync. The `paidThrough` clause is what keeps that window closed.
  */
 export const liveGrant = (now: Date): SQL =>
-  sql`(${eq(datasetAccessGrantsTable.status, "active")} and ${isNotNull(datasetAccessGrantsTable.expiresAt)} and ${gt(datasetAccessGrantsTable.expiresAt, now)})`;
+  sql`(${eq(datasetAccessGrantsTable.status, "active")} and ${isNotNull(datasetAccessGrantsTable.expiresAt)} and ${gt(datasetAccessGrantsTable.expiresAt, now)} and (${ne(datasetAccessGrantsTable.tier, "commercial")} or (${isNotNull(datasetAccessGrantsTable.paidThrough)} and ${gt(datasetAccessGrantsTable.paidThrough, now)})))`;
 
 export const renewalPendingGrant = (): SQL =>
   sql`(${eq(datasetAccessGrantsTable.status, "active")} and ${isNotNull(datasetAccessGrantsTable.renewalRequestedAt)})`;

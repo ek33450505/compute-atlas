@@ -37,6 +37,7 @@ const ALL_TABLES = [
   "operator_ownership",
   "siting_context",
   "state_digest_runs",
+  "stripe_events",
   "submission_notify_requests",
   "submission_notify_sends",
   "submissions",

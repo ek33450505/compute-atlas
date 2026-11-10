@@ -1,4 +1,4 @@
-import { and, asc, eq, gt, isNull, lt, lte, sql } from "drizzle-orm";
+import { and, asc, eq, isNull, lt, lte, sql } from "drizzle-orm";
 
 import { issueRenewalToken, liveGrant } from "@/lib/dataset-grants";
 import { getDb } from "@/lib/db/client";
@@ -206,8 +206,7 @@ export async function sendEditionNotices(editionId: string, opts: NoticeOptions 
         .where(
           and(
             eq(datasetAccessGrantsTable.id, grant.id),
-            eq(datasetAccessGrantsTable.status, "active"),
-            gt(datasetAccessGrantsTable.expiresAt, sql`now()`),
+            liveGrant(new Date()), // the clock at claim time (the old `now()`), not the candidate read's `now`: re-checks the payment gate too
             sql`${datasetAccessGrantsTable.lastNoticeEditionId} IS DISTINCT FROM ${editionId}`,
             sql`${editionId} = (SELECT id FROM dataset_editions WHERE status = 'published' ORDER BY edition_date DESC LIMIT 1)`
           )

@@ -110,6 +110,11 @@ const EXPECTED_COLUMNS: Record<string, Record<string, string>> = {
     last_notice_edition_id: "uuid NULL",
     download_count: "integer NOT NULL",
     submitter_ip_hash: "text NULL",
+    tier: "text NOT NULL",
+    paid_through: "timestamp with time zone NULL",
+    stripe_customer_id: "text NULL",
+    stripe_subscription_id: "text NULL",
+    stripe_checkout_session_id: "text NULL",
   },
   dataset_editions: {
     id: "uuid NOT NULL",
