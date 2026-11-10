@@ -303,6 +303,8 @@ export const INTAKE_SURFACES = [
   "leads",
   "contact",
   "access-request",
+  // Commercial Checkout starts; per-IP, card-testing is the threat (app/api/access/checkout/route.ts).
+  "commercial-checkout",
   // Failed admin-login attempts only (app/admin/login/actions.ts); own budget, see ADMIN_LOGIN_* in lib/rate-limit.ts.
   "admin-login",
 ] as const;
