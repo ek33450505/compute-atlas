@@ -33,6 +33,15 @@ import { NAV_LINKS, MOBILE_NAV_GROUPS, SiteHeader } from "./site-header";
 // shape covers both surfaces without needing to render either.
 // ---------------------------------------------------------------------------
 
+describe("SiteHeader — Get the data label", () => {
+  it("labels /data as Get the data in both nav surfaces, with no Cite entry", () => {
+    expect(NAV_LINKS).toContainEqual({ label: "Get the data", href: "/data" });
+    const mobile = MOBILE_NAV_GROUPS.flatMap((g) => [...g.links] as { label: string; href: string }[]);
+    expect(mobile).toContainEqual({ label: "Get the data", href: "/data" });
+    expect([...NAV_LINKS, ...mobile].some((l) => l.label === "Cite")).toBe(false);
+  });
+});
+
 describe("SiteHeader — NAV_LINKS", () => {
   it("includes a Contribute entry pointing at /contribute", () => {
     const contribute = NAV_LINKS.find((link) => link.label === "Contribute");

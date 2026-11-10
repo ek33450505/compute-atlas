@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageMasthead } from "@/components/page-masthead";
+import { isCommercialTierEnabled } from "@/lib/commercial-flag";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import { DATASET_TERMS_VERSION } from "@/lib/dataset-grants";
 import { DATASET_ACCESS_TERMS, DATASET_PRIVACY_NOTICE } from "@/lib/dataset-terms";
@@ -50,9 +51,8 @@ export default function AccessPage() {
         title="Dataset access"
         dek={
           <>
-            The full Compute Atlas dataset, updated weekly, is free for journalists,
-            researchers and organizations whose request is approved. Every request is
-            reviewed by hand, usually within a few days.
+            The full Compute Atlas dataset, updated weekly, is free for students, academics,
+            journalists, nonprofits and government. Every request is reviewed by hand.
           </>
         }
       />
@@ -70,6 +70,15 @@ export default function AccessPage() {
           <li>Confirm your address from the email. The link is valid for 7 days.</li>
           <li>Once approved, a personal link serves the latest edition for 365 days.</li>
         </ol>
+        {isCommercialTierEnabled() && (
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            For companies, consultancies, investors and law firms, see{" "}
+            <Link href="/access/commercial" className={ACCESS_LINK_CLASS}>
+              commercial access
+            </Link>
+            .
+          </p>
+        )}
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           The data is licensed CC BY 4.0. Credit Compute Atlas when publishing work that uses
           it; see{" "}
@@ -85,7 +94,7 @@ export default function AccessPage() {
         <TermsDetails summary="Privacy notice" paragraphs={DATASET_PRIVACY_NOTICE} />
       </section>
 
-      <AccessRequestForm termsVersion={DATASET_TERMS_VERSION} />
+      <AccessRequestForm termsVersion={DATASET_TERMS_VERSION} commercialTier={isCommercialTierEnabled()} />
     </AccessShell>
   );
 }

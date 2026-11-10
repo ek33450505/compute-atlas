@@ -26,20 +26,48 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("DataPage request-access line", () => {
-  it("links to /access?from=data when dataset sharing is enabled", () => {
+describe("DataPage access cards", () => {
+  it("shows the free card only, with no paid-tier section, when commercial is off", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
     render(DataPage());
-    expect(screen.getByText(/need the full dataset for reporting or research\?/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Free" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/access?from=data");
+    expect(screen.queryByRole("heading", { name: "Commercial" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Why a paid tier" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/\$150/)).not.toBeInTheDocument();
   });
 
-  it("places the request-access link before the Citing a facility page heading", () => {
+  it("shows both cards and the why section when sharing and commercial are on", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(DataPage());
-    const link = screen.getByRole("link", { name: "Request access" });
-    const heading = screen.getByRole("heading", { name: "Citing a facility page" });
-    expect(link.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 3, name: "Free" })).toBeInTheDocument();
+    const card = screen.getByRole("heading", { level: 3, name: "Commercial" }).closest("section");
+    expect(card).toHaveTextContent("$150/month or $1,500/year, plus applicable tax");
+    expect(card).toHaveTextContent("For one named person");
+    expect(within(card as HTMLElement).getByRole("link", { name: "See commercial plans" })).toHaveAttribute("href", "/access/commercial");
+    expect(within(card as HTMLElement).getByRole("link", { name: "Contact us" })).toHaveAttribute("href", "/contact");
+    expect(screen.getByRole("heading", { level: 2, name: "Why a paid tier" })).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/donat|support us/i);
+  });
+
+  it("shows no cards when sharing is off, even if commercial is on, and keeps the cite section", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    render(DataPage());
+    expect(screen.queryByRole("heading", { name: "Free" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Commercial" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Why a paid tier" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "How to cite Compute Atlas" })).toBeInTheDocument();
+  });
+
+  it("does not mention Ko-fi", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const { container } = render(DataPage());
+    expect(container.textContent ?? "").not.toMatch(/ko-?fi/i);
+    expect(readSource("app/data/page.tsx")).not.toMatch(/ko-?fi/i);
   });
 
   it.each([["false"], [""]])("renders no request-access text when the flag is %j", (value) => {
@@ -62,7 +90,7 @@ describe("DataPage", () => {
   it("renders the h1", () => {
     const page = DataPage();
     render(page);
-    expect(screen.getByRole("heading", { level: 1, name: "How to cite Compute Atlas" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
   });
 
   it("carries no download, bulk, or API wording and no data-file links", () => {
@@ -91,15 +119,15 @@ describe("DataPage", () => {
     try {
       const { default: FreshPage } = await import("./page");
       render(FreshPage());
-      expect(screen.getByRole("heading", { level: 1, name: "How to cite Compute Atlas" })).toBeInTheDocument();
-      expect(screen.getByRole("heading", { name: "How to cite" })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { level: 1, name: "Get the data" })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "How to cite Compute Atlas" })).toBeInTheDocument();
     } finally {
       vi.doUnmock("@/lib/data");
     }
   });
 
   it("describes citation in the meta description, within 160 characters", () => {
-    expect(metadata.title).toBe("How to cite Compute Atlas");
+    expect(metadata.title).toBe("Get the data");
     expect(metadata.description).toMatch(/cite/i);
     expect(metadata.description).not.toMatch(/download|bulk|paused/i);
     expect((metadata.description ?? "").length).toBeLessThanOrEqual(160);
@@ -139,7 +167,7 @@ describe("DataPage", () => {
     "non-partisan note", () => {
     const page = DataPage();
     render(page);
-    const section = screen.getByRole("heading", { name: "How to cite" }).closest("section");
+    const section = screen.getByRole("heading", { name: "How to cite Compute Atlas" }).closest("section");
     expect(section).not.toBeNull();
     const scoped = within(section as HTMLElement);
     expect(
@@ -179,7 +207,7 @@ describe("DataPage", () => {
     expect(breadcrumb.itemListElement[1]).toEqual({
       "@type": "ListItem",
       position: 2,
-      name: "Cite",
+      name: "Get the data",
       item: "https://www.compute-atlas.com/data",
     });
   });
@@ -314,13 +342,5 @@ describe("revalidate: /data keeps its own timer; aggregate pages agree with each
     expect(hit('// see /* note\nimport { getDb } from "@/lib/db/client";\nconst s = "*/";')).toBe(true);
     expect(hit('const u = "https://example.com"; import { getDb } from "@/lib/db/client";')).toBe(true);
     expect(hit('/* import { getDb } from "@/lib/db/client"; */')).toBe(false);
-  });
-
-  it("links the support page after the citation heading", () => {
-    render(DataPage());
-    const link = screen.getByRole("link", { name: "support keeps it running" });
-    expect(link).toHaveAttribute("href", "/support");
-    const heading = screen.getByRole("heading", { name: "How to cite" });
-    expect(heading.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

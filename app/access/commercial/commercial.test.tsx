@@ -23,6 +23,7 @@ afterEach(() => vi.unstubAllEnvs());
 describe("/access/commercial", () => {
   it("renders both plans with prices from COMMERCIAL_PLANS", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     expect(
       screen.getByRole("heading", { level: 1, name: "Commercial access to the dataset" })
@@ -34,8 +35,22 @@ describe("/access/commercial", () => {
     expect(screen.getByRole("link", { name: "dataset access" })).toHaveAttribute("href", "/access");
   });
 
+  it("states tax, cancellation, refund terms and links the terms and contact pages", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    expect(screen.getAllByText(/plus applicable tax/)).toHaveLength(2);
+    expect(screen.getByText(/Need access for a team\?/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Contact us" })).toHaveAttribute("href", "/contact");
+    expect(
+      screen.getByText(/Cancel anytime from Manage billing; access runs to the end of the paid period\. No refunds for partial periods\./)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Commercial access terms" })).toHaveAttribute("href", "/access/terms");
+  });
+
   it("posts each plan to the checkout route", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     for (const [name, plan] of [
       ["Subscribe monthly", "monthly"],
@@ -54,12 +69,14 @@ describe("/access/commercial", () => {
     ["unavailable", /temporarily unavailable/i],
   ])("shows an alert for ?error=%s", async (error, text) => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage({ error });
     expect(screen.getByRole("alert")).toHaveTextContent(text);
   });
 
   it("ignores an unknown error value", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage({ error: "<script>" });
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
@@ -68,30 +85,42 @@ describe("/access/commercial", () => {
     "shows no banner and does not crash for ?error=%s",
     async (error) => {
       vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+      vi.stubEnv("DATASET_SHARING_ENABLED", "true");
       await renderPage({ error });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Subscribe monthly" })).toBeInTheDocument();
     }
   );
 
-  it("renders seats and the annual note from the shared constants", async () => {
+  it("renders the one-person line and the annual note", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
-    expect(screen.getByText(/up to 3 people/)).toBeInTheDocument();
+    expect(screen.getByText(/One named person, through a personal link/)).toBeInTheDocument();
     expect(screen.getByText(/2 months free\./)).toBeInTheDocument();
   });
 
   it("shows the canceled note for ?canceled=1", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage({ canceled: "1" });
     expect(screen.getByText("Checkout was canceled; nothing was charged.")).toBeInTheDocument();
   });
 
   it("is indexable with a canonical when on", () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     const meta = generateMetadata();
     expect(meta.alternates?.canonical).toBe("/access/commercial");
     expect(meta.robots).toBeUndefined();
+  });
+
+  it("renders not-open when the tier is on but dataset sharing is off", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    await renderPage();
+    expect(screen.getByText(/not open yet/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("renders not-open and noindex when off", async () => {
@@ -103,8 +132,16 @@ describe("/access/commercial", () => {
 });
 
 describe("/access/commercial/success", () => {
+  it("renders not-open when dataset sharing is off", () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    render(<SuccessPage />);
+    expect(screen.getByText(/not open yet/i)).toBeInTheDocument();
+  });
+
   it("renders without session data, noindex and dynamic", () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     render(<SuccessPage />);
     expect(screen.getByRole("heading", { level: 1, name: "Payment received" })).toBeInTheDocument();
     expect(screen.getByText(/within a few minutes/i)).toBeInTheDocument();

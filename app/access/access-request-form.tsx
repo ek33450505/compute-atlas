@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,6 +24,8 @@ const INTENDED_USE_MAX = 2000;
 const LINK_COUNT = 3;
 const NAME_MAX = 200;
 const EMAIL_MAX = 254;
+
+const COMMERCIAL_PATH = "/access/commercial";
 
 const MSG_SUCCESS =
   "Check your inbox: if this address can receive mail from us, a message about this request is on its way.";
@@ -222,17 +225,21 @@ function CheckboxField({
  * already known. Terms text arrives from the server page; nothing here may
  * import the DB client.
  */
-export function AccessRequestForm({ termsVersion }: { termsVersion: string }) {
+export function AccessRequestForm({ termsVersion, commercialTier }: { termsVersion: string; commercialTier: boolean }) {
   const [state, setState] = useState<FormState>(EMPTY_STATE);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | undefined>(undefined);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  // Set by a 422 from the server, which decides on the category alone, so the note also
+  // shows when the client-side category check was bypassed.
+  const [commercialRedirect, setCommercialRedirect] = useState(false);
   // Synchronous re-entry guard: state updates lag a double click or double Enter.
   const inFlight = useRef(false);
   const summaryRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLParagraphElement>(null);
 
+  const showCommercialNote = commercialTier && (state.category === "commercial" || commercialRedirect);
   const hasSummary = Object.keys(errors).length > 0 || formError !== undefined;
 
   useEffect(() => {
@@ -249,7 +256,7 @@ export function AccessRequestForm({ termsVersion }: { termsVersion: string }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (inFlight.current) return;
+    if (inFlight.current || showCommercialNote) return;
     setFormError(undefined);
 
     const local = validate(state);
@@ -286,6 +293,10 @@ export function AccessRequestForm({ termsVersion }: { termsVersion: string }) {
         } else {
           setFormError("Please check the form and try again.");
         }
+        return;
+      }
+      if (res.status === 422) {
+        setCommercialRedirect(true);
         return;
       }
       if (res.status === 413) setFormError(MSG_TOO_LONG);
@@ -410,10 +421,16 @@ export function AccessRequestForm({ termsVersion }: { termsVersion: string }) {
               id="access-category"
               name="category"
               value={state.category}
-              onChange={(e) => set("category", e.target.value)}
+              onChange={(e) => {
+                set("category", e.target.value);
+                setCommercialRedirect(false);
+              }}
               required
               aria-invalid={errors.category ? true : undefined}
-              aria-describedby={describedBy(errors.category && "access-category-error")}
+              aria-describedby={describedBy(
+                errors.category && "access-category-error",
+                showCommercialNote && "access-commercial-note",
+              )}
               className={`${CONTROL_CLASS} h-8 w-full`}
             >
               <option value="">Choose a category</option>
@@ -424,6 +441,22 @@ export function AccessRequestForm({ termsVersion }: { termsVersion: string }) {
               ))}
             </select>
             <InlineError id="access-category-error" message={errors.category} />
+            {/* empty:absolute keeps the empty live region out of the flex gap */}
+            <div role="status" aria-live="polite" className="empty:absolute">
+              {showCommercialNote ? (
+                <p id="access-commercial-note" className="text-sm text-muted-foreground">
+                  Free access is for students, academics, journalists, nonprofits and government.
+                  For commercial use, please see{" "}
+                  <Link
+                    href={COMMERCIAL_PATH}
+                    className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+                  >
+                    commercial access
+                  </Link>
+                  .
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -511,7 +544,8 @@ export function AccessRequestForm({ termsVersion }: { termsVersion: string }) {
         <Button
           type="submit"
           size="lg"
-          aria-disabled={submitting}
+          aria-disabled={submitting || showCommercialNote}
+          disabled={showCommercialNote}
           className="min-h-11 min-w-11"
         >
           {submitting ? "Sending…" : "Request access"}

@@ -42,6 +42,7 @@ function location(res: Response): URL {
 
 beforeEach(() => {
   vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+  vi.stubEnv("DATASET_SHARING_ENABLED", "true");
   vi.stubEnv("CONTACT_TO_EMAIL", "maintainer@example.test");
   vi.stubEnv("RESEND_API_KEY", "re_test");
   checkLimit.mockResolvedValue({ ok: true });
@@ -58,6 +59,14 @@ afterEach(() => {
 describe("POST /api/access/checkout", () => {
   it("is 403 with the flag off and does no work", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
+    const res = await POST(formRequest("monthly"));
+    expect(res.status).toBe(403);
+    expect(checkLimit).not.toHaveBeenCalled();
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
+  it("is 403 when dataset sharing is off and does no work", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
     const res = await POST(formRequest("monthly"));
     expect(res.status).toBe(403);
     expect(checkLimit).not.toHaveBeenCalled();

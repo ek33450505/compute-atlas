@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
+import { formatPlanPrice } from "@/lib/commercial-plans";
+import { isCommercialTierEnabled } from "@/lib/commercial-flag";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
@@ -10,25 +12,32 @@ import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "How to cite Compute Atlas",
+  title: "Get the data",
   description:
-    "How to cite Compute Atlas and its individual facility pages: attribution line, license, and access date.",
+    "How to get the Compute Atlas dataset, free for students, academics, journalists, nonprofits and government or paid for commercial use, and how to cite it.",
   alternates: { canonical: "/data" },
 };
+
+const BUTTON_CLASS =
+  "inline-flex min-h-11 items-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 /**
- * /data — the citation page: how to cite the site and an individual facility
- * page, the license statement, and the access date. The route keeps
- * its path for inbound links. The page loads no facility data and revalidates
+ * /data — the access hub ("Get the data"): the free and commercial access
+ * cards, then how to cite the site and an individual facility page, the
+ * license statement, and the access date. The route keeps its path for
+ * inbound links. The page loads no facility data and revalidates
  * on its 86400s timer only.
  *
  * Deliberately does NOT emit Dataset JSON-LD — that already lives site-wide
  * on the homepage; duplicating it here would be redundant.
  */
 export default function DataPage() {
+  const sharing = isDatasetSharingEnabled();
+  const commercial = sharing && isCommercialTierEnabled();
+
   return (
     <div
       data-content-width="3xl"
@@ -39,18 +48,79 @@ export default function DataPage() {
         dangerouslySetInnerHTML={{
           __html: breadcrumbJsonLdString([
             { name: "Home", url: "/" },
-            { name: "Cite", url: "/data" },
+            { name: "Get the data", url: "/data" },
           ]),
         }}
       />
 
-      <Breadcrumb items={[{ label: "Cite" }]} />
+      <Breadcrumb items={[{ label: "Get the data" }]} />
 
       <PageMasthead
-        eyebrow="CITATION"
-        title="How to cite Compute Atlas"
-        dek="The attribution line for the site and for an individual facility page, the license, and the access date."
+        eyebrow="DATA"
+        title="Get the data"
+        dek="Every record is source-cited and the dataset is refreshed weekly, under CC BY 4.0."
       />
+
+      {sharing && (
+        <section aria-labelledby="access-heading" className="space-y-4">
+          <h2 id="access-heading" className="font-display text-2xl text-foreground">
+            Ways to get it
+          </h2>
+          <div className={commercial ? "grid gap-4 sm:grid-cols-2" : "grid gap-4"}>
+            <section
+              aria-labelledby="free-access-heading"
+              className="space-y-3 rounded-lg border border-border p-5"
+            >
+              <h3 id="free-access-heading" className="font-display text-xl text-foreground">
+                Free
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                For students, academics, journalists, nonprofits and government. The same
+                weekly files through a personal link. Each request is reviewed by hand.
+              </p>
+              <Link href="/access?from=data" className={BUTTON_CLASS}>
+                Request access
+              </Link>
+            </section>
+            {commercial && (
+              <section
+                aria-labelledby="commercial-access-heading"
+                className="space-y-3 rounded-lg border border-border p-5"
+              >
+                <h3 id="commercial-access-heading" className="font-display text-xl text-foreground">
+                  Commercial
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  For companies, consultancies, investors and law firms.{" "}
+                  {formatPlanPrice("monthly")} or {formatPlanPrice("annual")}, plus applicable
+                  tax. For one named person. Need access for a team?{" "}
+                  <Link href="/contact" className="underline underline-offset-2">
+                    Contact us
+                  </Link>
+                  . Access starts as soon as payment completes; cancel anytime.
+                </p>
+                <Link href="/access/commercial" className={BUTTON_CLASS}>
+                  See commercial plans
+                </Link>
+              </section>
+            )}
+          </div>
+        </section>
+      )}
+
+      {commercial && (
+        <section aria-labelledby="why-paid-heading" className="space-y-4 border-t border-border pt-10">
+          <h2 id="why-paid-heading" className="font-display text-2xl text-foreground">
+            Why a paid tier
+          </h2>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            The map and every facility page stay free for everyone, and the data stays CC BY
+            4.0. Commercial users (companies, consultancies, investors, law firms) pay for
+            the research, discovery, weekly delivery and hosting that keep the data free for
+            education, journalism and the public interest.
+          </p>
+        </section>
+      )}
 
       <section aria-labelledby="what-heading" className="space-y-4 border-t border-border pt-10">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -95,7 +165,7 @@ export default function DataPage() {
           § How to cite
         </p>
         <h2 id="cite-heading" className="font-display text-2xl text-foreground">
-          How to cite
+          How to cite Compute Atlas
         </h2>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           To credit the data on a page, article, or derived dataset:
@@ -123,15 +193,6 @@ export default function DataPage() {
           </a>
           ).
         </blockquote>
-        {isDatasetSharingEnabled() && (
-          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Need the full dataset for reporting or research?{" "}
-            <Link href="/access?from=data" className={LINK_CLASS}>
-              Request access
-            </Link>
-            .
-          </p>
-        )}
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           Link www.compute-atlas.com, Compute Atlas&apos;s home. Say if you changed
           anything (for example, filtered or joined the records). Compute Atlas is
@@ -150,14 +211,6 @@ export default function DataPage() {
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           Each record lists its own public sources. Cite those directly when a claim
           depends on them.
-        </p>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          If it saved you time,{" "}
-          <Link href="/support" className={LINK_CLASS}>
-            support keeps it running
-          </Link>
-          . Institutions that rely on it can support it with a Ko-fi institution
-          membership, and can be named on the support page if they ask to be.
         </p>
       </section>
 

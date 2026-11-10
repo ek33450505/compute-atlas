@@ -1,6 +1,6 @@
 import { methodNotAllowed, NO_STORE_HEADERS, notAvailable } from "@/lib/api-response";
 import { COMMERCIAL_PATH } from "@/lib/commercial-plans";
-import { isCommercialTierEnabled } from "@/lib/commercial-flag";
+import { isCommercialCheckoutOpen } from "@/lib/commercial-flag";
 import { redactedErrorCode } from "@/lib/db-error";
 import {
   checkIntakeRateLimit,
@@ -30,7 +30,7 @@ function parsePlan(value: FormDataEntryValue | null): CommercialPlan | null {
  */
 export async function POST(request: Request) {
   // Kill switch first: no DB, Stripe or body work.
-  if (!isCommercialTierEnabled()) return notAvailable();
+  if (!isCommercialCheckoutOpen()) return notAvailable();
 
   // Money must not be taken while the maintainer alert cannot be sent: both the alert recipient and the
   // mail key must be set. Checked before any rate-limit or Stripe work; the response never says which.

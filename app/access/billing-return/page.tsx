@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageMasthead } from "@/components/page-masthead";
-import { isCommercialTierEnabled } from "@/lib/commercial-flag";
+import { isCommercialCheckoutOpen } from "@/lib/commercial-flag";
 import { ACCESS_LINK_CLASS, AccessNotOpen, AccessShell } from "../not-open";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function BillingReturnPage({
 }: {
   searchParams: Promise<{ status?: string | string[] }>;
 }) {
-  if (!isCommercialTierEnabled()) return <AccessNotOpen />;
+  if (!isCommercialCheckoutOpen()) return <AccessNotOpen />;
   const { status } = await searchParams;
   const unavailable = status === "unavailable";
   return (

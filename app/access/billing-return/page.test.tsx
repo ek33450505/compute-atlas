@@ -7,7 +7,10 @@ async function renderPage(search: { status?: string | string[] } = {}) {
   return render(await BillingReturnPage({ searchParams: Promise.resolve(search) }));
 }
 
-beforeEach(() => vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true"));
+beforeEach(() => {
+  vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+  vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+});
 afterEach(() => vi.unstubAllEnvs());
 
 describe("/access/billing-return", () => {
@@ -31,6 +34,12 @@ describe("/access/billing-return", () => {
   it("treats any other status as the default", async () => {
     await renderPage({ status: "bogus" });
     expect(screen.getByText(/You're back from billing\./)).toBeTruthy();
+  });
+
+  it("shows the not-open page when dataset sharing is off", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    await renderPage();
+    expect(screen.getByText(/not open yet/)).toBeTruthy();
   });
 
   it("shows the not-open page with the flag off", async () => {

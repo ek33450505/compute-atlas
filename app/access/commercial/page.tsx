@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageMasthead } from "@/components/page-masthead";
-import { COMMERCIAL_PLANS, COMMERCIAL_SEATS, formatPlanPrice, type CommercialPlanKey } from "@/lib/commercial-plans";
-import { isCommercialTierEnabled } from "@/lib/commercial-flag";
+import { COMMERCIAL_PLANS, formatPlanPrice, type CommercialPlanKey } from "@/lib/commercial-plans";
+import { isCommercialCheckoutOpen } from "@/lib/commercial-flag";
 import { ACCESS_LINK_CLASS, AccessNotOpen, AccessShell } from "../not-open";
 
 // While the flag is off the page is a thin "not open yet" notice, so keep it out of the index.
@@ -13,7 +13,7 @@ export function generateMetadata(): Metadata {
     description:
       "The full Compute Atlas dataset, refreshed weekly, through a personal download link, for companies, consultancies, investors and law firms.",
     alternates: { canonical: "/access/commercial" },
-    ...(isCommercialTierEnabled() ? {} : { robots: { index: false, follow: false } }),
+    ...(isCommercialCheckoutOpen() ? {} : { robots: { index: false, follow: false } }),
   };
 }
 
@@ -26,15 +26,14 @@ const ERROR_MESSAGES: Readonly<Record<string, string>> = {
 const PLAN_ORDER: readonly CommercialPlanKey[] = ["monthly", "annual"];
 
 const PLAN_DETAIL: Record<CommercialPlanKey, { detail: string; button: string }> = {
-  monthly: { detail: "Cancel anytime.", button: "Subscribe monthly" },
-  annual: { detail: `${COMMERCIAL_PLANS.annual.note}.`, button: "Subscribe annually" },
+  monthly: { detail: "plus applicable tax.", button: "Subscribe monthly" },
+  annual: { detail: `plus applicable tax. ${COMMERCIAL_PLANS.annual.note}.`, button: "Subscribe annually" },
 };
 
 const INCLUDED = [
   "The full dataset, refreshed weekly (JSON and CSV)",
   "A personal download link, sent by email after payment",
-  `Internal use by up to ${COMMERCIAL_SEATS} people at the organization`,
-  "Cancel any time from the billing portal; access runs to the end of the paid period",
+  "One named person, through a personal link",
   "Receipts and invoices from Stripe",
 ] as const;
 
@@ -52,7 +51,7 @@ export default async function CommercialAccessPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  if (!isCommercialTierEnabled()) return <AccessNotOpen />;
+  if (!isCommercialCheckoutOpen()) return <AccessNotOpen />;
 
   const params = await searchParams;
   const errorKey = first(params.error);
@@ -68,8 +67,9 @@ export default async function CommercialAccessPage({
           <>
             The full Compute Atlas dataset (every record, JSON and CSV, refreshed weekly) through a
             personal download link, for companies, consultancies, investors and law firms. The data
-            is licensed CC BY 4.0, so the subscription pays for weekly delivery and upkeep, not for
-            the license.
+            is licensed CC BY 4.0. Commercial users pay for the research, discovery, weekly
+            delivery and hosting that keep the data free for education, journalism and the public
+            interest.
           </>
         }
       />
@@ -123,6 +123,21 @@ export default async function CommercialAccessPage({
             <li key={item}>{item}</li>
           ))}
         </ul>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Need access for a team?{" "}
+          <Link href="/contact" className={ACCESS_LINK_CLASS}>
+            Contact us
+          </Link>
+          .
+        </p>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Cancel anytime from Manage billing; access runs to the end of the paid period. No
+          refunds for partial periods.{" "}
+          <Link href="/access/terms" className={ACCESS_LINK_CLASS}>
+            Commercial access terms
+          </Link>
+          .
+        </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Payment is handled by Stripe. Compute Atlas never sees card details.
         </p>

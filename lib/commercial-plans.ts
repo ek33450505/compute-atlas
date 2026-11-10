@@ -14,6 +14,3 @@ export function formatPlanPrice(plan: CommercialPlanKey): string {
   const { priceUsd, cadence } = COMMERCIAL_PLANS[plan];
   return `$${priceUsd.toLocaleString("en-US")}/${cadence}`;
 }
-
-/** People at the buyer's organization who may use one subscription internally. */
-export const COMMERCIAL_SEATS = 3;
