@@ -1,6 +1,6 @@
 import { escapeHtml } from "@/lib/html-escape";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
-import { COMMERCIAL_PATH, COMMERCIAL_PLANS, formatPlanPrice } from "@/lib/commercial-plans";
+import { COMMERCIAL_PATH, formatPlanPrice } from "@/lib/commercial-plans";
 import { DATASET_LICENSE_URL } from "@/lib/site";
 
 /**
@@ -219,7 +219,7 @@ export function buildDatasetCommercialRedirectEmail(input: { siteUrl: string }):
   const url = `${input.siteUrl}${COMMERCIAL_PATH}`;
   const subject = "Your Compute Atlas dataset access request";
   const free = "The full dataset is free for students, academics, journalists, nonprofits and government.";
-  const paid = `For commercial use it is a subscription: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")} (${COMMERCIAL_PLANS.annual.note}).`;
+  const paid = `For commercial use it is a subscription: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}.`;
   const contact = `${input.siteUrl}/contact`;
   const reply = `If this request was not for commercial use, say so through the contact page: ${contact}`;
   const text = ["Thank you for your request for the Compute Atlas dataset.", free, "", paid, url, "", reply].join("\n");

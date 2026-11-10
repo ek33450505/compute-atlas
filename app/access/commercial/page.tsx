@@ -27,7 +27,7 @@ const PLAN_ORDER: readonly CommercialPlanKey[] = ["monthly", "annual"];
 
 const PLAN_DETAIL: Record<CommercialPlanKey, { detail: string; button: string }> = {
   monthly: { detail: "plus applicable tax.", button: "Subscribe monthly" },
-  annual: { detail: `plus applicable tax. ${COMMERCIAL_PLANS.annual.note}.`, button: "Subscribe annually" },
+  annual: { detail: "plus applicable tax.", button: "Subscribe annually" },
 };
 
 const INCLUDED = [

@@ -30,7 +30,7 @@ describe("/access/commercial", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("$150/month")).toBeInTheDocument();
     expect(screen.getByText("$1,500/year")).toBeInTheDocument();
-    expect(screen.getByText(/2 months free/)).toBeInTheDocument();
+    expect(screen.queryByText(/months free/)).toBeNull();
     expect(screen.getByText(/never sees card details/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "dataset access" })).toHaveAttribute("href", "/access");
   });
@@ -92,7 +92,7 @@ describe("/access/commercial", () => {
     }
   );
 
-  it("renders the one-person line and the annual note", async () => {
+  it("renders the one-person line and the annual price with no free-months label", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
@@ -105,7 +105,10 @@ describe("/access/commercial", () => {
     expect(
       screen.getByText(/The data is CC BY 4\.0 for everyone, and a subscription does not change that\./)
     ).toBeInTheDocument();
-    expect(screen.getByText(/2 months free\./)).toBeInTheDocument();
+    const annualForm = screen.getByRole("button", { name: "Subscribe annually" }).closest("form")!;
+    expect(annualForm).toHaveTextContent("$1,500/year · plus applicable tax.");
+    expect(annualForm).not.toHaveTextContent(/months free/);
+    expect(screen.queryByText(/months free/)).toBeNull();
   });
 
   it("shows the canceled note for ?canceled=1", async () => {

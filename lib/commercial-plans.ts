@@ -1,7 +1,7 @@
 /** The single source for the commercial plans shown to visitors and quoted in mail; Stripe price ids live elsewhere. */
 export const COMMERCIAL_PLANS = {
   monthly: { label: "Monthly", priceUsd: 150, cadence: "month" },
-  annual: { label: "Annual", priceUsd: 1500, cadence: "year", note: "2 months free" },
+  annual: { label: "Annual", priceUsd: 1500, cadence: "year" },
 } as const;
 
 export type CommercialPlanKey = keyof typeof COMMERCIAL_PLANS;
