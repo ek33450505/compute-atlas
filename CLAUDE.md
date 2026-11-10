@@ -428,18 +428,21 @@ tool, not part of the deployed app.
   crawlers.** `Google-Extended` stays allowed. **2026-11-09 amendment (Ed: "block them - i dont
   support those companies"): ChatGPT-User, OAI-SearchBot (OpenAI) and plain Applebot (Apple) are
   blocked** (`BLOCKED_BY_EDITORIAL_CHOICE`, a company choice, not a training-crawler
-  classification; expected consequences (reasoned, not measured): no Siri/Spotlight surfacing via Applebot, and no ChatGPT retrieval or search citation). Counts, each labelled with its side: **`app/robots.ts` = 14 `BLOCKED_AI_CRAWLERS`
-  + 4 `BLOCKED_BULK_EXTRACTORS` + 4 `BLOCKED_SEO_CRAWLERS` + 3 `BLOCKED_BY_EDITORIAL_CHOICE` = 25
-  tokens**; **Cloudflare (MEASURED via the API 2026-11-09 ~23:20Z) = a 23-UA AI Crawl Control rule
-  matched by `http.user_agent contains` + a "Block bulk dataset extractors" custom rule of 8 UAs (4
-  extractors + the 4 SEO crawlers).** The 23 include Arquivo-web-crawler, whose removal is PENDING
-  Ed's dashboard toggle (22 after); `lib/cloudflare-waf-parity.test.ts` records the post-removal 22.
+  classification; expected consequences (reasoned, not measured): no Siri/Spotlight surfacing via Applebot, and no ChatGPT retrieval or search citation). Also 2026-11-09 (Ed: "block them"):
+  Baiduspider, Manus-User, meta-externalfetcher, MistralAI-User and Terracotta are blocked in robots.txt
+  (`BLOCKED_TO_MIRROR_EDGE`) only so robots.txt agrees with the edge, which already 403ed them (live probe 2026-11-09 23:55Z: all five 403). Counts, each labelled with its side: **`app/robots.ts` = 14 `BLOCKED_AI_CRAWLERS`
+  + 4 `BLOCKED_BULK_EXTRACTORS` + 4 `BLOCKED_SEO_CRAWLERS` + 3 `BLOCKED_BY_EDITORIAL_CHOICE` + 5
+  `BLOCKED_TO_MIRROR_EDGE` = 30 tokens**; **Cloudflare (MEASURED via the API 2026-11-09 ~23:55Z,
+  ruleset v288) = a 22-UA AI Crawl Control rule matched by `http.user_agent contains` + a "Block bulk
+  dataset extractors" custom rule of 8 UAs (4 extractors + the 4 SEO crawlers).**
+  `lib/cloudflare-waf-parity.test.ts` records the 22.
   Because the match is `contains "Applebot"`, the edge also blocks `Applebot-Extended`, so it is no
-  longer robots-only. Edge-only entries robots.txt does not carry: Anchor Browser (a browser product
-  with no robots token), Baiduspider, Manus-User, meta-externalfetcher, MistralAI-User, Terracotta.
+  longer robots-only. The only edge-only entry robots.txt does not carry is Anchor Browser (a browser
+  product with no robots token).
   The custom rule also blocks HTTP-library UAs (python-requests, curl/, etc.) on `/facilities/*` and
   `/table` since 2026-11-09; those are not robots tokens. `Arquivo-web-crawler` (arquivo.pt, Portugal's
-  national web archive) is allowed in robots.txt as an archive; until Ed's dashboard toggle removes it from AI Crawl Control, the live edge still 403s it. The AI Crawl Control rule is READABLE via the rulesets API,
+  national web archive) is allowed in robots.txt as an archive; it was removed from AI Crawl Control via
+  the API 2026-11-09 (v288, live probe 200): keep the dashboard toggle on Allow or a toggle save may re-add it. The AI Crawl Control rule is READABLE via the rulesets API,
   but its per-crawler toggles are dashboard-only and every toggle save regenerates the rule,
   overwriting manual edits. The four SEO crawlers were FOUND missing from it on 2026-10-14; the
   actual drop date is unknown (some dashboard save after 2026-09-27). They now live in the custom
