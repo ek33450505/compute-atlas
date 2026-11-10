@@ -77,32 +77,84 @@ import { isEntrypoint } from "../is-entrypoint";
 // --- threshold -----------------------------------------------------------
 
 /**
- * Deliberately matches the same-named `DISCOVERY_STALE_HOURS` default in
- * `scripts/discovery/run.sh` (`DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-84}"`)
- * so the local (on-machine, same-run) check and this remote (off-machine,
- * scheduled) check agree on what "stale" means. Keep these two literals in
- * sync if either changes. 84h = the Mon/Wed/Fri schedule's longest gap
- * (Fri -> Mon, up to ~72h) + 12h slack.
+ * Monday/weekend stale budget. Deliberately matches the Monday/weekend branch of
+ * the day-aware `DISCOVERY_STALE_HOURS` default in `scripts/discovery/run.sh`
+ * (literal 84) so the local (on-machine, same-run) check and this remote
+ * (off-machine, scheduled) check agree on what "stale" means. Keep the two
+ * literals (and the weekday pair below) in sync; `schedule-parity.test.ts`
+ * enforces it.
+ *
+ * Why 84h on Monday: the check looks back over Fri -> Mon, ~70h from a Friday
+ * run's end to Monday 13:00 (`lastRunAt` is written at the END of a run), plus
+ * 12h slack. Saturday and Sunday use it too, to cover manual runs/dispatches
+ * after Friday.
  */
 export const DISCOVERY_STALE_HOURS_DEFAULT = 84;
 
 /**
+ * Tuesday-Friday stale budget (Mon-Fri 13:00 schedule). Those checks look back
+ * ~22h; 36h = the old daily budget's 12h slack plus margin. A single missed run
+ * on any weekday is caught by run.sh's local check on the next run (missed
+ * Tue..Fri: ~45h > 36; missed Mon: Fri end -> Tue ~94h > 36; missed Fri: Thu
+ * end -> Mon ~93h > 84); two consecutive missed runs are caught by the remote
+ * watchdog.
+ *
+ * Watchdog delay: measured 2026-11-10 (`gh run list
+ * --workflow=discovery-watchdog.yml`), the 17 scheduled runs 2026-10-18..11-10
+ * started 00:41-04:23 UTC the day AFTER the nominal 23:00 UTC (latest 04:23 on
+ * 11-10, 03:45 on 11-03). That cannot false-alarm a normal day: each Mon-Fri
+ * watchdog checks a heartbeat written by THAT SAME day's 13:00 run (ending
+ * ~13:25-15:30 local), so a normal age at execution is ~6-11h against a 36h/84h
+ * budget; an age near 36h means that day's run was really missed. In EDT a
+ * start after 04:00 UTC crosses local midnight, which only changes which budget
+ * applies (Monday's 84h -> Tuesday's 36h); both are far above the normal age.
+ */
+export const DISCOVERY_STALE_HOURS_WEEKDAY = 36;
+
+/** ISO weekdays (1=Mon..7=Sun) that get the long budget; run.sh's `1|6|7)` case arm must equal this. */
+export const DISCOVERY_LONG_BUDGET_ISO_WEEKDAYS = [1, 6, 7] as const;
+
+const ISO_WEEKDAY_BY_SHORT_NAME: Record<string, number> = {
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+  Sun: 7,
+};
+
+/** Day-aware default: 84h on Mon/Sat/Sun, 36h Tue-Fri, by the America/New_York weekday of `now`. */
+export function defaultStaleHoursFor(now: Date): number {
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short",
+  }).format(now);
+  const iso = ISO_WEEKDAY_BY_SHORT_NAME[weekday];
+  return DISCOVERY_LONG_BUDGET_ISO_WEEKDAYS.some((d) => d === iso)
+    ? DISCOVERY_STALE_HOURS_DEFAULT
+    : DISCOVERY_STALE_HOURS_WEEKDAY;
+}
+
+/**
  * Parses `DISCOVERY_STALE_HOURS` from the environment. An unset/empty value
- * falls back to `DISCOVERY_STALE_HOURS_DEFAULT`. A value that IS present but
+ * falls back to the day-aware default for `now`. A value that IS present but
  * fails to parse as a positive number THROWS rather than silently falling
  * back — an unparseable limit that disables its own bound is a known trap in
  * this repo (see `scripts/discovery/run.sh`'s and `extract-fields.ts`'s
  * `ENRICHMENT_LIMIT`/`VERIFY_LIMIT` validation for the same precaution).
+ * A set value overrides uniformly, every weekday.
  */
-export function parseStaleHoursEnv(raw: string | undefined): number {
+export function parseStaleHoursEnv(raw: string | undefined, now: Date = new Date()): number {
   if (raw === undefined || raw === "") {
-    return DISCOVERY_STALE_HOURS_DEFAULT;
+    return defaultStaleHoursFor(now);
   }
   const parsed = Number(raw);
   if (!Number.isFinite(parsed) || parsed <= 0) {
     throw new Error(
       `check-heartbeat: DISCOVERY_STALE_HOURS="${raw}" is not a valid positive number of hours. ` +
-        `Refusing to silently fall back to the default (${DISCOVERY_STALE_HOURS_DEFAULT}h) — an ` +
+        `Refusing to silently fall back to the default (${DISCOVERY_STALE_HOURS_DEFAULT}h Mon/Sat/Sun, ` +
+        `${DISCOVERY_STALE_HOURS_WEEKDAY}h Tue-Fri) — an ` +
         "unparseable threshold that disables the bound is exactly the failure mode this repo has " +
         "hit before (see run.sh's ENRICHMENT_LIMIT/VERIFY_LIMIT validation)."
     );
@@ -226,9 +278,10 @@ export class HeartbeatDegradedError extends Error {
  * echoes the recorded status and its report keeps `isDegraded`.
  */
 export async function runHeartbeatCheck(
-  thresholdHours: number = parseStaleHoursEnv(process.env.DISCOVERY_STALE_HOURS),
+  thresholdOverride?: number,
   now: Date = new Date()
 ): Promise<HeartbeatFreshnessReport> {
+  const thresholdHours = thresholdOverride ?? parseStaleHoursEnv(process.env.DISCOVERY_STALE_HOURS, now);
   const row = await fetchHeartbeatRow();
   if (!row) {
     throw new HeartbeatMissingError();

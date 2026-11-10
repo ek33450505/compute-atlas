@@ -4,7 +4,11 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { MONITORED_WORKFLOWS } from "../automation-health";
-import { DISCOVERY_STALE_HOURS_DEFAULT } from "./check-heartbeat";
+import {
+  DISCOVERY_LONG_BUDGET_ISO_WEEKDAYS,
+  DISCOVERY_STALE_HOURS_DEFAULT,
+  DISCOVERY_STALE_HOURS_WEEKDAY,
+} from "./check-heartbeat";
 
 // The discovery schedule lives in four places that nothing else ties together:
 // the launchd plist, the watchdog workflow's cron, run.sh's local stale check,
@@ -37,7 +41,7 @@ describe("discovery schedule parity", () => {
     const block = plist.slice(start, end);
 
     const dicts = block.match(/<dict>[\s\S]*?<\/dict>/g) ?? [];
-    expect(dicts).toHaveLength(3);
+    expect(dicts).toHaveLength(5);
 
     const weekdays = new Set<number>();
     for (const dict of dicts) {
@@ -51,22 +55,38 @@ describe("discovery schedule parity", () => {
       expect(minute[0]).toMatch(/<integer>0<\/integer>$/);
       weekdays.add(Number(/<integer>(\d+)<\/integer>/.exec(weekday[0]!)![1]));
     }
-    expect(weekdays.size).toBe(3);
+    expect(weekdays.size).toBe(5);
+    expect(weekdays).toEqual(new Set([1, 2, 3, 4, 5]));
     expect(weekdays).toEqual(workflowCron().days);
   });
 
-  it("run.sh's DISCOVERY_STALE_HOURS default equals check-heartbeat's", () => {
-    const matches = [...runSh.matchAll(/DISCOVERY_STALE_HOURS="\$\{DISCOVERY_STALE_HOURS:-(\d+)\}"/g)];
-    expect(matches).toHaveLength(1);
-    expect(Number(matches[0][1])).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
+  it("run.sh's day-aware DISCOVERY_STALE_HOURS literals equal check-heartbeat's", () => {
+    const monday = [...runSh.matchAll(/^\s*1\|6\|7\) DISCOVERY_STALE_HOURS=(\d+)/gm)];
+    const weekday = [...runSh.matchAll(/^\s*\*\) DISCOVERY_STALE_HOURS=(\d+)/gm)];
+    expect(monday).toHaveLength(1);
+    expect(weekday).toHaveLength(1);
+    expect(Number(monday[0]![1])).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
+    expect(Number(weekday[0]![1])).toBe(DISCOVERY_STALE_HOURS_WEEKDAY);
   });
 
-  // > 72: above the longest normal gap (Fri -> Mon, ~70h end to start), else a
-  // normal Monday warns. < 88: below the shortest gap a single missed run can
-  // leave, else run.sh can miss it.
-  it("stale threshold sits between the longest normal gap and the shortest single-miss gap", () => {
+  it("run.sh's long-budget case arm covers the same weekdays as check-heartbeat's", () => {
+    const arms = [...runSh.matchAll(/^\s*([0-9|]+)\) DISCOVERY_STALE_HOURS=/gm)];
+    expect(arms).toHaveLength(1);
+    const days = arms[0]![1]!.split("|").map(Number);
+    expect(new Set(days)).toEqual(new Set(DISCOVERY_LONG_BUDGET_ISO_WEEKDAYS));
+  });
+
+  // Monday: > 72 (normal Fri -> Mon gap, ~70h end to start) and < 93 (the
+  // shortest gap a single missed Friday leaves, Thu end -> Mon).
+  it("Monday/weekend budget sits between the normal Fri->Mon gap and a single missed Friday", () => {
     expect(DISCOVERY_STALE_HOURS_DEFAULT).toBeGreaterThan(72);
-    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBeLessThan(88);
+    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBeLessThan(93);
+  });
+
+  // Tue-Fri: > 24 (normal ~22h gap) and < 45 (a single missed midweek run).
+  it("weekday budget sits between the normal daily gap and a single missed midweek run", () => {
+    expect(DISCOVERY_STALE_HOURS_WEEKDAY).toBeGreaterThan(24);
+    expect(DISCOVERY_STALE_HOURS_WEEKDAY).toBeLessThan(45);
   });
 
   it("automation-health's discovery-watchdog entry matches the workflow cron and stale default", () => {
