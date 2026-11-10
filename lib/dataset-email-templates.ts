@@ -1,6 +1,6 @@
 import { escapeHtml } from "@/lib/html-escape";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
-import { COMMERCIAL_PATH, COMMERCIAL_PLANS, COMMERCIAL_SEATS, formatPlanPrice } from "@/lib/commercial-plans";
+import { COMMERCIAL_PATH, COMMERCIAL_PLANS, formatPlanPrice } from "@/lib/commercial-plans";
 import { DATASET_LICENSE_URL } from "@/lib/site";
 
 /**
@@ -220,14 +220,15 @@ export function buildDatasetCommercialRedirectEmail(input: { siteUrl: string }):
   const subject = "Your Compute Atlas dataset access request";
   const free = "The full dataset is free for students, academics, journalists, nonprofits and government.";
   const paid = `For commercial use it is a subscription: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")} (${COMMERCIAL_PLANS.annual.note}).`;
-  const reply = "If this request was not for commercial use, reply to this email and say so.";
+  const contact = `${input.siteUrl}/contact`;
+  const reply = `If this request was not for commercial use, say so through the contact page: ${contact}`;
   const text = ["Thank you for your request for the Compute Atlas dataset.", free, "", paid, url, "", reply].join("\n");
   const html = paragraphs(
     "Thank you for your request for the Compute Atlas dataset.",
     escapeHtml(free),
     escapeHtml(paid),
     `<a href="${escapeHtml(url)}">${escapeHtml(url)}</a>`,
-    escapeHtml(reply),
+    `If this request was not for commercial use, say so through the <a href="${escapeHtml(contact)}">contact page</a>.`,
   );
   return { subject, text, html };
 }
@@ -237,10 +238,10 @@ export function buildDatasetSubscriptionActiveEmail(input: { siteUrl: string; ac
   const dataUrl = `${input.siteUrl}/data`;
   const subject = "Your Compute Atlas commercial access is active";
   const refresh = "The dataset refreshes weekly.";
-  const seats = `One subscription covers internal use by up to ${COMMERCIAL_SEATS} people at your organization.`;
+  const seats = "A subscription gives one named person weekly access through a personal link.";
   const billing =
     'Billing, invoices and cancellation are handled from the "Manage billing" link on your dataset page. If you cancel, access continues to the end of the period you have paid for.';
-  const reply = "Reply to this email with any questions.";
+  const reply = `Questions can go through the contact page: ${input.siteUrl}/contact`;
   const notYou = `If you did not make this purchase, contact us at ${input.siteUrl}/contact.`;
   const text = [
     "Thank you for subscribing to the Compute Atlas dataset. Your personal link:",

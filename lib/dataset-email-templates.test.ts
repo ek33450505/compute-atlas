@@ -15,7 +15,6 @@ import {
   buildDatasetVerifyEmail,
   type DatasetEmail,
 } from "@/lib/dataset-email-templates";
-import { COMMERCIAL_SEATS } from "@/lib/commercial-plans";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
 import { buildReadme } from "@/lib/dataset-readme";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
@@ -331,14 +330,19 @@ describe("buildDatasetCommercialRedirectEmail", () => {
   const mail = buildDatasetCommercialRedirectEmail({ siteUrl: SITE });
 
   it("links the paid page and quotes both prices", () => {
-    expect([...mail.html.matchAll(/href="([^"]*)"/g)].map((m) => m[1])).toEqual([`${SITE}/access/commercial`]);
+    expect([...mail.html.matchAll(/href="([^"]*)"/g)].map((m) => m[1])).toEqual([`${SITE}/access/commercial`, `${SITE}/contact`]);
     expect(mail.text).toContain(`${SITE}/access/commercial`);
     for (const body of [mail.text, mail.html]) {
       expect(body).toContain("$150/month");
       expect(body).toContain("$1,500/year");
       expect(body).toContain("free for students, academics, journalists, nonprofits and government");
-      expect(body).toContain("reply to this email and say so");
+      expect(body).toContain("say so through the");
+      expect(body).toContain(`${SITE}/contact`);
     }
+  });
+
+  it("links the contact page in the html body", () => {
+    expect(mail.html).toContain(`<a href="${SITE}/contact">contact page</a>`);
   });
 
   it("never says donation", () => {
@@ -359,14 +363,15 @@ describe("buildDatasetSubscriptionActiveEmail", () => {
     expect(mail.subject).toBe("Your Compute Atlas commercial access is active");
   });
 
-  it("states seats, weekly refresh, billing, cancellation and the CC BY credit", () => {
+  it("states the single-person scope, weekly refresh, billing, cancellation and the CC BY credit", () => {
     for (const body of [mail.text, mail.html]) {
-      expect(body).toContain(`up to ${COMMERCIAL_SEATS} people`);
+      expect(body).toContain("one named person weekly access through a personal link");
       expect(body).toContain("refreshes weekly");
       expect(body).toContain("Manage billing");
       expect(body).toContain("access continues to the end of the period you have paid for");
       expect(body).toContain("CC BY 4.0");
-      expect(body).toContain("Reply to this email");
+      expect(body).toContain("Questions can go through the contact page");
+      expect(body.toLowerCase()).not.toContain("reply to");
     }
     expect(`${mail.subject} ${mail.text} ${mail.html}`.toLowerCase()).not.toContain("donat");
   });

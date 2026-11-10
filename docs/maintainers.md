@@ -667,6 +667,42 @@ watermark. It needs `DATABASE_URL`, `DATASET_WATERMARK_SECRET` and the Blob env 
 read-only: the only database access is `select`. A score is evidence for a person to review, not proof.
 A re-sorted file scores near zero for every grant (see the watermark limit above).
 
+### Paid tier: setup and policy
+
+`COMMERCIAL_TIER_ENABLED` (exact string `"true"`, `lib/commercial-flag.ts`) gates the commercial checkout,
+the Stripe webhook and the billing-return page. Unset, they are dark. A missing Stripe value makes the webhook
+return 503 and sends checkout back with `?error=unavailable`; neither falls back. The commercial pages, checkout and
+billing portal require BOTH `COMMERCIAL_TIER_ENABLED` and `DATASET_SHARING_ENABLED` (`isCommercialCheckoutOpen()` in
+`lib/commercial-flag.ts`).
+Env vars (all in `.env.example`): `COMMERCIAL_TIER_ENABLED`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+`STRIPE_PRICE_COMMERCIAL_MONTHLY`, `STRIPE_PRICE_COMMERCIAL_ANNUAL`, plus the four public
+`NEXT_PUBLIC_STRIPE_SUPPORT_*` Payment Link URLs. Vercel applies env changes to new deployments only: redeploy.
+
+Stripe dashboard setup:
+
+- Products: one commercial product with two recurring prices, $150/month and $1,500/year. No trials, no coupons.
+  Put the price ids in the two `STRIPE_PRICE_COMMERCIAL_*` vars.
+- Customer portal: allow update card and invoice history. Cancellation MUST be set to cancel at period end only:
+  an immediate cancel ends access at once (`handleSubscriptionDeleted` uses the earlier of paid-through and `ended_at`).
+- Email receipts: enable Stripe customer email receipts (Settings → Emails) for subscriptions and Payment Links.
+- Seats were dropped (2026-11-10): one named person per commercial subscription, and the personal link is strictly
+  personal. Teams are handled by arrangement through `/contact`.
+- Checkout uses `billing_address_collection: "auto"`: Stripe may ask for an address. The site never stores or shows one.
+- Terms URL: `https://www.compute-atlas.com/access/terms` (Checkout links it via `consent_collection.terms_of_service`).
+- Webhook endpoint: `https://www.compute-atlas.com/api/stripe/webhook`, subscribed to the six events listed at the
+  top of `app/api/stripe/webhook/route.ts`. Subscribe it only after the flag is on for that deployment, or the
+  deliveries 403 and Stripe retries.
+- Rotating `EDGE_SHARED_SECRET` breaks webhooks (403 from `proxy.ts`) until Cloudflare's injected header is updated.
+- Stripe Tax is off pending a CPA; prices are "plus applicable tax" in the terms.
+- Support: four Payment Links (monthly 5/15/50 and one-off) with success URL `/support?thanks=1`, pasted into the
+  `NEXT_PUBLIC_STRIPE_SUPPORT_*` vars.
+
+Cancellation and refunds (the public terms, `lib/dataset-terms.ts`): a buyer cancels from "Manage billing" on the
+download page and keeps access to the end of the paid period. No refunds for partial periods, except where the law
+requires one or where a purchase is refused (duplicate subscription, revoked buyer), which is refunded
+automatically. Free access (students, academics, journalists, nonprofits, government) is separate and hand-reviewed.
+Changing the terms text means bumping `DATASET_TERMS_VERSION`.
+
 ### Paid tier: revoke and refunds
 
 - A revoke on the paid tier sticks. A new checkout is refused if its email, its Stripe customer id or its card
@@ -687,6 +723,8 @@ A re-sorted file scores near zero for every grant (see the watermark limit above
   backstop, the next `invoice.paid` or `customer.subscription.updated` for a subscription linked to a revoked
   grant cancels it automatically (no refund) and alerts you, so the cost of a missed cancel is at most one
   more payment.
+- Keep `COMMERCIAL_TIER_ENABLED` on while any subscription exists: with it off the webhook answers 403, Stripe retries for about 3 days, and lapse/cancel events after that are lost (replay them from the Stripe dashboard if it was off).
+- If Manage billing is unavailable (sharing or commercial flag off), cancel a subscriber's subscription by hand in the Stripe dashboard on request via /contact.
 - **After a `superseded_session` or `welcome_mail_undeliverable` alert the buyer's subscription keeps billing**
   until you act: no grant was created (or the buyer got no link), and nothing cancels or refunds for you. Open
   the subscription in Stripe, then cancel it and refund as the case warrants.
