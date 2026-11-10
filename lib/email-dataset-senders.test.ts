@@ -15,6 +15,7 @@ import {
   sendDatasetEditionNoticeEmail,
   sendDatasetLinkReissuedEmail,
   sendDatasetRejectedEmail,
+  sendDatasetCommercialRedirectEmail,
   sendDatasetRenewalReminderEmail,
   sendDatasetVerifyEmail,
 } from "@/lib/email";
@@ -71,6 +72,7 @@ const senders: Array<[string, () => Promise<unknown>, string]> = [
   ["admin", () => sendDatasetAdminNewRequestEmail({ name: "Pat", organization: null }), "maintainer@example.test"],
   ["approved", () => sendDatasetApprovedEmail({ email: "a@b.test", accessToken: TOKEN }), "a@b.test"],
   ["rejected", () => sendDatasetRejectedEmail({ email: "a@b.test", rejectionNote: null }), "a@b.test"],
+  ["commercial redirect", () => sendDatasetCommercialRedirectEmail({ email: "a@b.test" }), "a@b.test"],
   ["reissued", () => sendDatasetLinkReissuedEmail({ email: "a@b.test", accessToken: TOKEN }), "a@b.test"],
   [
     "reminder",

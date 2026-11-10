@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   approveDatasetGrantAction,
+  redirectDatasetGrantToPaidAction,
   rejectDatasetGrantAction,
 } from "@/app/admin/access/actions";
 import { describeMailOutcome } from "@/app/admin/access/mail-outcome";
@@ -87,9 +88,11 @@ function RequesterDetails({ grant, idPrefix }: { grant: QueueGrant; idPrefix: st
 
 function QueueRow({
   grant,
+  commercialEnabled,
   onResult,
 }: {
   grant: QueueGrant;
+  commercialEnabled: boolean;
   onResult: (result: QueueResult, row?: Element | null) => void;
 }) {
   const router = useRouter();
@@ -171,6 +174,33 @@ function QueueRow({
           {
             tone: outcome.delivered ? "success" : "warning",
             text: `Rejected the request from ${grant.name}. ${outcome.text}`,
+          },
+          row,
+        );
+        setDoneFor(grant);
+        router.refresh();
+      } catch {
+        onResult({ tone: "error", text: `${grant.name}: ${ACTION_FAILED}` }, row);
+      }
+    });
+  }
+
+  function handlePointToPaid() {
+    if (locked) return;
+    const row = rowRef.current;
+    startTransition(async () => {
+      try {
+        const result = await redirectDatasetGrantToPaidAction(grant.id);
+        if (!result.ok) {
+          onResult({ tone: "error", text: `${grant.name}: ${result.error}` }, row);
+          router.refresh();
+          return;
+        }
+        const outcome = describeMailOutcome(result.mail, "commercial_redirect");
+        onResult(
+          {
+            tone: outcome.delivered ? "success" : "warning",
+            text: `Pointed ${grant.name} to the paid subscription. ${outcome.text}`,
           },
           row,
         );
@@ -277,6 +307,18 @@ function QueueRow({
             >
               Reject
             </Button>
+            {commercialEnabled ? (
+              <Button
+                size="sm"
+                variant="outline"
+                aria-disabled={locked || undefined}
+                className={LOCKED_CLASS}
+                onClick={handlePointToPaid}
+                aria-label={`Point ${grant.name} to the paid subscription`}
+              >
+                Point to paid
+              </Button>
+            ) : null}
           </>
         )}
         {isPending ? <WorkingText /> : null}
@@ -285,7 +327,13 @@ function QueueRow({
   );
 }
 
-export function AccessQueue({ grants }: { grants: QueueGrant[] }) {
+export function AccessQueue({
+  grants,
+  commercialEnabled = false,
+}: {
+  grants: QueueGrant[];
+  commercialEnabled?: boolean;
+}) {
   const { state, report, headingRef } = useResultReporter();
 
   return (
@@ -306,7 +354,7 @@ export function AccessQueue({ grants }: { grants: QueueGrant[] }) {
       ) : (
         <div className="flex flex-col gap-3">
           {grants.map((grant) => (
-            <QueueRow key={grant.id} grant={grant} onResult={report} />
+            <QueueRow key={grant.id} grant={grant} commercialEnabled={commercialEnabled} onResult={report} />
           ))}
         </div>
       )}

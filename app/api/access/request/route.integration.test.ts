@@ -125,7 +125,8 @@ beforeEach(async () => {
   vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://example.test");
 });
 
-afterEach(() => {
+afterEach(async () => {
+  await pendingAfter; // drain any background send before the mocks are restored
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
@@ -325,5 +326,28 @@ describe("POST /api/access/request — rate limit accounting", () => {
     const [row] = await tdb.db.select().from(intakeAttemptsTable);
     expect(row.surface).toBe("access-request");
     expect(row.submitterIpHash).toBe(hashIp(rateLimit.normaliseIpForBucketing("203.0.113.9")));
+  });
+});
+
+describe("POST /api/access/request: commercial tier", () => {
+  it("answers 422 commercial_requires_subscription, writing no row and sending no mail, while the tier is on", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const res = await POST(req(formBody({ category: "commercial" })));
+    expect(pendingAfter).toBeUndefined(); // no mail was even scheduled
+    expect(resendSendMock).not.toHaveBeenCalled();
+
+    expect(res.status).toBe(422);
+    expect(await res.json()).toEqual({ error: "commercial_requires_subscription", path: "/access/commercial" });
+    expect(res.headers.get("cache-control")).toContain("no-store");
+    expect(await rows()).toHaveLength(0);
+  });
+
+  it("keeps the fixed 202 for a commercial request when the tier is off", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "false");
+    const res = await POST(req(formBody({ category: "commercial" })));
+    await flushAfter();
+    expect(res.status).toBe(202);
+    expect(await res.json()).toEqual({ ok: true });
+    expect(await rows()).toHaveLength(1);
   });
 });

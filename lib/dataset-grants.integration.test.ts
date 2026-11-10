@@ -37,6 +37,7 @@ import {
   getGrantByAccessToken,
   issueRenewalToken,
   reissueDatasetLink,
+  redirectDatasetGrantToPaid,
   rejectDatasetGrant,
   requestDatasetAccess,
   requestRenewal,
@@ -1989,5 +1990,93 @@ describe("renewal grace, end to end", () => {
     expect(after.renewalRequestedAt).toBeNull();
     expect(after.renewTokenHash).toBeNull();
     expect(after.accessTokenHash).toBe(hashToken(accessToken));
+  });
+});
+
+describe("commercial tier: request path", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("refuses a commercial request before any DB call or mail while the tier is on", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    getDbMock().mockClear();
+
+    const result = await requestDatasetAccess(body({ category: "commercial" }), "iphash-c1");
+
+    expect(result).toStrictEqual({
+      ok: false,
+      status: 422,
+      error: "commercial_requires_subscription",
+      path: "/access/commercial",
+    });
+    expect(getDbMock()).not.toHaveBeenCalled();
+    expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(0);
+  });
+
+  it("refuses a honeypot-tripped commercial request with the same 422, writing nothing", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const result = await requestDatasetAccess(body({ category: "commercial", website: "http://spam.example" }), "iphash-c4");
+    expect(result).toStrictEqual({
+      ok: false,
+      status: 422,
+      error: "commercial_requires_subscription",
+      path: "/access/commercial",
+    });
+    expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(0);
+  });
+
+  it("still accepts a non-commercial request while the tier is on", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const result = await requestDatasetAccess(body({ category: "journalist" }), "iphash-c2");
+    expect(result.ok).toBe(true);
+  });
+
+  it("accepts a commercial request for review when the tier is off, as before", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", undefined);
+    const result = await requestDatasetAccess(body({ category: "commercial" }), "iphash-c3");
+    expect(result.ok).toBe(true);
+    expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(1);
+  });
+});
+
+describe("redirectDatasetGrantToPaid", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("moves pending_review to rejected with the internal marker and returns the redirect mail", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const g = await pendingGrant();
+    const now = new Date("2026-11-10T12:00:00Z");
+
+    const result = await redirectDatasetGrantToPaid(g.id, now);
+
+    expect(result).toStrictEqual({
+      ok: true,
+      mail: { kind: "dataset_commercial_redirect", grantId: g.id, email: "reporter@example.com" },
+    });
+    const row = await rowById(g.id);
+    expect(row.status).toBe("rejected");
+    expect(row.reviewedAt).toEqual(now);
+    expect(row.rejectionNote).toBe("Pointed to the paid commercial subscription");
+    expect(row.accessTokenHash).toBeNull();
+  });
+
+  it("is not eligible when the tier is off, and changes nothing", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", undefined);
+    const g = await pendingGrant();
+    expect(await redirectDatasetGrantToPaid(g.id)).toStrictEqual(NOT_ELIGIBLE);
+    expect((await rowById(g.id)).status).toBe("pending_review");
+  });
+
+  it("is not eligible for a grant that is no longer pending_review, and for a non-UUID", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const g = await pendingGrant();
+    expect(await rejectDatasetGrant(g.id)).toMatchObject({ ok: true });
+    expect(await redirectDatasetGrantToPaid(g.id)).toStrictEqual(NOT_ELIGIBLE);
+    getDbMock().mockClear();
+    expect(await redirectDatasetGrantToPaid("not-a-uuid")).toStrictEqual(NOT_ELIGIBLE);
+    expect(getDbMock()).not.toHaveBeenCalled();
   });
 });

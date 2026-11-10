@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { and, eq, gt, inArray, isNotNull, isNull, lte, ne, or, sql, type SQL } from "drizzle-orm";
 
+import { COMMERCIAL_PATH } from "@/lib/commercial-plans";
+import { isCommercialTierEnabled } from "@/lib/commercial-flag";
 import { isHoneypotTripped } from "@/lib/contribute";
 import { getDb } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
@@ -94,12 +96,14 @@ export type DatasetMailIntent =
   | { kind: "dataset_admin_new_request"; grantId: string; name: string; organization: string | null } // to the maintainer
   | { kind: "dataset_approved"; grantId: string; email: string; accessToken: string } // raw access token, for the link only
   | { kind: "dataset_rejected"; grantId: string; email: string; rejectionNote: string | null }
+  | { kind: "dataset_commercial_redirect"; grantId: string; email: string } // points a commercial requester to the paid subscription
   | { kind: "dataset_link_reissued"; grantId: string; email: string; accessToken: string } // the NEW raw access token
   | { kind: "dataset_renewal_reminder"; grantId: string; email: string; renewToken: string }; // raw renew token, for the link only
 
 export type DatasetRequestResult =
   | { ok: true; publicResult: { ok: true }; mail?: DatasetMailIntent }
-  | { ok: false; status: 400; error: string; issues?: unknown };
+  | { ok: false; status: 400; error: string; issues?: unknown }
+  | { ok: false; status: 422; error: "commercial_requires_subscription"; path: typeof COMMERCIAL_PATH; issues?: undefined };
 
 /**
  * The OPEN-grant predicate as SQL text, for the INSERT's `ON CONFLICT (email) WHERE ...` target. The statuses
@@ -216,7 +220,18 @@ export async function requestDatasetAccess(
   rawInput: unknown,
   ipHash: string
 ): Promise<DatasetRequestResult> {
-  // Honeypot FIRST, against the RAW input, before the schema runs (see
+  // A commercial request is refused while the paid tier is on, before any row, cap count or mail. The
+  // decision uses the submitted category alone, so it reveals nothing about any address and does not weaken the
+  // fixed 202 every other valid request gets. It runs BEFORE the honeypot so a commercial submission gets the
+  // same 422 whether or not the honeypot field is filled (the honeypot stays uniform for the categories it
+  // still applies to). It needs a schema-valid body, so it parses first; the 400 for an invalid body is still
+  // answered below, after the honeypot, exactly as before. With the flag off, commercial requests are reviewed.
+  const parsed = datasetRequestInputSchema.safeParse(rawInput);
+  if (parsed.success && parsed.data.category === "commercial" && isCommercialTierEnabled()) {
+    return { ok: false, status: 422, error: "commercial_requires_subscription", path: COMMERCIAL_PATH };
+  }
+
+  // Honeypot, against the RAW input, before the schema runs (see
   // requestAccessGrant). It runs on the raw value so that every non-empty
   // type, a number or an object as well as a string, answers the same generic
   // success. `null`, `false` and `[]` are "present but not filled in": they
@@ -234,11 +249,11 @@ export async function requestDatasetAccess(
     return genericSuccess();
   }
 
-  const parsed = datasetRequestInputSchema.safeParse(rawInput);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid request", issues: parsed.error.issues };
   }
   const data = parsed.data;
+
   const email = normalizeEmail(data.email);
   const now = new Date();
 
@@ -545,6 +560,8 @@ export async function approveDatasetGrant(
   return renewed ? { ok: true, kind: "renewed" } : NOT_ELIGIBLE;
 }
 
+const COMMERCIAL_REDIRECT_NOTE = "Pointed to the paid commercial subscription";
+
 /**
  * Admin rejection: `pending_review` -> `rejected` (terminal). `reviewNote` is
  * internal; `rejectionNote` is shown to the requester via the returned mail
@@ -570,6 +587,27 @@ export async function rejectDatasetGrant(
   if (!rejected) return NOT_ELIGIBLE;
 
   return { ok: true, mail: { kind: "dataset_rejected", grantId: rejected.id, email: rejected.email, rejectionNote } };
+}
+
+/**
+ * Admin "Point to paid": like a rejection (`pending_review` -> `rejected`), but the mail sends the requester to
+ * the paid commercial subscription. Refused while the commercial tier is off, because the mail would link to a
+ * closed page. The note is an internal marker, never shown to the requester.
+ */
+export async function redirectDatasetGrantToPaid(
+  id: string,
+  now: Date = new Date()
+): Promise<{ ok: true; mail: MailOf<"dataset_commercial_redirect"> } | DatasetGrantNotEligible> {
+  if (!isGrantId(id) || !isCommercialTierEnabled()) return NOT_ELIGIBLE;
+
+  const [redirected] = await getDb()
+    .update(datasetAccessGrantsTable)
+    .set({ status: "rejected", reviewedAt: now, rejectionNote: COMMERCIAL_REDIRECT_NOTE })
+    .where(and(eq(datasetAccessGrantsTable.id, id), eq(datasetAccessGrantsTable.status, "pending_review")))
+    .returning({ id: datasetAccessGrantsTable.id, email: datasetAccessGrantsTable.email });
+  if (!redirected) return NOT_ELIGIBLE;
+
+  return { ok: true, mail: { kind: "dataset_commercial_redirect", grantId: redirected.id, email: redirected.email } };
 }
 
 /**

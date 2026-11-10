@@ -8,6 +8,7 @@ const {
   mockRevalidatePath,
   mockApprove,
   mockReject,
+  mockRedirect,
   mockRevoke,
   mockReissue,
   mockExtend,
@@ -20,6 +21,7 @@ const {
   mockRevalidatePath: vi.fn(),
   mockApprove: vi.fn(),
   mockReject: vi.fn(),
+  mockRedirect: vi.fn(),
   mockRevoke: vi.fn(),
   mockReissue: vi.fn(),
   mockExtend: vi.fn(),
@@ -39,6 +41,7 @@ vi.mock("@/lib/admin-session", () => ({
 vi.mock("@/lib/dataset-grants", () => ({
   approveDatasetGrant: mockApprove,
   rejectDatasetGrant: mockReject,
+  redirectDatasetGrantToPaid: mockRedirect,
   revokeDatasetGrant: mockRevoke,
   reissueDatasetLink: mockReissue,
   extendDatasetGrant: mockExtend,
@@ -52,6 +55,7 @@ import {
   buildEditionNowAction,
   extendDatasetGrantAction,
   reissueDatasetLinkAction,
+  redirectDatasetGrantToPaidAction,
   rejectDatasetGrantAction,
   revokeDatasetGrantAction,
 } from "./actions";
@@ -70,6 +74,7 @@ const EDITION_ID = "9d1c2e4f-0b3a-4f6d-8a7e-1c2b3d4e5f60";
 
 const approvedIntent = { kind: "dataset_approved", grantId: ID, email: EMAIL, accessToken: TOKEN };
 const rejectedIntent = { kind: "dataset_rejected", grantId: ID, email: EMAIL, rejectionNote: "Out of scope." };
+const redirectIntent = { kind: "dataset_commercial_redirect", grantId: ID, email: EMAIL };
 const reissuedIntent = { kind: "dataset_link_reissued", grantId: ID, email: EMAIL, accessToken: TOKEN };
 
 /** Everything the console received, flattened, so a leak anywhere in the arguments is found. */
@@ -88,6 +93,7 @@ beforeEach(() => {
   mockVerifySessionCookie.mockReturnValue(true);
   mockApprove.mockResolvedValue({ ok: true, kind: "approved", mail: approvedIntent });
   mockReject.mockResolvedValue({ ok: true, mail: rejectedIntent });
+  mockRedirect.mockResolvedValue({ ok: true, mail: redirectIntent });
   mockRevoke.mockResolvedValue({ ok: true });
   mockReissue.mockResolvedValue({ ok: true, mail: reissuedIntent });
   mockExtend.mockResolvedValue({ ok: true });
@@ -110,13 +116,14 @@ describe("session gate", () => {
   it.each([
     ["approveDatasetGrantAction", () => approveDatasetGrantAction(ID)],
     ["rejectDatasetGrantAction", () => rejectDatasetGrantAction(ID)],
+    ["redirectDatasetGrantToPaidAction", () => redirectDatasetGrantToPaidAction(ID)],
     ["revokeDatasetGrantAction", () => revokeDatasetGrantAction(ID)],
     ["reissueDatasetLinkAction", () => reissueDatasetLinkAction(ID)],
     ["extendDatasetGrantAction", () => extendDatasetGrantAction(ID)],
   ])("%s rejects Unauthorized and touches nothing without a valid session", async (_name, run) => {
     mockVerifySessionCookie.mockReturnValue(false);
     await expect(run()).rejects.toThrow("Unauthorized");
-    for (const fn of [mockApprove, mockReject, mockRevoke, mockReissue, mockExtend, mockDeliver, mockRevalidatePath, mockHasRecentReissue]) {
+    for (const fn of [mockApprove, mockReject, mockRedirect, mockRevoke, mockReissue, mockExtend, mockDeliver, mockRevalidatePath, mockHasRecentReissue]) {
       expect(fn).not.toHaveBeenCalled();
     }
   });
@@ -182,6 +189,34 @@ describe("rejectDatasetGrantAction", () => {
   it("drops non-string note fields", async () => {
     await rejectDatasetGrantAction(ID, { reviewNote: 5, rejectionNote: {} } as never);
     expect(mockReject).toHaveBeenCalledWith(ID, { reviewNote: undefined, rejectionNote: undefined });
+  });
+});
+
+describe("redirectDatasetGrantToPaidAction", () => {
+  it("delivers the redirect intent and returns only the disposition", async () => {
+    const result = await redirectDatasetGrantToPaidAction(ID);
+
+    expect(mockRedirect).toHaveBeenCalledWith(ID);
+    expect(mockDeliver).toHaveBeenCalledWith(redirectIntent);
+    expect(result).toEqual({ ok: true, mail: "sent" });
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("returns not-eligible and sends nothing when the lib refuses", async () => {
+    mockRedirect.mockResolvedValue({ ok: false });
+    expect(await redirectDatasetGrantToPaidAction(ID)).toEqual(NOT_ELIGIBLE);
+    expect(mockDeliver).not.toHaveBeenCalled();
+  });
+
+  it("reports an update failure without leaking, and sends nothing", async () => {
+    mockRedirect.mockRejectedValue(new Error("boom"));
+    expect(await redirectDatasetGrantToPaidAction(ID)).toEqual(UPDATE_FAILED);
+    expect(mockDeliver).not.toHaveBeenCalled();
+  });
+
+  it("is not eligible for a non-string id", async () => {
+    expect(await redirectDatasetGrantToPaidAction(5 as never)).toEqual(NOT_ELIGIBLE);
+    expect(mockRedirect).not.toHaveBeenCalled();
   });
 });
 

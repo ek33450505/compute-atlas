@@ -105,7 +105,7 @@ import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type Supp
  *   address match; suppression of the grant's own address (global scope for
  *   every kind; `dataset_edition_notice` uses target `dataset_edition`/`weekly`,
  *   which a global row also blocks); required state: `dataset_verify` needs
- *   `unverified`, `dataset_rejected` needs `rejected`, `dataset_already_active`
+ *   `unverified`, `dataset_rejected` and `dataset_commercial_redirect` need `rejected`, `dataset_already_active`
  *   needs live OR renewal-pending (never lapsed), and approved / link_reissued /
  *   renewal_reminder / edition_notice need live. An edition notice also needs an
  *   `editionId` (row target `dataset_edition`/`<editionId>:<grantId>`). The
@@ -465,6 +465,7 @@ export async function sendGrantGated(
       stateOk = grant.status === "unverified";
       break;
     case "dataset_rejected":
+    case "dataset_commercial_redirect":
       stateOk = grant.status === "rejected";
       break;
     case "dataset_already_active":

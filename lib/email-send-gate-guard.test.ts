@@ -76,6 +76,7 @@ const GATE_SENDERS: Record<string, ReadonlySet<string>> = {
     "sendDatasetAlreadyActiveEmail",
     "sendDatasetApprovedEmail",
     "sendDatasetRejectedEmail",
+    "sendDatasetCommercialRedirectEmail",
     "sendDatasetLinkReissuedEmail",
     "sendDatasetRenewalReminderEmail",
     "sendDatasetEditionNoticeEmail",

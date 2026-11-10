@@ -56,6 +56,10 @@ export async function POST(request: Request) {
     console.error(`access-request failed (sqlstate: ${redactedErrorCode(err)})`);
     return jsonResponse(UNAVAILABLE, { status: 503 });
   }
+  if (!result.ok && result.status === 422) {
+    // Decided by the submitted category alone (no address lookup), so it is not an enumeration oracle.
+    return jsonResponse({ error: result.error, path: result.path }, { status: 422 });
+  }
   if (!result.ok) {
     // Decided by the input alone, so it is not an enumeration oracle.
     return jsonResponse({ error: result.error, issues: result.issues }, { status: result.status });

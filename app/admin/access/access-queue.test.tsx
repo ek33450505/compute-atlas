@@ -4,10 +4,11 @@ import userEvent from "@testing-library/user-event";
 
 import type { QueueGrant } from "./grant-views";
 
-const { mockRefresh, mockApprove, mockReject } = vi.hoisted(() => ({
+const { mockRefresh, mockApprove, mockReject, mockRedirect } = vi.hoisted(() => ({
   mockRefresh: vi.fn(),
   mockApprove: vi.fn(),
   mockReject: vi.fn(),
+  mockRedirect: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -17,6 +18,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/app/admin/access/actions", () => ({
   approveDatasetGrantAction: mockApprove,
   rejectDatasetGrantAction: mockReject,
+  redirectDatasetGrantToPaidAction: mockRedirect,
 }));
 
 import { AccessQueue } from "./access-queue";
@@ -500,5 +502,39 @@ describe("AccessQueue: reject", () => {
       "aria-disabled",
       "true"
     );
+  });
+});
+
+describe("AccessQueue: point to paid", () => {
+  it("shows no button while the commercial tier is off", () => {
+    render(<AccessQueue grants={[makeGrant()]} />);
+    expect(screen.queryByRole("button", { name: /to the paid subscription/ })).not.toBeInTheDocument();
+  });
+
+  it("shows no button on a renewal row even when the tier is on", () => {
+    render(<AccessQueue grants={[makeRenewal()]} commercialEnabled />);
+    expect(screen.queryByRole("button", { name: /to the paid subscription/ })).not.toBeInTheDocument();
+  });
+
+  it("calls the action and reports the outcome", async () => {
+    mockRedirect.mockResolvedValue({ ok: true, mail: "sent" });
+    const user = userEvent.setup();
+    render(<AccessQueue grants={[makeGrant()]} commercialEnabled />);
+
+    await user.click(screen.getByRole("button", { name: "Point Ada Lovelace to the paid subscription" }));
+
+    await waitFor(() => expect(mockRedirect).toHaveBeenCalledWith("g1"));
+    const status = await screen.findByRole("status");
+    await waitFor(() => expect(status).toHaveTextContent("paid-subscription email was sent"));
+    expect(mockReject).not.toHaveBeenCalled();
+    expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  it("shows the refusal as an error", async () => {
+    mockRedirect.mockResolvedValue({ ok: false, error: "No longer eligible." });
+    const user = userEvent.setup();
+    render(<AccessQueue grants={[makeGrant()]} commercialEnabled />);
+    await user.click(screen.getByRole("button", { name: /to the paid subscription/ }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("No longer eligible.");
   });
 });

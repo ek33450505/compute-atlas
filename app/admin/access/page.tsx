@@ -6,6 +6,7 @@ import { EditionsPanel } from "@/app/admin/access/editions-panel";
 import { GrantsList } from "@/app/admin/access/grants-list";
 import { toListGrant, toQueueGrant } from "@/app/admin/access/grant-views";
 import { hasAdminSession } from "@/lib/admin-session";
+import { isCommercialTierEnabled } from "@/lib/commercial-flag";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import {
   getDatasetDownloadLog,
@@ -61,7 +62,7 @@ export default async function AdminAccessPage({
           by email.
         </p>
       </div>
-      <AccessQueue grants={queue.map(toQueueGrant)} />
+      <AccessQueue grants={queue.map(toQueueGrant)} commercialEnabled={isCommercialTierEnabled()} />
       <EditionsPanel editions={editions} mailEnabled={isDatasetSharingEnabled()} />
       {/* Right above the list: the list's "Download log" links load it, so it must sit next to the list,
           not below every row. Keyed by grant so opening a different log remounts it and re-focuses it. */}

@@ -7,6 +7,7 @@ import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/admin-session";
 import {
   approveDatasetGrant,
   extendDatasetGrant,
+  redirectDatasetGrantToPaid,
   reissueDatasetLink,
   rejectDatasetGrant,
   revokeDatasetGrant,
@@ -115,6 +116,27 @@ export async function rejectDatasetGrantAction(
     });
   } catch (err) {
     logFailure("rejectDatasetGrantAction", err);
+    return updateFailed();
+  }
+  if (!result.ok) return notEligible();
+
+  const gate = await deliverDatasetReviewMail(result.mail);
+  revalidatePath("/admin/access");
+  return { ok: true, mail: gate.disposition };
+}
+
+/** Rejects a pending commercial request and mails the requester the link to the paid subscription. */
+export async function redirectDatasetGrantToPaidAction(
+  id: string
+): Promise<{ ok: true; mail: GateDisposition } | DatasetAdminActionError> {
+  await assertAdminSession();
+  if (typeof id !== "string") return notEligible();
+
+  let result;
+  try {
+    result = await redirectDatasetGrantToPaid(id);
+  } catch (err) {
+    logFailure("redirectDatasetGrantToPaidAction", err);
     return updateFailed();
   }
   if (!result.ok) return notEligible();

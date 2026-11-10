@@ -7,6 +7,7 @@ import {
   buildDatasetApprovedEmail,
   buildDatasetEditionNoticeEmail,
   buildDatasetLinkReissuedEmail,
+  buildDatasetCommercialRedirectEmail,
   buildDatasetRejectedEmail,
   buildDatasetRenewalReminderEmail,
   buildDatasetVerifyEmail,
@@ -566,6 +567,15 @@ export async function sendDatasetRejectedEmail(input: {
   return sendViaResend(
     "sendDatasetRejectedEmail",
     "RESEND_API_KEY not set — skipping dataset rejected email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+export async function sendDatasetCommercialRedirectEmail(input: { email: string }): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetCommercialRedirectEmail({ siteUrl: linkBase() });
+  return sendViaResend(
+    "sendDatasetCommercialRedirectEmail",
+    "RESEND_API_KEY not set — skipping dataset commercial redirect email send",
     { from: fromAddress(), to: input.email, subject, text, html },
   );
 }

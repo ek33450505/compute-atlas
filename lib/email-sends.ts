@@ -34,6 +34,7 @@ export const DATASET_SEND_KINDS = [
   "dataset_admin_new_request",
   "dataset_approved",
   "dataset_rejected",
+  "dataset_commercial_redirect",
   "dataset_edition_notice",
   "dataset_renewal_reminder",
   "dataset_link_reissued",

@@ -12,6 +12,7 @@ vi.mock("@/lib/email", () => ({
   sendDatasetAdminNewRequestEmail: vi.fn(),
   sendDatasetApprovedEmail: vi.fn(),
   sendDatasetRejectedEmail: vi.fn(),
+  sendDatasetCommercialRedirectEmail: vi.fn(),
   sendDatasetLinkReissuedEmail: vi.fn(),
 }));
 
@@ -21,6 +22,7 @@ import {
   sendDatasetAdminNewRequestEmail,
   sendDatasetAlreadyActiveEmail,
   sendDatasetApprovedEmail,
+  sendDatasetCommercialRedirectEmail,
   sendDatasetLinkReissuedEmail,
   sendDatasetRejectedEmail,
   sendDatasetVerifyEmail,
@@ -153,6 +155,18 @@ describe("deliverDatasetReviewMail", () => {
     expect(sendDatasetRejectedEmail).toHaveBeenCalledWith({ email: "c@d.co", rejectionNote: "Out of scope." });
     expect(sendDatasetApprovedEmail).not.toHaveBeenCalled();
     expect(sendDatasetLinkReissuedEmail).not.toHaveBeenCalled();
+  });
+
+  it("routes dataset_commercial_redirect through sendGrantGated and sends only to the address", async () => {
+    await deliverDatasetReviewMail({ kind: "dataset_commercial_redirect", grantId: "g7", email: "x@y.co" });
+
+    const [db, opts, send] = vi.mocked(sendGrantGated).mock.calls[0];
+    expect(db).toBe(DB);
+    expect(opts).toEqual({ kind: "dataset_commercial_redirect", grantId: "g7", email: "x@y.co" });
+    expect(sendDatasetCommercialRedirectEmail).not.toHaveBeenCalled();
+    await send();
+    expect(sendDatasetCommercialRedirectEmail).toHaveBeenCalledWith({ email: "x@y.co" });
+    expect(sendDatasetRejectedEmail).not.toHaveBeenCalled();
   });
 
   it("passes a null rejection note through", async () => {

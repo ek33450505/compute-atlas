@@ -8,6 +8,7 @@ import {
   buildDatasetEditionNoticeEmail,
   buildDatasetLinkReissuedEmail,
   buildDatasetRejectedEmail,
+  buildDatasetCommercialRedirectEmail,
   buildDatasetRenewalReminderEmail,
   buildDatasetVerifyEmail,
   type DatasetEmail,
@@ -320,6 +321,30 @@ describe("buildDatasetRejectedEmail", () => {
     expect(mail.text).toContain("Note from the maintainer:");
     expect(mail.html).toContain("&lt;img src=x onerror=alert(1)&gt;<br>Second line");
     expect(mail.html).not.toContain(XSS[0]);
+  });
+});
+
+describe("buildDatasetCommercialRedirectEmail", () => {
+  const mail = buildDatasetCommercialRedirectEmail({ siteUrl: SITE });
+
+  it("links the paid page and quotes both prices", () => {
+    expect([...mail.html.matchAll(/href="([^"]*)"/g)].map((m) => m[1])).toEqual([`${SITE}/access/commercial`]);
+    expect(mail.text).toContain(`${SITE}/access/commercial`);
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("$150/month");
+      expect(body).toContain("$1,500/year");
+      expect(body).toContain("free for students, academics, journalists, nonprofits and government");
+      expect(body).toContain("reply to this email and say so");
+    }
+  });
+
+  it("never says donation", () => {
+    expect(`${mail.subject} ${mail.text} ${mail.html}`.toLowerCase()).not.toContain("donat");
+  });
+
+  it("escapes the site URL in the html part", () => {
+    const evil = buildDatasetCommercialRedirectEmail({ siteUrl: `https://x.test/"><script>` });
+    expect(evil.html).not.toContain("<script>");
   });
 });
 

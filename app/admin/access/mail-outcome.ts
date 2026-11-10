@@ -1,6 +1,6 @@
 import type { GateDisposition } from "@/lib/email-gate";
 
-export type MailKind = "approved" | "rejected" | "link_reissued";
+export type MailKind = "approved" | "rejected" | "commercial_redirect" | "link_reissued";
 
 export type MailOutcome = { delivered: boolean; text: string };
 
@@ -31,6 +31,7 @@ function describeCause(disposition: Exclude<GateDisposition, "sent">): string {
 const MAIL_NOUN: Record<MailKind, string> = {
   approved: "approval email",
   rejected: "rejection email",
+  commercial_redirect: "paid-subscription email",
   link_reissued: "new-link email",
 };
 
@@ -44,7 +45,7 @@ export function describeMailOutcome(disposition: GateDisposition, mail: MailKind
     return { delivered: true, text: `The ${MAIL_NOUN[mail]} was sent.` };
   }
   const consequence =
-    mail === "rejected"
+    mail === "rejected" || mail === "commercial_redirect"
       ? "The requester was not told."
       : "The requester does NOT have their link. Reissue it from the grants list once the cause is fixed.";
   return {

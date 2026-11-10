@@ -1,5 +1,6 @@
 import { escapeHtml } from "@/lib/html-escape";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
+import { COMMERCIAL_PATH, COMMERCIAL_PLANS, formatPlanPrice } from "@/lib/commercial-plans";
 import { DATASET_LICENSE_URL } from "@/lib/site";
 
 /**
@@ -210,6 +211,23 @@ export function buildDatasetRejectedEmail(input: {
     "Thank you for your interest in the Compute Atlas dataset. The request was not approved.",
     ...(note ? [`<strong>Note from the maintainer:</strong><br>${multiline(note)}`] : []),
     `Questions can go through the <a href="${escapeHtml(contactUrl)}">contact page</a>.`,
+  );
+  return { subject, text, html };
+}
+
+export function buildDatasetCommercialRedirectEmail(input: { siteUrl: string }): DatasetEmail {
+  const url = `${input.siteUrl}${COMMERCIAL_PATH}`;
+  const subject = "Your Compute Atlas dataset access request";
+  const free = "The full dataset is free for students, academics, journalists, nonprofits and government.";
+  const paid = `For commercial use it is a subscription: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")} (${COMMERCIAL_PLANS.annual.note}).`;
+  const reply = "If this request was not for commercial use, reply to this email and say so.";
+  const text = ["Thank you for your request for the Compute Atlas dataset.", free, "", paid, url, "", reply].join("\n");
+  const html = paragraphs(
+    "Thank you for your request for the Compute Atlas dataset.",
+    escapeHtml(free),
+    escapeHtml(paid),
+    `<a href="${escapeHtml(url)}">${escapeHtml(url)}</a>`,
+    escapeHtml(reply),
   );
   return { subject, text, html };
 }
