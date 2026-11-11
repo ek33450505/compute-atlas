@@ -75,15 +75,16 @@ export default async function DataPage() {
         dangerouslySetInnerHTML={{
           __html: breadcrumbJsonLdString([
             { name: "Home", url: "/" },
+            { name: "Explore", url: "/explore" },
             { name: "Data", url: "/data" },
           ]),
         }}
       />
 
-      <Breadcrumb items={[{ label: "Data" }]} />
+      <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Data" }]} />
 
       <PageMasthead
-        eyebrow="DATA"
+        eyebrow="Files, license & citation"
         title="Data"
         dek="Every US data center, crypto-mining site and dedicated power plant Compute Atlas tracks, in one set of files, refreshed weekly. Source-cited, CC BY 4.0."
       />

@@ -68,7 +68,7 @@ export default async function MetrosIndexPage() {
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "By metro" }]} />
 
       <PageMasthead
-        eyebrow="Metro areas"
+        eyebrow="By geography"
         title="By metro"
         dek="Curated clusters of counties driving the buildout, from Northern Virginia to the Permian Basin. Each metro links to the full, source-cited list."
       />

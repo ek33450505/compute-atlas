@@ -15,7 +15,7 @@ export default function SubscribeConfirmedPage() {
   return (
     <StatePanel
       titleAs="h1"
-      eyebrow="Confirmed"
+      eyebrow="Email alerts"
       title="Subscription confirmed"
       description="You'll get an email when this record changes. Every alert has a one-click unsubscribe."
       actions={

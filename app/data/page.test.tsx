@@ -309,7 +309,7 @@ describe("DataPage", () => {
     expect(metadata.alternates).toEqual({ canonical: "/data" });
   });
 
-  it("emits a BreadcrumbList JSON-LD with a valid trail of at least two items", async () => {
+  it("emits a BreadcrumbList JSON-LD with a valid trail of three items", async () => {
     const page = await DataPage();
     const { container } = render(page);
 
@@ -318,9 +318,9 @@ describe("DataPage", () => {
 
     const breadcrumb = JSON.parse(scripts[0]!.textContent!);
     expect(breadcrumb["@type"]).toBe("BreadcrumbList");
-    expect(breadcrumb.itemListElement.length).toBeGreaterThanOrEqual(2);
+    expect(breadcrumb.itemListElement.length).toBeGreaterThanOrEqual(3);
     expect(breadcrumb.itemListElement.map((i: { position: number }) => i.position)).toEqual([
-      1, 2,
+      1, 2, 3,
     ]);
     expect(breadcrumb.itemListElement[0]).toEqual({
       "@type": "ListItem",
@@ -331,6 +331,12 @@ describe("DataPage", () => {
     expect(breadcrumb.itemListElement[1]).toEqual({
       "@type": "ListItem",
       position: 2,
+      name: "Explore",
+      item: "https://www.compute-atlas.com/explore",
+    });
+    expect(breadcrumb.itemListElement[2]).toEqual({
+      "@type": "ListItem",
+      position: 3,
       name: "Data",
       item: "https://www.compute-atlas.com/data",
     });

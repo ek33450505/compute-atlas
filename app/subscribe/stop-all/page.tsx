@@ -36,7 +36,7 @@ export default async function SubscribeStopAllPage({
   return (
     <StatePanel
       titleAs="h1"
-      eyebrow="Stop all automated email"
+      eyebrow="Email alerts"
       title="Stop all automated email from Compute Atlas?"
       description="This ends every watch and digest subscription for your address and stops all automated email from Compute Atlas to it: alerts, digests, confirmations and notices. The only exception is a personal reply to a message you send us."
       actions={

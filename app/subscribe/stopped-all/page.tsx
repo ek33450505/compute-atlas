@@ -33,7 +33,7 @@ export default async function SubscribeStoppedAllPage({
     return (
       <StatePanel
         titleAs="h1"
-        eyebrow="Already stopped"
+        eyebrow="Email alerts"
         title="Automated email was already stopped"
         description="Automated email from Compute Atlas to this address was already stopped from another email's link, and only that link can undo it: open the 'Stop all automated email' link in that original email and it will offer Undo. The only exception is a personal reply to a message you send us. If you can't find it, write to us through the contact page."
         actions={
@@ -53,7 +53,7 @@ export default async function SubscribeStoppedAllPage({
   return (
     <StatePanel
       titleAs="h1"
-      eyebrow="Unsubscribed"
+      eyebrow="Email alerts"
       title="Automated email stopped"
       description="You won't receive any more automated email from Compute Atlas at this address: alerts, digests, confirmations and notices. The only exception is a personal reply to a message you send us. Changed your mind? The Undo button lifts the block. You can also open this email's 'Stop all automated email' link again later and it will offer Undo."
       actions={
