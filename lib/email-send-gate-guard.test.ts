@@ -84,7 +84,7 @@ const GATE_SENDERS: Record<string, ReadonlySet<string>> = {
   ]),
   // The maintainer's alert about a new dataset request.
   sendDatasetAdminNoticeGated: new Set(["sendDatasetAdminNewRequestEmail"]),
-  // The maintainer's alert about a Stripe conflict on a commercial subscription.
+  // The maintainer's alert about a conflict on a commercial subscription.
   sendDatasetCommercialAlertGated: new Set(["sendDatasetCommercialAlertEmail"]),
 };
 const GATE_FNS = Object.keys(GATE_SENDERS);

@@ -297,7 +297,7 @@ export async function sendRenewalReminders(opts: NoticeOptions = {}): Promise<No
       .from(datasetAccessGrantsTable)
       .where(
         and(
-          // Free lane only: a commercial grant's expiry is its paid-through date, renewed by Stripe, so the
+          // Free lane only: a commercial grant's expiry is its paid-through date, renewed by PayPal, so the
           // "request renewal" reminder (and its renew token) would misfire on it.
           eq(datasetAccessGrantsTable.tier, "free"),
           liveGrant(now),

@@ -1,20 +1,27 @@
-CREATE TABLE "stripe_checkout_decisions" (
-	"session_id" text PRIMARY KEY NOT NULL,
-	"decision" text NOT NULL,
+CREATE TABLE "commercial_checkouts" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"plan" text NOT NULL,
+	"email" text,
+	"name" text,
+	"organization" text,
+	"terms_version" text NOT NULL,
+	"paypal_subscription_id" text,
+	"decision" text,
 	"reason" text,
-	"subscription_id" text NOT NULL,
-	"invoice_id" text,
-	"amount_total" integer NOT NULL,
-	"conflict_grant_id" uuid,
 	"grant_id" uuid,
+	"conflict_grant_id" uuid,
+	"refunded_sale_id" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "stripe_checkout_decisions_decision_check" CHECK ("stripe_checkout_decisions"."decision" IN ('activate', 'refuse')),
-	CONSTRAINT "stripe_checkout_decisions_reason_check" CHECK (("stripe_checkout_decisions"."decision" = 'refuse') = ("stripe_checkout_decisions"."reason" IS NOT NULL))
+	"decided_at" timestamp with time zone,
+	CONSTRAINT "commercial_checkouts_paypal_subscription_id_unique" UNIQUE("paypal_subscription_id"),
+	CONSTRAINT "commercial_checkouts_plan_check" CHECK ("commercial_checkouts"."plan" IN ('monthly', 'annual')),
+	CONSTRAINT "commercial_checkouts_decision_check" CHECK ("commercial_checkouts"."decision" IN ('activate', 'refuse')),
+	CONSTRAINT "commercial_checkouts_reason_check" CHECK (("commercial_checkouts"."decision" IS NOT DISTINCT FROM 'refuse') = ("commercial_checkouts"."reason" IS NOT NULL))
 );
 --> statement-breakpoint
-CREATE TABLE "stripe_events" (
+CREATE TABLE "paypal_webhook_events" (
 	"id" text PRIMARY KEY NOT NULL,
-	"type" text NOT NULL,
+	"event_type" text NOT NULL,
 	"received_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"processed_at" timestamp with time zone,
 	"grant_id" uuid
@@ -23,15 +30,14 @@ CREATE TABLE "stripe_events" (
 DROP INDEX "dataset_access_grants_open_email_idx";--> statement-breakpoint
 ALTER TABLE "dataset_access_grants" ADD COLUMN "tier" text DEFAULT 'free' NOT NULL;--> statement-breakpoint
 ALTER TABLE "dataset_access_grants" ADD COLUMN "paid_through" timestamp with time zone;--> statement-breakpoint
-ALTER TABLE "dataset_access_grants" ADD COLUMN "stripe_customer_id" text;--> statement-breakpoint
-ALTER TABLE "dataset_access_grants" ADD COLUMN "stripe_subscription_id" text;--> statement-breakpoint
-ALTER TABLE "dataset_access_grants" ADD COLUMN "stripe_checkout_session_id" text;--> statement-breakpoint
-ALTER TABLE "dataset_access_grants" ADD COLUMN "card_fingerprint_hash" text;--> statement-breakpoint
-ALTER TABLE "stripe_checkout_decisions" ADD CONSTRAINT "stripe_checkout_decisions_grant_id_dataset_access_grants_id_fk" FOREIGN KEY ("grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "stripe_checkout_decisions" ADD CONSTRAINT "stripe_checkout_decisions_conflict_grant_fk" FOREIGN KEY ("conflict_grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "stripe_events" ADD CONSTRAINT "stripe_events_grant_id_dataset_access_grants_id_fk" FOREIGN KEY ("grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "stripe_events_received_at_idx" ON "stripe_events" USING btree ("received_at");--> statement-breakpoint
-CREATE UNIQUE INDEX "dataset_access_grants_stripe_subscription_id_idx" ON "dataset_access_grants" USING btree ("stripe_subscription_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "dataset_access_grants_stripe_checkout_session_id_idx" ON "dataset_access_grants" USING btree ("stripe_checkout_session_id");--> statement-breakpoint
-CREATE INDEX "dataset_access_grants_card_fingerprint_hash_idx" ON "dataset_access_grants" USING btree ("card_fingerprint_hash");--> statement-breakpoint
-CREATE UNIQUE INDEX "dataset_access_grants_open_email_tier_idx" ON "dataset_access_grants" USING btree ("email","tier") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');
+ALTER TABLE "dataset_access_grants" ADD COLUMN "paypal_subscription_id" text;--> statement-breakpoint
+ALTER TABLE "dataset_access_grants" ADD COLUMN "payer_id_hash" text;--> statement-breakpoint
+ALTER TABLE "commercial_checkouts" ADD CONSTRAINT "commercial_checkouts_grant_id_dataset_access_grants_id_fk" FOREIGN KEY ("grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "commercial_checkouts" ADD CONSTRAINT "commercial_checkouts_conflict_grant_id_dataset_access_grants_id_fk" FOREIGN KEY ("conflict_grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "paypal_webhook_events" ADD CONSTRAINT "paypal_webhook_events_grant_id_dataset_access_grants_id_fk" FOREIGN KEY ("grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "commercial_checkouts_created_at_idx" ON "commercial_checkouts" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "paypal_webhook_events_received_at_idx" ON "paypal_webhook_events" USING btree ("received_at");--> statement-breakpoint
+CREATE UNIQUE INDEX "dataset_access_grants_paypal_subscription_id_idx" ON "dataset_access_grants" USING btree ("paypal_subscription_id");--> statement-breakpoint
+CREATE INDEX "dataset_access_grants_payer_id_hash_idx" ON "dataset_access_grants" USING btree ("payer_id_hash");--> statement-breakpoint
+CREATE UNIQUE INDEX "dataset_access_grants_open_email_tier_idx" ON "dataset_access_grants" USING btree ("email","tier") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');--> statement-breakpoint
+ALTER TABLE "dataset_access_grants" ADD CONSTRAINT "dataset_access_grants_tier_check" CHECK ("dataset_access_grants"."tier" IN ('free', 'commercial'));

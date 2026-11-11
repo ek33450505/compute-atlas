@@ -1,5 +1,5 @@
 {
-  "id": "533bbd63-4b4c-425c-8ab3-0632f53a3cf3",
+  "id": "c0e70cdf-2f83-4bad-8dd9-36ae67f6fd79",
   "prevId": "78ef4ace-1ab1-404c-9590-329ce92c433a",
   "version": "7",
   "dialect": "postgresql",
@@ -213,6 +213,169 @@
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.commercial_checkouts": {
+      "name": "commercial_checkouts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "plan": {
+          "name": "plan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "organization": {
+          "name": "organization",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "terms_version": {
+          "name": "terms_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paypal_subscription_id": {
+          "name": "paypal_subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decision": {
+          "name": "decision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "grant_id": {
+          "name": "grant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "conflict_grant_id": {
+          "name": "conflict_grant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refunded_sale_id": {
+          "name": "refunded_sale_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "decided_at": {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "commercial_checkouts_created_at_idx": {
+          "name": "commercial_checkouts_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "commercial_checkouts_grant_id_dataset_access_grants_id_fk": {
+          "name": "commercial_checkouts_grant_id_dataset_access_grants_id_fk",
+          "tableFrom": "commercial_checkouts",
+          "tableTo": "dataset_access_grants",
+          "columnsFrom": [
+            "grant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "commercial_checkouts_conflict_grant_id_dataset_access_grants_id_fk": {
+          "name": "commercial_checkouts_conflict_grant_id_dataset_access_grants_id_fk",
+          "tableFrom": "commercial_checkouts",
+          "tableTo": "dataset_access_grants",
+          "columnsFrom": [
+            "conflict_grant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "commercial_checkouts_paypal_subscription_id_unique": {
+          "name": "commercial_checkouts_paypal_subscription_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "paypal_subscription_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "commercial_checkouts_plan_check": {
+          "name": "commercial_checkouts_plan_check",
+          "value": "\"commercial_checkouts\".\"plan\" IN ('monthly', 'annual')"
+        },
+        "commercial_checkouts_decision_check": {
+          "name": "commercial_checkouts_decision_check",
+          "value": "\"commercial_checkouts\".\"decision\" IN ('activate', 'refuse')"
+        },
+        "commercial_checkouts_reason_check": {
+          "name": "commercial_checkouts_reason_check",
+          "value": "(\"commercial_checkouts\".\"decision\" IS NOT DISTINCT FROM 'refuse') = (\"commercial_checkouts\".\"reason\" IS NOT NULL)"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.contact_messages": {
@@ -512,26 +675,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "stripe_customer_id": {
-          "name": "stripe_customer_id",
+        "paypal_subscription_id": {
+          "name": "paypal_subscription_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "stripe_subscription_id": {
-          "name": "stripe_subscription_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "stripe_checkout_session_id": {
-          "name": "stripe_checkout_session_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "card_fingerprint_hash": {
-          "name": "card_fingerprint_hash",
+        "payer_id_hash": {
+          "name": "payer_id_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -553,26 +704,11 @@
           "method": "btree",
           "with": {}
         },
-        "dataset_access_grants_stripe_subscription_id_idx": {
-          "name": "dataset_access_grants_stripe_subscription_id_idx",
+        "dataset_access_grants_paypal_subscription_id_idx": {
+          "name": "dataset_access_grants_paypal_subscription_id_idx",
           "columns": [
             {
-              "expression": "stripe_subscription_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "dataset_access_grants_stripe_checkout_session_id_idx": {
-          "name": "dataset_access_grants_stripe_checkout_session_id_idx",
-          "columns": [
-            {
-              "expression": "stripe_checkout_session_id",
+              "expression": "paypal_subscription_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -598,11 +734,11 @@
           "method": "btree",
           "with": {}
         },
-        "dataset_access_grants_card_fingerprint_hash_idx": {
-          "name": "dataset_access_grants_card_fingerprint_hash_idx",
+        "dataset_access_grants_payer_id_hash_idx": {
+          "name": "dataset_access_grants_payer_id_hash_idx",
           "columns": [
             {
-              "expression": "card_fingerprint_hash",
+              "expression": "payer_id_hash",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -715,7 +851,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "dataset_access_grants_tier_check": {
+          "name": "dataset_access_grants_tier_check",
+          "value": "\"dataset_access_grants\".\"tier\" IN ('free', 'commercial')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.dataset_downloads": {
@@ -1758,6 +1899,80 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.paypal_webhook_events": {
+      "name": "paypal_webhook_events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "event_type": {
+          "name": "event_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "received_at": {
+          "name": "received_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "processed_at": {
+          "name": "processed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "grant_id": {
+          "name": "grant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "paypal_webhook_events_received_at_idx": {
+          "name": "paypal_webhook_events_received_at_idx",
+          "columns": [
+            {
+              "expression": "received_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "paypal_webhook_events_grant_id_dataset_access_grants_id_fk": {
+          "name": "paypal_webhook_events_grant_id_dataset_access_grants_id_fk",
+          "tableFrom": "paypal_webhook_events",
+          "tableTo": "dataset_access_grants",
+          "columnsFrom": [
+            "grant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.siting_context": {
       "name": "siting_context",
       "schema": "",
@@ -1869,184 +2084,6 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.stripe_checkout_decisions": {
-      "name": "stripe_checkout_decisions",
-      "schema": "",
-      "columns": {
-        "session_id": {
-          "name": "session_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "decision": {
-          "name": "decision",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "reason": {
-          "name": "reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "subscription_id": {
-          "name": "subscription_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "invoice_id": {
-          "name": "invoice_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "amount_total": {
-          "name": "amount_total",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "conflict_grant_id": {
-          "name": "conflict_grant_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "grant_id": {
-          "name": "grant_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "stripe_checkout_decisions_grant_id_dataset_access_grants_id_fk": {
-          "name": "stripe_checkout_decisions_grant_id_dataset_access_grants_id_fk",
-          "tableFrom": "stripe_checkout_decisions",
-          "tableTo": "dataset_access_grants",
-          "columnsFrom": [
-            "grant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "stripe_checkout_decisions_conflict_grant_fk": {
-          "name": "stripe_checkout_decisions_conflict_grant_fk",
-          "tableFrom": "stripe_checkout_decisions",
-          "tableTo": "dataset_access_grants",
-          "columnsFrom": [
-            "conflict_grant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {
-        "stripe_checkout_decisions_decision_check": {
-          "name": "stripe_checkout_decisions_decision_check",
-          "value": "\"stripe_checkout_decisions\".\"decision\" IN ('activate', 'refuse')"
-        },
-        "stripe_checkout_decisions_reason_check": {
-          "name": "stripe_checkout_decisions_reason_check",
-          "value": "(\"stripe_checkout_decisions\".\"decision\" = 'refuse') = (\"stripe_checkout_decisions\".\"reason\" IS NOT NULL)"
-        }
-      },
-      "isRLSEnabled": false
-    },
-    "public.stripe_events": {
-      "name": "stripe_events",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "received_at": {
-          "name": "received_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "processed_at": {
-          "name": "processed_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "grant_id": {
-          "name": "grant_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "stripe_events_received_at_idx": {
-          "name": "stripe_events_received_at_idx",
-          "columns": [
-            {
-              "expression": "received_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "stripe_events_grant_id_dataset_access_grants_id_fk": {
-          "name": "stripe_events_grant_id_dataset_access_grants_id_fk",
-          "tableFrom": "stripe_events",
-          "tableTo": "dataset_access_grants",
-          "columnsFrom": [
-            "grant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

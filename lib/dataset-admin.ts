@@ -41,7 +41,7 @@ export type AdminDatasetGrant = {
   tier: DatasetTier;
   /** Commercial only: the end of the paid period; null for free grants and before the first payment. */
   paidThrough: Date | null;
-  /** Whether a Stripe subscription is linked. The id itself never leaves the server. */
+  /** Whether a PayPal subscription is linked. The id itself never leaves the server. */
   subscriptionLinked: boolean;
   /** liveGrant(now): active and expiresAt in the future. */
   live: boolean;
@@ -95,7 +95,7 @@ const ADMIN_GRANT_COLUMNS = (now: Date) => ({
   downloadCount: datasetAccessGrantsTable.downloadCount,
   tier: datasetAccessGrantsTable.tier,
   paidThrough: datasetAccessGrantsTable.paidThrough,
-  subscriptionLinked: sql<boolean>`${datasetAccessGrantsTable.stripeSubscriptionId} is not null`,
+  subscriptionLinked: sql<boolean>`${datasetAccessGrantsTable.paypalSubscriptionId} is not null`,
   live: sql<boolean>`${liveGrant(now)}`,
   renewalPending: sql<boolean>`${renewalPendingGrant()}`,
 });

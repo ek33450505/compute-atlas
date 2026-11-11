@@ -2,12 +2,12 @@
 import { beforeAll, beforeEach, afterAll, describe, it, expect } from "vitest";
 
 import { liveGrant } from "@/lib/dataset-grants";
-import { DATASET_TIERS, datasetAccessGrantsTable, stripeEventsTable } from "@/lib/db/schema";
+import { commercialCheckoutsTable, DATASET_TIERS, datasetAccessGrantsTable, paypalWebhookEventsTable } from "@/lib/db/schema";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 
 /**
  * Commercial tier (drizzle/0021_commercial_tier.sql): the payment gate inside `liveGrant`, and the
- * unique indexes the Stripe webhook relies on.
+ * unique indexes the PayPal webhook relies on, plus the commercial_checkouts constraints.
  */
 
 let tdb: TestDbHandle;
@@ -103,40 +103,86 @@ describe("liveGrant: payment gate", () => {
 });
 
 describe("commercial tier: unique indexes", () => {
-  it("rejects a duplicate stripe_subscription_id", async () => {
-    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ stripeSubscriptionId: "sub_1" }));
+  it("rejects a duplicate paypal_subscription_id", async () => {
+    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ paypalSubscriptionId: "I-SUB1" }));
     const code = await sqlState(
-      tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ stripeSubscriptionId: "sub_1" }))
+      tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ paypalSubscriptionId: "I-SUB1" }))
     );
     expect(code).toBe("23505");
   });
 
-  it("rejects a duplicate stripe_checkout_session_id", async () => {
-    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ stripeCheckoutSessionId: "cs_1" }));
-    const code = await sqlState(
-      tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ stripeCheckoutSessionId: "cs_1" }))
-    );
-    expect(code).toBe("23505");
-  });
-
-  it("allows many grants with NULL stripe_subscription_id and stripe_checkout_session_id", async () => {
+  it("allows many grants with NULL paypal_subscription_id", async () => {
     await tdb.db.insert(datasetAccessGrantsTable).values(grantValues());
     expect(await sqlState(tdb.db.insert(datasetAccessGrantsTable).values(grantValues()))).toBeUndefined();
   });
+
+  it("allows one free and one commercial open grant per email, never two of one tier", async () => {
+    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: "same@example.com", tier: "free" }));
+    expect(
+      await sqlState(tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: "same@example.com", tier: "commercial" })))
+    ).toBeUndefined();
+    const code = await sqlState(
+      tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: "same@example.com", tier: "commercial" }))
+    );
+    expect(code).toBe("23505");
+  });
 });
 
-describe("stripe_events", () => {
+describe("paypal_webhook_events", () => {
   it("rejects a duplicate event id", async () => {
-    await tdb.db.insert(stripeEventsTable).values({ id: "evt_1", type: "invoice.paid" });
-    const code = await sqlState(tdb.db.insert(stripeEventsTable).values({ id: "evt_1", type: "invoice.paid" }));
+    await tdb.db.insert(paypalWebhookEventsTable).values({ id: "WH-1", eventType: "BILLING.SUBSCRIPTION.ACTIVATED" });
+    const code = await sqlState(tdb.db.insert(paypalWebhookEventsTable).values({ id: "WH-1", eventType: "BILLING.SUBSCRIPTION.ACTIVATED" }));
     expect(code).toBe("23505");
   });
 
   it("nulls grant_id when the grant is deleted", async () => {
     const [grant] = await tdb.db.insert(datasetAccessGrantsTable).values(grantValues()).returning();
-    await tdb.db.insert(stripeEventsTable).values({ id: "evt_2", type: "invoice.paid", grantId: grant.id });
+    await tdb.db.insert(paypalWebhookEventsTable).values({ id: "WH-2", eventType: "BILLING.SUBSCRIPTION.ACTIVATED", grantId: grant.id });
     await tdb.client.query(`DELETE FROM "dataset_access_grants" WHERE id = $1`, [grant.id]);
-    const [event] = await tdb.db.select().from(stripeEventsTable);
+    const [event] = await tdb.db.select().from(paypalWebhookEventsTable);
     expect(event.grantId).toBeNull();
+  });
+});
+
+describe("commercial_checkouts", () => {
+  const base = { plan: "monthly" as const, termsVersion: "2026-11-09" };
+
+  it("accepts a pending attempt with no decision and no reason", async () => {
+    expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values(base))).toBeUndefined();
+  });
+
+  it("rejects an unknown plan", async () => {
+    const code = await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, plan: "weekly" as "monthly" }));
+    expect(code).toBe("23514");
+  });
+
+  it("requires a reason exactly when the decision is refuse", async () => {
+    expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "refuse" }))).toBe("23514");
+    expect(
+      await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "activate", reason: "revoked_buyer" }))
+    ).toBe("23514");
+    expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, reason: "revoked_buyer" }))).toBe("23514");
+    expect(
+      await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "refuse", reason: "revoked_buyer" }))
+    ).toBeUndefined();
+    expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "activate" }))).toBeUndefined();
+  });
+
+  it("rejects a duplicate paypal_subscription_id but allows many nulls", async () => {
+    await tdb.db.insert(commercialCheckoutsTable).values({ ...base, paypalSubscriptionId: "I-A" });
+    expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, paypalSubscriptionId: "I-A" }))).toBe("23505");
+    await tdb.db.insert(commercialCheckoutsTable).values(base);
+    expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values(base))).toBeUndefined();
+  });
+
+  it("nulls grant_id and conflict_grant_id when the grant is deleted", async () => {
+    const [grant] = await tdb.db.insert(datasetAccessGrantsTable).values(grantValues()).returning();
+    await tdb.db
+      .insert(commercialCheckoutsTable)
+      .values({ ...base, decision: "refuse", reason: "already_subscribed", grantId: grant.id, conflictGrantId: grant.id });
+    await tdb.client.query(`DELETE FROM "dataset_access_grants" WHERE id = $1`, [grant.id]);
+    const [row] = await tdb.db.select().from(commercialCheckoutsTable);
+    expect(row.grantId).toBeNull();
+    expect(row.conflictGrantId).toBeNull();
   });
 });

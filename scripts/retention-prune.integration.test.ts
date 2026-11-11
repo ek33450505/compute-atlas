@@ -28,6 +28,7 @@ import {
   apiAccessGrantsTable,
   apiDailyUsageTable,
   contactMessagesTable,
+  commercialCheckoutsTable,
   datasetAccessGrantsTable,
   datasetDownloadsTable,
   intakeAttemptsTable,
@@ -37,7 +38,7 @@ import {
   submissionNotifySendsTable,
   emailSendsTable,
   subscribeAttemptsTable,
-  stripeEventsTable,
+  paypalWebhookEventsTable,
   subscriptionsTable,
 } from "../lib/db/schema";
 import { CONFIRM_CAP_WINDOW_MS } from "../lib/email-sends";
@@ -55,7 +56,9 @@ import {
   pruneRetentionBackups,
   RETENTION_BACKUP_RETENTION_DAYS,
   runRetentionPrune,
-  STRIPE_EVENTS_RETENTION_DAYS,
+  PAYPAL_WEBHOOK_EVENTS_RETENTION_DAYS,
+  COMMERCIAL_CHECKOUT_ABANDONED_RETENTION_DAYS,
+  COMMERCIAL_CHECKOUT_PII_RETENTION_DAYS,
 } from "./retention-prune";
 
 let tdb: TestDbHandle;
@@ -579,28 +582,81 @@ describe("runRetentionPrune — email_sends (outbound send log)", () => {
   });
 });
 
-describe("runRetentionPrune — stripe_events (webhook idempotency log)", () => {
+describe("runRetentionPrune — paypal_webhook_events (webhook idempotency log)", () => {
   it("deletes processed rows past the window; keeps recent and unprocessed rows; dry run changes nothing", async () => {
-    const cutoff = daysBefore(STRIPE_EVENTS_RETENTION_DAYS);
-    await tdb.db.insert(stripeEventsTable).values([
-      { id: "evt_old", type: "invoice.paid", receivedAt: daysBefore(200), processedAt: new Date(cutoff.getTime() - 1) },
-      { id: "evt_recent", type: "invoice.paid", receivedAt: daysBefore(10), processedAt: daysBefore(10) },
-      { id: "evt_unprocessed", type: "invoice.paid", receivedAt: daysBefore(200), processedAt: null },
+    const cutoff = daysBefore(PAYPAL_WEBHOOK_EVENTS_RETENTION_DAYS);
+    await tdb.db.insert(paypalWebhookEventsTable).values([
+      { id: "WH-old", eventType: "BILLING.SUBSCRIPTION.ACTIVATED", receivedAt: daysBefore(200), processedAt: new Date(cutoff.getTime() - 1) },
+      { id: "WH-recent", eventType: "BILLING.SUBSCRIPTION.ACTIVATED", receivedAt: daysBefore(10), processedAt: daysBefore(10) },
+      { id: "WH-unprocessed", eventType: "BILLING.SUBSCRIPTION.ACTIVATED", receivedAt: daysBefore(200), processedAt: null },
     ]);
 
     const dry = await runRetentionPrune({ apply: false, now: NOW, backupDir });
-    expect(dry.tables.find((t) => t.table === "stripe_events")).toMatchObject({ candidates: 1, applied: 0 });
-    expect(await tdb.db.select().from(stripeEventsTable)).toHaveLength(3);
+    expect(dry.tables.find((t) => t.table === "paypal_webhook_events")).toMatchObject({ candidates: 1, applied: 0 });
+    expect(await tdb.db.select().from(paypalWebhookEventsTable)).toHaveLength(3);
 
     const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
-    expect(summary.tables.find((t) => t.table === "stripe_events")).toMatchObject({
+    expect(summary.tables.find((t) => t.table === "paypal_webhook_events")).toMatchObject({
       candidates: 1,
       applied: 1,
       action: "delete",
     });
-    const remaining = (await tdb.db.select().from(stripeEventsTable)).map((r) => r.id).sort();
-    expect(remaining).toEqual(["evt_recent", "evt_unprocessed"]);
-    expect(readBackupLines().map((l) => l.table)).toEqual(["stripe_events"]);
+    const remaining = (await tdb.db.select().from(paypalWebhookEventsTable)).map((r) => r.id).sort();
+    expect(remaining).toEqual(["WH-recent", "WH-unprocessed"]);
+    expect(readBackupLines().map((l) => l.table)).toEqual(["paypal_webhook_events"]);
+  });
+});
+
+describe("runRetentionPrune — commercial_checkouts", () => {
+  const base = { plan: "monthly" as const, termsVersion: "test" };
+  const rowsById = async () =>
+    new Map((await tdb.db.select().from(commercialCheckoutsTable)).map((r) => [r.paypalSubscriptionId, r]));
+
+  it("deletes abandoned attempts past the window, keeps recent and decided ones; dry run changes nothing", async () => {
+    const past = (days: number) => new Date(daysBefore(days).getTime() - 1);
+    await tdb.db.insert(commercialCheckoutsTable).values([
+      { ...base, email: "a@example.com", paypalSubscriptionId: "abandoned-old", createdAt: past(COMMERCIAL_CHECKOUT_ABANDONED_RETENTION_DAYS) },
+      { ...base, email: "b@example.com", paypalSubscriptionId: "abandoned-recent", createdAt: daysBefore(5) },
+      { ...base, email: "c@example.com", paypalSubscriptionId: "decided-old", decision: "activate", createdAt: past(100) },
+    ]);
+
+    const dry = await runRetentionPrune({ apply: false, now: NOW, backupDir });
+    const dryDelete = dry.tables.find((t) => t.table === "commercial_checkouts" && t.action === "delete");
+    expect(dryDelete).toMatchObject({ candidates: 1, applied: 0 });
+    expect(await tdb.db.select().from(commercialCheckoutsTable)).toHaveLength(3);
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.tables.find((t) => t.table === "commercial_checkouts" && t.action === "delete")).toMatchObject({
+      candidates: 1,
+      applied: 1,
+    });
+    expect([...(await rowsById()).keys()].sort()).toEqual(["abandoned-recent", "decided-old"]);
+  });
+
+  it("scrubs email, name and organization on decided rows past the window; keeps the decision record", async () => {
+    const old = new Date(daysBefore(COMMERCIAL_CHECKOUT_PII_RETENTION_DAYS).getTime() - 1);
+    await tdb.db.insert(commercialCheckoutsTable).values([
+      { ...base, email: "d@example.com", name: "D", organization: "Org", paypalSubscriptionId: "scrub-me", decision: "refuse", reason: "revoked_buyer", createdAt: old },
+      { ...base, email: "e@example.com", name: "E", paypalSubscriptionId: "too-recent", decision: "activate", createdAt: daysBefore(100) },
+      { ...base, paypalSubscriptionId: "already-clean", decision: "activate", createdAt: old },
+      { ...base, email: "f@example.com", paypalSubscriptionId: "email-only", decision: "activate", createdAt: old },
+      // Undecided: only the abandoned-delete step may take it; the scrub step must not count it.
+      { ...base, email: "g@example.com", paypalSubscriptionId: "undecided-old", createdAt: old },
+    ]);
+
+    const dry = await runRetentionPrune({ apply: false, now: NOW, backupDir });
+    // scrub-me + email-only; not already-clean, too-recent or the undecided row.
+    expect(dry.tables.find((t) => t.action === "scrub-pii")).toMatchObject({ candidates: 2, applied: 0 });
+    expect((await rowsById()).get("scrub-me")?.email).toBe("d@example.com");
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.tables.find((t) => t.action === "scrub-pii")).toMatchObject({ candidates: 2, applied: 2 });
+    const rows = await rowsById();
+    expect(rows.get("scrub-me")).toMatchObject({ email: null, name: null, organization: null, decision: "refuse", reason: "revoked_buyer" });
+    expect(rows.get("email-only")).toMatchObject({ email: null, decision: "activate" });
+    expect(rows.get("too-recent")?.email).toBe("e@example.com");
+    // The undecided row is gone via the abandoned-delete step, never scrubbed.
+    expect([...rows.keys()].sort()).toEqual(["already-clean", "email-only", "scrub-me", "too-recent"]);
   });
 });
 

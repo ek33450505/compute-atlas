@@ -148,9 +148,9 @@ export async function redirectDatasetGrantToPaidAction(
 }
 
 /**
- * Revokes an active grant. Sends no mail. For a commercial grant the DB revoke comes FIRST, then the Stripe
+ * Revokes an active grant. Sends no mail. For a commercial grant the DB revoke comes FIRST, then the PayPal
  * subscription is cancelled (never refunded), so a failed cancel is still covered by the webhook backstop.
- * `subscription` is present only when a Stripe cancel was attempted (or, "unknown", when the grant could not be
+ * `subscription` is present only when a PayPal cancel was attempted (or, "unknown", when the grant could not be
  * read back to decide): a free grant returns plain `{ ok: true }`.
  */
 export async function revokeDatasetGrantAction(
@@ -172,7 +172,7 @@ export async function revokeDatasetGrantAction(
   const cancel = await cancelSubscriptionForRevokedGrant(id);
   revalidatePath("/admin/access");
   if (cancel.cancelled) return { ok: true, subscription: "cancelled" };
-  if (cancel.reason === "stripe_error") return { ok: true, subscription: "failed" };
+  if (cancel.reason === "provider_error") return { ok: true, subscription: "failed" };
   if (cancel.reason === "lookup_failed") return { ok: true, subscription: "unknown" };
   return { ok: true };
 }

@@ -135,7 +135,7 @@ const OPEN_GRANT_PREDICATE = sql`${datasetAccessGrantsTable.status} in (${sql.ra
  *
  * A commercial row adds a fourth state, UNPAID: `paidThrough` NULL or past while `expiresAt` is still in
  * the future. It is not LIVE (this predicate refuses it) and not LAPSED (its expiry has not passed). The
- * contract for the Stripe webhook (a later unit; NOT yet enforced by any code) is to set `expiresAt` equal
+ * contract for the PayPal webhook (a later unit; NOT yet enforced by any code) is to set `expiresAt` equal
  * to `paidThrough` on every payment event, which makes a lapsed subscription an ordinary lapse and leaves
  * UNPAID only as the window before that sync. The `paidThrough` clause is what keeps that window closed.
  */
@@ -282,7 +282,7 @@ export async function requestDatasetAccess(
       and(
         eq(datasetAccessGrantsTable.email, email),
         // The free lane sees only free rows: a paid grant never answers "already active" here, and the
-        // Checkout email (unverified by Stripe) can never influence a free request.
+        // Checkout email (unverified by PayPal) can never influence a free request.
         eq(datasetAccessGrantsTable.tier, "free"),
         inArray(datasetAccessGrantsTable.status, DATASET_OPEN_GRANT_STATUSES)
       )
@@ -678,7 +678,7 @@ export async function extendDatasetGrant(id: string): Promise<{ ok: true } | Dat
   const [extended] = await getDb()
     .update(datasetAccessGrantsTable)
     .set(extensionFields(now))
-    // Free lane only: a commercial grant's term is its paid-through date, which Stripe moves.
+    // Free lane only: a commercial grant's term is its paid-through date, which PayPal moves.
     .where(
       and(
         eq(datasetAccessGrantsTable.id, id),
@@ -770,8 +770,8 @@ export type DatasetActiveGrant = {
   organization: string | null;
   expiresAt: Date;
   tier: DatasetTier;
-  /** Whether a Stripe customer is on file. The customer id itself never leaves `getBillingCustomerId`. */
-  hasBillingAccount: boolean;
+  /** Whether a PayPal subscription is linked. The subscription id itself never leaves the server. */
+  hasSubscription: boolean;
 };
 
 /**
@@ -809,7 +809,7 @@ export async function getGrantByAccessToken(
       expiresAt: datasetAccessGrantsTable.expiresAt,
       status: datasetAccessGrantsTable.status,
       tier: datasetAccessGrantsTable.tier,
-      hasBillingAccount: sql<boolean>`${datasetAccessGrantsTable.stripeCustomerId} is not null`,
+      hasSubscription: sql<boolean>`${datasetAccessGrantsTable.paypalSubscriptionId} is not null`,
       live: sql<boolean>`${liveGrant(now)}`, // the shared LIVE definition, evaluated in the same query
     })
     .from(datasetAccessGrantsTable)
@@ -830,7 +830,7 @@ export async function getGrantByAccessToken(
         expiresAt: row.expiresAt,
         tier: row.tier,
         // Strict `=== true`, like `live`: a computed projection the driver may hand back as a string.
-        hasBillingAccount: row.hasBillingAccount === true,
+        hasSubscription: row.hasSubscription === true,
       },
     };
   }
@@ -848,26 +848,6 @@ export async function getGrantByAccessToken(
     }
   }
   return { state: "inactive" };
-}
-
-/**
- * Server-only read of a grant's Stripe customer id, for the billing-portal route. Returns it ONLY for a
- * LIVE commercial grant (re-checked in the query, so a revoke between lookup and read wins); null otherwise.
- * Never pass the result to a page or log it.
- */
-export async function getBillingCustomerId(grantId: string): Promise<string | null> {
-  const [row] = await getDb()
-    .select({ customerId: datasetAccessGrantsTable.stripeCustomerId })
-    .from(datasetAccessGrantsTable)
-    .where(
-      and(
-        eq(datasetAccessGrantsTable.id, grantId),
-        eq(datasetAccessGrantsTable.tier, "commercial"),
-        liveGrant(new Date())
-      )
-    )
-    .limit(1);
-  return row?.customerId ?? null;
 }
 
 /**

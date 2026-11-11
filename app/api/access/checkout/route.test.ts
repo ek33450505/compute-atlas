@@ -1,14 +1,9 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const createSession = vi.fn();
 const checkLimit = vi.fn();
 const recordAttempt = vi.fn();
 
-vi.mock("@/lib/stripe", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/lib/stripe")>();
-  return { ...actual, createCommercialCheckoutSession: (a: unknown) => createSession(a) };
-});
 vi.mock("@/lib/rate-limit", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/rate-limit")>();
   return {
@@ -18,10 +13,7 @@ vi.mock("@/lib/rate-limit", async (importOriginal) => {
   };
 });
 
-import { StripeConfigError } from "@/lib/stripe";
 import { GET, POST } from "./route";
-
-const SESSION_URL = "https://checkout.stripe.com/c/pay/cs_test_abc";
 
 function formRequest(plan?: string): Request {
   const body = new URLSearchParams(plan === undefined ? {} : { plan });
@@ -47,7 +39,6 @@ beforeEach(() => {
   vi.stubEnv("RESEND_API_KEY", "re_test");
   checkLimit.mockResolvedValue({ ok: true });
   recordAttempt.mockResolvedValue(undefined);
-  createSession.mockResolvedValue({ url: SESSION_URL, id: "cs_test_abc" });
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 afterEach(() => {
@@ -62,7 +53,6 @@ describe("POST /api/access/checkout", () => {
     const res = await POST(formRequest("monthly"));
     expect(res.status).toBe(403);
     expect(checkLimit).not.toHaveBeenCalled();
-    expect(createSession).not.toHaveBeenCalled();
   });
 
   it("is 403 when dataset sharing is off and does no work", async () => {
@@ -70,11 +60,10 @@ describe("POST /api/access/checkout", () => {
     const res = await POST(formRequest("monthly"));
     expect(res.status).toBe(403);
     expect(checkLimit).not.toHaveBeenCalled();
-    expect(createSession).not.toHaveBeenCalled();
   });
 
   it.each([["CONTACT_TO_EMAIL"], ["RESEND_API_KEY"]])(
-    "refuses to start a checkout when %s is missing, before any rate-limit or Stripe work",
+    "refuses to start a checkout when %s is missing, before any rate-limit work",
     async (name) => {
       vi.stubEnv(name, "  ");
       const res = await POST(formRequest("monthly"));
@@ -84,8 +73,7 @@ describe("POST /api/access/checkout", () => {
       expect(res.headers.get("location")).not.toContain(name);
       expect(checkLimit).not.toHaveBeenCalled();
       expect(recordAttempt).not.toHaveBeenCalled();
-      expect(createSession).not.toHaveBeenCalled();
-    }
+      }
   );
 
   it("answers GET with a no-store 405", async () => {
@@ -100,7 +88,6 @@ describe("POST /api/access/checkout", () => {
     expect(res.status).toBe(303);
     noStore(res);
     expect(location(res).pathname + location(res).search).toBe("/access/commercial?error=plan");
-    expect(createSession).not.toHaveBeenCalled();
   });
 
   it("redirects a missing plan back with ?error=plan", async () => {
@@ -118,7 +105,6 @@ describe("POST /api/access/checkout", () => {
     const res = await POST(req);
     expect(res.status).toBe(303);
     expect(location(res).search).toBe("?error=plan");
-    expect(createSession).not.toHaveBeenCalled();
   });
 
   it("refuses a cross-site POST before recording a rate-limit attempt", async () => {
@@ -130,7 +116,6 @@ describe("POST /api/access/checkout", () => {
     expect(location(res).search).toBe("?error=plan");
     expect(checkLimit).not.toHaveBeenCalled();
     expect(recordAttempt).not.toHaveBeenCalled();
-    expect(createSession).not.toHaveBeenCalled();
   });
 
   it.each(["same-origin", "same-site", "none"])("allows sec-fetch-site: %s", async (site) => {
@@ -142,7 +127,7 @@ describe("POST /api/access/checkout", () => {
         body,
       })
     );
-    expect(res.headers.get("location")).toBe(SESSION_URL);
+    expect(res.status).toBe(403);
   });
 
   it("redirects with ?error=busy when rate limited, recording nothing", async () => {
@@ -152,7 +137,6 @@ describe("POST /api/access/checkout", () => {
     noStore(res);
     expect(location(res).search).toBe("?error=busy");
     expect(recordAttempt).not.toHaveBeenCalled();
-    expect(createSession).not.toHaveBeenCalled();
   });
 
   it("redirects with ?error=unavailable when the rate-limit store fails", async () => {
@@ -161,31 +145,12 @@ describe("POST /api/access/checkout", () => {
     expect(res.status).toBe(303);
     noStore(res);
     expect(location(res).search).toBe("?error=unavailable");
-    expect(createSession).not.toHaveBeenCalled();
   });
 
-  it("redirects with ?error=unavailable on a Stripe config error, logging no error object", async () => {
-    createSession.mockRejectedValue(new StripeConfigError("STRIPE_SECRET_KEY"));
+  it("answers 403 no-store for a valid plan until the PayPal checkout lands", async () => {
     const res = await POST(formRequest("annual"));
-    expect(res.status).toBe(303);
-    noStore(res);
-    expect(location(res).search).toBe("?error=unavailable");
-    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain("STRIPE_SECRET_KEY");
-  });
-
-  it("redirects with ?error=unavailable on any other Stripe error", async () => {
-    createSession.mockRejectedValue(new Error("card sk_live_secret"));
-    const res = await POST(formRequest("monthly"));
-    expect(location(res).search).toBe("?error=unavailable");
-    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain("sk_live_secret");
-  });
-
-  it("303s to the session url with no-store on the happy path", async () => {
-    const res = await POST(formRequest("annual"));
-    expect(res.status).toBe(303);
-    expect(res.headers.get("location")).toBe(SESSION_URL);
+    expect(res.status).toBe(403);
     expect(res.headers.get("cache-control")).toContain("no-store");
-    expect(createSession).toHaveBeenCalledWith({ plan: "annual" });
     expect(recordAttempt).toHaveBeenCalledWith("commercial-checkout", expect.any(String));
   });
 });

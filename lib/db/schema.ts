@@ -2,7 +2,6 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
-  foreignKey,
   customType,
   index,
   integer,
@@ -306,7 +305,7 @@ export const INTAKE_SURFACES = [
   "access-request",
   // Commercial Checkout starts; per-IP, card-testing is the threat (app/api/access/checkout/route.ts).
   "commercial-checkout",
-  // Billing-portal opens for commercial grant holders; per-IP (app/api/access/billing-portal/route.ts).
+  // Subscription self-service for commercial grant holders; per-IP (reserved for the cancel control).
   "commercial-billing-portal",
   // Failed admin-login attempts only (app/admin/login/actions.ts); own budget, see ADMIN_LOGIN_* in lib/rate-limit.ts.
   "admin-login",
@@ -848,18 +847,15 @@ export const datasetAccessGrantsTable = pgTable(
     downloadCount: integer("download_count").notNull().default(0),
     submitterIpHash: text("submitter_ip_hash"),
     tier: text("tier").$type<DatasetTier>().notNull().default("free"), // free | commercial; a commercial grant is live only while paid_through is in the future (liveGrant)
-    paidThrough: timestamp("paid_through", { withTimezone: true }), // set by the Stripe webhook; null until first payment
-    stripeCustomerId: text("stripe_customer_id"),
-    stripeSubscriptionId: text("stripe_subscription_id"),
-    stripeCheckoutSessionId: text("stripe_checkout_session_id"), // the Checkout session that created the grant, recorded by the webhook
-    cardFingerprintHash: text("card_fingerprint_hash"), // sha256 (lib/token-hash.ts) of the buyer's card fingerprint; matches a revoked buyer who returns under a new email. NEVER the raw fingerprint.
+    paidThrough: timestamp("paid_through", { withTimezone: true }), // set by the PayPal webhook; null until first payment
+    paypalSubscriptionId: text("paypal_subscription_id"),
+    payerIdHash: text("payer_id_hash"), // sha256 (lib/token-hash.ts) of the buyer's PayPal payer_id; matches a revoked buyer who returns under a new email. NEVER the raw payer id.
   },
   (table) => [
     index("dataset_access_grants_status_idx").on(table.status),
-    uniqueIndex("dataset_access_grants_stripe_subscription_id_idx").on(table.stripeSubscriptionId),
-    uniqueIndex("dataset_access_grants_stripe_checkout_session_id_idx").on(table.stripeCheckoutSessionId),
+    uniqueIndex("dataset_access_grants_paypal_subscription_id_idx").on(table.paypalSubscriptionId),
     index("dataset_access_grants_email_idx").on(table.email),
-    index("dataset_access_grants_card_fingerprint_hash_idx").on(table.cardFingerprintHash),
+    index("dataset_access_grants_payer_id_hash_idx").on(table.payerIdHash),
     // One open row per (email, tier): a free and a commercial grant may coexist for one address, but never
     // two of the same tier. The tier split is what keeps a purchase (whose Checkout email nobody has
     // verified) from ever touching somebody's free request.
@@ -873,6 +869,7 @@ export const datasetAccessGrantsTable = pgTable(
     uniqueIndex("dataset_access_grants_access_token_hash_idx").on(table.accessTokenHash),
     uniqueIndex("dataset_access_grants_renew_token_hash_idx").on(table.renewTokenHash),
     uniqueIndex("dataset_access_grants_unsubscribe_token_idx").on(table.unsubscribeToken),
+    check("dataset_access_grants_tier_check", sql`${table.tier} IN ('free', 'commercial')`),
   ]
 );
 
@@ -948,61 +945,65 @@ export const datasetDownloadsTable = pgTable(
 export type DatasetDownloadRow = typeof datasetDownloadsTable.$inferSelect;
 
 /**
- * Idempotency log of Stripe webhook events: `id` is the Stripe event id, so a
+ * Idempotency log of PayPal webhook events: `id` is the PayPal event id, so a
  * redelivered event hits the primary key. `processedAt` is null until the
  * handler finishes. Deleting a grant keeps the row and nulls `grantId`.
  */
-export const stripeEventsTable = pgTable(
-  "stripe_events",
+export const paypalWebhookEventsTable = pgTable(
+  "paypal_webhook_events",
   {
     id: text("id").primaryKey(),
-    type: text("type").notNull(),
+    eventType: text("event_type").notNull(),
     receivedAt: timestamp("received_at", { withTimezone: true }).defaultNow().notNull(),
     processedAt: timestamp("processed_at", { withTimezone: true }),
     grantId: uuid("grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
   },
-  (table) => [index("stripe_events_received_at_idx").on(table.receivedAt)]
+  (table) => [index("paypal_webhook_events_received_at_idx").on(table.receivedAt)]
 );
 
-export type StripeEventRow = typeof stripeEventsTable.$inferSelect;
+export type PaypalWebhookEventRow = typeof paypalWebhookEventsTable.$inferSelect;
 
 /**
- * The durable DECISION for a Stripe Checkout session: 'activate' (it gets, or already has, a grant) or
- * 'refuse' (cancel + refund its own subscription). Written once with `ON CONFLICT (session_id) DO NOTHING`
- * the first time a session is evaluated, and every later delivery of that session acts on the STORED row, so
- * the outcome cannot change with later state (retries, async-payment events, a cleared conflict, a cancelled
- * subscription). The one permitted change is 'activate' -> 'refuse' (reason 'already_subscribed'), made by a
- * single conditional UPDATE (only while `grant_id` is null) when the grant write lost to another live subscription
- * for the same email and no grant carries this session. The row is also the lock every grant write for the
- * session takes (one statement: lock, write, set `grant_id`), so activation and refusal cannot both win. CHECKs:
- * `decision` is one of the two values, and a refusal always has a `reason` (and only a refusal does). `conflictGrantId` is the grant a refusal names; `grantId` the grant this session
- * activated. Both are informational and null after the grant is deleted. Holds no email, token or other PII.
- * Never pruned.
+ * One row per commercial checkout attempt, created by our own form BEFORE the buyer is sent to PayPal; its
+ * `id` travels to PayPal as `custom_id`, which is how the webhook finds the attempt again. `decision` stays
+ * null until the webhook evaluates the subscription: 'activate' (it gets, or already has, a grant) or
+ * 'refuse' (cancel + refund). A refusal always has a `reason`, and only a refusal does (CHECK). `email`,
+ * `name` and `organization` are nullable so retention can scrub them: abandoned attempts (no decision) are
+ * deleted after 30 days, decided rows have the three fields nulled after 365 days. `grantId` is the grant this
+ * attempt activated, `conflictGrantId` the grant a refusal names; both are informational and null after the
+ * grant is deleted. `refundedSaleId` records the PayPal sale refunded on a refusal.
  */
-export const stripeCheckoutDecisionsTable = pgTable(
-  "stripe_checkout_decisions",
+export const commercialCheckoutsTable = pgTable(
+  "commercial_checkouts",
   {
-    sessionId: text("session_id").primaryKey(),
-    decision: text("decision").notNull().$type<"activate" | "refuse">(),
+    id: uuid("id").defaultRandom().primaryKey(),
+    plan: text("plan").notNull().$type<"monthly" | "annual">(),
+    email: text("email"),
+    name: text("name"),
+    organization: text("organization"),
+    termsVersion: text("terms_version").notNull(),
+    paypalSubscriptionId: text("paypal_subscription_id").unique(),
+    decision: text("decision").$type<"activate" | "refuse">(),
     reason: text("reason").$type<"already_subscribed" | "revoked_buyer">(),
-    subscriptionId: text("subscription_id").notNull(),
-    invoiceId: text("invoice_id"),
-    amountTotal: integer("amount_total").notNull(),
-    conflictGrantId: uuid("conflict_grant_id"),
     grantId: uuid("grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
+    conflictGrantId: uuid("conflict_grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
+    refundedSaleId: text("refunded_sale_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
   },
   (table) => [
-    foreignKey({
-      name: "stripe_checkout_decisions_conflict_grant_fk",
-      columns: [table.conflictGrantId],
-      foreignColumns: [datasetAccessGrantsTable.id],
-    }).onDelete("set null"),
-    check("stripe_checkout_decisions_decision_check", sql`${table.decision} IN ('activate', 'refuse')`),
-    // A refusal always names its reason, and only a refusal has one.
-    check("stripe_checkout_decisions_reason_check", sql`(${table.decision} = 'refuse') = (${table.reason} IS NOT NULL)`),
+    check("commercial_checkouts_plan_check", sql`${table.plan} IN ('monthly', 'annual')`),
+    check("commercial_checkouts_decision_check", sql`${table.decision} IN ('activate', 'refuse')`),
+    // A refusal always names its reason, and only a refusal has one (a null decision implies a null reason).
+    check(
+      "commercial_checkouts_reason_check",
+      sql`(${table.decision} IS NOT DISTINCT FROM 'refuse') = (${table.reason} IS NOT NULL)`
+    ),
+    index("commercial_checkouts_created_at_idx").on(table.createdAt),
   ]
 );
+
+export type CommercialCheckoutRow = typeof commercialCheckoutsTable.$inferSelect;
 
 /**
  * Durable per-IP daily request counter for the public facilities-family read

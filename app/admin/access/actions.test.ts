@@ -232,7 +232,7 @@ describe("revokeDatasetGrantAction", () => {
     expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
   });
 
-  it("returns plain { ok: true } for a free grant (no Stripe outcome)", async () => {
+  it("returns plain { ok: true } for a free grant (no PayPal outcome)", async () => {
     mockCancelSub.mockResolvedValue({ cancelled: false, reason: "no_subscription" });
     expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true });
   });
@@ -245,7 +245,7 @@ describe("revokeDatasetGrantAction", () => {
   });
 
   it("reports a failed cancel but still succeeds (the revoke stands)", async () => {
-    mockCancelSub.mockResolvedValue({ cancelled: false, reason: "stripe_error" });
+    mockCancelSub.mockResolvedValue({ cancelled: false, reason: "provider_error" });
     expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true, subscription: "failed" });
     expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
   });

@@ -30,18 +30,19 @@
 import { appendFileSync, lstatSync, mkdirSync, readdirSync, statSync, unlinkSync } from "node:fs";
 import path from "node:path";
 
-import { and, eq, inArray, isNotNull, lt, ne, or, sql } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, isNull, lt, ne, or, sql } from "drizzle-orm";
 
 import { getDb } from "../lib/db/client";
 import {
   apiAccessGrantsTable,
   apiDailyUsageTable,
+  commercialCheckoutsTable,
   contactMessagesTable,
   datasetAccessGrantsTable,
   datasetDownloadsTable,
   intakeAttemptsTable,
   leadsTable,
-  stripeEventsTable,
+  paypalWebhookEventsTable,
   submissionsTable,
   submissionNotifyRequestsTable,
   submissionNotifySendsTable,
@@ -74,7 +75,9 @@ export const DATASET_ENDED_RETENTION_DAYS = 365; // dataset_access_grants: delet
 export const DATASET_REQUEST_IP_HASH_RETENTION_DAYS = 90; // dataset_access_grants: null submitterIpHash this many days after reviewedAt, whatever the status — the row itself stays
 export const DATASET_DOWNLOADS_RETENTION_DAYS = 365; // dataset_downloads: delete rows older than this many days (by createdAt)
 export const DATASET_DOWNLOAD_IP_HASH_RETENTION_DAYS = 90; // dataset_downloads: null ipHash on rows older than this many days (by createdAt) — the row itself stays
-export const STRIPE_EVENTS_RETENTION_DAYS = 90; // stripe_events: delete rows whose processedAt is older than this many days — unprocessed rows (processedAt null) are never pruned
+export const PAYPAL_WEBHOOK_EVENTS_RETENTION_DAYS = 90; // paypal_webhook_events: delete rows whose processedAt is older than this many days — unprocessed rows (processedAt null) are never pruned
+export const COMMERCIAL_CHECKOUT_ABANDONED_RETENTION_DAYS = 30; // commercial_checkouts: delete rows with no decision (an abandoned attempt still holding email/name/organization) older than this many days (by createdAt)
+export const COMMERCIAL_CHECKOUT_PII_RETENTION_DAYS = 365; // commercial_checkouts: null email, name and organization on DECIDED rows older than this many days (by createdAt) — the decision record itself stays
 export const RETENTION_BACKUP_RETENTION_DAYS = 30; // discovery-logs/retention-backups/*.jsonl: delete backup files whose FILENAME timestamp is older than this many days — the dataset privacy notice states it (pinned by a test)
 
 function daysAgo(now: Date, days: number): Date {
@@ -88,7 +91,7 @@ function utcDateString(now: Date): string {
 
 export interface RetentionTableOutcome {
   table: string;
-  action: "delete" | "strip-ip-hash";
+  action: "delete" | "strip-ip-hash" | "scrub-pii";
   candidates: number;
   applied: number;
   sampleIds: string[];
@@ -285,8 +288,24 @@ function buildSteps(now: Date): RetentionStep[] {
   const datasetDownloadsStripPredicate = () =>
     and(isNotNull(datasetDownloadsTable.ipHash), lt(datasetDownloadsTable.createdAt, datasetDownloadIpHashCutoff));
 
-  const stripeEventsCutoff = daysAgo(now, STRIPE_EVENTS_RETENTION_DAYS);
-  const stripeEventsPredicate = () => lt(stripeEventsTable.processedAt, stripeEventsCutoff);
+  const paypalWebhookEventsCutoff = daysAgo(now, PAYPAL_WEBHOOK_EVENTS_RETENTION_DAYS);
+  const paypalWebhookEventsPredicate = () => lt(paypalWebhookEventsTable.processedAt, paypalWebhookEventsCutoff);
+
+  const checkoutAbandonedCutoff = daysAgo(now, COMMERCIAL_CHECKOUT_ABANDONED_RETENTION_DAYS);
+  const checkoutAbandonedPredicate = () =>
+    and(isNull(commercialCheckoutsTable.decision), lt(commercialCheckoutsTable.createdAt, checkoutAbandonedCutoff));
+
+  const checkoutPiiCutoff = daysAgo(now, COMMERCIAL_CHECKOUT_PII_RETENTION_DAYS);
+  const checkoutScrubPredicate = () =>
+    and(
+      isNotNull(commercialCheckoutsTable.decision),
+      lt(commercialCheckoutsTable.createdAt, checkoutPiiCutoff),
+      or(
+        isNotNull(commercialCheckoutsTable.email),
+        isNotNull(commercialCheckoutsTable.name),
+        isNotNull(commercialCheckoutsTable.organization)
+      )
+    );
 
   return [
     {
@@ -387,16 +406,33 @@ function buildSteps(now: Date): RetentionStep[] {
       mutate: () => getDb().delete(apiDailyUsageTable).where(apiDailyUsagePredicate()).returning(),
     },
     {
-      // Stripe webhook idempotency log (see stripeEventsTable's doc comment). A null processedAt
+      // PayPal webhook idempotency log (see paypalWebhookEventsTable's doc comment). A null processedAt
       // never satisfies `lt`, so an event still in flight is kept.
-      table: "stripe_events",
+      table: "paypal_webhook_events",
       action: "delete",
-      selectCandidates: () => getDb().select().from(stripeEventsTable).where(stripeEventsPredicate()),
-      mutate: () => getDb().delete(stripeEventsTable).where(stripeEventsPredicate()).returning(),
+      selectCandidates: () => getDb().select().from(paypalWebhookEventsTable).where(paypalWebhookEventsPredicate()),
+      mutate: () => getDb().delete(paypalWebhookEventsTable).where(paypalWebhookEventsPredicate()).returning(),
     },
-    // stripe_checkout_decisions is deliberately NOT pruned: it is the permanent record of what was decided for a
-    // checkout session, and deleting a row would let a late event for that session be decided afresh (a refund
-    // of an activated session, or an activation of a refunded one).
+    {
+      // Abandoned checkout attempts: our form wrote email/name/organization before PayPal, and no webhook
+      // ever decided them. A decided row is never deleted here (it is the permanent record of the decision,
+      // and deleting it would let a late event for that attempt be decided afresh); it is only scrubbed below.
+      table: "commercial_checkouts",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(commercialCheckoutsTable).where(checkoutAbandonedPredicate()),
+      mutate: () => getDb().delete(commercialCheckoutsTable).where(checkoutAbandonedPredicate()).returning(),
+    },
+    {
+      table: "commercial_checkouts",
+      action: "scrub-pii",
+      selectCandidates: () => getDb().select().from(commercialCheckoutsTable).where(checkoutScrubPredicate()),
+      mutate: () =>
+        getDb()
+          .update(commercialCheckoutsTable)
+          .set({ email: null, name: null, organization: null })
+          .where(checkoutScrubPredicate())
+          .returning(),
+    },
     // Dataset sharing. ORDER MATTERS: downloads are deleted BEFORE the grants that own them, so a
     // download a grant delete would cascade away has already been backed up by its own step. An ended
     // grant is >= 365 d past its end and downloads are only logged while a grant is active, so every

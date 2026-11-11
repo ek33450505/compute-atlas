@@ -50,10 +50,8 @@ import { CSP_REPORT_PATH } from "./lib/csp-report";
  *     /contribute). That asymmetry is the point — a local harness is necessary
  *     but not sufficient for this header, because the proxy adds subresources
  *     the app never declares.
- *   - https://checkout.stripe.com — `form-action` only: the 303 target of
- *     POST /api/access/checkout (app/access/commercial/page.tsx forms).
- *   - https://billing.stripe.com — `form-action` only: the 303 target of
- *     POST /api/access/billing-portal (app/access/dataset/page.tsx).
+ *   - https://checkout.stripe.com and https://billing.stripe.com — `form-action` only. These
+ *     are legacy entries; the checkout unit revises the `form-action` targets for the new provider.
  *
  * `frame-ancestors` is NOT in this shared list — it is supplied per scope by
  * `buildCsp` below. See that function for why leaving it here would have

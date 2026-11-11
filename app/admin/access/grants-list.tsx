@@ -223,7 +223,7 @@ function GrantRow({
             {
               tone: "warning",
               label: "Warning.",
-              text: `${revoked} Revoked here, but the Stripe subscription could not be cancelled: cancel it in Stripe now (the next payment would also trigger an automatic cancel).`,
+              text: `${revoked} Revoked here, but the PayPal subscription could not be cancelled: cancel it in PayPal now (the next payment would also trigger an automatic cancel).`,
             },
             row,
           );
@@ -232,7 +232,7 @@ function GrantRow({
             {
               tone: "warning",
               label: "Warning.",
-              text: `${revoked} Could not check whether this grant has a Stripe subscription; if it is a commercial grant, confirm the subscription is cancelled in Stripe.`,
+              text: `${revoked} Could not check whether this grant has a PayPal subscription; if it is a commercial grant, confirm the subscription is cancelled in PayPal.`,
             },
             row,
           );
@@ -240,7 +240,7 @@ function GrantRow({
           onResult(
             {
               tone: "success",
-              text: `${revoked} Subscription cancelled in Stripe. No refund was issued; refund in Stripe if needed.`,
+              text: `${revoked} Subscription cancelled in PayPal. No refund was issued; refund in PayPal if needed.`,
             },
             row,
           );
@@ -312,7 +312,7 @@ function GrantRow({
           <>
             <dt className="text-xs font-medium text-muted-foreground">Paid through</dt>
             <dd>{grant.paidThrough ? <DateText value={grant.paidThrough} /> : "not yet paid"}</dd>
-            <dt className="text-xs font-medium text-muted-foreground">Stripe subscription</dt>
+            <dt className="text-xs font-medium text-muted-foreground">PayPal subscription</dt>
             <dd>{grant.subscriptionLinked ? "linked" : "none linked"}</dd>
           </>
         ) : null}
@@ -447,7 +447,7 @@ function GrantRow({
           title={`Revoke access for ${grant.name}?`}
           description={
             grant.tier === "commercial"
-              ? "The link stops working at once and the Stripe subscription is cancelled. No refund is issued and no email is sent to the requester."
+              ? "The link stops working at once and the PayPal subscription is cancelled. No refund is issued and no email is sent to the requester."
               : "The link stops working at once. No email is sent to the requester."
           }
           confirmLabel="Confirm revoke"

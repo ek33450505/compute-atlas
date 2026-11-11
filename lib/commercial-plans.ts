@@ -1,4 +1,4 @@
-/** The single source for the commercial plans shown to visitors and quoted in mail; Stripe price ids live elsewhere. */
+/** The single source for the commercial plans shown to visitors and quoted in mail; PayPal plan ids live in env (see lib/paypal.ts). */
 export const COMMERCIAL_PLANS = {
   monthly: { label: "Monthly", priceUsd: 150, cadence: "month" },
   annual: { label: "Annual", priceUsd: 1500, cadence: "year" },

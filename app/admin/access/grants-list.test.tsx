@@ -295,16 +295,16 @@ describe("GrantsList: revoke", () => {
     );
     await user.click(screen.getByRole("button", { name: "Revoke access for Ada Lovelace" }));
     const dialog = await screen.findByRole("dialog");
-    expect(dialog).toHaveTextContent("Stripe subscription is cancelled");
+    expect(dialog).toHaveTextContent("PayPal subscription is cancelled");
     await user.click(within(dialog).getByRole("button", { name: "Confirm revoke" }));
     await waitFor(() =>
       expect(screen.getByRole("status")).toHaveTextContent(
-        "Subscription cancelled in Stripe. No refund was issued; refund in Stripe if needed.",
+        "Subscription cancelled in PayPal. No refund was issued; refund in PayPal if needed.",
       ),
     );
   });
 
-  it("commercial: a failed cancel shows the cancel-it-in-Stripe warning", async () => {
+  it("commercial: a failed cancel shows the cancel-it-in-PayPal warning", async () => {
     mockRevoke.mockResolvedValue({ ok: true, subscription: "failed" });
     const user = userEvent.setup();
     render(
@@ -318,13 +318,13 @@ describe("GrantsList: revoke", () => {
     await user.click(within(dialog).getByRole("button", { name: "Confirm revoke" }));
     await waitFor(() =>
       expect(screen.getByRole("alert")).toHaveTextContent(
-        "Revoked here, but the Stripe subscription could not be cancelled: cancel it in Stripe now",
+        "Revoked here, but the PayPal subscription could not be cancelled: cancel it in PayPal now",
       ),
     );
     expect(screen.getByRole("alert")).not.toHaveTextContent("Not delivered");
   });
 
-  it("an unknown subscription state shows the neutral confirm-in-Stripe note, not mail wording", async () => {
+  it("an unknown subscription state shows the neutral confirm-in-PayPal note, not mail wording", async () => {
     mockRevoke.mockResolvedValue({ ok: true, subscription: "unknown" });
     const user = userEvent.setup();
     render(<GrantsList grants={[makeGrant()]} activeStatus="active" />);
@@ -334,7 +334,7 @@ describe("GrantsList: revoke", () => {
     const alert = await screen.findByRole("alert");
     await waitFor(() =>
       expect(alert).toHaveTextContent(
-        "Could not check whether this grant has a Stripe subscription; if it is a commercial grant, confirm the subscription is cancelled in Stripe.",
+        "Could not check whether this grant has a PayPal subscription; if it is a commercial grant, confirm the subscription is cancelled in PayPal.",
       ),
     );
     expect(alert).not.toHaveTextContent("Not delivered");

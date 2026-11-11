@@ -14,7 +14,7 @@ describe("0021 rollback block in docs/maintainers.md", () => {
     expect(entry).toBeDefined();
 
     const doc = readFileSync(join(ROOT, "docs/maintainers.md"), "utf8");
-    const start = doc.indexOf("DROP TABLE IF EXISTS stripe_checkout_decisions;");
+    const start = doc.indexOf("DROP TABLE IF EXISTS commercial_checkouts;");
     expect(start).toBeGreaterThan(-1);
     const block = doc.slice(start, doc.indexOf("COMMIT;", start));
 

@@ -779,40 +779,40 @@ lapsed row that another session's decision later claims), which is alerted only 
 replay.
 
 To undo only that migration
-(keeps every grant; `stripe_events` and `stripe_checkout_decisions` reference `dataset_access_grants`, so they go first):
+(keeps every grant; `paypal_webhook_events` and `commercial_checkouts` reference `dataset_access_grants`, so they go first):
 
-1. Revert the deploy first, then disable the webhook endpoint in the Stripe dashboard, so redelivered events
-   are not reprocessed once `stripe_events` is gone.
-2. **Warning: once any commercial grant exists, this rollback destroys `paid_through` and the Stripe IDs.**
+1. Revert the deploy first, then disable the webhook in the PayPal developer dashboard, so redelivered events
+   are not reprocessed once `paypal_webhook_events` is gone.
+2. **Warning: once any commercial grant exists, this rollback destroys `paid_through`, the PayPal subscription id and the payer hash.**
    Take a Neon branch first, or save the rows:
-   `COPY (SELECT id, email, tier, paid_through, stripe_customer_id, stripe_subscription_id, stripe_checkout_session_id FROM dataset_access_grants WHERE tier='commercial') TO STDOUT`
+   `COPY (SELECT id, email, tier, paid_through, paypal_subscription_id, payer_id_hash FROM dataset_access_grants WHERE tier='commercial') TO STDOUT`
 3. **Check the old one-open-row-per-email index can be recreated.** 0021 replaced
    `dataset_access_grants_open_email_idx` with `dataset_access_grants_open_email_tier_idx` (unique on
    `(email, tier)`), so one address may now hold an open free AND an open commercial grant. Recreating the
    old index fails while that is true. Find the addresses:
    `SELECT email, array_agg(tier || ':' || status) FROM dataset_access_grants WHERE status IN ('unverified','pending_review','active') GROUP BY email HAVING count(*) > 1;`
-   For each, expire or revoke one of the two rows (usually the commercial one, after refunding in Stripe)
+   For each, expire or revoke one of the two rows (usually the commercial one, after refunding in PayPal)
    before continuing.
 4. Run, in this order, back-to-back with the deploy revert (the old code's `ON CONFLICT (email)` fails until the
    old index is back):
 
 ```sql
 BEGIN;
-DROP TABLE IF EXISTS stripe_checkout_decisions;
-DROP TABLE IF EXISTS stripe_events;
+-- Revoke every commercial grant first: once `tier` is dropped the old code would read an unpaid commercial grant as a free one.
+UPDATE dataset_access_grants SET status = 'revoked', revoked_at = now(), revoke_reason = 'commercial tier rolled back' WHERE tier = 'commercial' AND status <> 'revoked';
+DROP TABLE IF EXISTS commercial_checkouts;
+DROP TABLE IF EXISTS paypal_webhook_events;
 DROP INDEX IF EXISTS dataset_access_grants_open_email_tier_idx;
 CREATE UNIQUE INDEX "dataset_access_grants_open_email_idx" ON "dataset_access_grants" USING btree ("email") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');
-DROP INDEX IF EXISTS dataset_access_grants_stripe_subscription_id_idx;
-DROP INDEX IF EXISTS dataset_access_grants_stripe_checkout_session_id_idx;
-DROP INDEX IF EXISTS dataset_access_grants_card_fingerprint_hash_idx;
+DROP INDEX IF EXISTS dataset_access_grants_paypal_subscription_id_idx;
+DROP INDEX IF EXISTS dataset_access_grants_payer_id_hash_idx;
 ALTER TABLE dataset_access_grants
   DROP COLUMN IF EXISTS tier,
   DROP COLUMN IF EXISTS paid_through,
-  DROP COLUMN IF EXISTS stripe_customer_id,
-  DROP COLUMN IF EXISTS stripe_subscription_id,
-  DROP COLUMN IF EXISTS stripe_checkout_session_id,
-  DROP COLUMN IF EXISTS card_fingerprint_hash;
-DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794326700162;
+  DROP COLUMN IF EXISTS paypal_subscription_id,
+  DROP COLUMN IF EXISTS payer_id_hash;
+-- Dropping `tier` also drops `dataset_access_grants_tier_check` (a single-column CHECK goes with its column).
+DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794410950088;
 COMMIT;
 ```
 

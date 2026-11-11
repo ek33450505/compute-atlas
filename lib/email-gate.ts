@@ -120,12 +120,12 @@ import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type Supp
  *   the admin queue. An empty recipient sends nothing and writes no row
  *   (`gate_error`: a configuration fault, not a decision about the request).
  *
- *   `sendDatasetCommercialAlertGated` (maintainer alert about a Stripe conflict,
- *   `dataset_admin_commercial_alert`). Anchored on a Stripe id, not a grant (an
- *   orphaned subscription has none): row target `stripe_alert`/`<reason>:<id>`.
+ *   `sendDatasetCommercialAlertGated` (maintainer alert about a commercial-subscription conflict,
+ *   `dataset_admin_commercial_alert`). Anchored on a provider subscription id, not a grant (an
+ *   orphaned subscription has none): row target `paypal_alert`/`<reason>:<id>`.
  *   Deduped: one `sent` row per target ends it (a webhook retry must not
  *   re-alert), so it is at-least-once until it lands and once after. No
- *   suppression check and no cap (each alert follows a distinct Stripe event).
+ *   suppression check and no cap (each alert follows a distinct provider event).
  */
 
 export type GateDisposition =
@@ -580,7 +580,7 @@ export async function sendDatasetAdminNoticeGated(
   );
 }
 
-/** Maintainer alert about a Stripe conflict; see the DATASET MAIL note at the top of this file. */
+/** Maintainer alert about a commercial-subscription conflict; see the DATASET MAIL note at the top of this file. */
 export async function sendDatasetCommercialAlertGated(
   db: EmailSendsDb,
   opts: { recipient: string; reason: string; targetId: string },
@@ -597,7 +597,7 @@ export async function sendDatasetCommercialAlertGated(
     kind: "dataset_admin_commercial_alert",
     email: recipient,
     subscriptionId: null,
-    targetType: "stripe_alert",
+    targetType: "paypal_alert",
     targetId: `${opts.reason}:${opts.targetId}`,
   };
 
@@ -608,7 +608,7 @@ export async function sendDatasetCommercialAlertGated(
       .where(
         and(
           eq(emailSendsTable.kind, base.kind),
-          eq(emailSendsTable.targetType, "stripe_alert"),
+          eq(emailSendsTable.targetType, "paypal_alert"),
           eq(emailSendsTable.targetId, base.targetId!),
           eq(emailSendsTable.outcome, "sent")
         )

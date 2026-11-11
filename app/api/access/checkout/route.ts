@@ -9,7 +9,7 @@ import {
   normaliseIpForBucketing,
   recordIntakeAttempt,
 } from "@/lib/rate-limit";
-import { createCommercialCheckoutSession, StripeConfigError, type CommercialPlan } from "@/lib/stripe";
+import type { CommercialPlan } from "@/lib/paypal";
 
 type CheckoutError = "plan" | "busy" | "unavailable";
 
@@ -24,16 +24,16 @@ function parsePlan(value: FormDataEntryValue | null): CommercialPlan | null {
 }
 
 /**
- * Starts a Stripe Checkout session for the commercial tier. Takes a native HTML form POST
- * (`plan` field) so the page works without JS, and answers with a 303 either to Stripe or back
- * to the page with `?error=`. Writes nothing to our DB beyond the rate-limit attempt row.
+ * Checkout entry point for the commercial tier. Takes a native HTML form POST (`plan` field)
+ * so the page works without JS. TEMPORARY: after the checks it answers the standard 403 "not available" until the PayPal
+ * checkout lands; the commercial tier is dark behind the flag until then.
  */
 export async function POST(request: Request) {
-  // Kill switch first: no DB, Stripe or body work.
+  // Kill switch first: no DB, provider or body work.
   if (!isCommercialCheckoutOpen()) return notAvailable();
 
   // Money must not be taken while the maintainer alert cannot be sent: both the alert recipient and the
-  // mail key must be set. Checked before any rate-limit or Stripe work; the response never says which.
+  // mail key must be set. Checked before any rate-limit or provider work; the response never says which.
   if (!process.env.CONTACT_TO_EMAIL?.trim() || !process.env.RESEND_API_KEY?.trim()) {
     console.error("commercial-checkout refused: alert mail not configured");
     return backWithError(request, "unavailable");
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
   // Gate on PRIOR attempts, then record this one before any content-dependent branch, so a bad
   // plan costs a unit too (same ordering as app/api/access/request/route.ts). Card-testing is
-  // the threat: every Checkout session is a Stripe API call an anonymous visitor can trigger.
+  // the threat: every checkout will be a PayPal API call an anonymous visitor can trigger.
   let gate: { ok: boolean };
   try {
     const ipHash = hashIp(normaliseIpForBucketing(extractTrustedClientIp(request.headers)));
@@ -66,17 +66,8 @@ export async function POST(request: Request) {
   }
   if (!plan) return backWithError(request, "plan");
 
-  let url: string;
-  try {
-    ({ url } = await createCommercialCheckoutSession({ plan }));
-  } catch (err) {
-    // Never log the error object or the session: Stripe errors can carry request params.
-    const code = err instanceof StripeConfigError ? "config" : redactedErrorCode(err);
-    console.error(`commercial-checkout session failed (code: ${code})`);
-    return backWithError(request, "unavailable");
-  }
-
-  return new Response(null, { status: 303, headers: { ...NO_STORE_HEADERS, Location: url } });
+  // Placeholder until the PayPal checkout replaces it; nothing is created or charged.
+  return notAvailable();
 }
 
 // No OPTIONS export on purpose: only our own same-origin form posts here, so a cross-origin

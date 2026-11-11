@@ -112,10 +112,8 @@ const EXPECTED_COLUMNS: Record<string, Record<string, string>> = {
     submitter_ip_hash: "text NULL",
     tier: "text NOT NULL",
     paid_through: "timestamp with time zone NULL",
-    stripe_customer_id: "text NULL",
-    stripe_subscription_id: "text NULL",
-    stripe_checkout_session_id: "text NULL",
-    card_fingerprint_hash: "text NULL",
+    paypal_subscription_id: "text NULL",
+    payer_id_hash: "text NULL",
   },
   dataset_editions: {
     id: "uuid NOT NULL",
@@ -171,7 +169,7 @@ describe("dataset sharing tables: shape", () => {
     expect(DATASET_DOWNLOAD_OUTCOMES).toEqual(["served", "denied_rate", "error"]);
   });
 
-  it("uses plain text columns, not pg enums or CHECK constraints", async () => {
+  it("uses plain text columns, not pg enums; the only CHECK is the tier vocabulary (0021)", async () => {
     const enums = await tdb.client.query(
       `SELECT a.attname FROM pg_attribute a JOIN pg_type t ON t.oid = a.atttypid
        WHERE a.attrelid IN ('dataset_access_grants'::regclass, 'dataset_editions'::regclass, 'dataset_downloads'::regclass)
@@ -181,12 +179,17 @@ describe("dataset sharing tables: shape", () => {
     const checks = await tdb.client.query(
       `SELECT conname FROM pg_constraint
        WHERE contype = 'c'
+         AND conname <> 'dataset_access_grants_tier_check'
          AND (conrelid IN ('dataset_access_grants'::regclass, 'dataset_editions'::regclass, 'dataset_downloads'::regclass)
               OR contypid IN (SELECT atttypid FROM pg_attribute
                                WHERE attrelid IN ('dataset_access_grants'::regclass, 'dataset_editions'::regclass, 'dataset_downloads'::regclass)
                                  AND attnum > 0))`
     );
     expect(checks.rows).toHaveLength(0);
+    const tierCheck = await tdb.client.query(
+      `SELECT 1 FROM pg_constraint WHERE conname = 'dataset_access_grants_tier_check' AND contype = 'c'`
+    );
+    expect(tierCheck.rows).toHaveLength(1);
   });
 
   it("getExpectedTableNames() includes the three dataset tables", () => {
