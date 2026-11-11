@@ -114,6 +114,8 @@ describe("FacilityPopup", () => {
     await renderLoaded();
     const sourceLink = screen.getByRole("link", { name: /opens in new tab/i });
     expect(sourceLink).toHaveAttribute("rel", "noreferrer noopener");
+    // WCAG 2.5.3: the name starts with the visible text.
+    expect(sourceLink).toHaveAccessibleName(/^Source/);
   });
 
   it("pressing Escape calls onClose", async () => {
@@ -382,6 +384,8 @@ describe("FacilityPopup", () => {
       // Accessible name follows the repo's existing "(opens in new tab)"
       // convention (see the source link's aria-label a few lines below it).
       expect(link).toHaveAccessibleName(/opens in new tab/i);
+      // WCAG 2.5.3: the name contains the visible text.
+      expect(link).toHaveAccessibleName(/^View details →/);
     });
   });
 

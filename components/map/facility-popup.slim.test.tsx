@@ -85,7 +85,7 @@ describe("FacilityPopup with a projected record", () => {
   it("shows the first source link and capacity for a data center", async () => {
     stubFetch(dataCenter);
     render(<FacilityPopup id={dataCenter.id} onClose={() => {}} />);
-    const link = await screen.findByRole("link", { name: "First Source (opens in new tab)" });
+    const link = await screen.findByRole("link", { name: "Source: First Source (opens in new tab)" });
     expect(link).toHaveAttribute("href", "https://example.com/first");
     // Popup contract: only the first source is linked. The projection-side
     // guard (second source never reaches the client) is in lib/facility-slim.test.ts.
@@ -93,7 +93,32 @@ describe("FacilityPopup with a projected record", () => {
     expect(screen.getByText("100 MW operational")).toBeInTheDocument();
     expect(screen.getByText("250 MW planned")).toBeInTheDocument();
     expect(screen.getByText("Waco, TX")).toBeInTheDocument();
-    expect(screen.getByText("mixed use · reported")).toBeInTheDocument();
+    expect(screen.getByText("AI classification: Mixed-use")).toBeInTheDocument();
+    expect(screen.getByText("Confidence: Reported")).toBeInTheDocument();
+    expect(screen.getByText(/Updated/)).toHaveTextContent("Updated 2026-01-01 · 2 sources");
+  });
+
+  it("never prints a bare 'Confirmed · Confirmed' when both enums are confirmed", async () => {
+    const [confirmedDc] = facilitiesSchema.parse([
+      {
+        ...BASE,
+        facilityType: "data_center",
+        aiClassification: "confirmed",
+        confidence: "confirmed",
+        location: { lat: 31.5, lon: -97.5, city: "Waco", state: "TX" },
+      },
+    ]);
+    stubFetch(confirmedDc);
+    render(<FacilityPopup id={dataCenter.id} onClose={() => {}} />);
+    expect(await screen.findByText("AI classification: AI-specific")).toBeInTheDocument();
+    expect(screen.getByText("Confidence: Confirmed")).toBeInTheDocument();
+    expect(screen.queryByText(/Confirmed · Confirmed/i)).not.toBeInTheDocument();
+  });
+
+  it("uses the singular for a single source", async () => {
+    stubFetch({ ...dataCenter, sources: [{ ...SOURCES[0], kind: "press" as const }] });
+    render(<FacilityPopup id={dataCenter.id} onClose={() => {}} />);
+    expect(await screen.findByText(/1 source$/)).toBeInTheDocument();
   });
 
   it("shows the multi-site line with its states", async () => {
@@ -109,7 +134,8 @@ describe("FacilityPopup with a projected record", () => {
     stubFetch(mining);
     render(<FacilityPopup id={mining.id} onClose={() => {}} />);
     expect(await screen.findByText("500 TH/s")).toBeInTheDocument();
-    expect(screen.getByText("stranded gas")).toBeInTheDocument();
+    expect(screen.getByText("Power arrangement: Stranded gas")).toBeInTheDocument();
+    expect(screen.getByText("Confidence: Reported")).toBeInTheDocument();
     expect(screen.getByText("Carbon proxy: 42")).toBeInTheDocument();
   });
 
