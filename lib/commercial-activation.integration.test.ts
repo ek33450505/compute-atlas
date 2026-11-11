@@ -5,8 +5,6 @@ import { eq } from "drizzle-orm";
 const paypal = vi.hoisted(() => ({
   getSubscription: vi.fn(),
   cancelSubscription: vi.fn(),
-  listSubscriptionTransactions: vi.fn(),
-  refundSale: vi.fn(),
 }));
 vi.mock("@/lib/paypal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/paypal")>()),
@@ -48,8 +46,6 @@ let sendMail: CommercialMailers;
 afterEach(() => {
   // Activation never moves money, whatever the test did.
   expect(paypal.cancelSubscription).not.toHaveBeenCalled();
-  expect(paypal.refundSale).not.toHaveBeenCalled();
-  expect(paypal.listSubscriptionTransactions).not.toHaveBeenCalled();
 });
 
 beforeEach(async () => {

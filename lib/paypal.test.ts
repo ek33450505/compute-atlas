@@ -7,10 +7,8 @@ import {
   cancelSubscription,
   createSubscription,
   getSubscription,
-  listSubscriptionTransactions,
   planForPlanId,
   planIdFor,
-  refundSale,
   resetPayPalTokenCacheForTests,
   verifyWebhookSignature,
 } from "@/lib/paypal";
@@ -392,48 +390,6 @@ describe("cancelSubscription", () => {
 
   it("rejects an invalid id without fetching", async () => {
     await expect(cancelSubscription("nope", "x")).rejects.toThrow(/invalid PayPal subscription id/);
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("listSubscriptionTransactions", () => {
-  it("passes the window and maps rows", async () => {
-    queue(
-      tokenResponse(),
-      json({
-        transactions: [
-          {
-            id: "SALE1234567",
-            status: "COMPLETED",
-            time: "2026-11-01T00:01:00Z",
-            amount_with_breakdown: { gross_amount: { currency_code: "USD", value: "49.00" } },
-          },
-        ],
-      }),
-    );
-    const rows = await listSubscriptionTransactions("I-ABCDEF123", "2026-10-01T00:00:00Z", "2026-11-11T00:00:00Z");
-    expect(rows).toEqual([
-      { id: "SALE1234567", status: "COMPLETED", gross: "49.00", currency: "USD", time: "2026-11-01T00:01:00Z" },
-    ]);
-    const url = new URL(callAt(1).url);
-    expect(url.pathname).toBe("/v1/billing/subscriptions/I-ABCDEF123/transactions");
-    expect(url.searchParams.get("start_time")).toBe("2026-10-01T00:00:00Z");
-    expect(url.searchParams.get("end_time")).toBe("2026-11-11T00:00:00Z");
-  });
-});
-
-describe("refundSale", () => {
-  it("derives the idempotency header from the sale id and sends an empty body", async () => {
-    queue(tokenResponse(), json({ id: "REFUND12345", state: "completed" }, 201));
-    expect(await refundSale("SALE1234567")).toEqual({ refundId: "REFUND12345", status: "completed" });
-    const { url, init, headers } = callAt(1);
-    expect(url).toBe("https://api-m.sandbox.paypal.com/v1/payments/sale/SALE1234567/refund");
-    expect(headers["PayPal-Request-Id"]).toBe("ca-refund-SALE1234567");
-    expect(init.body).toBe("{}");
-  });
-
-  it.each(["", "short", "sale1234567", "SALE1234567/x"])("rejects sale id %j without fetching", async (id) => {
-    await expect(refundSale(id)).rejects.toThrow(/invalid PayPal sale id/);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

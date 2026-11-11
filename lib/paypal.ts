@@ -26,14 +26,6 @@ export interface PayPalSubscription {
   lastPayment: { amount: string; currency: string; time: string } | null;
 }
 
-export interface PayPalTransaction {
-  id: string;
-  status: string;
-  gross: string | null;
-  currency: string | null;
-  time: string | null;
-}
-
 /** Missing or invalid PayPal configuration. Callers map it to 503; nothing falls back. */
 export class PayPalConfigError extends Error {
   readonly variable: string;
@@ -67,7 +59,6 @@ const TOKEN_REFRESH_MARGIN_MS = 60_000;
 const SUBSCRIPTION_ID = /^I-[A-Z0-9]{6,32}$/;
 const DEFAULT_CANCEL_REASON = "Cancelled by Compute Atlas";
 const CHECKOUT_ID = /^[A-Za-z0-9_-]{8,64}$/;
-const SALE_ID = /^[A-Z0-9]{10,32}$/;
 
 const BASE_URLS = {
   sandbox: "https://api-m.sandbox.paypal.com",
@@ -344,39 +335,6 @@ export async function cancelSubscription(
     return { ok: true, alreadyInactive: true };
   }
   throw toApiError(status, data);
-}
-
-// Reads one page only: enough to locate a subscription's first payment, not a full history.
-export async function listSubscriptionTransactions(
-  id: string,
-  startTime: string,
-  endTime: string,
-): Promise<PayPalTransaction[]> {
-  assertSubscriptionId(id);
-  const query = new URLSearchParams({ start_time: startTime, end_time: endTime });
-  const data = await call("GET", `/v1/billing/subscriptions/${id}/transactions?${query}`);
-  const rows = Array.isArray(data.transactions) ? data.transactions.map(asObject) : [];
-  return rows.map((row) => {
-    const gross = asObject(asObject(row.amount_with_breakdown).gross_amount);
-    return {
-      id: str(row.id) ?? "",
-      status: str(row.status) ?? "",
-      gross: str(gross.value),
-      currency: str(gross.currency_code),
-      time: str(row.time),
-    };
-  });
-}
-
-export async function refundSale(saleId: string): Promise<{ refundId: string; status: string }> {
-  if (!SALE_ID.test(saleId)) throw new Error("invalid PayPal sale id");
-  const data = await call("POST", `/v1/payments/sale/${saleId}/refund`, {
-    headers: { "PayPal-Request-Id": `ca-refund-${saleId}` },
-    body: {},
-  });
-  const refundId = str(data.id);
-  if (!refundId) throw new Error("PayPal returned a refund without an id");
-  return { refundId, status: str(data.state) ?? str(data.status) ?? "" };
 }
 
 // --- Webhooks ------------------------------------------------------------
