@@ -199,7 +199,8 @@ const PERMISSIONS_POLICY = [
  *
  * ⚠️ A change here reaches production only on a CODE deploy.
  * `scripts/vercel-ignore-build.sh` skips any deployment whose diff touches
- * only `data/`, `docs/`, `.github/` or `*.md` — production included — so a
+ * only `data/`, `docs/`, `.github/` or `*.md` — production included (except
+ * `docs/methodology.md`, which builds because `/methodology` renders it) — so a
  * header edit batched onto a data wave would sit unshipped. Confirm the
  * deployment actually built before treating a header as live.
  */

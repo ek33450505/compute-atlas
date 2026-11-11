@@ -9,8 +9,10 @@
 # Policy:
 #   1. ANY deployment — preview or production — is skipped when the diff
 #      touches ONLY docs or GitHub config, which change no byte a visitor can
-#      see. No data/ file is allowlisted any more (the facility data snapshot
-#      is untracked) — see the allowlist comment below.
+#      see. The one exception is docs/methodology.md: lib/methodology.ts reads
+#      it at prerender time for the public /methodology page, so it builds.
+#      No data/ file is allowlisted any more (the facility data snapshot is
+#      untracked) — see the allowlist comment below.
 #   2. Everything else builds.
 #
 # ## Why production is no longer unconditional (reversed 2026-08-08)
@@ -46,6 +48,15 @@ set -uo pipefail
 log() { printf '[vercel-ignore] %s\n' "$*" >&2; }
 build() { log "BUILD — $*"; exit 1; }
 skip() { log "SKIP — $*"; exit 0; }
+
+# One attempt to complete a shallow history. Git's own low-speed abort
+# (http.lowSpeedLimit/lowSpeedTime) ends a fetch that stays under 1000 B/s for
+# 30 s, so a stalled origin cannot hang the gate. It does NOT bound a slow but
+# steady fetch. No external `timeout` is used: it is not guaranteed in the
+# build image.
+unshallow() {
+  git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=30 fetch --quiet --unshallow >/dev/null 2>&1 || true
+}
 
 # 1. release-please's PR branch. By construction it only ever bumps a version
 #     string — .release-please-manifest.json, CHANGELOG.md, and the `version`
@@ -138,7 +149,17 @@ fi
 range_base=""
 how=""
 non_ancestor_prev=""
+absent_prev=""
 anc_rc=0
+
+# A previous SHA missing from a shallow clone may merely be unfetched. Complete
+# the history once before concluding anything, so the ancestry test below can
+# run on it.
+if [[ -n "${VERCEL_GIT_PREVIOUS_SHA:-}" ]] &&
+  ! git cat-file -e "${VERCEL_GIT_PREVIOUS_SHA}^{commit}" 2>/dev/null; then
+  log "previous SHA ${VERCEL_GIT_PREVIOUS_SHA} is not present in this clone — trying to complete the history"
+  unshallow
+fi
 
 if [[ -n "${VERCEL_GIT_PREVIOUS_SHA:-}" ]] &&
   git cat-file -e "${VERCEL_GIT_PREVIOUS_SHA}^{commit}" 2>/dev/null; then
@@ -160,11 +181,8 @@ if [[ -n "${VERCEL_GIT_PREVIOUS_SHA:-}" ]] &&
     non_ancestor_prev="$VERCEL_GIT_PREVIOUS_SHA"
   else
     # (c) shallow, or the probe itself failed. One attempt to complete the
-    #     history, then re-test. The fetch is bounded by git's own low-speed
-    #     abort — no external `timeout`, which is not guaranteed in the build
-    #     image — because a DEGRADED origin (slow, not down) would otherwise
-    #     hang the gate indefinitely.
-    git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=30 fetch --quiet --unshallow >/dev/null 2>&1 || true
+    #     history, then re-test (see unshallow() for what limits the fetch).
+    unshallow
     git merge-base --is-ancestor "$VERCEL_GIT_PREVIOUS_SHA" HEAD 2>/dev/null
     anc_rc=$?
     if [[ "$anc_rc" -eq 0 ]]; then
@@ -188,6 +206,7 @@ fi
 if [[ -z "${VERCEL_GIT_PREVIOUS_SHA:-}" ]]; then
   log "VERCEL_GIT_PREVIOUS_SHA is unset — no previous deployment to diff against"
 elif ! git cat-file -e "${VERCEL_GIT_PREVIOUS_SHA}^{commit}" 2>/dev/null; then
+  absent_prev="$VERCEL_GIT_PREVIOUS_SHA"
   log "previous SHA ${VERCEL_GIT_PREVIOUS_SHA} is not present in this clone (git cat-file -e failed) — ancestry cannot be tested"
 fi
 
@@ -205,6 +224,12 @@ fi
 # rebase, a force-push — was never determined, so none is asserted.
 if [[ -n "$non_ancestor_prev" && "${VERCEL_ENV:-}" != "preview" ]]; then
   build "previous SHA ${non_ancestor_prev} is not an ancestor of HEAD and this is not a preview (VERCEL_ENV=\"${VERCEL_ENV:-unset}\") — HEAD^ could be narrower than the push, so refusing to narrow (fail-open)"
+fi
+
+# Same rule for a previous SHA that is absent even after the history was
+# completed: HEAD^ may be narrower than the push, so only a preview may narrow.
+if [[ -n "$absent_prev" && "${VERCEL_ENV:-}" != "preview" ]]; then
+  build "previous SHA ${absent_prev} is absent from this clone and this is not a preview (VERCEL_ENV=\"${VERCEL_ENV:-unset}\") — HEAD^ could be narrower than the push, so refusing to narrow (fail-open)"
 fi
 
 # A merge commit pulls in whatever the other branch carried, which a
@@ -258,6 +283,7 @@ fi
 while IFS= read -r file; do
   [[ -z "$file" ]] && continue
   case "$file" in
+    docs/methodology.md) build "rendered by /methodology: ${file}" ;;
     docs/* | .github/* | *.md | LICENSE | LICENSE-DATA) continue ;;
     *) build "code change: ${file}" ;;
   esac

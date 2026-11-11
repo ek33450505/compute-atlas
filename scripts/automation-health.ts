@@ -15,7 +15,9 @@
  * is indistinguishable from a dead one. Run *freshness* (not just conclusion)
  * disambiguates that, because the scheduled run still happens either way.
  * Freshness also catches GitHub auto-disabling a schedule after 60 days of
- * repo inactivity — that shows up here as `never-run`/`stale`, not silence.
+ * repo inactivity (`disabled_inactivity`) — that shows up here as
+ * `never-run`/`stale`, not silence. A workflow disabled on purpose
+ * (`disabled_manually`) is reported as `disabled` and does not alert.
  *
  * Fails CLOSED, like `scripts/check-schema-drift.ts`: a missing
  * `GITHUB_TOKEN`, or any workflow found not-`ok`, exits 1. "Could not check"
@@ -29,7 +31,7 @@
 import { writeFileSync } from "node:fs";
 import { isEntrypoint } from "./is-entrypoint";
 
-export type WorkflowState = "ok" | "failing" | "stale" | "never-run";
+export type WorkflowState = "ok" | "failing" | "stale" | "never-run" | "disabled";
 
 /** One monitored workflow: which file, what schedule, how stale is too stale. */
 export interface WorkflowConfig {
@@ -39,6 +41,8 @@ export interface WorkflowConfig {
   cronDescription: string;
   /** Hours since the newest run before we call it stale. */
   staleAfterHours: number;
+  /** Optional extra clause appended to this workflow's "disabled on purpose" report line. */
+  disabledNote?: string;
 }
 
 /**
@@ -55,7 +59,9 @@ export interface WorkflowConfig {
  *
  * release-please is weekly (Mondays), so its budget is days, not hours:
  * 8 days catches a truly-dead schedule while giving a full week of jitter
- * room before alarming.
+ * room before alarming. It has been disabled on purpose since 2026-11-05;
+ * re-enabling it is how a release is cut. While `disabled_manually` it reports
+ * as `disabled` and does not alert.
  */
 export const MONITORED_WORKFLOWS: WorkflowConfig[] = [
   {
@@ -81,6 +87,7 @@ export const MONITORED_WORKFLOWS: WorkflowConfig[] = [
     name: "release-please",
     cronDescription: "0 9 * * 1 (Mondays 09:00 UTC)",
     staleAfterHours: 8 * 24,
+    disabledNote: "re-enabling it is how a release is cut",
   },
 ];
 
@@ -135,9 +142,26 @@ export function classifyWorkflow(
    * `workflow_dispatch`), or null. See the repair check in the failing branch
    * below for why this exists and exactly what it is allowed to override.
    */
-  latestSuccessAt: string | null = null
+  latestSuccessAt: string | null = null,
+  /**
+   * The workflow's own `state` from the Actions API. Only `disabled_manually`
+   * (intentional) is non-alerting; `disabled_inactivity` is GitHub's automatic
+   * 60-day disable, which is exactly what freshness must still catch.
+   */
+  workflowState = "active"
 ): WorkflowClassification {
   const base = { file: cfg.file, name: cfg.name };
+
+  if (workflowState === "disabled_manually") {
+    const last = sortNewestFirst(runs)[0]?.created_at ?? null;
+    return {
+      ...base,
+      state: "disabled",
+      streak: 0,
+      lastRunAt: last,
+      detail: "disabled on purpose (re-enable to run).",
+    };
+  }
   const ordered = sortNewestFirst(runs);
 
   if (ordered.length === 0) {
@@ -339,6 +363,67 @@ async function fetchRuns(owner: string, repo: string, file: string, token: strin
   return body.workflow_runs;
 }
 
+/** The workflow's own state (`active`, `disabled_manually`, `disabled_inactivity`, ...). */
+async function fetchWorkflowState(
+  owner: string,
+  repo: string,
+  file: string,
+  token: string
+): Promise<string> {
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/${file}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`GitHub API ${res.status} fetching state for ${file}: ${await res.text()}`);
+  }
+  const body = (await res.json()) as { state?: unknown };
+  if (typeof body.state !== "string") {
+    throw new Error(`GitHub API returned no workflow state for ${file}`);
+  }
+  return body.state;
+}
+
+/**
+ * Fetch and classify one workflow. A fetch error is itself an unhealthy signal,
+ * so it fails closed per-workflow as `never-run` — never as `disabled`.
+ */
+export async function checkWorkflow(
+  cfg: WorkflowConfig,
+  owner: string,
+  repo: string,
+  token: string,
+  now: Date
+): Promise<WorkflowClassification> {
+  try {
+    const [runs, latestSuccessAt, workflowState] = await Promise.all([
+      fetchRuns(owner, repo, cfg.file, token),
+      fetchLatestSuccessAt(owner, repo, cfg.file, token),
+      fetchWorkflowState(owner, repo, cfg.file, token),
+    ]);
+    return classifyWorkflow(cfg, runs, now, latestSuccessAt, workflowState);
+  } catch (err) {
+    // Fail-closed by design: a transient 5xx or rate limit on the state endpoint
+    // also lands here, reads as `never-run` and opens an issue (a false-alarm source).
+    return {
+      file: cfg.file,
+      name: cfg.name,
+      state: "never-run",
+      streak: 0,
+      lastRunAt: null,
+      detail: `Could not fetch runs: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+}
+
+/** Healthy = every result is `ok` or intentionally `disabled`. */
+export function isHealthy(results: WorkflowClassification[]): boolean {
+  return results.every((r) => r.state === "ok" || r.state === "disabled");
+}
+
 function runsUrl(owner: string, repo: string, file: string): string {
   return `https://github.com/${owner}/${repo}/actions/workflows/${file}`;
 }
@@ -360,12 +445,13 @@ const SELF_STALENESS_NOTE =
   "running, nothing here will say so — one level of recursion is where this stops, and " +
   "pretending otherwise would be the same false-confidence bug this check exists to fix._";
 
-function buildMarkdownReport(
+export function buildMarkdownReport(
   results: WorkflowClassification[],
   owner: string,
   repo: string
 ): string {
-  const unhealthy = results.filter((r) => r.state !== "ok");
+  const unhealthy = results.filter((r) => r.state !== "ok" && r.state !== "disabled");
+  const disabled = results.filter((r) => r.state === "disabled");
   const lines: string[] = [];
 
   lines.push("# Automation health report");
@@ -386,6 +472,16 @@ function buildMarkdownReport(
       lines.push(`- **Runs page:** ${runsUrl(owner, repo, r.file)}`);
       lines.push("");
     }
+  }
+  if (disabled.length > 0) {
+    for (const r of disabled) {
+      const note = MONITORED_WORKFLOWS.find((w) => w.file === r.file)?.disabledNote;
+      lines.push(
+        `${r.file} — disabled on purpose, not alerting; re-enable it to run` +
+          (note ? ` (${note}).` : ".")
+      );
+    }
+    lines.push("");
   }
   lines.push("---");
   lines.push(SELF_STALENESS_NOTE);
@@ -489,29 +585,12 @@ async function main() {
   const results: WorkflowClassification[] = [];
 
   for (const cfg of MONITORED_WORKFLOWS) {
-    try {
-      const [runs, latestSuccessAt] = await Promise.all([
-        fetchRuns(owner, repo, cfg.file, token),
-        fetchLatestSuccessAt(owner, repo, cfg.file, token),
-      ]);
-      results.push(classifyWorkflow(cfg, runs, now, latestSuccessAt));
-    } catch (err) {
-      // A fetch error is itself an unhealthy signal — fail closed per-workflow
-      // rather than skip it silently.
-      results.push({
-        file: cfg.file,
-        name: cfg.name,
-        state: "never-run",
-        streak: 0,
-        lastRunAt: null,
-        detail: `Could not fetch runs: ${err instanceof Error ? err.message : String(err)}`,
-      });
-    }
+    results.push(await checkWorkflow(cfg, owner, repo, token, now));
   }
 
   printSummaryTable(results);
 
-  const healthy = results.every((r) => r.state === "ok");
+  const healthy = isHealthy(results);
   emitOutcome({ healthy, markdown: buildMarkdownReport(results, owner, repo), out });
   if (out) {
     console.log(`Wrote markdown report to ${out}`);

@@ -191,10 +191,29 @@ assert_skip() {
 }
 
 @test "preview: docs-only diff is SKIPPED" {
-	commit_change "docs/methodology.md"
+	commit_change "docs/maintainers.md"
 
 	run bash "$SCRIPT"
 	assert_skip
+}
+
+@test "production: a docs/methodology.md-only diff BUILDS — the /methodology page renders it" {
+	# lib/methodology.ts reads docs/methodology.md at prerender time, so unlike
+	# the rest of docs/ it changes bytes a visitor can see.
+	export VERCEL_ENV="production"
+	export VERCEL_GIT_COMMIT_REF="main"
+	commit_change "docs/methodology.md"
+
+	run bash "$SCRIPT"
+	assert_build
+	[[ "$output" == *"rendered by /methodology"* ]]
+}
+
+@test "preview: a docs/methodology.md-only diff BUILDS too" {
+	commit_change "docs/methodology.md"
+
+	run bash "$SCRIPT"
+	assert_build
 }
 
 @test "preview: a code change BUILDS" {
@@ -237,15 +256,75 @@ assert_skip() {
 
 # --- fail-open paths: every uncertainty must BUILD -------------------------
 
-@test "fails open (BUILD) when VERCEL_GIT_PREVIOUS_SHA names a commit not in the clone" {
+@test "preview: a VERCEL_GIT_PREVIOUS_SHA absent from the clone narrows to HEAD^ (docs-only SKIP)" {
+	export VERCEL_ENV="preview"
 	export VERCEL_GIT_PREVIOUS_SHA="0000000000000000000000000000000000000000"
 	commit_change "docs/notes.md"
 
 	run bash "$SCRIPT"
-	# A SHA absent from the shallow clone must not crash the gate: it falls
+	# A SHA absent from the clone must not crash the gate: on a preview it falls
 	# back to HEAD^ and evaluates the diff normally (docs-only => SKIP).
 	assert_skip
 	[[ "$output" == *"HEAD^"* ]]
+}
+
+@test "production: a previous SHA absent from the clone BUILDS rather than narrowing to HEAD^" {
+	# The audit scenario (TMP-OPS-03): the code change sits BEHIND HEAD^ and the
+	# tip is docs-only, so HEAD^..HEAD would SKIP a production deploy that
+	# baseline..HEAD must build. A depth-2 clone does not contain the baseline.
+	export VERCEL_ENV="production"
+	export VERCEL_GIT_COMMIT_REF="main"
+	commit_change "app/page.tsx"
+	commit_change "docs/notes.md"
+	commit_change "docs/notes2.md"
+
+	local clone="$TEST_TMP/shallow-absent"
+	git clone --quiet --depth=2 "file://$REPO" "$clone"
+	cd "$clone" || exit 1
+	git config user.email "test@example.com"
+	git config user.name "Test"
+	! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null
+
+	run bash "$SCRIPT"
+	assert_build
+}
+
+@test "an UNSET VERCEL_ENV with a previous SHA absent from the clone BUILDS (only an explicit preview may narrow)" {
+	unset VERCEL_ENV
+	export VERCEL_GIT_COMMIT_REF="main"
+	commit_change "app/page.tsx"
+	commit_change "docs/notes.md"
+	commit_change "docs/notes2.md"
+
+	local clone="$TEST_TMP/shallow-absent-unset"
+	git clone --quiet --depth=2 "file://$REPO" "$clone"
+	cd "$clone" || exit 1
+	git config user.email "test@example.com"
+	git config user.name "Test"
+	git remote set-url origin "$TEST_TMP/no-such-remote.git"
+
+	run bash "$SCRIPT"
+	assert_build
+	[[ "$output" == *"VERCEL_ENV=\"unset\""* ]]
+}
+
+@test "production: a previous SHA absent from the clone and un-fetchable BUILDS (fail-open)" {
+	export VERCEL_ENV="production"
+	export VERCEL_GIT_COMMIT_REF="main"
+	commit_change "app/page.tsx"
+	commit_change "docs/notes.md"
+	commit_change "docs/notes2.md"
+
+	local clone="$TEST_TMP/shallow-absent-stuck"
+	git clone --quiet --depth=2 "file://$REPO" "$clone"
+	cd "$clone" || exit 1
+	git config user.email "test@example.com"
+	git config user.name "Test"
+	git remote set-url origin "$TEST_TMP/no-such-remote.git"
+
+	run bash "$SCRIPT"
+	assert_build
+	[[ "$output" == *"fail-open"* ]]
 }
 
 @test "a previous SHA absent from this clone is logged as such, not silently swallowed" {

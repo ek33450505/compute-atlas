@@ -41,6 +41,19 @@ vi.mock("resend", () => ({
  * are reset in `afterEach`. Plain wrappers rather than `vi.fn`s on purpose:
  * `clearMocks: true` (vitest.config.ts) must not be able to strip them.
  */
+const writeInjector = vi.hoisted(() => ({ statusUpdateThrows: null as Error | null }));
+
+vi.mock("@/lib/facility-write", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/facility-write")>();
+  return {
+    ...actual,
+    writeStatusUpdate: (...args: Parameters<typeof actual.writeStatusUpdate>) => {
+      if (writeInjector.statusUpdateThrows) return Promise.reject(writeInjector.statusUpdateThrows);
+      return actual.writeStatusUpdate(...args);
+    },
+  };
+});
+
 const contractViolation = vi.hoisted(() => ({
   submissionNotifyEnabled: null as Error | null,
   sendSubmissionReviewedEmail: null as Error | null,
@@ -140,6 +153,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
   contractViolation.submissionNotifyEnabled = null;
   contractViolation.sendSubmissionReviewedEmail = null;
+  writeInjector.statusUpdateThrows = null;
 });
 
 afterAll(async () => {
@@ -222,6 +236,126 @@ describe("approveSubmission (kind: status_update)", () => {
       .from(submissionsTable)
       .where(eq(submissionsTable.id, id));
     expect(submissionRows[0].status).toBe("pending");
+  });
+});
+
+describe("approve / reject claim the submission before acting", () => {
+  async function seedPendingStatusUpdate(): Promise<{ id: string; facilityId: string }> {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+    const id = await insertSubmission({
+      kind: "status_update",
+      targetFacilityId: seedDoc.id,
+      payload: {
+        status: "operational",
+        date: "2026-07-16",
+        sources: [makeSource("corroboration")],
+      },
+    });
+    return { id, facilityId: seedDoc.id };
+  }
+
+  async function historyFor(id: string) {
+    return tdb.db.select().from(facilityHistoryTable).where(eq(facilityHistoryTable.source, id));
+  }
+
+  async function submissionRow(id: string) {
+    const rows = await tdb.db.select().from(submissionsTable).where(eq(submissionsTable.id, id));
+    return rows[0];
+  }
+
+  it("two overlapping approves: exactly one succeeds, the other is a 409, one history row", async () => {
+    const { id } = await seedPendingStatusUpdate();
+
+    const results = await Promise.all([approveSubmission(id), approveSubmission(id)]);
+
+    expect(results.filter((r) => r.ok)).toHaveLength(1);
+    const loser = results.find((r) => !r.ok);
+    expect(loser).toMatchObject({ ok: false, status: 409 });
+    expect(await historyFor(id)).toHaveLength(1);
+    expect((await submissionRow(id)).status).toBe("approved");
+  });
+
+  it("approve and reject overlapping (either order): never both succeed, final status matches the winner", async () => {
+    for (const order of ["approve-first", "reject-first"] as const) {
+      await tdb.reset();
+      const { id } = await seedPendingStatusUpdate();
+      const calls =
+        order === "approve-first"
+          ? [approveSubmission(id), rejectSubmission(id, "duplicate")]
+          : [rejectSubmission(id, "duplicate"), approveSubmission(id)];
+      const results = await Promise.all(calls);
+
+      expect(results.filter((r) => r.ok)).toHaveLength(1);
+      const finalStatus = (await submissionRow(id)).status;
+      const winnerIsApprove = order === "approve-first" ? results[0].ok : results[1].ok;
+      expect(finalStatus).toBe(winnerIsApprove ? "approved" : "rejected");
+      // A rejected submission must not have touched the facility.
+      expect(await historyFor(id)).toHaveLength(winnerIsApprove ? 1 : 0);
+    }
+  });
+
+  it("a failed facility write reverts the claim: pending, reviewed_at and review_note cleared", async () => {
+    const seedDoc = makeSeedDoc();
+    await seedFacility(tdb.db, seedDoc);
+    const id = await insertSubmission({
+      kind: "status_update",
+      targetFacilityId: seedDoc.id,
+      payload: { status: "operational", date: "2026-07-16", sources: [] },
+    });
+
+    const result = await approveSubmission(id, "looks fine");
+    expect(result.ok).toBe(false);
+
+    const row = await submissionRow(id);
+    expect(row.status).toBe("pending");
+    expect(row.reviewedAt).toBeNull();
+    expect(row.reviewNote).toBeNull();
+    expect(await historyFor(id)).toHaveLength(0);
+  });
+
+  it("a facility write that throws reverts the claim to pending and propagates the error", async () => {
+    const { id } = await seedPendingStatusUpdate();
+    writeInjector.statusUpdateThrows = new Error("write exploded");
+
+    await expect(approveSubmission(id, "ok")).rejects.toThrow("write exploded");
+
+    const row = await submissionRow(id);
+    expect(row.status).toBe("pending");
+    expect(row.reviewedAt).toBeNull();
+    expect(row.reviewNote).toBeNull();
+  });
+
+  it("a status_update with a null target does not strand the submission as approved", async () => {
+    const id = await insertSubmission({
+      kind: "status_update",
+      payload: { status: "operational", date: "2026-07-16", sources: [makeSource("c")] },
+    });
+
+    const outcome = await approveSubmission(id).then(
+      (r) => r,
+      (e: unknown) => e
+    );
+
+    expect(outcome instanceof Error || (outcome as { ok: boolean }).ok === false).toBe(true);
+    const row = await submissionRow(id);
+    expect(row.status).toBe("pending");
+    expect(row.reviewedAt).toBeNull();
+  });
+
+  it("returns 404 for a missing id and 409 for an already-rejected one", async () => {
+    expect(await approveSubmission("00000000-0000-0000-0000-000000000000")).toMatchObject({
+      ok: false,
+      status: 404,
+    });
+    expect(await rejectSubmission("00000000-0000-0000-0000-000000000000", "x")).toMatchObject({
+      ok: false,
+      status: 404,
+    });
+    const { id } = await seedPendingStatusUpdate();
+    await rejectSubmission(id, "no");
+    expect(await approveSubmission(id)).toMatchObject({ ok: false, status: 409 });
+    expect(await rejectSubmission(id, "again")).toMatchObject({ ok: false, status: 409 });
   });
 });
 
@@ -361,16 +495,20 @@ describe("queue-drain \"facilities\" bust", () => {
   it("a failing pending count does not fail the review and busts nothing", async () => {
     const id = await insertSubmission({ kind: "create", payload: { name: "Count Fails" } });
     let selects = 0;
+    let countSelects = 0;
     const flaky = new Proxy(tdb.db, {
       get(target, prop, receiver) {
         if (prop === "select") {
           selects += 1;
-          // 1st select is the row lookup; the 2nd is the pending count.
-          if (selects >= 2) {
-            return () => {
+          // Fail only the pending-count query, identified by its `{ n }` projection.
+          return (...args: unknown[]) => {
+            const projection = args[0] as Record<string, unknown> | undefined;
+            if (projection && "n" in projection) {
+              countSelects += 1;
               throw new Error("boom");
-            };
-          }
+            }
+            return Reflect.apply(target.select, target, args);
+          };
         }
         return Reflect.get(target, prop, receiver);
       },
@@ -381,7 +519,8 @@ describe("queue-drain \"facilities\" bust", () => {
     const result = await rejectSubmission(id, "no");
 
     expect(result.ok).toBe(true);
-    expect(selects).toBeGreaterThanOrEqual(2);
+    expect(selects).toBeGreaterThanOrEqual(1);
+    expect(countSelects).toBe(1);
     expect(facilitiesBusts()).toHaveLength(0);
     expect(errSpy).toHaveBeenCalledWith(expect.stringContaining("queue-drain cache bust failed"));
     errSpy.mockRestore();

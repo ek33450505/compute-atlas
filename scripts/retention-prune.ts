@@ -60,6 +60,7 @@ export const CONTACT_MESSAGES_RETENTION_DAYS = 180; // contact_messages: delete 
 export const LEADS_RETENTION_DAYS = 365; // leads: delete promoted/dismissed rows whose reviewedAt (falling back to createdAt) is older than this many days
 export const SUBMISSIONS_IP_HASH_RETENTION_DAYS = 90; // submissions: strip provenance.submitterIpHash from reviewed (non-pending) rows older than this many days (by reviewedAt) — the submission row itself is never deleted
 export const SUBSCRIPTIONS_UNSUBSCRIBED_RETENTION_DAYS = 30; // subscriptions: delete unsubscribed rows older than this many days (by unsubscribedAt)
+export const SUBSCRIPTIONS_PENDING_RETENTION_DAYS = 7; // subscriptions: delete never-confirmed `pending` rows older than this many days (by createdAt). Confirm tokens have no TTL, so this prune is the link's effective lifetime AND the point after which the address can sign up again
 export const SUBSCRIBE_ATTEMPTS_RETENTION_DAYS = 2; // subscribe_attempts: delete rows older than this many days (by createdAt) — the cap window is 1h, so 2 days is already far beyond useful life
 export const INTAKE_ATTEMPTS_RETENTION_DAYS = 2; // intake_attempts: same as subscribe_attempts above (same 1h cap window, same salted-IP-hash-only payload) — deliberately the same number, not an independent knob
 export const SUBMISSION_NOTIFY_RETENTION_DAYS = 90; // submission_notify_requests: delete rows whose submission was never reviewed — otherwise a submission that never gets reviewed leaves its address sitting forever
@@ -220,6 +221,13 @@ function buildSteps(now: Date): RetentionStep[] {
       lt(subscriptionsTable.unsubscribedAt, subscriptionsCutoff)
     );
 
+  const pendingSubscriptionsCutoff = daysAgo(now, SUBSCRIPTIONS_PENDING_RETENTION_DAYS);
+  const pendingSubscriptionsPredicate = () =>
+    and(
+      eq(subscriptionsTable.status, "pending"),
+      lt(subscriptionsTable.createdAt, pendingSubscriptionsCutoff)
+    );
+
   const subscribeAttemptsCutoff = daysAgo(now, SUBSCRIBE_ATTEMPTS_RETENTION_DAYS);
   const subscribeAttemptsPredicate = () => lt(subscribeAttemptsTable.createdAt, subscribeAttemptsCutoff);
 
@@ -336,6 +344,16 @@ function buildSteps(now: Date): RetentionStep[] {
       action: "delete",
       selectCandidates: () => getDb().select().from(subscriptionsTable).where(subscriptionsPredicate()),
       mutate: () => getDb().delete(subscriptionsTable).where(subscriptionsPredicate()).returning(),
+    },
+    {
+      // Separate step (and table label) so the dry run counts never-confirmed
+      // pending rows apart from unsubscribed ones. email_sends.subscription_id
+      // is ON DELETE SET NULL, so the send log (and the confirm cap it feeds,
+      // which keys on the email hash) is untouched.
+      table: "subscriptions_pending",
+      action: "delete",
+      selectCandidates: () => getDb().select().from(subscriptionsTable).where(pendingSubscriptionsPredicate()),
+      mutate: () => getDb().delete(subscriptionsTable).where(pendingSubscriptionsPredicate()).returning(),
     },
     {
       // Pseudonymized per-IP rate-limit counters for POST /api/subscribe. They

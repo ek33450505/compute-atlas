@@ -16,7 +16,7 @@ npm run typecheck      # tsc --noEmit
 npm test               # vitest run (unit/integration)
 npm run test:watch     # vitest watch
 npm run test:e2e       # playwright (a11y + e2e)
-bats tests/discovery/run.bats   # shell tests for the discovery harness
+bats tests/discovery/           # shell tests for the discovery harness (every suite in the directory)
 
 # Database (Neon Postgres + Drizzle) — all read .env.local
 npm run db:generate    # generate a migration from schema changes

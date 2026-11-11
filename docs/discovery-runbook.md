@@ -237,7 +237,7 @@ Run tests (unit + integration):
 
 ```bash
 npx vitest run scripts/discovery/*.test.ts
-bats tests/discovery/run.bats
+bats tests/discovery/
 ```
 
 ## Discovery watchdog

@@ -167,7 +167,7 @@ describe("WatchButton — submit outcomes", () => {
     await user.click(screen.getByRole("button", { name: "Watch" }));
 
     expect(
-      await screen.findByText(/check your email to confirm your subscription/i)
+      await screen.findByText(/check your inbox \(and spam folder\) for an email from us/i)
     ).toBeInTheDocument();
   });
 
@@ -177,7 +177,7 @@ describe("WatchButton — submit outcomes", () => {
     await openAndFillEmail(user);
 
     await user.click(screen.getByRole("button", { name: "Watch" }));
-    await screen.findByText(/check your email to confirm your subscription/i);
+    await screen.findByText(/check your inbox \(and spam folder\) for an email from us/i);
 
     expect(screen.queryByLabelText(/^email$/i)).not.toBeInTheDocument();
   });
@@ -256,7 +256,7 @@ describe("WatchButton — submit outcomes", () => {
     expect(screen.getByLabelText(/^email$/i)).toBeDisabled();
 
     resolveFetch({ ok: true, status: 201, json: async () => ({ ok: true }) });
-    await screen.findByText(/check your email to confirm your subscription/i);
+    await screen.findByText(/check your inbox \(and spam folder\) for an email from us/i);
   });
 
   it("sends targetType and targetId in the POST body", async () => {
@@ -265,7 +265,7 @@ describe("WatchButton — submit outcomes", () => {
     await openAndFillEmail(user);
 
     await user.click(screen.getByRole("button", { name: "Watch" }));
-    await screen.findByText(/check your email to confirm your subscription/i);
+    await screen.findByText(/check your inbox \(and spam folder\) for an email from us/i);
 
     const mockFetch = global.fetch as unknown as { mock: { calls: [string, RequestInit][] } };
     const [url, init] = mockFetch.mock.calls[0];
