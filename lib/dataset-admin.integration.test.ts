@@ -49,8 +49,8 @@ afterAll(async () => {
 
 let seedCounter = 0;
 
-// Each seeded grant gets its own email: the partial unique index dataset_access_grants_open_email_idx
-// allows one open row (unverified / pending_review / active) per email.
+// Each seeded grant gets its own email: the partial unique index dataset_access_grants_open_email_tier_idx
+// allows one open row (unverified / pending_review / active) per (email, tier).
 async function insertGrant(over: Partial<typeof datasetAccessGrantsTable.$inferInsert> = {}) {
   const [row] = await tdb.db
     .insert(datasetAccessGrantsTable)
@@ -421,10 +421,16 @@ describe("hasRecentLinkReissue", () => {
 });
 
 describe("toAdminGrant", () => {
-  const row = { id: "x", live: true, renewalPending: false } as never;
+  const row = { id: "x", live: true, renewalPending: false, subscriptionLinked: false } as never;
 
   it("passes real booleans through", () => {
-    expect(toAdminGrant(row)).toMatchObject({ live: true, renewalPending: false });
+    expect(toAdminGrant(row)).toMatchObject({ live: true, renewalPending: false, subscriptionLinked: false });
+  });
+
+  it("throws on a non-boolean subscriptionLinked", () => {
+    expect(() => toAdminGrant({ ...(row as object), subscriptionLinked: "t" } as never)).toThrow(
+      "expected a boolean lifecycle flag"
+    );
   });
 
   it.each(["t", 1, null, undefined])("throws on a non-boolean lifecycle flag (%j)", (bad) => {

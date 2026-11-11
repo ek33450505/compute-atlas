@@ -1,6 +1,6 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 
-import { datasetAccessGrantsTable, subscriptionsTable } from "@/lib/db/schema";
+import { datasetAccessGrantsTable, emailSendsTable, subscriptionsTable } from "@/lib/db/schema";
 import { liveGrant, renewalPendingGrant } from "@/lib/dataset-grants";
 import { redactedErrorCode } from "@/lib/db-error";
 import { normalizeEmail } from "@/lib/email-address";
@@ -105,8 +105,8 @@ import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type Supp
  *   address match; suppression of the grant's own address (global scope for
  *   every kind; `dataset_edition_notice` uses target `dataset_edition`/`weekly`,
  *   which a global row also blocks); required state: `dataset_verify` needs
- *   `unverified`, `dataset_rejected` needs `rejected`, `dataset_already_active`
- *   needs live OR renewal-pending (never lapsed), and approved / link_reissued /
+ *   `unverified`, `dataset_rejected` and `dataset_commercial_redirect` need `rejected`, `dataset_already_active`
+ *   needs live OR renewal-pending (never lapsed), `dataset_subscription_active` needs a live, `active`, commercial-tier grant, and approved / link_reissued /
  *   renewal_reminder / edition_notice need live. An edition notice also needs an
  *   `editionId` (row target `dataset_edition`/`<editionId>:<grantId>`). The
  *   requester kinds `dataset_verify` + `dataset_already_active` share ONE
@@ -119,6 +119,13 @@ import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type Supp
  *   (DATASET_ADMIN_NOTICE_CAP_*), claim first; a capped request still sits in
  *   the admin queue. An empty recipient sends nothing and writes no row
  *   (`gate_error`: a configuration fault, not a decision about the request).
+ *
+ *   `sendDatasetCommercialAlertGated` (maintainer alert about a commercial-subscription conflict,
+ *   `dataset_admin_commercial_alert`). Anchored on a provider subscription id, not a grant (an
+ *   orphaned subscription has none): row target `paypal_alert`/`<reason>:<id>`.
+ *   Deduped: one `sent` row per target ends it (a webhook retry must not
+ *   re-alert), so it is at-least-once until it lands and once after. No
+ *   suppression check and no cap (each alert follows a distinct provider event).
  */
 
 export type GateDisposition =
@@ -128,6 +135,8 @@ export type GateDisposition =
   | "skipped_check_failed"
   | "skipped_unconfirmed"
   | "skipped_capped"
+  /** A deduped alert: a `sent` row for this target already exists (row `skipped_duplicate`). */
+  | "skipped_duplicate"
   /** The sender reported no API key: nothing was mailed (row `skipped_no_key`). */
   | "skipped_no_key"
   /** The gate could not decide or record (DB error): nothing was sent. */
@@ -331,11 +340,12 @@ export async function sendGated(
 }
 
 /** Every dataset kind mailed to the requester (the admin alert has its own gate). */
-export type DatasetRequesterKind = Exclude<DatasetSendKind, "dataset_admin_new_request">;
+export type DatasetRequesterKind = Exclude<DatasetSendKind, "dataset_admin_new_request" | "dataset_admin_commercial_alert">;
 
 const isRequesterKind = (kind: unknown): kind is DatasetRequesterKind =>
   typeof kind === "string" &&
   kind !== "dataset_admin_new_request" &&
+  kind !== "dataset_admin_commercial_alert" &&
   (DATASET_SEND_KINDS as readonly string[]).includes(kind);
 
 export interface GrantGatedSend {
@@ -407,7 +417,7 @@ export async function sendGrantGated(
   // (a) Re-read by id; the lifecycle flags are projected in the same SELECT as the row.
   const now = new Date();
   let grant:
-    | { id: string; email: string; status: string; live: boolean; renewalPending: boolean }
+    | { id: string; email: string; status: string; tier: string; live: boolean; renewalPending: boolean }
     | undefined;
   try {
     [grant] = await db
@@ -415,6 +425,7 @@ export async function sendGrantGated(
         id: datasetAccessGrantsTable.id,
         email: datasetAccessGrantsTable.email,
         status: datasetAccessGrantsTable.status,
+        tier: datasetAccessGrantsTable.tier,
         live: sql<boolean>`${liveGrant(now)}`,
         renewalPending: sql<boolean>`${renewalPendingGrant()}`,
       })
@@ -465,10 +476,14 @@ export async function sendGrantGated(
       stateOk = grant.status === "unverified";
       break;
     case "dataset_rejected":
+    case "dataset_commercial_redirect":
       stateOk = grant.status === "rejected";
       break;
     case "dataset_already_active":
       stateOk = live || renewalPending;
+      break;
+    case "dataset_subscription_active":
+      stateOk = live && grant.status === "active" && grant.tier === "commercial";
       break;
     default:
       stateOk = live;
@@ -563,4 +578,50 @@ export async function sendDatasetAdminNoticeGated(
     ],
     send
   );
+}
+
+/** Maintainer alert about a commercial-subscription conflict; see the DATASET MAIL note at the top of this file. */
+export async function sendDatasetCommercialAlertGated(
+  db: EmailSendsDb,
+  opts: { recipient: string; reason: string; targetId: string },
+  send: () => Promise<SendOutcome>
+): Promise<GateResult> {
+  const none = (disposition: GateDisposition): GateResult => ({ sent: false, disposition });
+  const recipient = opts.recipient.trim();
+  if (!recipient) {
+    console.error("email gate: commercial alert has no recipient");
+    return none("gate_error");
+  }
+
+  const base: EmailSendBase = {
+    kind: "dataset_admin_commercial_alert",
+    email: recipient,
+    subscriptionId: null,
+    targetType: "paypal_alert",
+    targetId: `${opts.reason}:${opts.targetId}`,
+  };
+
+  try {
+    const [already] = await db
+      .select({ id: emailSendsTable.id })
+      .from(emailSendsTable)
+      .where(
+        and(
+          eq(emailSendsTable.kind, base.kind),
+          eq(emailSendsTable.targetType, "paypal_alert"),
+          eq(emailSendsTable.targetId, base.targetId!),
+          eq(emailSendsTable.outcome, "sent")
+        )
+      )
+      .limit(1);
+    if (already) {
+      await recordSkip(db, base, "skipped_duplicate", "already_alerted");
+      return none("skipped_duplicate");
+    }
+  } catch (err) {
+    logGateError("commercial alert lookup failed", err);
+    return none("gate_error");
+  }
+
+  return claimCountSend(db, base, [], send);
 }

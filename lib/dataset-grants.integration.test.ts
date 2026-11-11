@@ -37,6 +37,7 @@ import {
   getGrantByAccessToken,
   issueRenewalToken,
   reissueDatasetLink,
+  redirectDatasetGrantToPaid,
   rejectDatasetGrant,
   requestDatasetAccess,
   requestRenewal,
@@ -192,6 +193,45 @@ describe("requestDatasetAccess", () => {
 
     expect(result).toStrictEqual({ ok: true, publicResult: { ok: true } });
     expect(await allRows()).toEqual([pending]);
+  });
+
+  it("the free renewal levers (extend, renewal link, renewal request) refuse a live COMMERCIAL grant", async () => {
+    const renewToken = generateToken();
+    const paid = await insertGrant({
+      status: "active",
+      tier: "commercial",
+      category: "commercial",
+      accessTokenHash: hashToken("paid-access-2"),
+      renewTokenHash: hashToken(renewToken),
+      expiresAt: daysFromNow(10),
+      paidThrough: daysFromNow(10),
+    });
+
+    expect(await extendDatasetGrant(paid.id)).toEqual({ ok: false, reason: "not_eligible" });
+    expect(await issueRenewalToken(paid.id)).toEqual({ ok: false, reason: "not_eligible" });
+    expect(await requestRenewal(renewToken)).toEqual({ outcome: "invalid" });
+    expect(await allRows()).toEqual([paid]);
+  });
+
+  it("a live COMMERCIAL grant for the address is not an 'already active' free grant: a free request gets its own verify row", async () => {
+    const paid = await insertGrant({
+      status: "active",
+      tier: "commercial",
+      category: "commercial",
+      accessTokenHash: hashToken("paid-access"),
+      expiresAt: daysFromNow(30),
+      paidThrough: daysFromNow(30),
+    });
+
+    const result = await requestDatasetAccess(body(), "iphash-paid");
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.mail?.kind).toBe("dataset_verify");
+    const rows = await allRows();
+    expect(rows).toHaveLength(2);
+    expect(rows.find((r) => r.id === paid.id)).toEqual(paid);
+    expect(rows.find((r) => r.id !== paid.id)).toMatchObject({ tier: "free", status: "unverified" });
   });
 
   it("existing active grant: already-active mail, no new row, access token untouched", async () => {
@@ -793,7 +833,7 @@ describe("requestDatasetAccess: one open request per email", () => {
   });
 
   describe("the INSERT's conflict target", () => {
-    it("is the partial unique index: the emitted SQL names the email column and the open-status predicate", async () => {
+    it("is the partial unique index: the emitted SQL names the email and tier columns and the open-status predicate", async () => {
       const query = vi.spyOn(tdb.client, "query");
       try {
         const result = await requestDatasetAccess(body(), "iphash-sql");
@@ -804,7 +844,7 @@ describe("requestDatasetAccess: one open request per email", () => {
           .filter((text) => text.startsWith('insert into "dataset_access_grants"'));
         expect(inserts).toHaveLength(1);
         expect(inserts[0]).toContain(
-          `on conflict ("email") where "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active') do nothing`
+          `on conflict ("email","tier") where "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active') do nothing`
         );
       } finally {
         query.mockRestore();
@@ -1134,6 +1174,13 @@ describe("checkDatasetRequestEmailCap", () => {
 
     await insertGrant({ status: "rejected" });
     expect((await checkDatasetRequestEmailCap("reporter@example.com")).ok).toBe(false);
+  });
+
+  it("does not count commercial rows (a purchase under an address cannot use up its free-request cap)", async () => {
+    for (let i = 0; i < EMAIL_SEND_CAP_MAX; i++) {
+      await insertGrant({ status: "revoked", tier: "commercial", category: "commercial" });
+    }
+    expect((await checkDatasetRequestEmailCap("reporter@example.com")).ok).toBe(true);
   });
 
   it("counts only this address", async () => {
@@ -1614,15 +1661,45 @@ describe("getGrantByAccessToken", () => {
     expect((await rowById(g.id)).status).toBe("expired");
   });
 
-  it("an active, unexpired grant resolves to its id, name, organization and expiry", async () => {
+  it("an active, unexpired grant resolves to its id, name, organization, expiry, tier, subscription flag and paid-through", async () => {
     const { row: g, accessToken } = await activeGrant({ name: "Pat Reporter", organization: "The Gazette" });
 
     const result = await getGrantByAccessToken(accessToken);
 
     expect(result).toStrictEqual({
       state: "active",
-      grant: { id: g.id, name: "Pat Reporter", organization: "The Gazette", expiresAt: g.expiresAt },
+      grant: {
+        id: g.id,
+        name: "Pat Reporter",
+        organization: "The Gazette",
+        expiresAt: g.expiresAt,
+        tier: "free",
+        hasSubscription: false,
+        paidThrough: null,
+      },
     });
+  });
+
+  it("never returns the PayPal subscription id, only a strict boolean saying one exists", async () => {
+    const paidThrough = daysFromNow(10);
+    const { accessToken } = await activeGrant({
+      tier: "commercial",
+      category: "commercial",
+      paidThrough,
+      paypalSubscriptionId: "I-SECRET123",
+    });
+
+    const result = await getGrantByAccessToken(accessToken);
+
+    expect(result.state).toBe("active");
+    if (result.state !== "active") return;
+    expect(result.grant.tier).toBe("commercial");
+    expect(result.grant.hasSubscription).toBe(true);
+    expect(result.grant.paidThrough).toEqual(paidThrough);
+    const serialised = JSON.stringify(result);
+    for (const secret of ["I-SECRET123", "paypal_subscription_id", "paypalSubscriptionId"]) {
+      expect(serialised).not.toContain(secret);
+    }
   });
 
   it("hands back exactly the DatasetActiveGrant keys: no hash, raw token, email, IP hash or note", async () => {
@@ -1639,8 +1716,9 @@ describe("getGrantByAccessToken", () => {
 
     expect(result.state).toBe("active");
     if (result.state !== "active") return;
-    expect(Object.keys(result.grant).sort()).toEqual(["expiresAt", "id", "name", "organization"]);
+    expect(Object.keys(result.grant).sort()).toEqual(["expiresAt", "hasSubscription", "id", "name", "organization", "paidThrough", "tier"]);
     expect(result.grant.organization).toBeNull();
+    expect(result.grant.hasSubscription).toBe(false);
     const serialised = JSON.stringify(result);
     for (const secret of [g.email, g.accessTokenHash, g.verifyTokenHash, g.renewTokenHash, g.unsubscribeToken, "iphash-secret", "internal"]) {
       expect(serialised).not.toContain(secret as string);
@@ -1989,5 +2067,93 @@ describe("renewal grace, end to end", () => {
     expect(after.renewalRequestedAt).toBeNull();
     expect(after.renewTokenHash).toBeNull();
     expect(after.accessTokenHash).toBe(hashToken(accessToken));
+  });
+});
+
+describe("commercial tier: request path", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("refuses a commercial request before any DB call or mail while the tier is on", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    getDbMock().mockClear();
+
+    const result = await requestDatasetAccess(body({ category: "commercial" }), "iphash-c1");
+
+    expect(result).toStrictEqual({
+      ok: false,
+      status: 422,
+      error: "commercial_requires_subscription",
+      path: "/access/commercial",
+    });
+    expect(getDbMock()).not.toHaveBeenCalled();
+    expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(0);
+  });
+
+  it("refuses a honeypot-tripped commercial request with the same 422, writing nothing", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const result = await requestDatasetAccess(body({ category: "commercial", website: "http://spam.example" }), "iphash-c4");
+    expect(result).toStrictEqual({
+      ok: false,
+      status: 422,
+      error: "commercial_requires_subscription",
+      path: "/access/commercial",
+    });
+    expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(0);
+  });
+
+  it("still accepts a non-commercial request while the tier is on", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const result = await requestDatasetAccess(body({ category: "journalist" }), "iphash-c2");
+    expect(result.ok).toBe(true);
+  });
+
+  it("accepts a commercial request for review when the tier is off, as before", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", undefined);
+    const result = await requestDatasetAccess(body({ category: "commercial" }), "iphash-c3");
+    expect(result.ok).toBe(true);
+    expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(1);
+  });
+});
+
+describe("redirectDatasetGrantToPaid", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("moves pending_review to rejected with the internal marker and returns the redirect mail", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const g = await pendingGrant();
+    const now = new Date("2026-11-10T12:00:00Z");
+
+    const result = await redirectDatasetGrantToPaid(g.id, now);
+
+    expect(result).toStrictEqual({
+      ok: true,
+      mail: { kind: "dataset_commercial_redirect", grantId: g.id, email: "reporter@example.com" },
+    });
+    const row = await rowById(g.id);
+    expect(row.status).toBe("rejected");
+    expect(row.reviewedAt).toEqual(now);
+    expect(row.rejectionNote).toBe("Pointed to the paid commercial subscription");
+    expect(row.accessTokenHash).toBeNull();
+  });
+
+  it("is not eligible when the tier is off, and changes nothing", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", undefined);
+    const g = await pendingGrant();
+    expect(await redirectDatasetGrantToPaid(g.id)).toStrictEqual(NOT_ELIGIBLE);
+    expect((await rowById(g.id)).status).toBe("pending_review");
+  });
+
+  it("is not eligible for a grant that is no longer pending_review, and for a non-UUID", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const g = await pendingGrant();
+    expect(await rejectDatasetGrant(g.id)).toMatchObject({ ok: true });
+    expect(await redirectDatasetGrantToPaid(g.id)).toStrictEqual(NOT_ELIGIBLE);
+    getDbMock().mockClear();
+    expect(await redirectDatasetGrantToPaid("not-a-uuid")).toStrictEqual(NOT_ELIGIBLE);
+    expect(getDbMock()).not.toHaveBeenCalled();
   });
 });

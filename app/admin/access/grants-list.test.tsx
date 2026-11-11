@@ -45,6 +45,9 @@ function makeGrant(overrides: Partial<ListGrant> = {}): ListGrant {
     renewalRequestedAt: null,
     lastDownloadAt: null,
     downloadCount: 0,
+    tier: "free",
+    paidThrough: null,
+    subscriptionLinked: false,
     live: true,
     renewalPending: false,
     ...overrides,
@@ -232,6 +235,35 @@ describe("GrantsList: which actions appear", () => {
   );
 });
 
+describe("GrantsList: tier", () => {
+  it("shows Free for a free grant, without commercial fields", () => {
+    render(<GrantsList grants={[makeGrant()]} activeStatus="active" />);
+    const row = rowFor("Ada Lovelace");
+    expect(within(row).getByText("Free")).toBeInTheDocument();
+    expect(within(row).queryByText("Paid through")).not.toBeInTheDocument();
+  });
+
+  it("shows Commercial, paid-through and the subscription link state", () => {
+    render(
+      <GrantsList
+        grants={[makeGrant({ tier: "commercial", paidThrough: FUTURE, subscriptionLinked: true })]}
+        activeStatus="active"
+      />,
+    );
+    const row = rowFor("Ada Lovelace");
+    expect(within(row).getByText("Commercial")).toBeInTheDocument();
+    expect(within(row).getByText("Paid through")).toBeInTheDocument();
+    expect(within(row).getByText("linked")).toBeInTheDocument();
+  });
+
+  it("says when no subscription is linked and nothing is paid yet", () => {
+    render(<GrantsList grants={[makeGrant({ tier: "commercial" })]} activeStatus="active" />);
+    const row = rowFor("Ada Lovelace");
+    expect(within(row).getByText("none linked")).toBeInTheDocument();
+    expect(within(row).getByText("not yet paid")).toBeInTheDocument();
+  });
+});
+
 describe("GrantsList: revoke", () => {
   it("needs a confirm step, says no email is sent, and passes the reason", async () => {
     mockRevoke.mockResolvedValue({ ok: true });
@@ -250,6 +282,62 @@ describe("GrantsList: revoke", () => {
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Revoked access for Ada Lovelace"));
     expect(screen.getByRole("status")).toHaveTextContent("No email was sent");
     expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  it("commercial: the dialog says the subscription is cancelled, and the result says no refund was issued", async () => {
+    mockRevoke.mockResolvedValue({ ok: true, subscription: "cancelled" });
+    const user = userEvent.setup();
+    render(
+      <GrantsList
+        grants={[makeGrant({ tier: "commercial", paidThrough: FUTURE, subscriptionLinked: true })]}
+        activeStatus="active"
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Revoke access for Ada Lovelace" }));
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toHaveTextContent("PayPal subscription is cancelled");
+    await user.click(within(dialog).getByRole("button", { name: "Confirm revoke" }));
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "Subscription cancelled in PayPal. No refund was issued; refund in PayPal if needed.",
+      ),
+    );
+  });
+
+  it("commercial: a failed cancel shows the cancel-it-in-PayPal warning", async () => {
+    mockRevoke.mockResolvedValue({ ok: true, subscription: "failed" });
+    const user = userEvent.setup();
+    render(
+      <GrantsList
+        grants={[makeGrant({ tier: "commercial", paidThrough: FUTURE, subscriptionLinked: true })]}
+        activeStatus="active"
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Revoke access for Ada Lovelace" }));
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Confirm revoke" }));
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Revoked here, but the PayPal subscription could not be cancelled: cancel it in PayPal now",
+      ),
+    );
+    expect(screen.getByRole("alert")).not.toHaveTextContent("Not delivered");
+  });
+
+  it("an unknown subscription state shows the neutral confirm-in-PayPal note, not mail wording", async () => {
+    mockRevoke.mockResolvedValue({ ok: true, subscription: "unknown" });
+    const user = userEvent.setup();
+    render(<GrantsList grants={[makeGrant()]} activeStatus="active" />);
+    await user.click(screen.getByRole("button", { name: "Revoke access for Ada Lovelace" }));
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Confirm revoke" }));
+    const alert = await screen.findByRole("alert");
+    await waitFor(() =>
+      expect(alert).toHaveTextContent(
+        "Could not check whether this grant has a PayPal subscription; if it is a commercial grant, confirm the subscription is cancelled in PayPal.",
+      ),
+    );
+    expect(alert).not.toHaveTextContent("Not delivered");
   });
 
   it("never calls the action when the confirm step is cancelled", async () => {

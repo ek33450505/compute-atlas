@@ -1,5 +1,6 @@
 import { escapeHtml } from "@/lib/html-escape";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
+import { COMMERCIAL_PATH, formatPlanPrice } from "@/lib/commercial-plans";
 import { DATASET_LICENSE_URL } from "@/lib/site";
 
 /**
@@ -211,6 +212,115 @@ export function buildDatasetRejectedEmail(input: {
     ...(note ? [`<strong>Note from the maintainer:</strong><br>${multiline(note)}`] : []),
     `Questions can go through the <a href="${escapeHtml(contactUrl)}">contact page</a>.`,
   );
+  return { subject, text, html };
+}
+
+export function buildDatasetCommercialRedirectEmail(input: { siteUrl: string }): DatasetEmail {
+  const url = `${input.siteUrl}${COMMERCIAL_PATH}`;
+  const subject = "Your Compute Atlas dataset access request";
+  const free = "The full dataset is free for students, academics, journalists, nonprofits and government.";
+  const paid = `For commercial use it is a subscription: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}.`;
+  const contact = `${input.siteUrl}/contact`;
+  const reply = `If this request was not for commercial use, say so through the contact page: ${contact}`;
+  const text = ["Thank you for your request for the Compute Atlas dataset.", free, "", paid, url, "", reply].join("\n");
+  const html = paragraphs(
+    "Thank you for your request for the Compute Atlas dataset.",
+    escapeHtml(free),
+    escapeHtml(paid),
+    `<a href="${escapeHtml(url)}">${escapeHtml(url)}</a>`,
+    `If this request was not for commercial use, say so through the <a href="${escapeHtml(contact)}">contact page</a>.`,
+  );
+  return { subject, text, html };
+}
+
+export function buildDatasetSubscriptionActiveEmail(input: { siteUrl: string; accessToken: string }): DatasetEmail {
+  const url = `${input.siteUrl}/access/dataset?t=${encodeURIComponent(input.accessToken)}`;
+  const dataUrl = `${input.siteUrl}/data`;
+  const subject = "Your Compute Atlas commercial access is active";
+  const refresh = "The dataset refreshes weekly.";
+  const seats = "A subscription gives one named person weekly access through a personal link.";
+  const billing =
+    'Cancel from the "Your subscription" section of your dataset page, or in your PayPal account\'s automatic payments settings. If you cancel, access continues to the end of the period you have paid for.';
+  const reply = `Questions can go through the contact page: ${input.siteUrl}/contact`;
+  const notYou = `If you did not make this purchase, contact us at ${input.siteUrl}/contact.`;
+  const text = [
+    "Thank you for subscribing to the Compute Atlas dataset. Your personal link:",
+    "",
+    url,
+    "",
+    "The link is personal: do not share it.",
+    refresh,
+    seats,
+    billing,
+    "",
+    `${ATTRIBUTION_TEXT} How to cite: ${dataUrl}`,
+    reply,
+    notYou,
+  ].join("\n");
+  const html = paragraphs(
+    "Thank you for subscribing to the Compute Atlas dataset.",
+    `<a href="${escapeHtml(url)}">Open your personal link</a>`,
+    "The link is personal: do not share it.",
+    escapeHtml(refresh),
+    escapeHtml(seats),
+    escapeHtml(billing),
+    `${escapeHtml(ATTRIBUTION_TEXT)} <a href="${escapeHtml(dataUrl)}">How to cite</a>.`,
+    escapeHtml(reply),
+    `If you did not make this purchase, contact us at <a href="${escapeHtml(`${input.siteUrl}/contact`)}">${escapeHtml(`${input.siteUrl}/contact`)}</a>.`,
+  );
+  return { subject, text, html };
+}
+
+export type CommercialAlertReason =
+  | "duplicate_subscription"
+  | "revoked_still_billing"
+  | "unmatched_subscription"
+  | "payment_reversed"
+  | "welcome_mail_undeliverable";
+
+/** What the webhook did about the event, in words the maintainer can act on. It never moves money. */
+export type CommercialAlertAction =
+  | "none"
+  | "no_grant_created"
+  | "no_action_person_decides"
+  | "link_not_mailed_suppressed"
+  | "link_not_mailed_unconfirmed";
+
+const ALERT_ACTION_TEXT: Record<CommercialAlertAction, string> = {
+  none: "No automatic action was taken. Check it in PayPal.",
+  no_grant_created:
+    "This buyer already has access (the Grant row is their existing live grant), so no second grant was created and nothing was cancelled or refunded. Cancel and refund the new subscription by hand in PayPal if they did not mean to buy twice.",
+  no_action_person_decides:
+    "Nothing was cancelled, refunded or changed automatically. Check the grant and the subscription in PayPal and decide by hand.",
+  link_not_mailed_suppressed:
+    "The buyer paid, but their address has opted out of our email, so the personal link was not sent. A reissue from /admin/access will be blocked by the same opt-out. Refund and cancel in PayPal, or reach the buyer through their PayPal receipt.",
+  link_not_mailed_unconfirmed:
+    "The buyer paid, but the grant was not live when the link was mailed (for example revoked or changed meanwhile). Check the grant in /admin/access; reissue the link there if it should be live, or refund and cancel in PayPal.",
+};
+
+export function buildDatasetCommercialAlertEmail(input: {
+  reason: CommercialAlertReason;
+  action: CommercialAlertAction;
+  subscriptionId: string | null;
+  /** The commercial_checkouts id (PayPal `custom_id`). */
+  checkoutId: string | null;
+  /** The PayPal sale id of the payment concerned (refunded, reversed or refund-needed). */
+  saleId: string | null;
+  grantId?: string | null;
+}): DatasetEmail {
+  const subject = "Compute Atlas commercial subscription needs attention";
+  const rows: Array<[string, string]> = [
+    ["Reason", input.reason],
+    ["Action", ALERT_ACTION_TEXT[input.action]],
+    ["Subscription", input.subscriptionId ?? "(none)"],
+    ["Checkout", input.checkoutId ?? "(none)"],
+    ["Sale", input.saleId ?? "(none)"],
+    ["Grant", input.grantId ?? "(none)"],
+  ].map(([k, v]) => [k, singleLine(v)] as [string, string]);
+  const text = ["A commercial subscription event needs your attention.", "", ...rows.map(([k, v]) => `${k}: ${v}`)].join("\n");
+  const html =
+    paragraphs("A commercial subscription event needs your attention.") +
+    `<ul>${rows.map(([k, v]) => `<li><strong>${escapeHtml(k)}:</strong> ${escapeHtml(v)}</li>`).join("")}</ul>`;
   return { subject, text, html };
 }
 

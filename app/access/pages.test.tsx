@@ -33,10 +33,22 @@ describe("/access", () => {
     expect(screen.getAllByRole("listitem").length).toBeGreaterThanOrEqual(3);
     expect(screen.getByText(/^access terms$/i)).toBeInTheDocument();
     expect(screen.getByText(/^privacy notice$/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/terms version 2026-11-09/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/terms version 2026-11-11/i).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: "How to cite" })).toHaveAttribute("href", "/data");
     expect(screen.getByRole("button", { name: /request access/i })).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/draft|pending review/i);
+  });
+
+  it("says who the free tier is for and points companies to commercial only when that flag is on", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
+    const { unmount } = render(<AccessPage />);
+    expect(screen.getByText(/free for students, academics, journalists, nonprofits and government/i)).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
+    unmount();
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    render(<AccessPage />);
+    expect(screen.getByRole("link", { name: /^commercial access$/i })).toHaveAttribute("href", "/access/commercial");
   });
 
   it("explains why requests are reviewed by hand when enabled", () => {

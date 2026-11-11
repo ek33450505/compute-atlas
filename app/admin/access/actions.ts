@@ -7,10 +7,12 @@ import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/admin-session";
 import {
   approveDatasetGrant,
   extendDatasetGrant,
+  redirectDatasetGrantToPaid,
   reissueDatasetLink,
   rejectDatasetGrant,
   revokeDatasetGrant,
 } from "@/lib/dataset-grants";
+import { cancelSubscriptionForRevokedGrant } from "@/lib/commercial-revoke";
 import { hasRecentLinkReissue } from "@/lib/dataset-admin";
 import { buildEdition, type EditionBuildResult } from "@/lib/dataset-edition-builder";
 import { deliverDatasetReviewMail } from "@/lib/dataset-mail";
@@ -124,11 +126,37 @@ export async function rejectDatasetGrantAction(
   return { ok: true, mail: gate.disposition };
 }
 
-/** Revokes an active grant. Sends no mail. */
+/** Rejects a pending commercial request and mails the requester the link to the paid subscription. */
+export async function redirectDatasetGrantToPaidAction(
+  id: string
+): Promise<{ ok: true; mail: GateDisposition } | DatasetAdminActionError> {
+  await assertAdminSession();
+  if (typeof id !== "string") return notEligible();
+
+  let result;
+  try {
+    result = await redirectDatasetGrantToPaid(id);
+  } catch (err) {
+    logFailure("redirectDatasetGrantToPaidAction", err);
+    return updateFailed();
+  }
+  if (!result.ok) return notEligible();
+
+  const gate = await deliverDatasetReviewMail(result.mail);
+  revalidatePath("/admin/access");
+  return { ok: true, mail: gate.disposition };
+}
+
+/**
+ * Revokes an active grant. Sends no mail. For a commercial grant the DB revoke comes FIRST, then the PayPal
+ * subscription is cancelled (never refunded), so a failed cancel leaves the grant revoked and billing running until someone cancels it in PayPal.
+ * `subscription` is present only when a PayPal cancel was attempted (or, "unknown", when the grant could not be
+ * read back to decide): a free grant returns plain `{ ok: true }`.
+ */
 export async function revokeDatasetGrantAction(
   id: string,
   reason?: string
-): Promise<{ ok: true } | DatasetAdminActionError> {
+): Promise<{ ok: true; subscription?: "cancelled" | "failed" | "unknown" } | DatasetAdminActionError> {
   await assertAdminSession();
   if (typeof id !== "string") return notEligible();
 
@@ -141,7 +169,11 @@ export async function revokeDatasetGrantAction(
   }
   if (!result.ok) return notEligible();
 
+  const cancel = await cancelSubscriptionForRevokedGrant(id);
   revalidatePath("/admin/access");
+  if (cancel.cancelled) return { ok: true, subscription: "cancelled" };
+  if (cancel.reason === "provider_error") return { ok: true, subscription: "failed" };
+  if (cancel.reason === "lookup_failed") return { ok: true, subscription: "unknown" };
   return { ok: true };
 }
 

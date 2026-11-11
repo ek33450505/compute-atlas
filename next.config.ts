@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 import { CSP_REPORT_PATH } from "./lib/csp-report";
 
+const FORM_ACTION = `form-action 'self' https://www.paypal.com${
+  process.env.PAYPAL_ENV === "sandbox" ? " https://www.sandbox.paypal.com" : ""
+}`;
+
 /**
  * Content-Security-Policy — ENFORCING as of 2026-09-07 (issue #236). It was
  * report-only from 2026-09-04 while the evidence was gathered.
@@ -50,6 +54,9 @@ import { CSP_REPORT_PATH } from "./lib/csp-report";
  *     /contribute). That asymmetry is the point — a local harness is necessary
  *     but not sufficient for this header, because the proxy adds subresources
  *     the app never declares.
+ *   - https://www.paypal.com — `form-action` only: the checkout route answers a same-origin form POST with a
+ *     303 to PayPal's approval page. https://www.sandbox.paypal.com is added ONLY when `PAYPAL_ENV` is
+ *     "sandbox" at build time, so a production build never allows it.
  *
  * `frame-ancestors` is NOT in this shared list — it is supplied per scope by
  * `buildCsp` below. See that function for why leaving it here would have
@@ -82,7 +89,10 @@ const CSP_COMMON_DIRECTIVES = [
   "font-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
+  // The checkout route answers 303 to PayPal's approval page, and `form-action` governs the whole
+  // post-submit redirect chain, so `'self'` alone would block every purchase. The sandbox origin is
+  // build-time opt-in (PAYPAL_ENV=sandbox); production allows only the live origin.
+  FORM_ACTION,
 ];
 
 /**

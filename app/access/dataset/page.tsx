@@ -100,7 +100,53 @@ function PreparedFor({ grant }: { grant: DatasetActiveGrant }) {
   );
 }
 
-function NoEdition({ grant }: { grant: DatasetActiveGrant }) {
+/** Cancel control for a live commercial grant with a PayPal subscription; nothing for free grants. Access is not cut on cancel. */
+function SubscriptionSection({ grant, token }: { grant: DatasetActiveGrant; token: string }) {
+  if (grant.tier !== "commercial" || !grant.hasSubscription || !grant.paidThrough) return null;
+  const day = formatDay(grant.paidThrough);
+  return (
+    <section aria-labelledby="dl-subscription" className="space-y-3">
+      <h2 id="dl-subscription" className="text-lg font-medium">
+        Your subscription
+      </h2>
+      <div className="max-w-2xl space-y-3 text-sm leading-relaxed text-muted-foreground">
+        <p>
+          Your access runs through <time dateTime={grant.paidThrough.toISOString()}>{day}</time>.
+        </p>
+        <form method="post" action="/api/access/subscription/cancel" className="space-y-3">
+          <input type="hidden" name="t" value={token} />
+          <div className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              id="cancel-confirm"
+              name="confirm"
+              required
+              className="mt-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            />
+            <label htmlFor="cancel-confirm">
+              Yes, cancel my subscription. My access continues until {day}.
+            </label>
+          </div>
+          <button
+            type="submit"
+            className="rounded-md border border-input px-3 py-1.5 text-sm text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            Cancel subscription
+          </button>
+        </form>
+        <p>
+          You can also{" "}
+          <a href="https://www.paypal.com/myaccount/autopay/" rel="noreferrer" className={ACCESS_LINK_CLASS}>
+            manage automatic payments in your PayPal account
+          </a>
+          .
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function NoEdition({ grant, token }: { grant: DatasetActiveGrant; token: string }) {
   return (
     <AccessShell>
       <PageMasthead eyebrow="Data" title="Your dataset download">
@@ -110,6 +156,7 @@ function NoEdition({ grant }: { grant: DatasetActiveGrant }) {
         No edition has been published yet. The first edition is built on Saturday; this link will
         work then.
       </p>
+      <SubscriptionSection grant={grant} token={token} />
     </AccessShell>
   );
 }
@@ -197,6 +244,8 @@ function Edition({ grant, edition, token }: { grant: DatasetActiveGrant; edition
           </p>
         </div>
       </section>
+
+      <SubscriptionSection grant={grant} token={token} />
     </AccessShell>
   );
 }
@@ -229,6 +278,6 @@ export default async function AccessDatasetPage({
   }
 
   if (resolved.state !== "active") return <InactiveLink />;
-  if (!edition) return <NoEdition grant={resolved.grant} />;
+  if (!edition) return <NoEdition grant={resolved.grant} token={t} />;
   return <Edition grant={resolved.grant} edition={edition} token={t} />;
 }

@@ -217,13 +217,36 @@ function GrantRow({
         closeAfterAction();
         if (!result.ok) return refused(result.error, row);
         setReason("");
-        onResult(
-          {
-            tone: "success",
-            text: `Revoked access for ${grant.name}. The link no longer works. No email was sent.`,
-          },
-          row,
-        );
+        const revoked = `Revoked access for ${grant.name}. The link no longer works. No email was sent.`;
+        if (result.subscription === "failed") {
+          onResult(
+            {
+              tone: "warning",
+              label: "Warning.",
+              text: `${revoked} Revoked here, but the PayPal subscription could not be cancelled: cancel it in PayPal now (the next payment is not cancelled automatically; it raises a revoked_still_billing alert).`,
+            },
+            row,
+          );
+        } else if (result.subscription === "unknown") {
+          onResult(
+            {
+              tone: "warning",
+              label: "Warning.",
+              text: `${revoked} Could not check whether this grant has a PayPal subscription; if it is a commercial grant, confirm the subscription is cancelled in PayPal.`,
+            },
+            row,
+          );
+        } else if (result.subscription === "cancelled") {
+          onResult(
+            {
+              tone: "success",
+              text: `${revoked} Subscription cancelled in PayPal. No refund was issued; refund in PayPal if needed.`,
+            },
+            row,
+          );
+        } else {
+          onResult({ tone: "success", text: revoked }, row);
+        }
         setDoneFor(grant);
         router.refresh();
       } catch {
@@ -281,6 +304,16 @@ function GrantRow({
               Organization (as submitted, not verified)
             </dt>
             <dd className="break-words">{grant.organization}</dd>
+          </>
+        ) : null}
+        <dt className="text-xs font-medium text-muted-foreground">Tier</dt>
+        <dd>{grant.tier === "commercial" ? "Commercial" : "Free"}</dd>
+        {grant.tier === "commercial" ? (
+          <>
+            <dt className="text-xs font-medium text-muted-foreground">Paid through</dt>
+            <dd>{grant.paidThrough ? <DateText value={grant.paidThrough} /> : "not yet paid"}</dd>
+            <dt className="text-xs font-medium text-muted-foreground">PayPal subscription</dt>
+            <dd>{grant.subscriptionLinked ? "linked" : "none linked"}</dd>
           </>
         ) : null}
         <dt className="text-xs font-medium text-muted-foreground">Created</dt>
@@ -412,7 +445,11 @@ function GrantRow({
           open={confirm === "revoke"}
           onOpenChange={(open) => setConfirm(open ? "revoke" : null)}
           title={`Revoke access for ${grant.name}?`}
-          description="The link stops working at once. No email is sent to the requester."
+          description={
+            grant.tier === "commercial"
+              ? "The link stops working at once and the PayPal subscription is cancelled. No refund is issued and no email is sent to the requester."
+              : "The link stops working at once. No email is sent to the requester."
+          }
           confirmLabel="Confirm revoke"
           pending={locked}
           onConfirm={handleRevoke}

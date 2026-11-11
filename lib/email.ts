@@ -7,9 +7,14 @@ import {
   buildDatasetApprovedEmail,
   buildDatasetEditionNoticeEmail,
   buildDatasetLinkReissuedEmail,
+  buildDatasetCommercialRedirectEmail,
+  buildDatasetCommercialAlertEmail,
+  buildDatasetSubscriptionActiveEmail,
   buildDatasetRejectedEmail,
   buildDatasetRenewalReminderEmail,
   buildDatasetVerifyEmail,
+  type CommercialAlertAction,
+  type CommercialAlertReason,
 } from "@/lib/dataset-email-templates";
 import type { DatasetRequestEcho } from "@/lib/dataset-grants";
 import { escapeHtml } from "@/lib/html-escape";
@@ -139,7 +144,7 @@ export async function sendContactEmail(input: {
   topic: string;
   message: string;
 }): Promise<SendOutcome> {
-  const to = process.env.CONTACT_TO_EMAIL;
+  const to = process.env.CONTACT_TO_EMAIL?.trim();
   if (!to) {
     // The message is already durably stored (the route inserts the row
     // before calling this), so nothing is lost — just log so the gap is
@@ -521,7 +526,7 @@ export async function sendDatasetAdminNewRequestEmail(input: {
   name: string;
   organization: string | null;
 }): Promise<SendOutcome> {
-  const to = process.env.CONTACT_TO_EMAIL;
+  const to = process.env.CONTACT_TO_EMAIL?.trim();
   if (!to) {
     // The grant row is already stored and shows in /admin/access; log so the gap is visible.
     console.warn("CONTACT_TO_EMAIL not set — skipping dataset admin notice send");
@@ -567,6 +572,52 @@ export async function sendDatasetRejectedEmail(input: {
     "sendDatasetRejectedEmail",
     "RESEND_API_KEY not set — skipping dataset rejected email send",
     { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+export async function sendDatasetCommercialRedirectEmail(input: { email: string }): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetCommercialRedirectEmail({ siteUrl: linkBase() });
+  return sendViaResend(
+    "sendDatasetCommercialRedirectEmail",
+    "RESEND_API_KEY not set — skipping dataset commercial redirect email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+export async function sendDatasetSubscriptionActiveEmail(input: {
+  email: string;
+  accessToken: string;
+}): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetSubscriptionActiveEmail({
+    siteUrl: linkBase(),
+    accessToken: input.accessToken,
+  });
+  return sendViaResend(
+    "sendDatasetSubscriptionActiveEmail",
+    "RESEND_API_KEY not set — skipping dataset subscription active email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+// The `recipient` passed to `sendDatasetCommercialAlertGated` must be this same CONTACT_TO_EMAIL value.
+export async function sendDatasetCommercialAlertEmail(input: {
+  reason: CommercialAlertReason;
+  action: CommercialAlertAction;
+  subscriptionId: string | null;
+  checkoutId: string | null;
+  saleId: string | null;
+  grantId?: string | null;
+}): Promise<SendOutcome> {
+  const to = process.env.CONTACT_TO_EMAIL?.trim();
+  if (!to) {
+    console.warn("CONTACT_TO_EMAIL not set — skipping commercial alert send");
+    return { sent: false };
+  }
+  const { subject, text, html } = buildDatasetCommercialAlertEmail(input);
+  return sendViaResend(
+    "sendDatasetCommercialAlertEmail",
+    "RESEND_API_KEY not set — skipping commercial alert send",
+    { from: fromAddress(), to, subject, text, html },
   );
 }
 

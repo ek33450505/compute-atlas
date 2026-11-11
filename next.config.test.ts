@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 import facilities from "@/data/facilities.json";
@@ -219,6 +219,55 @@ describe("Content-Security-Policy header", () => {
     const csp = await siteWideCsp();
     expect(csp?.value).toContain("nominatim.openstreetmap.org");
     expect(csp?.value).not.toContain("*");
+  });
+
+  /**
+   * The checkout route answers a same-origin form POST with a 303 to PayPal,
+   * and `form-action` applies to that redirect. Without the exact origin every
+   * purchase is blocked by the browser. The sandbox origin is build-time opt-in.
+   */
+  describe("form-action", () => {
+    const formActionSources = (value: string | undefined) => {
+      const directive = value
+        ?.split(";")
+        .map((d) => d.trim())
+        .find((d) => d.startsWith("form-action"));
+      return directive?.split(/\s+/).slice(1);
+    };
+    const expected = ["'self'", "https://www.paypal.com"];
+
+    it("allows exactly self plus the PayPal origin site-wide", async () => {
+      expect(formActionSources((await siteWideCsp())?.value)).toEqual(expected);
+    });
+
+    it("allows the same list on /admin, which shares the common directives", async () => {
+      const adminCsp = await headerOn("/admin/:path*", "Content-Security-Policy");
+      expect(formActionSources(adminCsp?.value)).toEqual(expected);
+    });
+
+    it("has no sandbox and no Stripe origin in a production build", async () => {
+      const sources = formActionSources((await siteWideCsp())?.value) ?? [];
+      expect(sources.join(" ")).not.toMatch(/sandbox|stripe/);
+    });
+
+    it("adds the sandbox origin only when PAYPAL_ENV=sandbox at build time", async () => {
+      vi.stubEnv("PAYPAL_ENV", "sandbox");
+      vi.resetModules();
+      try {
+        const sandboxConfig = (await import("./next.config")).default;
+        const rules = await sandboxConfig.headers!();
+        const csp = rules.find((r) => r.source === "/:path*")?.headers.find((h) => h.key === "Content-Security-Policy");
+        expect(formActionSources(csp?.value)).toEqual([...expected, "https://www.sandbox.paypal.com"]);
+      } finally {
+        vi.unstubAllEnvs();
+        vi.resetModules();
+      }
+    });
+
+    it("never uses a wildcard in form-action", async () => {
+      const sources = formActionSources((await siteWideCsp())?.value) ?? [];
+      expect(sources.some((s) => s.includes("*"))).toBe(false);
+    });
   });
 
   /**

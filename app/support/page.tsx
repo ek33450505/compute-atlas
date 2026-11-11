@@ -212,6 +212,14 @@ export default function SupportPage() {
           membership runs, or for twelve months after a one-off institutional
           contribution. Citing the dataset helps too.
         </p>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          If a university, lab, newsroom or organization needs the data
+          itself, see{" "}
+          <Link href="/data" className={LINK_CLASS}>
+            the data page
+          </Link>
+          .
+        </p>
       </section>
 
       {/* What support does not change */}

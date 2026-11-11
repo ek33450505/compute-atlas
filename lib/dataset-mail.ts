@@ -5,6 +5,7 @@ import {
   sendDatasetAdminNewRequestEmail,
   sendDatasetAlreadyActiveEmail,
   sendDatasetApprovedEmail,
+  sendDatasetCommercialRedirectEmail,
   sendDatasetLinkReissuedEmail,
   sendDatasetRejectedEmail,
   sendDatasetVerifyEmail,
@@ -42,7 +43,11 @@ export async function deliverDatasetRequestMail(
 
 /** Review-outcome mail: the access link on approval, the rejection notice, or a reissued link. */
 export async function deliverDatasetReviewMail(
-  intent: MailOf<"dataset_approved"> | MailOf<"dataset_rejected"> | MailOf<"dataset_link_reissued">
+  intent:
+    | MailOf<"dataset_approved">
+    | MailOf<"dataset_rejected">
+    | MailOf<"dataset_commercial_redirect">
+    | MailOf<"dataset_link_reissued">
 ): Promise<GateResult> {
   try {
     const db = getDb();
@@ -58,6 +63,12 @@ export async function deliverDatasetReviewMail(
           db,
           { kind: "dataset_rejected", grantId: intent.grantId, email: intent.email },
           () => sendDatasetRejectedEmail({ email: intent.email, rejectionNote: intent.rejectionNote })
+        );
+      case "dataset_commercial_redirect":
+        return await sendGrantGated(
+          db,
+          { kind: "dataset_commercial_redirect", grantId: intent.grantId, email: intent.email },
+          () => sendDatasetCommercialRedirectEmail({ email: intent.email })
         );
       case "dataset_link_reissued":
         return await sendGrantGated(
@@ -82,7 +93,7 @@ export async function deliverDatasetAdminNotice(
   try {
     return await sendDatasetAdminNoticeGated(
       getDb(),
-      { grantId: intent.grantId, recipient: process.env.CONTACT_TO_EMAIL ?? "" },
+      { grantId: intent.grantId, recipient: (process.env.CONTACT_TO_EMAIL ?? "").trim() },
       () => sendDatasetAdminNewRequestEmail({ name: intent.name, organization: intent.organization })
     );
   } catch (err) {

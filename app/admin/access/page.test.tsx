@@ -93,6 +93,9 @@ const fullGrant: AdminDatasetGrant = {
   renewalRequestedAt: null,
   lastDownloadAt: null,
   downloadCount: 0,
+  tier: "free",
+  paidThrough: null,
+  subscriptionLinked: false,
   live: false,
   renewalPending: false,
 };
@@ -125,6 +128,7 @@ const LIST_KEYS = [
   "live",
   "name",
   "organization",
+  "paidThrough",
   "rejectionNote",
   "renewalPending",
   "renewalRequestedAt",
@@ -132,6 +136,8 @@ const LIST_KEYS = [
   "revokedAt",
   "reviewNote",
   "status",
+  "subscriptionLinked",
+  "tier",
 ].sort();
 
 async function renderPage(params: { status?: string; grant?: string }) {

@@ -110,6 +110,10 @@ const EXPECTED_COLUMNS: Record<string, Record<string, string>> = {
     last_notice_edition_id: "uuid NULL",
     download_count: "integer NOT NULL",
     submitter_ip_hash: "text NULL",
+    tier: "text NOT NULL",
+    paid_through: "timestamp with time zone NULL",
+    paypal_subscription_id: "text NULL",
+    last_payment_at: "timestamp with time zone NULL",
   },
   dataset_editions: {
     id: "uuid NOT NULL",
@@ -165,7 +169,7 @@ describe("dataset sharing tables: shape", () => {
     expect(DATASET_DOWNLOAD_OUTCOMES).toEqual(["served", "denied_rate", "error"]);
   });
 
-  it("uses plain text columns, not pg enums or CHECK constraints", async () => {
+  it("uses plain text columns, not pg enums; the only CHECK is the tier vocabulary (0021)", async () => {
     const enums = await tdb.client.query(
       `SELECT a.attname FROM pg_attribute a JOIN pg_type t ON t.oid = a.atttypid
        WHERE a.attrelid IN ('dataset_access_grants'::regclass, 'dataset_editions'::regclass, 'dataset_downloads'::regclass)
@@ -175,12 +179,17 @@ describe("dataset sharing tables: shape", () => {
     const checks = await tdb.client.query(
       `SELECT conname FROM pg_constraint
        WHERE contype = 'c'
+         AND conname <> 'dataset_access_grants_tier_check'
          AND (conrelid IN ('dataset_access_grants'::regclass, 'dataset_editions'::regclass, 'dataset_downloads'::regclass)
               OR contypid IN (SELECT atttypid FROM pg_attribute
                                WHERE attrelid IN ('dataset_access_grants'::regclass, 'dataset_editions'::regclass, 'dataset_downloads'::regclass)
                                  AND attnum > 0))`
     );
     expect(checks.rows).toHaveLength(0);
+    const tierCheck = await tdb.client.query(
+      `SELECT 1 FROM pg_constraint WHERE conname = 'dataset_access_grants_tier_check' AND contype = 'c'`
+    );
+    expect(tierCheck.rows).toHaveLength(1);
   });
 
   it("getExpectedTableNames() includes the three dataset tables", () => {
@@ -258,7 +267,7 @@ describe("dataset_access_grants", () => {
   });
 });
 
-describe("dataset_access_grants: one OPEN row per email (dataset_access_grants_open_email_idx)", () => {
+describe("dataset_access_grants: one OPEN row per (email, tier) (dataset_access_grants_open_email_tier_idx)", () => {
   const OPEN = DATASET_OPEN_GRANT_STATUSES;
   const CLOSED = ["rejected", "revoked", "expired"] as const;
   const EMAIL = "same-person@example.com";
@@ -294,6 +303,26 @@ describe("dataset_access_grants: one OPEN row per email (dataset_access_grants_o
       await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, status }));
     }
     expect(await countRows("dataset_access_grants")).toBe(CLOSED.length * 2);
+  });
+
+  it("an open free and an open commercial row may share an email; a second of the SAME tier may not", async () => {
+    await tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, tier: "free", status: "active" }));
+    await tdb.db
+      .insert(datasetAccessGrantsTable)
+      .values(grantValues({ email: EMAIL, tier: "commercial", status: "active" }));
+    expect(
+      await sqlState(
+        tdb.db.insert(datasetAccessGrantsTable).values(grantValues({ email: EMAIL, tier: "free", status: "unverified" }))
+      )
+    ).toBe("23505");
+    expect(
+      await sqlState(
+        tdb.db
+          .insert(datasetAccessGrantsTable)
+          .values(grantValues({ email: EMAIL, tier: "commercial", status: "pending_review" }))
+      )
+    ).toBe("23505");
+    expect(await countRows("dataset_access_grants")).toBe(2);
   });
 
   it("a row that leaves the open set frees the email for a new open row", async () => {

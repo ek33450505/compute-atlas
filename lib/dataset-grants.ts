@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { and, eq, gt, inArray, isNotNull, isNull, lte, or, sql, type SQL } from "drizzle-orm";
+import { and, eq, gt, inArray, isNotNull, isNull, lte, ne, or, sql, type SQL } from "drizzle-orm";
 
+import { COMMERCIAL_PATH } from "@/lib/commercial-plans";
+import { isCommercialTierEnabled } from "@/lib/commercial-flag";
 import { isHoneypotTripped } from "@/lib/contribute";
 import { getDb } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
@@ -10,6 +12,7 @@ import {
   datasetAccessGrantsTable,
   type DatasetCategory,
   type DatasetGrantStatus,
+  type DatasetTier,
 } from "@/lib/db/schema";
 import { generateToken } from "@/lib/email";
 import { normalizeEmail } from "@/lib/email-address";
@@ -19,7 +22,7 @@ import { isSuppressed, mayEmail } from "@/lib/suppressions";
 import { hashToken } from "@/lib/token-hash";
 
 /** The single source of the version string a grant records. The final terms text is in lib/dataset-terms.ts; bump this version whenever that text changes. */
-export const DATASET_TERMS_VERSION = "2026-11-09";
+export const DATASET_TERMS_VERSION = "2026-11-11";
 
 /** Shape of every raw dataset token (`generateToken`: 256 bits, base64url, 43 chars). Checked before any DB call. */
 export const DATASET_TOKEN_RE = /^[A-Za-z0-9_-]{43}$/;
@@ -94,18 +97,20 @@ export type DatasetMailIntent =
   | { kind: "dataset_admin_new_request"; grantId: string; name: string; organization: string | null } // to the maintainer
   | { kind: "dataset_approved"; grantId: string; email: string; accessToken: string } // raw access token, for the link only
   | { kind: "dataset_rejected"; grantId: string; email: string; rejectionNote: string | null }
+  | { kind: "dataset_commercial_redirect"; grantId: string; email: string } // points a commercial requester to the paid subscription
   | { kind: "dataset_link_reissued"; grantId: string; email: string; accessToken: string } // the NEW raw access token
   | { kind: "dataset_renewal_reminder"; grantId: string; email: string; renewToken: string }; // raw renew token, for the link only
 
 export type DatasetRequestResult =
   | { ok: true; publicResult: { ok: true }; mail?: DatasetMailIntent }
-  | { ok: false; status: 400; error: string; issues?: unknown };
+  | { ok: false; status: 400; error: string; issues?: unknown }
+  | { ok: false; status: 422; error: "commercial_requires_subscription"; path: typeof COMMERCIAL_PATH; issues?: undefined };
 
 /**
  * The OPEN-grant predicate as SQL text, for the INSERT's `ON CONFLICT (email) WHERE ...` target. The statuses
  * come from `DATASET_OPEN_GRANT_STATUSES` (lib/db/schema.ts), the single source that also builds the predicate
- * of the partial unique index `dataset_access_grants_open_email_idx`: the index allows at most one open row
- * per email, which is what makes the INSERT below race-free. Postgres infers a partial unique index only when
+ * of the partial unique index `dataset_access_grants_open_email_tier_idx`: the index allows at most one open row
+ * per (email, tier), which is what makes the INSERT below race-free. Postgres infers a partial unique index only when
  * the clause's predicate implies the index's, and that proof needs literals: bound parameters (what
  * `inArray` emits) never match. The values are fixed constants, never input.
  */
@@ -122,10 +127,20 @@ const OPEN_GRANT_PREDICATE = sql`${datasetAccessGrantsTable.status} in (${sql.ra
  *   approves (Ed, 2026-11-09).
  * - LAPSED: neither: expiry passed or NULL, and no renewal requested. NULL expiry is lapsed everywhere
  *   (approve always sets it, so such a row is unreachable, but every function must treat it the same way).
- * Every `active` row is LIVE, RENEWAL_PENDING (both, if a renewal was requested while live) or LAPSED.
+ * Every free-tier `active` row is LIVE, RENEWAL_PENDING (both, if a renewal was requested while live) or
+ * LAPSED.
+ *
+ * The payment gate lives here: a `commercial` tier grant is LIVE only while `paidThrough` is set and in
+ * the future, on top of the expiry test. Never test `status = 'active'` alone to mean "usable".
+ *
+ * A commercial row adds a fourth state, UNPAID: `paidThrough` NULL or past while `expiresAt` is still in
+ * the future. It is not LIVE (this predicate refuses it) and not LAPSED (its expiry has not passed). The
+ * contract for the PayPal webhook (a later unit; NOT yet enforced by any code) is to set `expiresAt` equal
+ * to `paidThrough` on every payment event, which makes a lapsed subscription an ordinary lapse and leaves
+ * UNPAID only as the window before that sync. The `paidThrough` clause is what keeps that window closed.
  */
 export const liveGrant = (now: Date): SQL =>
-  sql`(${eq(datasetAccessGrantsTable.status, "active")} and ${isNotNull(datasetAccessGrantsTable.expiresAt)} and ${gt(datasetAccessGrantsTable.expiresAt, now)})`;
+  sql`(${eq(datasetAccessGrantsTable.status, "active")} and ${isNotNull(datasetAccessGrantsTable.expiresAt)} and ${gt(datasetAccessGrantsTable.expiresAt, now)} and (${ne(datasetAccessGrantsTable.tier, "commercial")} or (${isNotNull(datasetAccessGrantsTable.paidThrough)} and ${gt(datasetAccessGrantsTable.paidThrough, now)})))`;
 
 export const renewalPendingGrant = (): SQL =>
   sql`(${eq(datasetAccessGrantsTable.status, "active")} and ${isNotNull(datasetAccessGrantsTable.renewalRequestedAt)})`;
@@ -206,7 +221,18 @@ export async function requestDatasetAccess(
   rawInput: unknown,
   ipHash: string
 ): Promise<DatasetRequestResult> {
-  // Honeypot FIRST, against the RAW input, before the schema runs (see
+  // A commercial request is refused while the paid tier is on, before any row, cap count or mail. The
+  // decision uses the submitted category alone, so it reveals nothing about any address and does not weaken the
+  // fixed 202 every other valid request gets. It runs BEFORE the honeypot so a commercial submission gets the
+  // same 422 whether or not the honeypot field is filled (the honeypot stays uniform for the categories it
+  // still applies to). It needs a schema-valid body, so it parses first; the 400 for an invalid body is still
+  // answered below, after the honeypot, exactly as before. With the flag off, commercial requests are reviewed.
+  const parsed = datasetRequestInputSchema.safeParse(rawInput);
+  if (parsed.success && parsed.data.category === "commercial" && isCommercialTierEnabled()) {
+    return { ok: false, status: 422, error: "commercial_requires_subscription", path: COMMERCIAL_PATH };
+  }
+
+  // Honeypot, against the RAW input, before the schema runs (see
   // requestAccessGrant). It runs on the raw value so that every non-empty
   // type, a number or an object as well as a string, answers the same generic
   // success. `null`, `false` and `[]` are "present but not filled in": they
@@ -224,11 +250,11 @@ export async function requestDatasetAccess(
     return genericSuccess();
   }
 
-  const parsed = datasetRequestInputSchema.safeParse(rawInput);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid request", issues: parsed.error.issues };
   }
   const data = parsed.data;
+
   const email = normalizeEmail(data.email);
   const now = new Date();
 
@@ -253,9 +279,15 @@ export async function requestDatasetAccess(
     })
     .from(datasetAccessGrantsTable)
     .where(
-      and(eq(datasetAccessGrantsTable.email, email), inArray(datasetAccessGrantsTable.status, DATASET_OPEN_GRANT_STATUSES))
+      and(
+        eq(datasetAccessGrantsTable.email, email),
+        // The free lane sees only free rows: a paid grant never answers "already active" here, and the
+        // Checkout email (unverified by PayPal) can never influence a free request.
+        eq(datasetAccessGrantsTable.tier, "free"),
+        inArray(datasetAccessGrantsTable.status, DATASET_OPEN_GRANT_STATUSES)
+      )
     )
-    .limit(1); // the partial unique index guarantees at most one
+    .limit(1); // the partial unique index guarantees at most one per (email, tier)
 
   // Every request field comes from THIS submission; shared by the INSERT and the unverified rotation.
   const requestFields = {
@@ -338,7 +370,7 @@ export async function requestDatasetAccess(
     await db
       .select({ id: datasetAccessGrantsTable.id })
       .from(datasetAccessGrantsTable)
-      .where(eq(datasetAccessGrantsTable.email, email))
+      .where(and(eq(datasetAccessGrantsTable.email, email), eq(datasetAccessGrantsTable.tier, "free")))
       .limit(1);
     return genericSuccess();
   }
@@ -355,7 +387,10 @@ export async function requestDatasetAccess(
     })
     // A concurrent request took the one open slot. Scoped to that partial unique index, so a violation of
     // any other unique index (a token hash) is a real error, not silently swallowed as "someone else won".
-    .onConflictDoNothing({ target: datasetAccessGrantsTable.email, where: OPEN_GRANT_PREDICATE })
+    .onConflictDoNothing({
+      target: [datasetAccessGrantsTable.email, datasetAccessGrantsTable.tier],
+      where: OPEN_GRANT_PREDICATE,
+    })
     .returning({ id: datasetAccessGrantsTable.id });
   if (!row) return genericSuccess(); // that winner sends the one verify mail
 
@@ -535,6 +570,8 @@ export async function approveDatasetGrant(
   return renewed ? { ok: true, kind: "renewed" } : NOT_ELIGIBLE;
 }
 
+const COMMERCIAL_REDIRECT_NOTE = "Pointed to the paid commercial subscription";
+
 /**
  * Admin rejection: `pending_review` -> `rejected` (terminal). `reviewNote` is
  * internal; `rejectionNote` is shown to the requester via the returned mail
@@ -560,6 +597,27 @@ export async function rejectDatasetGrant(
   if (!rejected) return NOT_ELIGIBLE;
 
   return { ok: true, mail: { kind: "dataset_rejected", grantId: rejected.id, email: rejected.email, rejectionNote } };
+}
+
+/**
+ * Admin "Point to paid": like a rejection (`pending_review` -> `rejected`), but the mail sends the requester to
+ * the paid commercial subscription. Refused while the commercial tier is off, because the mail would link to a
+ * closed page. The note is an internal marker, never shown to the requester.
+ */
+export async function redirectDatasetGrantToPaid(
+  id: string,
+  now: Date = new Date()
+): Promise<{ ok: true; mail: MailOf<"dataset_commercial_redirect"> } | DatasetGrantNotEligible> {
+  if (!isGrantId(id) || !isCommercialTierEnabled()) return NOT_ELIGIBLE;
+
+  const [redirected] = await getDb()
+    .update(datasetAccessGrantsTable)
+    .set({ status: "rejected", reviewedAt: now, rejectionNote: COMMERCIAL_REDIRECT_NOTE })
+    .where(and(eq(datasetAccessGrantsTable.id, id), eq(datasetAccessGrantsTable.status, "pending_review")))
+    .returning({ id: datasetAccessGrantsTable.id, email: datasetAccessGrantsTable.email });
+  if (!redirected) return NOT_ELIGIBLE;
+
+  return { ok: true, mail: { kind: "dataset_commercial_redirect", grantId: redirected.id, email: redirected.email } };
 }
 
 /**
@@ -620,7 +678,14 @@ export async function extendDatasetGrant(id: string): Promise<{ ok: true } | Dat
   const [extended] = await getDb()
     .update(datasetAccessGrantsTable)
     .set(extensionFields(now))
-    .where(and(eq(datasetAccessGrantsTable.id, id), or(liveGrant(now), renewalPendingGrant())))
+    // Free lane only: a commercial grant's term is its paid-through date, which PayPal moves.
+    .where(
+      and(
+        eq(datasetAccessGrantsTable.id, id),
+        eq(datasetAccessGrantsTable.tier, "free"),
+        or(liveGrant(now), renewalPendingGrant())
+      )
+    )
     .returning({ id: datasetAccessGrantsTable.id });
   return extended ? { ok: true } : NOT_ELIGIBLE;
 }
@@ -642,7 +707,7 @@ export async function issueRenewalToken(
   const [issued] = await getDb()
     .update(datasetAccessGrantsTable)
     .set({ renewTokenHash: hashToken(renewToken) })
-    .where(and(eq(datasetAccessGrantsTable.id, id), liveGrant(new Date())))
+    .where(and(eq(datasetAccessGrantsTable.id, id), eq(datasetAccessGrantsTable.tier, "free"), liveGrant(new Date())))
     .returning({ id: datasetAccessGrantsTable.id, email: datasetAccessGrantsTable.email });
   if (!issued) return NOT_ELIGIBLE;
 
@@ -681,6 +746,7 @@ export async function requestRenewal(
     .where(
       and(
         eq(datasetAccessGrantsTable.renewTokenHash, renewTokenHash),
+        eq(datasetAccessGrantsTable.tier, "free"),
         liveGrant(now),
         isNull(datasetAccessGrantsTable.renewalRequestedAt)
       )
@@ -698,7 +764,17 @@ export async function requestRenewal(
 }
 
 /** The only fields a download page may learn about a grant. Deliberately no hashes, email, IP hash or notes. */
-export type DatasetActiveGrant = { id: string; name: string; organization: string | null; expiresAt: Date };
+export type DatasetActiveGrant = {
+  id: string;
+  name: string;
+  organization: string | null;
+  expiresAt: Date;
+  tier: DatasetTier;
+  /** Whether a PayPal subscription is linked. The subscription id itself never leaves the server. */
+  hasSubscription: boolean;
+  /** When the paid period ends (commercial grants; null for free ones). Shown on the download page. */
+  paidThrough: Date | null;
+};
 
 /**
  * Resolves a raw access token to its grant. "Active" means the grant is LIVE
@@ -734,6 +810,9 @@ export async function getGrantByAccessToken(
       organization: datasetAccessGrantsTable.organization,
       expiresAt: datasetAccessGrantsTable.expiresAt,
       status: datasetAccessGrantsTable.status,
+      tier: datasetAccessGrantsTable.tier,
+      hasSubscription: sql<boolean>`${datasetAccessGrantsTable.paypalSubscriptionId} is not null`,
+      paidThrough: datasetAccessGrantsTable.paidThrough,
       live: sql<boolean>`${liveGrant(now)}`, // the shared LIVE definition, evaluated in the same query
     })
     .from(datasetAccessGrantsTable)
@@ -747,7 +826,16 @@ export async function getGrantByAccessToken(
   if (row.live === true && row.expiresAt) {
     return {
       state: "active",
-      grant: { id: row.id, name: row.name, organization: row.organization, expiresAt: row.expiresAt },
+      grant: {
+        id: row.id,
+        name: row.name,
+        organization: row.organization,
+        expiresAt: row.expiresAt,
+        tier: row.tier,
+        // Strict `=== true`, like `live`: a computed projection the driver may hand back as a string.
+        hasSubscription: row.hasSubscription === true,
+        paidThrough: row.paidThrough,
+      },
     };
   }
 

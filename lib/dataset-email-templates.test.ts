@@ -8,6 +8,9 @@ import {
   buildDatasetEditionNoticeEmail,
   buildDatasetLinkReissuedEmail,
   buildDatasetRejectedEmail,
+  buildDatasetCommercialRedirectEmail,
+  buildDatasetSubscriptionActiveEmail,
+  buildDatasetCommercialAlertEmail,
   buildDatasetRenewalReminderEmail,
   buildDatasetVerifyEmail,
   type DatasetEmail,
@@ -320,6 +323,129 @@ describe("buildDatasetRejectedEmail", () => {
     expect(mail.text).toContain("Note from the maintainer:");
     expect(mail.html).toContain("&lt;img src=x onerror=alert(1)&gt;<br>Second line");
     expect(mail.html).not.toContain(XSS[0]);
+  });
+});
+
+describe("buildDatasetCommercialRedirectEmail", () => {
+  const mail = buildDatasetCommercialRedirectEmail({ siteUrl: SITE });
+
+  it("links the paid page and quotes both prices", () => {
+    expect([...mail.html.matchAll(/href="([^"]*)"/g)].map((m) => m[1])).toEqual([`${SITE}/access/commercial`, `${SITE}/contact`]);
+    expect(mail.text).toContain(`${SITE}/access/commercial`);
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("$150/month");
+      expect(body).toContain("For commercial use it is a subscription: $150/month or $1,500/year.");
+      expect(body).not.toContain("months free");
+      expect(body).toContain("free for students, academics, journalists, nonprofits and government");
+      expect(body).toContain("say so through the");
+      expect(body).toContain(`${SITE}/contact`);
+    }
+  });
+
+  it("links the contact page in the html body", () => {
+    expect(mail.html).toContain(`<a href="${SITE}/contact">contact page</a>`);
+  });
+
+  it("never says donation", () => {
+    expect(`${mail.subject} ${mail.text} ${mail.html}`.toLowerCase()).not.toContain("donat");
+  });
+
+  it("escapes the site URL in the html part", () => {
+    const evil = buildDatasetCommercialRedirectEmail({ siteUrl: `https://x.test/"><script>` });
+    expect(evil.html).not.toContain("<script>");
+  });
+});
+
+describe("buildDatasetSubscriptionActiveEmail", () => {
+  const mail = buildDatasetSubscriptionActiveEmail({ siteUrl: SITE, accessToken: TOKEN });
+
+  it("carries the token only in its link, with a fixed subject", () => {
+    expectTokenOnlyInLink(mail, `${SITE}/access/dataset?t=${ENCODED}`);
+    expect(mail.subject).toBe("Your Compute Atlas commercial access is active");
+  });
+
+  it("states the single-person scope, weekly refresh, billing, cancellation and the CC BY credit", () => {
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("one named person weekly access through a personal link");
+      expect(body).toContain("refreshes weekly");
+      expect(body).toContain("Your subscription");
+      expect(body).toContain("access continues to the end of the period you have paid for");
+      expect(body).toContain("CC BY 4.0");
+      expect(body).toContain("Questions can go through the contact page");
+      expect(body.toLowerCase()).not.toContain("reply to");
+    }
+    expect(`${mail.subject} ${mail.text} ${mail.html}`.toLowerCase()).not.toContain("donat");
+  });
+
+  it("tells a non-purchaser how to reach us", () => {
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("If you did not make this purchase, contact us at");
+      expect(body).toContain(`${SITE}/contact`);
+    }
+  });
+
+  it("escapes the site URL in html", () => {
+    const evil = buildDatasetSubscriptionActiveEmail({ siteUrl: `https://x.test/"><script>`, accessToken: TOKEN });
+    expect(evil.html).not.toContain("<script>");
+  });
+});
+
+describe("buildDatasetCommercialAlertEmail", () => {
+  it("names reason, action and PayPal ids, escaped, with no token", () => {
+    const mail = buildDatasetCommercialAlertEmail({
+      reason: "duplicate_subscription",
+      action: "no_grant_created",
+      subscriptionId: "sub_<b>x",
+      checkoutId: "cs_1",
+      saleId: null,
+    });
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("duplicate_subscription");
+      expect(body).toContain("cs_1");
+    }
+    expect(mail.text).toContain("already has access");
+    expect(mail.text).toContain("Cancel and refund the new subscription by hand in PayPal");
+    expect(mail.text).toContain("Sale: (none)");
+    expect(mail.html).not.toContain("<b>");
+    expect(mail.html).toContain("sub_&lt;b&gt;x");
+  });
+
+  it("names the new reasons and their actions, with the grant id escaped", () => {
+    const reversed = buildDatasetCommercialAlertEmail({
+      reason: "payment_reversed",
+      action: "no_action_person_decides",
+      subscriptionId: "sub_1",
+      checkoutId: "cs_1",
+      saleId: null,
+      grantId: "g<i>1",
+    });
+    expect(reversed.text).toContain("payment_reversed");
+    expect(reversed.text).toContain("Nothing was cancelled, refunded or changed automatically");
+    expect(reversed.html).toContain("g&lt;i&gt;1");
+    expect(reversed.html).not.toContain("<i>");
+
+    const suppressed = buildDatasetCommercialAlertEmail({
+      reason: "welcome_mail_undeliverable",
+      action: "link_not_mailed_suppressed",
+      subscriptionId: null,
+      checkoutId: null,
+      saleId: null,
+      grantId: "g1",
+    });
+    expect(suppressed.text).toContain("welcome_mail_undeliverable");
+    expect(suppressed.text).toContain("opted out of our email");
+    expect(suppressed.text).toContain("blocked by the same opt-out");
+
+    const unconfirmed = buildDatasetCommercialAlertEmail({
+      reason: "welcome_mail_undeliverable",
+      action: "link_not_mailed_unconfirmed",
+      subscriptionId: null,
+      checkoutId: null,
+      saleId: null,
+      grantId: "g1",
+    });
+    expect(unconfirmed.text).toContain("grant was not live when the link was mailed");
+    expect(unconfirmed.text).not.toContain("opted out");
   });
 });
 

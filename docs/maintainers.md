@@ -532,6 +532,7 @@ Outcomes (`EMAIL_SEND_OUTCOMES` in `lib/email-sends.ts`; meanings from `lib/emai
 | `skipped_no_key` | No API key: nothing was mailed |
 | `skipped_suppressed` | A global or per-target suppression covers the address |
 | `skipped_unconfirmed` | The row is missing, the address does not match, or the row is not in the state this mail requires (a confirmed row asked for a confirm mail lands here too) |
+| `skipped_duplicate` | A deduped maintainer alert: a `sent` row for the same reason and target already exists, so the alert was not mailed again |
 | `skipped_capped` | The per-address confirm cap (10 per 30 days) was exceeded: the 11th confirm attempt in the window is the first one skipped |
 | `skipped_check_failed` | The suppression lookup errored. Not sent, and NOT a suppression |
 
@@ -653,7 +654,7 @@ and the constants together. Summary:
   and the privacy notice says so (Ed, 2026-11-09).
 - A download-log write failure does not block the download. The log fails **open** (`lib/dataset-download.ts`).
 - Per-address mail caps: `lib/email-gate.ts`, with the limits in `lib/email-sends.ts`.
-- The terms and privacy notice are final (version `2026-11-09`). Ed decided on 2026-11-09 not to seek legal review. Bump `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts` whenever their text changes.
+- The terms and privacy notice are final (version `2026-11-11`). Ed decided on 2026-11-09 not to seek legal review. Bump `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts` whenever their text changes.
 
 ### Tracing a leaked file
 
@@ -665,6 +666,153 @@ npm run dataset:trace -- <file> --edition <YYYY-MM-DD|uuid>
 watermark. It needs `DATABASE_URL`, `DATASET_WATERMARK_SECRET` and the Blob env in `.env.local`. It is
 read-only: the only database access is `select`. A score is evidence for a person to review, not proof.
 A re-sorted file scores near zero for every grant (see the watermark limit above).
+
+### Paid tier: setup and policy
+
+`COMMERCIAL_TIER_ENABLED` (exact string `"true"`, `lib/commercial-flag.ts`) gates the commercial checkout and the
+PayPal webhook. The return page needs both flags, like checkout. Unset, they are off: the webhook answers 403
+(`app/api/paypal/webhook/route.ts`). A missing PayPal value makes the webhook log `config=<VARIABLE>` and answer 500.
+Checkout logs `commercial-checkout PayPal call failed (config)` and sends the buyer back with `?error=unavailable`.
+The commercial pages and checkout require BOTH
+`COMMERCIAL_TIER_ENABLED` and `DATASET_SHARING_ENABLED` (`isCommercialCheckoutOpen()` in `lib/commercial-flag.ts`).
+The webhook needs only the tier flag, so money already taken is still processed after checkout is closed.
+
+Env vars (all in `.env.example`):
+
+| Variable | Value |
+| --- | --- |
+| `COMMERCIAL_TIER_ENABLED` | `true` to turn the tier on |
+| `PAYPAL_ENV` | `live` or `sandbox` (anything else throws `config=PAYPAL_ENV`) |
+| `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | the REST app's credentials for that environment |
+| `PAYPAL_WEBHOOK_ID` | id of the webhook created below (needed to verify signatures) |
+| `PAYPAL_PLAN_COMMERCIAL_MONTHLY`, `PAYPAL_PLAN_COMMERCIAL_ANNUAL` | the two plan ids (`P-...`) |
+| `COMMERCIAL_RETURN_BASE_URL` | optional: origin PayPal returns buyers to; previews only (defaults to the site URL) |
+
+Vercel applies env changes to new deployments only: redeploy after any change.
+
+Decisions (Ed, 2026-11-11): payments go through PayPal and a PayPal account is required; $150/month or $1,500/year
+plus applicable tax (Ed handles sales tax himself; there is no tax engine); buyers are never refused on who they are (the data is
+CC BY 4.0): a revoked buyer may subscribe again, and a duplicate subscription gets no second grant and alerts you when its payment lands; no
+automatic refunds anywhere. Tax must not be added to the PayPal charge: activation requires the payment to equal the
+plan price exactly (`lib/commercial-activation.ts:270`), so a different charge is not activated and raises an
+`unmatched_subscription` alert. The public terms (`lib/dataset-terms.ts`, version `2026-11-11`) say the
+same. Changing their text means bumping `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts`. Seats were dropped
+(2026-11-10): one named person per subscription, the personal link is strictly personal, teams by arrangement
+through `/contact`. Free access (students, academics, journalists, nonprofits, government) is separate and
+hand-reviewed.
+
+PayPal setup (a live REST app under Ed's business account; do the sandbox first with `PAYPAL_ENV=sandbox` and
+`https://api-m.sandbox.paypal.com`). The product and plan calls below follow the PayPal Subscriptions REST API
+reference; `lib/paypal.ts` never creates products or plans, so the product and plan request bodies below are not
+exercised by the repo's tests: check the response of each.
+
+```bash
+BASE=https://api-m.paypal.com   # sandbox: https://api-m.sandbox.paypal.com
+TOKEN=$(curl -s -u "$PAYPAL_CLIENT_ID:$PAYPAL_CLIENT_SECRET" -d grant_type=client_credentials "$BASE/v1/oauth2/token" | jq -r .access_token)
+
+# 1. One product
+curl -s -X POST "$BASE/v1/catalogs/products" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"name":"Compute Atlas commercial dataset access","type":"DIGITAL","category":"SOFTWARE"}'
+# -> note "id" as <PRODUCT_ID>
+
+# 2. Monthly plan ($150) and annual plan ($1,500): infinite cycles (total_cycles 0), no trial, no setup fee
+curl -s -X POST "$BASE/v1/billing/plans" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"product_id":"<PRODUCT_ID>","name":"Commercial monthly","status":"ACTIVE",
+       "billing_cycles":[{"frequency":{"interval_unit":"MONTH","interval_count":1},"tenure_type":"REGULAR","sequence":1,"total_cycles":0,
+                          "pricing_scheme":{"fixed_price":{"value":"150.00","currency_code":"USD"}}}],
+       "payment_preferences":{"auto_bill_outstanding":true,"setup_fee_failure_action":"CANCEL","payment_failure_threshold":3}}'
+# -> "id" is PAYPAL_PLAN_COMMERCIAL_MONTHLY. Repeat with name "Commercial annual", interval_unit YEAR, value "1500.00"
+#    -> "id" is PAYPAL_PLAN_COMMERCIAL_ANNUAL.
+```
+
+Webhook: URL `https://www.compute-atlas.com/api/paypal/webhook`, subscribed to exactly the events
+`processPaypalEvent` handles (`lib/commercial-activation.ts`, the `switch` in `resolveEvent`; any other event type is
+recorded and ignored):
+
+- `BILLING.SUBSCRIPTION.ACTIVATED`: activates the grant (first activation path).
+- `PAYMENT.SALE.COMPLETED`: activates a grant that does not exist yet, or extends `paid_through` on renewal. Status,
+  plan and payment time come from a re-fetch of the subscription, never from the event body.
+- `BILLING.SUBSCRIPTION.CANCELLED`, `BILLING.SUBSCRIPTION.EXPIRED`, `BILLING.SUBSCRIPTION.SUSPENDED`: write nothing;
+  access runs to `paid_through`.
+- `PAYMENT.SALE.REFUNDED`, `PAYMENT.SALE.REVERSED`: alert `payment_reversed`; nothing is changed or refunded.
+- `BILLING.SUBSCRIPTION.PAYMENT.FAILED`: logged only; access runs to `paid_through`.
+
+Create it in the developer dashboard (Apps & Credentials, your app, Webhooks) or with
+`POST $BASE/v1/notifications/webhooks` and `{"url":"https://www.compute-atlas.com/api/paypal/webhook","event_types":[{"name":"BILLING.SUBSCRIPTION.ACTIVATED"}, ...]}`
+listing those eight names. Its `id` is `PAYPAL_WEBHOOK_ID`.
+
+Ship order (the webhook id does not exist until the webhook does, and the webhook 403s while the flag is off):
+
+1. Set `PAYPAL_ENV=live`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` and the two plan ids in Vercel production. Leave
+   `COMMERCIAL_TIER_ENABLED` unset. Redeploy.
+2. Create the live webhook (above). Put its id in `PAYPAL_WEBHOOK_ID`. Redeploy.
+3. Set `COMMERCIAL_TIER_ENABLED=true`. Redeploy.
+4. Ship-day Cloudflare check: send a test event from the dashboard's webhook simulator (or make one real
+   subscription) to the live `www` URL and confirm PayPal records a 200 delivery and a row appears in
+   `paypal_webhook_events`. The route sits behind `proxy.ts`'s edge secret, so deliveries must come through
+   Cloudflare. If Cloudflare blocks PayPal (a bot or UA rule), a skip rule is a Cloudflare change and needs
+   Ed's explicit go; do not edit the rules without it. Simulator events may fail signature verification (a 400 from the route is
+   possible); the check is that the request reaches the route and is not blocked by Cloudflare (403 or a challenge page).
+5. Rotating `EDGE_SHARED_SECRET` breaks webhooks (403 from `proxy.ts`) until Cloudflare's injected header is updated.
+
+Sandbox and previews: use `PAYPAL_ENV=sandbox` with sandbox credentials, sandbox plan ids and a sandbox webhook.
+Set `COMMERCIAL_RETURN_BASE_URL` to the preview's own URL (https, or http on loopback) so PayPal returns the buyer
+there (`checkoutReturnBase()` in `lib/commercial-checkout.ts`). Previews bypass Cloudflare, so a preview webhook needs
+no skip rule.
+
+Cancellation (the public terms): a buyer cancels from the download page (`lib/commercial-cancel.ts`,
+`app/api/access/subscription/cancel`) or in PayPal's automatic-payments settings, and keeps access to the end of the
+paid period (`paid_through` is left alone). No refunds for partial periods except where the law requires one; you may
+refund at your discretion, by hand in PayPal. Nothing in the code refunds.
+
+### Paid tier: alerts, revoke and refunds
+
+Maintainer alerts come from `CONTACT_TO_EMAIL` ("Compute Atlas commercial subscription needs attention";
+`lib/dataset-email-templates.ts`). The alert never moves money. By reason:
+
+- `duplicate_subscription`: the buyer's email already holds a live commercial grant from another subscription, so no
+  second grant was created. The alert arrives when PayPal reports the payment (one per charge on the duplicate
+  subscription), not at checkout. Cancel the new subscription and refund its payment by hand in PayPal, unless they
+  meant to buy twice.
+- `unmatched_subscription`: an ACTIVE PayPal subscription could not be matched to a checkout, or its plan, first payment or next billing date did not match that checkout. Look it up in PayPal
+  by the subscription id in the alert; decide whether to cancel/refund it or create access by hand.
+- `payment_reversed`: PayPal reported a refund or reversal of a sale. Check the grant and the sale in PayPal. Access
+  runs to `paid_through`; revoke the grant in `/admin/access` if it should end now.
+- `revoked_still_billing`: a payment arrived for a revoked grant. Nothing was extended. Cancel the subscription in
+  PayPal if the revoke did not, and refund that payment if you want to.
+- `welcome_mail_undeliverable`: the buyer paid but the personal link was not mailed (address opted out of our email, or
+  the grant was not live). Check the grant in `/admin/access`. Reissue the link there only if the address is not
+  opted out. If it is opted out, refund and cancel in PayPal, or reach the buyer through their PayPal receipt.
+
+Revoke:
+
+- Buyers are never refused on who they are: a revoked buyer may subscribe again. A duplicate subscription gets no second grant, and you are alerted when its payment lands.
+- **Admin revoke cancels the PayPal subscription (Ed, 2026-11-10).** Revoking a commercial grant in `/admin/access`
+  revokes it in the database first, then cancels its PayPal subscription at once (`lib/commercial-revoke.ts`). It never
+  refunds: refund by hand in PayPal if you want to. If the result line says the subscription could not be cancelled,
+  the grant is revoked but billing continues: cancel it in PayPal now. A later payment for it raises the
+  `revoked_still_billing` alert and is never extended.
+- The per-grant watermark traces leaks: if the file leaks again, revoke the new grant.
+- Keep `COMMERCIAL_TIER_ENABLED` on while any subscription exists: with it off the webhook answers 403, PayPal retries
+  for about 3 days and then drops the events, so renewals, and the alerts above, are lost. Replay missed events from
+  the PayPal developer dashboard (Webhooks events) if it was off.
+- Checkout refuses to start (the buyer is sent back to the page with `?error=unavailable`) unless both
+  `CONTACT_TO_EMAIL` and `RESEND_API_KEY` are set, so money is never taken while the maintainer alert cannot be sent
+  (`app/api/access/checkout/route.ts`).
+- Backstop: at most 300 checkouts per hour that have a PayPal subscription id and are not yet activated across the whole site
+  (`COMMERCIAL_CHECKOUT_GLOBAL_HOURLY_CAP`, `lib/commercial-checkout.ts`); past it the form says the service is busy.
+  Checkouts and cancels are also rate limited per hashed IP.
+
+Log codes worth watching in Vercel runtime logs (codes only, never bodies or addresses):
+
+- `commercial-checkout global cap reached`: the 300/hour backstop tripped; look for abuse.
+- `commercial grant has no last_payment_at (code: missing_last_payment_at)`: a commercial grant without a recorded
+  last payment time, so a renewal cannot be proven newer; check the grant against PayPal.
+- `paypal-webhook terminal (...)`: PayPal said a subscription does not exist for an event older than 2 hours; the
+  event was dropped with a 200. Check it in PayPal.
+- `paypal-webhook processing failed (...)` / `paypal-webhook verify failed (...)`: PayPal will redeliver; a run of
+  them means a config, PayPal or database problem. `paypal-webhook signature not verified` is a 400 (forged or wrong
+  `PAYPAL_WEBHOOK_ID`).
 
 ### Rollback SQL
 
@@ -679,6 +827,67 @@ DROP TABLE dataset_access_grants;
 
 `dataset_downloads` references both other tables, so it goes first. Migration `drizzle/0020_dataset_sharing_tables.sql`
 creates the three tables.
+
+Migration `drizzle/0021_commercial_tier.sql` adds the commercial tier. **Applying it (forward), in this order:**
+
+1. The PR is approved and green.
+2. Run `npm run db:migrate` (one transaction through the Neon websocket migrator).
+3. Merge immediately and wait for the production build.
+
+Why the order matters: 0021 drops the old `dataset_access_grants_open_email_idx`, and the code that is live until
+step 3 finishes inserts free requests with `ON CONFLICT (email)`, which then fails with SQLSTATE 42P10. The new
+code needs the `tier` column, so it cannot go first. Between step 2 and the new build going live only the free
+request form fails; downloads, notices and admin keep working. Do it at a quiet time and avoid Mon-Fri
+13:00-15:30 (the discovery runs).
+
+`commercial_checkouts` is the checkout and decision record: our form writes one row per attempt before the buyer is sent
+to PayPal (plan, email, name, organization, terms version; its id travels to PayPal as `custom_id`). The webhook sets
+the PayPal subscription id, then the decision: `activate` (the subscription has, or already had, a grant) or `refuse`
+(reason `duplicate_subscription`: the email already holds a live commercial grant, no second grant is made and you are
+alerted when its payment lands). Nothing is cancelled or refunded for a refusal; you decide by hand in PayPal. Retention
+(`scripts/retention-prune.ts`) deletes undecided rows after 30 days and nulls email, name and organization on decided
+rows after 365 days; the decision record itself stays. `paypal_webhook_events` holds event ids and types; processed
+rows are deleted after 90 days.
+
+To undo only that migration
+(keeps every grant; `paypal_webhook_events` and `commercial_checkouts` reference `dataset_access_grants`, so they go first):
+
+1. Revert the deploy first, then disable the webhook in the PayPal developer dashboard, so redelivered events
+   are not reprocessed once `paypal_webhook_events` is gone.
+2. **Warning: once any commercial grant exists, this rollback destroys `paid_through`, `last_payment_at` and the PayPal subscription id.**
+   Take a Neon branch first, or save the rows:
+   `COPY (SELECT id, email, tier, paid_through, last_payment_at, paypal_subscription_id FROM dataset_access_grants WHERE tier='commercial') TO STDOUT`
+3. **Check the old one-open-row-per-email index can be recreated.** 0021 replaced
+   `dataset_access_grants_open_email_idx` with `dataset_access_grants_open_email_tier_idx` (unique on
+   `(email, tier)`), so one address may now hold an open free AND an open commercial grant. Recreating the
+   old index fails while that is true. Find the addresses:
+   `SELECT email, array_agg(tier || ':' || status) FROM dataset_access_grants WHERE status IN ('unverified','pending_review','active') GROUP BY email HAVING count(*) > 1;`
+   For each, expire or revoke one of the two rows (usually the commercial one, after refunding in PayPal)
+   before continuing.
+4. Run, in this order, back-to-back with the deploy revert (the old code's `ON CONFLICT (email)` fails until the
+   old index is back):
+
+```sql
+BEGIN;
+-- Revoke every commercial grant first: once `tier` is dropped the old code would read an unpaid commercial grant as a free one.
+UPDATE dataset_access_grants SET status = 'revoked', revoked_at = now(), revoke_reason = 'commercial tier rolled back' WHERE tier = 'commercial' AND status <> 'revoked';
+DROP TABLE IF EXISTS commercial_checkouts;
+DROP TABLE IF EXISTS paypal_webhook_events;
+DROP INDEX IF EXISTS dataset_access_grants_open_email_tier_idx;
+CREATE UNIQUE INDEX "dataset_access_grants_open_email_idx" ON "dataset_access_grants" USING btree ("email") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');
+DROP INDEX IF EXISTS dataset_access_grants_paypal_subscription_id_idx;
+ALTER TABLE dataset_access_grants
+  DROP COLUMN IF EXISTS tier,
+  DROP COLUMN IF EXISTS paid_through,
+  DROP COLUMN IF EXISTS paypal_subscription_id,
+  DROP COLUMN IF EXISTS last_payment_at;
+-- Dropping `tier` also drops `dataset_access_grants_tier_check` (a single-column CHECK goes with its column).
+DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794412790979;
+COMMIT;
+```
+
+The last statement removes the migration's record (`created_at` is the 0021 `when` value in
+`drizzle/meta/_journal.json`), so a later `npm run db:migrate` applies 0021 again.
 
 ### Production checks (O8)
 

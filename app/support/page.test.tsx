@@ -43,6 +43,14 @@ describe("SupportPage", () => {
     expect(container.querySelectorAll('a[href*="github.com/sponsors"]')).toHaveLength(0);
   });
 
+  it("points data seekers to /data", () => {
+    render(<SupportPage />);
+    expect(screen.getByRole("link", { name: "the data page" })).toHaveAttribute(
+      "href",
+      "/data"
+    );
+  });
+
   it("renders the internal links to /contribute, /activity, and /about", () => {
     render(<SupportPage />);
     expect(screen.getByRole("link", { name: "Share a lead" })).toHaveAttribute(

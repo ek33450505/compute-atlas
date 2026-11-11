@@ -37,6 +37,58 @@ async function fillRequired(user: User) {
 
 const submit = (user: User) => user.click(screen.getByRole("button", { name: /request access/i }));
 
+describe("AccessRequestForm commercial category", () => {
+  it("shows a note linking to commercial access and disables submit when Commercial is chosen", async () => {
+    mockFetch(202, { ok: true });
+    const user = userEvent.setup();
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
+    expect(screen.getByRole("status")).toBeEmptyDOMElement();
+    expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
+    await user.selectOptions(screen.getByLabelText(/^category/i), "commercial");
+    expect(screen.getByRole("link", { name: "commercial access" })).toHaveAttribute("href", "/access/commercial");
+    expect(screen.getByRole("status")).toHaveTextContent(/commercial use/i);
+    expect(screen.getByRole("button", { name: /request access/i })).toBeDisabled();
+    await user.selectOptions(screen.getByLabelText(/^category/i), "journalist");
+    expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /request access/i })).toBeEnabled();
+  });
+
+  it("renders the note after a 422 from the server", async () => {
+    mockFetch(422, { error: "commercial", path: "/access/commercial" });
+    const user = userEvent.setup();
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
+    await fillRequired(user);
+    await submit(user);
+    expect(await screen.findByRole("link", { name: "commercial access" })).toHaveAttribute("href", "/access/commercial");
+    expect(screen.queryByText(SUCCESS)).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+});
+
+describe("AccessRequestForm commercial category with the tier off", () => {
+  it("shows no note, keeps submit enabled and posts a Commercial request", async () => {
+    mockFetch(202, { ok: true });
+    const user = userEvent.setup();
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier={false} />);
+    await fillRequired(user);
+    await user.selectOptions(screen.getByLabelText(/^category/i), "commercial");
+    expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /request access/i })).toBeEnabled();
+    await submit(user);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(SUCCESS)).toBeInTheDocument();
+  });
+});
+
+describe("AccessRequestForm live region layout", () => {
+  it("keeps the empty live region out of the flex gap while it has no content", () => {
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier={false} />);
+    const region = screen.getByRole("status");
+    expect(region).toBeEmptyDOMElement();
+    expect(region).toHaveClass("empty:absolute");
+  });
+});
+
 describe("AccessRequestForm", () => {
   it("keeps its category options in step with DATASET_CATEGORIES", () => {
     expect(DATASET_CATEGORY_OPTIONS.map((o) => o.value)).toEqual([...DATASET_CATEGORIES]);
@@ -45,7 +97,7 @@ describe("AccessRequestForm", () => {
   it("posts the exact JSON, dropping empty links and optional fields", async () => {
     mockFetch(202, { ok: true });
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await user.type(screen.getByLabelText(/^link 2/i), "  https://example.com/story  ");
     await submit(user);
@@ -68,7 +120,7 @@ describe("AccessRequestForm", () => {
   it("includes organization and role when filled", async () => {
     mockFetch(202, { ok: true });
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await user.type(screen.getByLabelText(/^organization/i), "The Paper");
     await user.type(screen.getByLabelText(/^role/i), "Reporter");
@@ -81,7 +133,7 @@ describe("AccessRequestForm", () => {
     for (const body of [{ ok: true }, { ok: false, status: "approved" }, {}]) {
       mockFetch(202, body);
       const user = userEvent.setup();
-      const { unmount } = render(<AccessRequestForm termsVersion="2026-11-draft" />);
+      const { unmount } = render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
       await fillRequired(user);
       await submit(user);
       const status = await screen.findByRole("status");
@@ -100,7 +152,7 @@ describe("AccessRequestForm", () => {
       issues: [{ path: ["email"], message: "Enter a valid email address." }],
     });
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await submit(user);
 
@@ -122,17 +174,17 @@ describe("AccessRequestForm", () => {
   ])("shows the message for a %i", async (status, message) => {
     mockFetch(status, { error: "x" });
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await submit(user);
     expect(await screen.findByRole("alert")).toHaveTextContent(message);
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toBeEmptyDOMElement();
   });
 
   it("shows the unavailable message on a network error", async () => {
     global.fetch = vi.fn().mockRejectedValue(new Error("offline")) as unknown as typeof fetch;
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await submit(user);
     expect(await screen.findByRole("alert")).toHaveTextContent(/temporarily unavailable/i);
@@ -141,7 +193,7 @@ describe("AccessRequestForm", () => {
   it("blocks submit without fetching when the checkboxes are unchecked", async () => {
     global.fetch = vi.fn() as unknown as typeof fetch;
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await user.type(screen.getByLabelText(/^email/i), "jane@example.com");
     await user.type(screen.getByLabelText(/^name/i), "Jane");
     await user.selectOptions(screen.getByLabelText(/^category/i), "other");
@@ -160,7 +212,7 @@ describe("AccessRequestForm", () => {
   it("blocks submit when required text fields and category are empty", async () => {
     global.fetch = vi.fn() as unknown as typeof fetch;
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await submit(user);
     expect(global.fetch).not.toHaveBeenCalled();
     expect(screen.getByLabelText(/^email/i)).toHaveAttribute("aria-invalid", "true");
@@ -168,7 +220,7 @@ describe("AccessRequestForm", () => {
   });
 
   it("hides the honeypot from assistive tech and the tab order", () => {
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     const input = document.querySelector<HTMLInputElement>('input[name="accessWebsite"]');
     expect(input).not.toBeNull();
     expect(input).toHaveAttribute("tabindex", "-1");
@@ -178,7 +230,7 @@ describe("AccessRequestForm", () => {
 
   it("updates the intended-use counter as the user types", async () => {
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     expect(screen.getByText("0 of 2000")).toBeInTheDocument();
     await user.type(screen.getByLabelText(/^intended use/i), "abcd");
     expect(screen.getByText("4 of 2000")).toBeInTheDocument();
@@ -187,7 +239,7 @@ describe("AccessRequestForm", () => {
   it("shows a generic message when a 400 only names fields without a control", async () => {
     mockFetch(400, { error: "Invalid", issues: [{ path: ["website"], message: "Bad" }] });
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await submit(user);
     expect(await screen.findByRole("alert")).toHaveTextContent("Please check the form and try again.");
@@ -202,7 +254,7 @@ describe("AccessRequestForm", () => {
       },
     }) as unknown as typeof fetch;
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await submit(user);
     expect(await screen.findByRole("alert")).toHaveTextContent("Please check the form and try again.");
@@ -211,7 +263,7 @@ describe("AccessRequestForm", () => {
   it("maps a links.0 issue to the first link field", async () => {
     mockFetch(400, { error: "Invalid", issues: [{ path: ["links", 0], message: "Enter a valid URL." }] });
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await submit(user);
     await screen.findByRole("alert");
@@ -222,7 +274,7 @@ describe("AccessRequestForm", () => {
   it("submits when Enter is pressed in a text field of a valid form", async () => {
     mockFetch(202, { ok: true });
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     await user.type(screen.getByLabelText(/^organization/i), "The Paper{enter}");
     expect(await screen.findByRole("status")).toHaveTextContent(SUCCESS);
@@ -237,7 +289,7 @@ describe("AccessRequestForm", () => {
       }),
     ) as unknown as typeof fetch;
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     const form = screen.getByRole("button", { name: /request access/i }).closest("form")!;
     fireEvent.submit(form);
@@ -256,7 +308,7 @@ describe("AccessRequestForm", () => {
       }),
     ) as unknown as typeof fetch;
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await fillRequired(user);
     const button = screen.getByRole("button", { name: /request access/i });
     await user.click(button);
@@ -271,7 +323,7 @@ describe("AccessRequestForm", () => {
   it("has exactly one role=alert after a failed submit with several field errors", async () => {
     global.fetch = vi.fn() as unknown as typeof fetch;
     const user = userEvent.setup();
-    render(<AccessRequestForm termsVersion="2026-11-draft" />);
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await submit(user);
     expect(screen.getAllByRole("alert")).toHaveLength(1);
     expect(screen.getByLabelText(/^email/i)).toHaveAccessibleDescription(/enter your email address/i);

@@ -15,6 +15,9 @@ import {
   sendDatasetEditionNoticeEmail,
   sendDatasetLinkReissuedEmail,
   sendDatasetRejectedEmail,
+  sendDatasetCommercialRedirectEmail,
+  sendDatasetSubscriptionActiveEmail,
+  sendDatasetCommercialAlertEmail,
   sendDatasetRenewalReminderEmail,
   sendDatasetVerifyEmail,
 } from "@/lib/email";
@@ -71,6 +74,20 @@ const senders: Array<[string, () => Promise<unknown>, string]> = [
   ["admin", () => sendDatasetAdminNewRequestEmail({ name: "Pat", organization: null }), "maintainer@example.test"],
   ["approved", () => sendDatasetApprovedEmail({ email: "a@b.test", accessToken: TOKEN }), "a@b.test"],
   ["rejected", () => sendDatasetRejectedEmail({ email: "a@b.test", rejectionNote: null }), "a@b.test"],
+  ["commercial redirect", () => sendDatasetCommercialRedirectEmail({ email: "a@b.test" }), "a@b.test"],
+  ["subscription active", () => sendDatasetSubscriptionActiveEmail({ email: "a@b.test", accessToken: TOKEN }), "a@b.test"],
+  [
+    "commercial alert",
+    () =>
+      sendDatasetCommercialAlertEmail({
+        reason: "duplicate_subscription",
+        action: "no_grant_created",
+        subscriptionId: "sub_1",
+        checkoutId: "cs_1",
+        saleId: null,
+      }),
+    "maintainer@example.test",
+  ],
   ["reissued", () => sendDatasetLinkReissuedEmail({ email: "a@b.test", accessToken: TOKEN }), "a@b.test"],
   [
     "reminder",
@@ -84,6 +101,19 @@ const senders: Array<[string, () => Promise<unknown>, string]> = [
     "a@b.test",
   ],
 ];
+
+describe("CONTACT_TO_EMAIL padding", () => {
+  it("is trimmed for the maintainer-recipient senders; all-whitespace counts as unset", async () => {
+    process.env.CONTACT_TO_EMAIL = "  maintainer@example.test \n";
+    await sendDatasetAdminNewRequestEmail({ name: "Pat", organization: null });
+    expect(payload().to).toBe("maintainer@example.test");
+    resendSendMock.mockClear();
+    process.env.CONTACT_TO_EMAIL = "   ";
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(await sendDatasetAdminNewRequestEmail({ name: "Pat", organization: null })).toEqual({ sent: false });
+    expect(resendSendMock).not.toHaveBeenCalled();
+  });
+});
 
 describe.each(senders)("dataset sender: %s", (_label, send, recipient) => {
   it("sends to the right recipient and reports the Resend id", async () => {

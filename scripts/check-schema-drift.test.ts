@@ -22,6 +22,7 @@ import {
 const ALL_TABLES = [
   "api_access_grants",
   "api_daily_usage",
+  "commercial_checkouts",
   "contact_messages",
   "dataset_access_grants",
   "dataset_downloads",
@@ -35,6 +36,7 @@ const ALL_TABLES = [
   "leads",
   "maintenance_ledger",
   "operator_ownership",
+  "paypal_webhook_events",
   "siting_context",
   "state_digest_runs",
   "submission_notify_requests",

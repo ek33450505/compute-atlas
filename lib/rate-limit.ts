@@ -569,8 +569,9 @@ export async function checkAccessGrantEmailSendCap(email: string): Promise<{ ok:
 /**
  * Per-address cap on NEW dataset-access request rows, independent of the
  * per-IP rate limit (the route's job) — bounds how many rows one address can
- * accumulate across IPs. Counts `dataset_access_grants` rows created in the
- * window. It does NOT bound verify MAIL volume: re-requesting an unverified
+ * accumulate across IPs. Counts FREE-tier `dataset_access_grants` rows created in the
+ * window (commercial rows are created by paid checkouts under an address nobody has verified, so they must
+ * never consume that address's free-request cap). It does NOT bound verify MAIL volume: re-requesting an unverified
  * address rotates its existing row (no new row, spaced by
  * `DATASET_ROTATION_COOLDOWN_MS`) and mails again, and an active address is
  * re-mailed `dataset_already_active`. `sendGrantGated` (lib/email-gate.ts) caps
@@ -582,6 +583,12 @@ export async function checkDatasetRequestEmailCap(email: string): Promise<{ ok: 
   const rows = await getDb()
     .select({ c: sql<number>`count(*)::int` })
     .from(datasetAccessGrantsTable)
-    .where(and(gt(datasetAccessGrantsTable.createdAt, windowStart), eq(datasetAccessGrantsTable.email, email)));
+    .where(
+      and(
+        gt(datasetAccessGrantsTable.createdAt, windowStart),
+        eq(datasetAccessGrantsTable.email, email),
+        eq(datasetAccessGrantsTable.tier, "free")
+      )
+    );
   return { ok: Number(rows[0]?.c ?? 0) < EMAIL_SEND_CAP_MAX };
 }

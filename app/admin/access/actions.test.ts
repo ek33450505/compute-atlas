@@ -8,7 +8,9 @@ const {
   mockRevalidatePath,
   mockApprove,
   mockReject,
+  mockRedirect,
   mockRevoke,
+  mockCancelSub,
   mockReissue,
   mockExtend,
   mockDeliver,
@@ -20,7 +22,9 @@ const {
   mockRevalidatePath: vi.fn(),
   mockApprove: vi.fn(),
   mockReject: vi.fn(),
+  mockRedirect: vi.fn(),
   mockRevoke: vi.fn(),
+  mockCancelSub: vi.fn(),
   mockReissue: vi.fn(),
   mockExtend: vi.fn(),
   mockDeliver: vi.fn(),
@@ -39,10 +43,12 @@ vi.mock("@/lib/admin-session", () => ({
 vi.mock("@/lib/dataset-grants", () => ({
   approveDatasetGrant: mockApprove,
   rejectDatasetGrant: mockReject,
+  redirectDatasetGrantToPaid: mockRedirect,
   revokeDatasetGrant: mockRevoke,
   reissueDatasetLink: mockReissue,
   extendDatasetGrant: mockExtend,
 }));
+vi.mock("@/lib/commercial-revoke", () => ({ cancelSubscriptionForRevokedGrant: mockCancelSub }));
 vi.mock("@/lib/dataset-admin", () => ({ hasRecentLinkReissue: mockHasRecentReissue }));
 vi.mock("@/lib/dataset-mail", () => ({ deliverDatasetReviewMail: mockDeliver }));
 vi.mock("@/lib/dataset-edition-builder", () => ({ buildEdition: mockBuildEdition }));
@@ -52,6 +58,7 @@ import {
   buildEditionNowAction,
   extendDatasetGrantAction,
   reissueDatasetLinkAction,
+  redirectDatasetGrantToPaidAction,
   rejectDatasetGrantAction,
   revokeDatasetGrantAction,
 } from "./actions";
@@ -70,6 +77,7 @@ const EDITION_ID = "9d1c2e4f-0b3a-4f6d-8a7e-1c2b3d4e5f60";
 
 const approvedIntent = { kind: "dataset_approved", grantId: ID, email: EMAIL, accessToken: TOKEN };
 const rejectedIntent = { kind: "dataset_rejected", grantId: ID, email: EMAIL, rejectionNote: "Out of scope." };
+const redirectIntent = { kind: "dataset_commercial_redirect", grantId: ID, email: EMAIL };
 const reissuedIntent = { kind: "dataset_link_reissued", grantId: ID, email: EMAIL, accessToken: TOKEN };
 
 /** Everything the console received, flattened, so a leak anywhere in the arguments is found. */
@@ -88,7 +96,9 @@ beforeEach(() => {
   mockVerifySessionCookie.mockReturnValue(true);
   mockApprove.mockResolvedValue({ ok: true, kind: "approved", mail: approvedIntent });
   mockReject.mockResolvedValue({ ok: true, mail: rejectedIntent });
+  mockRedirect.mockResolvedValue({ ok: true, mail: redirectIntent });
   mockRevoke.mockResolvedValue({ ok: true });
+  mockCancelSub.mockResolvedValue({ cancelled: false, reason: "not_commercial" });
   mockReissue.mockResolvedValue({ ok: true, mail: reissuedIntent });
   mockExtend.mockResolvedValue({ ok: true });
   mockDeliver.mockResolvedValue({ sent: true, disposition: "sent" });
@@ -110,13 +120,14 @@ describe("session gate", () => {
   it.each([
     ["approveDatasetGrantAction", () => approveDatasetGrantAction(ID)],
     ["rejectDatasetGrantAction", () => rejectDatasetGrantAction(ID)],
+    ["redirectDatasetGrantToPaidAction", () => redirectDatasetGrantToPaidAction(ID)],
     ["revokeDatasetGrantAction", () => revokeDatasetGrantAction(ID)],
     ["reissueDatasetLinkAction", () => reissueDatasetLinkAction(ID)],
     ["extendDatasetGrantAction", () => extendDatasetGrantAction(ID)],
   ])("%s rejects Unauthorized and touches nothing without a valid session", async (_name, run) => {
     mockVerifySessionCookie.mockReturnValue(false);
     await expect(run()).rejects.toThrow("Unauthorized");
-    for (const fn of [mockApprove, mockReject, mockRevoke, mockReissue, mockExtend, mockDeliver, mockRevalidatePath, mockHasRecentReissue]) {
+    for (const fn of [mockApprove, mockReject, mockRedirect, mockRevoke, mockReissue, mockExtend, mockDeliver, mockRevalidatePath, mockHasRecentReissue]) {
       expect(fn).not.toHaveBeenCalled();
     }
   });
@@ -185,12 +196,70 @@ describe("rejectDatasetGrantAction", () => {
   });
 });
 
+describe("redirectDatasetGrantToPaidAction", () => {
+  it("delivers the redirect intent and returns only the disposition", async () => {
+    const result = await redirectDatasetGrantToPaidAction(ID);
+
+    expect(mockRedirect).toHaveBeenCalledWith(ID);
+    expect(mockDeliver).toHaveBeenCalledWith(redirectIntent);
+    expect(result).toEqual({ ok: true, mail: "sent" });
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("returns not-eligible and sends nothing when the lib refuses", async () => {
+    mockRedirect.mockResolvedValue({ ok: false });
+    expect(await redirectDatasetGrantToPaidAction(ID)).toEqual(NOT_ELIGIBLE);
+    expect(mockDeliver).not.toHaveBeenCalled();
+  });
+
+  it("reports an update failure without leaking, and sends nothing", async () => {
+    mockRedirect.mockRejectedValue(new Error("boom"));
+    expect(await redirectDatasetGrantToPaidAction(ID)).toEqual(UPDATE_FAILED);
+    expect(mockDeliver).not.toHaveBeenCalled();
+  });
+
+  it("is not eligible for a non-string id", async () => {
+    expect(await redirectDatasetGrantToPaidAction(5 as never)).toEqual(NOT_ELIGIBLE);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+});
+
 describe("revokeDatasetGrantAction", () => {
   it("forwards the reason and sends no mail", async () => {
     expect(await revokeDatasetGrantAction(ID, "Misused.")).toEqual({ ok: true });
     expect(mockRevoke).toHaveBeenCalledWith(ID, { reason: "Misused." });
     expect(mockDeliver).not.toHaveBeenCalled();
     expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("returns plain { ok: true } for a free grant (no PayPal outcome)", async () => {
+    mockCancelSub.mockResolvedValue({ cancelled: false, reason: "no_subscription" });
+    expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true });
+  });
+
+  it("cancels the subscription AFTER the DB revoke and reports it", async () => {
+    mockCancelSub.mockResolvedValue({ cancelled: true });
+    expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true, subscription: "cancelled" });
+    expect(mockCancelSub).toHaveBeenCalledWith(ID);
+    expect(mockRevoke.mock.invocationCallOrder[0]).toBeLessThan(mockCancelSub.mock.invocationCallOrder[0]);
+  });
+
+  it("reports a failed cancel but still succeeds (the revoke stands)", async () => {
+    mockCancelSub.mockResolvedValue({ cancelled: false, reason: "provider_error" });
+    expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true, subscription: "failed" });
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("reports unknown when the follow-up grant read failed (the revoke stands)", async () => {
+    mockCancelSub.mockResolvedValue({ cancelled: false, reason: "lookup_failed" });
+    expect(await revokeDatasetGrantAction(ID)).toEqual({ ok: true, subscription: "unknown" });
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/admin/access");
+  });
+
+  it("does not attempt a cancel when the revoke is refused", async () => {
+    mockRevoke.mockResolvedValue({ ok: false, reason: "not_eligible" });
+    await revokeDatasetGrantAction(ID);
+    expect(mockCancelSub).not.toHaveBeenCalled();
   });
 
   it("drops a non-string reason", async () => {

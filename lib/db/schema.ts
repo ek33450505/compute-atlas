@@ -303,6 +303,10 @@ export const INTAKE_SURFACES = [
   "leads",
   "contact",
   "access-request",
+  // Commercial Checkout starts; per-IP, card-testing is the threat (app/api/access/checkout/route.ts).
+  "commercial-checkout",
+  // Subscription self-service for commercial grant holders; per-IP (reserved for the cancel control).
+  "commercial-billing-portal",
   // Failed admin-login attempts only (app/admin/login/actions.ts); own budget, see ADMIN_LOGIN_* in lib/rate-limit.ts.
   "admin-login",
 ] as const;
@@ -567,7 +571,7 @@ export type StateDigestRunRow = typeof stateDigestRunsTable.$inferSelect;
  * `kind`: confirm | watch_started | facility_change | facility_digest |
  * state_digest | area_digest. `outcome`: attempted | sent | error |
  * skipped_no_key | skipped_suppressed | skipped_check_failed |
- * skipped_unconfirmed | skipped_capped.
+ * skipped_unconfirmed | skipped_capped | skipped_duplicate.
  * Both are validated at the type level only (no CHECK constraint), so a new
  * value needs no migration.
  */
@@ -725,8 +729,8 @@ export const DATASET_GRANT_STATUSES = [
 export type DatasetGrantStatus = (typeof DATASET_GRANT_STATUSES)[number];
 
 /**
- * Statuses that count as an OPEN grant for an email: the single source for the predicate of the partial
- * unique index `dataset_access_grants_open_email_idx` below and for the matching `ON CONFLICT ... WHERE`
+ * Statuses that count as an OPEN grant for an email and tier: the single source for the predicate of the partial
+ * unique index `dataset_access_grants_open_email_tier_idx` below and for the matching `ON CONFLICT ... WHERE`
  * target in lib/dataset-grants.ts. Changing it changes the index, so it needs a migration.
  */
 export const DATASET_OPEN_GRANT_STATUSES = [
@@ -745,6 +749,10 @@ export const DATASET_CATEGORIES = [
 ] as const;
 
 export type DatasetCategory = (typeof DATASET_CATEGORIES)[number];
+
+export const DATASET_TIERS = ["free", "commercial"] as const;
+
+export type DatasetTier = (typeof DATASET_TIERS)[number];
 
 export const DATASET_EDITION_STATUSES = ["building", "published", "failed"] as const;
 
@@ -777,8 +785,8 @@ export type DatasetDownloadOutcome = (typeof DATASET_DOWNLOAD_OUTCOMES)[number];
  * ceilings, and a dataset token must never do that.
  *
  * At most one OPEN (`unverified` | `pending_review` | `active`) row may exist
- * per email, enforced by the partial unique index
- * `dataset_access_grants_open_email_idx`; that is what gives the request path
+ * per (email, tier), enforced by the partial unique index
+ * `dataset_access_grants_open_email_tier_idx`; that is what gives the request path
  * (lib/dataset-grants.ts) a race-free dedupe. Rows that are `expired`,
  * `revoked` or `rejected` do not count, so a re-request inserts a new row.
  *
@@ -838,12 +846,20 @@ export const datasetAccessGrantsTable = pgTable(
     lastNoticeEditionId: uuid("last_notice_edition_id"), // newest-edition weekly-notice claim (contract in the table doc); deliberately NO foreign key
     downloadCount: integer("download_count").notNull().default(0),
     submitterIpHash: text("submitter_ip_hash"),
+    tier: text("tier").$type<DatasetTier>().notNull().default("free"), // free | commercial; a commercial grant is live only while paid_through is in the future (liveGrant)
+    paidThrough: timestamp("paid_through", { withTimezone: true }), // set by the PayPal webhook; null until first payment
+    lastPaymentAt: timestamp("last_payment_at", { withTimezone: true }), // PayPal `lastPayment.time` of the payment that funded the current paid_through; an extension needs a strictly newer one
+    paypalSubscriptionId: text("paypal_subscription_id"),
   },
   (table) => [
     index("dataset_access_grants_status_idx").on(table.status),
+    uniqueIndex("dataset_access_grants_paypal_subscription_id_idx").on(table.paypalSubscriptionId),
     index("dataset_access_grants_email_idx").on(table.email),
-    uniqueIndex("dataset_access_grants_open_email_idx")
-      .on(table.email)
+    // One open row per (email, tier): a free and a commercial grant may coexist for one address, but never
+    // two of the same tier. The tier split is what keeps a purchase (whose Checkout email nobody has
+    // verified) from ever touching somebody's free request.
+    uniqueIndex("dataset_access_grants_open_email_tier_idx")
+      .on(table.email, table.tier)
       // `sql.raw` over the constant's quoted literals (fixed values in this file, never input): the index
       // predicate must be literal text, and this emits the same SQL as the migration's hand-readable form.
       .where(sql`${table.status} in (${sql.raw(DATASET_OPEN_GRANT_STATUSES.map((status) => `'${status}'`).join(", "))})`),
@@ -852,6 +868,7 @@ export const datasetAccessGrantsTable = pgTable(
     uniqueIndex("dataset_access_grants_access_token_hash_idx").on(table.accessTokenHash),
     uniqueIndex("dataset_access_grants_renew_token_hash_idx").on(table.renewTokenHash),
     uniqueIndex("dataset_access_grants_unsubscribe_token_idx").on(table.unsubscribeToken),
+    check("dataset_access_grants_tier_check", sql`${table.tier} IN ('free', 'commercial')`),
   ]
 );
 
@@ -925,6 +942,66 @@ export const datasetDownloadsTable = pgTable(
 );
 
 export type DatasetDownloadRow = typeof datasetDownloadsTable.$inferSelect;
+
+/**
+ * Idempotency log of PayPal webhook events: `id` is the PayPal event id, so a
+ * redelivered event hits the primary key. `processedAt` is null until the
+ * handler finishes. Deleting a grant keeps the row and nulls `grantId`.
+ */
+export const paypalWebhookEventsTable = pgTable(
+  "paypal_webhook_events",
+  {
+    id: text("id").primaryKey(),
+    eventType: text("event_type").notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true }).defaultNow().notNull(),
+    processedAt: timestamp("processed_at", { withTimezone: true }),
+    grantId: uuid("grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
+  },
+  (table) => [index("paypal_webhook_events_received_at_idx").on(table.receivedAt)]
+);
+
+export type PaypalWebhookEventRow = typeof paypalWebhookEventsTable.$inferSelect;
+
+/**
+ * One row per commercial checkout attempt, created by our own form BEFORE the buyer is sent to PayPal; its
+ * `id` travels to PayPal as `custom_id`, which is how the webhook finds the attempt again. `decision` stays
+ * null until the webhook evaluates the subscription: 'activate' (it gets, or already has, a grant) or
+ * 'refuse' (no grant: the address already holds a live commercial grant from another subscription; the maintainer is alerted and decides about any refund by hand). A refusal always has a `reason`, and only a refusal does (CHECK). `email`,
+ * `name` and `organization` are nullable so retention can scrub them: abandoned attempts (no decision) are
+ * deleted after 30 days, decided rows have the three fields nulled after 365 days. `grantId` is the grant this
+ * attempt activated, `conflictGrantId` the grant a refusal names; both are informational and null after the
+ * grant is deleted.
+ */
+export const commercialCheckoutsTable = pgTable(
+  "commercial_checkouts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    plan: text("plan").notNull().$type<"monthly" | "annual">(),
+    email: text("email"),
+    name: text("name"),
+    organization: text("organization"),
+    termsVersion: text("terms_version").notNull(),
+    paypalSubscriptionId: text("paypal_subscription_id").unique(),
+    decision: text("decision").$type<"activate" | "refuse">(),
+    reason: text("reason").$type<"duplicate_subscription">(),
+    grantId: uuid("grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
+    conflictGrantId: uuid("conflict_grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+  },
+  (table) => [
+    check("commercial_checkouts_plan_check", sql`${table.plan} IN ('monthly', 'annual')`),
+    check("commercial_checkouts_decision_check", sql`${table.decision} IN ('activate', 'refuse')`),
+    // A refusal always names its reason, and only a refusal has one (a null decision implies a null reason).
+    check(
+      "commercial_checkouts_reason_check",
+      sql`(${table.decision} IS NOT DISTINCT FROM 'refuse') = (${table.reason} IS NOT NULL)`
+    ),
+    index("commercial_checkouts_created_at_idx").on(table.createdAt),
+  ]
+);
+
+export type CommercialCheckoutRow = typeof commercialCheckoutsTable.$inferSelect;
 
 /**
  * Durable per-IP daily request counter for the public facilities-family read

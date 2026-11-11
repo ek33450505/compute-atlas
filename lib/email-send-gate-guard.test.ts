@@ -76,12 +76,16 @@ const GATE_SENDERS: Record<string, ReadonlySet<string>> = {
     "sendDatasetAlreadyActiveEmail",
     "sendDatasetApprovedEmail",
     "sendDatasetRejectedEmail",
+    "sendDatasetCommercialRedirectEmail",
+    "sendDatasetSubscriptionActiveEmail",
     "sendDatasetLinkReissuedEmail",
     "sendDatasetRenewalReminderEmail",
     "sendDatasetEditionNoticeEmail",
   ]),
   // The maintainer's alert about a new dataset request.
   sendDatasetAdminNoticeGated: new Set(["sendDatasetAdminNewRequestEmail"]),
+  // The maintainer's alert about a conflict on a commercial subscription.
+  sendDatasetCommercialAlertGated: new Set(["sendDatasetCommercialAlertEmail"]),
 };
 const GATE_FNS = Object.keys(GATE_SENDERS);
 const GATED_SENDERS = new Set(Object.values(GATE_SENDERS).flatMap((names) => [...names]));
