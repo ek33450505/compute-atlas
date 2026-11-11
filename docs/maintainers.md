@@ -602,11 +602,11 @@ unsubscribe at `/api/dataset/unsubscribe`. A grant runs 365 days (`DATASET_GRANT
 
 ### Cron, builds and the Resend cap
 
-- The edition cron is `0 14 * * 6`: Saturday 14:00 UTC, `/api/cron/dataset-edition` (`vercel.json`).
+- The edition cron is `0 14 * * 5`: Friday 14:00 UTC, `/api/cron/dataset-edition` (`vercel.json`).
   The route and the `/admin/access` page both set `maxDuration = 300`. The route's own comment calls 300 s
   the Pro-plan ceiling, so confirm the project's Vercel plan still allows it.
 - The cron ignores the 5-minute retry cooldown, but the schedule fires once a week and nothing reruns a
-  failed build. After a failed Saturday build, run **Build now** in `/admin/access`.
+  failed build. After a failed Friday build, run **Build now** in `/admin/access`.
 - After a build, renewal reminders are sent first, then the weekly notice, paced 600 ms apart with a 240 s
   budget and a 20 s timeout per send (`lib/dataset-notices.ts`).
 - **Resend Free allows 100 mails a day across all mail**, including verify, admin, approval, reminder and

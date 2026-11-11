@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 /**
- * Weekly dataset-edition build, fired by Vercel Cron (`vercel.json`, Saturdays 14:00 UTC).
+ * Weekly dataset-edition build, fired by Vercel Cron (`vercel.json`, Fridays 14:00 UTC).
  *
  * Cron secret ONLY: there is no admin-bearer fallback here, unlike the state-digest route.
  * The admin "Build now" action is a server action, not a call to this route.

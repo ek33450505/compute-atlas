@@ -3,6 +3,6 @@
   "ignoreCommand": "bash scripts/vercel-ignore-build.sh",
   "crons": [
     { "path": "/api/cron/state-digest", "schedule": "0 9 1 * *" },
-    { "path": "/api/cron/dataset-edition", "schedule": "0 14 * * 6" }
+    { "path": "/api/cron/dataset-edition", "schedule": "0 14 * * 5" }
   ]
 }
