@@ -40,9 +40,18 @@ export async function POST(request: Request) {
   // too; an absent header is allowed and the rate limit is the control.
   const site = request.headers.get("sec-fetch-site");
   if (site === "cross-site" || site === "same-site") return failed(request);
-  // A present `Origin` must be ours (the request's own or the canonical site); absent is allowed.
+  // A present `Origin` must be ours (the request's own or the canonical site); absent is allowed. The download
+  // page sends `Referrer-Policy: no-referrer`, so a real browser serializes its own form POST's Origin as the
+  // literal "null". That is accepted ONLY with `sec-fetch-site: same-origin` (a browser-set header a page cannot
+  // forge); "null" from a sandboxed or cross-origin context, or with the header absent, still fails.
   const origin = request.headers.get("origin");
-  if (origin !== null && origin !== new URL(request.url).origin && origin !== new URL(siteConfig.url).origin) {
+  const opaqueOwnForm = origin === "null" && site === "same-origin";
+  if (
+    origin !== null &&
+    !opaqueOwnForm &&
+    origin !== new URL(request.url).origin &&
+    origin !== new URL(siteConfig.url).origin
+  ) {
     return failed(request);
   }
 

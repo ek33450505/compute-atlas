@@ -71,6 +71,18 @@ describe("POST /api/access/subscription/cancel", () => {
     expect(cancel).not.toHaveBeenCalled();
   });
 
+  it("accepts Origin: null when sec-fetch-site is same-origin (the no-referrer download page's own form)", async () => {
+    const res = await POST(formRequest(undefined, { origin: "null", "sec-fetch-site": "same-origin" }));
+    expect(new URL(res.headers.get("location") ?? "").search).toBe("?status=cancelled");
+    expect(cancel).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([["cross-site"], ["same-site"], ["none"]])("refuses Origin: null with sec-fetch-site %s", async (site) => {
+    expectError(await POST(formRequest(undefined, { origin: "null", "sec-fetch-site": site })));
+    expect(checkLimit).not.toHaveBeenCalled();
+    expect(cancel).not.toHaveBeenCalled();
+  });
+
   it("accepts the request's own Origin", async () => {
     const res = await POST(formRequest(undefined, { origin: "https://www.compute-atlas.com" }));
     expect(new URL(res.headers.get("location") ?? "").search).toBe("?status=cancelled");
