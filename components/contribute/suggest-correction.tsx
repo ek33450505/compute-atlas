@@ -615,8 +615,8 @@ export function SuggestCorrection({
                   {emailSent ? null : (
                     <>
                       {" "}
-                      Submissions are anonymous, so there&rsquo;s no status to
-                      track this one.
+                      There is no account, so there is no status page to
+                      check.
                     </>
                   )}
                 </p>

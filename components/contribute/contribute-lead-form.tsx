@@ -154,8 +154,8 @@ export function ContributeLeadForm() {
             >
               public activity feed
             </Link>
-            . Submissions are anonymous, so there&rsquo;s no status to track
-            this one. Contributors who gave a name are credited on the{" "}
+            . There is no account, so there is no status page to
+            check. Contributors who gave a name are credited on the{" "}
             <Link
               href="/contributors"
               className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
@@ -225,7 +225,7 @@ export function ContributeLeadForm() {
           type="submit"
           size="lg"
           disabled={submitting}
-          className="min-h-11 min-w-11"
+          className="min-h-11 min-w-11 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100"
         >
           {submitting ? "Submitting…" : "Submit link"}
         </Button>

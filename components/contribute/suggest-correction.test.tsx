@@ -2053,7 +2053,7 @@ describe("SuggestCorrection — notify email", () => {
     await user.type(screen.getByLabelText(/your email/i), "a@b.co");
     await submit(user);
     await screen.findByText(/your correction is in the review queue/i);
-    expect(screen.queryByText(/no status to track/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/no status page to check/i)).not.toBeInTheDocument();
     const para = screen.getByRole("link", { name: /public activity feed/i }).closest("p")!;
     expect(para.textContent!.replace(/\s+/g, " ").trim()).toMatch(/public activity feed\.$/);
   });
@@ -2065,10 +2065,10 @@ describe("SuggestCorrection — notify email", () => {
     await fillRequired(user);
     await submit(user);
     await screen.findByText(/your correction is in the review queue/i);
-    expect(screen.getByText(/no status to track/i)).toBeInTheDocument();
-    const para = screen.getByText(/no status to track/i).closest("p")!;
+    expect(screen.getByText(/no status page to check/i)).toBeInTheDocument();
+    const para = screen.getByText(/no status page to check/i).closest("p")!;
     expect(para.textContent!.replace(/\s+/g, " ").trim()).toMatch(
-      /public activity feed\. Submissions are anonymous, so there\u2019s no status to track this one\.$/
+      /public activity feed\. There is no account, so there is no status page to check\.$/
     );
   });
 });

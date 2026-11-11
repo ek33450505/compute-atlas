@@ -136,6 +136,27 @@ describe("ContributeLeadForm — submit outcomes", () => {
     expect(contributorsLink).toHaveAttribute("href", "/contributors");
   });
 
+  // Pending state: the base Button's `disabled:opacity-50` blends the primary
+  // fill into a ~3:1 pair. The submit carries an opaque muted pair instead
+  // (--muted-foreground #5C5344 on --muted #E9E2CF = 5.85:1).
+  it("keeps the in-flight submit button at full opacity with the muted token pair", async () => {
+    const user = userEvent.setup();
+    global.fetch = vi.fn().mockReturnValue(new Promise(() => {})) as unknown as typeof fetch;
+
+    render(<ContributeLeadForm />);
+    await user.type(screen.getByLabelText(/link to a source/i), "https://example.com/a");
+    await user.click(screen.getByRole("button", { name: /submit link/i }));
+
+    const pending = await screen.findByRole("button", { name: /submitting/i });
+    expect(pending).toBeDisabled();
+    expect(pending).toHaveClass(
+      "disabled:bg-muted",
+      "disabled:text-muted-foreground",
+      "disabled:opacity-100",
+    );
+    expect(pending).not.toHaveClass("disabled:opacity-50");
+  });
+
   it("resets to the empty form when 'Submit another' is clicked", async () => {
     const user = userEvent.setup();
     mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });

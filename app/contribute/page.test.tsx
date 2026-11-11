@@ -71,3 +71,19 @@ describe("ContributePage — notify email flag", () => {
     expect(screen.getByLabelText(/your email/i)).toBeInTheDocument();
   });
 });
+
+describe("ContributePage — intake privacy copy", () => {
+  it("does not call submissions anonymous and discloses the IP hash", () => {
+    const { container } = render(<ContributePage />);
+    const intro = Array.from(container.querySelectorAll("p")).find((p) =>
+      /Know about a data center/.test(p.textContent ?? "")
+    );
+    expect(intro).toBeDefined();
+    const text = (intro?.textContent ?? "").replace(/\s+/g, " ");
+
+    expect(text).not.toMatch(/anonymous/i);
+    expect(text).toContain(
+      "No account or email required. To limit abuse, a salted hash of your IP address is stored with each submission."
+    );
+  });
+});
