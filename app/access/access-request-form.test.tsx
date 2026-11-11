@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { DATASET_CATEGORIES } from "@/lib/db/schema";
@@ -29,7 +29,7 @@ type User = ReturnType<typeof userEvent.setup>;
 async function fillRequired(user: User) {
   await user.type(screen.getByLabelText(/^email/i), " jane@example.com ");
   await user.type(screen.getByLabelText(/^name/i), "Jane Reporter");
-  await user.selectOptions(screen.getByLabelText(/^category/i), "journalist");
+  await user.selectOptions(screen.getByLabelText(/^category/i), "academic");
   await user.type(screen.getByLabelText(/^intended use/i), "A story on siting.");
   await user.click(screen.getByRole("checkbox", { name: /i will credit compute atlas/i }));
   await user.click(screen.getByRole("checkbox", { name: /i accept the access terms \(version 2026-11-draft\)/i }));
@@ -46,9 +46,9 @@ describe("AccessRequestForm commercial category", () => {
     expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
     await user.selectOptions(screen.getByLabelText(/^category/i), "commercial");
     expect(screen.getByRole("link", { name: "commercial access" })).toHaveAttribute("href", "/access/commercial");
-    expect(screen.getByRole("status")).toHaveTextContent(/commercial use/i);
+    expect(screen.getByRole("status")).toHaveTextContent(/everyone else/i);
     expect(screen.getByRole("button", { name: /request access/i })).toBeDisabled();
-    await user.selectOptions(screen.getByLabelText(/^category/i), "journalist");
+    await user.selectOptions(screen.getByLabelText(/^category/i), "academic");
     expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /request access/i })).toBeEnabled();
   });
@@ -65,18 +65,17 @@ describe("AccessRequestForm commercial category", () => {
   });
 });
 
-describe("AccessRequestForm commercial category with the tier off", () => {
-  it("shows no note, keeps submit enabled and posts a Commercial request", async () => {
-    mockFetch(202, { ok: true });
-    const user = userEvent.setup();
+describe("AccessRequestForm category options by tier", () => {
+  it("offers only the academic option with the tier off", () => {
     render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier={false} />);
-    await fillRequired(user);
-    await user.selectOptions(screen.getByLabelText(/^category/i), "commercial");
-    expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /request access/i })).toBeEnabled();
-    await submit(user);
-    expect(global.fetch).toHaveBeenCalledTimes(1);
-    expect(await screen.findByText(SUCCESS)).toBeInTheDocument();
+    const options = within(screen.getByLabelText(/^category/i)).getAllByRole("option");
+    expect(options.map((o) => o.textContent)).toEqual(["Choose a category", "Student, educator or academic"]);
+    expect(screen.queryByRole("option", { name: /something else/i })).not.toBeInTheDocument();
+  });
+
+  it("offers the something-else option with the tier on", () => {
+    render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
+    expect(screen.getByRole("option", { name: /something else/i })).toBeInTheDocument();
   });
 });
 
@@ -90,8 +89,10 @@ describe("AccessRequestForm live region layout", () => {
 });
 
 describe("AccessRequestForm", () => {
-  it("keeps its category options in step with DATASET_CATEGORIES", () => {
-    expect(DATASET_CATEGORY_OPTIONS.map((o) => o.value)).toEqual([...DATASET_CATEGORIES]);
+  it("offers only values the schema accepts, and only the education and everyone-else choices", () => {
+    const values = DATASET_CATEGORY_OPTIONS.map((o) => o.value);
+    expect(values).toEqual(["academic", "commercial"]);
+    for (const v of values) expect(DATASET_CATEGORIES).toContain(v);
   });
 
   it("posts the exact JSON, dropping empty links and optional fields", async () => {
@@ -108,7 +109,7 @@ describe("AccessRequestForm", () => {
     expect(postedBody()).toEqual({
       email: "jane@example.com",
       name: "Jane Reporter",
-      category: "journalist",
+      category: "academic",
       intendedUse: "A story on siting.",
       links: ["https://example.com/story"],
       attributionAck: true,
@@ -196,7 +197,7 @@ describe("AccessRequestForm", () => {
     render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier />);
     await user.type(screen.getByLabelText(/^email/i), "jane@example.com");
     await user.type(screen.getByLabelText(/^name/i), "Jane");
-    await user.selectOptions(screen.getByLabelText(/^category/i), "other");
+    await user.selectOptions(screen.getByLabelText(/^category/i), "academic");
     await user.type(screen.getByLabelText(/^intended use/i), "Research.");
     await submit(user);
 

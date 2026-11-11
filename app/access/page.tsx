@@ -51,8 +51,8 @@ export default function AccessPage() {
         title="Dataset access"
         dek={
           <>
-            The full Compute Atlas dataset, updated weekly, is free for students, academics,
-            journalists, nonprofits and government. Every request is reviewed by hand.
+            The full Compute Atlas dataset, updated weekly, is free for students, educators
+            and academics. Every request is reviewed by hand.
           </>
         }
       />
@@ -72,7 +72,7 @@ export default function AccessPage() {
         </ol>
         {isCommercialTierEnabled() && (
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            For companies, consultancies, investors and law firms, see{" "}
+            Everyone else can get the full dataset through{" "}
             <Link href="/access/commercial" className={ACCESS_LINK_CLASS}>
               commercial access
             </Link>
