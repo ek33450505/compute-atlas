@@ -692,7 +692,7 @@ Vercel applies env changes to new deployments only: redeploy after any change.
 
 Decisions (Ed, 2026-11-11): payments go through PayPal and a PayPal account is required; $150/month or $1,500/year
 plus applicable tax (Ed handles sales tax himself; there is no tax engine); buyers are never refused on who they are (the data is
-CC BY 4.0): a revoked buyer may subscribe again, and a duplicate subscription gets no second grant and alerts you; no
+CC BY 4.0): a revoked buyer may subscribe again, and a duplicate subscription gets no second grant and alerts you when its payment lands; no
 automatic refunds anywhere. Tax must not be added to the PayPal charge: activation requires the payment to equal the
 plan price exactly (`lib/commercial-activation.ts:270`), so a different charge is not activated and raises an
 `unmatched_subscription` alert. The public terms (`lib/dataset-terms.ts`, version `2026-11-11`) say the
@@ -771,8 +771,9 @@ Maintainer alerts come from `CONTACT_TO_EMAIL` ("Compute Atlas commercial subscr
 `lib/dataset-email-templates.ts`). The alert never moves money. By reason:
 
 - `duplicate_subscription`: the buyer's email already holds a live commercial grant from another subscription, so no
-  second grant was created. Cancel the new subscription and refund its payment by hand in PayPal, unless they meant to
-  buy twice.
+  second grant was created. The alert arrives when PayPal reports the payment (one per charge on the duplicate
+  subscription), not at checkout. Cancel the new subscription and refund its payment by hand in PayPal, unless they
+  meant to buy twice.
 - `unmatched_subscription`: an ACTIVE PayPal subscription could not be matched to a checkout, or its plan, first payment or next billing date did not match that checkout. Look it up in PayPal
   by the subscription id in the alert; decide whether to cancel/refund it or create access by hand.
 - `payment_reversed`: PayPal reported a refund or reversal of a sale. Check the grant and the sale in PayPal. Access
@@ -785,7 +786,7 @@ Maintainer alerts come from `CONTACT_TO_EMAIL` ("Compute Atlas commercial subscr
 
 Revoke:
 
-- Buyers are never refused on who they are: a revoked buyer may subscribe again. A duplicate subscription gets no second grant, and you are alerted.
+- Buyers are never refused on who they are: a revoked buyer may subscribe again. A duplicate subscription gets no second grant, and you are alerted when its payment lands.
 - **Admin revoke cancels the PayPal subscription (Ed, 2026-11-10).** Revoking a commercial grant in `/admin/access`
   revokes it in the database first, then cancels its PayPal subscription at once (`lib/commercial-revoke.ts`). It never
   refunds: refund by hand in PayPal if you want to. If the result line says the subscription could not be cancelled,
@@ -843,7 +844,7 @@ request form fails; downloads, notices and admin keep working. Do it at a quiet 
 to PayPal (plan, email, name, organization, terms version; its id travels to PayPal as `custom_id`). The webhook sets
 the PayPal subscription id, then the decision: `activate` (the subscription has, or already had, a grant) or `refuse`
 (reason `duplicate_subscription`: the email already holds a live commercial grant, no second grant is made and you are
-alerted). Nothing is cancelled or refunded for a refusal; you decide by hand in PayPal. Retention
+alerted when its payment lands). Nothing is cancelled or refunded for a refusal; you decide by hand in PayPal. Retention
 (`scripts/retention-prune.ts`) deletes undecided rows after 30 days and nulls email, name and organization on decided
 rows after 365 days; the decision record itself stays. `paypal_webhook_events` holds event ids and types; processed
 rows are deleted after 90 days.

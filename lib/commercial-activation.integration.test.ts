@@ -284,7 +284,7 @@ describe("activateFromPayPal", () => {
 });
 
 describe("duplicate subscription", () => {
-  it("writes no grant, claims a 'refuse' decision, alerts once across retries, and never moves money", async () => {
+  it("writes no grant, claims a 'refuse' decision, alerts only per sale (not at checkout), and never moves money", async () => {
     const existing = await insertGrant({ email: "buyer@example.com" });
     const co = await makeCheckout();
     pay(co.id);
@@ -301,7 +301,16 @@ describe("duplicate subscription", () => {
     expect(await activateFromPayPal(SUB, deps())).toEqual({ kind: "refused", reason: "duplicate_subscription" });
     pay(co.id, { status: "CANCELLED" });
     expect(await activateFromPayPal(SUB, deps())).toEqual({ kind: "refused", reason: "duplicate_subscription" });
-    expect(alerts).toEqual([{ reason: "duplicate_subscription", action: "no_grant_created", saleId: null }]);
+    // No sale, no alert: no money has moved yet.
+    expect(alerts).toEqual([]);
+    // A payment lands: one alert per sale, retries of the same sale deduped.
+    const sale = (saleId: string) => ({ ...deps(), saleId });
+    expect(await activateFromPayPal(SUB, sale("SALE-1"))).toEqual({ kind: "refused", reason: "duplicate_subscription" });
+    expect(await activateFromPayPal(SUB, sale("SALE-1"))).toEqual({ kind: "refused", reason: "duplicate_subscription" });
+    expect(alerts).toEqual([{ reason: "duplicate_subscription", action: "no_grant_created", saleId: "SALE-1" }]);
+    await activateFromPayPal(SUB, sale("SALE-2"));
+    expect(alerts.map((a) => a.saleId)).toEqual(["SALE-1", "SALE-2"]);
+    expect(await grants()).toHaveLength(1);
   });
 
   it("throws (so PayPal redelivers) when the maintainer alert cannot be sent, and alerts on the retry", async () => {
@@ -310,9 +319,10 @@ describe("duplicate subscription", () => {
     pay(co.id);
     const working = sendMail.alert;
     sendMail.alert = async () => ({ sent: false, errorCode: "boom" });
-    await expect(activateFromPayPal(SUB, deps())).rejects.toThrow(/alert not sent/);
+    const sale = { ...deps(), saleId: "SALE-1" };
+    await expect(activateFromPayPal(SUB, sale)).rejects.toThrow(/alert not sent/);
     sendMail.alert = working;
-    expect((await activateFromPayPal(SUB, deps())).kind).toBe("refused");
+    expect((await activateFromPayPal(SUB, sale)).kind).toBe("refused");
     expect(alerts).toHaveLength(1);
   });
 
@@ -333,7 +343,8 @@ describe("duplicate subscription", () => {
     const results = await Promise.all([activateFromPayPal(SUB, deps()), activateFromPayPal("I-SECOND123", deps())]);
     expect(results.map((r) => r.kind).sort()).toEqual(["activated", "refused"]);
     expect(await grants()).toHaveLength(1);
-    expect(alerts).toHaveLength(1);
+    // The refused duplicate had no sale, so no alert until its payment lands.
+    expect(alerts).toHaveLength(0);
   });
 });
 

@@ -37,8 +37,8 @@ import { hashToken } from "@/lib/token-hash";
  * origin/feat/commercial-tier): the decision is made once and stored (here on the `commercial_checkouts` row,
  * where the earlier version had its own decisions table); NOTHING here moves money (Ed's decision: paying buyers are not
  * refused and nothing is cancelled or refunded automatically; the only conflict, a second subscription for an
- * address that already holds a live commercial grant, writes no grant and alerts the maintainer, who decides by
- * hand in PayPal); the grant is written by ONE statement that row-locks the
+ * address that already holds a live commercial grant, writes no grant and, once a payment for it lands, alerts
+ * the maintainer, who decides by hand in PayPal); the grant is written by ONE statement that row-locks the
  * checkout, writes the grant and links the decision, so two concurrent activations can never both write; the
  * welcome mail is at-least-once (a send failure throws, the retry re-mints a token and mails again); alerts
  * to the maintainer are deduped by their gate and required (a missing one throws so PayPal redelivers).
@@ -574,24 +574,28 @@ async function replayActivation(deps: ResolvedDeps, checkout: CheckoutRow, sub: 
 
 /**
  * A stored 'refuse' decision (the address already holds a live commercial grant from another subscription): no
- * grant, and NO money movement. The maintainer is alerted (deduped by the gate: once per checkout, however
- * many retries) with the new subscription, the existing grant and what to do by hand. A failed alert throws,
- * so a redelivery tells them eventually.
+ * grant, and NO money movement. The maintainer is alerted only when a SALE triggered the call (deduped by the gate:
+ * once per sale id, so each charge on the duplicate subscription is one alert) with the new subscription, the
+ * existing grant and what to do by hand. Without a sale (return route, ACTIVATED webhook) there is no alert: no
+ * money has moved yet, so the alert waits for the charge, and if the sale webhook never arrives the refusal is
+ * still recorded in commercial_checkouts. A failed alert throws, so a redelivery tells them eventually.
  */
 async function replayDuplicate(deps: ResolvedDeps, checkout: CheckoutRow, sub: PayPalSubscription): Promise<ActivationOutcome> {
-  await sendAlert(
-    deps,
-    {
-      reason: "duplicate_subscription",
-      action: "no_grant_created",
-      subscriptionId: sub.id,
-      checkoutId: checkout.id,
-      saleId: deps.saleId ?? null,
-      grantId: checkout.conflictGrantId,
-    },
-    // Per SALE when a payment triggered this (each charge on a duplicate subscription is a fresh alert); else per checkout.
-    deps.saleId ?? checkout.id
-  );
+  if (deps.saleId) {
+    await sendAlert(
+      deps,
+      {
+        reason: "duplicate_subscription",
+        action: "no_grant_created",
+        subscriptionId: sub.id,
+        checkoutId: checkout.id,
+        saleId: deps.saleId,
+        grantId: checkout.conflictGrantId,
+      },
+      // Per SALE: each charge on a duplicate subscription is a fresh alert.
+      deps.saleId
+    );
+  }
   return { kind: "refused", reason: "duplicate_subscription" };
 }
 
