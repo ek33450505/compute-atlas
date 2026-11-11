@@ -186,7 +186,7 @@ describe("/access/commercial", () => {
     expect(text).toContain("(9.1 MB)");
     expect(text).toContain(`the same records as a ${CSV_COLUMN_COUNT}-column table, ready for a spreadsheet (1.8 MB)`);
     expect(text).toContain("reading 5 of them");
-    expect(text).toContain("A new edition every Saturday, and an email when it is ready");
+    expect(text).toContain("A new edition every Friday, and an email when it is ready");
     const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
     expect(headings).toEqual([
       "What you get",

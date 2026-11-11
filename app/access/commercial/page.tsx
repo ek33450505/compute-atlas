@@ -110,7 +110,7 @@ export default async function CommercialAccessPage({
             per facility
           </li>
           <li>changelog.json: records added, updated and removed since the previous edition</li>
-          <li>A new edition every Saturday, and an email when it is ready</li>
+          <li>A new edition every Friday, and an email when it is ready</li>
           <li>One personal download link, sent by email as soon as payment completes</li>
         </ul>
       </section>

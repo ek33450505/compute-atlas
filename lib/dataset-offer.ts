@@ -143,7 +143,7 @@ async function readCounts(): Promise<DatasetCounts> {
 // `unstable_cache` needs the Next request context, which vitest lacks (same dodge as lib/data.ts).
 // The cached readers throw on failure or timeout (a thrown read is never cached); the exported
 // loaders catch, log a SQLSTATE only, and fail soft to null so the page renders without the strip.
-// A cached value (or null) can lag a Saturday publish by up to 24h, same as the page's own ISR timer.
+// A cached value (or null) can lag a Friday publish by up to 24h, same as the page's own ISR timer.
 const cachedEdition: () => Promise<OfferEdition | null> = process.env.VITEST
   ? readEdition
   : unstable_cache(readEdition, ["dataset-offer-edition"], { revalidate: 86400 });

@@ -138,7 +138,7 @@ describe("/access/dataset active grant, no edition yet", () => {
     await renderPage();
 
     expect(screen.getByText(/no edition has been published yet/i)).toBeInTheDocument();
-    expect(screen.getByText(/built on saturday; this link will work then/i)).toBeInTheDocument();
+    expect(screen.getByText(/built on friday; this link will work then/i)).toBeInTheDocument();
     expect(screen.getByText("Prepared for Pat Reporter, Daily Planet")).toBeInTheDocument();
     expect(screen.queryAllByRole("link", { name: /\.(json|csv|txt)$/ })).toHaveLength(0);
   });

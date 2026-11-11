@@ -153,7 +153,7 @@ function NoEdition({ grant, token }: { grant: DatasetActiveGrant; token: string 
         <PreparedFor grant={grant} />
       </PageMasthead>
       <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-        No edition has been published yet. The first edition is built on Saturday; this link will
+        No edition has been published yet. The first edition is built on Friday; this link will
         work then.
       </p>
       <SubscriptionSection grant={grant} token={token} />
