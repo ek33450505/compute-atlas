@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, afterEach } from "vitest";
+import { vi, describe, it, expect, afterEach, beforeEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -20,86 +20,204 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+const mocks = vi.hoisted(() => ({ getAllFacilities: vi.fn(), latestPublishedEdition: vi.fn() }));
+vi.mock("@/lib/data", () => ({ getAllFacilities: mocks.getAllFacilities, loadFacilities: mocks.getAllFacilities }));
+vi.mock("@/lib/dataset-editions", () => ({ latestPublishedEdition: mocks.latestPublishedEdition }));
+
 import DataPage, { metadata } from "./page";
+import { CSV_COLUMN_COUNT } from "@/lib/dataset-csv";
+import { MAX_ROWS } from "@/lib/table-query";
+
+const fac = (facilityType: string, state: string, operator: string, sources: number) => ({
+  facilityType,
+  operator,
+  location: { state },
+  sources: Array.from({ length: sources }, () => ({})),
+});
+
+beforeEach(() => {
+  mocks.getAllFacilities.mockResolvedValue([
+    fac("data_center", "TX", "Alpha", 3),
+    fac("data_center", "VA", "Beta", 2),
+    fac("crypto_mining", "OH", "Alpha", 1),
+    fac("power_generation", "TX", "Gamma", 4),
+  ]);
+  mocks.latestPublishedEdition.mockResolvedValue({
+    id: "e1",
+    editionDate: "2026-11-10",
+    builtAt: new Date(),
+    recordCount: 4,
+    files: [],
+    changelogSummary: { added: 7, updated: 8, removed: 0, headlines: [] },
+  });
+});
 
 afterEach(() => {
   vi.unstubAllEnvs();
 });
 
 describe("DataPage access cards", () => {
-  it("shows the free card only, with no paid-tier section, when commercial is off", () => {
+  it("shows the free card only, with no paid-tier section, when commercial is off", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
-    render(DataPage());
+    render(await DataPage());
     expect(screen.getByRole("heading", { level: 3, name: "Free" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/access?from=data");
     expect(screen.queryByRole("heading", { name: "Commercial" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Why a paid tier" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Why it costs money" })).not.toBeInTheDocument();
     expect(screen.queryByText(/\$150/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Get the dataset" })).not.toBeInTheDocument();
   });
 
-  it("shows both cards and the why section when sharing and commercial are on", () => {
+  it("restricts the free tier to students, educators and academics", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
-    render(DataPage());
-    expect(screen.getByRole("heading", { level: 3, name: "Free" })).toBeInTheDocument();
-    const card = screen.getByRole("heading", { level: 3, name: "Commercial" }).closest("section");
-    expect(card).toHaveTextContent("$150/month or $1,500/year, plus applicable tax");
-    expect(card).toHaveTextContent("The same weekly JSON and CSV files, licensed CC BY 4.0");
-    expect(card).toHaveTextContent("One link per subscription; for a team, contact us.");
-    expect(card).toHaveTextContent(
-      "as soon as payment completes. $150/month or $1,500/year, plus applicable tax. Cancel anytime."
-    );
-    expect(within(card as HTMLElement).getByRole("link", { name: "See commercial plans" })).toHaveAttribute("href", "/access/commercial");
-    expect(within(card as HTMLElement).getByRole("link", { name: "contact us" })).toHaveAttribute("href", "/contact");
-    expect(screen.getByRole("heading", { level: 2, name: "Why a paid tier" })).toBeInTheDocument();
-    expect(document.body.textContent).toContain("A subscription pays for delivery, not a licence");
-    expect(document.body.textContent).not.toMatch(/donat|support us/i);
+    render(await DataPage());
+    const free = screen.getByRole("heading", { level: 3, name: "Free" }).closest("section")!;
+    expect(free).toHaveTextContent("For students, educators and academics.");
+    expect(free.textContent).not.toMatch(/government|journalist|nonprofit/i);
   });
 
-  it("shows no cards when sharing is off, even if commercial is on, and keeps the cite section", () => {
+  it("shows both cards and the why section when sharing and commercial are on", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    render(await DataPage());
+    const card = screen.getByRole("heading", { level: 3, name: "Commercial" }).closest("section")!;
+    expect(card).toHaveTextContent("$150/month or $1,500/year, plus applicable tax");
+    expect(card).toHaveTextContent("For everyone else: companies, consultancies, investors, utilities, law firms, journalists, nonprofits and government.");
+    expect(card).toHaveTextContent("One link per subscription; for a team, contact us.");
+    expect(within(card).getByRole("link", { name: "Get the dataset" })).toHaveAttribute("href", "/access/commercial");
+    expect(within(card).getByRole("link", { name: "contact us" })).toHaveAttribute("href", "/contact");
+    expect(screen.getByRole("heading", { level: 2, name: "Why it costs money" })).toBeInTheDocument();
+    expect(document.body.textContent).toContain("the fee pays for the work, not a licence");
+    expect(document.body.textContent).not.toMatch(/donat|support us|months free/i);
+  });
+
+  it("renders live counts, the edition line, and the quoted constants", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(await DataPage());
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("4 facilities · 2 data centers · 1 crypto-mining sites · 1 power plants");
+    expect(text).toContain("3 states and territories · 3 operators · 10 source links");
+    expect(text).toContain("Latest edition: 10 November 2026: 7 added, 8 updated, 0 removed.");
+    expect(text).toContain(`the table stops at ${MAX_ROWS} rows`);
+    expect(text).toContain(`${CSV_COLUMN_COUNT} CSV columns per facility`);
+  });
+
+  it("omits the change counts for the initial edition", async () => {
+    mocks.latestPublishedEdition.mockResolvedValue({
+      id: "e0",
+      editionDate: "2026-11-07",
+      builtAt: new Date(),
+      recordCount: 3121,
+      files: [],
+      changelogSummary: { added: 0, updated: 0, removed: 0, headlines: ["Initial edition: 3121 records"] },
+    });
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(await DataPage());
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("Latest edition: 7 November 2026: 3,121 records.");
+    expect(text).not.toMatch(/\d (added|updated|removed)/);
+  });
+
+  it("keeps zero counts on a later edition and omits a clause whose count is missing", async () => {
+    mocks.latestPublishedEdition.mockResolvedValue({
+      id: "e2",
+      editionDate: "2026-11-14",
+      builtAt: new Date(),
+      recordCount: 10,
+      files: [],
+      changelogSummary: { added: 0, updated: 4, headlines: [] },
+    });
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(await DataPage());
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("Latest edition: 14 November 2026: 0 added, 4 updated.");
+    expect(text).not.toMatch(/\d removed/);
+  });
+
+  it("words siting context without claiming it covers every facility", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(await DataPage());
+    const text = document.body.textContent ?? "";
+    expect(text).toContain(
+      "Siting context. Nearest surface water and ≥230 kV transmission line, basin water stress and aquifer, per facility, keyed by facility id.",
+    );
+    expect(text).not.toMatch(/Siting context, joined|aquifer for every facility/);
+  });
+
+  it.each([
+    ["throws", () => mocks.latestPublishedEdition.mockRejectedValue(new Error("db down"))],
+    ["returns null", () => mocks.latestPublishedEdition.mockResolvedValue(null)],
+  ])("omits the edition line, keeping the page, when the edition read %s", async (_label, arrange) => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    arrange();
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(await DataPage());
+    expect(document.body.textContent).not.toContain("Latest edition");
+    expect(screen.getByRole("heading", { level: 2, name: "The full dataset" })).toBeInTheDocument();
+    expect(document.body.textContent).toContain("4 facilities");
+  });
+
+  it("omits the stat lines, keeping the page, when the facility read throws", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mocks.getAllFacilities.mockRejectedValue(new Error("db down"));
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(await DataPage());
+    expect(document.body.textContent).not.toContain("source links");
+    expect(screen.getByRole("link", { name: "Request access" })).toBeInTheDocument();
+  });
+
+  it("reads no data at all when sharing is off", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    render(await DataPage());
+    expect(mocks.getAllFacilities).not.toHaveBeenCalled();
+    expect(mocks.latestPublishedEdition).not.toHaveBeenCalled();
+  });
+
+  it("shows no cards when sharing is off, even if commercial is on, and keeps the cite section", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
-    render(DataPage());
+    render(await DataPage());
     expect(screen.queryByRole("heading", { name: "Free" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Commercial" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Why a paid tier" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Why it costs money" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "How to cite Compute Atlas" })).toBeInTheDocument();
   });
 
-  it("does not mention Ko-fi", () => {
+  it("does not mention Ko-fi", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
-    const { container } = render(DataPage());
+    const { container } = render(await DataPage());
     expect(container.textContent ?? "").not.toMatch(/ko-?fi/i);
     expect(readSource("app/data/page.tsx")).not.toMatch(/ko-?fi/i);
   });
 
-  it.each([["false"], [""]])("renders no request-access text when the flag is %j", (value) => {
+  it.each([["false"], [""]])("renders no request-access text when the flag is %j", async (value) => {
     vi.stubEnv("DATASET_SHARING_ENABLED", value);
-    render(DataPage());
+    render(await DataPage());
     expect(screen.queryByText(/request access/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/full dataset/i)).not.toBeInTheDocument();
   });
 
-  it.each([["true"], ["false"]])("keeps the forbidden-words and data-file-link guard when the flag is %s", (value) => {
+  it.each([["true"], ["false"]])("keeps the forbidden-words and data-file-link guard when the flag is %s", async (value) => {
     vi.stubEnv("DATASET_SHARING_ENABLED", value);
-    const { container } = render(DataPage());
-    expect(container.textContent ?? "").not.toMatch(/download|bulk|paused|programmatic|developer docs/i);
+    const { container } = render(await DataPage());
+    expect(container.textContent ?? "").not.toMatch(/bulk|paused|programmatic|developer docs/i);
     const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
     expect(hrefs.some((h) => /facilities\.(csv|json)|^\/api/.test(h ?? ""))).toBe(false);
   });
 });
 
 describe("DataPage", () => {
-  it("renders the h1", () => {
-    const page = DataPage();
+  it("renders the h1", async () => {
+    const page = await DataPage();
     render(page);
     expect(screen.getByRole("heading", { level: 1, name: "Data" })).toBeInTheDocument();
   });
 
-  it("carries no download, bulk, or API wording and no data-file links", () => {
-    const { container } = render(DataPage());
+  it("carries no bulk or API wording and no data-file links", async () => {
+    const { container } = render(await DataPage());
     const text = container.textContent ?? "";
     expect(text).not.toMatch(/download|bulk|paused|programmatic|developer docs/i);
     const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
@@ -107,8 +225,8 @@ describe("DataPage", () => {
     expect(container.querySelector("a[download]")).toBeNull();
   });
 
-  it("explains how to cite an individual facility page", () => {
-    render(DataPage());
+  it("explains how to cite an individual facility page", async () => {
+    render(await DataPage());
     expect(screen.getByRole("heading", { name: "Citing a facility page" })).toBeInTheDocument();
     expect(screen.getByText(/compute-atlas\.com\/facilities\/\[id\]/)).toBeInTheDocument();
   });
@@ -123,7 +241,7 @@ describe("DataPage", () => {
     });
     try {
       const { default: FreshPage } = await import("./page");
-      render(FreshPage());
+      render(await FreshPage());
       expect(screen.getByRole("heading", { level: 1, name: "Data" })).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: "How to cite Compute Atlas" })).toBeInTheDocument();
     } finally {
@@ -131,21 +249,22 @@ describe("DataPage", () => {
     }
   });
 
-  it("describes citation in the meta description, within 160 characters", () => {
+  it("describes the offer and citation in the meta description, within 160 characters", async () => {
     expect(metadata.title).toBe("Data");
     expect(metadata.description).toMatch(/cite/i);
+    expect(metadata.description).toContain("$150/month for everyone else");
     expect(metadata.description).not.toMatch(/download|bulk|paused/i);
     expect((metadata.description ?? "").length).toBeLessThanOrEqual(160);
   });
 
-  it("does not import the DB-backed data layer", () => {
-    expect(readSource("app/data/page.tsx")).not.toMatch(
-      /from "@\/lib\/data"|getAllFacilities\(|loadFacilities\(/
-    );
+  it("reads data only through the cached, fail-soft offer helper", async () => {
+    const src = readSource("app/data/page.tsx");
+    expect(src).not.toMatch(/from "@\/lib\/data"|getAllFacilities\(|latestPublishedEdition\(/);
+    expect(src).toMatch(/from "@\/lib\/dataset-offer"/);
   });
 
-  it("gives the CC BY 4.0 link an accessible name that starts with its visible text", () => {
-    const page = DataPage();
+  it("gives the CC BY 4.0 link an accessible name that starts with its visible text", async () => {
+    const page = await DataPage();
     render(page);
     // WCAG 2.5.3 Label in Name.
     const link = screen.getByRole("link", {
@@ -154,23 +273,23 @@ describe("DataPage", () => {
     expect(link).toHaveTextContent("CC BY 4.0");
   });
 
-  it("renders a link to /methodology", () => {
-    const page = DataPage();
+  it("renders a link to /methodology", async () => {
+    const page = await DataPage();
     render(page);
     expect(
       screen.getByRole("link", { name: /Read the full methodology/ })
     ).toHaveAttribute("href", "/methodology");
   });
 
-  it("does not mention a DOI or Zenodo", () => {
-    const page = DataPage();
+  it("does not mention a DOI or Zenodo", async () => {
+    const page = await DataPage();
     render(page);
     expect(document.body.innerHTML).not.toMatch(/zenodo|10\.5281/i);
   });
 
   it("gives one canonical attribution in How to cite: site link, license link, " +
-    "non-partisan note", () => {
-    const page = DataPage();
+    "non-partisan note", async () => {
+    const page = await DataPage();
     render(page);
     const section = screen.getByRole("heading", { name: "How to cite Compute Atlas" }).closest("section");
     expect(section).not.toBeNull();
@@ -186,12 +305,12 @@ describe("DataPage", () => {
     expect(section!.textContent).not.toContain("GitHub");
   });
 
-  it("sets the canonical alternate to /data", () => {
+  it("sets the canonical alternate to /data", async () => {
     expect(metadata.alternates).toEqual({ canonical: "/data" });
   });
 
-  it("emits a BreadcrumbList JSON-LD with a valid trail of at least two items", () => {
-    const page = DataPage();
+  it("emits a BreadcrumbList JSON-LD with a valid trail of at least two items", async () => {
+    const page = await DataPage();
     const { container } = render(page);
 
     const scripts = container.querySelectorAll('script[type="application/ld+json"]');
@@ -217,7 +336,7 @@ describe("DataPage", () => {
     });
   });
 
-  it("keeps raw HTML entities out of metadata string props, which JSX does not decode", () => {
+  it("keeps raw HTML entities out of metadata string props, which JSX does not decode", async () => {
     const strings = [metadata.title, metadata.description].filter(
       (v): v is string => typeof v === "string"
     );
@@ -300,11 +419,11 @@ const AGGREGATE_PAGES = [
 ];
 
 describe("revalidate: /data keeps its own timer; aggregate pages agree with each other", () => {
-  it("app/data/page.tsx declares revalidate = 86400", () => {
+  it("app/data/page.tsx declares revalidate = 86400", async () => {
     expect(getRevalidate("app/data/page.tsx")).toBe("86400");
   });
 
-  it("every facility-reading aggregate page declares the same revalidate value", () => {
+  it("every facility-reading aggregate page declares the same revalidate value", async () => {
     const values = AGGREGATE_PAGES.map((path) => ({ path, value: getRevalidate(path) }));
 
     // Sanity check on the extraction itself, mirroring
@@ -322,7 +441,7 @@ describe("revalidate: /data keeps its own timer; aggregate pages agree with each
     ).toBe(1);
   });
 
-  it("/table imports getAllFacilities and imports no DB client", () => {
+  it("/table imports getAllFacilities and imports no DB client", async () => {
     const src = readSource("app/table/page.tsx");
     expect(src).toMatch(/^import\s*\{[^}]*\bgetAllFacilities\b[^}]*\}\s*from\s*"@\/lib\/data";/m);
     // A direct Neon read here would run on every request now that the page is dynamic.
@@ -330,7 +449,7 @@ describe("revalidate: /data keeps its own timer; aggregate pages agree with each
     expect(stripComments(src)).not.toMatch(/\bgetDb\(/);
   });
 
-  it("the DB-specifier scan catches every import form", () => {
+  it("the DB-specifier scan catches every import form", async () => {
     const hit = (code: string) => dbSpecifiers(code).length > 0;
     expect(hit(`import { getDb } from "@/lib/db/client";`)).toBe(true);
     expect(hit(`import { getDb } from '@/lib/db';`)).toBe(true);

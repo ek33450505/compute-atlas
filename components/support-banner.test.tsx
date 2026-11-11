@@ -160,11 +160,11 @@ describe("SupportBanner", () => {
       expect(screen.getByRole("region", REGION)).toBeInTheDocument();
     });
 
-    it("clicking the Ko-fi link dismisses for the session", async () => {
+    it("clicking the PayPal link dismisses for the session", async () => {
       window.localStorage.setItem(VISITS_KEY, "3");
       render(<SupportBanner />);
       await userEvent.click(
-        screen.getByRole("link", { name: /^Support on Ko-fi/i }),
+        screen.getByRole("link", { name: /^Support on PayPal/i }),
       );
       expect(screen.queryByRole("region", REGION)).not.toBeInTheDocument();
       expect(window.sessionStorage.getItem(DISMISSED_KEY)).toBe("1");

@@ -22,7 +22,7 @@ import { isSuppressed, mayEmail } from "@/lib/suppressions";
 import { hashToken } from "@/lib/token-hash";
 
 /** The single source of the version string a grant records. The final terms text is in lib/dataset-terms.ts; bump this version whenever that text changes. */
-export const DATASET_TERMS_VERSION = "2026-11-11";
+export const DATASET_TERMS_VERSION = "2026-11-11.2";
 
 /** Shape of every raw dataset token (`generateToken`: 256 bits, base64url, 43 chars). Checked before any DB call. */
 export const DATASET_TOKEN_RE = /^[A-Za-z0-9_-]{43}$/;
@@ -221,14 +221,16 @@ export async function requestDatasetAccess(
   rawInput: unknown,
   ipHash: string
 ): Promise<DatasetRequestResult> {
-  // A commercial request is refused while the paid tier is on, before any row, cap count or mail. The
-  // decision uses the submitted category alone, so it reveals nothing about any address and does not weaken the
-  // fixed 202 every other valid request gets. It runs BEFORE the honeypot so a commercial submission gets the
-  // same 422 whether or not the honeypot field is filled (the honeypot stays uniform for the categories it
-  // still applies to). It needs a schema-valid body, so it parses first; the 400 for an invalid body is still
-  // answered below, after the honeypot, exactly as before. With the flag off, commercial requests are reviewed.
+  // A non-academic request is refused while the paid tier is on, before any row, cap count or mail. The
+  // decision uses the submitted category alone, so it reveals nothing about any address and does not
+  // weaken the fixed 202 an academic request gets. Free access is education-only, so every other
+  // category is sent to the paid tier. It runs BEFORE the honeypot so such a submission gets the same
+  // 422 whether or not the honeypot field is filled (the honeypot stays uniform for academic
+  // requests). It needs a schema-valid body, so it parses first; the 400 for an invalid body is still
+  // answered below, after the honeypot, exactly as before. With the flag off, every category is
+  // reviewed.
   const parsed = datasetRequestInputSchema.safeParse(rawInput);
-  if (parsed.success && parsed.data.category === "commercial" && isCommercialTierEnabled()) {
+  if (parsed.success && parsed.data.category !== "academic" && isCommercialTierEnabled()) {
     return { ok: false, status: 422, error: "commercial_requires_subscription", path: COMMERCIAL_PATH };
   }
 

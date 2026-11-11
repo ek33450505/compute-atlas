@@ -162,7 +162,7 @@ yours. For academic work, cite the facility page you used and the date you acces
 `"[Facility name]", Compute Atlas, https://www.compute-atlas.com/facilities/<id>, accessed [date]`.
 Full terms: [LICENSE-DATA](LICENSE-DATA).
 
-The data is free. If you or your organization rely on it, a monthly or institution membership on [Ko-fi](https://ko-fi.com/L2T725R7FV) helps cover its upkeep.
+Browsing the data on the site is free. The full dataset files are free for students, educators and academics, and by subscription for everyone else ([compute-atlas.com/access/commercial](https://www.compute-atlas.com/access/commercial)). One-off support is welcome through [PayPal](https://www.paypal.com/paypalme/computeatlas).
 
 ---
 
@@ -211,7 +211,7 @@ Participation is governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Supporters
 
-People and organizations who support Compute Atlas and asked to be named are listed here and on [the support page](https://www.compute-atlas.com/support). Support never changes what the record says. To support the project, use [Ko-fi](https://ko-fi.com/L2T725R7FV) for a one-off tip, a monthly membership, or an institution membership.
+People and organizations who support Compute Atlas and asked to be named are listed here and on [the support page](https://www.compute-atlas.com/support). Support never changes what the record says. To support the project, use [PayPal](https://www.paypal.com/paypalme/computeatlas) for a one-off contribution, or the [commercial subscription](https://www.compute-atlas.com/access/commercial) for ongoing support.
 
 _None listed yet._
 

@@ -2103,10 +2103,44 @@ describe("commercial tier: request path", () => {
     expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(0);
   });
 
-  it("still accepts a non-commercial request while the tier is on", async () => {
+  it("refuses a honeypot-tripped journalist request with the same 422, writing nothing", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
-    const result = await requestDatasetAccess(body({ category: "journalist" }), "iphash-c2");
+    const result = await requestDatasetAccess(body({ category: "journalist", website: "http://spam.example" }), "iphash-c5");
+    expect(result).toStrictEqual({
+      ok: false,
+      status: 422,
+      error: "commercial_requires_subscription",
+      path: "/access/commercial",
+    });
+    expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(0);
+  });
+
+  it("still accepts an academic request while the tier is on", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const result = await requestDatasetAccess(body({ category: "academic" }), "iphash-c2");
     expect(result.ok).toBe(true);
+  });
+
+  it.each(["journalist", "nonprofit", "government", "other", "commercial"])(
+    "refuses a %s request with the 422 while the tier is on, writing nothing",
+    async (category) => {
+      vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+      const result = await requestDatasetAccess(body({ category }), `iphash-e-${category}`);
+      expect(result).toStrictEqual({
+        ok: false,
+        status: 422,
+        error: "commercial_requires_subscription",
+        path: "/access/commercial",
+      });
+      expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(0);
+    },
+  );
+
+  it("still accepts a journalist request for review when the tier is off", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", undefined);
+    const result = await requestDatasetAccess(body({ category: "journalist" }), "iphash-c5");
+    expect(result.ok).toBe(true);
+    expect(await tdb.db.select().from(datasetAccessGrantsTable)).toHaveLength(1);
   });
 
   it("accepts a commercial request for review when the tier is off, as before", async () => {

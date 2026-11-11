@@ -342,6 +342,14 @@ describe("POST /api/access/request: commercial tier", () => {
     expect(await rows()).toHaveLength(0);
   });
 
+  it("answers the same 422 for a journalist request while the tier is on", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const res = await POST(req(formBody({ category: "journalist" })));
+    expect(res.status).toBe(422);
+    expect(await res.json()).toEqual({ error: "commercial_requires_subscription", path: "/access/commercial" });
+    expect(await rows()).toHaveLength(0);
+  });
+
   it("keeps the fixed 202 for a commercial request when the tier is off", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "false");
     const res = await POST(req(formBody({ category: "commercial" })));

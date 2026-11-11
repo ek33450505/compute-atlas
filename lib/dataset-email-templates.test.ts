@@ -334,10 +334,10 @@ describe("buildDatasetCommercialRedirectEmail", () => {
     expect(mail.text).toContain(`${SITE}/access/commercial`);
     for (const body of [mail.text, mail.html]) {
       expect(body).toContain("$150/month");
-      expect(body).toContain("For commercial use it is a subscription: $150/month or $1,500/year.");
+      expect(body).toContain("Everyone else can subscribe: $150/month or $1,500/year.");
       expect(body).not.toContain("months free");
-      expect(body).toContain("free for students, academics, journalists, nonprofits and government");
-      expect(body).toContain("say so through the");
+      expect(body).toContain("free for students, educators and academics");
+      expect(body).toContain("teaching or academic research, say so through the");
       expect(body).toContain(`${SITE}/contact`);
     }
   });

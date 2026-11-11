@@ -73,7 +73,7 @@ const paragraphs = (...parts: string[]): string => parts.map((p) => `<p>${p}</p>
 
 const CATEGORY_LABEL: Record<DatasetRequestEcho["category"], string> = {
   journalist: "Journalist",
-  academic: "Academic",
+  academic: "Student, educator or academic",
   nonprofit: "Nonprofit",
   government: "Government",
   commercial: "Commercial",
@@ -218,17 +218,17 @@ export function buildDatasetRejectedEmail(input: {
 export function buildDatasetCommercialRedirectEmail(input: { siteUrl: string }): DatasetEmail {
   const url = `${input.siteUrl}${COMMERCIAL_PATH}`;
   const subject = "Your Compute Atlas dataset access request";
-  const free = "The full dataset is free for students, academics, journalists, nonprofits and government.";
-  const paid = `For commercial use it is a subscription: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}.`;
+  const free = "The full dataset is free for students, educators and academics.";
+  const paid = `Everyone else can subscribe: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}.`;
   const contact = `${input.siteUrl}/contact`;
-  const reply = `If this request was not for commercial use, say so through the contact page: ${contact}`;
+  const reply = `If this request is for teaching or academic research, say so through the contact page: ${contact}`;
   const text = ["Thank you for your request for the Compute Atlas dataset.", free, "", paid, url, "", reply].join("\n");
   const html = paragraphs(
     "Thank you for your request for the Compute Atlas dataset.",
     escapeHtml(free),
     escapeHtml(paid),
     `<a href="${escapeHtml(url)}">${escapeHtml(url)}</a>`,
-    `If this request was not for commercial use, say so through the <a href="${escapeHtml(contact)}">contact page</a>.`,
+    `If this request is for teaching or academic research, say so through the <a href="${escapeHtml(contact)}">contact page</a>.`,
   );
   return { subject, text, html };
 }

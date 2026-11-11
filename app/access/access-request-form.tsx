@@ -9,15 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HoneypotField, issuesToFieldMap } from "@/components/contribute/contribute-facility-form";
 
-// Local copy of DATASET_CATEGORIES from lib/db/schema: that module imports the
-// DB client, which must not reach a client bundle. A drift test keeps them equal.
+// The visible choices are a subset of DATASET_CATEGORIES in lib/db/schema (that module imports the
+// DB client, which must not reach a client bundle); a drift test keeps every value valid. Free access
+// is education-only, so everyone else files under "commercial", which the server redirects to the
+// paid tier. The other enum values stay valid for existing rows.
 export const DATASET_CATEGORY_OPTIONS = [
-  { value: "journalist", label: "Journalist" },
-  { value: "academic", label: "Academic or researcher" },
-  { value: "nonprofit", label: "Nonprofit" },
-  { value: "government", label: "Government" },
-  { value: "commercial", label: "Commercial" },
-  { value: "other", label: "Other" },
+  { value: "academic", label: "Student, educator or academic" },
+  { value: "commercial", label: "Something else (business, journalism, nonprofit, government)" },
 ] as const;
 
 const INTENDED_USE_MAX = 2000;
@@ -434,7 +432,7 @@ export function AccessRequestForm({ termsVersion, commercialTier }: { termsVersi
               className={`${CONTROL_CLASS} h-8 w-full`}
             >
               <option value="">Choose a category</option>
-              {DATASET_CATEGORY_OPTIONS.map((o) => (
+              {DATASET_CATEGORY_OPTIONS.filter((o) => commercialTier || o.value !== "commercial").map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>
@@ -445,8 +443,8 @@ export function AccessRequestForm({ termsVersion, commercialTier }: { termsVersi
             <div role="status" aria-live="polite" className="empty:absolute">
               {showCommercialNote ? (
                 <p id="access-commercial-note" className="text-sm text-muted-foreground">
-                  Free access is for students, academics, journalists, nonprofits and government.
-                  For commercial use, please see{" "}
+                  Free access is for students, educators and academics.
+                  Everyone else can get the full dataset through{" "}
                   <Link
                     href={COMMERCIAL_PATH}
                     className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"

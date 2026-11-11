@@ -5,16 +5,25 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { formatPlanPrice } from "@/lib/commercial-plans";
 import { isCommercialTierEnabled } from "@/lib/commercial-flag";
+import { CSV_COLUMN_COUNT } from "@/lib/dataset-csv";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
+import {
+  formatEditionDate,
+  loadOfferCounts,
+  loadOfferEdition,
+  n,
+  type OfferEdition,
+} from "@/lib/dataset-offer";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
+import { MAX_ROWS } from "@/lib/table-query";
 
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Data",
   description:
-    "How to get the Compute Atlas dataset, free for students, academics, journalists, nonprofits and government or paid for commercial use, and how to cite it.",
+    `Get the full Compute Atlas dataset as weekly JSON and CSV files: free for students, educators and academics, ${formatPlanPrice("monthly")} for everyone else. How to cite it.`,
   alternates: { canonical: "/data" },
 };
 
@@ -24,19 +33,37 @@ const BUTTON_CLASS =
 const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
+/** "Latest edition: 10 November 2026: 7 added, 8 updated." A first edition has no changes to report. */
+function editionLine(edition: OfferEdition): string {
+  const head = `Latest edition: ${formatEditionDate(edition.date)}`;
+  const parts = edition.initial
+    ? [edition.recordCount !== null ? `${n(edition.recordCount)} records` : null]
+    : [
+        edition.added !== null ? `${n(edition.added)} added` : null,
+        edition.updated !== null ? `${n(edition.updated)} updated` : null,
+        edition.removed !== null ? `${n(edition.removed)} removed` : null,
+      ];
+  const clauses = parts.filter((part) => part !== null);
+  return clauses.length > 0 ? `${head}: ${clauses.join(", ")}.` : `${head}.`;
+}
+
 /**
- * /data — the access hub ("Data"): the free and commercial access
- * cards, then how to cite the site and an individual facility page, the
- * license statement, and the access date. The route keeps its path for
- * inbound links. The page loads no facility data and revalidates
- * on its 86400s timer only.
+ * /data — the dataset offer ("Cite" in the nav): what the files hold, the
+ * free and commercial access cards, then how to cite the site and an
+ * individual facility page and the license statement. The route keeps its
+ * path for inbound links. Counts and the latest edition are read only when
+ * sharing is on, through 24h-cached, fail-soft loaders, and the page
+ * revalidates on its 86400s timer.
  *
  * Deliberately does NOT emit Dataset JSON-LD — that already lives site-wide
  * on the homepage; duplicating it here would be redundant.
  */
-export default function DataPage() {
+export default async function DataPage() {
   const sharing = isDatasetSharingEnabled();
   const commercial = sharing && isCommercialTierEnabled();
+  const [counts, edition] = sharing
+    ? await Promise.all([loadOfferCounts(), loadOfferEdition()])
+    : [null, null];
 
   return (
     <div
@@ -58,14 +85,63 @@ export default function DataPage() {
       <PageMasthead
         eyebrow="DATA"
         title="Data"
-        dek="Every record is source-cited and the dataset is refreshed weekly, under CC BY 4.0."
+        dek="Every US data center, crypto-mining site and dedicated power plant Compute Atlas tracks, in one set of files, refreshed weekly. Source-cited, CC BY 4.0."
       />
 
       {sharing && (
         <section aria-labelledby="access-heading" className="space-y-4">
           <h2 id="access-heading" className="font-display text-2xl text-foreground">
-            Ways to get it
+            The full dataset
           </h2>
+          {counts && (
+            <div className="space-y-1 font-mono text-sm text-foreground">
+              <p>
+                {n(counts.facilities)} facilities · {n(counts.dataCenters)} data centers
+                · {n(counts.cryptoSites)} crypto-mining sites ·{" "}
+                {n(counts.powerPlants)} power plants
+              </p>
+              <p>
+                {n(counts.states)} states and territories · {n(counts.operators)} operators
+                · {n(counts.sourceLinks)} source links
+              </p>
+            </div>
+          )}
+          {edition && (
+            <p className="font-mono text-xs text-muted-foreground">
+              {editionLine(edition)}
+            </p>
+          )}
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            What the files give you that the site does not:
+          </p>
+          <ul className="max-w-2xl list-disc space-y-2 pl-5 text-base leading-relaxed text-muted-foreground">
+            <li>
+              <strong className="font-medium text-foreground">Everything at once.</strong> The site
+              shows one facility at a time, and the table stops at {n(MAX_ROWS)} rows for any
+              search. The files hold every record.
+            </li>
+            <li>
+              <strong className="font-medium text-foreground">Every field.</strong> {CSV_COLUMN_COUNT}{" "}
+              CSV columns per facility (status, operator, address and coordinates, operational and
+              planned MW, energy source and utility, cooling, water use, investment, acreage, jobs,
+              dates) plus, in JSON, each record&apos;s status history, emissions, subsidies and full
+              source citations.
+            </li>
+            <li>
+              <strong className="font-medium text-foreground">Siting context.</strong> Nearest
+              surface water and ≥230 kV transmission line, basin water stress and aquifer, per
+              facility, keyed by facility id.
+            </li>
+            <li>
+              <strong className="font-medium text-foreground">What changed.</strong> Each weekly
+              edition ships a changelog of records added, updated and removed.
+            </li>
+            <li>
+              <strong className="font-medium text-foreground">The sources.</strong> Every record
+              carries the public filings behind it: permits, rate cases, county agendas, press
+              releases.
+            </li>
+          </ul>
           <div className={commercial ? "grid gap-4 sm:grid-cols-2" : "grid gap-4"}>
             <section
               aria-labelledby="free-access-heading"
@@ -75,8 +151,8 @@ export default function DataPage() {
                 Free
               </h3>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                For students, academics, journalists, nonprofits and government. The same
-                weekly files through a personal link. Each request is reviewed by hand.
+                For students, educators and academics. The same weekly files through a personal
+                link. Each request is reviewed by hand.
               </p>
               <Link href="/access?from=data" className={BUTTON_CLASS}>
                 Request access
@@ -91,18 +167,17 @@ export default function DataPage() {
                   Commercial
                 </h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  For companies, consultancies, investors and law firms. The same weekly JSON
-                  and CSV files, licensed CC BY 4.0, through your own download link as soon as
-                  payment completes. {formatPlanPrice("monthly")} or{" "}
-                  {formatPlanPrice("annual")}, plus applicable tax. Cancel anytime. One link per
-                  subscription; for a team,{" "}
-                  <Link href="/contact" className="underline underline-offset-2">
+                  For everyone else: companies, consultancies, investors, utilities, law firms,
+                  journalists, nonprofits and government. {formatPlanPrice("monthly")} or{" "}
+                  {formatPlanPrice("annual")}, plus applicable tax. Your download link arrives as
+                  soon as payment completes. Cancel anytime. One link per subscription; for a team,{" "}
+                  <Link href="/contact" className={LINK_CLASS}>
                     contact us
                   </Link>
                   .
                 </p>
                 <Link href="/access/commercial" className={BUTTON_CLASS}>
-                  See commercial plans
+                  Get the dataset
                 </Link>
               </section>
             )}
@@ -113,14 +188,15 @@ export default function DataPage() {
       {commercial && (
         <section aria-labelledby="why-paid-heading" className="space-y-4 border-t border-border pt-10">
           <h2 id="why-paid-heading" className="font-display text-2xl text-foreground">
-            Why a paid tier
+            Why it costs money
           </h2>
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            A subscription pays for delivery, not a licence: the data is CC BY 4.0 for
-            everyone. The map and every facility page stay free for everyone. Commercial users
-            (companies, consultancies, investors, law firms) pay for the research, discovery,
-            weekly delivery and hosting that keep the data free for education, journalism and
-            the public interest.
+            The data is CC BY 4.0 for everyone, and a subscription does not change that: the fee
+            pays for the work, not a licence. Finding, reading and citing{" "}
+            {counts ? n(counts.sourceLinks) : "thousands of"} public sources, checking for changes
+            every week and delivering clean files is the work. Commercial subscriptions pay for it
+            and keep the files free for students, educators and academics. The map and every
+            facility page stay free for everyone.
           </p>
         </section>
       )}

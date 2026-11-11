@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
 vi.mock("next/link", () => ({
@@ -9,7 +9,12 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+const mocks = vi.hoisted(() => ({ getAllFacilities: vi.fn(), latestPublishedEdition: vi.fn() }));
+vi.mock("@/lib/data", () => ({ getAllFacilities: mocks.getAllFacilities }));
+vi.mock("@/lib/dataset-editions", () => ({ latestPublishedEdition: mocks.latestPublishedEdition }));
+
 import CommercialPage, { generateMetadata } from "./page";
+import { CSV_COLUMN_COUNT } from "@/lib/dataset-csv";
 import SuccessPage, { dynamic, metadata } from "./success/page";
 
 const NOINDEX = { index: false, follow: false };
@@ -18,7 +23,34 @@ async function renderPage(search: Record<string, string> = {}) {
   render(await CommercialPage({ searchParams: Promise.resolve(search) }));
 }
 
-afterEach(() => vi.unstubAllEnvs());
+const fac = (facilityType: string, state: string, sources: number) => ({
+  facilityType,
+  operator: `op-${state}`,
+  location: { state },
+  sources: Array.from({ length: sources }, () => ({})),
+});
+
+beforeEach(() => {
+  mocks.getAllFacilities.mockResolvedValue([fac("data_center", "TX", 3), fac("crypto_mining", "OH", 2)]);
+  mocks.latestPublishedEdition.mockResolvedValue({
+    id: "e1",
+    editionDate: "2026-11-10",
+    builtAt: new Date(),
+    recordCount: 2,
+    files: [
+      { name: "facilities.json", bytes: 9_084_324, pathname: "", sha256: "" },
+      { name: "facilities.csv", bytes: 1_754_755, pathname: "", sha256: "" },
+    ],
+    changelogSummary: { added: 33, updated: 43, removed: 0, headlines: [] },
+  });
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+  mocks.getAllFacilities.mockReset();
+  mocks.latestPublishedEdition.mockReset();
+});
 
 describe("/access/commercial", () => {
   it("renders both plans with prices from COMMERCIAL_PLANS", async () => {
@@ -26,7 +58,7 @@ describe("/access/commercial", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     expect(
-      screen.getByRole("heading", { level: 1, name: "Commercial access to the dataset" })
+      screen.getByRole("heading", { level: 1, name: "The full dataset, every week" })
     ).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /\$150\/month/ })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /\$1,500\/year/ })).toBeInTheDocument();
@@ -39,9 +71,9 @@ describe("/access/commercial", () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
-    expect(screen.getAllByText(/plus applicable tax/)).toHaveLength(2);
-    expect(screen.getByText(/Need access for a team\?/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Contact us" })).toHaveAttribute("href", "/contact");
+    expect(screen.getAllByText(/plus applicable tax/)).toHaveLength(3);
+    expect(screen.getByText(/One named person per subscription/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "contact us" })).toHaveAttribute("href", "/contact");
     expect(
       screen.getByText(/Cancel anytime from your PayPal account; access runs to the end of the paid period\. No refunds for partial periods, except where the law requires one\./)
     ).toBeInTheDocument();
@@ -77,7 +109,7 @@ describe("/access/commercial", () => {
     expect(terms).toBeRequired();
     expect(terms).toHaveAttribute("name", "acceptTerms");
     expect(within(form).getByRole("link", { name: "terms" })).toHaveAttribute("href", "/access/terms");
-    expect(screen.getByText(/finish on PayPal; a PayPal account is required/)).toBeInTheDocument();
+    expect(screen.getByText("You'll finish on PayPal.")).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/stripe/i);
   });
 
@@ -135,16 +167,80 @@ describe("/access/commercial", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     expect(
-      screen.getByText("One personal download link per subscription, sent by email after payment")
+      screen.getByText("One personal download link, sent by email as soon as payment completes")
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("A personal download link, sent by email after payment")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByText(/The data is CC BY 4\.0 for everyone, and a subscription does not change that\./)
+      screen.getByText(/The data is CC BY 4\.0 for everyone: reuse it, including commercially, with attribution\./)
     ).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /\$1,500\/year.*plus applicable tax/ })).toBeInTheDocument();
     expect(screen.queryByText(/months free/)).toBeNull();
+  });
+
+  it("shows the buyer value with live numbers, the edition strip and file sizes", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("2 US data centers, crypto-mining sites and power plants");
+    expect(text).toContain("Latest edition 10 November 2026 · 2 records · 33 added · 43 updated · 0 removed");
+    expect(text).toContain("(9.1 MB)");
+    expect(text).toContain(`the same records as a ${CSV_COLUMN_COUNT}-column table, ready for a spreadsheet (1.8 MB)`);
+    expect(text).toContain("reading 5 of them");
+    expect(text).toContain("A new edition every Saturday, and an email when it is ready");
+    const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(headings).toEqual([
+      "What you get",
+      "Who uses it",
+      "Plans",
+      "Compared with assembling it yourself",
+      "Terms in plain words",
+    ]);
+    expect(screen.getByRole("link", { name: "table" })).toHaveAttribute("href", "/table");
+    expect(text).toContain("the free table and facility pages may be all you need.");
+    expect(text).toContain("siting-context.json: nearest water and transmission, basin water stress and aquifer, per facility");
+    expect(text).not.toMatch(/months free|What is included/);
+  });
+
+  it("shows only the date and record count for the initial edition", async () => {
+    mocks.latestPublishedEdition.mockResolvedValue({
+      id: "e0",
+      editionDate: "2026-11-07",
+      builtAt: new Date(),
+      recordCount: 3121,
+      files: [],
+      changelogSummary: { added: 0, updated: 0, removed: 0, headlines: ["Initial edition: 3121 records"] },
+    });
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    const text = document.body.textContent ?? "";
+    expect(text).toContain("Latest edition 7 November 2026 · 3,121 records");
+    expect(text).not.toMatch(/\d (added|updated|removed)/);
+  });
+
+  it.each([
+    ["throws", () => mocks.latestPublishedEdition.mockRejectedValue(new Error("db down"))],
+    ["returns null", () => mocks.latestPublishedEdition.mockResolvedValue(null)],
+  ])("renders without the edition strip or file sizes when the edition read %s", async (_label, arrange) => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    arrange();
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    const text = document.body.textContent ?? "";
+    expect(text).not.toContain("Latest edition");
+    expect(text).not.toMatch(/\d MB\)/);
+    expect(screen.getByRole("button", { name: "Continue to PayPal" })).toBeInTheDocument();
+  });
+
+  it("still renders the page when the facility read throws", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mocks.getAllFacilities.mockRejectedValue(new Error("db down"));
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    expect(screen.getByRole("heading", { level: 1, name: "The full dataset, every week" })).toBeInTheDocument();
+    expect(document.body.textContent).toContain("reading thousands of them");
   });
 
   it.each(["cancelled", "canceled"])("shows the cancelled note for ?%s=1", async (key) => {
