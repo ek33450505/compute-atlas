@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 vi.mock("@/lib/supporters", () => ({
@@ -28,6 +28,8 @@ vi.mock("next/link", () => ({
 }));
 
 describe("SupportPage", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   it("renders the h1", () => {
     render(<SupportPage />);
     expect(
@@ -35,11 +37,13 @@ describe("SupportPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders the Ko-fi funding link and no GitHub Sponsors link", () => {
+  it("renders the PayPal funding link, no Ko-fi link and no GitHub Sponsors link", () => {
     const { container } = render(<SupportPage />);
     expect(
-      screen.getByRole("link", { name: /Support on Ko-fi/i })
-    ).toHaveAttribute("href", "https://ko-fi.com/L2T725R7FV");
+      screen.getByRole("link", { name: /Support on PayPal/i })
+    ).toHaveAttribute("href", "https://www.paypal.com/paypalme/computeatlas");
+    expect(container.querySelectorAll('a[href*="ko-fi.com"]')).toHaveLength(0);
+    expect(container.textContent ?? "").not.toMatch(/ko-fi/i);
     expect(container.querySelectorAll('a[href*="github.com/sponsors"]')).toHaveLength(0);
   });
 
@@ -197,7 +201,7 @@ describe("SupportPage — the personal sections", () => {
   it("renders exactly one funding CTA, so its link keeps a unique accessible name", () => {
     const { container } = render(<SupportPage />);
     expect(
-      container.querySelectorAll('a[href="https://ko-fi.com/L2T725R7FV"]')
+      container.querySelectorAll('a[href="https://www.paypal.com/paypalme/computeatlas"]')
     ).toHaveLength(1);
   });
 
@@ -208,12 +212,30 @@ describe("SupportPage — the personal sections", () => {
     expect(text).toContain("It has never published a record.");
   });
 
-  it("explains the Ko-fi institution membership without a DOI link", () => {
+  it("states the guarantee without the retired membership wording", () => {
+    const { container } = render(<SupportPage />);
+    const text = container.textContent ?? "";
+    expect(text).not.toContain("membership");
+    expect(text).not.toContain("Nothing on this site is for sale");
+    expect(text).toContain("No record, edit, removal, or place in a ranking is for sale.");
+  });
+
+  it("points organizations to the commercial subscription when the tier is on", () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(<SupportPage />);
     expect(
-      screen.getByText(/Ko-fi has an institution membership/)
-    ).toBeInTheDocument();
-    expect(document.body.innerHTML).not.toMatch(/zenodo|10\.5281/i);
+      screen.getByRole("link", { name: "the commercial subscription" })
+    ).toHaveAttribute("href", "/access/commercial");
+    vi.unstubAllEnvs();
+  });
+
+  it("does not link the commercial subscription when the tier is off", () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "false");
+    render(<SupportPage />);
+    expect(
+      screen.queryByRole("link", { name: "the commercial subscription" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "the contact page" })).toHaveAttribute("href", "/contact");
   });
 
   it("orders the guarantee, then supporters, then where I stand", () => {
@@ -227,16 +249,12 @@ describe("SupportPage — the personal sections", () => {
     expect(follows(supporters, stand)).toBe(true);
   });
 
-  it("puts the monthly-membership line before the Ko-fi link and mentions one-off tips after it", () => {
+  it("mentions one-off support before the PayPal link", () => {
     render(<SupportPage />);
-    const monthly = screen.getByText(/a monthly membership on Ko-fi goes furthest/);
-    const kofi = screen.getByRole("link", { name: /Support on Ko-fi/ });
+    const oneOff = screen.getByText(/one-off contribution through PayPal/);
+    const link = screen.getByRole("link", { name: /Support on PayPal/ });
     expect(
-      Boolean(monthly.compareDocumentPosition(kofi) & Node.DOCUMENT_POSITION_FOLLOWING)
-    ).toBe(true);
-    const oneOff = screen.getByText(/One-off tips work too/);
-    expect(
-      Boolean(kofi.compareDocumentPosition(oneOff) & Node.DOCUMENT_POSITION_FOLLOWING)
+      Boolean(oneOff.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING)
     ).toBe(true);
   });
 });

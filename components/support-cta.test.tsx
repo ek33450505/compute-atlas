@@ -4,12 +4,12 @@ import { renderToString } from "react-dom/server";
 import { SupportCta } from "./support-cta";
 
 describe("SupportCta", () => {
-  it("renders a single Ko-fi link with the correct href", () => {
+  it("renders a single PayPal link with the correct href", () => {
     render(<SupportCta />);
     const links = screen.getAllByRole("link");
     expect(links).toHaveLength(1);
-    expect(links[0]).toHaveAccessibleName("Support on Ko-fi (opens in new tab)");
-    expect(links[0]).toHaveAttribute("href", "https://ko-fi.com/L2T725R7FV");
+    expect(links[0]).toHaveAccessibleName("Support on PayPal (opens in new tab)");
+    expect(links[0]).toHaveAttribute("href", "https://www.paypal.com/paypalme/computeatlas");
   });
 
   it("does not offer GitHub Sponsors on the site", () => {
@@ -36,14 +36,14 @@ describe("SupportCta", () => {
         .map((n) => n.textContent)
         .join("")
         .trim();
-      expect(visible).toBe("Support on Ko-fi");
+      expect(visible).toBe("Support on PayPal");
       expect(link.getAttribute("aria-label")?.startsWith(visible)).toBe(true);
     },
   );
 
   it("server-renders the label and its arrow in one text run (no <!-- --> split)", () => {
     const html = renderToString(<SupportCta />);
-    expect(html).toContain("Support on Ko-fi <span");
+    expect(html).toContain("Support on PayPal <span");
     expect(html).not.toContain("<!-- -->");
   });
 

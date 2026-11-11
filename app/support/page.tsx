@@ -5,13 +5,14 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SupportCta } from "@/components/support-cta";
 import { SupportersList } from "@/components/supporters-list";
+import { isCommercialTierEnabled } from "@/lib/commercial-flag";
 import { siteConfig } from "@/lib/site";
 import { SUPPORTERS } from "@/lib/supporters";
 
 export const metadata: Metadata = {
   title: "Support",
   description:
-    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a monthly membership or a one-off tip helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
+    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a one-off tip through PayPal helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
   alternates: { canonical: "/support" },
 };
 
@@ -26,8 +27,8 @@ const LINK_CLASS =
  *
  * Claims discipline (audited copy, do not extend): no privacy/tracking claim
  * (Vercel Analytics + Speed Insights were removed 2026-10-13, but the Cloudflare
- * proxy still injects its Web Analytics beacon in production), no Ko-fi/
- * GitHub fee percentage, no facility count, and NO DOLLAR FIGURE.
+ * proxy still injects its Web Analytics beacon in production), no payment-processor
+ * fee percentage, no facility count, and NO DOLLAR FIGURE.
  *
  * Named cost CATEGORIES and suppliers are permitted (added 2026-09-14, Ed's
  * call) — a database, hosting, and the discovery pipeline's model
@@ -65,6 +66,21 @@ const LINK_CLASS =
  * and the opinion.
  */
 export default function SupportPage() {
+  const commercialLink = isCommercialTierEnabled() ? (
+    <>
+      see{" "}
+      <Link href="/access/commercial" className={LINK_CLASS}>
+        the commercial subscription
+      </Link>
+    </>
+  ) : (
+    <>
+      get in touch through{" "}
+      <Link href="/contact" className={LINK_CLASS}>
+        the contact page
+      </Link>
+    </>
+  );
   return (
     <div
       data-content-width="4xl"
@@ -188,29 +204,22 @@ export default function SupportPage() {
           every citation, and the full revision history behind the change log;
           almost all of that is data moving between the database and the site
           rather than data stored, because the dataset itself is only tens of
-          megabytes. Hosting (Vercel) serves every facility page, the
-          full-screen map, with no paywall and no paid
-          tier. The third is the discovery pipeline, which runs on a paid
-          Claude subscription: it reads public sources overnight and proposes
-          candidates. It has never published a record. Every candidate is
+          megabytes. Hosting (Vercel) serves every facility page and the
+          full-screen map, with no paywall. The third is the discovery
+          pipeline, which runs on a paid Claude subscription: it reads public
+          sources overnight and proposes candidates. It has never published a record. Every candidate is
           staged for a person to approve or reject by hand &mdash; so what
           that line item buys is the search, not the writing.
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          All three of those costs come due every month, so a monthly
-          membership on Ko-fi goes furthest.
+          If you want to chip in, a one-off contribution through PayPal
+          helps cover them.
         </p>
         <SupportCta />
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          One-off tips work too, with no account needed &mdash; card or
-          PayPal.
-        </p>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          If a university, lab, newsroom or organization relies on the data,
-          Ko-fi has an institution membership. A supporting organization can
-          be named on this page if it asks to be &mdash; for as long as its
-          membership runs, or for twelve months after a one-off institutional
-          contribution. Citing the dataset helps too.
+          If an organization wants to support the project on an ongoing basis,
+          or relies on the full dataset, {commercialLink}. Citing the dataset
+          helps too.
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           If a university, lab, newsroom or organization needs the data
@@ -231,8 +240,8 @@ export default function SupportPage() {
           What support does not change
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Nothing on this site is for sale. A tip or a membership does not
-          buy a record, an edit, a removal, or a place in a ranking &mdash;
+          No record, edit, removal, or place in a ranking is for sale. A tip
+          does not buy one, and neither does a dataset subscription &mdash;
           there is no tier that does, and there won&rsquo;t be. No page
           carries advertising.
         </p>

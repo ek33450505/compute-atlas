@@ -36,12 +36,12 @@ export const siteConfig = {
   url: "https://www.compute-atlas.com",
   repoUrl: "https://github.com/ek33450505/compute-atlas",
   /**
-   * The one on-site funding destination. Ko-fi takes guest checkout (no
-   * account), card or PayPal, one-off or monthly: the right barrier for this
-   * site's audience (residents, local journalists, county officials). It is
-   * the only funding path anywhere: GitHub Sponsors was disabled on 2026-10-28.
+   * The one on-site funding destination: a PayPal.Me link on the Compute
+   * Atlas business account, for one-off support. A plain navigation link (no
+   * script, no form), so no CSP change. Ongoing support is the commercial
+   * subscription, not this link.
    */
-  kofiUrl: "https://ko-fi.com/L2T725R7FV",
+  supportUrl: "https://www.paypal.com/paypalme/computeatlas",
   /** Public Bluesky profile for the project. */
   blueskyUrl: "https://bsky.app/profile/compute-atlas.com",
   /**

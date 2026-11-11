@@ -16,9 +16,7 @@ interface SupportCtaProps {
 }
 
 /**
- * The single on-site ask: Ko-fi, which takes guest checkout (no account),
- * card or PayPal, as a one-off gift or a monthly membership. It is the only
- * funding path anywhere: GitHub Sponsors was disabled on 2026-10-28.
+ * The single on-site ask: a PayPal.Me link for one-off support.
  *
  * WCAG 2.5.3 (label in name): the aria-label STARTS with the visible text, so
  * speech-input users who say what they see hit the right control. The
@@ -29,13 +27,13 @@ export function SupportCta({ className, size = "default" }: SupportCtaProps) {
   return (
     <div className={cn("flex flex-wrap items-center gap-3", className)}>
       <a
-        href={siteConfig.kofiUrl}
+        href={siteConfig.supportUrl}
         target="_blank"
         rel="noreferrer noopener"
-        aria-label="Support on Ko-fi (opens in new tab)"
+        aria-label="Support on PayPal (opens in new tab)"
         className={cn(BASE_CLASS, size === "compact" && COMPACT_CLASS, PRIMARY_CLASS)}
       >
-        Support on Ko-fi <span aria-hidden="true">↗</span>
+        Support on PayPal <span aria-hidden="true">↗</span>
       </a>
     </div>
   );
