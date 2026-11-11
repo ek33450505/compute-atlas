@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => (
@@ -28,10 +28,10 @@ describe("/access/commercial", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Commercial access to the dataset" })
     ).toBeInTheDocument();
-    expect(screen.getByText("$150/month")).toBeInTheDocument();
-    expect(screen.getByText("$1,500/year")).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /\$150\/month/ })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /\$1,500\/year/ })).toBeInTheDocument();
     expect(screen.queryByText(/months free/)).toBeNull();
-    expect(screen.getByText(/never sees card details/i)).toBeInTheDocument();
+    expect(screen.getByText(/never sees your payment details/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "dataset access" })).toHaveAttribute("href", "/access");
   });
 
@@ -43,35 +43,73 @@ describe("/access/commercial", () => {
     expect(screen.getByText(/Need access for a team\?/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Contact us" })).toHaveAttribute("href", "/contact");
     expect(
-      screen.getByText(/Cancel anytime from Manage billing; access runs to the end of the paid period\. No refunds for partial periods\./)
+      screen.getByText(/Cancel anytime from your PayPal account; access runs to the end of the paid period\. No refunds for partial periods\./)
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Commercial access terms" })).toHaveAttribute("href", "/access/terms");
   });
 
-  it("posts each plan to the checkout route", async () => {
+  it("renders one native form posting plan, details and terms to the checkout route", async () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
-    for (const [name, plan] of [
-      ["Subscribe monthly", "monthly"],
-      ["Subscribe annually", "annual"],
+    const submit = screen.getByRole("button", { name: "Continue to PayPal" });
+    const form = submit.closest("form")!;
+    expect(document.querySelectorAll("form")).toHaveLength(1);
+    expect(form).toHaveAttribute("method", "post");
+    expect(form).toHaveAttribute("action", "/api/access/checkout");
+    const group = screen.getByRole("group", { name: "Plan" });
+    const radios = within(group).getAllByRole("radio");
+    expect(radios.map((r) => (r as HTMLInputElement).value)).toEqual(["monthly", "annual"]);
+    expect(radios.every((r) => r.hasAttribute("required") && r.getAttribute("name") === "plan")).toBe(true);
+    expect(screen.getByRole("radio", { name: /\$150\/month/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /\$1,500\/year/ })).not.toBeChecked();
+    for (const [label, name, autocomplete] of [
+      ["Email", "email", "email"],
+      ["Name", "name", "name"],
+      ["Organization", "organization", "organization"],
     ] as const) {
-      const form = screen.getByRole("button", { name }).closest("form")!;
-      expect(form).toHaveAttribute("method", "post");
-      expect(form).toHaveAttribute("action", "/api/access/checkout");
-      expect(form.querySelector('input[name="plan"]')).toHaveValue(plan);
+      const input = screen.getByLabelText(label);
+      expect(input).toBeRequired();
+      expect(input).toHaveAttribute("name", name);
+      expect(input).toHaveAttribute("autocomplete", autocomplete);
     }
+    const terms = screen.getByRole("checkbox", { name: /I agree to the terms/ });
+    expect(terms).toBeRequired();
+    expect(terms).toHaveAttribute("name", "acceptTerms");
+    expect(within(form).getByRole("link", { name: "terms" })).toHaveAttribute("href", "/access/terms");
+    expect(screen.getByText(/finish on PayPal; a PayPal account is required/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/stripe/i);
   });
 
   it.each([
     ["plan", /plan was not recognized/i],
-    ["busy", /too many checkout attempts/i],
+    ["busy", /checkout is busy right now/i],
     ["unavailable", /temporarily unavailable/i],
+    ["details", /check your details.*unsupported characters/i],
+    ["terms", /agree to the terms/i],
+    ["request", /couldn't be processed/i],
   ])("shows an alert for ?error=%s", async (error, text) => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage({ error });
     expect(screen.getByRole("alert")).toHaveTextContent(text);
+  });
+
+  it("points the form's aria-describedby at the alert only when an error shows", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage({ error: "details" });
+    const form = screen.getByRole("button", { name: "Continue to PayPal" }).closest("form")!;
+    expect(form).toHaveAccessibleDescription(/check your details/i);
+    expect(screen.getByRole("alert")).toHaveAttribute("id", form.getAttribute("aria-describedby"));
+  });
+
+  it("has no aria-describedby on the form without an error", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    const form = screen.getByRole("button", { name: "Continue to PayPal" }).closest("form")!;
+    expect(form).not.toHaveAttribute("aria-describedby");
   });
 
   it("ignores an unknown error value", async () => {
@@ -88,7 +126,7 @@ describe("/access/commercial", () => {
       vi.stubEnv("DATASET_SHARING_ENABLED", "true");
       await renderPage({ error });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Subscribe monthly" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Continue to PayPal" })).toBeInTheDocument();
     }
   );
 
@@ -105,17 +143,15 @@ describe("/access/commercial", () => {
     expect(
       screen.getByText(/The data is CC BY 4\.0 for everyone, and a subscription does not change that\./)
     ).toBeInTheDocument();
-    const annualForm = screen.getByRole("button", { name: "Subscribe annually" }).closest("form")!;
-    expect(annualForm).toHaveTextContent("$1,500/year · plus applicable tax.");
-    expect(annualForm).not.toHaveTextContent(/months free/);
+    expect(screen.getByRole("radio", { name: /\$1,500\/year.*plus applicable tax/ })).toBeInTheDocument();
     expect(screen.queryByText(/months free/)).toBeNull();
   });
 
-  it("shows the canceled note for ?canceled=1", async () => {
+  it.each(["cancelled", "canceled"])("shows the cancelled note for ?%s=1", async (key) => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
-    await renderPage({ canceled: "1" });
-    expect(screen.getByText("Checkout was canceled; nothing was charged.")).toBeInTheDocument();
+    await renderPage({ [key]: "1" });
+    expect(screen.getByText("Checkout was cancelled; nothing was charged.")).toBeInTheDocument();
   });
 
   it("is indexable with a canonical when on", () => {
@@ -154,8 +190,11 @@ describe("/access/commercial/success", () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     render(<SuccessPage />);
-    expect(screen.getByRole("heading", { level: 1, name: "Payment received" })).toBeInTheDocument();
-    expect(screen.getByText(/within a few minutes/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Thank you" })).toBeInTheDocument();
+    expect(
+      screen.getByText(/When PayPal confirms your subscription, we'll email your personal download link to the address you entered\. This usually takes a minute\./)
+    ).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/stripe/i);
     expect(screen.getByText(/spam/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "contact page" })).toHaveAttribute("href", "/contact");
     expect(metadata.robots).toEqual(NOINDEX);

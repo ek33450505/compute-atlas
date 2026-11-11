@@ -19,21 +19,23 @@ export function generateMetadata(): Metadata {
 
 const ERROR_MESSAGES: Readonly<Record<string, string>> = {
   plan: "That plan was not recognized. Choose one of the plans below.",
-  busy: "Too many checkout attempts from this network. Please try again later.",
+  details:
+    "Check your details: a valid email address, your name and your organization are all required, and unsupported characters are not accepted.",
+  request: "That request couldn't be processed. Please submit the form on this page.",
+  terms: "Please agree to the terms to continue.",
+  busy: "Checkout is busy right now. Please try again in a little while.",
   unavailable: "Checkout is temporarily unavailable. Please try again later.",
 };
 
 const PLAN_ORDER: readonly CommercialPlanKey[] = ["monthly", "annual"];
 
-const PLAN_DETAIL: Record<CommercialPlanKey, { detail: string; button: string }> = {
-  monthly: { detail: "plus applicable tax.", button: "Subscribe monthly" },
-  annual: { detail: "plus applicable tax.", button: "Subscribe annually" },
-};
+const FIELD_CLASS =
+  "w-full max-w-md rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 const INCLUDED = [
   "The full dataset, refreshed weekly (JSON and CSV)",
   "One personal download link per subscription, sent by email after payment",
-  "Receipts and invoices from Stripe",
+  "Receipts from PayPal",
 ] as const;
 
 function first(value: string | string[] | undefined): string | undefined {
@@ -41,8 +43,8 @@ function first(value: string | string[] | undefined): string | undefined {
 }
 
 /**
- * /access/commercial — self-serve paid access. Plain HTML forms post to /api/access/checkout, which
- * answers with a 303 to Stripe, so the page needs no client JS. The flag only decides which copy
+ * /access/commercial — self-serve paid access. One plain HTML form posts to /api/access/checkout, which
+ * answers with a 303 to PayPal, so the page needs no client JS. The flag only decides which copy
  * renders; the route enforces it independently.
  */
 export default async function CommercialAccessPage({
@@ -55,7 +57,7 @@ export default async function CommercialAccessPage({
   const params = await searchParams;
   const errorKey = first(params.error);
   const errorMessage = errorKey !== undefined && Object.hasOwn(ERROR_MESSAGES, errorKey) ? ERROR_MESSAGES[errorKey] : undefined;
-  const canceled = first(params.canceled) === "1";
+  const canceled = first(params.cancelled) === "1" || first(params.canceled) === "1";
 
   return (
     <AccessShell>
@@ -74,13 +76,13 @@ export default async function CommercialAccessPage({
       />
 
       {errorMessage ? (
-        <p role="alert" className="max-w-2xl rounded-lg border border-input p-4 text-sm">
+        <p id="checkout-error" role="alert" className="max-w-2xl rounded-lg border border-input p-4 text-sm">
           {errorMessage}
         </p>
       ) : null}
       {canceled && !errorMessage ? (
         <p role="status" className="max-w-2xl rounded-lg border border-input p-4 text-sm">
-          Checkout was canceled; nothing was charged.
+          Checkout was cancelled; nothing was charged.
         </p>
       ) : null}
 
@@ -88,29 +90,85 @@ export default async function CommercialAccessPage({
         <h2 id="commercial-plans" className="text-lg font-medium">
           Plans
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {PLAN_ORDER.map((plan) => (
-            <form
-              key={plan}
-              method="post"
-              action="/api/access/checkout"
-              className="space-y-3 rounded-lg border border-input p-4"
-            >
-              <input type="hidden" name="plan" value={plan} />
-              <h3 className="text-base font-medium">{COMMERCIAL_PLANS[plan].label}</h3>
-              <p className="text-sm">
-                <span className="font-medium">{formatPlanPrice(plan)}</span>
-                <span className="text-muted-foreground"> · {PLAN_DETAIL[plan].detail}</span>
-              </p>
-              <button
-                type="submit"
-                className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
-                {PLAN_DETAIL[plan].button}
-              </button>
-            </form>
-          ))}
-        </div>
+        <form
+          method="post"
+          action="/api/access/checkout"
+          aria-describedby={errorMessage ? "checkout-error" : undefined}
+          className="space-y-5"
+        >
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">Plan</legend>
+            {PLAN_ORDER.map((plan, index) => (
+              <div key={plan} className="flex items-start gap-2">
+                <input
+                  type="radio"
+                  id={`plan-${plan}`}
+                  name="plan"
+                  value={plan}
+                  required
+                  defaultChecked={index === 0}
+                  className="mt-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                />
+                <label htmlFor={`plan-${plan}`} className="text-sm">
+                  <span className="font-medium">{COMMERCIAL_PLANS[plan].label}</span>
+                  <span className="text-muted-foreground">
+                    {" "}
+                    · {formatPlanPrice(plan)} · plus applicable tax.
+                  </span>
+                </label>
+              </div>
+            ))}
+          </fieldset>
+          <div className="space-y-1">
+            <label htmlFor="checkout-email" className="text-sm font-medium">
+              Email
+            </label>
+            <input id="checkout-email" name="email" type="email" required maxLength={254} autoComplete="email" className={FIELD_CLASS} />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="checkout-name" className="text-sm font-medium">
+              Name
+            </label>
+            <input id="checkout-name" name="name" type="text" required maxLength={200} autoComplete="name" className={FIELD_CLASS} />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="checkout-organization" className="text-sm font-medium">
+              Organization
+            </label>
+            <input
+              id="checkout-organization"
+              name="organization"
+              type="text"
+              required
+              maxLength={200}
+              autoComplete="organization"
+              className={FIELD_CLASS}
+            />
+          </div>
+          <div className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              id="checkout-terms"
+              name="acceptTerms"
+              required
+              className="mt-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            />
+            <label htmlFor="checkout-terms" className="text-sm">
+              I agree to the{" "}
+              <Link href="/access/terms" className={ACCESS_LINK_CLASS}>
+                terms
+              </Link>
+              .
+            </label>
+          </div>
+          <p className="text-sm text-muted-foreground">You&apos;ll finish on PayPal; a PayPal account is required.</p>
+          <button
+            type="submit"
+            className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            Continue to PayPal
+          </button>
+        </form>
       </section>
 
       <section aria-labelledby="commercial-included" className="space-y-3">
@@ -135,7 +193,7 @@ export default async function CommercialAccessPage({
           .
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Cancel anytime from Manage billing; access runs to the end of the paid period. No
+          Cancel anytime from your PayPal account; access runs to the end of the paid period. No
           refunds for partial periods.{" "}
           <Link href="/access/terms" className={ACCESS_LINK_CLASS}>
             Commercial access terms
@@ -143,7 +201,7 @@ export default async function CommercialAccessPage({
           .
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Payment is handled by Stripe. Compute Atlas never sees card details.
+          Payment is handled by PayPal. Compute Atlas never sees your payment details.
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Access for students, academics, journalists, nonprofits and government is free and

@@ -1,7 +1,10 @@
 import { methodNotAllowed, NO_STORE_HEADERS, notAvailable } from "@/lib/api-response";
+import { commercialCheckoutInputSchema, startCommercialCheckout } from "@/lib/commercial-checkout";
 import { COMMERCIAL_PATH } from "@/lib/commercial-plans";
 import { isCommercialCheckoutOpen } from "@/lib/commercial-flag";
 import { redactedErrorCode } from "@/lib/db-error";
+import { getDb } from "@/lib/db/client";
+import { siteConfig } from "@/lib/site";
 import {
   checkIntakeRateLimit,
   extractTrustedClientIp,
@@ -9,9 +12,8 @@ import {
   normaliseIpForBucketing,
   recordIntakeAttempt,
 } from "@/lib/rate-limit";
-import type { CommercialPlan } from "@/lib/paypal";
 
-type CheckoutError = "plan" | "busy" | "unavailable";
+type CheckoutError = "plan" | "busy" | "unavailable" | "details" | "terms" | "request";
 
 /** 303 back to the commercial page. Relative-to-request, so it works on any host. */
 function backWithError(request: Request, error: CheckoutError): Response {
@@ -19,14 +21,10 @@ function backWithError(request: Request, error: CheckoutError): Response {
   return new Response(null, { status: 303, headers: { ...NO_STORE_HEADERS, Location: url.toString() } });
 }
 
-function parsePlan(value: FormDataEntryValue | null): CommercialPlan | null {
-  return value === "monthly" || value === "annual" ? value : null;
-}
-
 /**
- * Checkout entry point for the commercial tier. Takes a native HTML form POST (`plan` field)
- * so the page works without JS. TEMPORARY: after the checks it answers the standard 403 "not available" until the PayPal
- * checkout lands; the commercial tier is dark behind the flag until then.
+ * Checkout entry point for the commercial tier. Takes a native HTML form POST (`plan`, `email`,
+ * `name`, `organization`, `acceptTerms`) so the page works without JS, and answers 303 to PayPal's approval page.
+ * Submitted values are never echoed into a redirect.
  */
 export async function POST(request: Request) {
   // Kill switch first: no DB, provider or body work.
@@ -39,9 +37,15 @@ export async function POST(request: Request) {
     return backWithError(request, "unavailable");
   }
 
-  // Defence in depth: a cross-site POST cannot burn a shared IP's hourly budget. An absent header
-  // (older clients) is allowed; the rate limit below is the real control.
-  if (request.headers.get("sec-fetch-site") === "cross-site") return backWithError(request, "plan");
+  // Defence in depth: a cross-site POST cannot burn a shared IP's hourly budget. Absent headers (older clients) are
+  // allowed; the rate limit below is the real control. Our own form is same-origin, so same-site (a sibling
+  // subdomain) and a foreign or opaque `Origin` are refused too.
+  const site = request.headers.get("sec-fetch-site");
+  if (site === "cross-site" || site === "same-site") return backWithError(request, "request");
+  const origin = request.headers.get("origin");
+  if (origin !== null && origin !== new URL(request.url).origin && origin !== new URL(siteConfig.url).origin) {
+    return backWithError(request, "request");
+  }
 
   // Gate on PRIOR attempts, then record this one before any content-dependent branch, so a bad
   // plan costs a unit too (same ordering as app/api/access/request/route.ts). Card-testing is
@@ -58,16 +62,32 @@ export async function POST(request: Request) {
   }
   if (!gate.ok) return backWithError(request, "busy");
 
-  let plan: CommercialPlan | null = null;
+  let form: FormData | null = null;
   try {
-    plan = parsePlan((await request.formData()).get("plan"));
+    form = await request.formData();
   } catch {
-    // Not a form body: treated like an invalid plan.
+    // Not a form body: treated like invalid details.
   }
-  if (!plan) return backWithError(request, "plan");
+  if (!form) return backWithError(request, "details");
 
-  // Placeholder until the PayPal checkout replaces it; nothing is created or charged.
-  return notAvailable();
+  // A missing or unrecognised plan keeps its own code; the terms checkbox is checked before the other fields so
+  // the message points at the one thing the buyer can fix.
+  const plan = form.get("plan");
+  if (plan !== "monthly" && plan !== "annual") return backWithError(request, "plan");
+  if (form.get("acceptTerms") !== "on") return backWithError(request, "terms");
+
+  const parsed = commercialCheckoutInputSchema.safeParse({
+    plan,
+    email: form.get("email"),
+    name: form.get("name"),
+    organization: form.get("organization"),
+    acceptTerms: form.get("acceptTerms"),
+  });
+  if (!parsed.success) return backWithError(request, "details");
+
+  const result = await startCommercialCheckout(getDb(), parsed.data);
+  if (!result.ok) return backWithError(request, result.reason);
+  return new Response(null, { status: 303, headers: { ...NO_STORE_HEADERS, Location: result.approveUrl } });
 }
 
 // No OPTIONS export on purpose: only our own same-origin form posts here, so a cross-origin
