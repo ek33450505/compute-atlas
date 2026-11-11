@@ -97,6 +97,9 @@ const COLUMNS: readonly Column[] = [
 /** The fixed, ordered header row of the CSV edition. */
 export const CSV_COLUMNS: readonly string[] = COLUMNS.map(([name]) => name);
 
+/** How many columns the CSV edition has, for public copy that quotes it. */
+export const CSV_COLUMN_COUNT = COLUMNS.length;
+
 const FORMULA_START = /^[=+\-@\t\r]/;
 
 function renderCell(value: Cell): string {

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { PageMasthead } from "@/components/page-masthead";
 import { COMMERCIAL_PLANS, formatPlanPrice, type CommercialPlanKey } from "@/lib/commercial-plans";
 import { isCommercialCheckoutOpen } from "@/lib/commercial-flag";
+import { CSV_COLUMN_COUNT } from "@/lib/dataset-csv";
+import { formatEditionDate, formatMegabytes, loadOfferCounts, loadOfferEdition, n } from "@/lib/dataset-offer";
 import { ACCESS_LINK_CLASS, AccessNotOpen, AccessShell } from "../not-open";
 
 // While the flag is off the page is a thin "not open yet" notice, so keep it out of the index.
@@ -11,7 +13,7 @@ export function generateMetadata(): Metadata {
   return {
     title: "Commercial access to the dataset",
     description:
-      "The full Compute Atlas dataset, refreshed weekly, through a personal download link, for companies, consultancies, investors and law firms.",
+      `The full Compute Atlas dataset of US data centers, crypto-mining sites and power plants: weekly JSON and CSV files with sources and a changelog. ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}.`,
     alternates: { canonical: "/access/commercial" },
     ...(isCommercialCheckoutOpen() ? {} : { robots: { index: false, follow: false } }),
   };
@@ -31,12 +33,6 @@ const PLAN_ORDER: readonly CommercialPlanKey[] = ["monthly", "annual"];
 
 const FIELD_CLASS =
   "w-full max-w-md rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
-
-const INCLUDED = [
-  "The full dataset, refreshed weekly (JSON and CSV)",
-  "One personal download link per subscription, sent by email after payment",
-  "Receipts from PayPal",
-] as const;
 
 function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
@@ -58,22 +54,31 @@ export default async function CommercialAccessPage({
   const errorKey = first(params.error);
   const errorMessage = errorKey !== undefined && Object.hasOwn(ERROR_MESSAGES, errorKey) ? ERROR_MESSAGES[errorKey] : undefined;
   const canceled = first(params.cancelled) === "1" || first(params.canceled) === "1";
+  const [counts, edition] = await Promise.all([loadOfferCounts(), loadOfferEdition()]);
+  const jsonBytes = edition?.fileBytes["facilities.json"];
+  const csvBytes = edition?.fileBytes["facilities.csv"];
 
   return (
     <AccessShell>
       <PageMasthead
         eyebrow="Data"
-        title="Commercial access to the dataset"
-        dek={
-          <>
-            The full Compute Atlas dataset (every record, JSON and CSV, refreshed weekly) through a
-            personal download link, for companies, consultancies, investors and law firms. The data
-            is licensed CC BY 4.0. Commercial users pay for the research, discovery, weekly
-            delivery and hosting that keep the data free for education, journalism and the public
-            interest.
-          </>
-        }
+        title="The full dataset, every week"
+        dek={`${counts ? `${n(counts.facilities)} ` : ""}US data centers, crypto-mining sites and power plants, every field and every source, as JSON and CSV files refreshed weekly. ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}, plus applicable tax. Cancel anytime.`}
       />
+
+      {edition && (
+        <p className="font-mono text-xs text-muted-foreground">
+          {[
+            `Latest edition ${formatEditionDate(edition.date)}`,
+            edition.recordCount !== null ? `${n(edition.recordCount)} records` : null,
+            !edition.initial && edition.added !== null ? `${n(edition.added)} added` : null,
+            !edition.initial && edition.updated !== null ? `${n(edition.updated)} updated` : null,
+            !edition.initial && edition.removed !== null ? `${n(edition.removed)} removed` : null,
+          ]
+            .filter((part) => part !== null)
+            .join(" · ")}
+        </p>
+      )}
 
       {errorMessage ? (
         <p id="checkout-error" role="alert" className="max-w-2xl rounded-lg border border-input p-4 text-sm">
@@ -85,6 +90,42 @@ export default async function CommercialAccessPage({
           Checkout was cancelled; nothing was charged.
         </p>
       ) : null}
+
+      <section aria-labelledby="commercial-included" className="space-y-3">
+        <h2 id="commercial-included" className="text-lg font-medium">
+          What you get
+        </h2>
+        <ul className="max-w-2xl list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
+          <li>
+            facilities.json: every record with every field, including status history, emissions,
+            subsidies, stakeholders and full source citations
+            {jsonBytes !== undefined ? ` (${formatMegabytes(jsonBytes)})` : ""}
+          </li>
+          <li>
+            facilities.csv: the same records as a {CSV_COLUMN_COUNT}-column table, ready for a
+            spreadsheet{csvBytes !== undefined ? ` (${formatMegabytes(csvBytes)})` : ""}
+          </li>
+          <li>
+            siting-context.json: nearest water and transmission, basin water stress and aquifer,
+            per facility
+          </li>
+          <li>changelog.json: records added, updated and removed since the previous edition</li>
+          <li>A new edition every Saturday, and an email when it is ready</li>
+          <li>One personal download link, sent by email as soon as payment completes</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="commercial-users" className="space-y-3">
+        <h2 id="commercial-users" className="text-lg font-medium">
+          Who uses it
+        </h2>
+        <ul className="max-w-2xl list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
+          <li>Site selection and development: where projects are proposed, by whom, near which grid and water.</li>
+          <li>Utilities and energy: announced load, on-site generation and the utility named in each filing.</li>
+          <li>Investors and analysts: the pipeline by status, operator and state, with a weekly changelog to track it.</li>
+          <li>Law, policy and newsrooms: the permits, rate cases and county decisions behind each site.</li>
+        </ul>
+      </section>
 
       <section aria-labelledby="commercial-plans" className="space-y-4">
         <h2 id="commercial-plans" className="text-lg font-medium">
@@ -161,7 +202,7 @@ export default async function CommercialAccessPage({
               .
             </label>
           </div>
-          <p className="text-sm text-muted-foreground">You&apos;ll finish on PayPal; a PayPal account is required.</p>
+          <p className="text-sm text-muted-foreground">You&apos;ll finish on PayPal.</p>
           <button
             type="submit"
             className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
@@ -171,46 +212,54 @@ export default async function CommercialAccessPage({
         </form>
       </section>
 
-      <section aria-labelledby="commercial-included" className="space-y-3">
-        <h2 id="commercial-included" className="text-lg font-medium">
-          What is included
+      <section aria-labelledby="commercial-compare" className="space-y-3">
+        <h2 id="commercial-compare" className="text-lg font-medium">
+          Compared with assembling it yourself
+        </h2>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Every record here started as a public document. Rebuilding the dataset means finding and
+          reading {counts ? n(counts.sourceLinks) : "thousands"} of them, then re-checking every
+          week. If you need a handful of facilities, the free{" "}
+          <Link href="/table" className={ACCESS_LINK_CLASS}>
+            table
+          </Link>{" "}
+          and facility pages may be all you need.
+        </p>
+      </section>
+
+      <section aria-labelledby="commercial-terms" className="space-y-3">
+        <h2 id="commercial-terms" className="text-lg font-medium">
+          Terms in plain words
         </h2>
         <ul className="max-w-2xl list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
-          {INCLUDED.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
+          <li>
+            The data is CC BY 4.0 for everyone: reuse it, including commercially, with attribution.
+            The fee is not a licence fee.
+          </li>
+          <li>
+            Cancel anytime from your PayPal account; access runs to the end of the paid period. No
+            refunds for partial periods, except where the law requires one.{" "}
+            <Link href="/access/terms" className={ACCESS_LINK_CLASS}>
+              Commercial access terms
+            </Link>
+            .
+          </li>
+          <li>Payment is handled by PayPal; a PayPal account is required. Compute Atlas never sees your payment details.</li>
+          <li>
+            One named person per subscription. For a team,{" "}
+            <Link href="/contact" className={ACCESS_LINK_CLASS}>
+              contact us
+            </Link>
+            .
+          </li>
+          <li>
+            Students, educators and academics: access is free and reviewed by hand. See{" "}
+            <Link href="/access" className={ACCESS_LINK_CLASS}>
+              dataset access
+            </Link>
+            .
+          </li>
         </ul>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          The data is CC BY 4.0 for everyone, and a subscription does not change that. It
-          pays for weekly delivery in ready-to-use files, and for the research, discovery
-          and hosting behind them.
-        </p>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Need access for a team?{" "}
-          <Link href="/contact" className={ACCESS_LINK_CLASS}>
-            Contact us
-          </Link>
-          .
-        </p>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Cancel anytime from your PayPal account; access runs to the end of the paid period. No
-          refunds for partial periods, except where the law requires one.{" "}
-          <Link href="/access/terms" className={ACCESS_LINK_CLASS}>
-            Commercial access terms
-          </Link>
-          .
-        </p>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Payment is handled by PayPal. Compute Atlas never sees your payment details.
-        </p>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Access for students, academics, journalists, nonprofits and government is free and
-          approved by hand: see{" "}
-          <Link href="/access" className={ACCESS_LINK_CLASS}>
-            dataset access
-          </Link>
-          .
-        </p>
       </section>
     </AccessShell>
   );
