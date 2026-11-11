@@ -234,46 +234,97 @@ async function bustAggregatesIfQueueDrained(db: ReturnType<typeof getDb>): Promi
 }
 
 /**
+ * Resolves a failed conditional claim (`UPDATE … WHERE status='pending'`
+ * returned no row) into the same 404 / 409 the old check-then-act produced.
+ */
+async function claimFailure(
+  db: ReturnType<typeof getDb>,
+  id: string
+): Promise<{ ok: false; status: 404 | 409; error: string }> {
+  const [existing] = await db
+    .select({ status: submissionsTable.status })
+    .from(submissionsTable)
+    .where(eq(submissionsTable.id, id));
+  if (!existing) {
+    return { ok: false, status: 404, error: "Submission not found" };
+  }
+  if (existing.status === "pending") {
+    // Lost the claim to a request that has since reverted it (its write failed).
+    return {
+      ok: false,
+      status: 409,
+      error: "Submission is being reviewed by another request; try again",
+    };
+  }
+  return { ok: false, status: 409, error: `Submission already ${existing.status}` };
+}
+
+/**
  * Promotes a pending submission to a live facility via the write
- * primitives, then marks the submission `approved`. If the primitive rejects
- * (e.g. schema-invalid payload), the submission is left `pending` so it can
- * be fixed and retried rather than silently lost.
+ * primitives. The submission is claimed FIRST with one conditional UPDATE
+ * (`status='pending'` -> `approved`), so overlapping approves/rejects cannot
+ * both act: the loser gets a 409. The facility is then written from the
+ * claimed row. If the write fails (a `!ok` result or a throw) the claim is
+ * reverted to `pending` and the original failure is returned/rethrown, so the
+ * submission can be fixed and retried rather than silently lost.
+ *
+ * Residual cases (neon-http has no interactive transactions): a crash
+ * between the claim and the revert, or a revert that itself fails (logged),
+ * each leave the submission `approved` with no facility write. Approve and
+ * reject then both return 409, so it needs a manual fix: set its status back
+ * to `pending` (and clear reviewed_at / review_note) in admin or SQL. It is
+ * visible in the queue and cannot double-apply. Separately, a write that
+ * commits the facility and then throws is reverted to `pending` while the
+ * facility is live, so a re-approve would re-apply it (same as the old throw
+ * behaviour, not a regression).
  */
 export async function approveSubmission(
   id: string,
   reviewNote?: string
 ): Promise<SubmissionActionResult> {
   const db = getDb();
-  const rows = await db.select().from(submissionsTable).where(eq(submissionsTable.id, id));
-  const row = rows[0];
+  const [row] = await db
+    .update(submissionsTable)
+    .set({ status: "approved", reviewedAt: new Date(), reviewNote: reviewNote ?? null })
+    .where(and(eq(submissionsTable.id, id), eq(submissionsTable.status, "pending")))
+    .returning();
   if (!row) {
-    return { ok: false, status: 404, error: "Submission not found" };
+    return claimFailure(db, id);
   }
-  if (row.status !== "pending") {
-    return { ok: false, status: 409, error: `Submission already ${row.status}` };
-  }
+
+  const revertClaim = async () => {
+    try {
+      await db
+        .update(submissionsTable)
+        .set({ status: "pending", reviewedAt: null, reviewNote: null })
+        .where(and(eq(submissionsTable.id, id), eq(submissionsTable.status, "approved")));
+    } catch (err) {
+      console.error(`approve claim revert failed (sqlstate: ${redactedErrorCode(err)})`);
+    }
+  };
 
   // `source: id` attributes the resulting facility_history row to this
   // submission rather than the "admin-direct" default, so promoted-submission
   // history correctly shows where the change came from.
-  const writeResult: WriteResult =
-    row.kind === "create"
-      ? await createFacility(row.payload, id)
-      : row.kind === "status_update"
-        ? await writeStatusUpdate(row.targetFacilityId!, row.payload, id)
-        : row.kind === "enrichment_update"
-          ? await writeEnrichmentUpdate(row.targetFacilityId!, row.payload, id)
-          : await updateFacility(row.targetFacilityId!, row.payload, id);
-
-  if (!writeResult.ok) {
-    return writeResult;
+  let writeResult: WriteResult;
+  try {
+    writeResult =
+      row.kind === "create"
+        ? await createFacility(row.payload, id)
+        : row.kind === "status_update"
+          ? await writeStatusUpdate(row.targetFacilityId!, row.payload, id)
+          : row.kind === "enrichment_update"
+            ? await writeEnrichmentUpdate(row.targetFacilityId!, row.payload, id)
+            : await updateFacility(row.targetFacilityId!, row.payload, id);
+  } catch (err) {
+    await revertClaim();
+    throw err;
   }
 
-  const [updated] = await db
-    .update(submissionsTable)
-    .set({ status: "approved", reviewedAt: new Date(), reviewNote: reviewNote ?? null })
-    .where(eq(submissionsTable.id, id))
-    .returning();
+  if (!writeResult.ok) {
+    await revertClaim();
+    return writeResult;
+  }
 
   // Best-effort — neither notifySubscribersOfChange nor
   // notifySubmitterOfReview throws (each handles/logs its own errors
@@ -306,7 +357,7 @@ export async function approveSubmission(
 
   return {
     ok: true,
-    submission: updated,
+    submission: row,
     facility: writeResult.facility,
     historyRecorded: writeResult.historyRecorded,
   };
@@ -322,21 +373,14 @@ export async function rejectSubmission(
   }
 
   const db = getDb();
-  const rows = await db.select().from(submissionsTable).where(eq(submissionsTable.id, id));
-  const row = rows[0];
-  if (!row) {
-    return { ok: false, status: 404, error: "Submission not found" };
-  }
-  if (row.status !== "pending") {
-    return { ok: false, status: 409, error: `Submission already ${row.status}` };
-  }
-
-  const [updated] = await db
+  const [row] = await db
     .update(submissionsTable)
     .set({ status: "rejected", reviewedAt: new Date(), reviewNote: reason })
-    .where(eq(submissionsTable.id, id))
+    .where(and(eq(submissionsTable.id, id), eq(submissionsTable.status, "pending")))
     .returning();
-
+  if (!row) {
+    return claimFailure(db, id);
+  }
   // Best-effort — matches approveSubmission's identical discipline above:
   // notifySubmitterOfReview never throws (it handles/logs its own errors
   // internally), but this extra try/catch is belt-and-suspenders so a
@@ -350,7 +394,7 @@ export async function rejectSubmission(
 
   await bustAggregatesIfQueueDrained(db);
 
-  return { ok: true, submission: updated };
+  return { ok: true, submission: row };
 }
 
 /**
