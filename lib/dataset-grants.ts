@@ -772,6 +772,8 @@ export type DatasetActiveGrant = {
   tier: DatasetTier;
   /** Whether a PayPal subscription is linked. The subscription id itself never leaves the server. */
   hasSubscription: boolean;
+  /** When the paid period ends (commercial grants; null for free ones). Shown on the download page. */
+  paidThrough: Date | null;
 };
 
 /**
@@ -810,6 +812,7 @@ export async function getGrantByAccessToken(
       status: datasetAccessGrantsTable.status,
       tier: datasetAccessGrantsTable.tier,
       hasSubscription: sql<boolean>`${datasetAccessGrantsTable.paypalSubscriptionId} is not null`,
+      paidThrough: datasetAccessGrantsTable.paidThrough,
       live: sql<boolean>`${liveGrant(now)}`, // the shared LIVE definition, evaluated in the same query
     })
     .from(datasetAccessGrantsTable)
@@ -831,6 +834,7 @@ export async function getGrantByAccessToken(
         tier: row.tier,
         // Strict `=== true`, like `live`: a computed projection the driver may hand back as a string.
         hasSubscription: row.hasSubscription === true,
+        paidThrough: row.paidThrough,
       },
     };
   }

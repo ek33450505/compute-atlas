@@ -1661,7 +1661,7 @@ describe("getGrantByAccessToken", () => {
     expect((await rowById(g.id)).status).toBe("expired");
   });
 
-  it("an active, unexpired grant resolves to its id, name, organization, expiry, tier and subscription flag", async () => {
+  it("an active, unexpired grant resolves to its id, name, organization, expiry, tier, subscription flag and paid-through", async () => {
     const { row: g, accessToken } = await activeGrant({ name: "Pat Reporter", organization: "The Gazette" });
 
     const result = await getGrantByAccessToken(accessToken);
@@ -1675,15 +1675,17 @@ describe("getGrantByAccessToken", () => {
         expiresAt: g.expiresAt,
         tier: "free",
         hasSubscription: false,
+        paidThrough: null,
       },
     });
   });
 
   it("never returns the PayPal subscription id, only a strict boolean saying one exists", async () => {
+    const paidThrough = daysFromNow(10);
     const { accessToken } = await activeGrant({
       tier: "commercial",
       category: "commercial",
-      paidThrough: daysFromNow(10),
+      paidThrough,
       paypalSubscriptionId: "I-SECRET123",
     });
 
@@ -1693,6 +1695,7 @@ describe("getGrantByAccessToken", () => {
     if (result.state !== "active") return;
     expect(result.grant.tier).toBe("commercial");
     expect(result.grant.hasSubscription).toBe(true);
+    expect(result.grant.paidThrough).toEqual(paidThrough);
     const serialised = JSON.stringify(result);
     for (const secret of ["I-SECRET123", "paypal_subscription_id", "paypalSubscriptionId"]) {
       expect(serialised).not.toContain(secret);
@@ -1713,7 +1716,7 @@ describe("getGrantByAccessToken", () => {
 
     expect(result.state).toBe("active");
     if (result.state !== "active") return;
-    expect(Object.keys(result.grant).sort()).toEqual(["expiresAt", "hasSubscription", "id", "name", "organization", "tier"]);
+    expect(Object.keys(result.grant).sort()).toEqual(["expiresAt", "hasSubscription", "id", "name", "organization", "paidThrough", "tier"]);
     expect(result.grant.organization).toBeNull();
     expect(result.grant.hasSubscription).toBe(false);
     const serialised = JSON.stringify(result);
