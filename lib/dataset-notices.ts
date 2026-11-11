@@ -6,6 +6,9 @@ import { redactedErrorCode } from "@/lib/db-error";
 import { datasetAccessGrantsTable, datasetEditionsTable } from "@/lib/db/schema";
 import { sendDatasetEditionNoticeEmail, sendDatasetRenewalReminderEmail, type SendOutcome } from "@/lib/email";
 import { sendGrantGated } from "@/lib/email-gate";
+import { DATASET_NOTICE_PACE_MS, makePacer, realSleep, type Pacer } from "@/lib/send-pacer";
+
+export { DATASET_NOTICE_PACE_MS, makePacer, type Pacer };
 
 /**
  * The weekly edition notice and the renewal reminder: the two scheduled mails to dataset grantees. Both run
@@ -34,9 +37,6 @@ import { sendGrantGated } from "@/lib/email-gate";
 /** Reminders go out once a live grant is within this long of its expiry. */
 export const DATASET_RENEWAL_REMINDER_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
-/** Gap between two sends that reached Resend: 600 ms keeps the API under 2 requests a second. */
-export const DATASET_NOTICE_PACE_MS = 600;
-
 /** A send that has not settled after this long is abandoned (counted failed, `send_timeout`). */
 export const DATASET_SEND_TIMEOUT_MS = 20_000;
 
@@ -56,9 +56,6 @@ export interface NoticeOptions {
   pacer?: Pacer;
 }
 
-/** The wait to run at the top of each send callback. */
-export type Pacer = () => Promise<void>;
-
 export interface NoticeResult {
   /** Grants whose notice this run attempted: claimed for the edition, or (reminders) a token issued. */
   claimed: number;
@@ -69,20 +66,6 @@ export interface NoticeResult {
   failed: number;
   /** Every candidate was handled before the deadline and no error cut the run short. */
   complete: boolean;
-}
-
-const realSleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
-
-/**
- * Returns the wait to run at the top of each send callback. The gate invokes the callback only when it has
- * decided to mail, so a suppressed or ineligible grant costs no wait; the first send waits for nothing.
- */
-export function makePacer(paceMs: number = DATASET_NOTICE_PACE_MS, sleep: (ms: number) => Promise<void> = realSleep): Pacer {
-  let sentOne = false;
-  return async () => {
-    if (sentOne && paceMs > 0) await sleep(paceMs);
-    sentOne = true;
-  };
 }
 
 /**

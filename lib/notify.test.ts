@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, afterAll, afterEach, describe, it, expect, vi } from "vitest";
 
+import { eq } from "drizzle-orm";
 vi.mock("@/lib/db/client");
 vi.mock("@/lib/email", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/email")>();
@@ -1331,3 +1332,116 @@ describe("area digest — mixed-group guard and run id", () => {
   });
 });
 
+// Resend allows ~2 requests a second: an unpaced digest run lost one subscriber's mail to
+// `rate_limit_exceeded` on 2026-11-01.
+describe("sendGroupedChangeNotifications — pacing and rate-limit retry", () => {
+  const seedGroups = async (n: number) => {
+    const changes: RecipientFacilityChange[] = [];
+    for (let i = 0; i < n; i++) {
+      const [row] = await tdb.db
+        .insert(subscriptionsTable)
+        .values({
+          email: `pace${i}@example.com`,
+          targetType: "facility",
+          targetId: facilityA.id,
+          status: "confirmed",
+          confirmToken: generateToken(),
+          unsubscribeToken: generateToken(),
+        })
+        .returning();
+      changes.push({
+        origin: "facility-watch",
+        subscriptionId: row.id,
+        email: row.email,
+        unsubscribeToken: row.unsubscribeToken,
+        facilityName: facilityA.name,
+        facilitySlug: facilityA.id,
+        changeLabel: "record updated",
+        status: "Operational",
+      });
+    }
+    return groupChangesByRecipient(changes);
+  };
+
+  it("waits at least 500 ms between consecutive sends", async () => {
+    const groups = await seedGroups(5);
+    const sleep = vi.fn().mockResolvedValue(undefined);
+
+    const sent = await sendGroupedChangeNotifications(groups, undefined, { sleep });
+
+    expect(sent).toBe(5);
+    expect(sleep).toHaveBeenCalledTimes(4);
+    for (const [ms] of sleep.mock.calls) expect(ms).toBeGreaterThanOrEqual(500);
+  });
+
+  it("retries once after a rate limit; the second result is what counts", async () => {
+    const [group] = await seedGroups(1);
+    const sleep = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(sendChangeNotification)
+      .mockResolvedValueOnce({ sent: false, errorCode: "rate_limit_exceeded" })
+      .mockResolvedValueOnce({ sent: true, resendId: null });
+
+    const sent = await sendGroupedChangeNotifications([group], undefined, { sleep });
+
+    expect(sent).toBe(1);
+    expect(sendChangeNotification).toHaveBeenCalledTimes(2);
+    expect(sleep).toHaveBeenCalled();
+    const rows = await tdb.db.select().from(emailSendsTable);
+    expect(rows.map((r) => r.outcome).sort()).toEqual(["error", "sent"]);
+  });
+
+  it("does not retry a second consecutive rate limit", async () => {
+    const [group] = await seedGroups(1);
+    const sleep = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(sendChangeNotification)
+      .mockResolvedValueOnce({ sent: false, errorCode: "rate_limit_exceeded" })
+      .mockResolvedValueOnce({ sent: false, errorCode: "rate_limit_exceeded" })
+      .mockResolvedValue({ sent: true, resendId: null });
+
+    const sent = await sendGroupedChangeNotifications([group], undefined, { sleep });
+
+    expect(sent).toBe(0);
+    expect(sendChangeNotification).toHaveBeenCalledTimes(2);
+    const rows = await tdb.db.select().from(emailSendsTable);
+    expect(rows.every((r) => r.outcome === "error" && r.errorCode === "rate_limit_exceeded")).toBe(true);
+  });
+
+  it("costs no pace for a send the gate skips", async () => {
+    const groups = await seedGroups(2);
+    await tdb.db.update(subscriptionsTable).set({ status: "unsubscribed" }).where(eq(subscriptionsTable.id, groups[0].changes[0].subscriptionId));
+    const sleep = vi.fn().mockResolvedValue(undefined);
+
+    const sent = await sendGroupedChangeNotifications(groups, undefined, { sleep });
+
+    expect(sent).toBe(1);
+    expect(sendChangeNotification).toHaveBeenCalledTimes(1);
+    expect(sleep).not.toHaveBeenCalled();
+  });
+
+  it("re-reads the subscription through the gate before the retry", async () => {
+    const [group] = await seedGroups(1);
+    const subscriptionId = group.changes[0].subscriptionId;
+    // The sleep before the retry is where the subscriber opts out.
+    const sleep = vi.fn().mockImplementation(async () => {
+      await tdb.db.update(subscriptionsTable).set({ status: "unsubscribed" }).where(eq(subscriptionsTable.id, subscriptionId));
+    });
+    vi.mocked(sendChangeNotification).mockResolvedValueOnce({ sent: false, errorCode: "rate_limit_exceeded" });
+
+    const sent = await sendGroupedChangeNotifications([group], undefined, { sleep });
+
+    expect(sent).toBe(0);
+    expect(sendChangeNotification).toHaveBeenCalledTimes(1);
+    const rows = await tdb.db.select().from(emailSendsTable);
+    expect(rows.map((r) => r.outcome).sort()).toEqual(["error", "skipped_unconfirmed"]);
+  });
+
+  it("does not retry other send failures", async () => {
+    const [group] = await seedGroups(1);
+    vi.mocked(sendChangeNotification).mockResolvedValueOnce({ sent: false, errorCode: "validation_error" });
+
+    const sent = await sendGroupedChangeNotifications([group], undefined, { sleep: vi.fn().mockResolvedValue(undefined) });
+
+    expect(sent).toBe(0);
+    expect(sendChangeNotification).toHaveBeenCalledTimes(1);
+  });
+});

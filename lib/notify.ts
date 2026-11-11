@@ -7,7 +7,9 @@ import { getDb } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
 import { facilitiesTable, facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
 import { sendAreaDigestEmail, sendChangeDigestEmail, sendChangeNotification, type AreaDigestType } from "@/lib/email";
-import { sendGated } from "@/lib/email-gate";
+import { sendGated, type GateResult, type GatedSend } from "@/lib/email-gate";
+import type { SendOutcome } from "@/lib/email";
+import { makePacer, realSleep } from "@/lib/send-pacer";
 import { claimDigestWindow, completeDigestWindow } from "@/lib/state-digest-ledger";
 import { STATUS_META } from "@/lib/status";
 import { subscriptionSuppressedSql } from "@/lib/suppressions";
@@ -32,6 +34,42 @@ function dropOptedOut<T extends { optedOut: boolean }>(rows: T[]): Omit<T, "opte
     void optedOut;
     return rest;
   });
+}
+
+/** Resend's error name for hitting its ~2 requests/second limit, as persisted by `safeErrorCode`. */
+const RATE_LIMIT_CODE = "rate_limit_exceeded";
+
+/** Wait before the single retry of a rate-limited send. */
+const RATE_LIMIT_RETRY_MS = 1000;
+
+/**
+ * `sendGated` with pacing and one retry on a Resend rate limit. The pace runs inside the send callback, so a
+ * send the gate skips costs no wait. A rate-limited attempt is retried exactly once by calling `sendGated`
+ * again, so suppression and status are re-read before the second send; each attempt leaves its own
+ * `email_sends` row (first `error`/`rate_limit_exceeded`, then the final outcome).
+ */
+async function sendGatedPacedWithRetry(
+  db: ReturnType<typeof getDb>,
+  gated: GatedSend,
+  send: () => Promise<SendOutcome>,
+  pace: () => Promise<void>,
+  sleep: (ms: number) => Promise<void>
+): Promise<GateResult> {
+  let rateLimited = false;
+  const attempt = async (): Promise<GateResult> => {
+    rateLimited = false;
+    const result = await sendGated(db, gated, async () => {
+      await pace();
+      const outcome = await send();
+      rateLimited = !outcome.sent && "errorCode" in outcome && outcome.errorCode === RATE_LIMIT_CODE;
+      return outcome;
+    });
+    return result;
+  };
+  const first = await attempt();
+  if (!rateLimited) return first;
+  await sleep(RATE_LIMIT_RETRY_MS);
+  return attempt();
 }
 
 /**
@@ -203,9 +241,17 @@ export function groupChangesByRecipient(
  */
 export async function sendGroupedChangeNotifications(
   groups: RecipientChangeGroup[],
-  runId?: string
+  runId?: string,
+  opts: { sleep?: (ms: number) => Promise<void> } = {}
 ): Promise<number> {
   const db = getDb();
+  const sleep = opts.sleep ?? realSleep;
+  // One pacer per run: every send that reaches Resend waits out the gap since the previous one.
+  const pace = makePacer(undefined, sleep);
+  // Named `sendGated` with the gate's own signature so the call sites below, and
+  // lib/email-send-gate-guard.test.ts, still see every sender inside a gate callback.
+  const sendGated = (gateDb: typeof db, gated: GatedSend, send: () => Promise<SendOutcome>) =>
+    sendGatedPacedWithRetry(gateDb, gated, send, pace, sleep);
   let sentCount = 0;
   for (const group of groups) {
     const first = group.changes[0];
