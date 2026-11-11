@@ -108,10 +108,11 @@ export default function RootLayout({
             <main id="main-content" className="flex-1">
               {children}
             </main>
+            {/* Before the footer: on phones the banner is in flow, directly above it. */}
+            <SupportBanner />
             <FooterGate>
               <SiteFooter />
             </FooterGate>
-            <SupportBanner />
             <Toaster />
           </TooltipProvider>
         </NuqsAdapter>
