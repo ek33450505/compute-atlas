@@ -56,6 +56,7 @@ import {
   pruneRetentionBackups,
   RETENTION_BACKUP_RETENTION_DAYS,
   runRetentionPrune,
+  SUBSCRIPTIONS_PENDING_RETENTION_DAYS,
   PAYPAL_WEBHOOK_EVENTS_RETENTION_DAYS,
   COMMERCIAL_CHECKOUT_ABANDONED_RETENTION_DAYS,
   COMMERCIAL_CHECKOUT_PII_RETENTION_DAYS,
@@ -490,6 +491,47 @@ describe("runRetentionPrune — window boundary", () => {
     expect(remaining.map((r) => r.id)).toEqual([insideId.id]);
     const lines = readBackupLines();
     expect(lines.map((l) => l.row.id)).toEqual([outsideId.id]);
+  });
+});
+
+describe("runRetentionPrune — unconfirmed pending subscriptions", () => {
+  async function insertSub(tag: string, status: "pending" | "confirmed", createdAt: Date): Promise<string> {
+    const [row] = await tdb.db
+      .insert(subscriptionsTable)
+      .values({
+        email: `${tag}@example.com`,
+        targetType: "facility",
+        targetId: `facility-${tag}`,
+        status,
+        confirmToken: `confirm-${tag}`,
+        unsubscribeToken: `unsub-${tag}`,
+        createdAt,
+      })
+      .returning({ id: subscriptionsTable.id });
+    return row.id;
+  }
+
+  it("deletes a pending row older than the window, keeps a newer one and every confirmed row", async () => {
+    const oldPending = await insertSub("old-pending", "pending", daysBefore(SUBSCRIPTIONS_PENDING_RETENTION_DAYS + 1));
+    const freshPending = await insertSub("fresh-pending", "pending", daysBefore(SUBSCRIPTIONS_PENDING_RETENTION_DAYS - 1));
+    const oldConfirmed = await insertSub("old-confirmed", "confirmed", daysBefore(400));
+
+    const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
+    expect(summary.ok).toBe(true);
+
+    const remaining = (await tdb.db.select().from(subscriptionsTable)).map((r) => r.id).sort();
+    expect(remaining).toEqual([freshPending, oldConfirmed].sort());
+    expect(remaining).not.toContain(oldPending);
+  });
+
+  it("dry run reports the pending count separately and deletes nothing", async () => {
+    await insertSub("old-pending", "pending", daysBefore(SUBSCRIPTIONS_PENDING_RETENTION_DAYS + 1));
+    await insertSub("fresh-pending", "pending", daysBefore(1));
+
+    const summary = await runRetentionPrune({ apply: false, now: NOW, backupDir });
+    const pending = summary.tables.find((t) => t.table === "subscriptions_pending");
+    expect(pending).toMatchObject({ candidates: 1, applied: 0 });
+    expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(2);
   });
 });
 

@@ -425,14 +425,16 @@ export async function subscribeToTarget(
     // return) measurably faster than the new-subscription path (waits on
     // the network), leaking whether the (email,target) pair already existed.
     //
-    // KNOWN LIMITATION (MVP, security-reviewed): the send result is still not
-    // acted on by anything here. If this first confirm email fails (e.g.
-    // Resend down), the pending row persists and a retry hits the
-    // active-subscription unique index (23505) → generic success with no
-    // resend, so that (email,target) can't be confirmed until the row
-    // clears. Accepted for MVP (rare + bounded). Future fix: roll back the
-    // row on a genuine send error (distinguishing it from the env-gated
-    // no-key no-op), or expire stale pending rows + allow resend.
+    // KNOWN LIMITATION (security-reviewed): the send result is still not acted
+    // on here. If this first confirm email fails (e.g. Resend down), the
+    // pending row persists and a retry hits the active-subscription unique
+    // index (23505) -> generic success with no resend. Stale pending rows are
+    // deleted by scripts/retention-prune.ts after
+    // SUBSCRIPTIONS_PENDING_RETENTION_DAYS (it runs with the scheduled
+    // discovery run); a new subscribe then inserts a fresh row and sends a
+    // fresh confirm. Re-sending on conflict was rejected (2026-11-11 security
+    // review): rotating a token before the send gate lets a third party break
+    // a victim's link and keep their address stored.
     return { ok: true, confirm: { subscriptionId, email, targetLabel, confirmToken } };
   } catch (err) {
     if (!isUniqueViolation(err)) {

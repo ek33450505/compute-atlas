@@ -349,24 +349,41 @@ describe("subscribeToTarget", () => {
     expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(0);
   });
 
-  it("duplicate active subscribe: still returns generic ok, still only one active row, no second confirm signal", async () => {
+  it("duplicate subscribe while CONFIRMED: generic ok, one row, no confirm signal", async () => {
     await seedFacility(tdb.db, seedDoc);
     const input = { email: "reader@example.com", targetType: "facility" as const, targetId: seedDoc.id };
 
     const first = await subscribeToTarget(input);
-    expect(first.ok).toBe(true);
-    if (first.ok) {
-      expect(first.confirm).toBeDefined();
-    }
+    if (!first.ok || !first.confirm) throw new Error("expected a confirm signal on the first subscribe");
+    await tdb.db
+      .update(subscriptionsTable)
+      .set({ status: "confirmed", confirmedAt: new Date() })
+      .where(eq(subscriptionsTable.id, first.confirm.subscriptionId));
 
     const second = await subscribeToTarget(input);
     expect(second.ok).toBe(true);
     if (second.ok) {
-      expect(second.confirm).toBeUndefined(); // dedup (23505) path — no second confirm email
+      expect(second.confirm).toBeUndefined();
     }
+    expect(await tdb.db.select().from(subscriptionsTable)).toHaveLength(1);
+  });
+
+  it("duplicate subscribe while PENDING: bare ok, no confirm signal, original token and createdAt unchanged", async () => {
+    await seedFacility(tdb.db, seedDoc);
+    const input = { email: "reader@example.com", targetType: "facility" as const, targetId: seedDoc.id };
+
+    const first = await subscribeToTarget(input);
+    if (!first.ok || !first.confirm) throw new Error("expected a confirm signal on the first subscribe");
+    const [before] = await tdb.db.select().from(subscriptionsTable);
+
+    const second = await subscribeToTarget(input);
+    expect(second).toEqual({ ok: true });
 
     const rows = await tdb.db.select().from(subscriptionsTable);
     expect(rows).toHaveLength(1);
+    expect(rows[0].confirmToken).toBe(before.confirmToken);
+    expect(rows[0].createdAt.getTime()).toBe(before.createdAt.getTime());
+    expect((await confirmSubscription(first.confirm.confirmToken)).status).toBe("confirmed");
   });
 
   it("per-email send cap: bounds confirm emails to one address across distinct targets", async () => {

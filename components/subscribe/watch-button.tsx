@@ -250,7 +250,7 @@ export function WatchButton({
       <div aria-live="polite">
         {outcome === "success" && (
           <p className="text-sm text-foreground">
-            Check your email to confirm your subscription.
+            Check your inbox (and spam folder) for an email from us. If none arrives, this address may already be signed up or have opted out of our email. Unconfirmed sign-ups expire after 7 to 10 days; you can sign up again after that.
           </p>
         )}
         {formError && (
