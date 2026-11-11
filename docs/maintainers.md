@@ -670,7 +670,7 @@ A re-sorted file scores near zero for every grant (see the watermark limit above
 ### Paid tier: setup and policy
 
 `COMMERCIAL_TIER_ENABLED` (exact string `"true"`, `lib/commercial-flag.ts`) gates the commercial checkout and the
-PayPal webhook. The return page needs both flags, like checkout. Unset, they are dark: the webhook answers 403
+PayPal webhook. The return page needs both flags, like checkout. Unset, they are off: the webhook answers 403
 (`app/api/paypal/webhook/route.ts`). A missing PayPal value makes the webhook log `config=<VARIABLE>` and answer 500.
 Checkout logs `commercial-checkout PayPal call failed (config)` and sends the buyer back with `?error=unavailable`.
 The commercial pages and checkout require BOTH
