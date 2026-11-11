@@ -96,6 +96,7 @@ export async function POST(request: Request) {
   try {
     result = await verifyWebhookSignature(request.headers, raw);
   } catch (err) {
+    // lint-no-raw-error-logs: allow -- errorCodes() logs only PayPalApiError status plus regex-whitelisted name/debugId, PayPalConfigError's env variable name, or redactedErrorCode(err); never a message or bound params
     console.error(`paypal-webhook verify failed (${errorCodes(err)})`);
     return jsonResponse({ error: "processing failed" }, { status: 500 });
   }
@@ -116,9 +117,11 @@ export async function POST(request: Request) {
     // it is terminal only for an event old enough that lag is ruled out; a younger or undated event
     // answers 500 and PayPal's ~3-day retries end as terminal on a later delivery if the 404 persists.
     if (err instanceof PayPalApiError && err.status === 404 && isOldEnough(ev.create_time)) {
+      // lint-no-raw-error-logs: allow -- errorCodes() logs only PayPalApiError status plus regex-whitelisted name/debugId, PayPalConfigError's env variable name, or redactedErrorCode(err); never a message or bound params
       console.error(`paypal-webhook terminal (${errorCodes(err)} ${idType})`);
       return jsonResponse({ received: true, terminal: true });
     }
+    // lint-no-raw-error-logs: allow -- errorCodes() logs only PayPalApiError status plus regex-whitelisted name/debugId, PayPalConfigError's env variable name, or redactedErrorCode(err); never a message or bound params
     console.error(`paypal-webhook processing failed (${errorCodes(err)} ${idType})`);
     return jsonResponse({ error: "processing failed" }, { status: 500 });
   }

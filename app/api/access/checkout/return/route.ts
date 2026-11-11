@@ -65,6 +65,7 @@ export async function GET(request: Request) {
       const work = activateFromPayPal(row.paypalSubscriptionId).then(
         () => {},
         (err: unknown) => {
+          // lint-no-raw-error-logs: allow -- errorCodes() logs only PayPalApiError status plus regex-whitelisted name/debugId, PayPalConfigError's env variable name, or redactedErrorCode(err); never a message or bound params
           console.error(`checkout-return ${timedOut ? "late activation" : "activation"} failed (${errorCodes(err)})`);
         }
       );
@@ -83,6 +84,7 @@ export async function GET(request: Request) {
       }
     }
   } catch (err) {
+    // lint-no-raw-error-logs: allow -- errorCodes() logs only PayPalApiError status plus regex-whitelisted name/debugId, PayPalConfigError's env variable name, or redactedErrorCode(err); never a message or bound params
     console.error(`checkout-return activation failed (${errorCodes(err)})`);
   }
   return see(request, success);
