@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 // Routes under audit
@@ -36,6 +36,33 @@ const ROUTES = [
   // single-facility hub — 354 of the 636 qualify — would scan a near-empty
   // page and prove almost nothing about the template.
   "/counties/loudoun-va",
+
+  // Pages never audited before. The lens/ranking/hub indexes are plain
+  // server-rendered lists and tables, and /contribute and /access/commercial
+  // carry forms and pricing copy; all are linked from the primary nav or footer.
+  "/contribute",
+  "/access/commercial",
+  "/explore",
+  "/states",
+  "/operators",
+  "/power",
+  "/opposition",
+  "/activity",
+  "/rankings",
+  "/crypto",
+  "/ai",
+  "/gaps",
+  "/metros",
+  "/status",
+  "/stakeholders",
+  // The e2e webServer builds from tests/fixtures/facilities.fixture.json (68
+  // records, via ALLOW_FIXTURE_SNAPSHOT=1), so these slugs must exist THERE,
+  // not in the live dataset. The facility template branches on facilityType
+  // (different detail panels), and only data_center was audited, so scan one
+  // of each remaining type. Both are single-record, populated pages chosen
+  // from the fixture's own crypto_mining / power_generation entries.
+  "/facilities/mara-granbury-hood-tx",
+  "/facilities/crane-clean-energy-center-tmi-pa",
 ] as const;
 
 // Tags covering WCAG 2.x AA + 2.2 AA
@@ -219,18 +246,178 @@ for (const route of ROUTES) {
   });
 }
 
-// The support banner is client-only and hidden for first-time visitors, so the
-// route scans above never render it. Seed a returning visit (>= 2) to scan the
-// banner itself, then confirm dismissal.
-test("a11y: /about with the support banner — zero serious/critical violations", async ({
+/**
+ * Scan the page as it stands, for the open-overlay tests below. Same tags and
+ * the same runOnly guard as the route loop; no `.options()` call, so
+ * `.withTags()` is the only thing setting runOnly. Nothing is excluded from
+ * the scan and no rule is disabled. `include` optionally scopes the scan to
+ * one subtree (a chained `.include()`, not `.options()`, so runOnly survives).
+ */
+async function expectNoSeriousOrCritical(
+  page: Page,
+  label: string,
+  include?: string,
+): Promise<void> {
+  const builder = new AxeBuilder({ page });
+  if (include) builder.include(include);
+  const results = await builder.withTags([...AXE_TAGS]).analyze();
+  expect(results.toolOptions.runOnly).toEqual({
+    type: "tag",
+    values: [...AXE_TAGS],
+  });
+  const seriousOrCritical = results.violations.filter(
+    (v) => v.impact === "serious" || v.impact === "critical",
+  );
+  if (seriousOrCritical.length > 0) {
+    console.error(
+      `[${label}] serious/critical violations:\n${JSON.stringify(
+        seriousOrCritical.map((v) => ({
+          rule: v.id,
+          impact: v.impact,
+          description: v.description,
+          affectedNodes: v.nodes.slice(0, 3).map((n) => n.target.join(", ")),
+        })),
+        null,
+        2,
+      )}`,
+    );
+  }
+  expect(
+    seriousOrCritical,
+    `${label}: expected 0 serious/critical WCAG violations but found ${seriousOrCritical.length}: ${seriousOrCritical.map((v) => v.id).join(", ")}`,
+  ).toHaveLength(0);
+}
+
+// Open-overlay states. The route scans above only see a page at rest, so none
+// of these surfaces (portalled dialog, slide-in sheet, map popup, validation
+// errors) was ever scanned while showing.
+
+// The accessible name is "Search ⌘K" or "Search Ctrl K" by platform, so match
+// the stable prefix. The button is rendered at every width (only its text label
+// hides below `sm`), so this runs under both projects.
+test("a11y: ⌘K command palette open — zero serious/critical violations", async ({
   page,
 }) => {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("ca-support-banner:visits", "2");
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  await page
+    .locator("header")
+    .getByRole("button", { name: /^Search (⌘K|Ctrl K)$/ })
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "Search Compute Atlas" }),
+  ).toBeVisible();
+  await expect(page.getByRole("combobox")).toBeFocused();
+  await expectNoSeriousOrCritical(page, "command palette");
+});
+
+// Zero-result state: the listbox has no options and the "No matches" message
+// (with its contribute link) renders beside it.
+test("a11y: ⌘K command palette, no results — zero serious/critical violations", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+  await page
+    .locator("header")
+    .getByRole("button", { name: /^Search (⌘K|Ctrl K)$/ })
+    .click();
+  await page.getByRole("combobox").fill("zzzzqqq");
+  await expect(page.getByText(/No matches for/)).toBeVisible();
+  await expectNoSeriousOrCritical(page, "command palette (no results)");
+});
+
+// The hamburger is `xl:hidden` (1280px), so pin a phone width rather than rely
+// on the project's viewport.
+test.describe("mobile nav sheet", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("a11y: mobile navigation open at 390px — zero serious/critical violations", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    await page.getByRole("button", { name: "Open navigation menu" }).click();
+    await expect(
+      page.getByRole("navigation", { name: "Mobile navigation" }),
+    ).toBeVisible();
+    await expectNoSeriousOrCritical(page, "mobile nav (390px)");
   });
+});
+
+// A facility marker only exists once clustering has resolved to single pins, so
+// zoom into clusters until one appears. Cluster buttons are named "Cluster of
+// N datacenters"; anything else inside a maplibre marker is a facility pin.
+test("a11y: /map popup open — zero serious/critical violations", async ({
+  page,
+}) => {
+  await page.goto("/map");
+  await page.waitForSelector(".maplibregl-canvas-container", {
+    state: "attached",
+  });
+  const pins = page.locator(
+    '.maplibregl-marker button:not([aria-label^="Cluster of"])',
+  );
+  const clusters = page.locator(
+    '.maplibregl-marker button[aria-label^="Cluster of"]',
+  );
+  await expect
+    .poll(async () => (await pins.count()) + (await clusters.count()), {
+      message: "map never rendered a marker",
+      timeout: 30_000,
+    })
+    .toBeGreaterThan(0);
+  for (let i = 0; i < 12 && (await pins.count()) === 0; i++) {
+    await clusters.first().click();
+    // Let the zoom animation and re-cluster settle before looking again.
+    await page.waitForTimeout(1000);
+  }
+  expect(await pins.count(), "no single-facility pin reachable").toBeGreaterThan(0);
+  await pins.first().click();
+  await expect(page.locator(".atlas-popup")).toBeVisible();
+  // Scoped to the popup: the rest of /map is scanned at rest by the route loop
+  // on both projects. A whole-page scan here also hits a separate defect, a
+  // cluster marker partly under the legend toggle at phone width (WCAG 2.5.8
+  // target-size), tracked in issue #572, which says nothing about the popup.
+  await expectNoSeriousOrCritical(page, "/map (popup open)", ".atlas-popup");
+});
+
+// Submit the empty lead form so the validation errors (role="alert" messages,
+// aria-invalid fields) are on screen when axe runs.
+test("a11y: /contribute lead form validation errors — zero serious/critical violations", async ({
+  page,
+}) => {
+  await page.goto("/contribute");
+  await page.waitForLoadState("networkidle");
+  const submit = page.getByRole("button", { name: "Submit link" });
+  await submit.click();
+  await expect(page.getByRole("alert").first()).toBeVisible();
+  // The button is disabled while the request is in flight; scan the settled
+  // state, not the pending one.
+  // (The pending/disabled state is not scanned here; the contribute form
+  // vitest tests assert its classes instead.)
+  await expect(submit).toBeEnabled();
+  await expectNoSeriousOrCritical(page, "/contribute (validation errors)");
+});
+
+// The support banner is client-only and never shows on a session's first page
+// view (D7), so the route scans above never render it. Reach a non-excluded
+// route as the session's second page view to scan the banner itself, then
+// confirm dismissal. (/about is excluded: it carries its own support section.)
+test("a11y: /table with the support banner — zero serious/critical violations", async ({
+  page,
+}) => {
   // Keep axe from scanning mid-fade of the banner's entrance animation.
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/about");
+  await page.goto("/stats");
+  // Wait for hydration to count view 1; a full load that navigates away before
+  // the mount effect runs would leave the session at one view.
+  await expect
+    .poll(() => page.evaluate(() => sessionStorage.getItem("ca-support-banner:pageviews")), {
+      timeout: 15_000,
+    })
+    .toBe("1");
+  await page.goto("/table");
   await page.waitForLoadState("networkidle");
 
   const banner = page.getByRole("region", { name: "Support Compute Atlas" });
@@ -247,7 +434,7 @@ test("a11y: /about with the support banner — zero serious/critical violations"
   );
   expect(
     seriousOrCritical,
-    `/about (banner): ${seriousOrCritical.map((v) => v.id).join(", ")}`,
+    `/table (banner): ${seriousOrCritical.map((v) => v.id).join(", ")}`,
   ).toHaveLength(0);
 
   await page.getByRole("button", { name: "Dismiss support message" }).click();
@@ -291,7 +478,14 @@ test("a11y: /about with the support banner — zero serious/critical violations"
 // Regression: the hero globe's aria-hidden canvas must be non-focusable from the moment maplibre
 // creates it, not only after `load`. With the basemap requests failing, `load` never fires, so a
 // strip that only ran on load left a focusable canvas inside aria-hidden (axe aria-hidden-focus).
-test("a11y: / — hero globe canvas is never focusable, even if the basemap never loads", async ({ page }) => {
+test("a11y: / — hero globe canvas is never focusable, even if the basemap never loads", async ({ page }, testInfo) => {
+  // hero-globe-dynamic.tsx only mounts the MapLibre globe once
+  // `matchMedia("(min-width: 640px)")` matches; a phone gets the static plate
+  // and no canvas exists to be focusable.
+  test.skip(
+    testInfo.project.name === "Mobile Chrome",
+    "hero globe is not mounted below 640px (hero-globe-dynamic.tsx allowGlobe gate)",
+  );
   await page.route(/\/basemap\//, (route) => route.abort());
   await page.goto("/");
   const canvas = page.locator("canvas.maplibregl-canvas").first();

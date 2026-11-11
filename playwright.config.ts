@@ -38,17 +38,20 @@ export default defineConfig({
     },
     {
       name: "Mobile Chrome",
-      // Scoped to ONLY e2e/map-mobile.spec.ts — intentionally not the full
-      // suite. Running every existing desktop-authored spec a second time
+      // Scoped to e2e/map-mobile.spec.ts plus e2e/a11y.spec.ts — intentionally
+      // not the full suite. Running every desktop-authored spec a second time
       // under mobile emulation would roughly double CI runtime for no new
       // signal (most assertions don't depend on touch/viewport) and would
       // likely surface unrelated layout failures that belong to a dedicated
-      // responsive-layout audit, not this regression-cover unit.
+      // responsive-layout audit.
+      // a11y is the exception: some violations are layout-dependent (target
+      // size, reflow, text overflow, content clipped by the narrower viewport)
+      // and only show at phone width, so a desktop-only scan cannot see them.
       // devices["Pixel 5"], not an iPhone preset: it's Chromium-backed with
       // realistic hasTouch/isMobile/DPR, and the touch-drag assertion drives
       // MapLibre via CDP's Input.dispatchTouchEvent, which only exists for
       // Chromium — a WebKit (iPhone) preset can't run it at all.
-      testMatch: /map-mobile\.spec\.ts$/,
+      testMatch: /(map-mobile|a11y)\.spec\.ts$/,
       use: { ...devices["Pixel 5"] },
     },
   ],
