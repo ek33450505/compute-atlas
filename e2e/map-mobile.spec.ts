@@ -123,7 +123,7 @@ test.describe("map mobile touch", () => {
     await page.waitForTimeout(1000); // let the mini-map fully mount
 
     // Mobile viewport: the "Map" link lives inside the hamburger panel
-    // (components/mobile-nav.tsx), not the sm:hidden desktop PrimaryNav.
+    // (components/mobile-nav.tsx), not the desktop PrimaryNav (hidden xl:flex).
     await page.getByRole("button", { name: "Open navigation menu" }).click();
     await page
       .getByRole("navigation", { name: "Mobile navigation" })

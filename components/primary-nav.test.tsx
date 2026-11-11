@@ -75,19 +75,17 @@ describe("PrimaryNav — render", () => {
 });
 
 describe("PrimaryNav — responsive breakpoint", () => {
-  // Regression cover for the site-wide horizontal-overflow bug: all 7 links'
-  // bare text alone (no padding) measures ~310px, which cannot fit inline
-  // below ~750px viewport width no matter how much padding/gap is trimmed —
-  // so the nav must stay hidden through the sm: tier (640px) and reveal only
-  // at md: (768px), where the header's other fixed-width elements (wordmark,
-  // search, GitHub icon) leave enough room. Reverting "md" to "sm" here
-  // reproduces the original bug (measured 803px content in a 640px viewport).
-  it("reveals at the md: (768px) breakpoint, not sm: (640px)", () => {
+  // Regression cover for the header-overflow bug: the nine inline links do
+  // not fit beside the wordmark, search and GitHub icon below ~1,137px (page
+  // scrollWidth measured 863px at a 768px viewport and 1,137px at 1024px),
+  // so the nav must reveal only at xl: (1280px).
+  it("reveals at the xl: (1280px) breakpoint, not md: or lg:", () => {
     render(<PrimaryNav links={NAV_LINKS} />);
     const nav = screen.getByRole("navigation", { name: "Primary" });
 
-    expect(nav).toHaveClass("hidden", "md:flex");
-    expect(nav).not.toHaveClass("sm:flex");
+    expect(nav).toHaveClass("hidden", "xl:flex");
+    expect(nav).not.toHaveClass("md:flex");
+    expect(nav).not.toHaveClass("lg:flex");
   });
 });
 
