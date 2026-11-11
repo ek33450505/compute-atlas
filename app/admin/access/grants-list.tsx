@@ -223,7 +223,7 @@ function GrantRow({
             {
               tone: "warning",
               label: "Warning.",
-              text: `${revoked} Revoked here, but the PayPal subscription could not be cancelled: cancel it in PayPal now (the next payment would also trigger an automatic cancel).`,
+              text: `${revoked} Revoked here, but the PayPal subscription could not be cancelled: cancel it in PayPal now (the next payment is not cancelled automatically; it raises a revoked_still_billing alert).`,
             },
             row,
           );

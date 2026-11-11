@@ -149,7 +149,7 @@ export async function redirectDatasetGrantToPaidAction(
 
 /**
  * Revokes an active grant. Sends no mail. For a commercial grant the DB revoke comes FIRST, then the PayPal
- * subscription is cancelled (never refunded), so a failed cancel is still covered by the webhook backstop.
+ * subscription is cancelled (never refunded), so a failed cancel leaves the grant revoked and billing running until someone cancels it in PayPal.
  * `subscription` is present only when a PayPal cancel was attempted (or, "unknown", when the grant could not be
  * read back to decide): a free grant returns plain `{ ok: true }`.
  */

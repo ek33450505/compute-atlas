@@ -194,7 +194,7 @@ export default async function CommercialAccessPage({
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Cancel anytime from your PayPal account; access runs to the end of the paid period. No
-          refunds for partial periods.{" "}
+          refunds for partial periods, except where the law requires one.{" "}
           <Link href="/access/terms" className={ACCESS_LINK_CLASS}>
             Commercial access terms
           </Link>

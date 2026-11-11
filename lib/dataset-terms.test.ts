@@ -8,30 +8,30 @@ const privacy = DATASET_PRIVACY_NOTICE.join("\n");
 
 describe("dataset terms", () => {
   it("pins the terms version", () => {
-    expect(DATASET_TERMS_VERSION).toBe("2026-11-10");
+    expect(DATASET_TERMS_VERSION).toBe("2026-11-11");
   });
 
-  it("commercial terms keep the licence whole and state the price and one-person scope", () => {
+  it("commercial terms keep the licence whole and state the price, PayPal and one-person scope", () => {
     expect(commercial).toContain("CC BY 4.0");
-    expect(commercial).toContain("plus applicable tax");
+    expect(commercial).toContain("$150 per month or $1,500 per year, plus applicable tax, paid through PayPal. A PayPal account is required.");
     expect(commercial).toContain("one named person");
-    expect(commercial).not.toContain("3 named");
-    expect(commercial).not.toContain("cannot re-subscribe");
     expect(commercial).toContain("continues under the terms accepted at checkout until it is cancelled");
-    expect(commercial).toContain("After a revocation, new subscriptions using the same email address or Stripe account, or the same payment card where Stripe identifies it, are refused until the revoked grant is deleted, about 365 days after revocation.");
-    expect(commercial).not.toContain("For 365 days after a revocation");
-    expect(commercial).toContain("$150 per month or $1,500 per year");
+    expect(commercial).toContain("in your PayPal account's automatic payments settings");
+    expect(commercial).toContain("There are no refunds for partial periods, except where the law requires one. The maintainer may refund at their discretion.");
+    expect(commercial).toContain("Revoking cancels that subscription and ends access. You may subscribe again later.");
+    expect(commercial).not.toMatch(/stripe|fingerprint|billing portal|manage billing/i);
+    expect(commercial).not.toMatch(/refused|automatically/i);
     expect(commercial).not.toMatch(/internal use|donation/i);
   });
 
-  it("privacy notice names Stripe and the fingerprint hash, never the card number", () => {
-    expect(privacy).toMatch(/Cloudflare and Stripe/);
-    expect(privacy).toMatch(/one-way hash of the card's fingerprint \(never the card number\)/);
-    expect(privacy).toMatch(/checkout session id/);
-    expect(privacy).toMatch(/kept indefinitely/);
-    expect(privacy).toMatch(/processed Stripe event records are deleted after 90 days/);
-    expect(privacy).toMatch(/Commercial grants follow the same deletion schedule/);
-    expect(privacy).toContain("ends when the revoked grant is deleted, about 365 days after revocation.");
-    expect(privacy).not.toContain("ends 365 days after revocation");
+  it("privacy notice names PayPal, states the checkout and event retention, and never mentions Stripe", () => {
+    expect(privacy).toMatch(/Cloudflare and PayPal/);
+    expect(privacy).not.toMatch(/stripe|fingerprint/i);
+    expect(privacy).toContain("Checkout records that never reach a decision are deleted after 30 days.");
+    expect(privacy).toContain("the name, email and organization are removed after 365 days");
+    expect(privacy).toContain("the PayPal subscription id, the paid-through date and the time of the last payment");
+    expect(privacy).toContain("processed PayPal event records are deleted after 90 days");
+    expect(privacy).toContain("that backup is deleted after 30 days");
+    expect(privacy).toContain("PayPal holds payment details under its own privacy policy");
   });
 });

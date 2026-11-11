@@ -43,7 +43,7 @@ describe("/access/commercial", () => {
     expect(screen.getByText(/Need access for a team\?/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Contact us" })).toHaveAttribute("href", "/contact");
     expect(
-      screen.getByText(/Cancel anytime from your PayPal account; access runs to the end of the paid period\. No refunds for partial periods\./)
+      screen.getByText(/Cancel anytime from your PayPal account; access runs to the end of the paid period\. No refunds for partial periods, except where the law requires one\./)
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Commercial access terms" })).toHaveAttribute("href", "/access/terms");
   });

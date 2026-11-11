@@ -19,7 +19,7 @@ describe("/access/terms", () => {
     expect(screen.getByRole("heading", { name: "Privacy notice" })).toBeInTheDocument();
     expect(screen.getByText(`Terms version ${DATASET_TERMS_VERSION}.`)).toBeInTheDocument();
     expect(screen.getByText(/plus applicable tax/)).toBeInTheDocument();
-    expect(screen.getByText(/card's fingerprint/)).toBeInTheDocument();
+    expect(screen.getByText(/PayPal holds payment details/)).toBeInTheDocument();
   });
 
   it("shows the not-open page, noindexed, when sharing is off", () => {

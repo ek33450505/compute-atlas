@@ -33,7 +33,7 @@ describe("/access", () => {
     expect(screen.getAllByRole("listitem").length).toBeGreaterThanOrEqual(3);
     expect(screen.getByText(/^access terms$/i)).toBeInTheDocument();
     expect(screen.getByText(/^privacy notice$/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/terms version 2026-11-10/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/terms version 2026-11-11/i).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: "How to cite" })).toHaveAttribute("href", "/data");
     expect(screen.getByRole("button", { name: /request access/i })).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/draft|pending review/i);

@@ -368,7 +368,7 @@ describe("buildDatasetSubscriptionActiveEmail", () => {
     for (const body of [mail.text, mail.html]) {
       expect(body).toContain("one named person weekly access through a personal link");
       expect(body).toContain("refreshes weekly");
-      expect(body).toContain("Manage billing");
+      expect(body).toContain("Your subscription");
       expect(body).toContain("access continues to the end of the period you have paid for");
       expect(body).toContain("CC BY 4.0");
       expect(body).toContain("Questions can go through the contact page");

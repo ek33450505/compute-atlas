@@ -35,7 +35,7 @@ function TermsSection({ heading, paragraphs }: { heading: string; paragraphs: re
   );
 }
 
-/** /access/terms — static text; the Terms URL that Stripe Checkout links to. */
+/** /access/terms — static text; the terms URL the commercial checkout form links to. */
 export default function AccessTermsPage() {
   if (!isDatasetSharingEnabled()) return <AccessNotOpen />;
 

@@ -240,7 +240,7 @@ export function buildDatasetSubscriptionActiveEmail(input: { siteUrl: string; ac
   const refresh = "The dataset refreshes weekly.";
   const seats = "A subscription gives one named person weekly access through a personal link.";
   const billing =
-    'Billing, invoices and cancellation are handled from the "Manage billing" link on your dataset page. If you cancel, access continues to the end of the period you have paid for.';
+    'Cancel from the "Your subscription" section of your dataset page, or in your PayPal account\'s automatic payments settings. If you cancel, access continues to the end of the period you have paid for.';
   const reply = `Questions can go through the contact page: ${input.siteUrl}/contact`;
   const notYou = `If you did not make this purchase, contact us at ${input.siteUrl}/contact.`;
   const text = [

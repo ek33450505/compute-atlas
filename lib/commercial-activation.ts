@@ -33,9 +33,9 @@ import { hashToken } from "@/lib/token-hash";
  * Nothing is ever read from an event body beyond ids: the subscription is always re-fetched from PayPal, and
  * only `status === "ACTIVE"` grants anything or extends anything.
  *
- * Ported from the reviewed Stripe version (lib/commercial-grants.ts / commercial-actions.ts on
+ * Ported from the earlier reviewed implementation (lib/commercial-grants.ts / commercial-actions.ts on
  * origin/feat/commercial-tier): the decision is made once and stored (here on the `commercial_checkouts` row,
- * where Stripe had its own decisions table); NOTHING here moves money (Ed's decision: paying buyers are not
+ * where the earlier version had its own decisions table); NOTHING here moves money (Ed's decision: paying buyers are not
  * refused and nothing is cancelled or refunded automatically; the only conflict, a second subscription for an
  * address that already holds a live commercial grant, writes no grant and alerts the maintainer, who decides by
  * hand in PayPal); the grant is written by ONE statement that row-locks the
