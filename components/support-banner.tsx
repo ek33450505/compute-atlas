@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { isEmbedRoute } from "@/components/footer-gate";
+import { SupportCta } from "@/components/support-cta";
 
 const KEY_PREFIX = "ca-support-banner:";
 export const VISITS_KEY = `${KEY_PREFIX}visits`;
@@ -213,6 +214,7 @@ export function SupportBanner() {
         onClickCapture={dismiss}
         className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1"
       >
+        <SupportCta size="compact" />
         <Link href="/support" className={LINK_CLASS}>
           <span className="underline underline-offset-4">
             Why support? <span aria-hidden="true">→</span>

@@ -15,25 +15,6 @@
  */
 export const DATASET_LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
 
-/** A Stripe Payment Link, or null when absent or anything else. */
-export function parseSupportLink(value: string | undefined): string | null {
-  const raw = value?.trim();
-  if (!raw) return null;
-  try {
-    const url = new URL(raw);
-    const ok =
-      url.protocol === "https:" &&
-      url.hostname === "buy.stripe.com" &&
-      !url.username &&
-      !url.password &&
-      !url.port &&
-      /^\/[A-Za-z0-9_-]+$/.test(url.pathname);
-    return ok ? url.href : null;
-  } catch {
-    return null;
-  }
-}
-
 export const siteConfig = {
   name: "Compute Atlas",
   tagline: "Mapping the U.S. compute buildout",
@@ -55,20 +36,12 @@ export const siteConfig = {
   url: "https://www.compute-atlas.com",
   repoUrl: "https://github.com/ek33450505/compute-atlas",
   /**
-   * Reader-support Stripe Payment Links, the only funding path on the site.
-   * Configured per deployment through public env vars (the links are public
-   * by nature): NEXT_PUBLIC_STRIPE_SUPPORT_MONTHLY_5, _MONTHLY_15,
-   * _MONTHLY_50 and _ONE_OFF (pay what you want). A value counts only if it
-   * is an https://buy.stripe.com/ URL; anything else is `null`, so a typo
-   * cannot render an arbitrary link. Each must be a literal
-   * `process.env.NEXT_PUBLIC_…` read so Next inlines it at build time.
+   * The one on-site funding destination. Ko-fi takes guest checkout (no
+   * account), card or PayPal, one-off or monthly: the right barrier for this
+   * site's audience (residents, local journalists, county officials). It is
+   * the only funding path anywhere: GitHub Sponsors was disabled on 2026-10-28.
    */
-  supportLinks: {
-    monthly5: parseSupportLink(process.env.NEXT_PUBLIC_STRIPE_SUPPORT_MONTHLY_5),
-    monthly15: parseSupportLink(process.env.NEXT_PUBLIC_STRIPE_SUPPORT_MONTHLY_15),
-    monthly50: parseSupportLink(process.env.NEXT_PUBLIC_STRIPE_SUPPORT_MONTHLY_50),
-    oneOff: parseSupportLink(process.env.NEXT_PUBLIC_STRIPE_SUPPORT_ONE_OFF),
-  },
+  kofiUrl: "https://ko-fi.com/L2T725R7FV",
   /** Public Bluesky profile for the project. */
   blueskyUrl: "https://bsky.app/profile/compute-atlas.com",
   /**

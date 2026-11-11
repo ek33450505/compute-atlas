@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Link from "next/link";
 
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
-import { SupportLinks } from "@/components/support-links";
+import { SupportCta } from "@/components/support-cta";
 import { SupportersList } from "@/components/supporters-list";
-import { SupportThanks } from "@/components/support-thanks";
 import { siteConfig } from "@/lib/site";
 import { SUPPORTERS } from "@/lib/supporters";
 
 export const metadata: Metadata = {
   title: "Support",
   description:
-    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a monthly contribution or a one-off tip helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
+    "Compute Atlas is free to read, open source, and carries no advertising. If it's useful to you, a monthly membership or a one-off tip helps cover the database, hosting, and discovery pipeline that keep it running — without changing what the record says.",
   alternates: { canonical: "/support" },
 };
 
@@ -22,15 +20,14 @@ const LINK_CLASS =
 
 /**
  * /support — the canonical funding ask. Static server component; the only
- * interactive elements are plain anchors (<SupportLinks /> and below). The
- * only client piece is <SupportThanks />, which reads `?thanks=1` itself so
- * the page stays statically cacheable. Mirrors the masthead/section rhythm
+ * interactive elements are the plain anchor tags in <SupportCta /> and below,
+ * none of which need client-side state. Mirrors the masthead/section rhythm
  * of app/contribute/page.tsx (Breadcrumb -> PageMasthead -> border-t sections).
  *
  * Claims discipline (audited copy, do not extend): no privacy/tracking claim
  * (Vercel Analytics + Speed Insights were removed 2026-10-13, but the Cloudflare
- * proxy still injects its Web Analytics beacon in production), no payment-processor
- * fee percentage, no facility count, and no running-cost figure.
+ * proxy still injects its Web Analytics beacon in production), no Ko-fi/
+ * GitHub fee percentage, no facility count, and NO DOLLAR FIGURE.
  *
  * Named cost CATEGORIES and suppliers are permitted (added 2026-09-14, Ed's
  * call) — a database, hosting, and the discovery pipeline's model
@@ -74,10 +71,6 @@ export default function SupportPage() {
       className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
       <Breadcrumb items={[{ label: "About", href: "/about" }, { label: "Support" }]} />
-
-      <Suspense fallback={null}>
-        <SupportThanks />
-      </Suspense>
 
       <PageMasthead
         eyebrow="Support"
@@ -194,27 +187,38 @@ export default function SupportPage() {
           &mdash; a managed Postgres instance (Neon) holding every facility,
           every citation, and the full revision history behind the change log;
           almost all of that is data moving between the database and the site
-          rather than data stored, because the dataset itself is small and
-          cheap to store. Hosting (Vercel) serves every facility page, the
-          full-screen map, with no paywall for
-          reading. The third is the discovery pipeline, which runs on a paid
+          rather than data stored, because the dataset itself is only tens of
+          megabytes. Hosting (Vercel) serves every facility page, the
+          full-screen map, with no paywall and no paid
+          tier. The third is the discovery pipeline, which runs on a paid
           Claude subscription: it reads public sources overnight and proposes
           candidates. It has never published a record. Every candidate is
           staged for a person to approve or reject by hand &mdash; so what
           that line item buys is the search, not the writing.
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          All three of those costs come due every month, so a monthly amount
-          goes furthest. One-off tips work too, with no account needed.
-          Payment is handled by Stripe.
+          All three of those costs come due every month, so a monthly
+          membership on Ko-fi goes furthest.
         </p>
-        <SupportLinks />
+        <SupportCta />
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          If you need the data itself, see{" "}
+          One-off tips work too, with no account needed &mdash; card or
+          PayPal.
+        </p>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          If a university, lab, newsroom or organization relies on the data,
+          Ko-fi has an institution membership. A supporting organization can
+          be named on this page if it asks to be &mdash; for as long as its
+          membership runs, or for twelve months after a one-off institutional
+          contribution. Citing the dataset helps too.
+        </p>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          If a university, lab, newsroom or organization needs the data
+          itself, see{" "}
           <Link href="/data" className={LINK_CLASS}>
             the data page
           </Link>
-          . Citing the dataset helps too.
+          .
         </p>
       </section>
 
@@ -227,10 +231,10 @@ export default function SupportPage() {
           What support does not change
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Money never buys a record, an edit, a removal, or a place in a
-          ranking. A tip, a monthly contribution or a commercial data
-          subscription changes none of these &mdash; there is no tier that
-          does, and there won&rsquo;t be. No page carries advertising.
+          Nothing on this site is for sale. A tip or a membership does not
+          buy a record, an edit, a removal, or a place in a ranking &mdash;
+          there is no tier that does, and there won&rsquo;t be. No page
+          carries advertising.
         </p>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           That is a promise, so here is what makes it checkable rather than

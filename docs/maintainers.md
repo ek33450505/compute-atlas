@@ -675,8 +675,7 @@ return 503 and sends checkout back with `?error=unavailable`; neither falls back
 billing portal require BOTH `COMMERCIAL_TIER_ENABLED` and `DATASET_SHARING_ENABLED` (`isCommercialCheckoutOpen()` in
 `lib/commercial-flag.ts`).
 Env vars (all in `.env.example`): `COMMERCIAL_TIER_ENABLED`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
-`STRIPE_PRICE_COMMERCIAL_MONTHLY`, `STRIPE_PRICE_COMMERCIAL_ANNUAL`, plus the four public
-`NEXT_PUBLIC_STRIPE_SUPPORT_*` Payment Link URLs. Vercel applies env changes to new deployments only: redeploy.
+`STRIPE_PRICE_COMMERCIAL_MONTHLY`, `STRIPE_PRICE_COMMERCIAL_ANNUAL`. Vercel applies env changes to new deployments only: redeploy.
 
 Stripe dashboard setup:
 
@@ -684,7 +683,7 @@ Stripe dashboard setup:
   Put the price ids in the two `STRIPE_PRICE_COMMERCIAL_*` vars.
 - Customer portal: allow update card and invoice history. Cancellation MUST be set to cancel at period end only:
   an immediate cancel ends access at once (`handleSubscriptionDeleted` uses the earlier of paid-through and `ended_at`).
-- Email receipts: enable Stripe customer email receipts (Settings → Emails) for subscriptions and Payment Links.
+- Email receipts: enable Stripe customer email receipts (Settings → Emails) for subscriptions.
 - Seats were dropped (2026-11-10): one named person per commercial subscription, and the personal link is strictly
   personal. Teams are handled by arrangement through `/contact`.
 - Checkout uses `billing_address_collection: "auto"`: Stripe may ask for an address. The site never stores or shows one.
@@ -694,8 +693,6 @@ Stripe dashboard setup:
   deliveries 403 and Stripe retries.
 - Rotating `EDGE_SHARED_SECRET` breaks webhooks (403 from `proxy.ts`) until Cloudflare's injected header is updated.
 - Stripe Tax is off pending a CPA; prices are "plus applicable tax" in the terms.
-- Support: four Payment Links (monthly 5/15/50 and one-off) with success URL `/support?thanks=1`, pasted into the
-  `NEXT_PUBLIC_STRIPE_SUPPORT_*` vars.
 
 Cancellation and refunds (the public terms, `lib/dataset-terms.ts`): a buyer cancels from "Manage billing" on the
 download page and keeps access to the end of the paid period. No refunds for partial periods, except where the law
