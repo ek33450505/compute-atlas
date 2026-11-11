@@ -604,8 +604,8 @@ export async function sendDatasetCommercialAlertEmail(input: {
   reason: CommercialAlertReason;
   action: CommercialAlertAction;
   subscriptionId: string | null;
-  sessionId: string | null;
-  invoiceId: string | null;
+  checkoutId: string | null;
+  saleId: string | null;
   grantId?: string | null;
 }): Promise<SendOutcome> {
   const to = process.env.CONTACT_TO_EMAIL?.trim();

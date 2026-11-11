@@ -783,9 +783,9 @@ To undo only that migration
 
 1. Revert the deploy first, then disable the webhook in the PayPal developer dashboard, so redelivered events
    are not reprocessed once `paypal_webhook_events` is gone.
-2. **Warning: once any commercial grant exists, this rollback destroys `paid_through`, the PayPal subscription id and the payer hash.**
+2. **Warning: once any commercial grant exists, this rollback destroys `paid_through`, `last_payment_at` and the PayPal subscription id.**
    Take a Neon branch first, or save the rows:
-   `COPY (SELECT id, email, tier, paid_through, paypal_subscription_id, payer_id_hash FROM dataset_access_grants WHERE tier='commercial') TO STDOUT`
+   `COPY (SELECT id, email, tier, paid_through, last_payment_at, paypal_subscription_id FROM dataset_access_grants WHERE tier='commercial') TO STDOUT`
 3. **Check the old one-open-row-per-email index can be recreated.** 0021 replaced
    `dataset_access_grants_open_email_idx` with `dataset_access_grants_open_email_tier_idx` (unique on
    `(email, tier)`), so one address may now hold an open free AND an open commercial grant. Recreating the
@@ -805,14 +805,13 @@ DROP TABLE IF EXISTS paypal_webhook_events;
 DROP INDEX IF EXISTS dataset_access_grants_open_email_tier_idx;
 CREATE UNIQUE INDEX "dataset_access_grants_open_email_idx" ON "dataset_access_grants" USING btree ("email") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');
 DROP INDEX IF EXISTS dataset_access_grants_paypal_subscription_id_idx;
-DROP INDEX IF EXISTS dataset_access_grants_payer_id_hash_idx;
 ALTER TABLE dataset_access_grants
   DROP COLUMN IF EXISTS tier,
   DROP COLUMN IF EXISTS paid_through,
   DROP COLUMN IF EXISTS paypal_subscription_id,
-  DROP COLUMN IF EXISTS payer_id_hash;
+  DROP COLUMN IF EXISTS last_payment_at;
 -- Dropping `tier` also drops `dataset_access_grants_tier_check` (a single-column CHECK goes with its column).
-DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794410950088;
+DELETE FROM drizzle.__drizzle_migrations WHERE created_at = 1794412790979;
 COMMIT;
 ```
 

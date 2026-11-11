@@ -391,44 +391,45 @@ describe("buildDatasetSubscriptionActiveEmail", () => {
 });
 
 describe("buildDatasetCommercialAlertEmail", () => {
-  it("names reason, action and Stripe ids, escaped, with no token", () => {
+  it("names reason, action and PayPal ids, escaped, with no token", () => {
     const mail = buildDatasetCommercialAlertEmail({
-      reason: "revoked_buyer",
-      action: "cancelled_and_refunded",
+      reason: "duplicate_subscription",
+      action: "no_grant_created",
       subscriptionId: "sub_<b>x",
-      sessionId: "cs_1",
-      invoiceId: null,
+      checkoutId: "cs_1",
+      saleId: null,
     });
     for (const body of [mail.text, mail.html]) {
-      expect(body).toContain("revoked_buyer");
+      expect(body).toContain("duplicate_subscription");
       expect(body).toContain("cs_1");
     }
-    expect(mail.text).toContain("refunded");
-    expect(mail.text).toContain("Invoice: (none)");
+    expect(mail.text).toContain("already has access");
+    expect(mail.text).toContain("Cancel and refund the new subscription by hand in PayPal");
+    expect(mail.text).toContain("Sale: (none)");
     expect(mail.html).not.toContain("<b>");
     expect(mail.html).toContain("sub_&lt;b&gt;x");
   });
 
   it("names the new reasons and their actions, with the grant id escaped", () => {
-    const superseded = buildDatasetCommercialAlertEmail({
-      reason: "superseded_session",
+    const reversed = buildDatasetCommercialAlertEmail({
+      reason: "payment_reversed",
       action: "no_action_person_decides",
       subscriptionId: "sub_1",
-      sessionId: "cs_1",
-      invoiceId: null,
+      checkoutId: "cs_1",
+      saleId: null,
       grantId: "g<i>1",
     });
-    expect(superseded.text).toContain("superseded_session");
-    expect(superseded.text).toContain("NOT cancelled or refunded automatically");
-    expect(superseded.html).toContain("g&lt;i&gt;1");
-    expect(superseded.html).not.toContain("<i>");
+    expect(reversed.text).toContain("payment_reversed");
+    expect(reversed.text).toContain("Nothing was cancelled, refunded or changed automatically");
+    expect(reversed.html).toContain("g&lt;i&gt;1");
+    expect(reversed.html).not.toContain("<i>");
 
     const suppressed = buildDatasetCommercialAlertEmail({
       reason: "welcome_mail_undeliverable",
       action: "link_not_mailed_suppressed",
       subscriptionId: null,
-      sessionId: null,
-      invoiceId: null,
+      checkoutId: null,
+      saleId: null,
       grantId: "g1",
     });
     expect(suppressed.text).toContain("welcome_mail_undeliverable");
@@ -439,8 +440,8 @@ describe("buildDatasetCommercialAlertEmail", () => {
       reason: "welcome_mail_undeliverable",
       action: "link_not_mailed_unconfirmed",
       subscriptionId: null,
-      sessionId: null,
-      invoiceId: null,
+      checkoutId: null,
+      saleId: null,
       grantId: "g1",
     });
     expect(unconfirmed.text).toContain("grant was not live when the link was mailed");

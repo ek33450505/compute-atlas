@@ -113,7 +113,7 @@ const EXPECTED_COLUMNS: Record<string, Record<string, string>> = {
     tier: "text NOT NULL",
     paid_through: "timestamp with time zone NULL",
     paypal_subscription_id: "text NULL",
-    payer_id_hash: "text NULL",
+    last_payment_at: "timestamp with time zone NULL",
   },
   dataset_editions: {
     id: "uuid NOT NULL",

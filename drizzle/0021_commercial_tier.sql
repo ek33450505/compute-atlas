@@ -10,7 +10,6 @@ CREATE TABLE "commercial_checkouts" (
 	"reason" text,
 	"grant_id" uuid,
 	"conflict_grant_id" uuid,
-	"refunded_sale_id" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"decided_at" timestamp with time zone,
 	CONSTRAINT "commercial_checkouts_paypal_subscription_id_unique" UNIQUE("paypal_subscription_id"),
@@ -30,14 +29,13 @@ CREATE TABLE "paypal_webhook_events" (
 DROP INDEX "dataset_access_grants_open_email_idx";--> statement-breakpoint
 ALTER TABLE "dataset_access_grants" ADD COLUMN "tier" text DEFAULT 'free' NOT NULL;--> statement-breakpoint
 ALTER TABLE "dataset_access_grants" ADD COLUMN "paid_through" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "dataset_access_grants" ADD COLUMN "last_payment_at" timestamp with time zone;--> statement-breakpoint
 ALTER TABLE "dataset_access_grants" ADD COLUMN "paypal_subscription_id" text;--> statement-breakpoint
-ALTER TABLE "dataset_access_grants" ADD COLUMN "payer_id_hash" text;--> statement-breakpoint
 ALTER TABLE "commercial_checkouts" ADD CONSTRAINT "commercial_checkouts_grant_id_dataset_access_grants_id_fk" FOREIGN KEY ("grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "commercial_checkouts" ADD CONSTRAINT "commercial_checkouts_conflict_grant_id_dataset_access_grants_id_fk" FOREIGN KEY ("conflict_grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "paypal_webhook_events" ADD CONSTRAINT "paypal_webhook_events_grant_id_dataset_access_grants_id_fk" FOREIGN KEY ("grant_id") REFERENCES "public"."dataset_access_grants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "commercial_checkouts_created_at_idx" ON "commercial_checkouts" USING btree ("created_at");--> statement-breakpoint
 CREATE INDEX "paypal_webhook_events_received_at_idx" ON "paypal_webhook_events" USING btree ("received_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "dataset_access_grants_paypal_subscription_id_idx" ON "dataset_access_grants" USING btree ("paypal_subscription_id");--> statement-breakpoint
-CREATE INDEX "dataset_access_grants_payer_id_hash_idx" ON "dataset_access_grants" USING btree ("payer_id_hash");--> statement-breakpoint
 CREATE UNIQUE INDEX "dataset_access_grants_open_email_tier_idx" ON "dataset_access_grants" USING btree ("email","tier") WHERE "dataset_access_grants"."status" in ('unverified', 'pending_review', 'active');--> statement-breakpoint
 ALTER TABLE "dataset_access_grants" ADD CONSTRAINT "dataset_access_grants_tier_check" CHECK ("dataset_access_grants"."tier" IN ('free', 'commercial'));

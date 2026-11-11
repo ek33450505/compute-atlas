@@ -848,14 +848,13 @@ export const datasetAccessGrantsTable = pgTable(
     submitterIpHash: text("submitter_ip_hash"),
     tier: text("tier").$type<DatasetTier>().notNull().default("free"), // free | commercial; a commercial grant is live only while paid_through is in the future (liveGrant)
     paidThrough: timestamp("paid_through", { withTimezone: true }), // set by the PayPal webhook; null until first payment
+    lastPaymentAt: timestamp("last_payment_at", { withTimezone: true }), // PayPal `lastPayment.time` of the payment that funded the current paid_through; an extension needs a strictly newer one
     paypalSubscriptionId: text("paypal_subscription_id"),
-    payerIdHash: text("payer_id_hash"), // sha256 (lib/token-hash.ts) of the buyer's PayPal payer_id; matches a revoked buyer who returns under a new email. NEVER the raw payer id.
   },
   (table) => [
     index("dataset_access_grants_status_idx").on(table.status),
     uniqueIndex("dataset_access_grants_paypal_subscription_id_idx").on(table.paypalSubscriptionId),
     index("dataset_access_grants_email_idx").on(table.email),
-    index("dataset_access_grants_payer_id_hash_idx").on(table.payerIdHash),
     // One open row per (email, tier): a free and a commercial grant may coexist for one address, but never
     // two of the same tier. The tier split is what keeps a purchase (whose Checkout email nobody has
     // verified) from ever touching somebody's free request.
@@ -967,11 +966,11 @@ export type PaypalWebhookEventRow = typeof paypalWebhookEventsTable.$inferSelect
  * One row per commercial checkout attempt, created by our own form BEFORE the buyer is sent to PayPal; its
  * `id` travels to PayPal as `custom_id`, which is how the webhook finds the attempt again. `decision` stays
  * null until the webhook evaluates the subscription: 'activate' (it gets, or already has, a grant) or
- * 'refuse' (cancel + refund). A refusal always has a `reason`, and only a refusal does (CHECK). `email`,
+ * 'refuse' (no grant: the address already holds a live commercial grant from another subscription; the maintainer is alerted and decides about any refund by hand). A refusal always has a `reason`, and only a refusal does (CHECK). `email`,
  * `name` and `organization` are nullable so retention can scrub them: abandoned attempts (no decision) are
  * deleted after 30 days, decided rows have the three fields nulled after 365 days. `grantId` is the grant this
  * attempt activated, `conflictGrantId` the grant a refusal names; both are informational and null after the
- * grant is deleted. `refundedSaleId` records the PayPal sale refunded on a refusal.
+ * grant is deleted.
  */
 export const commercialCheckoutsTable = pgTable(
   "commercial_checkouts",
@@ -984,10 +983,9 @@ export const commercialCheckoutsTable = pgTable(
     termsVersion: text("terms_version").notNull(),
     paypalSubscriptionId: text("paypal_subscription_id").unique(),
     decision: text("decision").$type<"activate" | "refuse">(),
-    reason: text("reason").$type<"already_subscribed" | "revoked_buyer">(),
+    reason: text("reason").$type<"duplicate_subscription">(),
     grantId: uuid("grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
     conflictGrantId: uuid("conflict_grant_id").references(() => datasetAccessGrantsTable.id, { onDelete: "set null" }),
-    refundedSaleId: text("refunded_sale_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     decidedAt: timestamp("decided_at", { withTimezone: true }),
   },

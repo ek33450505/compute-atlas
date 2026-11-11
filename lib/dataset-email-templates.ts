@@ -272,43 +272,40 @@ export function buildDatasetSubscriptionActiveEmail(input: { siteUrl: string; ac
 }
 
 export type CommercialAlertReason =
-  | "already_subscribed"
-  | "revoked_buyer"
+  | "duplicate_subscription"
   | "revoked_still_billing"
-  | "orphaned_subscription"
-  | "superseded_session"
+  | "unmatched_subscription"
+  | "payment_reversed"
   | "welcome_mail_undeliverable";
 
-/** What the webhook did about the conflict, in words the maintainer can act on. */
+/** What the webhook did about the event, in words the maintainer can act on. It never moves money. */
 export type CommercialAlertAction =
-  | "cancelled"
-  | "cancelled_and_refunded"
-  | "cancelled_refund_needed"
   | "none"
+  | "no_grant_created"
   | "no_action_person_decides"
   | "link_not_mailed_suppressed"
   | "link_not_mailed_unconfirmed";
 
 const ALERT_ACTION_TEXT: Record<CommercialAlertAction, string> = {
-  cancelled: "The new subscription was cancelled. No refund was due.",
-  cancelled_and_refunded: "The new subscription was cancelled and its first payment refunded.",
-  cancelled_refund_needed:
-    "The subscription was cancelled, but a paid first payment could not be identified for refund. Refund it by hand in Stripe.",
-  none: "No automatic action was taken. Check it in Stripe.",
+  none: "No automatic action was taken. Check it in PayPal.",
+  no_grant_created:
+    "This buyer already has access (the Grant row is their existing live grant), so no second grant was created and nothing was cancelled or refunded. Cancel and refund the new subscription by hand in PayPal if they did not mean to buy twice.",
   no_action_person_decides:
-    "This checkout was already approved for activation (it may or may not have produced a grant yet), so it was NOT cancelled or refunded automatically. Check the grant and the subscription and decide by hand.",
+    "Nothing was cancelled, refunded or changed automatically. Check the grant and the subscription in PayPal and decide by hand.",
   link_not_mailed_suppressed:
-    "The buyer paid, but their address has opted out of our email, so the personal link was not sent. A reissue from /admin/access will be blocked by the same opt-out. Refund and cancel in Stripe, or reach the buyer through their Stripe receipt.",
+    "The buyer paid, but their address has opted out of our email, so the personal link was not sent. A reissue from /admin/access will be blocked by the same opt-out. Refund and cancel in PayPal, or reach the buyer through their PayPal receipt.",
   link_not_mailed_unconfirmed:
-    "The buyer paid, but the grant was not live when the link was mailed (for example revoked or changed meanwhile). Check the grant in /admin/access; reissue the link there if it should be live, or refund and cancel in Stripe.",
+    "The buyer paid, but the grant was not live when the link was mailed (for example revoked or changed meanwhile). Check the grant in /admin/access; reissue the link there if it should be live, or refund and cancel in PayPal.",
 };
 
 export function buildDatasetCommercialAlertEmail(input: {
   reason: CommercialAlertReason;
   action: CommercialAlertAction;
   subscriptionId: string | null;
-  sessionId: string | null;
-  invoiceId: string | null;
+  /** The commercial_checkouts id (PayPal `custom_id`). */
+  checkoutId: string | null;
+  /** The PayPal sale id of the payment concerned (refunded, reversed or refund-needed). */
+  saleId: string | null;
   grantId?: string | null;
 }): DatasetEmail {
   const subject = "Compute Atlas commercial subscription needs attention";
@@ -316,8 +313,8 @@ export function buildDatasetCommercialAlertEmail(input: {
     ["Reason", input.reason],
     ["Action", ALERT_ACTION_TEXT[input.action]],
     ["Subscription", input.subscriptionId ?? "(none)"],
-    ["Checkout session", input.sessionId ?? "(none)"],
-    ["Invoice", input.invoiceId ?? "(none)"],
+    ["Checkout", input.checkoutId ?? "(none)"],
+    ["Sale", input.saleId ?? "(none)"],
     ["Grant", input.grantId ?? "(none)"],
   ].map(([k, v]) => [k, singleLine(v)] as [string, string]);
   const text = ["A commercial subscription event needs your attention.", "", ...rows.map(([k, v]) => `${k}: ${v}`)].join("\n");

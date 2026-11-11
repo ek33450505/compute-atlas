@@ -1,5 +1,5 @@
 {
-  "id": "c0e70cdf-2f83-4bad-8dd9-36ae67f6fd79",
+  "id": "0ab00120-85f0-454e-8244-437cc6c992c1",
   "prevId": "78ef4ace-1ab1-404c-9590-329ce92c433a",
   "version": "7",
   "dialect": "postgresql",
@@ -283,12 +283,6 @@
         "conflict_grant_id": {
           "name": "conflict_grant_id",
           "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "refunded_sale_id": {
-          "name": "refunded_sale_id",
-          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -675,14 +669,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "paypal_subscription_id": {
-          "name": "paypal_subscription_id",
-          "type": "text",
+        "last_payment_at": {
+          "name": "last_payment_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
-        "payer_id_hash": {
-          "name": "payer_id_hash",
+        "paypal_subscription_id": {
+          "name": "paypal_subscription_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -724,21 +718,6 @@
           "columns": [
             {
               "expression": "email",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "dataset_access_grants_payer_id_hash_idx": {
-          "name": "dataset_access_grants_payer_id_hash_idx",
-          "columns": [
-            {
-              "expression": "payer_id_hash",
               "isExpression": false,
               "asc": true,
               "nulls": "last"

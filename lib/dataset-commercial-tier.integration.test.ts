@@ -159,11 +159,11 @@ describe("commercial_checkouts", () => {
   it("requires a reason exactly when the decision is refuse", async () => {
     expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "refuse" }))).toBe("23514");
     expect(
-      await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "activate", reason: "revoked_buyer" }))
+      await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "activate", reason: "duplicate_subscription" }))
     ).toBe("23514");
-    expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, reason: "revoked_buyer" }))).toBe("23514");
+    expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, reason: "duplicate_subscription" }))).toBe("23514");
     expect(
-      await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "refuse", reason: "revoked_buyer" }))
+      await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "refuse", reason: "duplicate_subscription" }))
     ).toBeUndefined();
     expect(await sqlState(tdb.db.insert(commercialCheckoutsTable).values({ ...base, decision: "activate" }))).toBeUndefined();
   });
@@ -179,7 +179,7 @@ describe("commercial_checkouts", () => {
     const [grant] = await tdb.db.insert(datasetAccessGrantsTable).values(grantValues()).returning();
     await tdb.db
       .insert(commercialCheckoutsTable)
-      .values({ ...base, decision: "refuse", reason: "already_subscribed", grantId: grant.id, conflictGrantId: grant.id });
+      .values({ ...base, decision: "refuse", reason: "duplicate_subscription", grantId: grant.id, conflictGrantId: grant.id });
     await tdb.client.query(`DELETE FROM "dataset_access_grants" WHERE id = $1`, [grant.id]);
     const [row] = await tdb.db.select().from(commercialCheckoutsTable);
     expect(row.grantId).toBeNull();

@@ -80,11 +80,11 @@ const senders: Array<[string, () => Promise<unknown>, string]> = [
     "commercial alert",
     () =>
       sendDatasetCommercialAlertEmail({
-        reason: "already_subscribed",
-        action: "cancelled",
+        reason: "duplicate_subscription",
+        action: "no_grant_created",
         subscriptionId: "sub_1",
-        sessionId: "cs_1",
-        invoiceId: null,
+        checkoutId: "cs_1",
+        saleId: null,
       }),
     "maintainer@example.test",
   ],

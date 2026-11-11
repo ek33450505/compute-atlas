@@ -636,7 +636,7 @@ describe("runRetentionPrune — commercial_checkouts", () => {
   it("scrubs email, name and organization on decided rows past the window; keeps the decision record", async () => {
     const old = new Date(daysBefore(COMMERCIAL_CHECKOUT_PII_RETENTION_DAYS).getTime() - 1);
     await tdb.db.insert(commercialCheckoutsTable).values([
-      { ...base, email: "d@example.com", name: "D", organization: "Org", paypalSubscriptionId: "scrub-me", decision: "refuse", reason: "revoked_buyer", createdAt: old },
+      { ...base, email: "d@example.com", name: "D", organization: "Org", paypalSubscriptionId: "scrub-me", decision: "refuse", reason: "duplicate_subscription", createdAt: old },
       { ...base, email: "e@example.com", name: "E", paypalSubscriptionId: "too-recent", decision: "activate", createdAt: daysBefore(100) },
       { ...base, paypalSubscriptionId: "already-clean", decision: "activate", createdAt: old },
       { ...base, email: "f@example.com", paypalSubscriptionId: "email-only", decision: "activate", createdAt: old },
@@ -652,7 +652,7 @@ describe("runRetentionPrune — commercial_checkouts", () => {
     const summary = await runRetentionPrune({ apply: true, now: NOW, backupDir });
     expect(summary.tables.find((t) => t.action === "scrub-pii")).toMatchObject({ candidates: 2, applied: 2 });
     const rows = await rowsById();
-    expect(rows.get("scrub-me")).toMatchObject({ email: null, name: null, organization: null, decision: "refuse", reason: "revoked_buyer" });
+    expect(rows.get("scrub-me")).toMatchObject({ email: null, name: null, organization: null, decision: "refuse", reason: "duplicate_subscription" });
     expect(rows.get("email-only")).toMatchObject({ email: null, decision: "activate" });
     expect(rows.get("too-recent")?.email).toBe("e@example.com");
     // The undecided row is gone via the abandoned-delete step, never scrubbed.
