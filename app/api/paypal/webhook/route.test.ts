@@ -74,12 +74,22 @@ describe("POST /api/paypal/webhook", () => {
   });
 
   it("answers 400 when unverified and never processes", async () => {
-    verify.mockResolvedValue({ verified: false });
+    verify.mockResolvedValue({ verified: false, reason: "body_shape" });
     const res = await POST(post());
     expect(res.status).toBe(400);
     expectNoStore(res);
     expect(processEvent).not.toHaveBeenCalled();
     expect(loggedText()).not.toContain("SECRET-BODY-MARKER");
+  });
+
+  it("logs the reason and PayPal codes on unverified, never a message", async () => {
+    verify.mockResolvedValue({ verified: false, reason: "paypal_4xx", status: 400, paypalName: "INVALID_REQUEST", debugId: "dbg9" });
+    await POST(post());
+    expect(loggedText()).toContain("reason=paypal_4xx status=400 paypalName=INVALID_REQUEST debugId=dbg9");
+    errSpy.mockClear();
+    verify.mockResolvedValue({ verified: false, reason: "verdict_failure", verdict: "FAILURE" });
+    await POST(post());
+    expect(loggedText()).toContain("reason=verdict_failure verdict=FAILURE");
   });
 
   it("answers 500 when verification throws, logging codes only", async () => {
@@ -117,7 +127,7 @@ describe("POST /api/paypal/webhook", () => {
   });
 
   it("logs a well-formed transmission id on unverified, omits a malformed one", async () => {
-    verify.mockResolvedValue({ verified: false });
+    verify.mockResolvedValue({ verified: false, reason: "body_shape" });
     await POST(post(SECRET_BODY, { "paypal-transmission-id": "abc-123" }));
     expect(loggedText()).toContain("abc-123");
     errSpy.mockClear();

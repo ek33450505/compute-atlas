@@ -425,9 +425,37 @@ describe("verifyWebhookSignature", () => {
     });
   });
 
+  it("sends the raw body bytes as webhook_event, not a re-serialisation", async () => {
+    const raw = '{ "id":"WH-EVT-2","event_type":"PAYMENT.SALE.COMPLETED","summary":"a\\/b & c","resource":{"amount":{"value":150.00}} }';
+    queue(tokenResponse(), json({ verification_status: "SUCCESS" }));
+    const result = await verifyWebhookSignature(goodHeaders(), raw);
+    expect(result.verified).toBe(true);
+    const sent = callAt(1).init.body as string;
+    expect(sent).toContain(`"webhook_event":${raw}`);
+    expect(Object.keys(JSON.parse(sent)).sort()).toEqual(
+      ["auth_algo", "cert_url", "transmission_id", "transmission_sig", "transmission_time", "webhook_event", "webhook_id"],
+    );
+  });
+
+  it("splices a body with surrounding whitespace verbatim", async () => {
+    const raw = `\n  ${body}\r\n `;
+    queue(tokenResponse(), json({ verification_status: "SUCCESS" }));
+    expect((await verifyWebhookSignature(goodHeaders(), raw)).verified).toBe(true);
+    expect(callAt(1).init.body as string).toContain(`"webhook_event":${raw}}`);
+  });
+
+  it("is not verified, with no fetch, for a BOM-prefixed body", async () => {
+    expect(await verifyWebhookSignature(goodHeaders(), `\uFEFF${body}`)).toEqual({ verified: false, reason: "body_shape" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("is not verified on a FAILURE answer", async () => {
     queue(tokenResponse(), json({ verification_status: "FAILURE" }));
-    expect(await verifyWebhookSignature(goodHeaders(), body)).toEqual({ verified: false });
+    expect(await verifyWebhookSignature(goodHeaders(), body)).toEqual({
+      verified: false,
+      reason: "verdict_failure",
+      verdict: "FAILURE",
+    });
   });
 
   it.each([
@@ -443,8 +471,14 @@ describe("verifyWebhookSignature", () => {
   });
 
   it.each([400, 422])("is not verified when PayPal answers %i", async (status) => {
-    queue(tokenResponse(), json({ name: "INVALID_REQUEST" }, status));
-    expect(await verifyWebhookSignature(goodHeaders(), body)).toEqual({ verified: false });
+    queue(tokenResponse(), json({ name: "INVALID_REQUEST", debug_id: "abc123", message: "secret detail" }, status));
+    expect(await verifyWebhookSignature(goodHeaders(), body)).toEqual({
+      verified: false,
+      reason: "paypal_4xx",
+      status,
+      paypalName: "INVALID_REQUEST",
+      debugId: "abc123",
+    });
   });
 
   it.each([
@@ -456,21 +490,21 @@ describe("verifyWebhookSignature", () => {
   ])("is not verified, with no fetch, when %s is missing", async (name) => {
     const headers = goodHeaders();
     headers.delete(name);
-    expect(await verifyWebhookSignature(headers, body)).toEqual({ verified: false });
+    expect(await verifyWebhookSignature(headers, body)).toEqual({ verified: false, reason: "missing_header" });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it.each([
-    ["wrong algo", { "paypal-auth-algo": "SHA1withRSA" }],
-    ["suffix-spoofed cert host", { "paypal-cert-url": "https://api.paypal.com.evil.com/certs/1" }],
-    ["prefix-spoofed cert host", { "paypal-cert-url": "https://evilapi.paypal.com/certs/1" }],
-    ["userinfo-spoofed cert host", { "paypal-cert-url": "https://api.paypal.com@evil.com/certs/1" }],
-    ["http cert url", { "paypal-cert-url": "http://api.paypal.com/certs/1" }],
-    ["unparseable cert url", { "paypal-cert-url": "not a url" }],
-    ["cert url with a port", { "paypal-cert-url": "https://api.paypal.com:8443/certs/1" }],
-    ["cert url with userinfo", { "paypal-cert-url": "https://user:pw@api.paypal.com/certs/1" }],
-  ])("is not verified, with no fetch: %s", async (_name, overrides) => {
-    expect(await verifyWebhookSignature(goodHeaders(overrides), body)).toEqual({ verified: false });
+    ["wrong algo", { "paypal-auth-algo": "SHA1withRSA" }, "bad_algo"],
+    ["suffix-spoofed cert host", { "paypal-cert-url": "https://api.paypal.com.evil.com/certs/1" }, "cert_host"],
+    ["prefix-spoofed cert host", { "paypal-cert-url": "https://evilapi.paypal.com/certs/1" }, "cert_host"],
+    ["userinfo-spoofed cert host", { "paypal-cert-url": "https://api.paypal.com@evil.com/certs/1" }, "cert_host"],
+    ["http cert url", { "paypal-cert-url": "http://api.paypal.com/certs/1" }, "cert_host"],
+    ["unparseable cert url", { "paypal-cert-url": "not a url" }, "cert_host"],
+    ["cert url with a port", { "paypal-cert-url": "https://api.paypal.com:8443/certs/1" }, "cert_host"],
+    ["cert url with userinfo", { "paypal-cert-url": "https://user:pw@api.paypal.com/certs/1" }, "cert_host"],
+  ])("is not verified, with no fetch: %s", async (_name, overrides, reason) => {
+    expect(await verifyWebhookSignature(goodHeaders(overrides), body)).toEqual({ verified: false, reason });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -497,7 +531,7 @@ describe("verifyWebhookSignature", () => {
     ["non-string resource_type", JSON.stringify({ id: "WH-1", event_type: "X", resource_type: 1 })],
     ["non-string create_time", JSON.stringify({ id: "WH-1", event_type: "X", create_time: {} })],
   ])("is not verified, with no fetch, for body: %s", async (_name, raw) => {
-    expect(await verifyWebhookSignature(goodHeaders(), raw)).toEqual({ verified: false });
+    expect(await verifyWebhookSignature(goodHeaders(), raw)).toEqual({ verified: false, reason: "body_shape" });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

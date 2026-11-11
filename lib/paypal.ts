@@ -201,10 +201,11 @@ async function requestToken(env: "sandbox" | "live", clientId: string, clientSec
   return token;
 }
 
-interface SendOptions {
-  body?: unknown;
-  headers?: Record<string, string>;
-}
+type SendOptions = { headers?: Record<string, string> } & (
+  | { body?: unknown; rawJsonBody?: never }
+  /** A pre-serialised JSON document sent byte for byte; cannot be combined with `body`. */
+  | { rawJsonBody: string; body?: never }
+);
 
 /** Authenticated call. Returns non-2xx results to the caller; retries once on 401 with a fresh token. */
 async function send(
@@ -219,10 +220,10 @@ async function send(
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
-        ...(options.body !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...(options.body !== undefined || options.rawJsonBody !== undefined ? { "Content-Type": "application/json" } : {}),
         ...options.headers,
       },
-      body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+      body: options.rawJsonBody ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
     });
     return { status: res.status, ok: res.ok, data: await readJson(res) };
   };
@@ -365,33 +366,47 @@ function payPalCertUrl(value: string): string | null {
   }
 }
 
+export type VerifyFailReason =
+  | "missing_header"
+  | "bad_algo"
+  | "cert_host"
+  | "body_shape"
+  | "paypal_4xx"
+  | "verdict_failure";
+
+export type WebhookVerification =
+  | { verified: true; event: PayPalWebhookEvent }
+  | { verified: false; reason: VerifyFailReason; status?: number; paypalName?: string; debugId?: string; verdict?: string };
+
 /**
  * Verified only when PayPal itself reports SUCCESS, and then returns the one event object that was sent to
- * PayPal; routes must act only on it. Missing or malformed headers, a bad cert host, a wrong algorithm or an
- * unusable body are `{ verified: false }` with no network call, as is a 400/422 or non-SUCCESS answer from
- * PayPal. A missing webhook id throws (fail closed); network and 5xx errors throw so the route answers 500 and
- * PayPal retries.
+ * PayPal; routes must act only on it. PayPal is sent the raw body text spliced in as `webhook_event`, never
+ * a re-serialisation, because the signature covers the bytes PayPal sent. Missing or malformed headers, a
+ * bad cert host, a wrong algorithm or an unusable body are `{ verified: false, reason }` with no network
+ * call, as is a 400/422 or non-SUCCESS answer from PayPal (those carry PayPal's regex-checked codes). A
+ * missing webhook id throws (fail closed); network and 5xx errors throw so the route answers 500 and PayPal
+ * retries.
  */
-export async function verifyWebhookSignature(
-  headers: Headers,
-  rawBody: string,
-): Promise<{ verified: true; event: PayPalWebhookEvent } | { verified: false }> {
+export async function verifyWebhookSignature(headers: Headers, rawBody: string): Promise<WebhookVerification> {
   const webhookId = requireEnv("PAYPAL_WEBHOOK_ID");
   const [authAlgo, certUrl, transmissionId, transmissionSig, transmissionTime] = SIGNATURE_HEADERS.map(
     (name) => headers.get(name)?.trim() ?? "",
   );
-  if (!authAlgo || !certUrl || !transmissionId || !transmissionSig || !transmissionTime) return { verified: false };
+  if (!authAlgo || !certUrl || !transmissionId || !transmissionSig || !transmissionTime) {
+    return { verified: false, reason: "missing_header" };
+  }
+  if (authAlgo !== "SHA256withRSA") return { verified: false, reason: "bad_algo" };
   const certHref = payPalCertUrl(certUrl);
-  if (authAlgo !== "SHA256withRSA" || !certHref) return { verified: false };
+  if (!certHref) return { verified: false, reason: "cert_host" };
   let parsed: unknown;
   try {
     parsed = JSON.parse(rawBody);
   } catch {
-    return { verified: false };
+    return { verified: false, reason: "body_shape" };
   }
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { verified: false };
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { verified: false, reason: "body_shape" };
   const event = parsed as Json;
-  if (!str(event.id) || !str(event.event_type)) return { verified: false };
+  if (!str(event.id) || !str(event.event_type)) return { verified: false, reason: "body_shape" };
   const optionalString = (v: unknown) => v === undefined || typeof v === "string";
   const resource = event.resource;
   if (
@@ -399,25 +414,44 @@ export async function verifyWebhookSignature(
     !optionalString(event.create_time) ||
     (resource !== undefined && (!resource || typeof resource !== "object" || Array.isArray(resource)))
   ) {
-    return { verified: false };
+    return { verified: false, reason: "body_shape" };
   }
-  const { status, ok, data } = await send("POST", "/v1/notifications/verify-webhook-signature", {
-    body: {
-      auth_algo: authAlgo,
-      cert_url: certHref,
-      transmission_id: transmissionId,
-      transmission_sig: transmissionSig,
-      transmission_time: transmissionTime,
-      webhook_id: webhookId,
-      webhook_event: event,
-    },
-  });
+  // The body parsed as a single JSON object, so splicing it in keeps the document valid.
+  const rawJsonBody =
+    "{" +
+    [
+      ["auth_algo", authAlgo],
+      ["cert_url", certHref],
+      ["transmission_id", transmissionId],
+      ["transmission_sig", transmissionSig],
+      ["transmission_time", transmissionTime],
+      ["webhook_id", webhookId],
+    ]
+      .map(([k, v]) => `${JSON.stringify(k)}:${JSON.stringify(v)}`)
+      .join(",") +
+    `,"webhook_event":${rawBody}}`;
+  const { status, ok, data } = await send("POST", "/v1/notifications/verify-webhook-signature", { rawJsonBody });
   if (!ok) {
-    if (status === 400 || status === 422) return { verified: false };
+    if (status === 400 || status === 422) {
+      const err = toApiError(status, data);
+      return {
+        verified: false,
+        reason: "paypal_4xx",
+        status,
+        ...(err.paypalName ? { paypalName: err.paypalName } : {}),
+        ...(err.debugId ? { debugId: err.debugId } : {}),
+      };
+    }
     throw toApiError(status, data);
   }
   // A 2xx we cannot read as a verdict must throw (route answers 500, PayPal retries), not read as "not verified".
   if (typeof data.verification_status !== "string") throw new PayPalApiError(0, "UNEXPECTED_RESPONSE", undefined);
-  if (data.verification_status !== "SUCCESS") return { verified: false };
+  if (data.verification_status !== "SUCCESS") {
+    return {
+      verified: false,
+      reason: "verdict_failure",
+      ...(/^[A-Z_]{1,40}$/.test(data.verification_status) ? { verdict: data.verification_status } : {}),
+    };
+  }
   return { verified: true, event: event as unknown as PayPalWebhookEvent };
 }

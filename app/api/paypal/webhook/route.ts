@@ -2,12 +2,14 @@
  * PayPal webhook for the commercial tier.
  *
  * The signature, not the network path, is the authentication: `verifyWebhookSignature` asks PayPal to
- * verify the exact bytes and returns the event it verified. The route acts only on that returned
- * object, never on a re-parse of the body.
+ * verify the exact raw body text (spliced in unchanged, never re-serialised) and returns the event it
+ * verified. The route acts only on that returned object, never on a re-parse of the body.
  *
  * Status codes, as PayPal's retry logic reads them:
  *   200  handled, duplicate or ignored: stop retrying.
- *   400  signature did not verify: forged or corrupt, nothing to retry.
+ *   400  signature did not verify (the log line carries the reason). PayPal redelivers any
+ *        non-2xx, 400 included (observed 2026-11-11: 7 redeliveries of one 400 over ~2 h), so a 400
+ *        is not "nothing to retry".
  *   403  tier flag off.
  *   413  body over the cap (rejected before verification).
  *   500  verification could not run (PayPal transport or config failure) or processing failed:
@@ -103,7 +105,12 @@ export async function POST(request: Request) {
   if (!result.verified) {
     const tid = request.headers.get("paypal-transmission-id");
     const safeTid = tid !== null && /^[A-Za-z0-9-]{1,64}$/.test(tid) ? ` transmission=${tid}` : "";
-    console.error(`paypal-webhook signature not verified${safeTid}`);
+    const detail =
+      (result.status !== undefined ? ` status=${result.status}` : "") +
+      (result.paypalName ? ` paypalName=${result.paypalName}` : "") +
+      (result.debugId ? ` debugId=${result.debugId}` : "") +
+      (result.verdict ? ` verdict=${result.verdict}` : "");
+    console.error(`paypal-webhook signature not verified reason=${result.reason}${detail}${safeTid}`);
     return jsonResponse({ error: "invalid signature" }, { status: 400 });
   }
 
