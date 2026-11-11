@@ -2,12 +2,15 @@
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildCannotCheckReport,
+  buildMarkdownReport,
+  checkWorkflow,
   classifyWorkflow,
   emitOutcome,
+  isHealthy,
   MONITORED_WORKFLOWS,
   pickLatestSuccess,
   sortNewestFirst,
@@ -418,5 +421,147 @@ describe("MONITORED_WORKFLOWS", () => {
     expect(cron).toBeTruthy();
     const entry = MONITORED_WORKFLOWS.find((w) => w.file === "schema-check.yml");
     expect(entry?.cronDescription.startsWith(cron as string)).toBe(true);
+  });
+});
+
+describe("classifyWorkflow with a disabled workflow", () => {
+  const stale = [run(20 * 24)];
+
+  it("reports disabled_manually as disabled, not stale", () => {
+    const result = classifyWorkflow(WEEKLY, stale, NOW, null, "disabled_manually");
+    expect(result.state).toBe("disabled");
+  });
+
+  it("still alerts for disabled_inactivity (GitHub's automatic disable)", () => {
+    const result = classifyWorkflow(WEEKLY, stale, NOW, null, "disabled_inactivity");
+    expect(result.state).toBe("stale");
+  });
+
+  it("treats an active workflow exactly as before", () => {
+    expect(classifyWorkflow(WEEKLY, stale, NOW, null, "active").state).toBe("stale");
+    expect(classifyWorkflow(WEEKLY, stale, NOW).state).toBe("stale");
+  });
+});
+
+describe("checkWorkflow", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("classifies never-run when the workflow-state fetch fails, never disabled", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) =>
+        url.endsWith("/release-please.yml")
+          ? { ok: false, status: 500, text: async () => "boom" }
+          : { ok: true, status: 200, json: async () => ({ workflow_runs: [] }) }
+      )
+    );
+    const result = await checkWorkflow(WEEKLY, "o", "r", "tok", NOW);
+    expect(result.state).toBe("never-run");
+    expect(result.detail).toContain("boom");
+  });
+
+  it("returns disabled when the API says disabled_manually", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) =>
+        url.endsWith("/release-please.yml")
+          ? { ok: true, status: 200, json: async () => ({ state: "disabled_manually" }) }
+          : {
+              ok: true,
+              status: 200,
+              json: async () => ({ workflow_runs: [run(20 * 24)] }),
+            }
+      )
+    );
+    const result = await checkWorkflow(WEEKLY, "o", "r", "tok", NOW);
+    expect(result.state).toBe("disabled");
+  });
+
+  it("classifies never-run when the state endpoint returns 404 (renamed file)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) =>
+        url.endsWith("/release-please.yml")
+          ? { ok: false, status: 404, text: async () => "Not Found" }
+          : { ok: true, status: 200, json: async () => ({ workflow_runs: [] }) }
+      )
+    );
+    const result = await checkWorkflow(WEEKLY, "o", "r", "tok", NOW);
+    expect(result.state).toBe("never-run");
+    expect(result.detail).toContain("404");
+  });
+
+  it("classifies never-run when the state endpoint returns a non-JSON body", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) =>
+        url.endsWith("/release-please.yml")
+          ? {
+              ok: true,
+              status: 200,
+              json: async () => {
+                throw new SyntaxError("Unexpected token <");
+              },
+            }
+          : { ok: true, status: 200, json: async () => ({ workflow_runs: [] }) }
+      )
+    );
+    const result = await checkWorkflow(WEEKLY, "o", "r", "tok", NOW);
+    expect(result.state).toBe("never-run");
+  });
+
+  it("treats a non-string state as a fetch error", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) =>
+        url.endsWith("/release-please.yml")
+          ? { ok: true, status: 200, json: async () => ({}) }
+          : { ok: true, status: 200, json: async () => ({ workflow_runs: [] }) }
+      )
+    );
+    const result = await checkWorkflow(WEEKLY, "o", "r", "tok", NOW);
+    expect(result.state).toBe("never-run");
+  });
+});
+
+describe("disabled is non-alerting in the aggregates", () => {
+  const okResult = classifyWorkflow(DAILY, [run(2)], NOW);
+  const disabledResult = classifyWorkflow(WEEKLY, [run(20 * 24)], NOW, null, "disabled_manually");
+  const staleResult = classifyWorkflow(DAILY, [run(40)], NOW);
+
+  it("isHealthy is true when the only non-ok result is disabled", () => {
+    expect(isHealthy([okResult, disabledResult])).toBe(true);
+  });
+
+  it("isHealthy is false when something else is unhealthy", () => {
+    expect(isHealthy([okResult, disabledResult, staleResult])).toBe(false);
+  });
+
+  it("the markdown report omits disabled from the attention list", () => {
+    const body = buildMarkdownReport([okResult, disabledResult], "o", "r");
+    expect(body).toContain("All monitored scheduled workflows are healthy");
+    expect(body).not.toContain("## release-please");
+    expect(body).not.toContain("need attention");
+    expect(body).toContain(
+      "release-please.yml — disabled on purpose, not alerting; re-enable it to run " +
+        "(re-enabling it is how a release is cut)."
+    );
+    const other = classifyWorkflow(
+      MONITORED_WORKFLOWS.find((w) => w.file === "schema-check.yml") as WorkflowConfig,
+      [run(2)],
+      NOW,
+      null,
+      "disabled_manually"
+    );
+    const generic = buildMarkdownReport([okResult, other], "o", "r");
+    expect(generic).toContain(
+      "schema-check.yml — disabled on purpose, not alerting; re-enable it to run."
+    );
+    expect(generic).not.toContain("release");
+    const mixed = buildMarkdownReport([disabledResult, staleResult], "o", "r");
+    expect(mixed).toContain("1 of 2 monitored workflow(s) need attention");
+    expect(mixed).not.toContain("## release-please");
   });
 });
