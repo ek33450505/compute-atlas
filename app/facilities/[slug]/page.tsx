@@ -33,10 +33,12 @@ import { ProvenancePanel } from "@/components/facility/provenance-panel";
 import { FacilityMiniMapDynamic } from "@/components/facility/facility-mini-map-dynamic";
 import { CivicImpactSection } from "@/components/facility/civic-impact";
 import { StakeholdersSection } from "@/components/facility/stakeholders";
-import { PowerLinksSection } from "@/components/facility/power-links";
+import { PowerLinksSection, hasPowerLinks } from "@/components/facility/power-links";
 import { SitingContextSection } from "@/components/facility/siting-context";
 import { RelatedFacilities } from "@/components/facility/related-facilities";
 import { PrintBriefButton } from "@/components/facility/print-brief-button";
+import { MissingRecordCard } from "@/components/facility/missing-record-card";
+import { CAPACITY_NOT_RECORDED_KEY, missingRecordItems } from "@/lib/facility-gaps";
 import { PrintGapSummary } from "@/components/facility/print-gap-summary";
 import { PrintProvenanceFooter } from "@/components/facility/print-provenance-footer";
 import { CiteThisFacility } from "@/components/facility/cite-this-facility";
@@ -130,12 +132,6 @@ export async function generateMetadata({
   return { title, description, alternates: { canonical: `/facilities/${slug}` } };
 }
 
-// notRecorded key for each correctable capacity field.
-const CAPACITY_NOT_RECORDED_KEY = {
-  capacityOperationalMw: "capacityMw.operational",
-  capacityPlannedMw: "capacityMw.planned",
-} as const;
-
 /**
  * Facility detail page — static server component.
  *
@@ -160,6 +156,9 @@ export default async function FacilityPage({
     getSitingContext(facility.id),
     getOperatorOwnership(facility.operator),
   ]);
+  // Resolved once and shared by the card, the power section and the print summary.
+  const hasLinkedPower = await hasPowerLinks(facility);
+  const missingItems = missingRecordItems(facility, siting, hasLinkedPower);
   const location = formatLocation(facility);
   const capacity = formatCapacity(facility);
   // Keyed on the field, not the reason text: two fields may share a reason.
@@ -389,6 +388,7 @@ export default async function FacilityPage({
             {capacity === "—" ? (
               !capacityGapMarked && (
                 <FieldGapPrompt
+                  printOnly
                   field={capacityGapField(facility.status)}
                   facilityId={facility.id}
                   facilityName={facility.name}
@@ -420,6 +420,7 @@ export default async function FacilityPage({
           <MastheadFactRow label="Powered by">
             {facility.poweredBy ?? (
               <FieldGapPrompt
+                printOnly
                 field="poweredBy"
                 facilityId={facility.id}
                 facilityName={facility.name}
@@ -431,6 +432,7 @@ export default async function FacilityPage({
           <MastheadFactRow label="Announced" valueClassName="mt-1 text-sm font-mono tabular-nums">
             {facility.announcedDate ?? (
               <FieldGapPrompt
+                printOnly
                 field="announcedDate"
                 facilityId={facility.id}
                 facilityName={facility.name}
@@ -447,11 +449,19 @@ export default async function FacilityPage({
 
       <SitingContextSection facility={facility} siting={siting} />
 
-      <PowerLinksSection facility={facility} />
+      <PowerLinksSection facility={facility} hasLinks={hasLinkedPower} />
 
       <CivicImpactSection facility={facility} />
 
       <StakeholdersSection facility={facility} ownership={ownership} />
+
+      {/* The page's single gap prompt: sits where the stakeholder prompt used
+          to, just above the status history. */}
+      <MissingRecordCard
+        facilityId={facility.id}
+        facilityName={facility.name}
+        items={missingItems}
+      />
 
       <Separator />
 
@@ -539,7 +549,7 @@ export default async function FacilityPage({
       {/* Print-only: one line naming every section this record has no data
           for. Sits immediately above the provenance footer so the sheet ends
           with what is known about the record, then what is not. */}
-      <PrintGapSummary facility={facility} siting={siting} />
+      <PrintGapSummary facility={facility} siting={siting} hasLinkedPower={hasLinkedPower} />
 
       {/* Print-only: what makes the printout citable — where it came from,
           when the record was curated, when it was printed, and the data

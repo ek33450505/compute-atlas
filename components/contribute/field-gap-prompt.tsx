@@ -11,8 +11,8 @@ import { QUIET_ACTION_CLASS } from "@/lib/utils";
  * `hidden` is `display: none`, so the marker is absent from the screen
  * accessibility tree without an `aria-hidden` that would also silence it in
  * print. Kept quiet on the page — it is a nil marker, not data.
- * (`text-muted-foreground` is 6.70:1 on parchment; see the contrast note on
- * SECTION_LINK_CLASS below.)
+ * (`text-muted-foreground` is 6.70:1 on parchment; see
+ * the contrast audit in app/globals.css.)
  *
  * ⛔ The print visibility is NOT a `print:inline` utility on this element. It
  * lives in app/globals.css, scoped under `[data-print-brief]`, because the
@@ -46,20 +46,12 @@ interface FieldGapPromptProps {
   /** Human copy, e.g. "permanent jobs", "the air permit". */
   label: string;
   /**
-   * Set when this prompt stands in for a WHOLE group rather than one field —
-   * it replaces the group's heading and list, so there is no `<dt>` beside it
-   * and the print nil renders as a bare "Not recorded" naming nothing.
-   *
-   * The gap is NOT going unreported: the consolidated line at the foot of the
-   * brief (components/facility/print-gap-summary.tsx) already names the group,
-   * so the marker here is a duplicate as well as an orphan. Suppressing it
-   * removes a repetition, never a fact.
-   *
-   * ⛔ Do not "restore" the marker for completeness — an unlabelled nil is the
-   * defect this flag exists to prevent, and it is invisible in review because
-   * it only shows in rendered output (found in a printed PDF, 2026-09-11).
+   * Facility page: the on-screen invite is gone (the gap is listed once on the
+   * "What this record is missing" card), but the row stays so the printed
+   * brief keeps its "Not recorded" nil beside the `<dt>`. Screen shows a quiet
+   * dash labelled "Not recorded"; it does not print.
    */
-  coveredByPrintSummary?: boolean;
+  printOnly?: boolean;
 }
 
 /**
@@ -106,12 +98,25 @@ export function FieldGapPrompt({
   facilityId,
   facilityName,
   label,
-  coveredByPrintSummary = false,
+  printOnly = false,
 }: FieldGapPromptProps) {
   const correctable = (CORRECTABLE_KEYS as readonly string[]).includes(field);
   // Both branches below carry the same marker, so the decision is made once
   // here — adding it to only one branch is how half a stat sheet gets printed.
-  const printNil = coveredByPrintSummary ? null : <NotRecorded />;
+  const printNil = <NotRecorded />;
+
+  if (printOnly) {
+    return (
+      <>
+        {/* aria-label, not text: e2e/print-brief.spec.ts finds the print nil by
+            its "Not recorded" text, and a second copy would be ambiguous. */}
+        <span role="img" aria-label="Not recorded" className="text-muted-foreground print:hidden">
+          {"\u2014"}
+        </span>
+        {printNil}
+      </>
+    );
+  }
 
   if (correctable) {
     return (
@@ -142,48 +147,5 @@ export function FieldGapPrompt({
       />
       {printNil}
     </>
-  );
-}
-
-interface SectionGapPromptProps {
-  facilityId: string;
-  facilityName: string;
-  /** Human copy, e.g. "economic impact data", "a documented stakeholder". */
-  label: string;
-}
-
-// `text-muted-foreground` (#5C5344 on #F5F1E6) is 6.70:1 — see the contrast
-// audit in app/globals.css. This used to carry `/70` opacity to read
-// quieter than a populated section, but that composited to ~#8A8275 on
-// #F5F1E6 = 3.36:1, below the 4.5:1 AA floor for normal text (WCAG 1.4.3).
-// Full-opacity muted-foreground plus text-xs + italic still reads distinctly
-// quieter than LINK_CLASS (text-sm, non-italic) without sacrificing AA.
-const SECTION_LINK_CLASS =
-  "text-xs italic text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
-
-/**
- * Whole-section/whole-group gap — an entire group has no data at all (e.g.
- * every field in "Economics" is undefined, or a facility has no siting-
- * context entry), so there is no single field key to target a correction
- * at. Unlike FieldGapPrompt, this never does an eligibility check and
- * always offers the tip path (see TipPrompt). Render exactly one per empty group —
- * never one per hypothetical field inside it, which would be noise — and
- * keep it visually quieter (smaller, muted, italic) than a populated
- * section so an empty facility page doesn't read louder than a full one.
- *
- * Screen-only, and carries no print nil marker of its own: on paper the
- * sections it stands in for are named together in one consolidated line
- * (components/facility/print-gap-summary.tsx). Both read the SAME emptiness
- * predicates from lib/facility-gaps.ts, so the summary and the sections
- * cannot drift apart about what is missing.
- */
-export function SectionGapPrompt({ facilityId, facilityName, label }: SectionGapPromptProps) {
-  return (
-    <TipPrompt
-      facilityId={facilityId}
-      facilityName={facilityName}
-      label={label}
-      className={SECTION_LINK_CLASS}
-    />
   );
 }

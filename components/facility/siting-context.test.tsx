@@ -76,22 +76,20 @@ describe("SitingContextSection", () => {
     expect(screen.getByText(/HIFLD/)).toBeInTheDocument();
   });
 
-  it("renders a SectionGapPrompt tip trigger when the facility has no siting-context entry", () => {
+  it("renders nothing when the facility has no siting-context entry (the page's missing-record card lists it)", () => {
     const facility = makeFacility({ id: "not-a-real-facility-id-xyz" });
-    render(<SitingContextSection facility={facility} siting={sitingFor(facility.id)} />);
+    const { container } = render(<SitingContextSection facility={facility} siting={sitingFor(facility.id)} />);
 
-    const trigger = screen.getByRole("button");
-    expect(trigger).toHaveTextContent(/the siting context/i);
-    expect(trigger).toHaveTextContent(/test datacenter/i);
-    expect(screen.queryByRole("heading", { name: "Siting context" })).not.toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("renders the no-data state from the prop alone, even for an id the bundled snapshot holds", () => {
     const id = "xai-colossus-memphis-tn";
     expect((sitingContextRaw as Record<string, SitingContext>)[id]?.nearestWater).toBeDefined();
-    render(<SitingContextSection facility={makeFacility({ id })} siting={undefined} />);
+    const { container } = render(<SitingContextSection facility={makeFacility({ id })} siting={undefined} />);
 
-    expect(screen.getByRole("button")).toHaveTextContent(/the siting context/i);
+    expect(container).toBeEmptyDOMElement();
     expect(screen.queryByRole("heading", { name: "Siting context" })).not.toBeInTheDocument();
     expect(screen.queryByText(/Nonconnah Creek/)).not.toBeInTheDocument();
   });

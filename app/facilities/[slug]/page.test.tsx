@@ -1,4 +1,4 @@
-import { vi, describe, it, expect } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -14,6 +14,7 @@ const {
   stakeholdersProps,
   sitingSectionProps,
   printGapProps,
+  mockMissingRecordItems,
 } = vi.hoisted(() => ({
   mockGetFacilityByIdCached: vi.fn(),
   mockGetSitingContext: vi.fn(),
@@ -21,6 +22,7 @@ const {
   stakeholdersProps: vi.fn(),
   sitingSectionProps: vi.fn(),
   printGapProps: vi.fn(),
+  mockMissingRecordItems: vi.fn(),
 }));
 
 // operatorSlug is real (imported from the dependency-free lib/operator-slug
@@ -82,6 +84,7 @@ vi.mock("@/lib/siting-context", () => ({ getSitingContext: mockGetSitingContext 
 vi.mock("@/lib/operator-ownership", () => ({ getOperatorOwnership: mockGetOperatorOwnership }));
 vi.mock("@/components/facility/power-links", () => ({
   PowerLinksSection: () => null,
+  hasPowerLinks: async () => true,
 }));
 vi.mock("@/components/facility/siting-context", () => ({
   SitingContextSection: (props: unknown) => {
@@ -102,7 +105,24 @@ vi.mock("@/components/facility/print-gap-summary", () => ({
   },
 }));
 
+// facility-gaps pulls the predicates out of the section modules stubbed above;
+// its own list is covered by lib/facility-gaps.test.ts, so only the seam the
+// page uses is faked here.
+vi.mock("@/lib/facility-gaps", () => ({
+  CAPACITY_NOT_RECORDED_KEY: {
+    capacityOperationalMw: "capacityMw.operational",
+    capacityPlannedMw: "capacityMw.planned",
+  },
+  missingRecordItems: mockMissingRecordItems,
+  firstCorrectableField: (items: { field?: string }[]) => items.find((i) => i.field)?.field,
+}));
+
 import FacilityPage, { generateMetadata } from "./page";
+
+beforeEach(() => {
+  mockMissingRecordItems.mockReset();
+  mockMissingRecordItems.mockReturnValue([]);
+});
 
 function makeFacility(overrides: Partial<Facility> = {}): Facility {
   return {
@@ -289,18 +309,18 @@ describe("generateMetadata", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Masthead gap prompts (Theme B / B1a) — capacity and powered-by are
-// CORRECTABLE_KEYS members so a missing value renders FieldGapPrompt's
-// inline "Know ...?" correction trigger; announcedDate is not (yet)
-// correctable, so a missing value renders the "Know a source for …" tip
-// trigger instead (it opens the same dialog, on "Something else"). Same
-// em-dash today, different affordance once wired — that contrast is the thing
-// under test, not FieldGapPrompt's own branching (already covered by
-// field-gap-prompt.test.tsx).
+// Masthead gaps — capacity, powered-by and announced date no longer carry an
+// on-screen invite (the page's one "What this record is missing" card lists
+// them). The rows stay so the printed brief keeps its hidden "Not recorded"
+// nil beside each <dt>; those markers must not change.
 // ---------------------------------------------------------------------------
 
-describe("FacilityPage masthead — capacity / powered-by / announced gap prompts", () => {
-  it("renders the correction trigger for missing capacity and powered-by, and the tip trigger for missing announced date", async () => {
+function printNils(container: HTMLElement) {
+  return container.querySelectorAll("[data-print-nil]");
+}
+
+describe("FacilityPage masthead — capacity / powered-by / announced gaps", () => {
+  it("shows no inline prompt for missing capacity, powered-by or announced date, but keeps one print nil marker per row", async () => {
     const facility = makeFacility({
       name: "Gapville Data Center",
       // capacityMw, poweredBy, announcedDate all deliberately omitted.
@@ -310,25 +330,12 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
     const page = await FacilityPage({
       params: Promise.resolve({ slug: "test-facility" }),
     });
-    render(page);
+    const { container } = render(page);
 
-    expect(
-      screen.getByRole("button", { name: /know the capacity\?/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /know who powers this facility\?/i })
-    ).toBeInTheDocument();
-
-    // A button that opens the dialog on "Something else", not a link away.
-    // Found by its text, not by role, so the tag check below sees whatever was
-    // actually rendered; the closest("a") check catches a button wrapped in a
-    // link, which a getByRole("button") query would still find.
-    const announcedPrompt = screen.getByText(/Know a source for the announcement date/);
-    expect(announcedPrompt.tagName).toBe("BUTTON");
-    expect(announcedPrompt.closest("a")).toBeNull();
-
-    // No em-dash placeholders left over for the three wired fields.
-    expect(screen.queryByText("—")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /know /i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Send us a link/)).not.toBeInTheDocument();
+    expect(printNils(container)).toHaveLength(3);
+    for (const nil of printNils(container)) expect(nil).toHaveTextContent("Not recorded");
   });
 
   it("renders 'Not recorded' with the reason instead of a prompt for a marked capacity", async () => {
@@ -338,11 +345,11 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
       })
     );
     const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
-    render(page);
+    const { container } = render(page);
     expect(
       screen.getByText(/Not recorded — The 107 MW figure is company-wide, not this site\./)
     ).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /know the capacity\?/i })).not.toBeInTheDocument();
+    expect(printNils(container)).toHaveLength(2);
   });
 
   it("shows the reason for a marked operational capacity beside a recorded planned figure", async () => {
@@ -370,8 +377,9 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
       })
     );
     const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
-    render(page);
-    expect(screen.getByRole("button", { name: /know the capacity\?/i })).toBeInTheDocument();
+    const { container } = render(page);
+    // capacity + powered-by + announced: the operational field is NOT marked.
+    expect(printNils(container)).toHaveLength(3);
     expect(screen.getByText(/Planned: Not recorded — No expansion capacity/)).toBeInTheDocument();
   });
 
@@ -383,8 +391,9 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
       })
     );
     const page = await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) });
-    render(page);
-    expect(screen.queryByRole("button", { name: /know the capacity\?/i })).not.toBeInTheDocument();
+    const { container } = render(page);
+    // the marked capacity field prints its reason, not a nil: powered-by + announced only.
+    expect(printNils(container)).toHaveLength(2);
     expect(screen.getByText(/Operational: Not recorded — The 107 MW figure/)).toBeInTheDocument();
   });
 
@@ -415,19 +424,13 @@ describe("FacilityPage masthead — capacity / powered-by / announced gap prompt
     const page = await FacilityPage({
       params: Promise.resolve({ slug: "test-facility" }),
     });
-    render(page);
+    const { container } = render(page);
 
     expect(screen.getByText("150 MW")).toBeInTheDocument();
     expect(screen.getByText("Grid — Dominion Energy")).toBeInTheDocument();
     expect(screen.getByText("2025-03-01")).toBeInTheDocument();
 
-    expect(
-      screen.queryByRole("button", { name: /know the capacity\?/i })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /know who powers this facility\?/i })
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText(/Know a source for the announcement date/)).not.toBeInTheDocument();
+    expect(printNils(container)).toHaveLength(0);
   });
 });
 
@@ -461,32 +464,6 @@ describe("FacilityPage — correction dialogs", () => {
     await user.click(screen.getByRole("button", { name: /^suggest a correction$/i }));
 
     expect(screen.getByText("Currently: Colossus")).toBeInTheDocument();
-  });
-
-  it.each([["proposed"], ["permitted"], ["under_construction"], ["cancelled"]] as const)(
-    "a %s facility with no capacity opens 'Know the capacity?' on planned capacity",
-    async (status) => {
-      const user = userEvent.setup();
-      await renderPage(makeFacility({ status }));
-
-      await user.click(screen.getByRole("button", { name: /know the capacity\?/i }));
-
-      expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
-        "Planned capacity (MW)"
-      );
-      expect(screen.getByText("Currently: not recorded")).toBeInTheDocument();
-    }
-  );
-
-  it("an operational facility with no capacity opens 'Know the capacity?' on operational capacity", async () => {
-    const user = userEvent.setup();
-    await renderPage(makeFacility({ status: "operational" }));
-
-    await user.click(screen.getByRole("button", { name: /know the capacity\?/i }));
-
-    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
-      "Operational capacity (MW)"
-    );
   });
 
   it("'No' on a planned-only capacity corrects planned capacity, and shows its current value", async () => {
@@ -564,5 +541,43 @@ describe("FacilityPage — loader results reach the sections as props", () => {
     expect(sitingSectionProps.mock.calls[0][0]).toMatchObject({ siting: SITING });
     expect(printGapProps.mock.calls[0][0]).toMatchObject({ siting: SITING });
     expect(stakeholdersProps.mock.calls[0][0]).toMatchObject({ ownership: OWNERSHIP });
+  });
+});
+
+describe("FacilityPage — 'What this record is missing' card", () => {
+  const ITEMS = [
+    { field: "poweredBy", label: "who powers it" },
+    { label: "air permit" },
+  ];
+
+  it("renders one card with one 'Send a source' button and no 'Send us a link' prompts", async () => {
+    mockMissingRecordItems.mockReturnValue(ITEMS);
+    mockGetFacilityByIdCached.mockResolvedValue(makeFacility());
+
+    const { container } = render(await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) }));
+
+    expect(screen.getByRole("heading", { level: 2, name: "What this record is missing" })).toBeInTheDocument();
+    expect(container.textContent?.match(/Send a source/g)).toHaveLength(1);
+    expect(container.textContent).not.toContain("Send us a link");
+  });
+
+  it("gets the page's facility, siting and ownership", async () => {
+    const facility = makeFacility();
+    mockGetFacilityByIdCached.mockResolvedValue(facility);
+    mockGetSitingContext.mockResolvedValue(undefined);
+    mockGetOperatorOwnership.mockResolvedValue([]);
+
+    render(await FacilityPage({ params: Promise.resolve({ slug: facility.id }) }));
+
+    expect(mockMissingRecordItems).toHaveBeenCalledWith(facility, undefined, true);
+  });
+
+  it("renders no card when nothing is missing", async () => {
+    mockGetFacilityByIdCached.mockResolvedValue(makeFacility());
+
+    render(await FacilityPage({ params: Promise.resolve({ slug: "test-facility" }) }));
+
+    expect(screen.queryByRole("heading", { name: "What this record is missing" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /send a source/i })).not.toBeInTheDocument();
   });
 });

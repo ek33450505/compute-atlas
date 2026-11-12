@@ -30,11 +30,14 @@ import { missingSectionLabels } from "@/lib/facility-gaps";
 export async function PrintGapSummary({
   facility,
   siting,
+  hasLinkedPower,
 }: {
   facility: Facility;
   siting: SitingContext | undefined;
+  /** The page's already-resolved `hasPowerLinks(facility)`; queried when omitted. */
+  hasLinkedPower?: boolean;
 }) {
-  const missing = await missingSectionLabels(facility, siting);
+  const missing = await missingSectionLabels(facility, siting, hasLinkedPower);
   if (missing.length === 0) return null;
 
   return (

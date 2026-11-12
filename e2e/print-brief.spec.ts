@@ -242,9 +242,9 @@ for (const record of RECORDS) {
 // ---------------------------------------------------------------------------
 // Empty fields print an explicit nil.
 //
-// On screen an empty slot holds a working invite ("Know the capacity?"), which
-// is `print:hidden` — so the printed stat sheet used to render the label over
-// whitespace, and on a document meant to be cited a blank reads as ZERO rather
+// On screen an empty slot holds a quiet dash (the invite lives on the page's
+// one "What this record is missing" card), which is `print:hidden` — so the
+// printed stat sheet would render the label over whitespace, and on a document meant to be cited a blank reads as ZERO rather
 // than UNKNOWN. This is the only place the fallback can be pinned: the unit
 // tests in components/contribute/field-gap-prompt.test.tsx can see the marker
 // in the DOM but not in the media it exists for, because jsdom evaluates no
@@ -285,7 +285,7 @@ function keyFactRow(page: Page, label: string) {
 }
 
 test.describe("microsoft-becker-mn empty fields", () => {
-  test("prints an explicit nil in the slot the screen fills with an invite", async ({ page }) => {
+  test("prints an explicit nil in the slot the screen fills with a dash", async ({ page }) => {
     await page.goto("/facilities/microsoft-becker-mn");
     await page.emulateMedia({ media: "print" });
 
@@ -293,15 +293,17 @@ test.describe("microsoft-becker-mn empty fields", () => {
     await expect(capacity).toHaveCount(1);
     await expect(capacity.getByText(NIL_MARKER)).toBeVisible();
 
-    // The invite it stands in for is an affordance — unusable on paper, and
-    // the reason the slot was blank in the first place.
-    await expect(capacity.getByRole("button")).toBeHidden();
+    // The row carries no invite at all any more; the screen dash does not print.
+    // includeHidden: print emulation drops display:none from role queries, so
+    // without it these would pass even if the old print:hidden button returned.
+    await expect(capacity.getByRole("button", { includeHidden: true })).toHaveCount(0);
+    const dash = capacity.getByRole("img", { name: "Not recorded", includeHidden: true });
+    await expect(dash).toHaveCount(1);
+    await expect(dash).toBeHidden();
 
-    // FieldGapPrompt has two return paths and both had to be covered:
-    // `capacityOperationalMw` above is in CORRECTABLE_KEYS and renders a
-    // correction trigger; `investmentUsd` is not, and renders the "Know a
-    // source for …" tip trigger instead. A fallback added to only one branch
-    // prints half the sheet.
+    // Both kinds of row print the nil: `capacityOperationalMw` above is in
+    // CORRECTABLE_KEYS and `investmentUsd` is not. A fallback added to only one
+    // kind prints half the sheet.
     const investment = page
       .locator("section[aria-labelledby^='civic-impact'] dl > div")
       .filter({ hasText: "Investment" });
@@ -356,8 +358,9 @@ test.describe("microsoft-becker-mn empty fields", () => {
     await expect(summary).toHaveCount(1);
     await expect(summary).toBeHidden();
 
-    // Screen keeps the working invite instead, everywhere on the page.
-    await expect(capacity.getByRole("button", { name: /know the capacity\?/i })).toBeVisible();
+    // Screen shows a quiet labelled dash instead of an invite in the row.
+    await expect(capacity.getByRole("img", { name: "Not recorded" })).toBeVisible();
+    await expect(capacity.getByRole("button")).toHaveCount(0);
     expect(await visibleCount(page, `text=${NIL_MARKER}`)).toBe(0);
   });
 });

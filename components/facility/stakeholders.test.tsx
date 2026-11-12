@@ -63,11 +63,10 @@ describe("hasStakeholders", () => {
 });
 
 describe("StakeholdersSection", () => {
-  it("renders a SectionGapPrompt tip trigger when the facility has no stakeholders", () => {
-    render(<StakeholdersSection facility={makeFacility()} />);
+  it("renders nothing when the facility has no stakeholders (the page's missing-record card lists it)", () => {
+    const { container } = render(<StakeholdersSection facility={makeFacility()} />);
 
-    const trigger = screen.getByRole("button");
-    expect(trigger).toHaveTextContent(/a documented stakeholder/i);
+    expect(container).toBeEmptyDOMElement();
     expect(
       screen.queryByRole("heading", { name: "Notable stakeholders" })
     ).not.toBeInTheDocument();
