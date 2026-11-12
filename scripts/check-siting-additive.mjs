@@ -61,6 +61,15 @@ const PRINT_LIMIT = 25;
 // Pure diff
 // ---------------------------------------------------------------------------
 
+/** JSON.stringify with object keys sorted recursively; arrays keep their order. */
+function stableJson(value) {
+  return JSON.stringify(value, (_key, v) =>
+    v && typeof v === "object" && !Array.isArray(v)
+      ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, v[k]]))
+      : v,
+  );
+}
+
 /**
  * Diff two siting-context objects (facility id -> entry object with optional
  * keys like nearestWater/nearestTransmission/waterStress/...).
@@ -128,10 +137,10 @@ export function diffSitingContext(oldObj, newObj, liveIds) {
         continue;
       }
 
-      // Deep-compare via JSON.stringify — deliberately simple/deterministic
-      // per spec; key order inside these small leaf objects is produced by
-      // the same build code on both sides so this does not false-positive.
-      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+      // Compare canonically: one side may come from Neon, and Postgres jsonb
+      // re-orders object keys (shorter first, then bytewise), so a plain
+      // JSON.stringify reported ~6,000 false `changed` entries per run.
+      if (stableJson(oldValue) !== stableJson(newValue)) {
         changed.push({ id, field, oldValue, newValue });
       }
     }

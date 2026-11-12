@@ -107,6 +107,40 @@ describe("diffSitingContext / isAdditive", () => {
     expect(isAdditive(diff)).toBe(true);
   });
 
+  it("does not report `changed` when only object key order differs (Neon jsonb re-orders keys)", () => {
+    const oldObj = { "site-a": { nearestWater: { name: "River A", kind: "river", distanceMi: 1.2 } } };
+    const newObj = { "site-a": { nearestWater: { kind: "river", name: "River A", distanceMi: 1.2 } } };
+
+    expect(diffSitingContext(oldObj, newObj).changed).toEqual([]);
+  });
+
+  it("does not report `changed` when only NESTED object key order differs", () => {
+    const oldObj = { "site-a": { waterStress: { basin: { id: 7, label: "X" }, bands: [{ a: 1, b: 2 }] } } };
+    const newObj = { "site-a": { waterStress: { bands: [{ b: 2, a: 1 }], basin: { label: "X", id: 7 } } } };
+
+    expect(diffSitingContext(oldObj, newObj).changed).toEqual([]);
+  });
+
+  it("reports `changed` when a value changes type (1 vs \"1\")", () => {
+    const diff = diffSitingContext({ "site-a": { score: 1 } }, { "site-a": { score: "1" } });
+
+    expect(diff.changed).toHaveLength(1);
+  });
+
+  it("reports `changed` for an array of objects with one changed nested value", () => {
+    const oldObj = { "site-a": { bands: [{ a: 1, b: 2 }, { a: 3, b: 4 }] } };
+    const newObj = { "site-a": { bands: [{ b: 2, a: 1 }, { b: 5, a: 3 }] } };
+
+    expect(diffSitingContext(oldObj, newObj).changed).toHaveLength(1);
+  });
+
+  it("still reports `changed` for a real value change under reordered keys, and for array order", () => {
+    const oldObj = { "site-a": { nearestWater: { name: "River A", distanceMi: 1.2 } }, "site-b": { tags: [1, 2] } };
+    const newObj = { "site-a": { nearestWater: { distanceMi: 0.9, name: "River A" } }, "site-b": { tags: [2, 1] } };
+
+    expect(diffSitingContext(oldObj, newObj).changed.map((c) => c.id)).toEqual(["site-a", "site-b"]);
+  });
+
   it("treats an empty old object as additive (first-ever build)", () => {
     const oldObj = {};
     const newObj = {
