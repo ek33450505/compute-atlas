@@ -980,8 +980,10 @@ export async function notifyStateSubscribersMonthly(
     // path, or from completeDigestWindow itself — leaves this window claimed
     // and marked incomplete by design. See the stateDigestRunsTable doc
     // comment (lib/db/schema.ts) for why that silent-under-delivery direction
-    // is the accepted failure mode here, and why a deliberate resend requires
-    // deleting the row rather than a bypass flag.
+    // is the accepted failure mode here. An incomplete window is recovered by
+    // re-calling the route for the same window after STALE_DIGEST_RUN_MS, which
+    // resumes it at-most-once; deleting the row is only for deliberately
+    // re-sending a COMPLETED window, and it re-mails everyone.
     // Name and SQLSTATE only (redactedErrorCode), never the raw error object.
     console.error(
       `notifyStateSubscribersMonthly failed: ${err instanceof Error ? err.name : "unknown"} (sqlstate: ${redactedErrorCode(err)})`

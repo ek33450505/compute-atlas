@@ -30,10 +30,12 @@ setup() {
 	[ "$output" = "healthy" ]
 }
 
-@test "digest healthy: empty stdin with exit 0 (detector printed nothing)" {
+@test "digest detector-broken: empty stdin with exit 0 (detector never reported)" {
+	# Fail closed: a clean run always prints at least one note, so silence means
+	# the detector did not report. Matches the workflow's catch-all philosophy.
 	run bash -c "printf '' | '$DIGEST_SCRIPT' 0"
 	[ "$status" -eq 0 ]
-	[ "$output" = "healthy" ]
+	[ "$output" = "detector-broken" ]
 }
 
 @test "digest crashed: single incomplete run, exit 1" {
@@ -57,12 +59,12 @@ setup() {
 	[ "$output" = "crashed" ]
 }
 
-@test "digest crashed: rule 1 wins even when a detector-broken phrase is ALSO present" {
-	# Adversarial: an output that could satisfy two rules must not be
-	# ambiguous. The crash phrase must win because it is checked first.
+@test "digest crashed: a crash phrase plus a detector-broken phrase prints both, crash first" {
+	# Several failure kinds can be true at once, so both are reported in the
+	# fixed order rather than one silently masking the other.
 	run bash -c "printf '%s\n' '::error::1 incomplete state digest run(s) found (completedAt IS NULL). Also: Failed to query state_digest_runs: connect ETIMEDOUT' | '$DIGEST_SCRIPT' 1"
 	[ "$status" -eq 0 ]
-	[ "$output" = "crashed" ]
+	[ "$output" = "crashed detector-broken" ]
 }
 
 @test "digest detector-broken: DATABASE_URL unset, exit 1" {
@@ -133,6 +135,90 @@ setup() {
 	# mention (e.g. a promise that "did not complete") must not misclassify
 	# a real detector failure as a digest crash.
 	run bash -c "printf '%s\n' '::error::digest status check errored: request did not complete before timeout' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "detector-broken" ]
+}
+
+@test "digest send-failures: recent send failures, exit 1" {
+	run bash -c "printf '%s\n' '::error::3 digest recipient(s) in run [11111111-2222-3333-4444-555555555555] were not mailed (by code: send_timeout_may_have_left=1, unknown=2). Check email_sends for this run in Neon.' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "send-failures" ]
+}
+
+@test "digest healthy: warning-only send failures (run older than 7 days), exit 0" {
+	run bash -c "printf '%s\n' '::warning::3 digest recipient(s) in run [11111111-2222-3333-4444-555555555555] were not mailed (by code: send_timeout_may_have_left=1, unknown=2). Check email_sends for this run in Neon.' | '$DIGEST_SCRIPT' 0"
+	[ "$status" -eq 0 ]
+	[ "$output" = "healthy" ]
+}
+
+@test "digest recipient-alarm: alarm error, exit 1" {
+	run bash -c "printf '%s\n' '::error::5000 confirmed digest subscriptions exceed the alarm of 4000. The digest route stops at its time budget.' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "recipient-alarm" ]
+}
+
+@test "digest detector-broken: Failed to query digest sends" {
+	run bash -c "printf '%s\n' '::error::Failed to query digest sends: 42P01' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "detector-broken" ]
+}
+
+@test "digest detector-broken: Failed to query state_digest_runs" {
+	run bash -c "printf '%s\n' '::error::Failed to query state_digest_runs: 08006' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "detector-broken" ]
+}
+
+@test "digest detector-broken: DATABASE_URL is not set" {
+	run bash -c "printf '%s\n' '::error::DATABASE_URL is not set. Configure it.' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "detector-broken" ]
+}
+
+@test "digest detector-broken: digest status check errored" {
+	run bash -c "printf '%s\n' '::error::digest status check errored: boom' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "detector-broken" ]
+}
+
+@test "digest combined: crash plus send failures print both, fixed order" {
+	run bash -c "printf '%s\n' '::error::3 digest recipient(s) in run [11111111-2222-3333-4444-555555555555] were not mailed (by code: send_timeout_may_have_left=1, unknown=2). Check email_sends for this run in Neon.' '::error::1 incomplete state digest run(s) found: run [abc] started 2026-11-01' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "crashed send-failures" ]
+}
+
+@test "digest combined: crash, send failures and alarm print all three" {
+	run bash -c "printf '%s\n' '::error::5000 confirmed digest subscriptions exceed the alarm of 4000. The digest route stops at its time budget.' '::error::3 digest recipient(s) in run [11111111-2222-3333-4444-555555555555] were not mailed (by code: send_timeout_may_have_left=1, unknown=2). Check email_sends for this run in Neon.' '::error::1 incomplete state digest run(s) found: run [abc] started 2026-11-01' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "crashed send-failures recipient-alarm" ]
+}
+
+@test "digest combined: send failures plus detector error" {
+	run bash -c "printf '%s\n' '::error::Failed to query digest sends: 42P01' '::error::3 digest recipient(s) in run [11111111-2222-3333-4444-555555555555] were not mailed (by code: send_timeout_may_have_left=1, unknown=2). Check email_sends for this run in Neon.' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "send-failures detector-broken" ]
+}
+
+@test "digest detector-broken: unrecognised failure with exit 1 is still caught" {
+	run bash -c "printf '%s\n' '::error::something entirely new went wrong' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "detector-broken" ]
+}
+
+@test "digest send-failures: warning text on an error-free run does not count even with notes, expects healthy" {
+	run bash -c "printf '%s\n' '✓ ok' '::warning::3 digest recipient(s) in run [11111111-2222-3333-4444-555555555555] were not mailed (by code: send_timeout_may_have_left=1, unknown=2). Check email_sends for this run in Neon.' | '$DIGEST_SCRIPT' 0"
+	[ "$status" -eq 0 ]
+	[ "$output" = "healthy" ]
+}
+
+@test "digest combined: crash plus an unrecognised count failure prints crashed detector-broken" {
+	run bash -c "printf '%s\n' '::error::1 incomplete state digest run(s) found: run [abc]' '::error::Failed to count digest subscriptions: 42501' | '$DIGEST_SCRIPT' 1"
+	[ "$status" -eq 0 ]
+	[ "$output" = "crashed detector-broken" ]
+}
+
+@test "digest detector-broken: an unknown ::error:: line alone with exit 1" {
+	run bash -c "printf '%s\n' '::error::Failed to count digest subscriptions: 42501' | '$DIGEST_SCRIPT' 1"
 	[ "$status" -eq 0 ]
 	[ "$output" = "detector-broken" ]
 }

@@ -56,6 +56,7 @@ jobs:
   googlebot-access:
     name: Verify Google is not being blocked
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # ⛔ DO NOT hoist GSC_SERVICE_ACCOUNT_JSON back to a job-level `env:`. It
     # was one until 2026-09-27, defended here by the claim that "npm ci runs no
     # lifecycle scripts that could read it out". That claim was measured FALSE:
