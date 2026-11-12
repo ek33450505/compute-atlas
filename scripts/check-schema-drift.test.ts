@@ -10,9 +10,11 @@ import * as dbClient from "../lib/db/client";
 import { makeTestDb, type TestDbHandle } from "@/test/pglite-db";
 import { apiDailyUsageTable } from "../lib/db/schema";
 import {
+  getExpectedShape,
   getExpectedTableNames,
   runSchemaDriftCheck,
   SchemaDriftError,
+  type SchemaDriftReport,
 } from "./check-schema-drift";
 
 // Hand-maintained on purpose: this is the independent check proving
@@ -153,7 +155,7 @@ describe("runSchemaDriftCheck", () => {
   it("throws SchemaDriftError when a table the code expects is dropped from the live database — reproduces the PR #222 incident directly", async () => {
     // Use a dedicated PGlite instance for this test only: dropping a table
     // is not something tdb.reset()'s TRUNCATE can undo, and every other test
-    // in this file depends on the shared instance keeping all 9 tables.
+    // in this file depends on the shared instance keeping every table.
     const isolated = await makeTestDb();
     try {
       await isolated.client.exec(`DROP TABLE "api_daily_usage"`);
@@ -165,6 +167,137 @@ describe("runSchemaDriftCheck", () => {
       const err = await runSchemaDriftCheck().catch((e: unknown) => e);
       expect(err).toBeInstanceOf(SchemaDriftError);
       expect((err as SchemaDriftError).report.missingTables).toEqual(["api_daily_usage"]);
+    } finally {
+      await isolated.client.close();
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // Column / index / nullability drift (A-OPS-11). Each uses an isolated
+  // PGlite because DDL cannot be undone by tdb.reset().
+  // -------------------------------------------------------------------------
+
+  async function driftAfter(ddl: string): Promise<SchemaDriftError | SchemaDriftReport> {
+    const isolated = await makeTestDb();
+    try {
+      await isolated.client.exec(ddl);
+      vi.mocked(dbClient.getDb).mockReturnValueOnce(isolated.db as never);
+      return await runSchemaDriftCheck().catch((e: unknown) => e as SchemaDriftError);
+    } finally {
+      await isolated.client.close();
+    }
+  }
+
+  it("derives expected columns and named indexes from the schema", () => {
+    const shape = getExpectedShape();
+    expect(shape.columns.map((c) => c.key)).toContain("dataset_access_grants.tier");
+    expect(shape.indexes.map((i) => i.name)).toContain("dataset_access_grants_status_idx");
+  });
+
+  it("passes with empty missing lists on a database built from the real migrations", async () => {
+    const report = await runSchemaDriftCheck();
+    expect(report.missingColumns).toEqual([]);
+    expect(report.nullabilityMismatches).toEqual([]);
+    expect(report.missingIndexes).toEqual([]);
+  });
+
+  it("fails naming a dropped column", async () => {
+    const err = await driftAfter(`ALTER TABLE "dataset_access_grants" DROP COLUMN "tier" CASCADE`);
+    expect(err).toBeInstanceOf(SchemaDriftError);
+    expect((err as SchemaDriftError).report.missingColumns).toEqual(["dataset_access_grants.tier"]);
+    expect((err as SchemaDriftError).message).toContain("dataset_access_grants.tier");
+  });
+
+  it("fails naming a dropped index", async () => {
+    const err = await driftAfter(`DROP INDEX "dataset_access_grants_status_idx"`);
+    expect(err).toBeInstanceOf(SchemaDriftError);
+    expect((err as SchemaDriftError).report.missingIndexes).toEqual([
+      "dataset_access_grants: dataset_access_grants_status_idx",
+    ]);
+    expect((err as SchemaDriftError).message).toContain("dataset_access_grants_status_idx");
+  });
+
+  it("requires hand-managed indexes: dropping one fails, and they are not info extras", async () => {
+    const ok = await runSchemaDriftCheck();
+    expect(ok.extraIndexes).not.toContain("subscriptions_active_target_idx");
+    expect(ok.extraIndexes).not.toContain("facilities_search_vector_idx");
+
+    for (const [table, name] of [
+      ["subscriptions", "subscriptions_active_target_idx"],
+      ["facilities", "facilities_search_vector_idx"],
+    ]) {
+      const err = await driftAfter(`DROP INDEX "${name}"`);
+      expect(err).toBeInstanceOf(SchemaDriftError);
+      expect((err as SchemaDriftError).report.missingIndexes).toEqual([`${table}: ${name}`]);
+    }
+  });
+
+  it("covers column-level .unique() constraints under their generated name", async () => {
+    expect(getExpectedShape().indexes.map((i) => i.name)).toContain(
+      "commercial_checkouts_paypal_subscription_id_unique"
+    );
+    const ok = await runSchemaDriftCheck();
+    expect(ok.extraIndexes).not.toContain("commercial_checkouts_paypal_subscription_id_unique");
+
+    const err = await driftAfter(
+      `ALTER TABLE "commercial_checkouts" DROP CONSTRAINT "commercial_checkouts_paypal_subscription_id_unique"`
+    );
+    expect(err).toBeInstanceOf(SchemaDriftError);
+    expect((err as SchemaDriftError).report.missingIndexes).toEqual([
+      "commercial_checkouts: commercial_checkouts_paypal_subscription_id_unique",
+    ]);
+  });
+
+  it("fails on a NOT NULL expected but nullable, and on the reverse", async () => {
+    const shape = getExpectedShape();
+    const notNullCol = shape.columns.find((c) => c.notNull && c.key.startsWith("api_access_grants.") && !c.key.endsWith(".id"))!;
+    const nullableCol = shape.columns.find((c) => !c.notNull && c.key.startsWith("api_access_grants."))!;
+    const [t1, c1] = notNullCol.key.split(".");
+    const [t2, c2] = nullableCol.key.split(".");
+    const err = await driftAfter(
+      `ALTER TABLE "${t1}" ALTER COLUMN "${c1}" DROP NOT NULL; ` +
+        `UPDATE "${t2}" SET "${c2}" = "${c2}" WHERE false; ` +
+        `ALTER TABLE "${t2}" ALTER COLUMN "${c2}" SET NOT NULL;`
+    );
+    expect(err).toBeInstanceOf(SchemaDriftError);
+    const mism = (err as SchemaDriftError).report.nullabilityMismatches;
+    expect(mism.some((m) => m.startsWith(`${notNullCol.key}: expected NOT NULL, found nullable`))).toBe(true);
+    expect(mism.some((m) => m.startsWith(`${nullableCol.key}: expected nullable, found NOT NULL`))).toBe(true);
+  });
+
+  it("does not double-report columns and indexes of a missing table", async () => {
+    const err = await driftAfter(`DROP TABLE "api_daily_usage"`);
+    const report = (err as SchemaDriftError).report;
+    expect(report.missingTables).toEqual(["api_daily_usage"]);
+    expect(report.missingColumns).toEqual([]);
+    expect(report.missingIndexes).toEqual([]);
+  });
+
+  it("passes, reporting info only, when the DB has an extra column and an extra index", async () => {
+    const result = await driftAfter(
+      `ALTER TABLE "api_access_grants" ADD COLUMN "hotfix_col" text; ` +
+        `CREATE INDEX "hotfix_manual_idx" ON "api_access_grants" ("hotfix_col");`
+    );
+    expect(result).not.toBeInstanceOf(Error);
+    const report = result as SchemaDriftReport;
+    expect(report.extraColumns).toContain("api_access_grants.hotfix_col");
+    expect(report.extraIndexes).toContain("hotfix_manual_idx");
+  });
+
+  it("sees columns and indexes under a least-privilege role with no table grants", async () => {
+    const isolated = await makeTestDb();
+    try {
+      await isolated.client.exec(`
+        CREATE ROLE ci_probe2 NOLOGIN;
+        GRANT USAGE ON SCHEMA public TO ci_probe2;
+        GRANT SELECT ON api_daily_usage TO ci_probe2;
+        SET ROLE ci_probe2;
+      `);
+      vi.mocked(dbClient.getDb).mockReturnValueOnce(isolated.db as never);
+      const report = await runSchemaDriftCheck();
+      expect(report.missingColumns).toEqual([]);
+      expect(report.nullabilityMismatches).toEqual([]);
+      expect(report.missingIndexes).toEqual([]);
     } finally {
       await isolated.client.close();
     }
