@@ -8,7 +8,7 @@ const privacy = DATASET_PRIVACY_NOTICE.join("\n");
 
 describe("dataset terms", () => {
   it("pins the terms version", () => {
-    expect(DATASET_TERMS_VERSION).toBe("2026-11-11.2");
+    expect(DATASET_TERMS_VERSION).toBe("2026-11-12.1");
   });
 
   it("commercial terms keep the licence whole and state the price, PayPal and one-person scope", () => {

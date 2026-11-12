@@ -654,7 +654,7 @@ and the constants together. Summary:
   and the privacy notice says so (Ed, 2026-11-09).
 - A download-log write failure does not block the download. The log fails **open** (`lib/dataset-download.ts`).
 - Per-address mail caps: `lib/email-gate.ts`, with the limits in `lib/email-sends.ts`.
-- The terms and privacy notice are final (version `2026-11-11.2`). Ed decided on 2026-11-09 not to seek legal review. Bump `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts` whenever their text changes.
+- The terms and privacy notice are final (version `2026-11-12.1`). Ed decided on 2026-11-09 not to seek legal review. Bump `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts` whenever their text changes.
 
 ### Tracing a leaked file
 
@@ -695,11 +695,11 @@ plus applicable tax (Ed handles sales tax himself; there is no tax engine); buye
 CC BY 4.0): a revoked buyer may subscribe again, and a duplicate subscription gets no second grant and alerts you when its payment lands; no
 automatic refunds anywhere. Tax must not be added to the PayPal charge: activation requires the payment to equal the
 plan price exactly (`lib/commercial-activation.ts:270`), so a different charge is not activated and raises an
-`unmatched_subscription` alert. The public terms (`lib/dataset-terms.ts`, version `2026-11-11.2`) say the
+`unmatched_subscription` alert. The public terms (`lib/dataset-terms.ts`, version `2026-11-12.1`) say the
 same. Changing their text means bumping `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts`. Seats were dropped
 (2026-11-10): one named person per subscription, the personal link is strictly personal, teams by arrangement
-through `/contact`. Free access is for students, educators and academics only (Ed, 2026-11-11), separate and
-hand-reviewed; everyone else, journalists and nonprofits included, is pointed to the commercial tier.
+through `/contact`. Free access is for students and educators only (Ed, 2026-11-11; "academics" dropped 2026-11-12), separate and
+hand-reviewed. Rule (Ed, 2026-11-12): verify by hand against a school email address; decline personal addresses (Gmail, Outlook and similar) in `/admin/access`; no form enforcement, and the stored category value stays `academic`; everyone else, journalists and nonprofits included, is pointed to the commercial tier.
 
 PayPal setup (a live REST app under Ed's business account; do the sandbox first with `PAYPAL_ENV=sandbox` and
 `https://api-m.sandbox.paypal.com`). The product and plan calls below follow the PayPal Subscriptions REST API

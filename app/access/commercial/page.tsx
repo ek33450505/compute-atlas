@@ -352,7 +352,7 @@ export default async function CommercialAccessPage({
             .
           </li>
           <li>
-            Students, educators and academics: access is free and reviewed by hand. See{" "}
+            Students and educators: access is free and reviewed by hand against a school email address. See{" "}
             <Link href="/access" className={ACCESS_LINK_CLASS}>
               dataset access
             </Link>

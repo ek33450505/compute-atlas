@@ -330,20 +330,20 @@ describe("buildDatasetCommercialRedirectEmail", () => {
   const mail = buildDatasetCommercialRedirectEmail({ siteUrl: SITE });
 
   it("links the paid page and quotes both prices", () => {
-    expect([...mail.html.matchAll(/href="([^"]*)"/g)].map((m) => m[1])).toEqual([`${SITE}/access/commercial`, `${SITE}/contact`]);
+    expect([...mail.html.matchAll(/href="([^"]*)"/g)].map((m) => m[1])).toEqual([`${SITE}/access/commercial`, `${SITE}/access`]);
     expect(mail.text).toContain(`${SITE}/access/commercial`);
     for (const body of [mail.text, mail.html]) {
       expect(body).toContain("$150/month");
       expect(body).toContain("Everyone else can subscribe: $150/month or $1,500/year.");
       expect(body).not.toContain("months free");
-      expect(body).toContain("free for students, educators and academics");
-      expect(body).toContain("teaching or academic research, say so through the");
-      expect(body).toContain(`${SITE}/contact`);
+      expect(body).toContain("free for students and educators");
+      expect(body).toContain("If you are a student or educator, send a new request at");
     }
   });
 
-  it("links the contact page in the html body", () => {
-    expect(mail.html).toContain(`<a href="${SITE}/contact">contact page</a>`);
+  it("points students and educators to a new request at /access from a school address", () => {
+    expect(mail.html).toContain(`send a new request at <a href="${SITE}/access">${SITE}/access</a> from your school email address`);
+    expect(mail.text).toContain(`send a new request at ${SITE}/access from your school email address and choose "Student or educator".`);
   });
 
   it("never says donation", () => {
