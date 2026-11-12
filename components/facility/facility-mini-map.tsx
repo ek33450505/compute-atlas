@@ -37,7 +37,7 @@ export function FacilityMiniMap({ facility }: FacilityMiniMapProps) {
     <div
       role="img"
       aria-label={`Map showing ${name} in ${locationLabel}`}
-      className="h-64 w-full rounded-lg border overflow-hidden"
+      className="h-64 lg:h-48 w-full rounded-lg border overflow-hidden"
     >
       <Map
         mapLib={mapLib}

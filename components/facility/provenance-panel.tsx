@@ -29,10 +29,62 @@ export function ProvenancePanel({ facility }: ProvenancePanelProps) {
   const headingId = `provenance-heading-${facility.id}`;
 
   return (
-    <section aria-labelledby={headingId} data-print-sources className="space-y-4">
+    <section
+      id="sources"
+      aria-labelledby={headingId}
+      data-print-sources
+      className="scroll-mt-20 space-y-4"
+    >
       <h2 id={headingId} className="text-base font-semibold">
         Sources &amp; data provenance
       </h2>
+
+      <ol className="space-y-4" aria-label="Sources">
+        {facility.sources.map((source, i) => (
+          <li
+            key={i}
+            id={`source-${i + 1}`}
+            className="flex scroll-mt-20 gap-2 target:rounded-sm target:bg-muted"
+          >
+            <span
+              className="w-6 shrink-0 text-right text-sm tabular-nums text-muted-foreground"
+              aria-hidden="true"
+            >
+              {i + 1}.
+            </span>
+            <div className="min-w-0 space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <a
+                  href={safeExternalHref(source.url)}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label={`${source.label} (opens in new tab)`}
+                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded"
+                >
+                  <ExternalLink
+                    className="size-3 shrink-0"
+                    aria-hidden="true"
+                  />
+                  {source.label}
+                </a>
+                <Badge variant="outline" className="text-xs capitalize">
+                  {source.kind}
+                </Badge>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
+                {source.publisher && <span>{source.publisher}</span>}
+                <span>
+                  Retrieved:{" "}
+                  <time dateTime={source.retrievedAt} className="tabular-nums">
+                    {source.retrievedAt}
+                  </time>
+                </span>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
 
       <p className="text-sm text-muted-foreground">
         {CONFIDENCE_DESCRIPTIONS[facility.confidence]}
@@ -44,38 +96,6 @@ export function ProvenancePanel({ facility }: ProvenancePanelProps) {
           {facility.lastUpdated}
         </time>
       </p>
-
-      <ul className="space-y-4" aria-label="Sources">
-        {facility.sources.map((source, i) => (
-          <li key={i} className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <a
-                href={safeExternalHref(source.url)}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label={`${source.label} (opens in new tab)`}
-                className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded"
-              >
-                <ExternalLink className="size-3 shrink-0" aria-hidden="true" />
-                {source.label}
-              </a>
-              <Badge variant="outline" className="text-xs capitalize">
-                {source.kind}
-              </Badge>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
-              {source.publisher && <span>{source.publisher}</span>}
-              <span>
-                Retrieved:{" "}
-                <time dateTime={source.retrievedAt} className="tabular-nums">
-                  {source.retrievedAt}
-                </time>
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }

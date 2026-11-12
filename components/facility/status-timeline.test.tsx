@@ -81,6 +81,17 @@ describe("StatusTimeline", () => {
     expect(link).toHaveAttribute("rel", "noreferrer noopener");
   });
 
+  it("with linkSources, renders [n] references to the numbered sources list", () => {
+    render(<StatusTimeline history={HISTORY} sources={SOURCES} linkSources />);
+    const link = screen.getByRole("link", { name: "[1] Example Source One" });
+    expect(link).toHaveAttribute("href", "#source-1");
+    expect(link).toHaveTextContent("[1]");
+    expect(screen.getByRole("link", { name: "[2] Example Source Two" })).toHaveAttribute(
+      "href",
+      "#source-2"
+    );
+  });
+
   it("renders the second source link correctly", () => {
     render(<StatusTimeline history={HISTORY} sources={SOURCES} />);
     const link = screen.getByRole("link", {

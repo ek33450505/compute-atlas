@@ -209,9 +209,9 @@ export default async function FacilityPage({
   // screen rhythm.
   const content = (
     <div
-      data-content-width="4xl"
+      data-content-width="6xl"
       data-print-brief
-      className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
+      className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
     >
       <script
         type="application/ld+json"
@@ -230,7 +230,7 @@ export default async function FacilityPage({
       <Breadcrumb items={crumbs} className="print:hidden" />
 
       {/* Plate masthead */}
-      <header className="space-y-3">
+      <header className="mb-4 space-y-3">
         <p className="font-mono text-xs uppercase tracking-widest text-primary">
           {location}
           {facility.location.county
@@ -271,6 +271,21 @@ export default async function FacilityPage({
           <Badge variant="outline">
             {CONFIDENCE_LABELS[facility.confidence] ?? facility.confidence}
           </Badge>
+          {facility.sources.length > 0 && (
+            <a
+              href="#sources"
+              className="rounded-sm text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              {facility.sources.length}{" "}
+              {facility.sources.length === 1 ? "source" : "sources"}
+            </a>
+          )}
+          <span className="text-sm text-muted-foreground">
+            Updated{" "}
+            <time dateTime={facility.lastUpdated} className="tabular-nums">
+              {facility.lastUpdated}
+            </time>
+          </span>
         </div>
         <div className="border-t border-border" />
       </header>
@@ -287,7 +302,7 @@ export default async function FacilityPage({
           `min-h-11` touch target and a leading icon (aria-hidden, so it
           never leaks into the accessible name), rather than a mix of
           default/sm Buttons and a bare text link at four different heights. */}
-      <div className="flex flex-wrap items-center gap-x-5 print:hidden">
+      <div className="mb-6 flex flex-wrap items-center gap-x-5 print:hidden">
         <PrintBriefButton />
         <ShareButton title={facility.name} url={canonicalUrl} />
         <SuggestCorrection
@@ -310,186 +325,203 @@ export default async function FacilityPage({
           targetType="facility"
           targetId={facility.id}
           label="Watch this facility"
-          quiet
+          triggerClassName="border-primary/40 text-primary"
+          revealedClassName="basis-full"
         />
       </div>
 
-      {/* Provisional / rumored banner */}
-      {showBanner && (
-        <Card className="border-muted-foreground/30">
-          <CardContent className="flex gap-3 pt-4">
-            <Info
-              className="size-4 mt-0.5 shrink-0 text-muted-foreground"
-              aria-hidden="true"
-            />
-            <div className="space-y-1 text-sm text-muted-foreground">
-              {isProvisional && (
-                <p>
-                  This facility is{" "}
-                  <strong className="font-medium text-foreground">
-                    {facility.status}
-                  </strong>{" "}
-                  and has not been reported as operational. Details are based on
-                  public filings and announcements as of{" "}
-                  <time dateTime={facility.lastUpdated} className="tabular-nums">
-                    {facility.lastUpdated}
-                  </time>
-                  .
-                </p>
-              )}
-              {isRumored && (
-                <p>
-                  This record is marked as{" "}
-                  <strong className="font-medium text-foreground">
-                    rumored
-                  </strong>{" "}
-                  — data has not been independently confirmed.
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Two columns from lg; ONE DOM order doubles as the phone order
+          (key facts, map, sources, then the rest). A = banner + key facts,
+          B = aside (map, sources, siting), C = the rest. The aside is NOT
+          sticky: its height is unbounded (sources and siting context vary
+          per record), and a sticky element taller than the viewport hides its
+          own bottom until the grid ends. [data-facility-layout] is the print
+          hook in globals.css. */}
+      <div
+        data-facility-layout
+        className="space-y-10 lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-x-12 lg:gap-y-10 lg:space-y-0"
+      >
+        <div className="space-y-10 lg:col-start-1 lg:row-start-1">
+        {/* Provisional / rumored banner */}
+        {showBanner && (
+          <Card className="border-muted-foreground/30">
+            <CardContent className="flex gap-3 pt-4">
+              <Info
+                className="size-4 mt-0.5 shrink-0 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <div className="space-y-1 text-sm text-muted-foreground">
+                {isProvisional && (
+                  <p>
+                    This facility is{" "}
+                    <strong className="font-medium text-foreground">
+                      {facility.status}
+                    </strong>{" "}
+                    and has not been reported as operational. Details are based on
+                    public filings and announcements as of{" "}
+                    <time dateTime={facility.lastUpdated} className="tabular-nums">
+                      {facility.lastUpdated}
+                    </time>
+                    .
+                  </p>
+                )}
+                {isRumored && (
+                  <p>
+                    This record is marked as{" "}
+                    <strong className="font-medium text-foreground">
+                      rumored
+                    </strong>{" "}
+                    — data has not been independently confirmed.
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Key facts */}
-      <section aria-labelledby="key-facts-heading">
-        <h2 id="key-facts-heading" className="font-display text-xl text-foreground mb-4">
-          Key facts
-        </h2>
-        <MastheadFactGrid>
-          <MastheadFactRow label="Location">
-            {facility.location.street ? (
-              <span className="block">{facility.location.street}</span>
-            ) : null}
-            {location}
-            {facility.location.postalCode ? ` ${facility.location.postalCode}` : ""}
-            {/* County links to its /counties hub. Deliberately carries no
-                resting color or underline — only hover/focus affordances —
-                so the printed stat sheet renders it as the plain text it
-                replaced (a link is meaningless on paper). Same treatment as
-                the operator link in the masthead above, which already sits
-                inside [data-print-brief]. The masthead's county eyebrow is
-                left as plain text: it is a dense mono metadata line, and one
-                link per fact is enough. */}
-            {facility.location.county ? (
-              <>
-                {" · "}
-                <Link
-                  href={`/counties/${countySlug(facility.location.county, facility.location.state)}`}
-                  className="underline-offset-4 rounded-sm transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                >
-                  {formatCountyLabel(facility.location.county, facility.location.state)}
-                </Link>
-              </>
-            ) : null}
-          </MastheadFactRow>
+        {/* Key facts */}
+        <section aria-labelledby="key-facts-heading">
+          <h2 id="key-facts-heading" className="font-display text-xl text-foreground mb-4">
+            Key facts
+          </h2>
+          <MastheadFactGrid>
+            <MastheadFactRow label="Location">
+              {facility.location.street ? (
+                <span className="block">{facility.location.street}</span>
+              ) : null}
+              {location}
+              {facility.location.postalCode ? ` ${facility.location.postalCode}` : ""}
+              {/* County links to its /counties hub. Deliberately carries no
+                  resting color or underline — only hover/focus affordances —
+                  so the printed stat sheet renders it as the plain text it
+                  replaced (a link is meaningless on paper). Same treatment as
+                  the operator link in the masthead above, which already sits
+                  inside [data-print-brief]. The masthead's county eyebrow is
+                  left as plain text: it is a dense mono metadata line, and one
+                  link per fact is enough. */}
+              {facility.location.county ? (
+                <>
+                  {" · "}
+                  <Link
+                    href={`/counties/${countySlug(facility.location.county, facility.location.state)}`}
+                    className="underline-offset-4 rounded-sm transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  >
+                    {formatCountyLabel(facility.location.county, facility.location.state)}
+                  </Link>
+                </>
+              ) : null}
+            </MastheadFactRow>
 
-          <MastheadFactRow label="Capacity" valueClassName="mt-1 text-sm font-mono tabular-nums">
-            {capacity === "—" ? (
-              !capacityGapMarked && (
-                <FieldGapPrompt
-                  printOnly
-                  field={capacityGapField(facility.status)}
-                  facilityId={facility.id}
-                  facilityName={facility.name}
-                  label="the capacity"
-                />
-              )
-            ) : (
-              <>
-                {capacity}
-                <div className="mt-1">
-                  <ConfirmFactPrompt
-                    field={capacityShownField(facility)}
+            <MastheadFactRow label="Capacity" valueClassName="mt-1 text-sm font-mono tabular-nums">
+              {capacity === "—" ? (
+                !capacityGapMarked && (
+                  <FieldGapPrompt
+                    printOnly
+                    field={capacityGapField(facility.status)}
                     facilityId={facility.id}
                     facilityName={facility.name}
                     label="the capacity"
-                    vintage={facility.lastUpdated}
-                    currentValues={currentValues}
                   />
+                )
+              ) : (
+                <>
+                  {capacity}
+                  <div className="mt-1">
+                    <ConfirmFactPrompt
+                      field={capacityShownField(facility)}
+                      facilityId={facility.id}
+                      facilityName={facility.name}
+                      label="the capacity"
+                      vintage={facility.lastUpdated}
+                      currentValues={currentValues}
+                    />
+                  </div>
+                </>
+              )}
+              {capacityNotRecorded.map(({ field, label, reason }) => (
+                <div key={field} className="font-sans">
+                  <NotRecordedText reason={reason} label={label} />
                 </div>
-              </>
-            )}
-            {capacityNotRecorded.map(({ field, label, reason }) => (
-              <div key={field} className="font-sans">
-                <NotRecordedText reason={reason} label={label} />
-              </div>
-            ))}
-          </MastheadFactRow>
+              ))}
+            </MastheadFactRow>
 
-          <MastheadFactRow label="Powered by">
-            {facility.poweredBy ?? (
-              <FieldGapPrompt
-                printOnly
-                field="poweredBy"
-                facilityId={facility.id}
-                facilityName={facility.name}
-                label="who powers this facility"
-              />
-            )}
-          </MastheadFactRow>
+            <MastheadFactRow label="Powered by">
+              {facility.poweredBy ?? (
+                <FieldGapPrompt
+                  printOnly
+                  field="poweredBy"
+                  facilityId={facility.id}
+                  facilityName={facility.name}
+                  label="who powers this facility"
+                />
+              )}
+            </MastheadFactRow>
 
-          <MastheadFactRow label="Announced" valueClassName="mt-1 text-sm font-mono tabular-nums">
-            {facility.announcedDate ?? (
-              <FieldGapPrompt
-                printOnly
-                field="announcedDate"
-                facilityId={facility.id}
-                facilityName={facility.name}
-                label="the announcement date"
-              />
-            )}
-          </MastheadFactRow>
+            <MastheadFactRow label="Announced" valueClassName="mt-1 text-sm font-mono tabular-nums">
+              {facility.announcedDate ?? (
+                <FieldGapPrompt
+                  printOnly
+                  field="announcedDate"
+                  facilityId={facility.id}
+                  facilityName={facility.name}
+                  label="the announcement date"
+                />
+              )}
+            </MastheadFactRow>
 
-          <MastheadFactRow label="Last updated" valueClassName="mt-1 text-sm font-mono tabular-nums">
-            <time dateTime={facility.lastUpdated}>{facility.lastUpdated}</time>
-          </MastheadFactRow>
-        </MastheadFactGrid>
-      </section>
+            <MastheadFactRow label="Last updated" valueClassName="mt-1 text-sm font-mono tabular-nums">
+              <time dateTime={facility.lastUpdated}>{facility.lastUpdated}</time>
+            </MastheadFactRow>
+          </MastheadFactGrid>
+        </section>
+        </div>
 
-      <SitingContextSection facility={facility} siting={siting} />
+        <aside
+          aria-label="Location, sources and siting context"
+          className="space-y-6 lg:col-start-2 lg:row-start-1 lg:row-span-2"
+        >
+        {/* Mini map — interactive-only, not useful on a printed page */}
+        <section aria-labelledby="map-heading" className="print:hidden">
+          <h2 id="map-heading" className="font-display text-xl text-foreground mb-4">
+            Location
+          </h2>
+          <FacilityMiniMapDynamic facility={toMiniMapFacility(facility)} />
+        </section>
 
-      <PowerLinksSection facility={facility} hasLinks={hasLinkedPower} />
+        {/* Provenance */}
+        <ProvenancePanel facility={facility} />
 
-      <CivicImpactSection facility={facility} />
+        <SitingContextSection facility={facility} siting={siting} />
+        </aside>
 
-      <StakeholdersSection facility={facility} ownership={ownership} />
+        <div className="space-y-10 lg:col-start-1 lg:row-start-2">
+        {/* Status timeline */}
+        <section aria-labelledby="timeline-heading">
+          <h2 id="timeline-heading" className="font-display text-xl text-foreground mb-4">
+            Status history
+          </h2>
+          <StatusTimeline
+            history={facility.statusHistory}
+            sources={facility.sources}
+            linkSources
+          />
+        </section>
 
-      {/* The page's single gap prompt: sits where the stakeholder prompt used
-          to, just above the status history. */}
-      <MissingRecordCard
-        facilityId={facility.id}
-        facilityName={facility.name}
-        items={missingItems}
-      />
+        <PowerLinksSection facility={facility} hasLinks={hasLinkedPower} />
 
-      <Separator />
+        <CivicImpactSection facility={facility} />
 
-      {/* Status timeline */}
-      <section aria-labelledby="timeline-heading">
-        <h2 id="timeline-heading" className="font-display text-xl text-foreground mb-4">
-          Status history
-        </h2>
-        <StatusTimeline
-          history={facility.statusHistory}
-          sources={facility.sources}
+        <StakeholdersSection facility={facility} ownership={ownership} />
+
+        {/* The page's single gap prompt: sits where the stakeholder prompt used
+            to, just above the status history. */}
+        <MissingRecordCard
+          facilityId={facility.id}
+          facilityName={facility.name}
+          items={missingItems}
         />
-      </section>
-
-      <Separator />
-
-      {/* Mini map — interactive-only, not useful on a printed page */}
-      <section aria-labelledby="map-heading" className="print:hidden">
-        <h2 id="map-heading" className="font-display text-xl text-foreground mb-4">
-          Location
-        </h2>
-        <FacilityMiniMapDynamic facility={toMiniMapFacility(facility)} />
-      </section>
-
-      <Separator />
-
-      {/* Provenance */}
-      <ProvenancePanel facility={facility} />
+        </div>
+      </div>
 
       {/* Agent-quotable contribution note — plain server-rendered prose (not
           print:hidden; it reads fine on a printout too), separate from the

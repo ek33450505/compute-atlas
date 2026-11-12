@@ -10,7 +10,35 @@ import { safeExternalHref } from "@/lib/url";
 // already has the `Source` in hand — SourceLink below (resolves by index
 // against `facility.sources`), and the status timeline (resolves by index
 // against its own `sources` prop rather than a full `Facility`).
-export function SourceAnchor({ source }: { source: Source }) {
+//
+// With `number` (the 1-based position in the facility's sources list), the
+// screen shows a compact "[n]" reference to that entry in the numbered
+// Sources list (`#source-<n>`, components/facility/provenance-panel.tsx) and
+// the print-only label stays, so the printed brief still names each cited
+// source. Without it, the full external label links out as before.
+export function SourceAnchor({
+  source,
+  number,
+}: {
+  source: Source;
+  number?: number;
+}) {
+  if (number !== undefined) {
+    return (
+      <>
+        <a
+          href={`#source-${number}`}
+          aria-label={`[${number}] ${source.label}`}
+          className="inline-flex min-h-6 min-w-6 items-center justify-center rounded px-1 text-xs tabular-nums text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring print:hidden"
+        >
+          [{number}]
+        </a>
+        <span className="hidden text-xs text-muted-foreground print:inline">
+          {source.label}
+        </span>
+      </>
+    );
+  }
   return (
     <a
       href={safeExternalHref(source.url)}
@@ -40,7 +68,7 @@ export function SourceLink({
       ? facility.sources[sourceIndex]
       : null;
   if (!source) return null;
-  return <SourceAnchor source={source} />;
+  return <SourceAnchor source={source} number={sourceIndex! + 1} />;
 }
 
 // --- DT/DD pair helper (wrapped in div so CSS grid treats each pair as one item) ---

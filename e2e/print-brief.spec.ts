@@ -171,7 +171,7 @@ for (const record of RECORDS) {
     test("keeps every cited source, with its URL expanded", async ({ page }) => {
       await page.goto(`/facilities/${record.slug}`);
 
-      const sources = page.locator("[data-print-sources] ul[aria-label='Sources'] > li");
+      const sources = page.locator("[data-print-sources] [aria-label='Sources'] > li");
       const onScreen = await sources.count();
       expect(onScreen).toBeGreaterThan(0);
 
@@ -179,7 +179,7 @@ for (const record of RECORDS) {
 
       // Compression is by type size and leading only — no citation is
       // dropped to make the page fit.
-      expect(await visibleCount(page, "[data-print-sources] ul[aria-label='Sources'] > li")).toBe(
+      expect(await visibleCount(page, "[data-print-sources] [aria-label='Sources'] > li")).toBe(
         onScreen
       );
 

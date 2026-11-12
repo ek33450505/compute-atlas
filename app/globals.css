@@ -1023,6 +1023,7 @@
    Tailwind max-w-7xl utility on the footer inner container. */
 body:has([data-content-width="3xl"]) [data-footer-inner] { max-width: 48rem; }
 body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
+body:has([data-content-width="6xl"]) [data-footer-inner] { max-width: 72rem; }
 
 /* ── Print styles — clean, ink-efficient facility page printouts ─────────────
    Screen theme is a warm parchment bg + ink fg; print forces plain white/black
@@ -1148,6 +1149,20 @@ body:has([data-content-width="4xl"]) [data-footer-inner] { max-width: 56rem; }
 
   /* space-y-10 between ~16 sections was ~640px — 15% of the document. */
   [data-print-brief] > :not(:last-child) {
+    margin-block-end: 0.6rem !important;
+  }
+
+  /* The two-column screen layout (app/facilities/[slug]/page.tsx) nests the
+     sections one or two levels below the container, out of reach of the
+     direct-child rule above: re-apply the same rhythm to the layout's
+     wrappers and their children. Print is below the lg breakpoint, so the
+     grid is never active here and everything flows in DOM order. */
+  [data-print-brief] > [data-facility-layout] {
+    margin-block-end: 0.6rem !important;
+  }
+
+  [data-facility-layout] > :not(:last-child),
+  [data-facility-layout] > * > :not(:last-child) {
     margin-block-end: 0.6rem !important;
   }
 

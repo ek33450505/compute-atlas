@@ -101,9 +101,9 @@ describe("StakeholdersSection", () => {
     expect(screen.getByText(/As of 2024-01-01/)).toBeInTheDocument();
 
     const link = screen.getByRole("link", {
-      name: /Founder Filing \(opens in new tab\)/i,
+      name: "[1] Founder Filing",
     });
-    expect(link).toHaveAttribute("href", "https://example.com/founder-source");
+    expect(link).toHaveAttribute("href", "#source-1");
   });
 
   it("renders an organization lender under the financial-interest group with a Lender label", () => {
@@ -155,12 +155,9 @@ describe("StakeholdersSection", () => {
     expect(screen.getByText("Senator Smith")).toBeInTheDocument();
 
     const link = screen.getByRole("link", {
-      name: /County Meeting Minutes \(opens in new tab\)/i,
+      name: "[2] County Meeting Minutes",
     });
-    expect(link).toHaveAttribute(
-      "href",
-      "https://example.com/official-source"
-    );
+    expect(link).toHaveAttribute("href", "#source-2");
   });
 
   it("does not render a public_official entry under the financial-interest heading", () => {

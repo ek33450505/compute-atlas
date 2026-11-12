@@ -364,9 +364,10 @@ describe("CivicImpactSection — Air permit (emissions)", () => {
     render(<CivicImpactSection facility={facility} />);
 
     const link = screen.getByRole("link", {
-      name: /Subsidy Source \(opens in new tab\)/i,
+      name: "[1] Subsidy Source",
     });
-    expect(link).toHaveAttribute("href", "https://example.com/subsidy-source");
+    expect(link).toHaveAttribute("href", "#source-1");
+    expect(link).toHaveTextContent("[1]");
   });
 
   it("renders 'Per unit' for basis alongside the tonnages", () => {
@@ -598,11 +599,10 @@ describe("CivicImpactSection — Public subsidies", () => {
     expect(screen.getByText(/Illinois · 2023/)).toBeInTheDocument();
 
     const link = screen.getByRole("link", {
-      name: /Subsidy Source \(opens in new tab\)/i,
+      name: "[1] Subsidy Source",
     });
-    expect(link).toHaveAttribute("href", "https://example.com/subsidy-source");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noreferrer noopener");
+    expect(link).toHaveAttribute("href", "#source-1");
+    expect(link).toHaveTextContent("[1]");
   });
 
   it("uses 'Subsidy' as fallback label when program is absent", () => {
@@ -644,12 +644,9 @@ describe("CivicImpactSection — Community sentiment", () => {
     render(<CivicImpactSection facility={facility} />);
 
     const link = screen.getByRole("link", {
-      name: /Community Report \(opens in new tab\)/i,
+      name: "[2] Community Report",
     });
-    expect(link).toHaveAttribute(
-      "href",
-      "https://example.com/community-source"
-    );
+    expect(link).toHaveAttribute("href", "#source-2");
   });
 });
 
