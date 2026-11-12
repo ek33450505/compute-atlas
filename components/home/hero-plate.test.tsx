@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { HeroPlate } from "./hero-plate";
+import { formatEditionDate } from "@/lib/edition-date";
 import { HERO_PLATE } from "./hero-plate-paths";
 import { OUTLINE_BYTE_BUDGET } from "../../scripts/build-hero-plate.mjs";
 import { STATUS_ORDER, STATUS_META } from "@/lib/status";
@@ -140,6 +141,8 @@ describe("HeroPlate", () => {
       const name = screen.getByRole("img").getAttribute("aria-label") ?? "";
 
       expect(name).toContain(`${expectedCovered} tracked sites`);
+      // Dated with the snapshot it drew, never an undated build-time total.
+      expect(name).toContain(`tracked sites as of ${formatEditionDate(HERO_PLATE.asOf)},`);
 
       // `plotted` is a count of drawn MARKS — same-status co-located
       // facilities collapse onto one — so captioning it as facilities
@@ -153,12 +156,13 @@ describe("HeroPlate", () => {
     // An image's accessible name is announced in FULL, and this one sits
     // immediately ahead of the page's H1 — the name it replaced ran 36 words
     // of projection caveat before a screen-reader user reached the heading.
+    // 15 words: the original 11 plus the 4-word snapshot date ("as of 11 November 2026"), still far from 36.
     it("stays short enough to precede the H1", () => {
       renderPlate();
       const name = screen.getByRole("img").getAttribute("aria-label") ?? "";
 
       expect(name.trim().split(/\s+/)).not.toHaveLength(0);
-      expect(name.trim().split(/\s+/).length).toBeLessThanOrEqual(12);
+      expect(name.trim().split(/\s+/).length).toBeLessThanOrEqual(15);
     });
   });
 

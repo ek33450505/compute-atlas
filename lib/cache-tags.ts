@@ -26,8 +26,11 @@ import { operatorSlug } from "@/lib/operator-slug";
  * resolves inside the Next.js runtime.
  */
 
+/** The aggregate tag every facility-set cache carries and `db:sync --apply` busts. */
+export const FACILITIES_TAG = "facilities";
+
 /** Tags with no dynamic part. */
-const LITERAL_TAGS = new Set(["facilities", "power-generation"]);
+const LITERAL_TAGS = new Set([FACILITIES_TAG, "power-generation"]);
 
 /**
  * Shapes of the parameterized tags. Facility ids are lowercase slugs and

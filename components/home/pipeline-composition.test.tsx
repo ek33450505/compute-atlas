@@ -132,7 +132,8 @@ describe("PipelineComposition", () => {
     // Phrase-anchored, not bare `toContain("303")`: the sr-only table
     // concatenates adjacent cells, so a loose numeric substring can be
     // satisfied by digits that have nothing to do with the caption.
-    expect(text).toMatch(/303 of 4,103 tracked facilities/);
+    // Dated: the totals belong to the build the artifact was drawn from, and say so.
+    expect(text).toMatch(/303 of 4,103 facilities in the 2 July 2023 build carry no dated status history/);
     expect(text).toMatch(/2,077 do\./);
     expect(text).toContain("1958-04-09");
 
@@ -196,7 +197,7 @@ describe("PipelineComposition", () => {
     // known: 41 → 213, the denominator the chart is obliged to make visible.
     // Phrase-anchored rather than a bare `toContain("41")`, which the table's
     // concatenated digits would satisfy on their own.
-    expect(text).toMatch(/41 facilities at 2022 Q4, 213 at 2023 Q2/);
+    expect(text).toMatch(/population itself in the 2 July 2023 build: 41 facilities at 2022 Q4, 213 at 2023 Q2/);
     expect(text).toMatch(/nothing here is drawn as a share/i);
   });
 

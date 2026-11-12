@@ -1,9 +1,10 @@
 import { unstable_cache } from "next/cache";
 
+import { FACILITIES_TAG } from "@/lib/cache-tags";
 import { getAllFacilities } from "@/lib/data";
 import { redactedErrorCode } from "@/lib/db-error";
 import { latestPublishedEdition } from "@/lib/dataset-editions";
-import type { Facility } from "@/lib/schema";
+import { facilitySchema, type Facility } from "@/lib/schema";
 
 /** What the sales pages quote about the dataset, all computed from live data. */
 export interface DatasetCounts {
@@ -11,9 +12,20 @@ export interface DatasetCounts {
   dataCenters: number;
   cryptoSites: number;
   powerPlants: number;
-  states: number;
+  /** Distinct jurisdictions present: states, DC and territories alike (so not a state count). */
+  jurisdictions: number;
+  /** Sorted two-letter codes of those jurisdictions. */
+  stateCodes: string[];
+  /** Facilities per jurisdiction code. */
+  stateCounts: Record<string, number>;
   operators: number;
   sourceLinks: number;
+  /**
+   * ISO instant the facilities were COUNTED, not the moment a page rendered, so a cached value keeps its
+   * age. It is not the database read time: `getAllFacilities` has its own cache, so the facility set
+   * itself can be older than this. Pages therefore say "counted on", never "read from the database".
+   */
+  asOf: string;
 }
 
 export interface OfferEdition {
@@ -26,14 +38,30 @@ export interface OfferEdition {
   initial: boolean;
   /** File sizes by file name, in bytes. */
   fileBytes: Record<string, number>;
+  /** The changelog's plain headlines (at most ten); for the first edition, only its "Initial edition" line. */
+  headlines: string[];
 }
+
+/**
+ * The three records the sales page shows in full, one per facility type. A fixed constant on
+ * purpose: nothing from a request (query, header, cookie) may choose which records render.
+ */
+export const SAMPLE_FACILITY_IDS: readonly string[] = [
+  "meta-hyperion-richland-parish-la",
+  "riot-platforms-corsicana-tx",
+  "homer-city-energy-campus-generation-pa",
+];
 
 type CountableFacility = Pick<Facility, "facilityType" | "operator" | "sources"> & {
   location: Pick<Facility["location"], "state">;
 };
 
-export function countDataset(facilities: readonly CountableFacility[]): DatasetCounts {
+export function countDataset(
+  facilities: readonly CountableFacility[],
+  readAt: Date = new Date(),
+): DatasetCounts {
   const states = new Set<string>();
+  const stateCounts: Record<string, number> = {};
   const operators = new Set<string>();
   let dataCenters = 0;
   let cryptoSites = 0;
@@ -43,7 +71,10 @@ export function countDataset(facilities: readonly CountableFacility[]): DatasetC
     if (f.facilityType === "data_center") dataCenters++;
     else if (f.facilityType === "crypto_mining") cryptoSites++;
     else if (f.facilityType === "power_generation") powerPlants++;
-    if (f.location?.state) states.add(f.location.state);
+    if (f.location?.state) {
+      states.add(f.location.state);
+      stateCounts[f.location.state] = (stateCounts[f.location.state] ?? 0) + 1;
+    }
     if (f.operator) operators.add(f.operator);
     sourceLinks += f.sources?.length ?? 0;
   }
@@ -52,23 +83,24 @@ export function countDataset(facilities: readonly CountableFacility[]): DatasetC
     dataCenters,
     cryptoSites,
     powerPlants,
-    states: states.size,
+    jurisdictions: states.size,
+    stateCodes: [...states].sort(),
+    stateCounts,
     operators: operators.size,
     sourceLinks,
+    asOf: readAt.toISOString(),
   };
 }
 
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-
-/** "2026-11-10" -> "10 November 2026"; anything else comes back unchanged. */
-export function formatEditionDate(iso: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  const month = m ? MONTHS[Number(m[2]) - 1] : undefined;
-  if (!m || !month) return iso;
-  return `${Number(m[3])} ${month} ${m[1]}`;
+/** The `n` jurisdictions with the most facilities: count desc, then code A to Z (same order as `getTopStates`). */
+export function topStatesFromCounts(
+  stateCounts: Readonly<Record<string, number>>,
+  n: number,
+): { state: string; count: number }[] {
+  return Object.entries(stateCounts)
+    .map(([state, count]) => ({ state, count }))
+    .sort((a, b) => b.count - a.count || a.state.localeCompare(b.state))
+    .slice(0, n);
 }
 
 /** 9084324 -> "9.1 MB" (decimal megabytes, one decimal). */
@@ -107,7 +139,22 @@ export function toOfferEdition(edition: {
     removed: numberOrNull(summary.removed),
     initial,
     fileBytes: Object.fromEntries(edition.files.map((f) => [f.name, f.bytes])),
+    headlines: headlines.filter((h): h is string => typeof h === "string"),
   };
+}
+
+/** The sample records present in `facilities`, in `SAMPLE_FACILITY_IDS` order; ids not found are skipped. */
+export function pickSamples(facilities: readonly Facility[]): Facility[] {
+  return SAMPLE_FACILITY_IDS.flatMap((id) => {
+    const found = facilities.find((f) => f.id === id);
+    if (!found) return [];
+    // facilities.json is written after facilitiesSchema.parse (unknown keys stripped, defaults filled),
+    // while the live read returns the stored doc as is; parse so the sample has the file's shape.
+    const parsed = facilitySchema.safeParse(found);
+    if (parsed.success) return [parsed.data];
+    console.error("dataset offer: a sample record failed schema validation and was skipped");
+    return [];
+  });
 }
 
 const READ_TIMEOUT_MS = 5000;
@@ -137,7 +184,15 @@ async function readEdition(): Promise<OfferEdition | null> {
 }
 
 async function readCounts(): Promise<DatasetCounts> {
-  return countDataset(await withTimeout(getAllFacilities));
+  // Stamp the count, not the render: unstable_cache keeps this value (asOf included) for up to 24h.
+  // The facility set may come from getAllFacilities' own cache and so predate this stamp; the pages' wording
+  // ("counted on") claims no more than that.
+  const facilities = await withTimeout(getAllFacilities);
+  return countDataset(facilities, new Date());
+}
+
+async function readSamples(): Promise<Facility[]> {
+  return pickSamples(await withTimeout(getAllFacilities));
 }
 
 // `unstable_cache` needs the Next request context, which vitest lacks (same dodge as lib/data.ts).
@@ -150,7 +205,14 @@ const cachedEdition: () => Promise<OfferEdition | null> = process.env.VITEST
 
 const cachedCounts: () => Promise<DatasetCounts> = process.env.VITEST
   ? readCounts
-  : unstable_cache(readCounts, ["dataset-offer-counts"], { revalidate: 86400 });
+  : // Tagged like every other facility-set cache, so `db:sync --apply` (which busts "facilities")
+    // refreshes the home, /dataset and /access/commercial counts together instead of leaving them
+    // stale for up to 24h. The edition and sample caches stay untagged on purpose.
+    unstable_cache(readCounts, ["dataset-offer-counts"], { revalidate: 86400, tags: [FACILITIES_TAG] });
+
+const cachedSamples: () => Promise<Facility[]> = process.env.VITEST
+  ? readSamples
+  : unstable_cache(readSamples, ["dataset-offer-samples"], { revalidate: 86400 });
 
 /** The latest published edition, or null when there is none or the read fails. */
 export async function loadOfferEdition(): Promise<OfferEdition | null> {
@@ -168,6 +230,16 @@ export async function loadOfferCounts(): Promise<DatasetCounts | null> {
     return await cachedCounts();
   } catch (err) {
     console.error(`dataset offer: facility read failed (code: ${redactedErrorCode(err)})`);
+    return null;
+  }
+}
+
+/** The fixed sample records, or null when the facility read fails. Ids not in the dataset are skipped. */
+export async function loadOfferSamples(): Promise<Facility[] | null> {
+  try {
+    return await cachedSamples();
+  } catch (err) {
+    console.error(`dataset offer: sample read failed (code: ${redactedErrorCode(err)})`);
     return null;
   }
 }

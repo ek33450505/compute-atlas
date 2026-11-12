@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { SiteFooter } from "./site-footer";
@@ -24,27 +24,27 @@ vi.mock("next/link", () => ({
 }));
 
 describe("SiteFooter", () => {
-  beforeEach(() => {
-  });
-
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
-  it("shows the Request data access link while dataset sharing is enabled", () => {
+  it("shows the Free access and Commercial access links while sharing and the commercial tier are on", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(<SiteFooter />);
     expect(
-      screen.getByRole("link", { name: "Request data access" })
+      screen.getByRole("link", { name: "Free access for education" })
     ).toHaveAttribute("href", "/access");
+    expect(
+      screen.getByRole("link", { name: "Commercial access" })
+    ).toHaveAttribute("href", "/access/commercial");
   });
 
-  it("hides the Request data access link while dataset sharing is off", () => {
+  it("hides both access links while dataset sharing is off", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "");
     render(<SiteFooter />);
-    expect(
-      screen.queryByRole("link", { name: "Request data access" })
-    ).toBeNull();
+    expect(screen.queryByRole("link", { name: "Free access for education" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Commercial access" })).toBeNull();
   });
 
   it("renders the wordmark/home link with an accessible name that includes its visible text", () => {
@@ -75,75 +75,50 @@ describe("SiteFooter", () => {
     expect(screen.queryByRole("link", { name: /Edward Kubiak/ })).toBeNull();
   });
 
-  it("renders the Explore and Data & project column labels", () => {
+  it("renders the Browse, Explore, Dataset and About column labels", () => {
     render(<SiteFooter />);
-    expect(screen.getByText("Explore")).toBeInTheDocument();
-    expect(screen.getByText("Data & project")).toBeInTheDocument();
+    for (const label of ["Browse", "Explore", "Dataset", "About"]) {
+      expect(screen.getAllByText(label).length).toBeGreaterThan(0);
+    }
+    expect(screen.queryByText("Data & project")).not.toBeInTheDocument();
   });
 
-  it("renders every Explore column link with the correct href", () => {
-    render(<SiteFooter />);
-    expect(screen.getByRole("link", { name: "States" })).toHaveAttribute(
-      "href",
-      "/states"
-    );
-    expect(screen.getByRole("link", { name: "By status" })).toHaveAttribute(
-      "href",
-      "/status"
-    );
-    expect(screen.getByRole("link", { name: "By metro" })).toHaveAttribute(
-      "href",
-      "/metros"
-    );
-    expect(screen.getByRole("link", { name: "Power" })).toHaveAttribute(
-      "href",
-      "/power"
-    );
-    expect(screen.getByRole("link", { name: "Opposition" })).toHaveAttribute(
-      "href",
-      "/opposition"
-    );
-    expect(
-      screen.getByRole("link", { name: /All lenses/i })
-    ).toHaveAttribute("href", "/explore");
-  });
-
-  it("renders every Data & project column link with the correct href", () => {
+  it("renders every nav link with the correct href", () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     const { container } = render(<SiteFooter />);
-    expect(
-      screen.getByRole("link", { name: "About the project" })
-    ).toHaveAttribute("href", "/about");
-    expect(
-      screen.getByRole("link", { name: "Methodology" })
-    ).toHaveAttribute("href", "/methodology");
+    const expected: [string, string][] = [
+      ["Map", "/map"],
+      ["Table", "/table"],
+      ["All lenses", "/explore"],
+      ["States", "/states"],
+      ["By status", "/status"],
+      ["By metro", "/metros"],
+      ["Power", "/power"],
+      ["Opposition", "/opposition"],
+      ["Stats", "/stats"],
+      ["Activity", "/activity"],
+      ["Dataset", "/dataset"],
+      ["Cite & license", "/data"],
+      ["About", "/about"],
+      ["Methodology", "/methodology"],
+      ["Contribute", "/contribute"],
+      ["Contributors", "/contributors"],
+      ["Support", "/support"],
+      ["Contact", "/contact"],
+    ];
+    for (const [name, href] of expected) {
+      expect(screen.getByRole("link", { name })).toHaveAttribute("href", href);
+    }
     expect(screen.queryByRole("link", { name: "API" })).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Data" })
-    ).toHaveAttribute("href", "/data");
-    expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute(
-      "href",
-      "/contact"
-    );
-    expect(
-      screen.getByRole("link", { name: /Contribute a facility/i })
-    ).toHaveAttribute("href", "/contribute");
-    expect(
-      screen.getByRole("link", { name: /Recent activity/i })
-    ).toHaveAttribute("href", "/activity");
-    expect(
-      screen.getByRole("link", { name: "Contributors" })
-    ).toHaveAttribute("href", "/contributors");
-    expect(
-      screen.getByRole("link", { name: /Support the atlas/i })
-    ).toHaveAttribute("href", "/support");
     expect(
       screen.getByRole("link", { name: /Source on GitHub/i })
     ).toHaveAttribute("href", "https://github.com/ek33450505/compute-atlas");
     expect(
-      screen.getByRole("link", { name: /Compute Atlas on Bluesky/i })
+      screen.getByRole("link", { name: /^Bluesky/i })
     ).toHaveAttribute("href", "https://bsky.app/profile/compute-atlas.com");
     expect(
-      screen.getByRole("link", { name: /^Newsletter on Buttondown/i })
+      screen.getByRole("link", { name: /^Newsletter/i })
     ).toHaveAttribute("href", "https://buttondown.com/compute-atlas");
     expect(container.innerHTML).not.toMatch(/monthly newsletter/i);
   });
@@ -152,8 +127,8 @@ describe("SiteFooter", () => {
     render(<SiteFooter />);
     const repo = screen.getByRole("link", { name: /Source on GitHub/i });
     const osm = screen.getByRole("link", { name: /OpenStreetMap/i });
-    const bluesky = screen.getByRole("link", { name: /on Bluesky/i });
-    const newsletter = screen.getByRole("link", { name: /newsletter on Buttondown/i });
+    const bluesky = screen.getByRole("link", { name: /^Bluesky/i });
+    const newsletter = screen.getByRole("link", { name: /^Newsletter/i });
 
     for (const link of [repo, osm, bluesky, newsletter]) {
       expect(link).toHaveAttribute("target", "_blank");

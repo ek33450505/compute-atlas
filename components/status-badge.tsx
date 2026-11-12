@@ -5,6 +5,11 @@ import { cn } from "@/lib/utils";
 interface StatusBadgeProps {
   status: Status;
   className?: string;
+  /**
+   * Drop the icon. The label still carries the status in text, so it is not
+   * color alone; long index lists use this to avoid repeating an inline SVG per row.
+   */
+  hideIcon?: boolean;
 }
 
 /**
@@ -12,7 +17,7 @@ interface StatusBadgeProps {
  * Icon is aria-hidden; the status is conveyed by both shape and color (never color alone).
  * Styled as a map-legend entry: mono uppercase tracking-wider.
  */
-export function StatusBadge({ status, className }: StatusBadgeProps) {
+export function StatusBadge({ status, className, hideIcon = false }: StatusBadgeProps) {
   const meta = getStatusMeta(status);
   const Icon = meta.icon;
 
@@ -24,7 +29,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       )}
       style={{ color: getStatusColor(status) }}
     >
-      <Icon aria-hidden="true" className="size-3.5 shrink-0" />
+      {!hideIcon && <Icon aria-hidden="true" className="size-3.5 shrink-0" />}
       {meta.label}
     </span>
   );

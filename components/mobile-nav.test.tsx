@@ -92,17 +92,17 @@ describe("MobileNav — initial render", () => {
 
 describe("MobileNav — responsive breakpoint", () => {
   // Companion to the PrimaryNav breakpoint test: PrimaryNav only reveals at
-  // xl: (1280px) — see components/primary-nav.test.tsx — so this toggle must
-  // stay visible through the whole sub-1280px range. A stale "md:hidden" or
-  // "lg:hidden" here would reopen a dead zone where NEITHER the inline nav NOR
-  // the hamburger is reachable.
-  it("hides at the xl: (1280px) breakpoint, not md: or lg:", () => {
+  // lg: (1024px) — see components/primary-nav.test.tsx — so this toggle must
+  // stay visible through the whole sub-1024px range. A mismatched breakpoint
+  // would reopen a dead zone where NEITHER the inline nav NOR the hamburger is
+  // reachable, or show both at once.
+  it("hides at the lg: (1024px) breakpoint, not md: or xl:", () => {
     render(<MobileNav groups={GROUPS} />);
     const toggle = screen.getByRole("button", { name: "Open navigation menu" });
 
-    expect(toggle).toHaveClass("xl:hidden");
+    expect(toggle).toHaveClass("lg:hidden");
     expect(toggle).not.toHaveClass("md:hidden");
-    expect(toggle).not.toHaveClass("lg:hidden");
+    expect(toggle).not.toHaveClass("xl:hidden");
   });
 });
 

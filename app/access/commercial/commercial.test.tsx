@@ -15,7 +15,8 @@ vi.mock("@/lib/data", () => ({ getAllFacilities: mocks.getAllFacilities }));
 vi.mock("@/lib/dataset-editions", () => ({ latestPublishedEdition: mocks.latestPublishedEdition }));
 
 import CommercialPage, { generateMetadata } from "./page";
-import { CSV_COLUMN_COUNT } from "@/lib/dataset-csv";
+import { CSV_COLUMN_COUNT, CSV_COLUMNS, CSV_COLUMN_NOTES } from "@/lib/dataset-csv";
+import { SAMPLE_FACILITY_IDS } from "@/lib/dataset-offer";
 import SuccessPage, { dynamic, metadata } from "./success/page";
 
 const NOINDEX = { index: false, follow: false };
@@ -31,7 +32,30 @@ const fac = (facilityType: string, state: string, sources: number) => ({
   sources: Array.from({ length: sources }, () => ({})),
 });
 
+const sample = (id: string, facilityType: string) => ({
+  id,
+  name: `Name of ${id}`,
+  facilityType,
+  operator: "Op",
+  status: "operational",
+  confidence: "confirmed",
+  location: { state: "TX", lat: 1, lon: 2, precision: "exact" },
+  statusHistory: [],
+  sources: [{ url: "https://example.com/a", label: "A", retrievedAt: "2026-01-01", kind: "other" }],
+  lastUpdated: "2026-01-01",
+});
+const SAMPLE_TYPES = ["data_center", "crypto_mining", "power_generation"];
+const sampleFacilities = () => SAMPLE_FACILITY_IDS.map((id, i) => sample(id, SAMPLE_TYPES[i]!));
+
+function openPage() {
+  vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+  vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+}
+
 beforeEach(() => {
+  // The count's date is the moment it was taken; pin it so every assertion can name the exact date.
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-11-12T01:04:00Z"));
   mocks.getAllFacilities.mockResolvedValue([fac("data_center", "TX", 3), fac("crypto_mining", "OH", 2)]);
   mocks.latestPublishedEdition.mockResolvedValue({
     id: "e1",
@@ -47,6 +71,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
   mocks.getAllFacilities.mockReset();
@@ -66,6 +91,29 @@ describe("/access/commercial", () => {
     expect(screen.queryByText(/months free/)).toBeNull();
     expect(screen.getByText(/never sees your payment details/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "dataset access" })).toHaveAttribute("href", "/access");
+  });
+
+  it("dates the live count and separates it from the edition's record count", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-11-12T01:04:00Z"));
+    try {
+      vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+      vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+      await renderPage();
+      expect(document.body.textContent).toContain(
+        "Latest edition (10 November 2026): 2 records. The live site has 2 facilities, counted on 12 November 2026.",
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("uses US spelling for the license statement", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    expect(document.body.textContent).toContain("The fee is not a license fee.");
+    expect(document.body.textContent).not.toContain("licence");
   });
 
   it("states tax, cancellation, refund terms and links the terms and contact pages", async () => {
@@ -204,15 +252,18 @@ describe("/access/commercial", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     const text = document.body.textContent ?? "";
-    expect(text).toContain("2 US data centers, crypto-mining sites and power plants");
-    expect(text).toContain("Latest edition 10 November 2026 · 2 records · 33 added · 43 updated · 0 removed");
+    expect(text).toContain("US data centers, crypto-mining sites and power plants");
+    expect(text).toContain("Latest edition (10 November 2026): 2 records. The live site has 2 facilities, counted on 12 November 2026.");
+    expect(text).toContain("Since the previous edition: 33 added, 43 updated, 0 removed.");
+    expect(text.match(/Latest edition/g)).toHaveLength(1);
     expect(text).toContain("(9.1 MB)");
     expect(text).toContain(`the same records as a ${CSV_COLUMN_COUNT}-column table, ready for a spreadsheet (1.8 MB)`);
-    expect(text).toContain("reading 5 of them");
+    expect(text).toContain("reading 5 of them (counted 12 November 2026)");
     expect(text).toContain("A new edition every Friday, and an email when it is ready");
     const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
     expect(headings).toEqual([
       "What you get",
+      "See what's in it",
       "Who uses it",
       "Plans",
       "Compared with assembling it yourself",
@@ -237,7 +288,8 @@ describe("/access/commercial", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     const text = document.body.textContent ?? "";
-    expect(text).toContain("Latest edition 7 November 2026 · 3,121 records");
+    expect(text).toContain("Latest edition (7 November 2026): 3,121 records. The live site has 2 facilities, counted on 12 November 2026.");
+    expect(text).not.toContain("Latest edition 7 November 2026");
     expect(text).not.toMatch(/\d (added|updated|removed)/);
   });
 
@@ -323,5 +375,127 @@ describe("/access/commercial/success", () => {
   it("renders not-open when off", () => {
     render(<SuccessPage />);
     expect(screen.getByText(/not open yet/i)).toBeInTheDocument();
+  });
+});
+
+describe("/access/commercial dataset preview", () => {
+  it("lists every CSV column with a meaning", async () => {
+    openPage();
+    await renderPage();
+    const section = screen.getByRole("region", { name: "See what's in it" });
+    const terms = section.querySelectorAll("dt");
+    expect(terms).toHaveLength(CSV_COLUMN_COUNT);
+    expect(terms[0]).toHaveTextContent("id");
+    expect(terms[terms.length - 1]).toHaveTextContent("sources.url");
+    const defs = [...section.querySelectorAll("dd")].map((d) => d.textContent);
+    expect(defs[0]).toBe(CSV_COLUMN_NOTES.id);
+    const miningIndex = CSV_COLUMNS.indexOf("mining.hashRateThPerS");
+    expect(defs[miningIndex]).toBe(CSV_COLUMN_NOTES["mining.hashRateThPerS"]);
+    expect(defs[miningIndex]).toMatch(/TH\/s/);
+  });
+
+  it("shows the three fixed samples as JSON and CSV, each scroll region focusable and named", async () => {
+    openPage();
+    mocks.getAllFacilities.mockResolvedValue([...sampleFacilities(), fac("data_center", "OH", 1)]);
+    await renderPage();
+    for (const id of SAMPLE_FACILITY_IDS) {
+      const pre = screen.getByLabelText(`Name of ${id} as JSON`);
+      expect(pre).toHaveAttribute("tabindex", "0");
+      expect(pre.textContent).toContain(`"id": "${id}"`);
+    }
+    const csv = screen.getByLabelText("Sample records as CSV");
+    expect(csv).toHaveAttribute("tabindex", "0");
+    expect(csv.textContent?.trim().split("\r\n")).toHaveLength(4);
+    expect(screen.getByText("Name of riot-platforms-corsicana-tx (crypto-mining site)")).toBeInTheDocument();
+  });
+
+  it("renders the parsed record, so a key the schema does not know never reaches the page", async () => {
+    openPage();
+    const extra = { ...sampleFacilities()[0]!, internalOnlyKey: "leak-canary" };
+    mocks.getAllFacilities.mockResolvedValue([extra]);
+    await renderPage();
+    const pre = screen.getByLabelText(`Name of ${SAMPLE_FACILITY_IDS[0]} as JSON`);
+    expect(pre.textContent).not.toContain("leak-canary");
+    expect(pre.textContent).toContain('"statusHistory": []');
+  });
+
+  it("skips a sample that fails schema validation", async () => {
+    openPage();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mocks.getAllFacilities.mockResolvedValue([{ ...sampleFacilities()[0]!, status: "bogus" }]);
+    await renderPage();
+    expect(screen.queryByRole("heading", { name: "Sample records" })).toBeNull();
+  });
+
+  it("skips sample ids that are not in the dataset", async () => {
+    openPage();
+    mocks.getAllFacilities.mockResolvedValue([sample(SAMPLE_FACILITY_IDS[1]!, "crypto_mining")]);
+    await renderPage();
+    expect(screen.getAllByLabelText(/ as JSON$/)).toHaveLength(1);
+  });
+
+  it("renders exactly the samples present, without a count in the copy", async () => {
+    openPage();
+    mocks.getAllFacilities.mockResolvedValue(sampleFacilities().slice(0, 2));
+    await renderPage();
+    const section = screen.getByRole("region", { name: "See what's in it" });
+    const heading = within(section).getByRole("heading", { name: "Sample records" });
+    const block = heading.parentElement!;
+    // two record <details> plus the CSV <details>
+    expect(block.querySelectorAll("details")).toHaveLength(3);
+    expect(within(block).getAllByLabelText(/ as JSON$/)).toHaveLength(2);
+    expect(block.textContent).not.toMatch(/Three/);
+  });
+
+  it("omits the samples when none are present or the read fails", async () => {
+    openPage();
+    await renderPage();
+    expect(screen.queryByRole("heading", { name: "Sample records" })).toBeNull();
+    expect(screen.getByRole("heading", { name: /CSV columns/ })).toBeInTheDocument();
+    document.body.innerHTML = "";
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mocks.getAllFacilities.mockRejectedValue(new Error("boom"));
+    await renderPage();
+    expect(screen.queryByRole("heading", { name: "Sample records" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Continue to PayPal" })).toBeInTheDocument();
+  });
+
+  it("cannot be steered by search params", async () => {
+    openPage();
+    mocks.getAllFacilities.mockResolvedValue([...sampleFacilities(), sample("other-record", "data_center")]);
+    await renderPage({ id: "other-record", ids: "other-record", sample: "other-record", facility: "other-record" });
+    expect(screen.queryByLabelText("Name of other-record as JSON")).toBeNull();
+    expect(screen.getAllByLabelText(/ as JSON$/)).toHaveLength(3);
+  });
+
+  it("shows no headlines and says so for the initial edition", async () => {
+    openPage();
+    mocks.latestPublishedEdition.mockResolvedValue({
+      id: "e1",
+      editionDate: "2026-11-10",
+      builtAt: new Date(),
+      recordCount: 2,
+      files: [],
+      changelogSummary: { added: 0, updated: 0, removed: 0, headlines: ["Initial edition: 2 records"] },
+    });
+    await renderPage();
+    expect(screen.getByText(/latest edition is the first/)).toBeInTheDocument();
+    expect(screen.queryByText("Initial edition: 2 records")).toBeNull();
+  });
+
+  it("lists the real headlines of a later edition", async () => {
+    openPage();
+    mocks.latestPublishedEdition.mockResolvedValue({
+      id: "e2",
+      editionDate: "2026-11-17",
+      builtAt: new Date(),
+      recordCount: 2,
+      files: [],
+      changelogSummary: { added: 1, updated: 0, removed: 0, headlines: ["Added: Campus Alpha (TX)"] },
+    });
+    await renderPage();
+    expect(screen.getByText("Added: Campus Alpha (TX)")).toBeInTheDocument();
+    expect(screen.getByText(/Headlines from the edition of 17 November 2026/)).toBeInTheDocument();
+    expect(screen.queryByText(/latest edition is the first/)).toBeNull();
   });
 });

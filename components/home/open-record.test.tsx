@@ -163,7 +163,7 @@ describe("OpenRecord", () => {
     render(<OpenRecord sources={100} recentActivity={[]} datasetAccess />);
     expect(screen.getByRole("link", { name: "Request dataset access" })).toHaveAttribute(
       "href",
-      "/access"
+      "/dataset"
     );
     expect(screen.getByText(/Free to reuse with attribution\. Code under MIT\./)).toBeInTheDocument();
   });

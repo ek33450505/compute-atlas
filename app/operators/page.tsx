@@ -6,29 +6,63 @@ import { formatPower } from "@/lib/format";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { LetterNav } from "@/components/collection/letter-nav";
+import { letterLabel, letterOf, lettersInUse, parseLetter } from "@/lib/letter-index";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-export const revalidate = 86400;
+/** Rows on the default view: the largest operators by disclosed capacity. */
+const TOP_COUNT = 48;
 
-export const metadata: Metadata = {
-  title: "Data centers by operator",
-  description:
-    "Browse the U.S. compute buildout by operator — every company running tracked data-center, crypto-mining, or power-generation capacity, each record source-cited.",
-  alternates: { canonical: "/operators" },
-};
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const letter = parseLetter((await searchParams).letter);
+  const description =
+    "Browse the U.S. compute buildout by operator — the largest companies by capacity, then every tracked data-center, crypto-mining, or power-generation operator A–Z by letter, each record source-cited.";
+  if (!letter) {
+    return {
+      title: "Data centers by operator",
+      description,
+      alternates: { canonical: "/operators" },
+    };
+  }
+  return {
+    title: `Data center operators: ${letterLabel(letter)}`,
+    description,
+    alternates: { canonical: `/operators?letter=${letter}` },
+  };
+}
+
+const ROW_CLASS =
+  "flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 /**
- * /operators — index of all tracked operators. Static server component.
+ * /operators — index of all tracked operators, paged A–Z.
  *
- * Links to /operators/[operator] for each operator with at least one tracked
- * facility, sorted by total capacity (operational + planned) desc — many top
- * operators are planned-only buildouts, so operational alone would bury them
- * (tie-break: facility count desc, then name A→Z). Operators with zero
- * disclosed capacity are split into a collapsed <details> toggle below the
- * main grid rather than diluting it.
+ * With no (or an invalid) `?letter=`, lists the largest operators by total
+ * capacity (operational + planned) desc — many top operators are planned-only
+ * buildouts, so operational alone would bury them (tie-break: facility count
+ * desc, then name A→Z). With `?letter=x`, lists the operators starting with
+ * that letter A→Z, including those with no disclosed capacity. Every operator
+ * is reachable from a letter link.
+ *
+ * Why paged: the full list of 1,500+ rows was a 2.7 MB document (audit U-11),
+ * and the RSC payload repeats rendered markup. Reading `searchParams` makes
+ * the route dynamic; the data still comes through the 24 h-cached
+ * `loadFacilities()` loader (`getOperators` / `getOperatorSummary` /
+ * `getAllFacilities`), as /table does, so there is no extra DB read.
  */
-export default async function OperatorsIndexPage() {
+export default async function OperatorsIndexPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const letter = parseLetter((await searchParams).letter);
   const operatorNames = await getOperators();
   const rows = (
     await Promise.all(
@@ -50,10 +84,19 @@ export default async function OperatorsIndexPage() {
   );
 
   const disclosed = rows.filter((r) => r.total > 0);
-  const undisclosed = rows.filter((r) => r.total === 0);
   const totalDisclosedMw = disclosed.reduce((sum, r) => sum + r.total, 0);
+  const available = lettersInUse(operatorNames);
+
+  const shown = letter
+    ? rows
+        .filter((r) => letterOf(r.name) === letter)
+        .sort((a, b) => a.name.localeCompare(b.name))
+    : disclosed.slice(0, TOP_COUNT);
 
   const totalFacilities = (await getAllFacilities()).length;
+  const listHeading = letter
+    ? `Operators starting with ${letterLabel(letter)}`
+    : `Largest ${shown.length} operators by capacity`;
 
   return (
     <div
@@ -64,7 +107,7 @@ export default async function OperatorsIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: itemListJsonLdString(
-            rows.map(({ name, slug }) => ({
+            shown.map(({ name, slug }) => ({
               name,
               url: `${siteConfig.url}/operators/${slug}`,
             }))
@@ -76,7 +119,7 @@ export default async function OperatorsIndexPage() {
       <PageMasthead
         eyebrow="By company"
         title="Operators"
-        dek="Who is building it. Every company running tracked capacity, ranked by disclosed megawatts. Operators with no disclosed figure are listed separately — undisclosed is not the same as small."
+        dek="Who is building it. The largest operators by disclosed megawatts come first; every tracked operator is also listed A–Z by the first letter of its name, with digit-first and other names under “0–9 & other”. Operators with no disclosed figure are listed under their letter — undisclosed is not the same as small."
       />
 
       <SurveyStatRow
@@ -96,35 +139,38 @@ export default async function OperatorsIndexPage() {
           id="operators-overview-heading"
           className="font-display text-2xl text-foreground"
         >
-          Why the list is split
+          How the list is organized
         </h2>
         <p className="text-base leading-relaxed text-muted-foreground">
-          Operators are ranked by operational plus planned capacity, because
-          much of the largest buildout is still unbuilt — ranking on
+          The first view ranks operators by operational plus planned capacity,
+          because much of the largest buildout is still unbuilt — ranking on
           operational alone would bury the companies with the biggest
-          pipelines. Companies that have never published a megawatt figure
-          sit in their own list below rather than at rank zero, where they
-          would read as small rather than silent.
+          pipelines. Every operator, including those that have never
+          published a megawatt figure, is listed A–Z under the first letter of its name; names that start with a digit or any other character are under &ldquo;0&ndash;9 &amp; other&rdquo;.
         </p>
       </section>
 
       <section aria-labelledby="operators-list-heading" className="space-y-4">
-        <h2 id="operators-list-heading" className="sr-only">
-          All tracked operators
+        <LetterNav
+          basePath="/operators"
+          label="Operators by first letter"
+          available={available}
+          current={letter}
+        />
+        <h2
+          id="operators-list-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          {listHeading}
         </h2>
         <ul className="grid gap-2 sm:grid-cols-2">
-          {disclosed.map(({ name, slug, summary, total }) => (
+          {shown.map(({ name, slug, summary, total }) => (
             <li key={slug}>
-              <Link
-                href={`/operators/${slug}`}
-                className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
+              <Link href={`/operators/${slug}`} className={ROW_CLASS}>
                 <span className="flex flex-col gap-0.5 min-w-0">
-                  <span className="text-sm text-foreground truncate">
-                    {name}
-                  </span>
+                  <span className="text-sm text-foreground truncate">{name}</span>
                   <span className="font-mono text-xs text-muted-foreground">
-                    {formatPower(total)} total
+                    {total > 0 ? `${formatPower(total)} total` : "No disclosed capacity"}
                   </span>
                 </span>
                 <span className="font-mono tabular-nums text-sm text-muted-foreground shrink-0">
@@ -135,42 +181,6 @@ export default async function OperatorsIndexPage() {
           ))}
         </ul>
       </section>
-
-      {undisclosed.length > 0 && (
-        <details className="group border-t border-border pt-6">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-            Show {undisclosed.length} operators with no disclosed capacity
-            <span
-              aria-hidden="true"
-              className="transition-transform motion-reduce:transition-none group-open:rotate-90"
-            >
-              →
-            </span>
-          </summary>
-          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-            {undisclosed.map(({ name, slug, summary }) => (
-              <li key={slug}>
-                <Link
-                  href={`/operators/${slug}`}
-                  className="flex min-h-11 items-center justify-between gap-4 rounded-sm border border-border px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                >
-                  <span className="flex flex-col gap-0.5 min-w-0">
-                    <span className="text-sm text-foreground truncate">
-                      {name}
-                    </span>
-                    <span className="font-mono text-xs text-muted-foreground">
-                      No disclosed capacity
-                    </span>
-                  </span>
-                  <span className="font-mono tabular-nums text-sm text-muted-foreground shrink-0">
-                    {summary.count} {summary.count === 1 ? "site" : "sites"}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
     </div>
   );
 }

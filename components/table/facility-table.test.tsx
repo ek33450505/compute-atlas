@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { FacilityTable } from "./facility-table";
 import type { Facility } from "@/lib/schema";
 import { toTableRow } from "@/lib/facility-slim";
+import { SORT_COLUMNS } from "@/lib/table-sort";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -78,6 +79,8 @@ const facilityDelta: Facility = {
   lastUpdated: "2024-03-10",
 };
 
+const tbl = () => within(screen.getByRole("table"));
+
 const base = { sort: "capacity", dir: "desc", onSort: () => {} } as const;
 
 const fixtures = [facilityAlpha, facilityBeta, facilityGamma, facilityDelta].map(toTableRow);
@@ -128,35 +131,35 @@ describe("FacilityTable — headers", () => {
 describe("FacilityTable — row content", () => {
   it("renders a link to /facilities/<id> for each facility name", () => {
     render(<FacilityTable facilities={fixtures} {...base} />);
-    const alphaLink = screen.getByRole("link", { name: "Alpha Center" });
+    const alphaLink = tbl().getByRole("link", { name: "Alpha Center" });
     expect(alphaLink).toHaveAttribute("href", "/facilities/alpha-facility");
   });
 
   it("renders the StatusBadge label text for each row", () => {
     render(<FacilityTable facilities={fixtures} {...base} />);
-    expect(screen.getByText("Operational")).toBeInTheDocument();
-    expect(screen.getByText("Proposed")).toBeInTheDocument();
-    expect(screen.getByText("Under construction")).toBeInTheDocument();
+    expect(tbl().getByText("Operational")).toBeInTheDocument();
+    expect(tbl().getByText("Proposed")).toBeInTheDocument();
+    expect(tbl().getByText("Under construction")).toBeInTheDocument();
   });
 
   it("formats operational capacity correctly", () => {
     render(<FacilityTable facilities={fixtures} {...base} />);
-    expect(screen.getByText("150 MW")).toBeInTheDocument();
+    expect(tbl().getByText("150 MW")).toBeInTheDocument();
   });
 
   it("formats planned-only capacity with 'planned' suffix", () => {
     render(<FacilityTable facilities={fixtures} {...base} />);
-    expect(screen.getByText("1,200 MW planned")).toBeInTheDocument();
+    expect(tbl().getByText("1,200 MW planned")).toBeInTheDocument();
   });
 
   it("shows em dash for facility with no capacity", () => {
     render(<FacilityTable facilities={fixtures} {...base} />);
-    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
+    expect(tbl().getAllByText("—").length).toBeGreaterThan(0);
   });
 
   it("renders location as City, State", () => {
     render(<FacilityTable facilities={fixtures} {...base} />);
-    expect(screen.getByText("Memphis, TN")).toBeInTheDocument();
+    expect(tbl().getByText("Memphis, TN")).toBeInTheDocument();
   });
 
   it("exposes the full location text via title while carrying the truncation class, for long location strings", () => {
@@ -177,7 +180,7 @@ describe("FacilityTable — row content", () => {
     };
     render(<FacilityTable facilities={[toTableRow(longLocationFacility)]} {...base} />);
 
-    const locationText = screen.getByText("Boardman area (Tower Road), OR");
+    const locationText = tbl().getByText("Boardman area (Tower Road), OR");
     expect(locationText).toHaveAttribute(
       "title",
       "Boardman area (Tower Road), OR"
@@ -187,13 +190,13 @@ describe("FacilityTable — row content", () => {
 
   it("renders the facility type label", () => {
     render(<FacilityTable facilities={fixtures} {...base} />);
-    expect(screen.getAllByText("Data center").length).toBeGreaterThan(0);
+    expect(tbl().getAllByText("Data center").length).toBeGreaterThan(0);
   });
 
   it("renders the AI classification label and falls back to em dash when absent", () => {
     render(<FacilityTable facilities={fixtures} {...base} />);
-    expect(screen.getAllByText("AI-specific").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("—").length).toBeGreaterThan(0);
+    expect(tbl().getAllByText("AI-specific").length).toBeGreaterThan(0);
+    expect(tbl().getAllByText("—").length).toBeGreaterThan(0);
   });
 });
 
@@ -276,9 +279,7 @@ describe("FacilityTable — sorting", () => {
 describe("FacilityTable — empty state", () => {
   it("renders the empty-state message when facilities is empty", () => {
     render(<FacilityTable facilities={[]} {...base} />);
-    expect(
-      screen.getByText("No facilities match your filters.")
-    ).toBeInTheDocument();
+    expect(tbl().getByText("No facilities match your filters.")).toBeInTheDocument();
   });
 
   it("renders no data rows when facilities is empty", () => {
@@ -302,5 +303,84 @@ describe("FacilityTable — row order", () => {
     const rows = screen.getAllByRole("row");
     expect(within(rows[1]).getByRole("link")).toHaveTextContent("Beta Farm");
     expect(within(rows[4]).getByRole("link")).toHaveTextContent("Gamma Hub");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phone view: cards + "Sort by" select (hidden from md up by CSS)
+// ---------------------------------------------------------------------------
+
+describe("FacilityTable — phone cards", () => {
+  const list = () => screen.getByRole("list", { name: "Facilities" });
+
+  it("renders one card per row with name link, status, capacity and operator · location", () => {
+    render(<FacilityTable facilities={fixtures} {...base} />);
+    const items = within(list()).getAllByRole("listitem");
+    expect(items).toHaveLength(4);
+    const alpha = within(items[0]);
+    expect(alpha.getByRole("link", { name: "Alpha Center" })).toHaveAttribute(
+      "href",
+      "/facilities/alpha-facility"
+    );
+    expect(alpha.getByText("Operational")).toBeInTheDocument();
+    expect(alpha.getByText("150 MW")).toBeInTheDocument();
+    expect(alpha.getByText("AlphaCorp · Memphis, TN")).toBeInTheDocument();
+    expect(within(items[1]).getByText("1,200 MW planned")).toBeInTheDocument();
+    expect(within(items[2]).getByText("—")).toBeInTheDocument();
+  });
+
+  it("keeps the given row order", () => {
+    render(<FacilityTable facilities={[...fixtures].reverse()} {...base} />);
+    const items = within(list()).getAllByRole("listitem");
+    expect(within(items[0]).getByRole("link")).toHaveTextContent("Delta Point");
+  });
+
+  it("labels the Sort by select and reflects sort/dir", () => {
+    render(<FacilityTable facilities={fixtures} sort="capacity" dir="desc" onSort={() => {}} />);
+    expect(screen.getByRole("combobox", { name: "Sort by" })).toHaveValue("capacity:desc");
+  });
+
+  it("reflects an ascending name sort", () => {
+    render(<FacilityTable facilities={fixtures} sort="name" dir="asc" onSort={() => {}} />);
+    expect(screen.getByRole("combobox", { name: "Sort by" })).toHaveValue("name:asc");
+  });
+
+  it("calls onSort with the chosen column and direction", async () => {
+    const user = userEvent.setup();
+    const onSort = vi.fn();
+    render(<FacilityTable facilities={fixtures} sort="capacity" dir="desc" onSort={onSort} />);
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Sort by" }),
+      "Updated, newest first"
+    );
+    expect(onSort).toHaveBeenCalledWith("lastUpdated", "desc");
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Sort by" }),
+      "Name, A to Z"
+    );
+    expect(onSort).toHaveBeenLastCalledWith("name", "asc");
+  });
+
+  it("offers every sortable column in both directions", () => {
+    render(<FacilityTable facilities={fixtures} {...base} />);
+    const values = within(screen.getByRole("combobox", { name: "Sort by" }))
+      .getAllByRole("option")
+      .map((o) => o.getAttribute("value"));
+    for (const col of SORT_COLUMNS) {
+      expect(values).toContain(`${col}:asc`);
+      expect(values).toContain(`${col}:desc`);
+    }
+  });
+
+  it("shows the empty state in both views", () => {
+    render(<FacilityTable facilities={[]} {...base} />);
+    expect(screen.getAllByText("No facilities match your filters.")).toHaveLength(2);
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
+  });
+
+  it("hides cards from md up and the table below md", () => {
+    render(<FacilityTable facilities={fixtures} {...base} />);
+    expect(list().parentElement).toHaveClass("md:hidden");
+    expect(screen.getByRole("region", { name: /data centers table/i }).parentElement).toHaveClass("hidden", "md:block");
   });
 });

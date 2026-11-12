@@ -97,6 +97,72 @@ const COLUMNS: readonly Column[] = [
 /** The fixed, ordered header row of the CSV edition. */
 export const CSV_COLUMNS: readonly string[] = COLUMNS.map(([name]) => name);
 
+/**
+ * One-line meaning for every CSV column, shown on /access/commercial. Derived from the field
+ * definitions and comments in lib/schema.ts; a test asserts the keys equal `CSV_COLUMNS`
+ * exactly, so the list cannot drift from the file. Where schema.ts defines no meaning, the
+ * line is the plainest literal description of the field.
+ */
+export const CSV_COLUMN_NOTES: Readonly<Record<string, string>> = {
+  id: "Stable record identifier, a lowercase kebab-case slug.",
+  name: "Facility name.",
+  facilityType: "data_center, crypto_mining or power_generation.",
+  status: "operational, under_construction, permitted, proposed or cancelled.",
+  confidence: "How firmly the record is established: confirmed, reported or rumored.",
+  operator: "Operating company, as recorded.",
+  "location.state": "Two-letter US state, DC or territory code.",
+  "location.city": "City, when recorded.",
+  "location.county": "County, when recorded.",
+  "location.street": "Street address, when recorded.",
+  "location.postalCode": "Postal code, when recorded.",
+  "location.lat": "Latitude in decimal degrees.",
+  "location.lon": "Longitude in decimal degrees.",
+  "location.precision":
+    "How the coordinates relate to the facility: exact, approximate, or representative_multi_site (an illustrative point for a facility with no single fixed location).",
+  "location.multiSite.states": "All states a multi-site facility spans, joined with ;.",
+  "capacityMw.operational": "Operational capacity in MW, when a source states it.",
+  "capacityMw.planned": "Planned capacity in MW, when a source states it.",
+  poweredBy: "Free-text description of what powers the facility.",
+  announcedDate: "Announcement date, as recorded.",
+  lastUpdated: "Date of the record's last update, as recorded.",
+  "energy.source": "Energy source: grid, on_site_gas, nuclear, solar, wind, hydro, mixed or other.",
+  "energy.utility": "Utility named for the site, as recorded.",
+  "energy.onSiteGenerationMw": "On-site generation in MW, when a source states it.",
+  "water.coolingType":
+    "Heat-rejection method, classified by water use: evaporative, air, closed_loop, hybrid or unknown (see the methodology page).",
+  "water.reportedMgd": "Reported water use in million gallons per day (MGD).",
+  investmentUsd: "Stated investment in US dollars (USD).",
+  landAcres: "Site area in acres.",
+  "jobs.construction": "Construction jobs, as stated by a source.",
+  "jobs.permanent": "Permanent jobs, as stated by a source.",
+  "community.status":
+    "Documented community position: supported, mixed, contested, opposed, litigation or unknown.",
+  aiClassification:
+    "How strongly the public record ties the facility to AI compute: confirmed, likely or mixed_use. Data centers and crypto-mining sites only.",
+  "environmental.pue": "Power usage effectiveness (PUE). Data centers only.",
+  "environmental.pueConfidence": "Confidence in the PUE value: confirmed, reported or rumored. Data centers only.",
+  "environmental.wue": "Water usage effectiveness (WUE). Data centers only.",
+  "environmental.gridCarbonIntensityGCo2PerKwh": "Grid carbon intensity in gCO2/kWh. Data centers only.",
+  "environmental.renewablePercent": "Renewable share of energy, 0 to 100 percent. Data centers only.",
+  "environmental.waterStress": "Water stress: low, medium, high, extreme or unknown. Data centers only.",
+  "mining.hashRateThPerS": "Hash rate in TH/s. Crypto-mining sites only.",
+  "mining.hardwareType": "Mining hardware: asic, gpu, mixed or unknown. Crypto-mining sites only.",
+  "mining.coolingType":
+    "Mining rig cooling: immersion, air, hydro, hybrid or unknown. Crypto-mining sites only.",
+  "mining.powerArrangement":
+    "Power arrangement: grid, stranded_gas, flared_gas, curtailed_renewable, behind_meter, mixed or unknown. Crypto-mining sites only.",
+  "environmental.carbonIntensityProxy": "Carbon intensity proxy value. Crypto-mining sites only.",
+  "environmental.carbonIntensityBasis":
+    "Basis of the carbon intensity proxy: self_reported, grid_average, estimated or unknown. Crypto-mining sites only.",
+  "generation.technology":
+    "Generation technology: nuclear_smr, nuclear, fusion, natural_gas, solar, wind, hydro, geothermal, battery or other. Power plants only.",
+  "generation.offtaker": "The compute company buying the power. Power plants only.",
+  "generation.unitCount": "Number of generating units. Power plants only.",
+  "generation.poweredFacilityIds":
+    "Ids of the compute campuses this plant is sourced as powering, joined with ;. Power plants only.",
+  "sources.url": "Every source URL for the record, joined with ; (a literal ; inside a URL is written %3B).",
+};
+
 /** How many columns the CSV edition has, for public copy that quotes it. */
 export const CSV_COLUMN_COUNT = COLUMNS.length;
 

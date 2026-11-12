@@ -7,11 +7,9 @@ import {
   getStats,
   getNotableFacilities,
   getRecentActivity,
-  getTopStates,
   getAllFacilities,
   getCommunityReceptionCounts,
   getAiClassificationCounts,
-  getFacilityTypeCounts,
   getNotableOppositionCases,
   getGenerationBuildoutStats,
   getWaterStressExposure,
@@ -20,22 +18,26 @@ import {
   getQuarterlyPipelineSummary,
   selectRecordSpecimen,
 } from "@/lib/data";
+import { countDataset, loadOfferCounts, topStatesFromCounts } from "@/lib/dataset-offer";
+import { formatEditionDate } from "@/lib/edition-date";
 import { METROS } from "@/lib/metros";
 import { StatusBadge } from "@/components/status-badge";
+import type { Status } from "@/lib/status";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
 import { HeroPlate } from "@/components/home/hero-plate";
 import { HERO_PLATE } from "@/components/home/hero-plate-paths";
 import { HeroSearch } from "@/components/home/hero-search";
 import { HeroProvenance } from "@/components/home/hero-provenance";
 import { PlateKey } from "@/components/home/plate-key";
+import { datasetCountPhrase } from "@/components/dataset-counts";
 import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
 import { CostLedger } from "@/components/home/cost-ledger";
-import { PipelineComposition } from "@/components/home/pipeline-composition";
 import { RecordSpecimen } from "@/components/home/record-specimen";
 import { OpenRecord } from "@/components/home/open-record";
 import { ThisWeek, isActivityWindowTruncated } from "@/components/home/this-week";
+import { PlaceEntry } from "@/components/home/place-entry";
 import { StateChips } from "@/components/home/state-chips";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 
@@ -105,12 +107,14 @@ const HOME_SPECULATION_RULES = JSON.stringify({
 
 /**
  * `generateMetadata`, not a static `metadata`, so the facility count in the
- * description is read from the same `getStats()` the page body renders
- * rather than hardcoded — a literal here would silently go stale on the
- * next data wave.
+ * description is read from the same `loadOfferCounts()` the page body
+ * renders rather than hardcoded — a literal here would silently go stale on
+ * the next data wave.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const { count } = await getStats();
+  // Same cached loader the page body uses, so the description cannot disagree with the hero.
+  const offerCounts = await loadOfferCounts();
+  const count = offerCounts?.facilities ?? (await getAllFacilities()).length;
   return {
     title: "US data center map & database",
     description: `Interactive US data center map and database — ${count.toLocaleString("en-US")} AI, hyperscale, and crypto-mining sites plus the power built to supply them. Every record is source-cited.`,
@@ -124,10 +128,6 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function HomePage() {
   const {
-    count,
-    states,
-    includesDc,
-    stateCodes,
     operationalMw,
     plannedMw,
     underConstructionMw,
@@ -138,7 +138,6 @@ export default async function HomePage() {
   // NOTABLE_CARD_COUNT either way — see `specimenCards`.
   const notable = await getNotableFacilities(NOTABLE_CARD_COUNT + 1);
   const recentActivity = await getRecentActivity(THIS_WEEK_FETCH_LIMIT);
-  const topStates = await getTopStates(6);
   const now = new Date();
   const activityTruncated = isActivityWindowTruncated(
     recentActivity,
@@ -158,15 +157,28 @@ export default async function HomePage() {
   const dateModified =
     maxLastUpdatedMs > 0 ? new Date(maxLastUpdatedMs).toISOString() : undefined;
 
-  const operatorCount = new Set(allFacilities.map((f) => f.operator)).size;
-  const sourcesCited = allFacilities.reduce(
-    (n, f) => n + (f.sources?.length ?? 0),
-    0
-  );
+  // The dated count: the same cached, fail-soft loader /dataset and /access/commercial use, so the
+  // three pages quote one figure with one count date.
+  const offerCounts = await loadOfferCounts();
+
+  // EVERY facility/jurisdiction/operator/source/per-type total on this page comes from one object, so
+  // no two totals on a screen can disagree. When the loader failed, the fallback counts the facility
+  // set this page already loaded (`allFacilities`), so the totals still share ONE source; they are
+  // simply undated (the hero's dated phrase and the ledger caption are dropped, never faked). The
+  // plate key beside them is a separately dated snapshot of the plate build and states only itself.
+  // The power totals (MW) and quarter figures are not facility totals and stay on getStats / their own reads.
+  const totals = offerCounts ?? countDataset(allFacilities);
+  const count = totals.facilities;
+  // The phone chips follow the same totals (ordering and limit unchanged), so they cannot sum to a
+  // different figure than the headline after a publish.
+  const topStates = topStatesFromCounts(totals.stateCounts, 6);
+  const stateCodes = totals.stateCodes;
+  const operatorCount = totals.operators;
+  const sourcesCited = totals.sourceLinks;
 
   // Lens-gateway + cost-ledger counts — cheap derivations off the same
   // cached facility set (no new DB reads; getCommunityReceptionCounts/
-  // getAiClassificationCounts/getFacilityTypeCounts/
+  // getAiClassificationCounts/
   // getGenerationBuildoutStats/getWaterStressExposure all read the shared
   // loadFacilities() cache).
   const communityCounts = await getCommunityReceptionCounts();
@@ -174,8 +186,7 @@ export default async function HomePage() {
   const aiCounts = await getAiClassificationCounts();
   const aiClassified =
     (aiCounts.confirmed ?? 0) + (aiCounts.likely ?? 0) + (aiCounts.mixed_use ?? 0);
-  const typeCounts = await getFacilityTypeCounts();
-  const cryptoCount = typeCounts.crypto_mining ?? 0;
+  const cryptoCount = totals.cryptoSites;
   const utilityLinked = allFacilities.filter((f) => f.energy?.utility).length;
   // County/metro lens counts. `getCounties` reads the same memoized county
   // index the /counties hub uses, so this adds no DB work; METROS is static.
@@ -195,6 +206,13 @@ export default async function HomePage() {
   // nothing meets the bar (empty dataset / no DATABASE_URL), in which case the
   // section degrades to the plain card grid it was before.
   const specimen = selectRecordSpecimen(allFacilities);
+  // Current status and state for the "Last 7 days" rows, read off the facility set already loaded.
+  const facilityById = new Map(allFacilities.map((f) => [f.id, f]));
+  const thisWeekPlaces: Record<string, { status: Status; state: string }> = {};
+  for (const e of recentActivity) {
+    const f = facilityById.get(e.facilityId);
+    if (f) thisWeekPlaces[e.facilityId] = { status: f.status, state: f.location.state };
+  }
   // Cards below the specimen, minus the specimen itself so the same record is
   // not printed twice. Always NOTABLE_CARD_COUNT of them: the fetch above asks
   // for one spare, so the filter leaves exactly that many when the specimen is
@@ -414,16 +432,11 @@ export default async function HomePage() {
                 the CTA: the scale and sourcing of the dataset is the claim this
                 page is making, so it has to be inside the fold. */}
             <HeroProvenance
-              sites={count}
+              sites={offerCounts ? datasetCountPhrase(offerCounts) : null}
               stateCodes={stateCodes}
               sources={sourcesCited}
               newThisQuarter={quarterly.newThisQuarter}
               cancelledThisQuarter={quarterly.cancelledThisQuarter}
-              /* The plate's territory omission, stated in durable visible text.
-                 The plate's own accessible name cannot carry it: that element
-                 is replaced by the (aria-hidden) globe on desktop, so the
-                 disclosure would come and go with the mount. */
-              mapOmitted={HERO_PLATE.omitted}
             />
           </div>
 
@@ -433,17 +446,16 @@ export default async function HomePage() {
           <HeroSearch facilityCount={count} className="max-w-2xl" />
 
           {/* Primary CTA — the accessible next step this hero's own comment
-              above already claimed existed. Deliberately the only BUTTON
-              here: the candidate that was rejected was a second "browse all
+              above already claimed existed. Deliberately the only SOLID
+              button here: the candidate that was rejected was a second "browse all
               sites" link, which was a straight duplicate of the header's
               Table nav, and two competing buttons blunt the primary one.
               That objection was about duplication, not about ever having a
               second action — "How this is sourced" is differentiated (it
               answers "why should I believe this?", which nothing else in the
-              fold does) and is styled as a quiet text link precisely so it
-              reads as a footnote to the primary button rather than a rival
-              to it. Keep any future addition to that test: differentiated,
-              and visually subordinate.
+              fold does) and is an outline button (no fill) so it stays
+              subordinate to the solid primary rather than a rival to it. Keep any future
+              addition to that test: differentiated, and visually subordinate.
 
               Solid --primary (not the bg-primary/10 tint it started as):
               a 10% sage wash on parchment reads as a disabled/ghost control,
@@ -471,48 +483,22 @@ export default async function HomePage() {
 
             <Link
               href="/methodology"
-              className="inline-flex min-h-11 items-center rounded-sm bg-background/85 px-2 backdrop-blur-sm font-mono text-sm text-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="group inline-flex h-11 items-center gap-2.5 rounded-sm border border-foreground/40 bg-background/85 px-5 backdrop-blur-sm font-mono text-sm font-semibold uppercase tracking-wider text-foreground transition-colors motion-reduce:transition-none hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              {/* min-h-11 (44px), not padding: the sibling map CTA is h-11, so
-                  this matches its touch target and its baseline in the flex row
-                  without gaining a button's visual weight. The arrow is
-                  aria-hidden for the same reason the map CTA's ArrowRight is —
-                  otherwise the accessible name is announced as "How this is
-                  sourced right arrow".
-
-                  bg-background/85 + backdrop-blur-sm + px-2 is a BACKING, not
-                  decoration — do not strip it. Its two siblings in the fold
-                  paint their own opaque fills (the map CTA is solid bg-primary,
-                  HeroSearch's root is bg-card), so the cartouche scrim above
-                  deliberately stops short of this row. This link paints
-                  nothing, so on sm+ it sits directly over live MapLibre tiles —
-                  land, water, roads and status-coloured dots. --foreground
-                  #2B2721 computes to 13.15:1 against parchment #F5F1E6, and
-                  that audit ASSUMES parchment behind it; over tiles the
-                  effective ratio is still unknown and lower — the backing is
-                  what the reader actually has, not the token. That caveat is
-                  exactly why this link was darkened from --muted-foreground
-                  (#5C5344, 6.70:1) on Ed's read of the live page: it does not
-                  measure the over-tiles case, it raises its FLOOR, roughly
-                  doubling the headroom the 85% backing has to give away.
-
-                  Hover shifts to --primary (#3F5B43, 6.672:1) rather than
-                  keeping `hover:text-foreground`, which is now the rest state
-                  and would be a dead class. It is the house pattern for a
-                  text-foreground link (app/counties/page.tsx,
-                  app/facilities/[slug]/page.tsx) and it keeps
-                  `transition-colors` meaning something. Note the direction:
-                  hover LOWERS contrast here, which is only acceptable because
-                  it is transient, still clears AA on parchment, and arrives
-                  with `hover:underline` — a non-colour affordance that carries
-                  the interactive signal on its own. This is the
-                  same treatment .maplibregl-ctrl-scale gets in globals.css
-                  (85% background + a blur) and that the map's own quiet
-                  overlays already use in Tailwind form
-                  (components/map/facility-map.tsx). px-2 so the plate reads as
-                  a soft backing rather than a tight box; it is still a text
-                  link, not a second button. */}
-              How this is sourced <span aria-hidden="true">→</span>
+              {/* An outline button in the primary's shape (h-11, same type and
+                  arrow), so it reads as a real control and not stray text.
+                  Quieter than the primary by fill only: it paints the same
+                  bg-background/85 + backdrop-blur-sm backing the old text link
+                  had, because the cartouche scrim stops short of this row and
+                  on sm+ the button sits over live map tiles. jsdom cannot
+                  prove contrast over tiles; the class assertions only prove
+                  the backing was not stripped. The arrow is aria-hidden, so
+                  the accessible name stays "How this is sourced". */}
+              How this is sourced
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+              />
             </Link>
           </div>
         </div>
@@ -637,14 +623,15 @@ export default async function HomePage() {
             and under-counts facilities wherever co-located same-status sites
             collapse onto one.
 
-            It is also the card's ONLY number, deliberately. The snapshot's
-            own total used to sit here too ("1,920 of 1,929"), a few lines
-            under <HeroProvenance>'s `sites={count}` — which is live Neon.
-            Equal today, contradictory the first time a sync lands without a
-            plate rebuild. The build-time artifact describes what it drew; the
-            dataset total is stated once, above, from the database. */}
+            The card states only what the plate drew, dated with the snapshot
+            it drew (`HERO_PLATE.asOf`), plus the territory omission that
+            qualifies it. The dataset total is stated once, above, dated from
+            its own read; the two dates are what keep them from contradicting. */}
         <PlateKey
-          plotted={HERO_PLATE.total - HERO_PLATE.omitted}
+          sites={HERO_PLATE.total - HERO_PLATE.omitted}
+          shared={HERO_PLATE.deduped}
+          omitted={HERO_PLATE.omitted}
+          asOfLabel={formatEditionDate(HERO_PLATE.asOf)}
           className="relative z-20 order-3 sm:order-none sm:mt-auto sm:mb-4 sm:w-fit sm:max-w-xs sm:shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_30%,transparent)]"
         />
         {/* Phones only: last in the stack, after the key (`order-3`). */}
@@ -654,10 +641,33 @@ export default async function HomePage() {
         />
       </div>
 
+      <PlaceEntry stateCodes={stateCodes} className="mb-10" />
+
+      {/* Lens gateway — the ways in, directly under the place entry */}
+      <LensGateway
+        className="mb-10"
+        counts={{
+          sites: count,
+          stateCodes,
+          utilityLinked,
+          frictionCount,
+          aiClassified,
+          operators: operatorCount,
+          plannedGw: Math.round(plannedMw / 1000),
+          cryptoCount,
+          metros: metroCount,
+          counties: countyCount,
+        }}
+      />
+
+      {/* "N sites added" / "N records updated" here are counts of the last 7 days of
+          getRecentActivity rows (a window, lower bounds when truncated), NOT facility totals;
+          totals come only from `totals` above. */}
       <ThisWeek
         entries={recentActivity}
         now={now}
         truncated={activityTruncated}
+        places={thisWeekPlaces}
         className="mb-10"
       />
 
@@ -668,11 +678,10 @@ export default async function HomePage() {
         {/* Survey ledger + pipeline-scale signature */}
         <SurveyLedger
           count={count}
-          states={states}
-          includesDc={includesDc}
           stateCodes={stateCodes}
           operators={operatorCount}
           sources={sourcesCited}
+          countedOnLabel={offerCounts ? formatEditionDate(offerCounts.asOf) : undefined}
           operationalMw={operationalMw}
           underConstructionMw={underConstructionMw}
           plannedMw={plannedMw}
@@ -691,28 +700,17 @@ export default async function HomePage() {
           className="mb-10 border-b border-border pb-10"
         />
 
-        {/* Pipeline composition over time — the standing counts behind the
-            ledgers above. Placement is provisional: U10 reorders this page. */}
-        <PipelineComposition className="mb-10 border-b border-border pb-10" />
-
-        {/* Lens gateway — the ways in */}
-        <LensGateway
-          className="mt-2"
-          counts={{
-            sites: count,
-            states,
-            includesDc,
-            stateCodes,
-            utilityLinked,
-            frictionCount,
-            aiClassified,
-            operators: operatorCount,
-            plannedGw: Math.round(plannedMw / 1000),
-            cryptoCount,
-            metros: metroCount,
-            counties: countyCount,
-          }}
-        />
+        {/* The over-time chart lives on /stats; one line points to it. */}
+        <p className="mb-10 text-sm text-muted-foreground">
+          How the pipeline&rsquo;s makeup has changed quarter by quarter is charted on{" "}
+          <Link
+            href="/stats#pipeline-composition-heading"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+          >
+            the stats page
+          </Link>
+          .
+        </p>
       </div>
 
       <div className="plate-reveal">

@@ -36,10 +36,8 @@ vi.mock("next/link", () => ({
 const NAV_LINKS = [
   { label: "Map", href: "/map" },
   { label: "Table", href: "/table" },
-  { label: "Stats", href: "/stats" },
   { label: "Explore", href: "/explore" },
-  { label: "Activity", href: "/activity" },
-  { label: "Contribute", href: "/contribute" },
+  { label: "Dataset", href: "/dataset" },
   { label: "About", href: "/about" },
 ] as const;
 
@@ -56,10 +54,10 @@ describe("PrimaryNav — render", () => {
     }
   });
 
-  it("renders all 7 links with correct hrefs", () => {
+  it("renders all 5 links with correct hrefs", () => {
     render(<PrimaryNav links={NAV_LINKS} />);
 
-    expect(NAV_LINKS).toHaveLength(7);
+    expect(NAV_LINKS).toHaveLength(5);
     for (const { label, href } of NAV_LINKS) {
       expect(screen.getByRole("link", { name: label })).toHaveAttribute(
         "href",
@@ -75,17 +73,17 @@ describe("PrimaryNav — render", () => {
 });
 
 describe("PrimaryNav — responsive breakpoint", () => {
-  // Regression cover for the header-overflow bug: the nine inline links do
-  // not fit beside the wordmark, search and GitHub icon below ~1,137px (page
-  // scrollWidth measured 863px at a 768px viewport and 1,137px at 1024px),
-  // so the nav must reveal only at xl: (1280px).
-  it("reveals at the xl: (1280px) breakpoint, not md: or lg:", () => {
+  // Regression cover for the header-overflow bug: the inline links must not
+  // overflow beside the wordmark, search and GitHub icon, so the nav reveals
+  // only at lg: (1024px; measured 2026-11-12). The toggle and the GitHub icon
+  // switch at the same breakpoint.
+  it("reveals at the lg: (1024px) breakpoint, not md: or xl:", () => {
     render(<PrimaryNav links={NAV_LINKS} />);
     const nav = screen.getByRole("navigation", { name: "Primary" });
 
-    expect(nav).toHaveClass("hidden", "xl:flex");
+    expect(nav).toHaveClass("hidden", "lg:flex");
     expect(nav).not.toHaveClass("md:flex");
-    expect(nav).not.toHaveClass("lg:flex");
+    expect(nav).not.toHaveClass("xl:flex");
   });
 });
 
@@ -102,7 +100,7 @@ describe("PrimaryNav — active-page indicator", () => {
     expect(screen.getByRole("link", { name: "Map" })).not.toHaveAttribute(
       "aria-current"
     );
-    expect(screen.getByRole("link", { name: "Stats" })).not.toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Explore" })).not.toHaveAttribute(
       "aria-current"
     );
     expect(screen.getByRole("link", { name: "About" })).not.toHaveAttribute(

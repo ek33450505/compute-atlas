@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import { HeroProvenance } from "./hero-provenance";
 
 const BASE_PROPS = {
-  sites: 1929,
+  sites: "1,929 sites, counted on 12 November 2026",
   stateCodes: ["CA", "TX", "VA", "DC"],
   sources: 8421,
   newThisQuarter: 0,
@@ -17,7 +17,7 @@ describe("HeroProvenance", () => {
 
     expect(
       screen.getByText(
-        "1,929 sites · 3 states and DC · 8,421 sources"
+        "1,929 sites, counted on 12 November 2026 · 3 states and DC · 8,421 sources"
       )
     ).toBeInTheDocument();
   });
@@ -71,83 +71,32 @@ describe("HeroProvenance", () => {
     expect(container.textContent).not.toContain("new this quarter");
   });
 
-  // The hero plate discloses this in its accessible name too, but that element
-  // is swapped out for the (aria-hidden) globe the moment MapLibre mounts, so
-  // on desktop the disclosure came and went with the mount. This rule is on
-  // the page at every viewport in every state — asserting the WHOLE line also
-  // pins that the segment joins the same single interpolated string as the
-  // rest (the repo's remedy for the JSX entity-swallows-a-leading-space bug),
-  // not an adjacent JSX child.
-  it("discloses what the static map cannot place, as the last segment", () => {
-    render(<HeroProvenance {...BASE_PROPS} mapOmitted={9} />);
-
-    expect(
-      screen.getByText(
-        "1,929 sites · 3 states and DC · 8,421 sources · static map omits 9 in U.S. territories"
-      )
-    ).toBeInTheDocument();
-  });
-
-  it("keeps the omission after the quarter when both are present", () => {
-    render(
-      <HeroProvenance {...BASE_PROPS} newThisQuarter={41} mapOmitted={9} />
-    );
-
-    expect(
-      screen.getByText(
-        "1,929 sites · 3 states and DC · 8,421 sources · +41 new this quarter · static map omits 9 in U.S. territories"
-      )
-    ).toBeInTheDocument();
-  });
-
-  it("says `a U.S. territory` when exactly one site is unplaceable", () => {
-    const { container } = render(
-      <HeroProvenance {...BASE_PROPS} mapOmitted={1} />
-    );
-
-    expect(container.textContent).toContain(
-      "static map omits 1 in a U.S. territory"
-    );
-    expect(container.textContent).not.toContain("territories");
-  });
-
-  // Formatter gap: every other mapOmitted case here is a single digit, so the
-  // `toLocaleString("en-US")` call was doing nothing observable and a plain
-  // `${mapOmitted}` would have passed all of them. Four digits is the smallest
-  // input where the grouping separator appears, so this is the assertion that
-  // actually pins the formatter rather than the number.
-  it("groups a four-digit omission count with a thousands separator", () => {
-    const { container } = render(
-      <HeroProvenance {...BASE_PROPS} mapOmitted={1000} />
-    );
-
-    expect(container.textContent).toContain(
-      "static map omits 1,000 in U.S. territories"
-    );
-    // Guards the separator specifically: an unformatted `1000` would still
-    // satisfy a looser substring check on the surrounding prose.
-    expect(container.textContent).not.toContain("omits 1000 ");
-  });
-
-  // Same reasoning as the quarter segment above: an absence is not a finding.
-  it.each([
-    ["nothing is omitted", 0],
-    ["the caller does not know", undefined],
-  ])("drops the segment entirely when %s", (_case, mapOmitted) => {
-    const { container } = render(
-      <HeroProvenance {...BASE_PROPS} mapOmitted={mapOmitted} />
-    );
+  // The static-map territory omission moved to <PlateKey>, beside the plot it qualifies.
+  // Its removal from this line is asserted here so it cannot drift back into two places.
+  it("no longer carries the static-map territory caveat", () => {
+    const { container } = render(<HeroProvenance {...BASE_PROPS} newThisQuarter={41} />);
 
     expect(container.textContent).not.toContain("static map");
     expect(container.textContent).not.toContain("omits");
   });
 
-  it("thousands-separates large figures", () => {
-    render(
-      <HeroProvenance {...BASE_PROPS} sites={12345} sources={101112} />
-    );
+  // A count without a date is the bug this unit removes: when the read failed
+  // (sites === null) the segment is dropped, never printed undated.
+  it("drops the site count when its read failed", () => {
+    render(<HeroProvenance {...BASE_PROPS} sites={null} />);
 
-    expect(screen.getByText(/12,345 sites/)).toBeInTheDocument();
+    expect(screen.getByText("3 states and DC · 8,421 sources")).toBeInTheDocument();
+  });
+
+  it("always shows the as-of date with the site count", () => {
+    const { container } = render(<HeroProvenance {...BASE_PROPS} />);
+
+    expect(container.textContent).toContain("sites, counted on 12 November 2026");
+  });
+
+  it("thousands-separates the source count", () => {
+    render(<HeroProvenance {...BASE_PROPS} sources={101112} />);
+
     expect(screen.getByText(/101,112 sources/)).toBeInTheDocument();
   });
 

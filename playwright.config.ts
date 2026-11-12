@@ -33,7 +33,7 @@ export default defineConfig({
       // below — excluded here so it doesn't ALSO run (redundantly, and
       // against a non-touch context where its CDP touch-dispatch assertions
       // don't mean anything) on desktop.
-      testIgnore: /map-mobile\.spec\.ts$/,
+      testIgnore: /(map-mobile|table-mobile)\.spec\.ts$/,
       use: { ...devices["Desktop Chrome"] },
     },
     {
@@ -51,7 +51,7 @@ export default defineConfig({
       // realistic hasTouch/isMobile/DPR, and the touch-drag assertion drives
       // MapLibre via CDP's Input.dispatchTouchEvent, which only exists for
       // Chromium — a WebKit (iPhone) preset can't run it at all.
-      testMatch: /(map-mobile|a11y)\.spec\.ts$/,
+      testMatch: /(map-mobile|a11y|table-mobile)\.spec\.ts$/,
       use: { ...devices["Pixel 5"] },
     },
   ],

@@ -224,8 +224,8 @@ export default function SupportPage() {
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           If a university, lab, newsroom or organization needs the data
           itself, see{" "}
-          <Link href="/data" className={LINK_CLASS}>
-            the data page
+          <Link href="/dataset" className={LINK_CLASS}>
+            the dataset page
           </Link>
           .
         </p>

@@ -172,6 +172,20 @@ describe("StatsPage — § Data coverage dimension count", () => {
   });
 });
 
+describe("StatsPage — pipeline composition chart (moved from /)", () => {
+  it("renders the over-time chart, with its build-dated caption, under the id the home page links to", async () => {
+    render(await StatsPage());
+
+    const heading = screen.getByRole("heading", { level: 2, name: "What the pipeline was made of" });
+    expect(heading).toHaveAttribute("id", "pipeline-composition-heading");
+    const section = heading.closest("section");
+    if (!section) throw new Error("no section wrapping the pipeline heading");
+    expect(section.textContent).toMatch(/facilities in the .+ build carry no dated status history/);
+    // The stacked-area chart itself, not only its prose.
+    expect(within(section).getByRole("img")).toBeInTheDocument();
+  });
+});
+
 describe("StatsPage — disclosedCapacityCount excludes cancelled facilities", () => {
   it("excludes a cancelled facility from the disclosed capacity count even if it discloses capacity", async () => {
     mockGetAllFacilities.mockReset().mockResolvedValue([

@@ -151,6 +151,88 @@ function SortIcon({ direction }: { direction: "asc" | "desc" | false }) {
 }
 
 // ---------------------------------------------------------------------------
+// Phone view: cards + a single "Sort by" select
+// ---------------------------------------------------------------------------
+
+const SORT_OPTIONS: ReadonlyArray<{ column: SortColumn; dir: SortDir; label: string }> = [
+  { column: "name", dir: "asc", label: "Name, A to Z" },
+  { column: "name", dir: "desc", label: "Name, Z to A" },
+  { column: "operator", dir: "asc", label: "Operator, A to Z" },
+  { column: "operator", dir: "desc", label: "Operator, Z to A" },
+  { column: "status", dir: "asc", label: "Status, operational first" },
+  { column: "status", dir: "desc", label: "Status, cancelled first" },
+  { column: "facilityType", dir: "asc", label: "Type, A to Z" },
+  { column: "facilityType", dir: "desc", label: "Type, Z to A" },
+  { column: "aiClassification", dir: "asc", label: "AI class, A to Z" },
+  { column: "aiClassification", dir: "desc", label: "AI class, Z to A" },
+  { column: "location", dir: "asc", label: "State, A to Z" },
+  { column: "location", dir: "desc", label: "State, Z to A" },
+  { column: "capacity", dir: "desc", label: "Capacity, largest first" },
+  { column: "capacity", dir: "asc", label: "Capacity, smallest first" },
+  { column: "confidence", dir: "asc", label: "Confidence, A to Z" },
+  { column: "confidence", dir: "desc", label: "Confidence, Z to A" },
+  { column: "lastUpdated", dir: "desc", label: "Updated, newest first" },
+  { column: "lastUpdated", dir: "asc", label: "Updated, oldest first" },
+];
+
+function FacilityCards({ facilities, sort, dir, onSort }: FacilityTableProps) {
+  return (
+    <div className="overflow-hidden rounded-sm border border-border md:hidden">
+      <div className="flex flex-col gap-1 border-b border-border p-3">
+        <label
+          htmlFor="facility-sort-by"
+          className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
+        >
+          Sort by
+        </label>
+        <select
+          id="facility-sort-by"
+          value={`${sort}:${dir}`}
+          onChange={(e) => {
+            const [column, nextDir] = e.target.value.split(":");
+            if (isSortColumn(column) && (nextDir === "asc" || nextDir === "desc")) {
+              onSort(column, nextDir);
+            }
+          }}
+          className="min-h-10 w-full rounded-sm border border-border bg-background px-2 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          {SORT_OPTIONS.map((o) => (
+            <option key={`${o.column}:${o.dir}`} value={`${o.column}:${o.dir}`}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      {facilities.length === 0 ? (
+        <p className="py-8 text-center text-muted-foreground">
+          No facilities match your filters.
+        </p>
+      ) : (
+        <ul aria-label="Facilities" className="divide-y divide-border">
+          {facilities.map((f) => (
+            <li key={f.id} className="flex flex-col gap-1.5 p-3">
+              <Link
+                href={`/facilities/${f.id}`}
+                className="inline-block min-h-6 break-words font-medium text-foreground underline underline-offset-2 hover:text-primary hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+              >
+                {f.name}
+              </Link>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <StatusBadge status={f.status as Status} />
+                <span className="tabular-nums text-sm">{formatCapacity(f)}</span>
+              </div>
+              <p className="break-words text-sm text-muted-foreground">
+                {f.operator} · {formatLocation(f)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -180,7 +262,10 @@ export function FacilityTable({ facilities, sort, dir, onSort }: FacilityTablePr
   });
 
   return (
-    <div className="overflow-hidden rounded-sm border border-border">
+    <>
+      <FacilityCards facilities={facilities} sort={sort} dir={dir} onSort={onSort} />
+      {/* Below md the cards above replace the table; display:none keeps it out of the a11y tree. */}
+      <div className="hidden overflow-hidden rounded-sm border border-border md:block">
       {/* The scroll region is flush with this overflow-hidden frame, which would
           clip an outline drawn outside it entirely, so the focus outline is inset. */}
       <Table
@@ -298,6 +383,7 @@ export function FacilityTable({ facilities, sort, dir, onSort }: FacilityTablePr
         )}
       </TableBody>
     </Table>
-    </div>
+      </div>
+    </>
   );
 }

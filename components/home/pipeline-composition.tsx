@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { StackArea } from "@/components/chart/stack-area";
 import { SectionHeading } from "@/components/section-heading";
+import { formatEditionDate } from "@/lib/edition-date";
 import { STATUS_META, type Status } from "@/lib/status";
 import pipelineHistory from "@/public/data/pipeline-history.json";
 
@@ -15,6 +16,9 @@ const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
 const { coverage, quarters, statuses } = pipelineHistory;
+
+// A chart over a build-time snapshot: every total it states belongs to that build, so each says so.
+const BUILD_DATE = formatEditionDate(pipelineHistory.asOf);
 
 /**
  * A real runtime check rather than a cast. `statuses` arrives from imported
@@ -103,8 +107,8 @@ export function PipelineComposition({ className }: PipelineCompositionProps) {
       <p className="mt-3 max-w-2xl text-base text-muted-foreground">
         Each column is how many tracked facilities stood in each status at that
         quarter&rsquo;s end — a standing count, not a tally of announcements.
-        The total height is the population itself: {fmt(FIRST_QUARTER.known)}{" "}
-        facilities at {X_LABELS[0]}, {fmt(LAST_QUARTER.known)} at{" "}
+        The total height is the population itself in the {BUILD_DATE} build:{" "}
+        {fmt(FIRST_QUARTER.known)} facilities at {X_LABELS[0]}, {fmt(LAST_QUARTER.known)} at{" "}
         {X_LABELS[X_LABELS.length - 1]}. Most of that rise is the survey
         growing, not the buildout, which is why nothing here is drawn as a
         share.
@@ -117,7 +121,7 @@ export function PipelineComposition({ className }: PipelineCompositionProps) {
         provisionalNote="quarter in progress"
         ariaLabel={`Tracked facilities by status at each quarter’s end, ${X_LABELS[0]} to ${
           X_LABELS[X_LABELS.length - 1]
-        }, stacked as counts rather than shares. The tracked population rises from ${fmt(
+        }, stacked as counts rather than shares. The tracked population, in the ${BUILD_DATE} build, rises from ${fmt(
           FIRST_QUARTER.known
         )} to ${fmt(
           LAST_QUARTER.known
@@ -127,7 +131,7 @@ export function PipelineComposition({ className }: PipelineCompositionProps) {
         caption={
           <>
             {fmt(coverage.excludedNoHistory)} of {fmt(coverage.totalFacilities)}{" "}
-            tracked facilities carry no dated status history and appear in no
+            facilities in the {BUILD_DATE} build carry no dated status history and appear in no
             quarter at all; {fmt(coverage.withHistory)} do. The axis omits{" "}
             {/* The `where` clause has to attach to the OMITTED range, not to
                 the drawn one. `knownAtStart` is the denominator at the FIRST

@@ -18,7 +18,8 @@ import {
   FRICTION_CAUSES_FINDING,
   FRICTION_ELECTRICITY_CONTRAST,
 } from "@/lib/glossary";
-import { statesStat, statesPhrase } from "@/lib/us-states";
+import { statesStat, statesPhrase, stateNameFromCode } from "@/lib/us-states";
+import { parseStateParam, stateCounts } from "@/lib/state-index";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { StatusBadge } from "@/components/status-badge";
@@ -27,21 +28,56 @@ import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow, type SurveyStat } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
 import { SectionHeading } from "@/components/section-heading";
+import { StateNav } from "@/components/collection/state-nav";
 
-export const revalidate = 86400;
+/** Withdrawn-or-defeated rows shown on the default view; the rest sit under their state. */
+const DEFEATED_SHOWN = 12;
+
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 /** Most-severe-first display order for the friction statuses shown on this page. */
 const FRICTION_ORDER = ["litigation", "opposed", "contested"] as const satisfies readonly CommunityReception[];
 
-export const metadata: Metadata = {
-  title: "Data center opposition & community response",
-  description:
-    "The U.S. compute sites facing documented community friction — litigation, moratoria, referendums, and formal opposition, each with a public source. Part of Compute Atlas.",
-  alternates: { canonical: "/opposition" },
-};
+/** Codes of the states that hold at least one friction site. */
+async function frictionStates(): Promise<Set<string>> {
+  const groups = await Promise.all(
+    FRICTION_ORDER.map((status) => getFacilitiesByCommunityStatus(status))
+  );
+  return new Set(groups.flatMap((g) => g.map((f) => f.location.state)));
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const state = parseStateParam((await searchParams).state, await frictionStates());
+  const description =
+    "The U.S. compute sites facing documented community friction — litigation, moratoria, referendums, and formal opposition, each with a public source. Part of Compute Atlas.";
+  if (!state) {
+    return {
+      title: "Data center opposition & community response",
+      description,
+      alternates: { canonical: "/opposition" },
+    };
+  }
+  return {
+    title: `Data center opposition in ${stateNameFromCode(state)}`,
+    description,
+    alternates: { canonical: `/opposition?state=${state.toLowerCase()}` },
+  };
+}
 
 /**
- * /opposition — index of tracked sites with sourced local friction. Static server component.
+ * /opposition — index of tracked sites with sourced local friction.
+ *
+ * The default view carries the summary, the notable cases, the largest
+ * withdrawn projects, and a link per state; `?state=xx` lists every friction
+ * site in that state. Why: listing all ~590 sites with their notes was a
+ * 2.5 MB document (audit U-11) because the RSC payload repeats every row.
+ * Row notes live on the facility page, not in this index. Reading
+ * `searchParams` makes the route dynamic; data still comes through the
+ * 24 h-cached loader.
  *
  * Surfaces facilities whose community.status is contested, opposed, or in
  * litigation — the subset of the dataset with documented pushback. This is
@@ -50,7 +86,11 @@ export const metadata: Metadata = {
  * /power and /stats visual language (masthead, survey-stat row, § progress-bar
  * sections, block-Link rows).
  */
-export default async function OppositionPage() {
+export default async function OppositionPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const counts = await getCommunityReceptionCounts();
   const notableCases = await getNotableOppositionCases();
   const defeatedProjects = await getDefeatedProjects();
@@ -64,17 +104,44 @@ export default async function OppositionPage() {
   const frictionStateCodes = new Set(
     groups.flatMap((g) => g.facilities.map((f) => f.location.state))
   );
+  const state = parseStateParam((await searchParams).state, frictionStateCodes);
   const statesTile = statesStat(frictionStateCodes);
-  const jsonLdFacilities = [
-    ...groups.flatMap((g) => g.facilities),
-    ...defeatedProjects,
-  ];
-  const surveyStats: SurveyStat[] = [
-    { value: total, label: "Friction sites" },
-    { value: counts.litigation, label: "In litigation" },
-    { ...statesTile },
-  ];
-  if (defeatedProjects.length > 0) {
+  const stateList = stateCounts(
+    groups.flatMap((g) => g.facilities.map((f) => f.location.state))
+  );
+  const stateGroups = state
+    ? groups
+        .map((g) => ({
+          ...g,
+          facilities: g.facilities.filter((f) => f.location.state === state),
+        }))
+        .filter((g) => g.facilities.length > 0)
+    : [];
+  // A withdrawn project that is also a notable case is already rendered above.
+  const shownDefeated = defeatedProjects
+    .filter((d) => !notableCases.some((n) => n.id === d.id))
+    .slice(0, DEFEATED_SHOWN);
+  const jsonLdFacilities = state
+    ? stateGroups.flatMap((g) => g.facilities)
+    : [...notableCases, ...shownDefeated];
+  const surveyStats: SurveyStat[] = state
+    ? [
+        {
+          value: stateGroups.reduce((n, g) => n + g.facilities.length, 0),
+          label: "Friction sites",
+        },
+        {
+          value:
+            stateGroups.find((g) => g.status === "litigation")?.facilities.length ?? 0,
+          label: "In litigation",
+        },
+      ]
+    : [
+        { value: total, label: "Friction sites" },
+        { value: counts.litigation, label: "In litigation" },
+        { ...statesTile },
+      ];
+  if (!state && defeatedProjects.length > 0) {
     surveyStats.push({
       value: defeatedProjects.length,
       label: "Withdrawn after opposition",
@@ -98,7 +165,17 @@ export default async function OppositionPage() {
         }}
       />
 
-      <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Opposition" }]} />
+      <Breadcrumb
+        items={
+          state
+            ? [
+                { label: "Explore", href: "/explore" },
+                { label: "Opposition", href: "/opposition" },
+                { label: stateNameFromCode(state) ?? state },
+              ]
+            : [{ label: "Explore", href: "/explore" }, { label: "Opposition" }]
+        }
+      />
 
       <PageMasthead
         eyebrow="Community friction"
@@ -119,6 +196,9 @@ export default async function OppositionPage() {
         </p>
       ) : (
         <>
+          {state && <SurveyStatRow stats={surveyStats} />}
+          {!state && (
+          <>
           <div className="max-w-2xl space-y-4 text-base text-muted-foreground">
             <p>
               Compute Atlas has sourced {total} facilities with a documented friction
@@ -195,7 +275,7 @@ export default async function OppositionPage() {
 
           <SurveyStatRow stats={surveyStats} />
 
-          {defeatedProjects.length > 0 && (
+          {shownDefeated.length > 0 && (
             <section
               aria-labelledby="defeated-heading"
               className="space-y-6 border-t border-border pt-10"
@@ -209,8 +289,11 @@ export default async function OppositionPage() {
                 objection on record. That is a correlation, not a causal claim:
                 Compute Atlas does not assert opposition stopped any of these
                 projects, since a cancellation can have economic or other causes
-                that go unstated publicly. Each entry below links to a
-                source-cited record. For background on why local pushback
+                that go unstated publicly.{" "}
+                {defeatedProjects.length > shownDefeated.length
+                  ? "The largest are listed below, apart from any notable case above; every one also appears under its state, marked cancelled. "
+                  : ""}
+                Each entry links to a source-cited record. For background on why local pushback
                 happens, see{" "}
                 <Link
                   href="/learn/why-do-communities-oppose-data-centers"
@@ -221,7 +304,7 @@ export default async function OppositionPage() {
                 .
               </p>
               <ul className="divide-y divide-border">
-                {defeatedProjects.map((f) => (
+                {shownDefeated.map((f) => (
                   <li key={f.id}>
                     <Link
                       href={`/facilities/${f.id}`}
@@ -238,11 +321,6 @@ export default async function OppositionPage() {
                       <span className="text-xs text-muted-foreground truncate">
                         {f.operator} &middot; {formatLocation(f)}
                       </span>
-                      {f.community?.notes && (
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {f.community.notes}
-                        </p>
-                      )}
                     </Link>
                   </li>
                 ))}
@@ -275,13 +353,27 @@ export default async function OppositionPage() {
             </div>
           </section>
 
+          </>
+          )}
+
           <section
             aria-labelledby="sites-heading"
             className="space-y-8 border-t border-border pt-10"
           >
-            <SectionHeading kicker="The sites" id="sites-heading" title="The sites" />
+            <SectionHeading
+              kicker={state ? "The sites" : "By state"}
+              id="sites-heading"
+              title={state ? `Friction sites in ${stateNameFromCode(state)}` : "Sites by state"}
+            />
+            <StateNav
+              basePath="/opposition"
+              label="Friction sites by state"
+              states={stateList}
+              current={state}
+              noun={["site", "sites"]}
+            />
             <div className="space-y-8">
-              {groups.map((group) => (
+              {stateGroups.map((group) => (
                 <div key={group.status} className="space-y-3">
                   <h3 className="text-sm font-medium text-foreground">
                     {COMMUNITY_RECEPTION_META[group.status].label} &middot; {group.facilities.length}
@@ -291,24 +383,19 @@ export default async function OppositionPage() {
                       <li key={f.id}>
                         <Link
                           href={`/facilities/${f.id}`}
-                          className="flex min-h-11 flex-col gap-1 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+                          className="flex min-h-11 flex-col gap-1 py-3 hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                         >
                           <span className="flex items-center justify-between gap-4">
                             <span className="text-sm text-foreground truncate">
                               {f.name}
                             </span>
                             <span className="shrink-0">
-                              <StatusBadge status={f.status} />
+                              <StatusBadge status={f.status} hideIcon />
                             </span>
                           </span>
                           <span className="text-xs text-muted-foreground truncate">
                             {f.operator} &middot; {formatLocation(f)}
                           </span>
-                          {f.community?.notes && (
-                            <p className="text-xs text-muted-foreground line-clamp-2">
-                              {f.community.notes}
-                            </p>
-                          )}
                         </Link>
                       </li>
                     ))}

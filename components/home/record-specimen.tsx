@@ -28,7 +28,8 @@ interface RecordSpecimenProps {
    */
   facility: Facility | null;
   /**
-   * LIVE facility count from `getStats()`, for the caption. Passed in rather
+   * Facility total for the caption: the dated `totals` count in app/page.tsx (undated in its
+   * fallback, when the dated read failed), never a second source. Passed in rather
    * than written as a literal: the caption's whole claim is that the figures on
    * this page are current, and a hardcoded count would go stale at the next
    * publish on the one component that says every field traces to a citation.

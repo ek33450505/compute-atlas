@@ -6,35 +6,69 @@ import { statesStat } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { LetterNav } from "@/components/collection/letter-nav";
+import { letterLabel, letterOf, lettersInUse, parseLetter } from "@/lib/letter-index";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { formatStakeholderRole } from "./format-role";
 
-export const revalidate = 86400;
+/** Rows on the default view: the stakeholders tied to the most sites. */
+const TOP_COUNT = 48;
 
-export const metadata: Metadata = {
-  title: "Stakeholders",
-  description:
-    "Named people and organizations with a documented, source-cited stake in a specific tracked facility — founders, owners, investors, lenders, executives, board members, landowners, and public officials.",
-  alternates: { canonical: "/stakeholders" },
-};
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const letter = parseLetter((await searchParams).letter);
+  const description =
+    "Named people and organizations with a documented, source-cited stake in a specific tracked facility — founders, owners, investors, lenders, executives, board members, landowners, and public officials.";
+  if (!letter) {
+    return { title: "Stakeholders", description, alternates: { canonical: "/stakeholders" } };
+  }
+  return {
+    title: `Stakeholders: ${letterLabel(letter)}`,
+    description,
+    alternates: { canonical: `/stakeholders?letter=${letter}` },
+  };
+}
 
 /**
  * /stakeholders — index of every named person with a documented stake in at
- * least one tracked facility. Static server component.
+ * least one tracked facility, paged A–Z.
  *
  * Sparse by design at launch: `stakeholders` is a new, still-mostly-
  * unpopulated field on `Facility` (see lib/schema.ts) that back-fills over
  * time as sourced entries land — this page (and the per-person hub) must
  * render correctly, and emptily, before that data exists.
  */
-export default async function StakeholdersIndexPage() {
+export default async function StakeholdersIndexPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const letter = parseLetter((await searchParams).letter);
   const people = await getStakeholders();
   const peopleCount = people.filter((p) => p.kind === "person").length;
   const organizationCount = people.length - peopleCount;
   const stakeholderStateCodes = new Set(people.flatMap((p) => p.states));
   const totalFacilityLinks = people.reduce((sum, p) => sum + p.facilityCount, 0);
   const statesTile = statesStat(stakeholderStateCodes);
+  const available = lettersInUse(people.map((p) => p.name));
+  // Paged like /operators: the full list was a 1.5 MB document (audit U-11),
+  // because the RSC payload repeats every rendered row.
+  const shown = letter
+    ? people
+        .filter((p) => letterOf(p.name) === letter)
+        .sort((a, b) => a.name.localeCompare(b.name))
+    : [...people]
+        .sort((a, b) => b.facilityCount - a.facilityCount || a.name.localeCompare(b.name))
+        .slice(0, TOP_COUNT);
+  const listHeading = letter
+    ? `Stakeholders starting with ${letterLabel(letter)}`
+    : `${shown.length} stakeholders tied to the most sites`;
 
   return (
     <div
@@ -45,7 +79,7 @@ export default async function StakeholdersIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: itemListJsonLdString(
-            people.map(({ name, slug }) => ({
+            shown.map(({ name, slug }) => ({
               name,
               url: `${siteConfig.url}/stakeholders/${slug}`,
             }))
@@ -70,7 +104,10 @@ export default async function StakeholdersIndexPage() {
           are listed for a documented role in a site&rsquo;s approval or
           funding; listing does not by itself imply a financial interest.
           This page grows as sourced entries land, so most tracked facilities
-          carry no site-level stakeholder record yet.
+          carry no site-level stakeholder record yet. The first view lists the
+          stakeholders tied to the most sites; everyone is listed A&ndash;Z by
+          the first letter of the name as shown, and names that start with a
+          digit or any other character are under &ldquo;0&ndash;9 &amp; other&rdquo;.
         </p>
       </section>
 
@@ -93,11 +130,20 @@ export default async function StakeholdersIndexPage() {
         </p>
       ) : (
         <section aria-labelledby="stakeholders-list-heading" className="space-y-4">
-          <h2 id="stakeholders-list-heading" className="sr-only">
-            All tracked stakeholders
+          <LetterNav
+            basePath="/stakeholders"
+            label="Stakeholders by first letter"
+            available={available}
+            current={letter}
+          />
+          <h2
+            id="stakeholders-list-heading"
+            className="font-display text-2xl text-foreground"
+          >
+            {listHeading}
           </h2>
           <ul className="grid gap-2 sm:grid-cols-2">
-            {people.map(({ name, slug, roles, facilityCount, states, viaOperators }) => (
+            {shown.map(({ name, slug, roles, facilityCount, states, viaOperators }) => (
               <li key={slug}>
                 <Link
                   href={`/stakeholders/${slug}`}

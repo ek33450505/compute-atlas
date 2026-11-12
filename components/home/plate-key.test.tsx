@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { PlateKey } from "./plate-key";
+import { HERO_PLATE } from "./hero-plate-paths";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -13,7 +14,10 @@ import { PlateKey } from "./plate-key";
 // expectations drift silently. The value happens to match the current
 // snapshot; nothing depends on it continuing to.
 const BASE_PROPS = {
-  plotted: 1920,
+  sites: 1920,
+  shared: 14,
+  omitted: 9,
+  asOfLabel: "11 November 2026",
 };
 
 const ALL_STATUS_LABELS = [
@@ -57,52 +61,75 @@ describe("PlateKey legend", () => {
 });
 
 describe("PlateKey caption", () => {
-  it("states how many sites the plate draws ground for, with separators", () => {
+  it("states how many sites the plate draws ground for, dated, with separators", () => {
     render(<PlateKey {...BASE_PROPS} />);
-    expect(screen.getByText("1,920 sites plotted")).toBeInTheDocument();
-  });
-
-  // ---- the invariant this component was stripped to protect ----
-
-  // ONE number. The caption used to read "1,920 of 1,929 sites plotted", whose
-  // second total came from the build-time plate artifact while
-  // <HeroProvenance>'s `sites` a few lines above comes from live Neon — equal
-  // today, contradictory the first data sync that lands without a plate
-  // rebuild. Anchored at BOTH ends on purpose: an unanchored match passes
-  // happily against "1,920 sites plotted · <anything>", which is precisely the
-  // regression. Restoring the old caption, appending an omission segment, or
-  // adding any further clause all fail here.
-  it("states exactly one number, with nothing appended", () => {
-    render(<PlateKey {...BASE_PROPS} />);
-
-    const caption = screen.getByText(/sites plotted/);
-    expect(caption.textContent).toMatch(/^1,920 sites plotted$/);
-
-    // Belt and braces on the number itself: one digit-group run in the whole
-    // caption. A second total added as a bare number rather than after a
-    // separator already fails the anchored match above — this asserts the same
-    // thing from the other side, so the guarantee does not rest on one regex,
-    // and it catches a second number introduced anywhere in the caption's text
-    // node.
-    expect(caption.textContent?.match(/[\d,]+/g)).toHaveLength(1);
+    expect(screen.getByText("1,920 sites plotted as of 11 November 2026")).toBeInTheDocument();
   });
 
   it("formats the count with thousands separators", () => {
-    render(<PlateKey plotted={1929} />);
-    expect(screen.getByText("1,929 sites plotted")).toBeInTheDocument();
+    render(<PlateKey {...BASE_PROPS} sites={1929} />);
+    expect(screen.getByText("1,929 sites plotted as of 11 November 2026")).toBeInTheDocument();
   });
 
-  // The four territory NAMES were cut from this caption (Ed, 2026-09-15). The
-  // disclosure itself was not: <HeroProvenance> renders "static map omits N in
-  // U.S. territories" at every viewport and every mount state, which is the
-  // durable version of it. This asserts the names stay out of the KEY — it is
-  // deliberately not a statement about the disclosure, which lives in
-  // components/home/hero-provenance.test.tsx and must keep passing.
-  it("carries no territory prose", () => {
+  // The territory caveat lives HERE now (moved off the hero stat line). The wording
+  // explains the gap between the plotted count and the plate's total, so the numbers reconcile.
+  it("explains marks already held and off-map territories in one sentence each", () => {
+    render(<PlateKey {...BASE_PROPS} />);
+    expect(
+      screen.getByText("14 sites are drawn on a mark another site already holds. 9 in U.S. territories are off this map."),
+    ).toBeInTheDocument();
+  });
+
+  it("uses singular wording for exactly one", () => {
+    render(<PlateKey {...BASE_PROPS} shared={1} omitted={1} />);
+    expect(
+      screen.getByText("1 site is drawn on a mark another site already holds. 1 in a U.S. territory is off this map."),
+    ).toBeInTheDocument();
+  });
+
+  // An absence is not a finding: nothing to explain, no line.
+  it("drops the explanation line when nothing is shared or omitted", () => {
+    const { container } = render(<PlateKey {...BASE_PROPS} shared={0} omitted={0} />);
+    expect(container.textContent).not.toContain("share");
+    expect(container.textContent).not.toContain("off this map");
+  });
+
+  it("always carries the as-of date", () => {
+    const { container } = render(<PlateKey {...BASE_PROPS} shared={0} omitted={0} />);
+    expect(container.textContent).toContain("as of 11 November 2026");
+  });
+
+  // The live dataset total is HeroProvenance's job. This caption states only the
+  // plate's own figures, never "of <total>".
+  it("never restates a dataset total", () => {
     const { container } = render(<PlateKey {...BASE_PROPS} />);
-    expect(container.textContent).not.toMatch(/Albers/);
-    expect(container.textContent).not.toMatch(/cannot place/);
-    expect(container.textContent).not.toMatch(/Puerto Rico|Guam/);
+    expect(container.textContent).not.toMatch(/ of [\d,]+ (sites|facilities)/);
+  });
+});
+
+// The legend's numbers must reconcile with the artifact it describes: every facility the build read is
+// either drawn on its own mark, drawn on a mark it shares, or off the map. scripts/build-hero-plate.mjs
+// throws on a mismatch at build time; this pins the same identity on the generated module the page imports,
+// and the sentence the legend derives from it.
+describe("PlateKey reconciliation with HERO_PLATE", () => {
+  it("marks + shared + off-map = total facilities read", () => {
+    expect(HERO_PLATE.plotted + HERO_PLATE.deduped + HERO_PLATE.omitted).toBe(HERO_PLATE.total);
+  });
+
+  it("the legend's plotted count is total minus off-map, and shared is a subset of it", () => {
+    const plotted = HERO_PLATE.total - HERO_PLATE.omitted;
+    expect(plotted).toBe(HERO_PLATE.plotted + HERO_PLATE.deduped);
+    render(
+      <PlateKey
+        sites={plotted}
+        shared={HERO_PLATE.deduped}
+        omitted={HERO_PLATE.omitted}
+        asOfLabel="11 November 2026"
+      />,
+    );
+    expect(
+      screen.getByText(`${plotted.toLocaleString("en-US")} sites plotted as of 11 November 2026`),
+    ).toBeInTheDocument();
   });
 });
 

@@ -8,6 +8,9 @@ import { GraticuleSurvey } from "@/components/home/graticule-survey";
 
 export const revalidate = 86400;
 
+const HUB_LINK_CLASS =
+  "inline-flex min-h-6 items-center underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
+
 export const metadata: Metadata = {
   title: "Explore US data centers",
   description:
@@ -166,6 +169,17 @@ export default async function ExplorePage() {
             </li>
           ))}
         </ul>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Also:{" "}
+          <Link href="/stats" className={HUB_LINK_CLASS}>
+            Stats
+          </Link>
+          {" · "}
+          <Link href="/activity" className={HUB_LINK_CLASS}>
+            Recent activity
+          </Link>
+          .
+        </p>
       </section>
     </div>
   );

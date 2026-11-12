@@ -26,6 +26,7 @@ import { statesStat, statesPhrase } from "@/lib/us-states";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { GraticuleSurvey } from "@/components/home/graticule-survey";
 import { SurveyStatRow } from "@/components/survey-stat-row";
+import { PipelineComposition } from "@/components/home/pipeline-composition";
 import { PercentageBar } from "@/components/percentage-bar";
 import { SectionHeading } from "@/components/section-heading";
 import { AI_CLASSIFICATION_CONFIDENCE_LABELS, countDisclosedCapacity } from "@/lib/format";
@@ -177,6 +178,8 @@ export default async function StatsPage() {
         this page sums those records only — read them as a floor, not a dataset
         total.
       </p>
+
+      <PipelineComposition className="border-t border-border pt-10" />
 
       <section
         aria-labelledby="facility-type-heading"

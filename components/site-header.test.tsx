@@ -24,7 +24,8 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import { NAV_LINKS, MOBILE_NAV_GROUPS, SiteHeader } from "./site-header";
+import { NAV_LINKS } from "@/lib/site-nav";
+import { SiteHeader } from "./site-header";
 
 // ---------------------------------------------------------------------------
 // SiteHeader itself is a Server Component in the root layout; only its logo
@@ -33,59 +34,22 @@ import { NAV_LINKS, MOBILE_NAV_GROUPS, SiteHeader } from "./site-header";
 // shape covers both surfaces without needing to render either.
 // ---------------------------------------------------------------------------
 
-describe("SiteHeader — Data label", () => {
-  it("labels /data as Data in both nav surfaces, with no Cite entry", () => {
-    expect(NAV_LINKS).toContainEqual({ label: "Data", href: "/data" });
-    const mobile = MOBILE_NAV_GROUPS.flatMap((g) => [...g.links] as { label: string; href: string }[]);
-    expect(mobile).toContainEqual({ label: "Data", href: "/data" });
-    expect([...NAV_LINKS, ...mobile].some((l) => l.label === "Cite")).toBe(false);
-  });
-});
-
 describe("SiteHeader — NAV_LINKS", () => {
-  it("includes a Contribute entry pointing at /contribute", () => {
-    const contribute = NAV_LINKS.find((link) => link.label === "Contribute");
-    expect(contribute).toBeDefined();
-    expect(contribute?.href).toBe("/contribute");
+  it("is exactly Map, Table, Explore, Dataset, About, in that order", () => {
+    expect(NAV_LINKS).toEqual([
+      { label: "Map", href: "/map" },
+      { label: "Table", href: "/table" },
+      { label: "Explore", href: "/explore" },
+      { label: "Dataset", href: "/dataset" },
+      { label: "About", href: "/about" },
+    ]);
   });
 
-  it("places Contribute after Activity and before About", () => {
+  it("no longer carries Data, Stats, Activity, Contribute or Support as header items", () => {
     const labels = NAV_LINKS.map((link) => link.label);
-    const activityIndex = labels.indexOf("Activity");
-    const contributeIndex = labels.indexOf("Contribute");
-    const aboutIndex = labels.indexOf("About");
-
-    expect(activityIndex).toBeGreaterThanOrEqual(0);
-    expect(contributeIndex).toBe(activityIndex + 1);
-    expect(aboutIndex).toBe(contributeIndex + 1);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Task C4 — 1,064 facility pages previously carried zero funding ask, and
-// there was no "Support" entry in either nav surface. Both must carry one so
-// the /support ask is reachable without knowing the URL.
-// ---------------------------------------------------------------------------
-
-describe("SiteHeader — Support is reachable in both desktop and mobile nav", () => {
-  it("NAV_LINKS (desktop) includes a Support entry pointing at /support", () => {
-    const support = NAV_LINKS.find((link) => link.label === "Support");
-    expect(support).toBeDefined();
-    expect(support?.href).toBe("/support");
-  });
-
-  it("MOBILE_NAV_GROUPS includes a Support entry pointing at /support", () => {
-    // Explicit accumulation, not .flatMap: MOBILE_NAV_GROUPS is a tuple of
-    // differently-shaped `as const` group literals, and TS can't unify
-    // .flatMap's return type across them — see the typecheck failure this
-    // replaced.
-    const allLinks: { label: string; href: string; external?: boolean }[] = [];
-    for (const group of MOBILE_NAV_GROUPS) {
-      allLinks.push(...group.links);
+    for (const gone of ["Data", "Stats", "Activity", "Contribute", "Support"]) {
+      expect(labels).not.toContain(gone);
     }
-    const support = allLinks.find((link) => link.label === "Support");
-    expect(support).toBeDefined();
-    expect(support?.href).toBe("/support");
   });
 });
 
@@ -102,14 +66,14 @@ describe("SiteHeader — logo link", () => {
 });
 
 describe("SiteHeader — GitHub icon breakpoint", () => {
-  // Must switch at the same xl: (1280px) breakpoint as PrimaryNav/MobileNav,
+  // Must switch at the same lg: (1024px) breakpoint as PrimaryNav/MobileNav,
   // or the right-hand group overflows at tablet width.
-  it("reveals at xl: (1280px), not md: or lg:", () => {
+  it("reveals at lg: (1024px), not md: or xl:", () => {
     render(<SiteHeader />);
     const link = screen.getByRole("link", { name: "View source on GitHub" });
 
-    expect(link).toHaveClass("hidden", "xl:flex");
+    expect(link).toHaveClass("hidden", "lg:flex");
     expect(link).not.toHaveClass("md:flex");
-    expect(link).not.toHaveClass("lg:flex");
+    expect(link).not.toHaveClass("xl:flex");
   });
 });

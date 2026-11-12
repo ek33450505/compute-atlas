@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { DatasetCounts, editionChangesLine } from "@/components/dataset-counts";
 import { PageMasthead } from "@/components/page-masthead";
 import { COMMERCIAL_PLANS, formatPlanPrice, type CommercialPlanKey } from "@/lib/commercial-plans";
 import { isCommercialCheckoutOpen } from "@/lib/commercial-flag";
-import { CSV_COLUMN_COUNT } from "@/lib/dataset-csv";
-import { formatEditionDate, formatMegabytes, loadOfferCounts, loadOfferEdition, n } from "@/lib/dataset-offer";
+import { CSV_COLUMN_COUNT, CSV_COLUMNS, CSV_COLUMN_NOTES, facilitiesToCsv } from "@/lib/dataset-csv";
+import {
+  formatMegabytes,
+  loadOfferCounts,
+  loadOfferEdition,
+  loadOfferSamples,
+  n,
+} from "@/lib/dataset-offer";
+import { formatEditionDate } from "@/lib/edition-date";
 import { ACCESS_LINK_CLASS, AccessNotOpen, AccessShell } from "../not-open";
 
 // While the flag is off the page is a thin "not open yet" notice, so keep it out of the index.
@@ -31,6 +39,16 @@ const ERROR_MESSAGES: Readonly<Record<string, string>> = {
 
 const PLAN_ORDER: readonly CommercialPlanKey[] = ["monthly", "annual"];
 
+const PRE_CLASS = "max-w-full overflow-x-auto rounded-md border border-input bg-muted p-3 text-xs leading-relaxed";
+const SUMMARY_CLASS =
+  "cursor-pointer text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
+const TYPE_LABELS: Readonly<Record<string, string>> = {
+  data_center: "data center",
+  crypto_mining: "crypto-mining site",
+  power_generation: "power plant",
+};
+
 const FIELD_CLASS =
   "w-full max-w-md rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
@@ -54,7 +72,8 @@ export default async function CommercialAccessPage({
   const errorKey = first(params.error);
   const errorMessage = errorKey !== undefined && Object.hasOwn(ERROR_MESSAGES, errorKey) ? ERROR_MESSAGES[errorKey] : undefined;
   const canceled = first(params.cancelled) === "1" || first(params.canceled) === "1";
-  const [counts, edition] = await Promise.all([loadOfferCounts(), loadOfferEdition()]);
+  const [counts, edition, samples] = await Promise.all([loadOfferCounts(), loadOfferEdition(), loadOfferSamples()]);
+  const editionChanges = editionChangesLine(edition);
   const jsonBytes = edition?.fileBytes["facilities.json"];
   const csvBytes = edition?.fileBytes["facilities.csv"];
 
@@ -63,21 +82,17 @@ export default async function CommercialAccessPage({
       <PageMasthead
         eyebrow="Data"
         title="The full dataset, every week"
-        dek={`${counts ? `${n(counts.facilities)} ` : ""}US data centers, crypto-mining sites and power plants, every field and every source, as JSON and CSV files refreshed weekly. ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}, plus applicable tax. Cancel anytime.`}
+        dek={`US data centers, crypto-mining sites and power plants, every field and every source, as JSON and CSV files refreshed weekly. ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}, plus applicable tax. Cancel anytime.`}
       />
 
-      {edition && (
-        <p className="font-mono text-xs text-muted-foreground">
-          {[
-            `Latest edition ${formatEditionDate(edition.date)}`,
-            edition.recordCount !== null ? `${n(edition.recordCount)} records` : null,
-            !edition.initial && edition.added !== null ? `${n(edition.added)} added` : null,
-            !edition.initial && edition.updated !== null ? `${n(edition.updated)} updated` : null,
-            !edition.initial && edition.removed !== null ? `${n(edition.removed)} removed` : null,
-          ]
-            .filter((part) => part !== null)
-            .join(" · ")}
-        </p>
+      <DatasetCounts
+        counts={counts}
+        edition={edition}
+        noun="facilities"
+        className="font-mono text-xs text-muted-foreground"
+      />
+      {editionChanges && (
+        <p className="font-mono text-xs text-muted-foreground">{editionChanges}</p>
       )}
 
       {errorMessage ? (
@@ -113,6 +128,84 @@ export default async function CommercialAccessPage({
           <li>A new edition every Friday, and an email when it is ready</li>
           <li>One personal download link, sent by email as soon as payment completes</li>
         </ul>
+      </section>
+
+      <section aria-labelledby="commercial-preview" className="space-y-6">
+        <h2 id="commercial-preview" className="text-lg font-medium">
+          See what&apos;s in it
+        </h2>
+
+        <div className="max-w-2xl space-y-2">
+          <h3 className="text-sm font-medium">The {CSV_COLUMN_COUNT} CSV columns</h3>
+          <details className="rounded-lg border border-input p-3">
+            <summary className={SUMMARY_CLASS}>Column list, in file order</summary>
+            <dl className="mt-3 space-y-2 text-sm">
+              {CSV_COLUMNS.map((column) => (
+                <div key={column}>
+                  <dt className="break-all font-mono text-xs">{column}</dt>
+                  <dd className="text-muted-foreground">{CSV_COLUMN_NOTES[column]}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            A column that does not apply to a facility&apos;s type is an empty cell. The JSON file also
+            carries status history, emissions, subsidies, stakeholders and each source&apos;s label and date.
+          </p>
+        </div>
+
+        {samples && samples.length > 0 ? (
+          <div className="max-w-2xl space-y-3">
+            <h3 className="text-sm font-medium">Sample records</h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Records from the live dataset, in the same format as facilities.json, then as rows in
+              the format of facilities.csv.
+            </p>
+            {samples.map((record) => (
+              <details key={record.id} className="rounded-lg border border-input p-3">
+                <summary className={SUMMARY_CLASS}>
+                  {record.name} ({TYPE_LABELS[record.facilityType] ?? record.facilityType})
+                </summary>
+                <pre role="region" tabIndex={0} aria-label={`${record.name} as JSON`} className={`mt-3 ${PRE_CLASS}`}>
+                  {JSON.stringify(record, null, 2)}
+                </pre>
+              </details>
+            ))}
+            <details className="rounded-lg border border-input p-3">
+              <summary className={SUMMARY_CLASS}>The same records as CSV rows</summary>
+              <pre role="region" tabIndex={0} aria-label="Sample records as CSV" className={`mt-3 ${PRE_CLASS}`}>
+                {facilitiesToCsv(samples)}
+              </pre>
+            </details>
+          </div>
+        ) : null}
+
+        <div className="max-w-2xl space-y-2">
+          <h3 className="text-sm font-medium">What the weekly changelog looks like</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Each edition&apos;s changelog.json lists the records added, updated and removed since the
+            previous edition. Every entry carries the record&apos;s id and, where known, its name and
+            state, and an updated entry also lists the names of the fields that changed. The entries
+            carry no old or new values; an edition&apos;s summary headlines may show a status change as before → after.
+          </p>
+          {edition && edition.initial ? (
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              The latest edition is the first, so there is nothing yet to compare it against.
+            </p>
+          ) : null}
+          {edition && !edition.initial && edition.headlines.length > 0 ? (
+            <>
+              <p className="text-sm text-muted-foreground">
+                Headlines from the edition of {formatEditionDate(edition.date)}:
+              </p>
+              <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
+                {edition.headlines.map((headline, index) => (
+                  <li key={`${index}-${headline}`}>{headline}</li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
       </section>
 
       <section aria-labelledby="commercial-users" className="space-y-3">
@@ -224,7 +317,7 @@ export default async function CommercialAccessPage({
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Every record here started as a public document. Rebuilding the dataset means finding and
-          reading {counts ? n(counts.sourceLinks) : "thousands"} of them, then re-checking every
+          reading {counts ? `${n(counts.sourceLinks)} of them (counted ${formatEditionDate(counts.asOf)})` : "thousands of them"}, then re-checking every
           week. If you need a handful of facilities, the free{" "}
           <Link href="/table" className={ACCESS_LINK_CLASS}>
             table
@@ -240,7 +333,7 @@ export default async function CommercialAccessPage({
         <ul className="max-w-2xl list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
           <li>
             The data is CC BY 4.0 for everyone: reuse it, including commercially, with attribution.
-            The fee is not a licence fee.
+            The fee is not a license fee.
           </li>
           <li>
             Cancel anytime from your PayPal account; access runs to the end of the paid period. No

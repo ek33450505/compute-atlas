@@ -68,6 +68,17 @@ describe("ExplorePage", () => {
     expect(links).not.toContain("/api");
   });
 
+  it("links to Stats and Recent activity, which are no longer header items", async () => {
+    mockGetStates.mockResolvedValue(["CA", "TX"]);
+    mockGetOperators.mockResolvedValue(["Operator A"]);
+    mockGetCounties.mockResolvedValue([]);
+
+    render(await ExplorePage());
+
+    expect(screen.getByRole("link", { name: "Stats" })).toHaveAttribute("href", "/stats");
+    expect(screen.getByRole("link", { name: "Recent activity" })).toHaveAttribute("href", "/activity");
+  });
+
   it("renders a Counties card linking to /counties, with a derived county-count stat", async () => {
     mockGetStates.mockResolvedValue(["CA", "TX"]);
     mockGetOperators.mockResolvedValue(["Operator A"]);

@@ -57,8 +57,6 @@ afterEach(() => {
 
 const PROPS: SurveyLedgerProps = {
   count: 727,
-  states: 45,
-  includesDc: false,
   stateCodes: ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT"],
   operators: 210,
   sources: 2570,
@@ -128,7 +126,7 @@ describe("SurveyLedger", () => {
 
   it("captions the states tile 'States covered' with a DC footnote, animating the number to the actual state count (50) not the raw jurisdiction total (51), when the dataset includes DC", () => {
     setReducedMotion(true);
-    render(<SurveyLedger {...PROPS} states={51} includesDc={true} stateCodes={["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"]} />);
+    render(<SurveyLedger {...PROPS} stateCodes={["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"]} />);
 
     // The bug this guards: the tile's animated number must land on the
     // actual state count (50), not the raw distinct-code total (51) — "51 /
@@ -154,7 +152,7 @@ describe("SurveyLedger", () => {
 
   it("prints no footnote and no marker when the dataset is states only", () => {
     setReducedMotion(true);
-    render(<SurveyLedger {...PROPS} states={2} stateCodes={["CA", "TX"]} />);
+    render(<SurveyLedger {...PROPS} stateCodes={["CA", "TX"]} />);
 
     expect(screen.getByText("States covered")).toBeInTheDocument();
     expect(screen.queryByText("*")).not.toBeInTheDocument();
@@ -166,8 +164,6 @@ describe("SurveyLedger", () => {
     render(
       <SurveyLedger
         {...PROPS}
-        states={5}
-        includesDc={true}
         stateCodes={["CA", "TX", "DC", "PR", "GU"]}
       />
     );
@@ -275,5 +271,17 @@ describe("SurveyLedger", () => {
   it("does not throw when motion is allowed (count-up / bar-grow code paths execute)", () => {
     setReducedMotion(false);
     expect(() => render(<SurveyLedger {...PROPS} />)).not.toThrow();
+  });
+});
+
+describe("SurveyLedger counted-on caption", () => {
+  it("dates the count tiles when given the read date", () => {
+    render(<SurveyLedger {...PROPS} countedOnLabel="12 November 2026" />);
+    expect(screen.getByText("Counted on 12 November 2026")).toBeInTheDocument();
+  });
+
+  it("prints no caption without a date", () => {
+    render(<SurveyLedger {...PROPS} />);
+    expect(screen.queryByText(/Counted on/)).not.toBeInTheDocument();
   });
 });

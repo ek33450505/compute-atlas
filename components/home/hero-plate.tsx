@@ -1,4 +1,5 @@
 import { HERO_PLATE } from "@/components/home/hero-plate-paths";
+import { formatEditionDate } from "@/lib/edition-date";
 import { STATUS_ORDER, getStatusColor } from "@/lib/status";
 import { cn } from "@/lib/utils";
 
@@ -42,7 +43,8 @@ const COVERED = HERO_PLATE.total - HERO_PLATE.omitted;
 
 /**
  * Deliberately short, and it claims only what the plate DRAWS (`COVERED`,
- * never `HERO_PLATE.total`) — an image's accessible name is announced in full
+ * never `HERO_PLATE.total`), dated with the snapshot it drew (the same date the plate key states, so
+ * a build-time total never sits undated beside the live, dated one) — an image's accessible name is announced in full
  * before the reader reaches anything else, and this one sits immediately ahead
  * of the page's H1.
  *
@@ -51,7 +53,7 @@ const COVERED = HERO_PLATE.total - HERO_PLATE.omitted;
  * MapLibre mounts (hero-globe-dynamic.tsx swaps the plate out for the globe,
  * which is aria-hidden), so on desktop the disclosure was announced or not
  * purely on timing. It now lives in the always-present provenance rule
- * (components/home/hero-provenance.tsx, `mapOmitted`), which no viewport or
+ * (now components/home/plate-key.tsx, beside the plot it qualifies), which no viewport or
  * mount order can take away. It is disclosed there as a COUNT ("static map
  * omits 9 in U.S. territories"); the omitted jurisdictions' individual NAMES
  * are no longer rendered anywhere, having been cut from the plate's caption
@@ -62,7 +64,7 @@ const COVERED = HERO_PLATE.total - HERO_PLATE.omitted;
  */
 const ACCESSIBLE_NAME = `Dot map of ${NUMBER.format(
   COVERED
-)} tracked sites, coloured by project status.`;
+)} tracked sites as of ${formatEditionDate(HERO_PLATE.asOf)}, coloured by project status.`;
 
 /**
  * The colour-only-encoding gap the name above used to leave open is CLOSED:

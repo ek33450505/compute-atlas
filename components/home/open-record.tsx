@@ -55,7 +55,7 @@ export function OpenRecord({
       sub: datasetAccess ? (
         <>
           Free to reuse with attribution. Code under MIT.{" "}
-          <Link href="/access" className={TRAILING_LINK_CLASS}>
+          <Link href="/dataset" className={TRAILING_LINK_CLASS}>
             Request dataset access
           </Link>
         </>
