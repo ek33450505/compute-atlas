@@ -10,10 +10,11 @@ import { CSV_COLUMN_COUNT } from "@/lib/dataset-csv";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import {
   loadOfferCounts,
+  loadOfferDateModified,
   loadOfferEdition,
   n,
 } from "@/lib/dataset-offer";
-import { breadcrumbJsonLdString } from "@/lib/seo";
+import { breadcrumbJsonLdString, datasetJsonLdString } from "@/lib/seo";
 import { MAX_ROWS } from "@/lib/table-query";
 import { statesPhrase } from "@/lib/us-states";
 
@@ -50,9 +51,9 @@ const LINK_CLASS =
 export default async function DatasetPage() {
   const sharing = isDatasetSharingEnabled();
   const commercial = sharing && isCommercialTierEnabled();
-  const [counts, edition] = sharing
-    ? await Promise.all([loadOfferCounts(), loadOfferEdition()])
-    : [null, null];
+  const [counts, edition, dateModified] = sharing
+    ? await Promise.all([loadOfferCounts(), loadOfferEdition(), loadOfferDateModified()])
+    : [null, null, undefined];
   const editionDetail = editionChangesLine(edition);
 
   return (
@@ -70,6 +71,14 @@ export default async function DatasetPage() {
           ]),
         }}
       />
+      {sharing && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: datasetJsonLdString({ dateModified, commercial }),
+          }}
+        />
+      )}
 
       <Breadcrumb items={[{ label: "Map", href: "/map" }, { label: "Dataset" }]} />
 

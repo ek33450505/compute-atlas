@@ -251,61 +251,79 @@ describe("facilityJsonLdString", () => {
 
 describe("buildDatasetJsonLd", () => {
   it("returns a valid Dataset shape", () => {
-    const ld = buildDatasetJsonLd();
+    const ld = buildDatasetJsonLd({ commercial: false });
     expect(ld["@context"]).toBe("https://schema.org");
     expect(ld["@type"]).toBe("Dataset");
   });
 
   it("carries no sameAs and no distribution", () => {
-    const ld = buildDatasetJsonLd();
+    const ld = buildDatasetJsonLd({ commercial: false });
     expect(ld).not.toHaveProperty("sameAs");
     expect(ld).not.toHaveProperty("distribution");
   });
 
   it("carries no distribution entry while bulk access is paused", () => {
-    const ld = buildDatasetJsonLd();
+    const ld = buildDatasetJsonLd({ commercial: false });
     expect(ld).not.toHaveProperty("distribution");
     expect(JSON.stringify(ld)).not.toMatch(/\/api\/facilities|facilities\.(csv|json)/);
   });
 
   it("sets license to the CC-BY-4.0 URL", () => {
-    const ld = buildDatasetJsonLd();
+    const ld = buildDatasetJsonLd({ commercial: false });
     expect(ld.license).toBe("https://creativecommons.org/licenses/by/4.0/");
   });
 
   it("carries no identifier", () => {
-    const ld = buildDatasetJsonLd();
+    const ld = buildDatasetJsonLd({ commercial: false });
     expect(ld).not.toHaveProperty("identifier");
   });
 
   it("includes dateModified when provided", () => {
-    const ld = buildDatasetJsonLd({ dateModified: "2026-07-01T00:00:00.000Z" });
+    const ld = buildDatasetJsonLd({ commercial: false, dateModified: "2026-07-01T00:00:00.000Z" });
     expect(ld.dateModified).toBe("2026-07-01T00:00:00.000Z");
   });
 
   it("omits dateModified when not provided", () => {
-    const ld = buildDatasetJsonLd();
+    const ld = buildDatasetJsonLd({ commercial: false });
     expect(ld.dateModified).toBeUndefined();
+  });
+
+  it("is not free for everyone, and lives on /dataset", () => {
+    const ld = buildDatasetJsonLd({ commercial: false });
+    expect(ld.isAccessibleForFree).toBe(false);
+    expect(ld.url.endsWith("/dataset")).toBe(true);
+  });
+
+  it("describes access with commercial on", () => {
+    expect(buildDatasetJsonLd({ commercial: true }).conditionsOfAccess).toBe(
+      "Facility pages are free to read. Data files require approved access: free for students, educators and academics, paid for commercial use.",
+    );
+  });
+
+  it("describes access with commercial off", () => {
+    expect(buildDatasetJsonLd({ commercial: false }).conditionsOfAccess).toBe(
+      "Facility pages are free to read. Data files require approved access, free for students, educators and academics.",
+    );
   });
 });
 
 describe("datasetJsonLdString", () => {
   it("returns a string with no raw < characters", () => {
-    const str = datasetJsonLdString();
+    const str = datasetJsonLdString({ commercial: false });
     expect(str).not.toContain("<");
   });
 
   it("escapes every < as \\u003c when dateModified carries a script-breakout payload", () => {
     // `dateModified` is this serializer's only caller-supplied input — every
     // other value is a module constant — so it is the whole injectable surface.
-    const str = datasetJsonLdString({ dateModified: SCRIPT_BREAKOUT_PAYLOAD });
+    const str = datasetJsonLdString({ commercial: false, dateModified: SCRIPT_BREAKOUT_PAYLOAD });
     expect(str).toContain("\\u003c");
     expect(str).not.toContain("<");
     expect(JSON.parse(str).dateModified).toBe(SCRIPT_BREAKOUT_PAYLOAD);
   });
 
   it("produces valid JSON that round-trips to a Dataset shape", () => {
-    const str = datasetJsonLdString();
+    const str = datasetJsonLdString({ commercial: false });
     const parsed = JSON.parse(str);
     expect(parsed["@type"]).toBe("Dataset");
     expect(parsed).not.toHaveProperty("distribution");

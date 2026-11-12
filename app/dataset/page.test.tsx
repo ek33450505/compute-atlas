@@ -64,6 +64,37 @@ function readAt(iso: string) {
 }
 
 describe("DatasetPage", () => {
+  const datasetNodes = () =>
+    Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
+      .map((el) => JSON.parse(el.textContent ?? "{}"))
+      .filter((n) => n["@type"] === "Dataset");
+
+  it("emits one Dataset JSON-LD node, not free for everyone, when sharing is on", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    render(await DatasetPage());
+    const nodes = datasetNodes();
+    expect(nodes).toHaveLength(1);
+    expect(nodes[0].isAccessibleForFree).toBe(false);
+    expect(nodes[0].url).toMatch(/\/dataset$/);
+    expect(nodes[0].conditionsOfAccess).toContain("paid for commercial use");
+  });
+
+  it("uses the non-commercial conditionsOfAccess when the commercial tier is off", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
+    render(await DatasetPage());
+    expect(datasetNodes()[0].conditionsOfAccess).toBe(
+      "Facility pages are free to read. Data files require approved access, free for students, educators and academics.",
+    );
+  });
+
+  it("emits no Dataset JSON-LD when sharing is off", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    render(await DatasetPage());
+    expect(datasetNodes()).toHaveLength(0);
+  });
+
   it("shows the free card only, with no paid-tier section, when commercial is off", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
