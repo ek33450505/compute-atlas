@@ -123,7 +123,8 @@
       "esbuild": "^0.25.0"
     },
     "brace-expansion": "^5.0.12",
-    "minimatch": "^10.2.5",
+    "minimatch": "11.0.2",
+    "@isaacs/nonrecursive-glob-match": "1.0.3",
     "@vercel/cli-config": {
       "zod": "$zod"
     }
