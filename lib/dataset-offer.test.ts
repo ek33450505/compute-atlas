@@ -10,6 +10,9 @@ import {
   formatMegabytes,
   loadOfferCounts,
   loadOfferEdition,
+  loadOfferSamples,
+  pickSamples,
+  SAMPLE_FACILITY_IDS,
   toOfferEdition,
   withTimeout,
 } from "./dataset-offer";
@@ -152,5 +155,60 @@ describe("fail-soft loaders", () => {
   it("returns null when there is no edition", async () => {
     mocks.latestPublishedEdition.mockResolvedValue(null);
     await expect(loadOfferEdition()).resolves.toBeNull();
+  });
+});
+
+describe("sample records", () => {
+  const rec = (id: string) =>
+    ({
+      id,
+      name: id,
+      facilityType: "data_center",
+      operator: "Op",
+      status: "operational",
+      confidence: "confirmed",
+      location: { state: "TX", lat: 1, lon: 2 },
+      sources: [{ url: "https://example.com/a", label: "A", retrievedAt: "2026-01-01" }],
+      lastUpdated: "2026-01-01",
+    }) as never;
+  it("hard-codes one id per facility type", () => {
+    expect(SAMPLE_FACILITY_IDS).toEqual([
+      "meta-hyperion-richland-parish-la",
+      "riot-platforms-corsicana-tx",
+      "homer-city-energy-campus-generation-pa",
+    ]);
+  });
+  it("picks by id in constant order and skips missing ids", () => {
+    const all = [rec("x"), rec("homer-city-energy-campus-generation-pa"), rec("meta-hyperion-richland-parish-la")];
+    expect(pickSamples(all).map((r) => (r as { id: string }).id)).toEqual([
+      "meta-hyperion-richland-parish-la",
+      "homer-city-energy-campus-generation-pa",
+    ]);
+  });
+  it("skips a record that fails schema validation and returns the others parsed", () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const bad = { ...(rec("riot-platforms-corsicana-tx") as object), status: "bogus" } as never;
+    const out = pickSamples([rec("meta-hyperion-richland-parish-la"), bad, rec("homer-city-energy-campus-generation-pa")]);
+    expect(out.map((r) => r.id)).toEqual(["meta-hyperion-richland-parish-la", "homer-city-energy-campus-generation-pa"]);
+    expect(out[0]).toHaveProperty("statusHistory", []);
+  });
+  it("strips keys the schema does not know", () => {
+    const extra = { ...(rec("meta-hyperion-richland-parish-la") as object), internalOnlyKey: "x" } as never;
+    expect(pickSamples([extra])[0]).not.toHaveProperty("internalOnlyKey");
+  });
+  it("loadOfferSamples fails soft to null with a code-only log", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    mocks.getAllFacilities.mockRejectedValue(new Error("Failed query: secret"));
+    await expect(loadOfferSamples()).resolves.toBeNull();
+    expect(String(log.mock.calls[0]![0])).not.toContain("secret");
+  });
+  it("exposes headlines, dropping non-strings", () => {
+    const e = toOfferEdition({
+      editionDate: "2026-11-17",
+      recordCount: 1,
+      files: [],
+      changelogSummary: { headlines: ["Added: A", 3] },
+    });
+    expect(e.headlines).toEqual(["Added: A"]);
   });
 });

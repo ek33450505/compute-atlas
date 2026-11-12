@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { CSV_COLUMNS, facilitiesToCsv } from "@/lib/dataset-csv";
+import { CSV_COLUMNS, CSV_COLUMN_NOTES, facilitiesToCsv } from "@/lib/dataset-csv";
 import { facilitySchema, type Facility } from "@/lib/schema";
 
 /** Minimal RFC 4180 parser (quoted cells, doubled quotes, CRLF/LF inside quotes) so the round trip needs no dependency. */
@@ -271,5 +271,12 @@ describe("facilitiesToCsv", () => {
       const [row] = cellsOf([plant]);
       expect(row[col("generation.poweredFacilityIds")]).toBe("'-odd;ok");
     });
+  });
+});
+
+describe("CSV_COLUMN_NOTES", () => {
+  it("has a non-empty note for exactly the CSV columns, no more and no fewer", () => {
+    expect(Object.keys(CSV_COLUMN_NOTES).sort()).toEqual([...CSV_COLUMNS].sort());
+    for (const column of CSV_COLUMNS) expect(CSV_COLUMN_NOTES[column]?.trim()).toBeTruthy();
   });
 });

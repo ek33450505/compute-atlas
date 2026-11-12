@@ -3,7 +3,7 @@ import { unstable_cache } from "next/cache";
 import { getAllFacilities } from "@/lib/data";
 import { redactedErrorCode } from "@/lib/db-error";
 import { latestPublishedEdition } from "@/lib/dataset-editions";
-import type { Facility } from "@/lib/schema";
+import { facilitySchema, type Facility } from "@/lib/schema";
 
 /** What the sales pages quote about the dataset, all computed from live data. */
 export interface DatasetCounts {
@@ -26,7 +26,19 @@ export interface OfferEdition {
   initial: boolean;
   /** File sizes by file name, in bytes. */
   fileBytes: Record<string, number>;
+  /** The changelog's plain headlines (at most ten); for the first edition, only its "Initial edition" line. */
+  headlines: string[];
 }
+
+/**
+ * The three records the sales page shows in full, one per facility type. A fixed constant on
+ * purpose: nothing from a request (query, header, cookie) may choose which records render.
+ */
+export const SAMPLE_FACILITY_IDS: readonly string[] = [
+  "meta-hyperion-richland-parish-la",
+  "riot-platforms-corsicana-tx",
+  "homer-city-energy-campus-generation-pa",
+];
 
 type CountableFacility = Pick<Facility, "facilityType" | "operator" | "sources"> & {
   location: Pick<Facility["location"], "state">;
@@ -107,7 +119,22 @@ export function toOfferEdition(edition: {
     removed: numberOrNull(summary.removed),
     initial,
     fileBytes: Object.fromEntries(edition.files.map((f) => [f.name, f.bytes])),
+    headlines: headlines.filter((h): h is string => typeof h === "string"),
   };
+}
+
+/** The sample records present in `facilities`, in `SAMPLE_FACILITY_IDS` order; ids not found are skipped. */
+export function pickSamples(facilities: readonly Facility[]): Facility[] {
+  return SAMPLE_FACILITY_IDS.flatMap((id) => {
+    const found = facilities.find((f) => f.id === id);
+    if (!found) return [];
+    // facilities.json is written after facilitiesSchema.parse (unknown keys stripped, defaults filled),
+    // while the live read returns the stored doc as is; parse so the sample has the file's shape.
+    const parsed = facilitySchema.safeParse(found);
+    if (parsed.success) return [parsed.data];
+    console.error("dataset offer: a sample record failed schema validation and was skipped");
+    return [];
+  });
 }
 
 const READ_TIMEOUT_MS = 5000;
@@ -140,6 +167,10 @@ async function readCounts(): Promise<DatasetCounts> {
   return countDataset(await withTimeout(getAllFacilities));
 }
 
+async function readSamples(): Promise<Facility[]> {
+  return pickSamples(await withTimeout(getAllFacilities));
+}
+
 // `unstable_cache` needs the Next request context, which vitest lacks (same dodge as lib/data.ts).
 // The cached readers throw on failure or timeout (a thrown read is never cached); the exported
 // loaders catch, log a SQLSTATE only, and fail soft to null so the page renders without the strip.
@@ -151,6 +182,10 @@ const cachedEdition: () => Promise<OfferEdition | null> = process.env.VITEST
 const cachedCounts: () => Promise<DatasetCounts> = process.env.VITEST
   ? readCounts
   : unstable_cache(readCounts, ["dataset-offer-counts"], { revalidate: 86400 });
+
+const cachedSamples: () => Promise<Facility[]> = process.env.VITEST
+  ? readSamples
+  : unstable_cache(readSamples, ["dataset-offer-samples"], { revalidate: 86400 });
 
 /** The latest published edition, or null when there is none or the read fails. */
 export async function loadOfferEdition(): Promise<OfferEdition | null> {
@@ -168,6 +203,16 @@ export async function loadOfferCounts(): Promise<DatasetCounts | null> {
     return await cachedCounts();
   } catch (err) {
     console.error(`dataset offer: facility read failed (code: ${redactedErrorCode(err)})`);
+    return null;
+  }
+}
+
+/** The fixed sample records, or null when the facility read fails. Ids not in the dataset are skipped. */
+export async function loadOfferSamples(): Promise<Facility[] | null> {
+  try {
+    return await cachedSamples();
+  } catch (err) {
+    console.error(`dataset offer: sample read failed (code: ${redactedErrorCode(err)})`);
     return null;
   }
 }
