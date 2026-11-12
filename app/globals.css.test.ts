@@ -839,3 +839,24 @@ describe("app/globals.css — prefers-contrast and prefers-reduced-transparency 
     expect(occurrencesOf(".hero-scrim {")).toHaveLength(1);
   });
 });
+
+describe("map popup stacking", () => {
+  const zOf = (file: string): number[] =>
+    [...readFileSync(path.resolve(process.cwd(), file), "utf8").matchAll(/\bz-(\d+)\b/g)].map(
+      (m) => Number(m[1])
+    );
+  const rule = /(?:^|\})\s*\.atlas-popup\s*\{([^}]*)\}/.exec(CODE);
+  const popupZ = Number(/z-index:\s*(\d+)/.exec(rule?.[1] ?? "")?.[1]);
+
+  it("paints the popup above every map overlay and below the sticky header", () => {
+    const overlayZ = [
+      ...zOf("components/map/facility-map.tsx"),
+      ...zOf("components/map/map-legend.tsx"),
+    ];
+    expect(overlayZ.length).toBeGreaterThan(0);
+    expect(popupZ).toBeGreaterThan(Math.max(...overlayZ));
+    const headerZ = zOf("components/site-header.tsx");
+    expect(headerZ).toContain(40);
+    expect(popupZ).toBeLessThan(Math.min(...headerZ));
+  });
+});
