@@ -70,6 +70,7 @@ function makeSummary(results: SourceVerification[]): VerifyFieldsSummary {
     recoveredViaArchive: 0,
     aborted: false,
     abortReason: null,
+    nextCursor: null,
     results,
   };
 }

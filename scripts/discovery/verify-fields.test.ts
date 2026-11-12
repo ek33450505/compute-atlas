@@ -690,19 +690,19 @@ describe("runVerify — Wayback fallback (archived-snapshot recovery)", () => {
     // it still does not abort.
     const genuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
       makeFacility({
-        id: `bad-facility-${i}`,
+        id: `a-bad-facility-${i}`,
         capacityMw: { operational: 100 },
         sources: [{ url: `https://example.com/bad-${i}`, label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
       })
     );
     const recoveredFacility = makeFacility({
-      id: "recovered-facility",
+      id: "b-recovered-facility",
       capacityMw: { operational: 100 },
       sources: [{ url: "https://example.com/recovered", label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
     });
     const moreGenuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
       makeFacility({
-        id: `bad-facility-later-${i}`,
+        id: `c-bad-facility-later-${i}`,
         capacityMw: { operational: 100 },
         sources: [{ url: `https://example.com/bad-later-${i}`, label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
       })
@@ -1007,7 +1007,7 @@ describe("runVerify — abort guard on a consecutive total-fetch-failure streak"
 
   it("preserves results found before the abort — an aborted run must not discard legitimate findings", async () => {
     const goodFacility = makeFacility({
-      id: "good-facility",
+      id: "a-good-facility",
       capacityMw: { operational: 100 },
       sources: [{ url: "https://example.com/good", label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
     });
@@ -1045,7 +1045,7 @@ describe("runVerify — abort guard on a consecutive total-fetch-failure streak"
 
     expect(summary.aborted).toBe(true);
     expect(summary.disagreements).toBe(1);
-    expect(summary.results.some((r) => r.facilityId === "good-facility" && r.outcome === "disagreement")).toBe(true);
+    expect(summary.results.some((r) => r.facilityId === "a-good-facility" && r.outcome === "disagreement")).toBe(true);
   });
 
   it("does not trip below the threshold", async () => {
@@ -1487,7 +1487,7 @@ describe("runVerify — checkpoint (crash durability)", () => {
     const outPath = path.join(dir, "summary.json");
 
     const goodFacility = makeFacility({
-      id: "good-facility",
+      id: "a-good-facility",
       capacityMw: { operational: 100 },
       sources: [{ url: "https://example.com/good", label: "Source", retrievedAt: "2026-01-01", kind: "press" }],
     });
@@ -1536,7 +1536,7 @@ describe("runVerify — checkpoint (crash durability)", () => {
     // consumer must not be able to tell a checkpoint file from a final one.
     expect(onDisk.runId).toBe(summary.runId);
     expect(onDisk.disagreements).toBe(1);
-    expect(onDisk.results.some((r) => r.facilityId === "good-facility" && r.outcome === "disagreement")).toBe(true);
+    expect(onDisk.results.some((r) => r.facilityId === "a-good-facility" && r.outcome === "disagreement")).toBe(true);
   });
 
   it("atomicWriteJson writes valid JSON matching the input, and leaves no .tmp file behind", () => {

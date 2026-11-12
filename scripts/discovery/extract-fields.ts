@@ -112,8 +112,13 @@
  * Run via:
  *   npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
  *     --fields water.coolingType --out <path> \
- *     [--limit N] [--facility <id>] [--run-id ID]
+ *     [--limit N] [--facility <id>] [--run-id ID] [--cursor-file <path>] \
+ *     [--next-cursor-out <path>]
  *   (omit --out for a dry run: prints a summary, writes nothing)
+ *
+ *   --cursor-file makes the bounded run resumable (see cursor.ts): it starts
+ *   after the facility id stored in the file, wraps at the end of the table,
+ *   and records the last facility reached when the run did not abort.
  *
  *   --fields is REQUIRED (see parseArgs, below the CLI section): this script
  *   STAGES candidates for human review, so the shortest command must not
@@ -122,12 +127,24 @@
  *   P=50%) and are not safe to run unattended.
  *
  * Never imports or touches the DB, never calls createSubmission — this
- * script's only write is the candidates file itself.
+ * script's only writes are the candidates file and the optional cursor file.
  *
  * Uses relative imports throughout, matching the rest of scripts/discovery/.
  */
 import { mkdirSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
+
+import {
+  beginCursorRun,
+  clearNextCursorOutFromArgv,
+  finalizeCursorRun,
+  parseCursorFileFlag,
+  parseNextCursorOutFlag,
+  proposeNextCursor,
+  type ProcessedFacility,
+  rotateAfterCursor,
+  sortById,
+} from "./cursor";
 
 import { NOT_RECORDABLE_FIELDS, waterCoolingTypeEnum, type Facility, type Source } from "../../lib/schema";
 import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
@@ -218,11 +235,12 @@ function fieldIsMissing(facility: Facility, field: ExtractableField): boolean {
 }
 
 /** Every (facility, field) pair in `facilities` × `fields` whose target field
- * is currently undefined. Order: outer loop over facilities, inner loop over
+ * is currently undefined. Order: facilities sorted by id (so the bounded lane
+ * and `--cursor-file` see a deterministic table order), inner loop over
  * `fields` in the order given. */
 export function selectGaps(facilities: Facility[], fields: ExtractableField[]): FieldGap[] {
   const gaps: FieldGap[] = [];
-  for (const facility of facilities) {
+  for (const facility of sortById(facilities, (f) => f.id)) {
     for (const field of fields) {
       if (fieldIsMissing(facility, field)) {
         gaps.push({ facility, field });
@@ -578,6 +596,14 @@ export function isValidValueForField(field: ExtractableField, value: number | st
       && value !== "hybrid";
   }
   return typeof value === "number" && Number.isFinite(value);
+}
+
+/** Model calls made (`attempted`) and usably answered (`answered`). Summed
+ * over a run, `attempted > 0 && answered === 0` means the model was unusable (no usable answer), and
+ * the run proposes no cursor move (see cursor.ts). Shared with verify-fields.ts. */
+export interface ModelCallTally {
+  attempted: number;
+  answered: number;
 }
 
 export interface ExtractionOutcome {
@@ -1154,6 +1180,8 @@ export interface RunExtractOptions {
   limit?: number;
   facilityId?: string;
   runId: string;
+  /** Last facility id reached by the previous bounded run; see cursor.ts. */
+  cursor?: string;
 }
 
 export interface RunExtractSummary {
@@ -1249,6 +1277,11 @@ export interface RunExtractSummary {
   aborted: boolean;
   /** Human-readable reason, set iff `aborted` is true; `null` otherwise. */
   abortReason: string | null;
+  /** Proposed next `--cursor-file` value: the id of the last facility
+   * processed, whatever its outcome. `null` = the cursor must not move (the run
+   * aborted, the model was unusable (no usable answer), or the run was a dry run / had no cursor).
+   * The tool never writes the cursor; see cursor.ts. */
+  nextCursor: string | null;
   reviewFlagged: number;
   candidates: Track5Candidate[];
 }
@@ -1297,6 +1330,7 @@ interface FacilitySourcesResult {
   sourcesRead: number;
   sawAnyReadable: boolean;
   sawAnyUnreadable: boolean;
+  modelCalls: ModelCallTally;
 }
 
 /**
@@ -1496,6 +1530,7 @@ async function extractFieldsFromReadableText(
   accepted: AcceptedExtraction[],
   fieldFailureReason: Map<ExtractableField, FieldFailureReason>,
   deps: RunExtractDeps,
+  modelCalls: ModelCallTally,
   archive?: { archiveUrl: string }
 ): Promise<void> {
   const archiveSuffix = archive ? `, via archive ${archive.archiveUrl}` : "";
@@ -1507,6 +1542,8 @@ async function extractFieldsFromReadableText(
     }
 
     const outcome = await extractField(field, facility, windowedText, deps);
+    modelCalls.attempted++;
+    if (outcome.ok) modelCalls.answered++;
     if (!outcome.ok) {
       console.log(`skip: ${facility.id} ${field} — model call unavailable on ${source.url}${archiveSuffix} (${outcome.modelFailureReason})`);
       fieldFailureReason.set(field, "modelUnavailable");
@@ -1598,6 +1635,7 @@ async function processFacilitySources(
   const unfilled = new Set(fields);
   const accepted: AcceptedExtraction[] = [];
   const fieldFailureReason = new Map<ExtractableField, FieldFailureReason>();
+  const modelCalls: ModelCallTally = { attempted: 0, answered: 0 };
   let sourcesRead = 0;
   let sawAnyReadable = false;
   let sawAnyUnreadable = false;
@@ -1667,7 +1705,7 @@ async function processFacilitySources(
           console.log(
             `recovered-via-archive: ${facility.id} — ${source.url} — direct fetch failed (${detail}); reading Wayback snapshot ${archiveUrl} instead (${windowed.mode}, ${windowed.text.length} chars)`
           );
-          await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps, {
+          await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps, modelCalls, {
             archiveUrl,
           });
           continue;
@@ -1706,10 +1744,10 @@ async function processFacilitySources(
 
     // Only the fields still unfilled are tried against this source — a field
     // already filled from an earlier source is never re-attempted.
-    await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps);
+    await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps, modelCalls);
   }
 
-  return { accepted, fieldFailureReason, sourcesRead, sawAnyReadable, sawAnyUnreadable };
+  return { accepted, fieldFailureReason, sourcesRead, sawAnyReadable, sawAnyUnreadable, modelCalls };
 }
 
 /**
@@ -1868,13 +1906,18 @@ export async function runExtract(
     abortedUnprocessed: 0,
     aborted: false,
     abortReason: null,
+    nextCursor: null,
     reviewFlagged: 0,
     candidates: [],
   };
 
   const targetFacilities = opts.facilityId ? facilities.filter((f) => f.id === opts.facilityId) : facilities;
 
-  let gaps = selectGaps(targetFacilities, opts.fields);
+  // A value the maintainer rejected can be re-staged once per full lap of the
+  // cursor (~7 weeks). There is deliberately no re-staging guard: discovery_reader
+  // cannot read `submissions` and the owner credential is not widened for this
+  // lane (decision 2026-11-12).
+  let gaps = rotateAfterCursor(selectGaps(targetFacilities, opts.fields), opts.cursor, (g) => g.facility.id);
   if (opts.limit !== undefined) {
     gaps = gaps.slice(0, opts.limit);
   }
@@ -1916,6 +1959,7 @@ export async function runExtract(
   // than throwing) is what preserves everything accumulated in `summary`
   // and `outcomes` so far.
   let abortReason: string | null = null;
+  const processed: ProcessedFacility[] = [];
 
   // One instance per `runExtract` call — see `FetchState`'s doc-comment —
   // so the pdf_extractor_unavailable warning's "once per run" guarantee
@@ -1926,6 +1970,7 @@ export async function runExtract(
     try {
       const result = await processFacilitySources(facility, fields, deps, fetchState);
       summary.sourcesRead += result.sourcesRead;
+      processed.push({ id: facility.id, ...result.modelCalls });
 
       if (!result.sawAnyReadable) {
         // `unreadable`/`fetchFailures` must reconcile against `gapsConsidered`
@@ -2110,6 +2155,8 @@ export async function runExtract(
     }
   }
 
+  summary.nextCursor = proposeNextCursor({ processed, aborted: summary.aborted });
+
   // Single tally point: every gap's final entry in `outcomes` is counted
   // exactly once here. `"unclassified"` entries are counted (loudly, via the
   // console.error above) rather than thrown — a bookkeeping bug should never
@@ -2134,6 +2181,8 @@ interface CliArgs {
   fields: ExtractableField[];
   facilityId?: string;
   runId: string;
+  cursorFile?: string;
+  nextCursorOut?: string;
 }
 
 /**
@@ -2206,6 +2255,8 @@ export function parseLimitArg(raw: string | undefined): number | undefined {
 
 export function parseArgs(argv: string[]): CliArgs {
   let outPath: string | undefined;
+  let cursorFile: string | undefined;
+  let nextCursorOut: string | undefined;
   let limit: number | undefined;
   // Deliberately starts `undefined`, NOT `[...EXTRACTABLE_FIELDS]`. Unlike
   // parseFieldsArg's own "omitted means all six" contract (which verify-fields.ts's
@@ -2220,7 +2271,15 @@ export function parseArgs(argv: string[]): CliArgs {
 
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i];
-    if (flag === "--out") {
+    const cursorFlag = parseCursorFileFlag(argv, i);
+    const nextOutFlag = parseNextCursorOutFlag(argv, i);
+    if (cursorFlag) {
+      cursorFile = cursorFlag.value;
+      i += cursorFlag.consumed;
+    } else if (nextOutFlag) {
+      nextCursorOut = nextOutFlag.value;
+      i += nextOutFlag.consumed;
+    } else if (flag === "--out") {
       outPath = argv[++i];
     } else if (flag.startsWith("--out=")) {
       outPath = flag.slice("--out=".length);
@@ -2286,7 +2345,7 @@ export function parseArgs(argv: string[]): CliArgs {
     );
   }
 
-  return { outPath, limit, fields, facilityId, runId };
+  return { outPath, limit, fields, facilityId, runId, cursorFile, nextCursorOut };
 }
 
 function printSummary(summary: RunExtractSummary): void {
@@ -2312,6 +2371,7 @@ export function buildRealDeps(): RunExtractDeps {
 }
 
 async function main(): Promise<void> {
+  clearNextCursorOutFromArgv(process.argv.slice(2));
   const args = parseArgs(process.argv.slice(2));
   const { facilities } = await loadFacilities();
 
@@ -2334,9 +2394,16 @@ async function main(): Promise<void> {
     };
   }
 
+  const { cursor } = beginCursorRun(args);
   const summary = await runExtract(
     facilities,
-    { fields: args.fields, limit: args.limit, facilityId: args.facilityId, runId: args.runId },
+    {
+      fields: args.fields,
+      limit: args.limit,
+      facilityId: args.facilityId,
+      runId: args.runId,
+      cursor,
+    },
     deps
   );
 
@@ -2353,6 +2420,8 @@ async function main(): Promise<void> {
     writeFileSync(args.outPath, JSON.stringify(summary.candidates, null, 2));
     console.log(`wrote ${summary.candidates.length} candidate(s) to ${args.outPath}`);
   }
+  // Report-only: the scheduler persists the cursor after the downstream step.
+  finalizeCursorRun(args, summary);
   printSummary(summary);
 
   if (summary.aborted) {

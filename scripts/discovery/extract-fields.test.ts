@@ -756,15 +756,15 @@ describe("runExtract — Wayback fallback (archived-snapshot recovery)", () => {
     const archivedText = `The facility has an operational capacity of 100 MW. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
 
     const genuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
-      makeArchiveFacility(`bad-facility-${i}`, [
+      makeArchiveFacility(`a-bad-facility-${i}`, [
         { url: `https://example.com/bad-${i}`, label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
       ])
     );
-    const recoveredFacility = makeArchiveFacility("recovered-facility", [
+    const recoveredFacility = makeArchiveFacility("b-recovered-facility", [
       { url: "https://example.com/recovered", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
     ]);
     const moreGenuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
-      makeArchiveFacility(`bad-facility-later-${i}`, [
+      makeArchiveFacility(`c-bad-facility-later-${i}`, [
         { url: `https://example.com/bad-later-${i}`, label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
       ])
     );
@@ -1877,16 +1877,16 @@ describe("runExtract — aborts loudly on a consecutive total-fetch-failure stre
     // too thin to use), then THRESHOLD-1 more failures — never an unbroken
     // run of THRESHOLD, so this must complete normally.
     const before = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
-      makeUnfetchableFacility(`before-${i}`)
+      makeUnfetchableFacility(`a-before-${i}`)
     );
-    const resetFacility = makeUnfetchableFacility("reset-facility");
+    const resetFacility = makeUnfetchableFacility("b-reset-facility");
     const after = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
-      makeUnfetchableFacility(`after-${i}`)
+      makeUnfetchableFacility(`c-after-${i}`)
     );
 
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async (url) => {
-        if (url === "https://example.com/reset-facility") {
+        if (url === "https://example.com/b-reset-facility") {
           return { ok: true, text: "short", finalUrl: url, httpStatus: 200 }; // thin, but a real fetch
         }
         return { ok: false, reason: "network_error", errorCode: "ECONNRESET" };
@@ -1942,18 +1942,18 @@ describe("runExtract — combined real-shape edge cases reconcile (defect 7, ret
   }
 
   it("reconciles across a zero-source facility, an early-exit facility, a limit-truncated facility, and a partial-fill facility together", async () => {
-    const zeroSourceFacility = makeEdgeCaseFacility("zero-source", "Zero Source Corp", []);
-    const earlyExitFacility = makeEdgeCaseFacility("early-exit", "Early Exit Corp", [
+    const zeroSourceFacility = makeEdgeCaseFacility("a-zero-source", "Zero Source Corp", []);
+    const earlyExitFacility = makeEdgeCaseFacility("b-early-exit", "Early Exit Corp", [
       source("https://example.com/early-exit-s0"),
       source("https://example.com/early-exit-s1"),
       source("https://example.com/early-exit-s2"),
     ]);
     // Passed BEFORE limitCutFacility so its gaps (both fields) survive the
     // slice fully — only limitCutFacility's SECOND gap gets truncated.
-    const partialFillFacility = makeEdgeCaseFacility("partial-fill", "Partial Fill Corp", [
+    const partialFillFacility = makeEdgeCaseFacility("c-partial-fill", "Partial Fill Corp", [
       source("https://example.com/partial-fill-s0"),
     ]);
-    const limitCutFacility = makeEdgeCaseFacility("limit-cut", "Limit Cut Corp", [
+    const limitCutFacility = makeEdgeCaseFacility("d-limit-cut", "Limit Cut Corp", [
       source("https://example.com/limit-cut-s0"),
     ]);
 
@@ -2028,7 +2028,7 @@ describe("runExtract — combined real-shape edge cases reconcile (defect 7, ret
     // precisely, not merely implied by the aggregate `extracted` total (which
     // could stay correct even if this specific field were dropped while some
     // other field were double-counted). Assert its actual emitted candidate.
-    const limitCutCandidate = summary.candidates.find((c) => c.enrichmentUpdate.targetFacilityId === "limit-cut");
+    const limitCutCandidate = summary.candidates.find((c) => c.enrichmentUpdate.targetFacilityId === "d-limit-cut");
     expect(limitCutCandidate).toBeDefined();
     expect(limitCutCandidate?.enrichmentUpdate.fields.capacityMw?.planned).toBe(77);
     // The truncated field was never even requested for this facility — it
