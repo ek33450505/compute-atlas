@@ -33,8 +33,10 @@
  * 0. Triage duplicate: if the lead's triage (recorded at submit time) already
  *    found live facilities citing its URL, defer it immediately — BEFORE any
  *    fetch or model work — with a note pointing at /admin/leads.
- * 1. Fetch the lead's URL. A fetch failure leaves the lead `new` (a
- *    bot-walled page is not a bad tip) and does not count against it.
+ * 1. Fetch the lead's URL (PDFs via pdftotext). A permanently unreadable page
+ *    defers the lead; a transient failure leaves it `new` until it is 14 days
+ *    old (see `classifyFetchFailure`); the run exits 1
+ *    if any staging write failed.
  * 2. Ask the model to extract name/operator/facilityType/status/city/state/
  *    capacityMw, explicitly instructed to return null for anything the page
  *    does not state. A failed or malformed model call is treated exactly
@@ -101,9 +103,9 @@
 import { facilitySchema } from "../../lib/schema";
 import { buildCreatePayload, type CreateContributeInput } from "../../lib/contribute";
 import {
-  listLeadsForAdmin,
+  deferLeadIfNew,
+  listNewLeadsOldestFirst,
   promoteLead,
-  updateLeadStatus,
   type AdminLeadRow,
   type LeadActionResult,
 } from "../../lib/leads";
@@ -111,8 +113,10 @@ import { createSubmission, type SubmissionResult } from "../../lib/submissions";
 import { and, eq, sql } from "drizzle-orm";
 import { facilitiesTable } from "../../lib/db/schema";
 import { geocodeUS, type GeocodeResult } from "../../lib/geocode";
-import { verifySource, type VerifyClaim } from "./verify-source";
+import { verifySource, truncatePageText, type VerifyClaim } from "./verify-source";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
+import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
+import { fetchTextWithPdfRetryDetailed, type PdfPathFailure } from "./pdf-retry";
 import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
 import { getFacilitiesReadDb } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
@@ -196,7 +200,7 @@ function isLeadExtraction(data: unknown): data is LeadExtraction {
 // Pipeline driver
 // ============================================================================
 
-export type LeadForLane = Pick<AdminLeadRow, "id" | "url" | "note" | "attribution" | "triage">;
+export type LeadForLane = Pick<AdminLeadRow, "id" | "url" | "note" | "attribution" | "triage" | "createdAt">;
 
 /** Nominatim 403s Node's default fetch User-Agent (measured 2026-10-09); its
  * usage policy wants an identifying one. */
@@ -224,6 +228,8 @@ export class LeadsLaneUnavailableError extends Error {
 export interface LeadsLaneDeps {
   listNewLeadsImpl: (limit: number) => Promise<LeadForLane[]>;
   fetchPageTextImpl: (url: string) => Promise<FetchPageTextResult>;
+  /** PDF fallback (pdftotext) for a `bad_content_type` page; see `fetchTextWithPdfRetry`. */
+  fetchPdfTextImpl: (url: string) => Promise<FetchPdfTextResult>;
   /** Generic over T so both the extraction call (LeadExtraction) and the
    * verification gate's own model call (ModelVerdict, via verify-source.ts)
    * share one injected implementation — mirrors ollama-client.ts's own
@@ -250,6 +256,7 @@ export interface LeadsLaneDeps {
    * the two indistinguishable and stranded its own inputs outside the `new`
    * queue it reads. See LEAD_STATUSES in lib/lead-fields.ts.
    */
+  /** Must only defer a lead that is still `new`; a 409 result means someone else changed it. */
   markDeferredImpl: (id: string, note: string) => Promise<LeadActionResult>;
   promoteLeadImpl: (id: string, submissionId: string, note?: string) => Promise<LeadActionResult>;
   now: () => Date;
@@ -285,6 +292,8 @@ export interface RunLeadsLaneSummary {
    * (size cap / content type), ambiguous rather than a clean rejection. The
    * lead is left untouched (`new`), not moved to `deferred`. */
   escalated: number;
+  /** Leads left `new` because pdftotext is missing; an environment fault, so it fails the run. */
+  pdfExtractorUnavailable: number;
   geocodeFailed: number;
   /** The geocoder THREW (HTTP error / network) — an outage, not a judgement
    * about the lead, so the lead is left untouched (`new`) and the run goes on. */
@@ -306,6 +315,7 @@ function freshSummary(runId: string): RunLeadsLaneSummary {
     fetchFailed: 0,
     unusable: 0,
     escalated: 0,
+    pdfExtractorUnavailable: 0,
     geocodeFailed: 0,
     geocodeErrored: 0,
     possibleDuplicate: 0,
@@ -326,6 +336,66 @@ function capacityField(
 ): { capacityOperationalMw?: number; capacityPlannedMw?: number } {
   if (capacityMw === null) return {};
   return status === "operational" ? { capacityOperationalMw: capacityMw } : { capacityPlannedMw: capacityMw };
+}
+
+/** Read failures that retrying cannot fix. `redirect_limit` is a redirect loop;
+ * `pdf_extract_failed` is a PDF that downloaded but would not parse. */
+export const PERMANENT_FETCH_REASONS: ReadonlySet<string> = new Set([
+  "bad_content_type",
+  "too_large",
+  "blocked",
+  "redirect_limit",
+  "pdf_extract_failed",
+]);
+/** `http_error` 4xx statuses that are transient: bot walls (401/403) and timeouts/rate limits. */
+export const TRANSIENT_HTTP_STATUSES: ReadonlySet<number> = new Set([401, 403, 408, 429]);
+/** A lead stuck in a retryable state this long is deferred, so it cannot starve the queue. */
+export const LEAD_TRANSIENT_GIVE_UP_DAYS = 14;
+
+/** Anything with a reason code: a page-fetch failure or a PDF-path failure. */
+interface ReadFailure {
+  reason: string;
+  httpStatus?: number;
+}
+
+export function isPastGiveUp(createdAt: Date, now: Date): boolean {
+  return (now.getTime() - createdAt.getTime()) / 86_400_000 > LEAD_TRANSIENT_GIVE_UP_DAYS;
+}
+
+/** Fixed age-out note for a lead stuck in a retryable state (`what` e.g. "page could not be read"). */
+function giveUpNote(what: string, reason: string): string {
+  return `leads-lane: ${what} for ${LEAD_TRANSIENT_GIVE_UP_DAYS} days (${reason})`;
+}
+
+export type FetchFailureDecision =
+  | { action: "defer"; note: string }
+  | { action: "retry" }
+  /** Not the lead's fault (poppler missing): stay `new`, never age out, report it. */
+  | { action: "environment" };
+
+export function classifyFetchFailure(failure: ReadFailure, createdAt: Date, now: Date): FetchFailureDecision {
+  if (failure.reason === "pdf_extractor_unavailable") return { action: "environment" };
+  const status = failure.httpStatus;
+  const permanent =
+    PERMANENT_FETCH_REASONS.has(failure.reason) ||
+    (failure.reason === "http_error" &&
+      status !== undefined &&
+      status >= 400 &&
+      status < 500 &&
+      !TRANSIENT_HTTP_STATUSES.has(status));
+  if (permanent) return { action: "defer", note: `leads-lane: page could not be read (${failure.reason})` };
+  if (isPastGiveUp(createdAt, now)) {
+    return { action: "defer", note: giveUpNote("page could not be read", failure.reason) };
+  }
+  return { action: "retry" };
+}
+
+/** The failure to classify: when the PDF fallback ran and failed, ITS reason
+ * (not the page's `bad_content_type`) decides permanent vs transient. */
+function effectiveFailure(page: ReadFailure, pdf: PdfPathFailure | undefined): ReadFailure {
+  if (!pdf) return page;
+  if (pdf.reason === "pdf_path_threw") return { reason: "pdf_path_threw" };
+  return pdf;
 }
 
 /** True if the extraction has enough of an identity to attempt staging at
@@ -397,16 +467,43 @@ async function processLead(
     return;
   }
 
-  const fetchResult = await deps.fetchPageTextImpl(lead.url);
+  // PDF-capable reader, shared with verifySource below so a PDF tip is read
+  // the same way at both steps. `pdfFailure` keeps the PDF path's own reason.
+  let pdfFailure: PdfPathFailure | undefined;
+  const readPage = async (url: string) => {
+    const detailed = await fetchTextWithPdfRetryDetailed(url, {
+      fetchPageTextImpl: deps.fetchPageTextImpl,
+      fetchPdfTextImpl: deps.fetchPdfTextImpl,
+    });
+    pdfFailure = detailed.pdfFailure;
+    return detailed.result;
+  };
+
+  const fetchResult = await readPage(lead.url);
   if (!fetchResult.ok) {
-    console.log(`fetch failed for lead ${lead.id} (${lead.url}): ${fetchResult.reason} — leaving lead 'new'`);
+    // No attempt-count column exists, so the lead's age bounds retries: a
+    // permanent failure defers at once, a transient one retries until the
+    // lead is LEAD_TRANSIENT_GIVE_UP_DAYS old.
+    const failure = effectiveFailure(fetchResult, pdfFailure);
+    const decision = classifyFetchFailure(failure, lead.createdAt, deps.now());
+    if (decision.action === "environment") {
+      console.log(`fetch failed for lead ${lead.id} (${lead.url}): pdftotext unavailable (poppler not installed) — leaving lead 'new'`);
+      summary.pdfExtractorUnavailable++;
+      return;
+    }
     summary.fetchFailed++;
+    if (decision.action === "defer") {
+      console.log(`fetch failed for lead ${lead.id} (${lead.url}): ${decision.note} — ${deferLabel}`);
+      if (!opts.dryRun) await deps.markDeferredImpl(lead.id, decision.note);
+    } else {
+      console.log(`fetch failed for lead ${lead.id} (${lead.url}): ${failure.reason} (transient) — leaving lead 'new'`);
+    }
     return;
   }
 
   const extractionResult = await deps.callOllamaImpl<LeadExtraction>({
     systemPrompt: EXTRACTION_SYSTEM_PROMPT,
-    userPrompt: buildExtractionUserPrompt(fetchResult.text),
+    userPrompt: buildExtractionUserPrompt(truncatePageText(fetchResult.text).text),
     jsonSchema: LEAD_EXTRACTION_JSON_SCHEMA,
   });
   if (!extractionResult.ok) {
@@ -430,6 +527,16 @@ async function processLead(
     return;
   }
 
+  // Never stage a value the page did not state: a null type/status is a human's call.
+  if (extraction.facilityType === null || extraction.status === null) {
+    console.log(`lead ${lead.id}: extraction left facility type/status null — ${deferLabel}`);
+    summary.unusable++;
+    if (!opts.dryRun) {
+      await deps.markDeferredImpl(lead.id, "leads-lane: page does not state facility type/status");
+    }
+    return;
+  }
+
   const claim: VerifyClaim = {
     entityName: extraction.name,
     ...(extraction.capacityMw !== null
@@ -437,7 +544,7 @@ async function processLead(
       : {}),
   };
   const verification = await verifySource(lead.url, claim, {
-    fetchPageTextImpl: deps.fetchPageTextImpl,
+    fetchPageTextImpl: readPage,
     callOllamaImpl: (verifyOpts) => deps.callOllamaImpl(verifyOpts),
     fetchImpl: deps.rawFetchImpl,
   });
@@ -446,8 +553,15 @@ async function processLead(
     throw new LeadsLaneUnavailableError(lead.url, "verification", verification.reason);
   }
   if (verification.verdict === "escalate") {
-    console.log(`lead ${lead.id}: verification escalated (${verification.reason}) — leaving lead 'new'`);
     summary.escalated++;
+    if (isPastGiveUp(lead.createdAt, deps.now())) {
+      console.log(`lead ${lead.id}: verification escalated (${verification.reason}) for over ${LEAD_TRANSIENT_GIVE_UP_DAYS} days — ${deferLabel}`);
+      if (!opts.dryRun) {
+        await deps.markDeferredImpl(lead.id, giveUpNote("page could not be verified", verification.reason));
+      }
+    } else {
+      console.log(`lead ${lead.id}: verification escalated (${verification.reason}) — leaving lead 'new'`);
+    }
     return;
   }
   if (verification.verdict === "rejected") {
@@ -482,10 +596,14 @@ async function processLead(
     geocodeResults = await deps.geocodeImpl(geocodeQuery);
   } catch (err) {
     // An HTTP/network failure is an outage, not a verdict on the lead.
+    const giveUp = isPastGiveUp(lead.createdAt, deps.now());
     console.log(
-      `lead ${lead.id}: geocode errored (${formatErrorSummary(err)}) — leaving lead 'new'`
+      `lead ${lead.id}: geocode errored (${formatErrorSummary(err)}) — ${giveUp ? deferLabel : "leaving lead 'new'"}`
     );
     summary.geocodeErrored++;
+    if (giveUp && !opts.dryRun) {
+      await deps.markDeferredImpl(lead.id, giveUpNote("geocoder errored", "geocode_error"));
+    }
     return;
   }
   const top = geocodeResults[0];
@@ -504,8 +622,8 @@ async function processLead(
     name: extraction.name,
     operator: extraction.operator,
     state: extraction.state.toUpperCase(),
-    facilityType: extraction.facilityType ?? "data_center",
-    status: extraction.status ?? "proposed",
+    facilityType: extraction.facilityType,
+    status: extraction.status,
     lat: top.lat,
     lon: top.lon,
     ...(extraction.city ? { city: extraction.city } : {}),
@@ -557,10 +675,21 @@ async function processLead(
 
   const promoteResult = await deps.promoteLeadImpl(lead.id, submitResult.id, "leads-lane: auto-staged");
   if (!promoteResult.ok) {
-    // The submission genuinely exists at this point — count it staged
-    // regardless. A lead stuck on `new` with a live submission is a much
-    // smaller problem than losing track of a submission that was created.
+    // The submission genuinely exists. Left `new`, the next run would stage a
+    // DUPLICATE pending submission, so park the lead as deferred with the id.
+    // Only if that write fails too is the lead left `new` (and the run fails).
     console.log(`lead ${lead.id}: staged as submission ${submitResult.id} but promoteLead failed — ${promoteResult.error}`);
+    const parked = await deps.markDeferredImpl(
+      lead.id,
+      `leads-lane: staged as submission ${submitResult.id}, promote failed`
+    );
+    if (!parked.ok && parked.status === 409) {
+      // Someone else (a human, or a promote that actually committed) already moved the lead.
+      console.log(`lead ${lead.id}: already changed by someone else (${parked.error}) — not parking`);
+    } else if (!parked.ok) {
+      console.log(`lead ${lead.id}: could not park after promote failure — ${parked.error}; may be re-staged next run`);
+      summary.errors++;
+    }
   }
   summary.staged++;
   summary.stagedLeadIds.push(lead.id);
@@ -613,13 +742,13 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 async function listNewLeadsReal(limit: number): Promise<LeadForLane[]> {
-  const rows = await listLeadsForAdmin("new");
-  return rows.slice(0, limit).map((row) => ({
+  return (await listNewLeadsOldestFirst(limit)).map((row) => ({
     id: row.id,
     url: row.url,
     note: row.note,
     attribution: row.attribution,
     triage: row.triage,
+    createdAt: row.createdAt,
   }));
 }
 
@@ -634,6 +763,7 @@ export function buildRealDeps(): LeadsLaneDeps {
   return {
     listNewLeadsImpl: listNewLeadsReal,
     fetchPageTextImpl: (url) => fetchPageText(url, {}),
+    fetchPdfTextImpl: (url) => fetchPdfText(url, {}),
     callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
     geocodeImpl: (query) => geocodeUS(query, undefined, { userAgent: LEADS_LANE_USER_AGENT }),
     findPossibleDuplicatesImpl: async ({ operator, state }) => {
@@ -651,10 +781,16 @@ export function buildRealDeps(): LeadsLaneDeps {
       return rows.map((r) => r.id);
     },
     createSubmissionImpl: (input) => createSubmission(input),
-    markDeferredImpl: (id, note) => updateLeadStatus(id, "deferred", note),
+    markDeferredImpl: (id, note) => deferLeadIfNew(id, note),
     promoteLeadImpl: (id, submissionId, note) => promoteLead(id, submissionId, note),
     now: () => new Date(),
   };
+}
+
+/** Nonzero when a staging write failed or pdftotext is missing, so run.sh records a FAILURES entry.
+ * A lead the lane deliberately defers is not an error. */
+export function leadsLaneExitCode(summary: RunLeadsLaneSummary): number {
+  return summary.errors > 0 || summary.pdfExtractorUnavailable > 0 ? 1 : 0;
 }
 
 async function main(): Promise<void> {
@@ -663,7 +799,7 @@ async function main(): Promise<void> {
   const summary = await runLeadsLane(args, buildRealDeps());
 
   console.log(JSON.stringify(summary, null, 2));
-  process.exit(0);
+  process.exit(leadsLaneExitCode(summary));
 }
 
 // Only run the CLI when this file is executed directly, not when

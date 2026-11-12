@@ -41,8 +41,12 @@ import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../..
 import { isRestrictedSourceUrl } from "../../lib/restricted-sources";
 import { normalizeSourceUrl } from "./source-url";
 import { verifySource, type VerifyClaim, type VerificationResult } from "./verify-source";
-import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
-import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
+import { fetchPageText } from "./fetch-page-text";
+import { fetchPdfText } from "./fetch-pdf-text";
+import { fetchTextWithPdfRetry } from "./pdf-retry";
+
+// Re-exported: the implementation moved to ./pdf-retry so leads-lane.ts can share it.
+export { fetchTextWithPdfRetry };
 import { callOllama, probeOllama, type ProbeOllamaResult } from "./ollama-client";
 import { loadFacilities } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
@@ -1517,39 +1521,6 @@ export async function runSubmitAndLog(
       }
     }
   }
-}
-
-/**
- * Page fetch with the same PDF fallback `extract-fields.ts` uses
- * (`fetchSourceText`): a `bad_content_type` rejection (the page fetcher
- * refuses `application/pdf` on principle) is retried once through
- * `fetchPdfText` (pdftotext) and the extracted text is verified like any other
- * page. A THROWING PDF path is caught and treated as a failure. When the PDF path cannot read it either, the ORIGINAL
- * `bad_content_type` result is returned so verify-source escalates exactly as
- * before; a missing poppler therefore degrades to an escalation, never to a
- * silent accept.
- */
-export async function fetchTextWithPdfRetry(
-  url: string,
-  deps: {
-    fetchPageTextImpl: (url: string) => Promise<FetchPageTextResult>;
-    fetchPdfTextImpl: (url: string) => Promise<FetchPdfTextResult>;
-  }
-): Promise<FetchPageTextResult> {
-  const pageResult = await deps.fetchPageTextImpl(url);
-  if (pageResult.ok || pageResult.reason !== "bad_content_type") return pageResult;
-  let pdfResult: FetchPdfTextResult;
-  try {
-    pdfResult = await deps.fetchPdfTextImpl(url);
-  } catch (err) {
-    // The PDF path touches the filesystem (temp dir, pdftotext); a throw must
-    // degrade to the original bad_content_type (an escalation), never crash the run.
-    console.log(`pdf-retry-failed: ${url} — ${formatErrorSummary(err)}`);
-    return pageResult;
-  }
-  return pdfResult.ok
-    ? { ok: true, text: pdfResult.text, finalUrl: pdfResult.finalUrl, httpStatus: pdfResult.httpStatus, contentType: pdfResult.contentType }
-    : pageResult;
 }
 
 /**
