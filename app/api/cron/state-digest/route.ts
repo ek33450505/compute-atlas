@@ -2,7 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 
 import { requireAdmin } from "@/lib/api-auth";
 import { jsonResponse } from "@/lib/api-response";
-import { notifyStateSubscribersMonthly } from "@/lib/notify";
+import { DIGEST_GROUP_WORST_CASE_MS, notifyStateSubscribersMonthly } from "@/lib/notify";
 
 /**
  * Monthly state-digest trigger — the one caller of `notifyStateSubscribersMonthly`.
@@ -39,12 +39,26 @@ import { notifyStateSubscribersMonthly } from "@/lib/notify";
  *          window and never finished — crashed or timed out partway through sending. Do not
  *          assume a month's mail went out just because its window shows as claimed; check
  *          `completedAt` first (this route's response does, via `priorRunCompleted`).
- *        - There is intentionally NO `?force=` parameter to bypass the guard. A deliberate
- *          resend requires manually deleting the `state_digest_runs` row for that window in
- *          Neon — the same raw-delete-only convention this repo already uses for retiring a
- *          facility (see docs/maintainers.md). A one-parameter bypass of an idempotency guard
- *          gets used reflexively eventually; requiring a slower, deliberate manual step is the
- *          point, not an oversight.
+ *        - An INCOMPLETE window (`completedAt IS NULL`; the send deadline below makes this an
+ *          expected outcome, not only a crash) is recovered by re-calling THIS route for the
+ *          same window: normally on the admin bearer with `?since=&until=` (the monthly cron
+ *          will not re-fire for an old window). The resume is NOT admin-only: ANY authorised
+ *          call (the cron secret included) whose window holds a stale incomplete run resumes it,
+ *          and at-most-once still holds because the skip rule below does not depend on the
+ *          caller. Once the run is older than `STALE_DIGEST_RUN_MS` (10 min, past
+ *          `maxDuration`) the call RESUMES it under the same run id. Resume is AT-MOST-ONCE: a
+ *          group is re-sent only when its final `email_sends` row for the run proves no mail left
+ *          (no row, a `skipped_*` row, or `error/rate_limit_exceeded`); everything else is
+ *          skipped, and the non-`sent` ones are counted as `ambiguous`. The full rule is the doc
+ *          comment in `notifyStateSubscribersMonthly` (lib/notify.ts). A younger incomplete run still answers `alreadyRun`.
+ *        - There is intentionally NO `?force=` parameter to bypass the guard. Re-sending a
+ *          COMPLETED window requires manually deleting the `state_digest_runs` row for that
+ *          window in Neon — the same raw-delete-only convention this repo already uses for
+ *          retiring a facility (see docs/maintainers.md). ⚠️ That RE-MAILS EVERYONE (fresh run
+ *          id, and `email_sends.run_id` goes NULL, losing the link to what was sent): never
+ *          use it to recover an incomplete window. A one-parameter bypass of an idempotency
+ *          guard gets used reflexively eventually; requiring a slower, deliberate manual step
+ *          is the point, not an oversight.
  *   2. ✅ DONE. Added to `vercel.json`:
  *        "crons": [{ "path": "/api/cron/state-digest", "schedule": "0 9 1 * *" }]
  *   3. ✅ DONE. Set `CRON_SECRET` and `STATE_DIGEST_ENABLED=true` in the Vercel project env.
@@ -87,9 +101,26 @@ export const dynamic = "force-dynamic";
  * this function's runtime scales with the confirmed-subscriber count. Declared rather than
  * left to the platform default because a function killed mid-loop leaves SOME recipients
  * mailed with nothing recording which — and a re-run mails them again (see the idempotency
- * prerequisite above). Raise this only alongside that ledger, never instead of it.
+ * prerequisite above). The send ledger (`lib/state-digest-ledger.ts`) now records the claim,
+ * and the deadline below stops the loop before the platform would kill it.
+ *
+ * 300 s (allowed on the Vercel Pro team plan this project uses). Ceiling estimate:
+ * (300 - ~57 s margin = ~243 s) / (0.6 s pace + 0.2 s per send) ≈ 300 recipients per run. The 0.2 s
+ * per send (gate DB reads and writes plus the Resend call) rests on ONE sample: production run 0190a7e5
+ * (2026-11-01, before pacing existed) wrote 14 `email_sends` rows in 1.51 s, about 0.11 s each; 0.2 s is
+ * the conservative allowance. Re-measure from the 2026-12-01 run's `email_sends` timestamps. The previous 60 s
+ * ceiling (~50-60 recipients) was an estimate, not a measurement. The deadline turns a platform kill into a recorded, alarmed
+ * incomplete run: past it no new group starts, the window is left uncompleted, and the
+ * watchdog (`scripts/discovery/check-digest-status.ts`) reports it.
  */
-export const maxDuration = 60;
+export const maxDuration = 300;
+
+/**
+ * Stop starting new groups this long before `maxDuration`: the worst case for ONE group (two paced sends at the
+ * 20 s timeout plus the rate-limit retry wait, plus DB allowance), derived in `DIGEST_GROUP_WORST_CASE_MS`
+ * (about 57 s), so a group started at the deadline still finishes before the platform kill.
+ */
+const DEADLINE_MARGIN_MS = DIGEST_GROUP_WORST_CASE_MS;
 
 /** Strict `YYYY-MM-DD`. Anything else (including `YYYY-MM-DDTHH:MM:SSZ`) is rejected. */
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
@@ -170,6 +201,7 @@ function previousCalendarMonth(now: Date): { since: Date; until: Date } {
 }
 
 export async function GET(request: Request): Promise<Response> {
+  const startedAt = Date.now();
   // 1. AUTH FIRST, fail closed. Either Vercel Cron's bearer or the maintainer's admin bearer
   //    (so a missed month can be re-run by hand). If NEITHER `CRON_SECRET` nor
   //    `API_ADMIN_TOKEN` is configured, both checks reject and this is a 401 — the route never
@@ -228,7 +260,9 @@ export async function GET(request: Request): Promise<Response> {
   // 4. Run it. `notifyStateSubscribersMonthly` never throws; `ok: false` means it caught one,
   //    which is deliberately distinguishable from a quiet month (`ok: true, changes: 0`) and
   //    from an already-run window (`ok: true, alreadyRun: {...}`, handled below).
-  const result = await notifyStateSubscribersMonthly(since, until);
+  const result = await notifyStateSubscribersMonthly(since, until, {
+    deadline: startedAt + maxDuration * 1000 - DEADLINE_MARGIN_MS,
+  });
 
   if (result.alreadyRun) {
     // This window was already claimed by a prior call — see claimDigestWindow /
@@ -243,10 +277,10 @@ export async function GET(request: Request): Promise<Response> {
     const priorRunCompleted = result.alreadyRun.completedAt !== null;
     const message = priorRunCompleted
       ? "This window was already sent — no-op."
-      : "A prior run claimed this window but never completed (crashed or timed out). Some " +
-        "recipients may be unmailed, and this call will not retry. A deliberate resend " +
-        "requires manually deleting the state_digest_runs row for this window — there is no " +
-        "?force= override.";
+      : "A prior run claimed this window but has not completed. If it is under 10 minutes old it " +
+        "may still be running: wait. Otherwise re-call this route on the admin bearer with " +
+        "?since=&until= for the same window; that resumes it and skips everyone already mailed. " +
+        "Do NOT delete the state_digest_runs row to recover: that re-mails everyone.";
     return jsonResponse(
       {
         ok: true,
@@ -277,7 +311,11 @@ export async function GET(request: Request): Promise<Response> {
       // one recipient with three changed facilities as a failure.
       groups: result.groups,
       recipients: result.recipients,
+      // Only present when the deadline cut the run short; the window is left uncompleted.
+      ...(result.incomplete ? { incomplete: true, complete: false } : {}),
+      ...(result.resumed ? { resumed: true, skipped: result.skipped ?? 0, ambiguous: result.ambiguous ?? 0 } : {}),
     },
-    { status: result.ok ? 200 : 500 }
+    // An incomplete run is a 500 so Vercel's cron log does not show success; the window stays resumable.
+    { status: result.ok && !result.incomplete ? 200 : 500 }
   );
 }

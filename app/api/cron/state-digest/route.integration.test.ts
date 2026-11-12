@@ -505,7 +505,25 @@ describe("GET /api/cron/state-digest — idempotency (D3)", () => {
     expect(secondBody).toMatchObject({ ok: true, alreadyRun: true, priorRunCompleted: false });
     // The crashed-run message must not read like the completed-run message from the test
     // above ("already sent") — it must say a prior run crashed and won't be retried.
-    expect(secondBody.message).toMatch(/never completed|crashed|timed out/i);
+    expect(secondBody.message).toMatch(/has not completed/i);
     expect(secondBody.message).not.toMatch(/already sent/i);
+  });
+
+  it("returns 500 with complete:false when the send deadline cuts the run short, leaving the window open", async () => {
+    await seedConfirmedSubscriberWithInWindowChange();
+    await insertStateSubscription("confirmed", "second@example.com");
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    // The first send moves the clock past the route's deadline, so the second group never starts.
+    resendSendMock.mockImplementationOnce(async () => {
+      vi.setSystemTime(new Date(CRON_FIRE_TIME.getTime() + 300_000));
+      return { data: { id: "email-1" }, error: null };
+    });
+
+    const res = await GET(req(cronAuth));
+    const body = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(body).toMatchObject({ ok: true, incomplete: true, complete: false, groups: 2, recipients: 1 });
+    expect(resendSendMock).toHaveBeenCalledTimes(1);
   });
 });

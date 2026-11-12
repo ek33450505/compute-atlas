@@ -5,12 +5,18 @@ import { formatCountyLabel, getMetroBySlug, metroCountyKey } from "@/lib/metros"
 
 import { getDb } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
-import { facilitiesTable, facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
+import { emailSendsTable, facilitiesTable, facilityHistoryTable, subscriptionsTable } from "@/lib/db/schema";
 import { sendAreaDigestEmail, sendChangeDigestEmail, sendChangeNotification, type AreaDigestType } from "@/lib/email";
 import { sendGated, type GateResult, type GatedSend } from "@/lib/email-gate";
 import type { SendOutcome } from "@/lib/email";
-import { makePacer, realSleep } from "@/lib/send-pacer";
-import { claimDigestWindow, completeDigestWindow } from "@/lib/state-digest-ledger";
+import { DATASET_NOTICE_PACE_MS, makePacer, realSleep } from "@/lib/send-pacer";
+import { sendWithTimeout } from "@/lib/send-timeout";
+import {
+  claimDigestWindow,
+  completeDigestWindow,
+  STALE_DIGEST_RUN_MS,
+  takeOverStaleDigestRun,
+} from "@/lib/state-digest-ledger";
 import { STATUS_META } from "@/lib/status";
 import { subscriptionSuppressedSql } from "@/lib/suppressions";
 import { stateNameFromCode } from "@/lib/us-states";
@@ -39,8 +45,33 @@ function dropOptedOut<T extends { optedOut: boolean }>(rows: T[]): Omit<T, "opte
 /** Resend's error name for hitting its ~2 requests/second limit, as persisted by `safeErrorCode`. */
 const RATE_LIMIT_CODE = "rate_limit_exceeded";
 
+/**
+ * A send that has not settled after this long is abandoned (counted not sent, `send_timeout`). Applies to every
+ * path through `sendGatedPacedWithRetry`, the approve path included. A timeout is NOT retried: only a rate
+ * limit is, and the abandoned call may still have reached the recipient.
+ */
+export const NOTIFY_SEND_TIMEOUT_MS = 20_000;
+
+/**
+ * `email_sends.error_code` values that prove the provider REJECTED the request before accepting a message, so a
+ * resumed digest may safely send again. Only `rate_limit_exceeded`: Resend answers 429 without queuing the mail
+ * (`sendGatedPacedWithRetry` below relies on the same fact to retry). Do not add a code unless it is a rejection
+ * before acceptance: `send_timeout` and `send_threw` (lib/email-gate.ts) happen AFTER the request may have left.
+ */
+const PRE_ACCEPTANCE_ERROR_CODES: ReadonlySet<string> = new Set([RATE_LIMIT_CODE]);
+
 /** Wait before the single retry of a rate-limited send. */
 const RATE_LIMIT_RETRY_MS = 1000;
+
+/**
+ * Bound on how long ONE group started just before the deadline can run. The real worst paths are (a) pace +
+ * the 20 s send timeout, or (b) a fast 429 + 1 s retry wait + pace + the 20 s timeout (a rate-limited first
+ * attempt returns quickly, it does not burn a full timeout). Both are about 22 s plus DB time. The constant
+ * below is deliberately CONSERVATIVE: it budgets two full timeouts (about 57 s with a 15 s DB allowance), which
+ * still bounds the real paths. Derived, not measured.
+ */
+export const DIGEST_GROUP_WORST_CASE_MS =
+  2 * (DATASET_NOTICE_PACE_MS + NOTIFY_SEND_TIMEOUT_MS) + RATE_LIMIT_RETRY_MS + 15_000;
 
 /**
  * `sendGated` with pacing and one retry on a Resend rate limit. The pace runs inside the send callback, so a
@@ -60,7 +91,7 @@ async function sendGatedPacedWithRetry(
     rateLimited = false;
     const result = await sendGated(db, gated, async () => {
       await pace();
-      const outcome = await send();
+      const outcome = await sendWithTimeout(send, NOTIFY_SEND_TIMEOUT_MS);
       rateLimited = !outcome.sent && "errorCode" in outcome && outcome.errorCode === RATE_LIMIT_CODE;
       return outcome;
     });
@@ -244,7 +275,31 @@ export async function sendGroupedChangeNotifications(
   runId?: string,
   opts: { sleep?: (ms: number) => Promise<void> } = {}
 ): Promise<number> {
+  // Only `sleep` is forwarded: this is the approve path, which must never carry a deadline.
+  return (await sendGroupedChangeNotificationsUntil(groups, runId, { sleep: opts.sleep })).sent;
+}
+
+export interface GroupedSendProgress {
+  /** Emails the gate reported sent. */
+  sent: number;
+  /** Groups this run got to (sent, skipped or failed) before stopping. */
+  handled: number;
+  /** The deadline passed with groups still unstarted. */
+  stoppedEarly: boolean;
+}
+
+/**
+ * `sendGroupedChangeNotifications` with an optional deadline: once `opts.now() >= opts.deadline` (epoch ms) no
+ * further group is STARTED (a send already in flight is bounded by `NOTIFY_SEND_TIMEOUT_MS`). The monthly digest
+ * uses it so a platform kill becomes a recorded, incomplete run; the approve path calls the plain wrapper above.
+ */
+export async function sendGroupedChangeNotificationsUntil(
+  groups: RecipientChangeGroup[],
+  runId?: string,
+  opts: { sleep?: (ms: number) => Promise<void>; deadline?: number; now?: () => number } = {}
+): Promise<GroupedSendProgress> {
   const db = getDb();
+  const now = opts.now ?? Date.now;
   const sleep = opts.sleep ?? realSleep;
   // One pacer per run: every send that reaches Resend waits out the gap since the previous one.
   const pace = makePacer(undefined, sleep);
@@ -253,7 +308,12 @@ export async function sendGroupedChangeNotifications(
   const sendGated = (gateDb: typeof db, gated: GatedSend, send: () => Promise<SendOutcome>) =>
     sendGatedPacedWithRetry(gateDb, gated, send, pace, sleep);
   let sentCount = 0;
+  let handled = 0;
   for (const group of groups) {
+    if (opts.deadline !== undefined && now() >= opts.deadline) {
+      return { sent: sentCount, handled, stoppedEarly: true };
+    }
+    handled++;
     const first = group.changes[0];
     // `groupChangesByRecipient` never emits an empty group, but read the
     // discriminator off a value that is guaranteed to exist rather than
@@ -343,7 +403,7 @@ export async function sendGroupedChangeNotifications(
       if (sent) sentCount++;
     }
   }
-  return sentCount;
+  return { sent: sentCount, handled, stoppedEarly: false };
 }
 
 /**
@@ -777,11 +837,33 @@ export interface StateDigestResult {
    * both into one message, because they demand different human responses.
    */
   alreadyRun?: { startedAt: Date; completedAt: Date | null; recipients: number | null };
+  /**
+   * Present (true) only when the deadline stopped the run before every group was started. The window is then
+   * NOT completed (`completedAt` stays NULL), so the watchdog reports it; `recipients` counts what was sent.
+   */
+  incomplete?: true;
+  /** True when this call took over an earlier incomplete run of the same window instead of starting one. */
+  resumed?: true;
+  /** Resumed runs only: groups left alone because the earlier attempt sent them or may have (`ambiguous`). */
+  skipped?: number;
+  /** Resumed runs only: the part of `skipped` whose delivery is unknown (not `sent`, not provably unsent). */
+  ambiguous?: number;
+}
+
+export interface StateDigestOptions {
+  /** Epoch ms after which no new group is started. Unset: no deadline. */
+  deadline?: number;
+  /** Test seams for the deadline clock and the pacing wait. */
+  now?: () => number;
+  sleep?: (ms: number) => Promise<void>;
+  /** Test seam: the clock for the stale-run check. */
+  clock?: () => Date;
 }
 
 export async function notifyStateSubscribersMonthly(
   since: Date,
-  until: Date
+  until: Date,
+  opts: StateDigestOptions = {}
 ): Promise<StateDigestResult> {
   try {
     // Claim the window FIRST, before building or sending anything — see the
@@ -791,8 +873,23 @@ export async function notifyStateSubscribersMonthly(
     // already sent (or is currently claimed by another invocation) can never
     // duplicate-mail anyone.
     const claim = await claimDigestWindow(since, until);
-    if (!claim.claimed) {
-      return { ok: true, changes: 0, groups: 0, recipients: 0, alreadyRun: claim.priorRun };
+    let runId: string;
+    let resumed = false;
+    if (claim.claimed) {
+      runId = claim.runId;
+    } else {
+      const { id, ...priorRun } = claim.priorRun;
+      // An incomplete run older than the stale threshold is RESUMED, never restarted: same run id, and groups
+      // the earlier attempt already sent (or may have sent) are skipped below. The takeover is one guarded
+      // UPDATE, so of two concurrent callers only one proceeds; the other gets `alreadyRun` as before.
+      const takenOver =
+        priorRun.completedAt === null &&
+        (await takeOverStaleDigestRun(id, STALE_DIGEST_RUN_MS, opts.clock?.() ?? new Date()));
+      if (!takenOver) {
+        return { ok: true, changes: 0, groups: 0, recipients: 0, alreadyRun: priorRun };
+      }
+      runId = id;
+      resumed = true;
     }
 
     const changes = await buildAreaDigestChanges(since, until);
@@ -805,13 +902,72 @@ export async function notifyStateSubscribersMonthly(
     const groups = groupChangesByRecipient(changes, (c) =>
       c.origin === "area-digest" ? `${c.email}::${c.areaType}::${c.areaId}` : c.email
     );
-    const recipients = await sendGroupedChangeNotifications(groups, claim.runId);
+    /**
+     * RESUME IS AT-MOST-ONCE. A group is re-sent only when its FINAL `email_sends` row for this run proves no
+     * mail left: no row at all, a `skipped_*` row (nothing was attempted), or `error` with a code in
+     * `PRE_ACCEPTANCE_ERROR_CODES`. Everything else is skipped: `sent` (done), and as AMBIGUOUS (counted, not
+     * re-sent) `attempted`, `error/send_timeout` (the abandoned call may still deliver), `send_threw`, and any
+     * unknown code. "Final" is the latest row per subscription (ties to the greater id: a random uuid, so arbitrary rather than chronological; kept because a tie needs two
+     * rows in the same millisecond and retries are at least 1 s apart), the rule
+     * `scripts/discovery/check-digest-status.ts` `finalFailures` uses. A missed re-send is recoverable by hand;
+     * a duplicate email to a subscriber is not.
+     */
+    let toSend = groups;
+    let alreadySent = 0;
+    let skipped = 0;
+    let ambiguous = 0;
+    if (resumed) {
+      const rows = await getDb()
+        .select({
+          id: emailSendsTable.id,
+          subscriptionId: emailSendsTable.subscriptionId,
+          outcome: emailSendsTable.outcome,
+          errorCode: emailSendsTable.errorCode,
+          createdAt: emailSendsTable.createdAt,
+        })
+        .from(emailSendsTable)
+        .where(eq(emailSendsTable.runId, runId));
+      const finalRow = new Map<string, (typeof rows)[number]>();
+      for (const r of rows) {
+        if (!r.subscriptionId) continue;
+        const prev = finalRow.get(r.subscriptionId);
+        const newer =
+          !prev ||
+          r.createdAt.getTime() > prev.createdAt.getTime() ||
+          (r.createdAt.getTime() === prev.createdAt.getTime() && r.id > prev.id);
+        if (newer) finalRow.set(r.subscriptionId, r);
+      }
+      toSend = groups.filter((g) => {
+        const last = finalRow.get(g.changes[0]?.subscriptionId ?? "");
+        if (!last) return true;
+        if (last.outcome.startsWith("skipped_")) return true;
+        if (last.outcome === "error" && last.errorCode !== null && PRE_ACCEPTANCE_ERROR_CODES.has(last.errorCode)) {
+          return true;
+        }
+        skipped++;
+        if (last.outcome === "sent") alreadySent++;
+        else ambiguous++;
+        return false;
+      });
+    }
+    // `completeDigestWindow` below sits OUTSIDE `DIGEST_GROUP_WORST_CASE_MS`. A kill there leaves the window
+    // incomplete after all mail went out, which is the safe direction: a resume skips everyone already sent.
+    const progress = await sendGroupedChangeNotificationsUntil(toSend, runId, opts);
+    const recipients = alreadySent + ambiguous + progress.sent;
+    const extra = resumed ? { resumed: true as const, skipped, ambiguous } : {};
+    if (progress.stoppedEarly) {
+      // Deliberately not completed: the open claim is what the watchdog reads. Counts only, never an address.
+      console.error(
+        `notifyStateSubscribersMonthly: deadline reached, handled ${progress.handled} of ${toSend.length} groups, sent ${progress.sent}; window left incomplete`
+      );
+      return { ok: true, changes: changes.length, groups: groups.length, recipients, incomplete: true, ...extra };
+    }
     await completeDigestWindow(since, until, {
       changes: changes.length,
       groups: groups.length,
       recipients,
     });
-    return { ok: true, changes: changes.length, groups: groups.length, recipients };
+    return { ok: true, changes: changes.length, groups: groups.length, recipients, ...extra };
   } catch (err) {
     // Log the error's NAME only — never addresses, tokens, or the error object
     // itself. A Drizzle/Neon error can carry the failing SQL, and a connection
