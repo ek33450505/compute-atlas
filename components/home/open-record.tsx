@@ -1,13 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { ActivityList } from "@/app/activity/activity-list";
-import type { ActivityEntry } from "@/lib/data";
 import { SectionHeading } from "@/components/section-heading";
 
 export interface OpenRecordProps {
   sources: number;
-  recentActivity: ActivityEntry[];
   /** True while approved-access dataset sharing is on; adds the request link. */
   datasetAccess?: boolean;
   className?: string;
@@ -28,13 +25,12 @@ const TRAILING_LINK_CLASS =
 /**
  * Closing band for the home page — the credibility/trust close. Provenance
  * facts (sources cited / moderation / license / RSS access), a
- * contribute CTA, and the recent-activity stream (only when non-empty, e.g.
- * omitted entirely on the local JSON fallback with no DB). Server
- * component: no client state needed.
+ * contribute CTA. Recent activity is not repeated here: the "Last 7 days"
+ * section higher on the page already shows it. Server component: no client
+ * state needed.
  */
 export function OpenRecord({
   sources,
-  recentActivity,
   datasetAccess = false,
   className,
 }: OpenRecordProps) {
@@ -84,7 +80,7 @@ export function OpenRecord({
     <section aria-labelledby="record-heading" className={className}>
       {/* `defer-offscreen p-2 -m-2`: see contested-strip.tsx and the utility's
           comment in globals.css. The padding is a paint-containment clip
-          reserve for the provenance and activity links' focus rings, not
+          reserve for the provenance links' focus rings, not
           spacing, and the negative margin cancels it so nothing moves. */}
       <div className="defer-offscreen p-2 -m-2">
         {/* space-y-1 wrapper: see contested-strip.tsx for why the kicker/h2 gap
@@ -142,20 +138,6 @@ export function OpenRecord({
             <span aria-hidden="true">→</span>
           </Link>
         </div>
-
-        {recentActivity.length > 0 && (
-          <div className="mt-10">
-            <div className="mb-5 flex items-center justify-between gap-4">
-              <h3 className="font-display text-lg text-foreground">
-                Recently updated
-              </h3>
-              <Link href="/activity" className={TRAILING_LINK_CLASS}>
-                View all →
-              </Link>
-            </div>
-            <ActivityList entries={recentActivity} />
-          </div>
-        )}
       </div>
     </section>
   );
