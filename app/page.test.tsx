@@ -214,7 +214,6 @@ beforeEach(() => {
     powerPlants: 112,
     jurisdictions: 3,
     stateCodes: STATE_CODES,
-    stateCounts: { TX: 9, OH: 4, CA: 1 },
     operators: 2,
     sourceLinks: 7,
     asOf: "2026-11-12T01:04:00.000Z",
@@ -331,15 +330,6 @@ describe("HomePage hero", () => {
       .reduce((text, el) => text.replace(el.textContent ?? "", ""), container.textContent ?? "");
     expect(visible).not.toContain("counted on");
     expect(visible).not.toMatch(/(?<![\d,])2,?(412|500)(?![\d,])/);
-  });
-
-  // The phone state chips follow the same totals (not a second loadFacilities read): most facilities first.
-  it("orders the state chips from the dated counts", async () => {
-    render(await HomePage());
-
-    const nav = screen.getByRole("navigation", { name: "Browse by state" });
-    const names = within(nav).getAllByRole("link").map((a) => a.textContent);
-    expect(names).toEqual(["Texas", "Ohio", "California", "All states"]);
   });
 
   // Per-type totals come from the same dated object, not a second cache (getFacilityTypeCounts).

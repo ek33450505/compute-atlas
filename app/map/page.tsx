@@ -9,6 +9,8 @@ import {
   getStatusCounts,
   getFacilityTypeCounts,
 } from "@/lib/data";
+import { loadOfferCounts } from "@/lib/dataset-offer";
+import { formatEditionDate } from "@/lib/edition-date";
 import { toMapPoint } from "@/lib/facility-slim";
 import { getFilterOptions } from "@/lib/filters";
 import { Explorer } from "@/components/explorer/explorer";
@@ -17,10 +19,16 @@ import { MapPageContent } from "@/components/map/map-page-content";
 export const revalidate = 86400;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { count } = await getStats();
+  // The number is getStats' (the same read as the pins). The date comes from the offer read and is shown
+  // only when that read counted the same total, because the two caches can hold different snapshots.
+  const [{ count }, offerCounts] = await Promise.all([getStats(), loadOfferCounts()]);
+  const counted =
+    offerCounts && offerCounts.facilities === count
+      ? `, counted on ${formatEditionDate(offerCounts.asOf)}`
+      : "";
   return {
     title: "Map of data centers, mining and power sites",
-    description: `Interactive map of ${count.toLocaleString("en-US")} US data centers, AI campuses, crypto-mining sites, and power plants — filter by status, state, operator, and capacity. Source-cited.`,
+    description: `Interactive map of ${count.toLocaleString("en-US")} US data centers, AI campuses, crypto-mining sites, and power plants${counted} — filter by status, state, operator, and capacity. Source-cited.`,
     alternates: { canonical: "/map" },
   };
 }
@@ -48,10 +56,11 @@ export async function generateMetadata(): Promise<Metadata> {
  * capacity filters via /api/map/match.
  */
 export default async function MapPage() {
-  const [facilities, stats, topStates, topOperators, statusCounts, typeCounts] =
+  const [facilities, stats, offerCounts, topStates, topOperators, statusCounts, typeCounts] =
     await Promise.all([
       getAllFacilities(),
       getStats(),
+      loadOfferCounts(),
       getTopStates(),
       getTopOperators(),
       getStatusCounts(),
@@ -72,6 +81,11 @@ export default async function MapPage() {
       </Suspense>
       <MapPageContent
         stats={stats}
+        countedOnLabel={
+          offerCounts && offerCounts.facilities === stats.count
+            ? formatEditionDate(offerCounts.asOf)
+            : undefined
+        }
         topStates={topStates}
         topOperators={topOperators}
         statusCounts={statusCounts}

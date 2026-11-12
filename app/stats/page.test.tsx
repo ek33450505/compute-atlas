@@ -18,6 +18,7 @@ const {
   mockGetCommunityReceptionCounts,
   mockGetEnergySourceCounts,
   mockGetAllFacilities,
+  mockLoadOfferCounts,
 } = vi.hoisted(() => ({
   mockGetStats: vi.fn(),
   mockGetStatusCounts: vi.fn(),
@@ -32,7 +33,10 @@ const {
   mockGetCommunityReceptionCounts: vi.fn(),
   mockGetEnergySourceCounts: vi.fn(),
   mockGetAllFacilities: vi.fn(),
+  mockLoadOfferCounts: vi.fn(),
 }));
+
+vi.mock("@/lib/dataset-offer", () => ({ loadOfferCounts: mockLoadOfferCounts }));
 
 vi.mock("@/lib/data", () => ({
   getStats: mockGetStats,
@@ -147,6 +151,30 @@ beforeEach(() => {
     other: 1,
   });
   mockGetAllFacilities.mockReset().mockResolvedValue(ALL_FACILITIES);
+  mockLoadOfferCounts.mockReset().mockResolvedValue({ facilities: 5, asOf: "2026-11-12T08:00:00.000Z" });
+});
+
+describe("StatsPage — dated total", () => {
+  it("dates the total when the offer read counted the same number", async () => {
+    render(await StatsPage());
+    expect(
+      screen.getByText(/of the 5 tracked sites, counted on 12 November 2026\./)
+    ).toBeInTheDocument();
+  });
+
+  it("shows no date, and getStats' number, when the offer read counted a different total", async () => {
+    mockLoadOfferCounts.mockResolvedValue({ facilities: 3174, asOf: "2026-11-12T08:00:00.000Z" });
+    render(await StatsPage());
+    expect(screen.getByText(/of the 5 tracked sites\./)).toBeInTheDocument();
+    expect(screen.queryByText("3,174")).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toContain("counted on");
+  });
+
+  it("shows no date when the offer read fails", async () => {
+    mockLoadOfferCounts.mockResolvedValue(null);
+    render(await StatsPage());
+    expect(document.body.textContent).not.toContain("counted on");
+  });
 });
 
 describe("StatsPage — § Data coverage dimension count", () => {
@@ -202,6 +230,7 @@ describe("StatsPage — disclosedCapacityCount excludes cancelled facilities", (
       plannedMw: 40,
       underConstructionMw: 0,
     });
+    mockLoadOfferCounts.mockResolvedValue({ facilities: 3, asOf: "2026-11-12T08:00:00.000Z" });
 
     const page = await StatsPage();
     render(page);
@@ -229,6 +258,7 @@ describe("StatsPage — disclosedCapacityCount excludes cancelled facilities", (
       plannedMw: 40,
       underConstructionMw: 0,
     });
+    mockLoadOfferCounts.mockResolvedValue({ facilities: 3, asOf: "2026-11-12T08:00:00.000Z" });
 
     const page = await StatsPage();
     render(page);
@@ -253,6 +283,7 @@ describe("StatsPage — DC-aware states wording", () => {
       plannedMw: 3000,
       underConstructionMw: 1200,
     });
+    mockLoadOfferCounts.mockResolvedValue({ facilities: 5, asOf: "2026-11-12T08:00:00.000Z" });
 
     const page = await StatsPage();
     render(page);
@@ -287,6 +318,7 @@ describe("StatsPage — DC-aware states wording", () => {
       plannedMw: 3000,
       underConstructionMw: 1200,
     });
+    mockLoadOfferCounts.mockResolvedValue({ facilities: 5, asOf: "2026-11-12T08:00:00.000Z" });
 
     const page = await StatsPage();
     render(page);

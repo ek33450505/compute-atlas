@@ -1,3 +1,4 @@
+import { cache as reactCache } from "react";
 import { unstable_cache } from "next/cache";
 
 import { FACILITIES_TAG } from "@/lib/cache-tags";
@@ -16,8 +17,6 @@ export interface DatasetCounts {
   jurisdictions: number;
   /** Sorted two-letter codes of those jurisdictions. */
   stateCodes: string[];
-  /** Facilities per jurisdiction code. */
-  stateCounts: Record<string, number>;
   operators: number;
   sourceLinks: number;
   /**
@@ -61,7 +60,6 @@ export function countDataset(
   readAt: Date = new Date(),
 ): DatasetCounts {
   const states = new Set<string>();
-  const stateCounts: Record<string, number> = {};
   const operators = new Set<string>();
   let dataCenters = 0;
   let cryptoSites = 0;
@@ -73,7 +71,6 @@ export function countDataset(
     else if (f.facilityType === "power_generation") powerPlants++;
     if (f.location?.state) {
       states.add(f.location.state);
-      stateCounts[f.location.state] = (stateCounts[f.location.state] ?? 0) + 1;
     }
     if (f.operator) operators.add(f.operator);
     sourceLinks += f.sources?.length ?? 0;
@@ -85,22 +82,10 @@ export function countDataset(
     powerPlants,
     jurisdictions: states.size,
     stateCodes: [...states].sort(),
-    stateCounts,
     operators: operators.size,
     sourceLinks,
     asOf: readAt.toISOString(),
   };
-}
-
-/** The `n` jurisdictions with the most facilities: count desc, then code A to Z (same order as `getTopStates`). */
-export function topStatesFromCounts(
-  stateCounts: Readonly<Record<string, number>>,
-  n: number,
-): { state: string; count: number }[] {
-  return Object.entries(stateCounts)
-    .map(([state, count]) => ({ state, count }))
-    .sort((a, b) => b.count - a.count || a.state.localeCompare(b.state))
-    .slice(0, n);
 }
 
 /** 9084324 -> "9.1 MB" (decimal megabytes, one decimal). */
@@ -224,15 +209,18 @@ export async function loadOfferEdition(): Promise<OfferEdition | null> {
   }
 }
 
-/** Live dataset counts, or null when the facility read fails. */
-export async function loadOfferCounts(): Promise<DatasetCounts | null> {
+/**
+ * Live dataset counts, or null when the facility read fails. React-cached so `generateMetadata` and the page
+ * body share one call per request; the `unstable_cache` entry underneath is unchanged.
+ */
+export const loadOfferCounts = reactCache(async (): Promise<DatasetCounts | null> => {
   try {
     return await cachedCounts();
   } catch (err) {
     console.error(`dataset offer: facility read failed (code: ${redactedErrorCode(err)})`);
     return null;
   }
-}
+});
 
 /** The fixed sample records, or null when the facility read fails. Ids not in the dataset are skipped. */
 export async function loadOfferSamples(): Promise<Facility[] | null> {

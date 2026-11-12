@@ -18,7 +18,7 @@ import {
   getQuarterlyPipelineSummary,
   selectRecordSpecimen,
 } from "@/lib/data";
-import { countDataset, loadOfferCounts, topStatesFromCounts } from "@/lib/dataset-offer";
+import { countDataset, loadOfferCounts } from "@/lib/dataset-offer";
 import { formatEditionDate } from "@/lib/edition-date";
 import { METROS } from "@/lib/metros";
 import { StatusBadge } from "@/components/status-badge";
@@ -38,7 +38,6 @@ import { RecordSpecimen } from "@/components/home/record-specimen";
 import { OpenRecord } from "@/components/home/open-record";
 import { ThisWeek, isActivityWindowTruncated } from "@/components/home/this-week";
 import { PlaceEntry } from "@/components/home/place-entry";
-import { StateChips } from "@/components/home/state-chips";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 
 export const revalidate = 3600;
@@ -169,9 +168,6 @@ export default async function HomePage() {
   // The power totals (MW) and quarter figures are not facility totals and stay on getStats / their own reads.
   const totals = offerCounts ?? countDataset(allFacilities);
   const count = totals.facilities;
-  // The phone chips follow the same totals (ordering and limit unchanged), so they cannot sum to a
-  // different figure than the headline after a publish.
-  const topStates = topStatesFromCounts(totals.stateCounts, 6);
   const stateCodes = totals.stateCodes;
   const operatorCount = totals.operators;
   const sourcesCited = totals.sourceLinks;
@@ -633,11 +629,6 @@ export default async function HomePage() {
           omitted={HERO_PLATE.omitted}
           asOfLabel={formatEditionDate(HERO_PLATE.asOf)}
           className="relative z-20 order-3 sm:order-none sm:mt-auto sm:mb-4 sm:w-fit sm:max-w-xs sm:shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_30%,transparent)]"
-        />
-        {/* Phones only: last in the stack, after the key (`order-3`). */}
-        <StateChips
-          states={topStates}
-          className="relative z-20 order-4 px-1 pb-4 pt-2 sm:hidden"
         />
       </div>
 
