@@ -1,5 +1,9 @@
 import type { MapPoint } from "@/lib/facility-slim";
 
+// 256-px world tiles. MapLibre 6 renders a 512-px world, so one unit here is two
+// screen pixels: the 44 "px" radius below is ~88 screen px, and a greedy cluster
+// can span ~176 px. Kept deliberately (2026-11-12); `zoomToCluster` enforces a
+// minimum zoom gain instead of relying on the cluster's span.
 const TILE = 256;
 
 /**

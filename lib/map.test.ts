@@ -4,6 +4,8 @@ import {
   WIDE_AND_TALL_VIEWPORT_QUERY,
   buildMarkerLabel,
   computeFacilitiesBounds,
+  clusterFitPadding,
+  clusterTargetZoom,
 } from "@/lib/map";
 import type { Facility } from "@/lib/schema";
 
@@ -171,5 +173,47 @@ describe("computeFacilitiesBounds", () => {
     ]);
     expect(result).not.toBeNull();
     expect(result!.isCoincident).toBe(true);
+  });
+});
+
+describe("clusterFitPadding", () => {
+  it("caps at 80 px on a desktop canvas", () => {
+    expect(clusterFitPadding(1280, 636)).toBe(76);
+    expect(clusterFitPadding(1920, 1080)).toBe(80);
+  });
+
+  it("shrinks with the smaller dimension on a phone, keeping usable width", () => {
+    const pad = clusterFitPadding(375, 701);
+    expect(pad).toBeLessThan(80);
+    expect(375 - 2 * pad).toBeGreaterThanOrEqual(375 * 0.7);
+    expect(320 - 2 * clusterFitPadding(320, 560)).toBeGreaterThan(215);
+  });
+
+  it("is 0 for a degenerate canvas", () => {
+    expect(clusterFitPadding(0, 0)).toBe(0);
+  });
+});
+
+describe("clusterTargetZoom", () => {
+  it("enforces a +2 gain when the fitted zoom is a near-no-op (phone: 3.4 -> 3.645)", () => {
+    expect(clusterTargetZoom(3.4, 3.645)).toBeCloseTo(5.4, 6);
+  });
+
+  it("keeps the fitted zoom when it already exceeds the minimum gain (desktop)", () => {
+    expect(clusterTargetZoom(3.4, 6.2)).toBe(6.2);
+  });
+
+  it("gains 3 for a coincident cluster (no fitted zoom)", () => {
+    expect(clusterTargetZoom(3.4, null, 3)).toBeCloseTo(6.4, 6);
+  });
+
+  it("falls back to the minimum gain when the fitted zoom is not finite", () => {
+    expect(clusterTargetZoom(3.4, Number.NaN)).toBeCloseTo(5.4, 6);
+  });
+
+  it("never exceeds the 12 max zoom", () => {
+    expect(clusterTargetZoom(11, 11.2)).toBe(12);
+    expect(clusterTargetZoom(10, null, 3)).toBe(12);
+    expect(clusterTargetZoom(3.4, 15)).toBe(12);
   });
 });
