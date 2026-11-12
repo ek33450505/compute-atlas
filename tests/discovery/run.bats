@@ -3142,11 +3142,11 @@ SHIM
 	_assert_token_not_in_sinks
 }
 
-# --- STATES_PER_RUN default (3) and the nightly community-leads lane ----------
+# --- STATES_PER_RUN default (4) and the nightly community-leads lane ----------
 # leads-lane.ts is shimmed by the catch-all `*) exit 0` in setup()'s fake npx;
 # these assert run.sh's own invocation of it, not the lane's behavior.
 
-@test "STATES_PER_RUN unset defaults to a 3-state batch and the cursor advances by 3" {
+@test "STATES_PER_RUN unset defaults to a 4-state batch and the cursor advances by 4" {
 	export DISCOVERY_ENABLED=true
 	# Live (non-dry) run: dry runs no longer advance the cursor.
 	export DISCOVERY_DRY_RUN=false
@@ -3156,12 +3156,12 @@ SHIM
 	run bash "$RUN_SH"
 	[ "$status" -eq 0 ]
 
-	[[ "$output" == *"states=TX VA OH"* ]] || return 1
+	[[ "$output" == *"states=TX VA OH GA (STATES_PER_RUN=4)"* ]] || return 1
 	outfile_count="$(find "$LOG_DIR" -name 'candidates-*.json' | wc -l | tr -d ' ')"
-	[ "$outfile_count" = "3" ]
-	# TX VA OH consumed -> next up is GA
+	[ "$outfile_count" = "4" ]
+	# TX VA OH GA consumed -> next up is AZ
 	cursor_after="$(cat "$LOG_DIR/cursor.txt" | tr -d ' \n')"
-	[ "$cursor_after" = "GA" ]
+	[ "$cursor_after" = "AZ" ]
 }
 
 @test "a live run invokes the leads lane with the default --limit=10" {
