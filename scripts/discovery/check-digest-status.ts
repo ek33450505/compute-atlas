@@ -60,15 +60,17 @@ import {
 import { WATCH_TARGET, watchAreasEnabled } from "../../lib/watch-target-types";
 import { isEntrypoint } from "../is-entrypoint";
 
+export type IncompleteRun = Pick<StateDigestRunRow, "id" | "startedAt" | "since" | "until">;
+
 // --- errors ---------------------------------------------------------------
 
 /**
  * Thrown when one or more digest runs are incomplete (completedAt IS NULL).
  */
 export class DigestCrashError extends Error {
-  readonly rows: StateDigestRunRow[];
+  readonly rows: IncompleteRun[];
 
-  constructor(rows: StateDigestRunRow[]) {
+  constructor(rows: IncompleteRun[]) {
     const count = rows.length;
     const details = rows
       .map(
@@ -224,6 +226,11 @@ export function recipientAlarm(count: number): string | null {
 /**
  * Attempts to fetch incomplete digest runs from the database.
  *
+ * Selects named columns only. The CI role (scripts/ops/create-ci-monitor-role.ts) is
+ * column-granted on email_sends and subscriptions, so every query in this script must name
+ * its columns; a select() without a list would be refused for the ungranted ones (and
+ * subscriptions.email must never be readable by CI).
+ *
  * Returns:
  *   - null if the table does not exist (expected in forks or pre-migration DBs)
  *   - an array (possibly empty) if the table exists
@@ -231,7 +238,7 @@ export function recipientAlarm(count: number): string | null {
  * Throws DigestCheckError if the database connection fails or a query error
  * occurs for some other reason.
  */
-export async function fetchIncompleteRuns(): Promise<StateDigestRunRow[] | null> {
+export async function fetchIncompleteRuns(): Promise<IncompleteRun[] | null> {
   const db = getDb();
 
   // Attempt to query. If the table doesn't exist (Postgres error code 42P01,
@@ -242,7 +249,15 @@ export async function fetchIncompleteRuns(): Promise<StateDigestRunRow[] | null>
   // as a belt-and-suspenders check, since relying on message text alone is
   // fragile to driver/message-format changes.
   try {
-    const rows = await db.select().from(stateDigestRunsTable).where(isNull(stateDigestRunsTable.completedAt));
+    const rows = await db
+      .select({
+        id: stateDigestRunsTable.id,
+        startedAt: stateDigestRunsTable.startedAt,
+        since: stateDigestRunsTable.since,
+        until: stateDigestRunsTable.until,
+      })
+      .from(stateDigestRunsTable)
+      .where(isNull(stateDigestRunsTable.completedAt));
     return rows;
   } catch (err) {
     if (isMissingTable(err, "state_digest_runs")) {
@@ -250,7 +265,7 @@ export async function fetchIncompleteRuns(): Promise<StateDigestRunRow[] | null>
     }
     // Any other error is unexpected — log it and fail.
     throw new DigestCheckError(
-      `Failed to query state_digest_runs: ${formatErrorSummary(err)}`
+      `Failed to query state_digest_runs: ${redactedErrorCode(err)}`
     );
   }
 }
@@ -317,7 +332,7 @@ export async function countDigestSubscriptions(): Promise<number> {
 }
 
 export interface CheckDeps {
-  fetchIncompleteRuns: () => Promise<StateDigestRunRow[] | null>;
+  fetchIncompleteRuns: () => Promise<IncompleteRun[] | null>;
   fetchNewestRunSends: () => Promise<{ run: { id: string; startedAt: Date }; rows: SendRow[] } | null>;
   countDigestSubscriptions: () => Promise<number>;
   now: () => Date;

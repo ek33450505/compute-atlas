@@ -32,16 +32,45 @@ import { isEntrypoint } from "../is-entrypoint";
 export const ROLE = "ci_monitor";
 
 /**
- * Tables the CI workflows read: check-schema-drift.ts (`api_daily_usage`),
- * discovery/check-heartbeat.ts (`discovery_heartbeat`) and
- * discovery/check-digest-status.ts (`state_digest_runs`). Table listing goes
- * through pg_catalog.pg_tables, which needs no grant.
+ * Whole tables the CI workflows read: check-schema-drift.ts (`api_daily_usage`),
+ * discovery/check-heartbeat.ts (`discovery_heartbeat`) and the digest runs read by
+ * discovery/check-digest-status.ts and ops/check-cron-freshness.ts
+ * (`state_digest_runs`). Table listing goes through pg_catalog.pg_tables, which
+ * needs no grant.
  */
 export const GRANTED_TABLES = [
   "api_daily_usage",
   "discovery_heartbeat",
   "state_digest_runs",
 ] as const;
+
+/**
+ * Tables granted COLUMN-level only, because they hold data CI must not read:
+ * `subscriptions.email` (every subscriber's address), `email_sends` (its
+ * `email_hash` is kept: a salted hash that collapses a recipient's retry chain; the
+ * resend id and target columns are not) and `paypal_webhook_events` (ids and payer
+ * linkage). Each list is exactly what the queries in check-digest-status.ts
+ * and check-cron-freshness.ts name, including their WHERE columns. Widening a
+ * query to another column fails under this role until it is added here AND
+ * granted by the maintainer.
+ *
+ * `email_hash` plus `subscription_id` give a pseudonymous per-recipient send history.
+ * That is safe ONLY because CI never holds CONTRIBUTE_IP_SALT (the hash salt): never add
+ * that salt to any watchdog workflow's env, or the hashes become reversible for known addresses.
+ */
+export const GRANTED_COLUMNS = {
+  subscriptions: ["status", "target_type"],
+  email_sends: ["id", "created_at", "kind", "email_hash", "subscription_id", "run_id", "outcome", "error_code"],
+  paypal_webhook_events: ["received_at", "processed_at"],
+  dataset_editions: ["built_at", "status"],
+} as const satisfies Record<string, readonly string[]>;
+
+/** One statement per column-granted table, e.g. `GRANT SELECT (status, target_type) ON subscriptions TO ci_monitor`. */
+export function columnGrantStatements(): string[] {
+  return Object.entries(GRANTED_COLUMNS).map(
+    ([table, cols]) => `GRANT SELECT (${cols.join(", ")}) ON ${table} TO ${ROLE}`,
+  );
+}
 
 const REDACTED = "<redacted>";
 
@@ -151,6 +180,7 @@ export function buildPlan(
     `GRANT CONNECT ON DATABASE ${quotedDb} TO ${ROLE}`,
     `GRANT USAGE ON SCHEMA public TO ${ROLE}`,
     `GRANT SELECT ON ${GRANTED_TABLES.join(", ")} TO ${ROLE}`,
+    ...columnGrantStatements(),
     `ALTER ROLE ${ROLE} SET default_transaction_read_only = on`,
     `ALTER ROLE ${ROLE} SET statement_timeout = '30s'`,
   ];
@@ -189,6 +219,44 @@ export async function verifyRole(
       return true;
     });
   }
+  for (const [table, cols] of Object.entries(GRANTED_COLUMNS)) {
+    await check(`SELECT (${cols.join(", ")}) on ${table}`, async () => {
+      await sql.query(`SELECT ${cols.join(", ")} FROM ${table} LIMIT 1`);
+      return true;
+    });
+  }
+  await check("column-readable columns are exactly the granted columns", async () => {
+    // Via pg_class/pg_attribute oids, like the relation check below. Table-level
+    // grants make every column readable, so those tables are excluded by name.
+    const found = await rows<{ relname: string; attname: string }>(
+      sql,
+      `SELECT c.relname, a.attname FROM pg_catalog.pg_class c
+         JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+         JOIN pg_catalog.pg_attribute a ON a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
+        WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+          AND c.relname IN (${Object.keys(GRANTED_COLUMNS).map((t) => `'${t}'`).join(", ")})
+          AND has_column_privilege(current_user, c.oid, a.attnum, 'SELECT')`
+    );
+    const got = found.map((r) => `${r.relname}.${r.attname}`).sort();
+    const want = Object.entries(GRANTED_COLUMNS)
+      .flatMap(([t, cols]) => cols.map((c) => `${t}.${c}`))
+      .sort();
+    return JSON.stringify(got) === JSON.stringify(want);
+  });
+  await check("no table-level privilege on the column-granted tables", async () => {
+    // has_table_privilege ignores column grants, so any hit is a stray table-level GRANT
+    // (e.g. an ad-hoc `GRANT SELECT ON subscriptions`) that would expose every column.
+    const found = await rows<{ relname: string }>(
+      sql,
+      `SELECT DISTINCT c.relname FROM pg_catalog.pg_class c
+         JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+         CROSS JOIN unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER']) AS priv
+        WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+          AND c.relname IN (${Object.keys(GRANTED_COLUMNS).map((t) => `'${t}'`).join(", ")})
+          AND has_table_privilege(current_user, c.oid, priv)`
+    );
+    return found.length === 0;
+  });
   await check("INSERT into api_daily_usage is refused", async () => {
     try {
       await sql.query("INSERT INTO api_daily_usage DEFAULT VALUES");
