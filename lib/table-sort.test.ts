@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 
+import { formatCapacity } from "@/lib/format";
 import { compareRows, SORT_COLUMNS } from "@/lib/table-sort";
 import type { TableRow } from "@/lib/facility-slim";
 
@@ -42,6 +43,31 @@ describe("compareRows", () => {
     ];
     expect(sorted(rows, "capacity", "desc")).toEqual(["big", "small", "none"]);
     expect(sorted(rows, "capacity", "asc")).toEqual(["small", "big", "none"]);
+  });
+
+  it("sorts by the capacity the cell displays (operational first, then planned)", () => {
+    const rows = [
+      row({ id: "both", name: "A", capacityMw: { operational: 200, planned: 5000 } }),
+      row({ id: "op", name: "B", capacityMw: { operational: 618 } }),
+      row({ id: "plan", name: "C", capacityMw: { planned: 165 } }),
+      row({ id: "none", name: "D" }),
+    ];
+    expect(sorted(rows, "capacity", "desc")).toEqual(["op", "both", "plan", "none"]);
+    expect(sorted(rows, "capacity", "asc")).toEqual(["plan", "both", "op", "none"]);
+  });
+
+  it("renders non-increasing numbers in the capacity column when sorted desc", () => {
+    const rows = [
+      row({ id: "1", name: "A", capacityMw: { operational: 16, planned: 900 } }),
+      row({ id: "2", name: "B", capacityMw: { planned: 165 } }),
+      row({ id: "3", name: "C", capacityMw: { operational: 618 } }),
+      row({ id: "4", name: "D", capacityMw: { operational: 70, planned: 2000 } }),
+      row({ id: "5", name: "E", capacityMw: { planned: 84 } }),
+    ];
+    const shown = [...rows]
+      .sort(compareRows("capacity", "desc"))
+      .map((r) => Number(formatCapacity(r).replace(/[^\d.]/g, "")));
+    expect(shown).toEqual([618, 165, 84, 70, 16]);
   });
 
   it("breaks ties by name then id, independent of direction", () => {

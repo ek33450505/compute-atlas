@@ -139,7 +139,7 @@ different slugs. These are resolved deliberately, not by string match alone.
 Nothing becomes a live facility automatically. Every candidate — from the
 research waves, the automated pipeline, or a public contributor — lands as a
 `pending` submission and is promoted only by an explicit human approval. Public
-intake is anonymous and moderated and can only ever stage a pending record;
+intake needs no account and is moderated, and can only ever stage a pending record;
 privileged writes require an admin credential. This curated-intake model
 is what keeps the dataset trustworthy: every record is public and cited, but
 volume never bypasses review.

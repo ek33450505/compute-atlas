@@ -46,7 +46,7 @@ export function CommandPalette({ navLinks }: CommandPaletteProps) {
   const [index, setIndex] = useState<SearchEntry[]>(EMPTY_SEARCH_ENTRIES);
   const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const activeItemRef = useRef<HTMLLIElement>(null);
+  const activeItemRef = useRef<HTMLDivElement>(null);
 
   // Detect platform once on mount; default to non-Mac ("Ctrl K") for SSR/
   // first paint to avoid a hydration mismatch. `navigator` is unavailable
@@ -300,7 +300,12 @@ export function CommandPalette({ navLinks }: CommandPaletteProps) {
               />
             </div>
 
-            <ul
+            {/* WAI-ARIA combobox + listbox: options (and the role="group"s that
+                label them) are the only children of the listbox, and an option
+                is not wrapped around a button (nested-interactive). Focus stays
+                in the input; aria-activedescendant names the active option. The
+                "no matches" message is a sibling, NOT a listbox child. */}
+            <div
               id="cmdk-listbox"
               role="listbox"
               aria-label="Search results"
@@ -308,92 +313,92 @@ export function CommandPalette({ navLinks }: CommandPaletteProps) {
             >
               {groups.map((group) => {
                 const groupStart = groupOffsets.get(group.type) ?? 0;
+                const labelId = `cmdk-group-${group.type}`;
                 return (
-                  <li key={group.type}>
-                    <div className="px-3 pb-1 pt-2 font-mono text-[0.65rem] uppercase tracking-wider text-muted-foreground">
+                  <div key={group.type} role="group" aria-labelledby={labelId}>
+                    <div
+                      id={labelId}
+                      aria-hidden="true"
+                      className="px-3 pb-1 pt-2 font-mono text-[0.65rem] uppercase tracking-wider text-muted-foreground"
+                    >
                       {SEARCH_GROUP_LABELS[group.type]}
                     </div>
-                    <ul>
-                      {group.items.map((item, i) => {
-                        const flatIndex = groupStart + i;
-                        const isActive = flatIndex === activeIndex;
-                        return (
-                          <li
-                            key={`${item.type}-${item.href}`}
-                            id={`cmdk-opt-${flatIndex}`}
-                            role="option"
-                            aria-selected={isActive}
-                            ref={isActive ? activeItemRef : undefined}
-                          >
-                            <button
-                              type="button"
-                              tabIndex={-1}
-                              onClick={() => go(item.href)}
-                              onMouseEnter={() => setActiveIndex(flatIndex)}
-                              className={cn(
-                                "flex w-full items-center justify-between gap-3 px-3 py-2 text-left font-mono text-sm text-foreground transition-colors",
-                                isActive && "bg-muted/60"
-                              )}
-                            >
-                              <span className="truncate">{item.label}</span>
-                              {item.sublabel && (
-                                <span className="shrink-0 truncate text-xs text-muted-foreground">
-                                  {item.sublabel}
-                                </span>
-                              )}
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </li>
+                    {group.items.map((item, i) => {
+                      const flatIndex = groupStart + i;
+                      const isActive = flatIndex === activeIndex;
+                      return (
+                        <div
+                          key={`${item.type}-${item.href}`}
+                          id={`cmdk-opt-${flatIndex}`}
+                          role="option"
+                          aria-selected={isActive}
+                          ref={isActive ? activeItemRef : undefined}
+                          // Keep focus (and the caret) in the combobox input.
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => go(item.href)}
+                          onMouseEnter={() => setActiveIndex(flatIndex)}
+                          className={cn(
+                            "flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2 text-left font-mono text-sm text-foreground transition-colors",
+                            isActive && "bg-muted/60"
+                          )}
+                        >
+                          <span className="truncate">{item.label}</span>
+                          {item.sublabel && (
+                            <span className="shrink-0 truncate text-xs text-muted-foreground">
+                              {item.sublabel}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 );
               })}
+            </div>
 
-              {trimmedQuery && groups.length === 0 && !showSearching && (
-                <li className="px-3 py-6 text-center font-mono text-sm text-muted-foreground">
-                  No matches for &ldquo;{query}&rdquo;.
-                  {/*
-                    Highest-intent contribution moment on the site: GSC shows
-                    visitors arriving by searching for one named facility we
-                    don't have. Not part of `flat`/`groups` — deliberately
-                    outside the arrow-key/aria-activedescendant path (see
-                    those below) — so it keeps its default tabIndex (0) and
-                    is reached by Tab instead, since it would otherwise have
-                    no keyboard path at all. Reuses `go()` so it closes the
-                    dialog and clears `query` exactly like a result click.
-                    Plain `<a>`, not `next/link`: this file is `"use client"`
-                    and covered by the client-bundle allowlist in
-                    lib/search-index.guard.test.ts, and `next/link` would earn
-                    its keep only via prefetch — wasted bandwidth for a
-                    contribute page reached from a zero-result search — since
-                    `go()` already does the soft-navigate (router.push) and
-                    the onClick below preempts Link's own navigation anyway.
-                  */}
-                  <p className="mt-2 text-xs">
-                    If it is real and missing,{" "}
-                    <a
-                      href="/contribute"
-                      className={QUIET_ACTION_CLASS}
-                      onClick={(e) => {
-                        // Let the browser handle modified clicks (middle/⌘/Ctrl/
-                        // Shift/Alt) so "open in new tab" still works — only a
-                        // plain left click needs the dialog closed before
-                        // navigating. Same guard Next's own Link uses internally.
-                        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
-                          return;
-                        }
-                        e.preventDefault();
-                        go("/contribute");
-                      }}
-                    >
-                      send us a link
-                    </a>{" "}
-                    — that is what gets it added.
-                  </p>
-                </li>
-              )}
-            </ul>
+            {trimmedQuery && groups.length === 0 && !showSearching && (
+              <div className="px-3 py-6 text-center font-mono text-sm text-muted-foreground">
+                No matches for &ldquo;{query}&rdquo;.
+                {/*
+                  Highest-intent contribution moment on the site: GSC shows
+                  visitors arriving by searching for one named facility we
+                  don't have. Not part of `flat`/`groups` — deliberately
+                  outside the arrow-key/aria-activedescendant path (see
+                  those below) — so it keeps its default tabIndex (0) and
+                  is reached by Tab instead, since it would otherwise have
+                  no keyboard path at all. Reuses `go()` so it closes the
+                  dialog and clears `query` exactly like a result click.
+                  Plain `<a>`, not `next/link`: this file is `"use client"`
+                  and covered by the client-bundle allowlist in
+                  lib/search-index.guard.test.ts, and `next/link` would earn
+                  its keep only via prefetch — wasted bandwidth for a
+                  contribute page reached from a zero-result search — since
+                  `go()` already does the soft-navigate (router.push) and
+                  the onClick below preempts Link's own navigation anyway.
+                */}
+                <p className="mt-2 text-xs">
+                  If it is real and missing,{" "}
+                  <a
+                    href="/contribute"
+                    className={QUIET_ACTION_CLASS}
+                    onClick={(e) => {
+                      // Let the browser handle modified clicks (middle/⌘/Ctrl/
+                      // Shift/Alt) so "open in new tab" still works — only a
+                      // plain left click needs the dialog closed before
+                      // navigating. Same guard Next's own Link uses internally.
+                      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                        return;
+                      }
+                      e.preventDefault();
+                      go("/contribute");
+                    }}
+                  >
+                    send us a link
+                  </a>{" "}
+                  — that is what gets it added.
+                </p>
+              </div>
+            )}
 
             <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
               {resultCountMessage}

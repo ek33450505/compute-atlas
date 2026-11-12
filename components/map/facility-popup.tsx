@@ -5,11 +5,22 @@ import Link from "next/link";
 import { Droplets, ExternalLink, X, Zap } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
 import { formatNearestTransmission, formatNearestWater } from "@/lib/siting-format";
+import { AI_CLASSIFICATION_LABELS, CONFIDENCE_LABELS } from "@/lib/format";
 import type { PopupSummary } from "@/lib/facility-slim";
 
 // Module-level so reopening a pin never refetches. Summaries are immutable
 // for the page's lifetime (the endpoint is edge-cached for an hour anyway).
 const summaryCache = new Map<string, PopupSummary>();
+
+const POWER_ARRANGEMENT_LABELS: Partial<Record<string, string>> = {
+  grid: "Grid",
+  stranded_gas: "Stranded gas",
+  flared_gas: "Flared gas",
+  curtailed_renewable: "Curtailed renewable",
+  behind_meter: "Behind the meter",
+  mixed: "Mixed",
+  unknown: "Unknown",
+};
 
 /** Test hook: the cache outlives any one component instance by design. */
 export function __clearFacilityPopupCache(): void {
@@ -304,35 +315,47 @@ export function FacilityPopup({
           </div>
         )}
 
-        {/* Type-specific detail: AI classification for data centers, mining/environmental
-            signals for crypto-mining facilities. */}
-        {summary &&
-          (summary.facilityType === "data_center" ? (
-            <p className="text-xs text-foreground mb-2 capitalize">
-              {summary.aiClassification
-                ? `${summary.aiClassification.replace("_", " ")} · ${summary.confidence}`
-                : summary.confidence}
+        {/* Type-specific detail: every value carries its label, so an AI
+            classification and a record confidence can never read as the same
+            word twice. */}
+        {summary && (
+          <div className="text-xs text-foreground mb-2 space-y-0.5">
+            {summary.facilityType === "data_center" && summary.aiClassification && (
+              <p>
+                AI classification:{" "}
+                {AI_CLASSIFICATION_LABELS[summary.aiClassification] ??
+                  summary.aiClassification.replace(/_/g, " ")}
+              </p>
+            )}
+            {summary.facilityType === "crypto_mining" && (
+              <>
+                {summary.mining?.hashRateThPerS !== undefined && (
+                  <p className="tabular-nums">{summary.mining.hashRateThPerS} TH/s</p>
+                )}
+                {summary.mining?.powerArrangement && (
+                  <p>
+                    Power arrangement:{" "}
+                    {(Object.hasOwn(POWER_ARRANGEMENT_LABELS, summary.mining.powerArrangement)
+                      ? POWER_ARRANGEMENT_LABELS[summary.mining.powerArrangement]
+                      : undefined) ??
+                      summary.mining.powerArrangement.replace(/_/g, " ")}
+                  </p>
+                )}
+                {summary.carbonIntensityProxy !== undefined && (
+                  <p className="tabular-nums">
+                    Carbon proxy: {summary.carbonIntensityProxy}
+                  </p>
+                )}
+              </>
+            )}
+            <p>Confidence: {CONFIDENCE_LABELS[summary.confidence] ?? summary.confidence}</p>
+            <p className="text-muted-foreground tabular-nums">
+              Updated <time dateTime={summary.lastUpdated}>{summary.lastUpdated}</time>
+              {" · "}
+              {summary.sourceCount} {summary.sourceCount === 1 ? "source" : "sources"}
             </p>
-          ) : summary.facilityType === "crypto_mining" ? (
-            <div className="text-xs text-foreground mb-2 space-y-0.5">
-              {summary.mining?.hashRateThPerS !== undefined && (
-                <p className="tabular-nums">{summary.mining.hashRateThPerS} TH/s</p>
-              )}
-              {summary.mining?.powerArrangement && (
-                <p className="capitalize">
-                  {summary.mining.powerArrangement.replace(/_/g, " ")}
-                </p>
-              )}
-              {summary.carbonIntensityProxy !== undefined && (
-                <p className="tabular-nums">
-                  Carbon proxy: {summary.carbonIntensityProxy}
-                </p>
-              )}
-              <p className="capitalize">{summary.confidence}</p>
-            </div>
-          ) : (
-            <p className="text-xs text-foreground mb-2 capitalize">{summary.confidence}</p>
-          ))}
+          </div>
+        )}
 
         {/* Footer links. Both stand alone as the entire content of their
             link — unlike the map attribution links in facility-map.tsx,
@@ -347,21 +370,28 @@ export function FacilityPopup({
             href={`/facilities/${id}`}
             target={linksOpenInNewTab ? "_blank" : undefined}
             rel={linksOpenInNewTab ? "noopener" : undefined}
-            aria-label={linksOpenInNewTab ? "View details (opens in new tab)" : undefined}
             className="text-xs text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring rounded py-1.5"
           >
             View details →
+            {/* Hidden text, not an aria-label: WCAG 2.5.3 needs the accessible
+                name to contain the visible text, and an aria-label that
+                replaces it with different words fails that. */}
+            {linksOpenInNewTab && <span className="sr-only"> (opens in new tab)</span>}
           </Link>
           {firstSource && (
             <a
               href={firstSource.url}
               target="_blank"
               rel="noreferrer noopener"
-              aria-label={`${firstSource.label} (opens in new tab)`}
               className="text-xs text-foreground/80 hover:text-foreground flex items-center gap-1 focus-visible:outline-2 focus-visible:outline-ring rounded py-1.5"
             >
               <ExternalLink className="size-3" aria-hidden="true" />
               Source
+              {/* Name stays "Source: <label> (opens in new tab)" so it starts
+                  with the visible text (WCAG 2.5.3). */}
+              <span className="sr-only">
+                : {firstSource.label} (opens in new tab)
+              </span>
             </a>
           )}
         </div>

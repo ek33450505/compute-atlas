@@ -76,11 +76,11 @@ export function SiteHeader() {
             target="_blank"
             rel="noreferrer noopener"
             aria-label="View source on GitHub"
-            className="hidden md:flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="hidden xl:flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <Code2 aria-hidden className="size-4" />
           </a>
-          {/* Mobile menu — hidden on md+ */}
+          {/* Mobile menu — hidden on xl+ */}
           <MobileNav groups={MOBILE_NAV_GROUPS} />
         </div>
       </div>

@@ -74,7 +74,7 @@ export default async function OperatorsIndexPage() {
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "Operators" }]} />
 
       <PageMasthead
-        eyebrow="By operator"
+        eyebrow="By company"
         title="Operators"
         dek="Who is building it. Every company running tracked capacity, ranked by disclosed megawatts. Operators with no disclosed figure are listed separately — undisclosed is not the same as small."
       />

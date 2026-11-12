@@ -15,6 +15,15 @@ export function getFacilityMaxMw(f: Pick<Facility, "capacityMw">): number | unde
 }
 
 /**
+ * The single MW figure the capacity cell shows: operational when present,
+ * else planned. Sort by this (not `getFacilityMaxMw`) wherever the sorted
+ * column displays `formatCapacity`, so order and display cannot drift.
+ */
+export function getDisplayedCapacityMw(f: Pick<Facility, "capacityMw">): number | undefined {
+  return f.capacityMw?.operational ?? f.capacityMw?.planned;
+}
+
+/**
  * Count of facilities that disclose a capacity figure, restricted to
  * non-cancelled facilities. Shared "N of M disclose capacity" denominator
  * used by /power, /crypto, and /stats. The non-cancelled restriction matters
@@ -50,15 +59,11 @@ export function sortByMaxMwDesc(a: Facility, b: Facility): number {
  * - "—"                   when no capacity data is available
  */
 export function formatCapacity(f: Pick<Facility, "capacityMw">): string {
-  const operational = f.capacityMw?.operational;
-  const planned = f.capacityMw?.planned;
-  if (operational !== undefined) {
-    return `${operational.toLocaleString()} MW`;
-  }
-  if (planned !== undefined) {
-    return `${planned.toLocaleString()} MW planned`;
-  }
-  return "—";
+  const mw = getDisplayedCapacityMw(f);
+  if (mw === undefined) return "—";
+  return f.capacityMw?.operational !== undefined
+    ? `${mw.toLocaleString()} MW`
+    : `${mw.toLocaleString()} MW planned`;
 }
 
 /**

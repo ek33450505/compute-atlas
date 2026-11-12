@@ -15,7 +15,7 @@ export default function SubscribeInvalidPage() {
   return (
     <StatePanel
       titleAs="h1"
-      eyebrow="Invalid link"
+      eyebrow="Email alerts"
       title="Link expired or invalid"
       description="This confirmation or unsubscribe link has already been used, or the link itself is no longer valid."
       actions={

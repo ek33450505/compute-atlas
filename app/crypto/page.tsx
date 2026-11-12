@@ -148,7 +148,7 @@ export default async function CryptoPage() {
       <Breadcrumb items={CRUMBS} />
 
       <PageMasthead
-        eyebrow="Crypto mining"
+        eyebrow="Facility type"
         title="Bitcoin and crypto mining facilities in the United States"
         dek="Bitcoin and altcoin mining capacity, tracked site by site."
       />

@@ -32,7 +32,7 @@ export default function MethodologyPage() {
       <Breadcrumb items={[{ label: "About", href: "/about" }, { label: "Methodology" }]} />
 
       <PageMasthead
-        eyebrow="Methodology"
+        eyebrow="Sources and rules"
         title="Methodology"
         dek="How facilities are found, the sourcing standard every record is held to, and how to read the citations behind a record — published in full, not summarized."
       />

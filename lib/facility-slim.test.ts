@@ -236,6 +236,48 @@ describe("toPopupSummary", () => {
     expect(JSON.stringify(s)).not.toMatch(/"lat"|"lon"/);
   });
 
+  it("carries lastUpdated and the source count, and no other unexpected keys", () => {
+    const s = toPopupSummary(FULL[0]);
+    expect(s.lastUpdated).toBe("2026-01-01");
+    expect(s.sourceCount).toBe(FULL[0].sources.length);
+    expect(Object.keys(s).sort()).toEqual(
+      [
+        "aiClassification", "capacityMw", "city", "confidence", "facilityType", "id",
+        "lastUpdated", "multiSiteStates", "name", "operator", "precision", "source",
+        "sourceCount", "state", "status",
+      ].sort()
+    );
+  });
+
+  it("pins the exact key set for a crypto-mining record", () => {
+    const s = toPopupSummary(FULL[1]);
+    expect(Object.keys(s).sort()).toEqual(
+      [
+        "aiClassification", "capacityMw", "carbonIntensityProxy", "city", "confidence",
+        "facilityType", "id", "lastUpdated", "mining", "multiSiteStates", "name", "operator",
+        "precision", "source", "sourceCount", "state", "status",
+      ].sort()
+    );
+    expect(Object.keys(s.mining ?? {}).sort()).toEqual(["hashRateThPerS", "powerArrangement"]);
+  });
+
+  it("pins the exact key set for a record with siting context, nested keys included", () => {
+    const siting = {
+      nearestWater: { name: "Creek", kind: "river", distanceMi: 1.2, lat: 31.1 },
+      nearestTransmission: { voltageKv: 345, distanceMi: 2.5, lon: -97.1 },
+    } as unknown as Parameters<typeof toPopupSummary>[1];
+    const s = toPopupSummary(FULL[0], siting);
+    expect(Object.keys(s).sort()).toEqual(
+      [
+        "aiClassification", "capacityMw", "city", "confidence", "facilityType", "id",
+        "lastUpdated", "multiSiteStates", "name", "nearestTransmission", "nearestWater",
+        "operator", "precision", "source", "sourceCount", "state", "status",
+      ].sort()
+    );
+    expect(Object.keys(s.nearestWater ?? {}).sort()).toEqual(["distanceMi", "kind", "name"]);
+    expect(Object.keys(s.nearestTransmission ?? {}).sort()).toEqual(["distanceMi", "voltageKv"]);
+  });
+
   it("carries no coordinates", () => {
     const json = JSON.stringify(FULL.map((f) => toPopupSummary(f)));
     expect(json).not.toMatch(/"lat"|"lon"/);

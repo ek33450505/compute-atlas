@@ -89,7 +89,7 @@ export default function SupportPage() {
       <Breadcrumb items={[{ label: "About", href: "/about" }, { label: "Support" }]} />
 
       <PageMasthead
-        eyebrow="Support"
+        eyebrow="Funding"
         title="Support the atlas"
         dek={
           <>

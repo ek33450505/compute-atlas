@@ -17,6 +17,16 @@ describe("Button", () => {
     );
   });
 
+  // A re-enabled button fades opacity 0.5 -> 1 under `transition-all`; a scan
+  // mid-fade measures a blended, low-contrast color. Reduced-motion users get
+  // no transition (the e2e a11y suite forces reduced motion).
+  it("drops its transition under prefers-reduced-motion", () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole("button", { name: "Click me" })).toHaveClass(
+      "motion-reduce:transition-none"
+    );
+  });
+
   it("applies the default variant + size classes", () => {
     render(<Button>Click me</Button>);
     const btn = screen.getByRole("button", { name: "Click me" });

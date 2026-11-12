@@ -965,6 +965,18 @@
   bottom: 20px !important;
 }
 
+/* MapLibre popup stacking: the popup holds focus, the Close button and links,
+   so no map overlay may cover it. The overlays beside the map, inside its
+   wrapper, are absolute at z-10 (legend, readouts, attribution), z-20 (search)
+   and z-30 (Tools column) — see components/map/facility-map.tsx and
+   map-legend.tsx — and the popup had no z-index, so they all painted over it
+   (CI axe target-size failure, PR #573). 35 sits above Tools and below the
+   sticky site header (z-40). `.maplibregl-popup` is position:absolute, so
+   z-index applies. Guarded by app/globals.css.test.ts. */
+.atlas-popup {
+  z-index: 35;
+}
+
 /* ── MapLibre popup — themed as a parchment atlas card (Track B, Phase 1b) ─────
    Overrides maplibre-gl.css defaults (imported in components/map/facility-map.tsx).
    Scoped via `.atlas-popup` (the react-map-gl <Popup className>) so it only skins

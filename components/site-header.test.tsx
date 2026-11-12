@@ -100,3 +100,16 @@ describe("SiteHeader — logo link", () => {
     expect(home).toHaveAccessibleName(/Mapping the U\.S\. compute buildout/);
   });
 });
+
+describe("SiteHeader — GitHub icon breakpoint", () => {
+  // Must switch at the same xl: (1280px) breakpoint as PrimaryNav/MobileNav,
+  // or the right-hand group overflows at tablet width.
+  it("reveals at xl: (1280px), not md: or lg:", () => {
+    render(<SiteHeader />);
+    const link = screen.getByRole("link", { name: "View source on GitHub" });
+
+    expect(link).toHaveClass("hidden", "xl:flex");
+    expect(link).not.toHaveClass("md:flex");
+    expect(link).not.toHaveClass("lg:flex");
+  });
+});

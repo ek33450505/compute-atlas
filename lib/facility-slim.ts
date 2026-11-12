@@ -265,6 +265,9 @@ export interface PopupSummary {
   mining?: { hashRateThPerS?: number; powerArrangement?: string };
   carbonIntensityProxy?: number;
   source?: MapSource;
+  /** The record's lastUpdated, as stored. */
+  lastUpdated: string;
+  sourceCount: number;
   nearestWater?: NearestWater;
   nearestTransmission?: NearestTransmission;
 }
@@ -279,6 +282,8 @@ export function toPopupSummary(f: Facility, siting?: SitingContext): PopupSummar
     facilityType: f.facilityType,
     confidence: f.confidence,
     state: f.location.state,
+    lastUpdated: f.lastUpdated,
+    sourceCount: f.sources.length,
   };
   if (m.location.city !== undefined) out.city = m.location.city;
   if (m.location.multiSite) out.multiSiteStates = m.location.multiSite.states;

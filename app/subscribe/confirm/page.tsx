@@ -29,7 +29,7 @@ export default async function SubscribeConfirmPage({
   return (
     <StatePanel
       titleAs="h1"
-      eyebrow="Confirm"
+      eyebrow="Email alerts"
       title="Confirm your watch"
       description="Confirming means you'll get email when the watched record or area changes. You can unsubscribe from any email."
       actions={

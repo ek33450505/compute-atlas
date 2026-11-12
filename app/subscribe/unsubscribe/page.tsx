@@ -30,7 +30,7 @@ export default async function SubscribeUnsubscribeConfirmPage({
     return (
       <StatePanel
         titleAs="h1"
-        eyebrow="Unsubscribed"
+        eyebrow="Email alerts"
         title="Already unsubscribed"
         description="You're unsubscribed from this subscription. Changed your mind? Resume it below."
         actions={
@@ -55,7 +55,7 @@ export default async function SubscribeUnsubscribeConfirmPage({
   return (
     <StatePanel
       titleAs="h1"
-      eyebrow="Unsubscribe"
+      eyebrow="Email alerts"
       title="Unsubscribe from this subscription?"
       description="You'll stop receiving alerts for the subscription in the email you clicked from. Your other subscriptions are not affected."
       actions={

@@ -8,16 +8,21 @@ import { isEmbedRoute } from "@/components/footer-gate";
 import { SupportCta } from "@/components/support-cta";
 
 const KEY_PREFIX = "ca-support-banner:";
-export const VISITS_KEY = `${KEY_PREFIX}visits`;
 export const DISMISSED_KEY = `${KEY_PREFIX}dismissed`;
-const COUNTED_KEY = `${KEY_PREFIX}counted`;
+export const PAGEVIEWS_KEY = `${KEY_PREFIX}pageviews`;
+// Retired by D7 (2026-11-11): the cross-session visit counter. See removeLegacyKeys().
+const LEGACY_VISITS_KEY = `${KEY_PREFIX}visits`;
+const LEGACY_COUNTED_KEY = `${KEY_PREFIX}counted`;
 
-const MIN_VISITS = 2;
+/** D7 (2026-11-11): never on the first page view of a session; from the second on. */
+const MIN_PAGE_VIEWS = 2;
 
 /**
  * Routes where the banner never renders: admin, the immersive full-bleed map
  * (sized to exactly 100dvh, see footer-gate.tsx), every chrome-free embed, and
- * /support itself, where the page is the ask.
+ * /support itself, where the page is the ask. Also the pages that already
+ * carry an in-page support section (D7, 2026-11-11: one support mention per
+ * page): /about, /contribute and every facility detail page.
  */
 export function isBannerExcludedRoute(pathname: string): boolean {
   return (
@@ -25,35 +30,30 @@ export function isBannerExcludedRoute(pathname: string): boolean {
     pathname.startsWith("/admin/") ||
     pathname === "/map" ||
     pathname === "/support" ||
+    pathname === "/about" ||
+    pathname === "/contribute" ||
+    pathname.startsWith("/facilities/") ||
     isEmbedRoute(pathname)
   );
 }
 
-/** The returning-visitor path: shown from the second visit, unless dismissed. */
-export function shouldShowOnVisits(visits: number): boolean {
-  return visits >= MIN_VISITS;
+/** The session's page-view qualification: the second view onward. */
+export function shouldShowOnPageViews(views: number): boolean {
+  return views >= MIN_PAGE_VIEWS;
 }
 
-function readRaw(key: string): number | null {
+/**
+ * Counts one page view in sessionStorage and returns the session total.
+ * Returns 0 when sessionStorage is unavailable, so the banner stays hidden.
+ */
+function countPageView(): number {
   try {
-    const raw = window.localStorage.getItem(key);
-    return raw === null ? null : Number(raw);
+    const stored = Number(window.sessionStorage.getItem(PAGEVIEWS_KEY));
+    const next = (Number.isInteger(stored) && stored >= 0 ? stored : 0) + 1;
+    window.sessionStorage.setItem(PAGEVIEWS_KEY, String(next));
+    return next;
   } catch {
-    return null;
-  }
-}
-
-/** Stored visit count; anything but a non-negative integer reads as 0. */
-function readVisits(): number {
-  const n = readRaw(VISITS_KEY);
-  return n !== null && Number.isInteger(n) && n >= 0 ? n : 0;
-}
-
-function writeVisits(value: number): void {
-  try {
-    window.localStorage.setItem(VISITS_KEY, String(value));
-  } catch {
-    // Storage blocked or full: the count simply does not advance.
+    return 0;
   }
 }
 
@@ -78,34 +78,17 @@ function writeDismissedThisSession(): void {
  * Earlier builds stored a 60-day dismissal in localStorage; drop it.
  * Safe to delete after 2027-01-31 (the 60-day key it clears had expired for
  * everyone by then; added 2026-10-27).
+ * D7 (2026-11-11) also retired the localStorage visit counter and its
+ * per-session "counted" flag; clear those too. Safe to delete after 2027-02-28.
  */
-function removeLegacyDismissal(): void {
+function removeLegacyKeys(): void {
   try {
     window.localStorage.removeItem(DISMISSED_KEY);
+    window.localStorage.removeItem(LEGACY_VISITS_KEY);
+    window.sessionStorage.removeItem(LEGACY_COUNTED_KEY);
   } catch {
     // Ignore.
   }
-}
-
-/** Counts this browser session's visit once; returns the current total. */
-function countVisit(): number {
-  let alreadyCounted = false;
-  try {
-    alreadyCounted = window.sessionStorage.getItem(COUNTED_KEY) === "1";
-  } catch {
-    // No sessionStorage: cannot guard against double counting, so do not count.
-    return readVisits();
-  }
-  const stored = readVisits();
-  if (alreadyCounted) return stored;
-  const next = stored + 1;
-  writeVisits(next);
-  try {
-    window.sessionStorage.setItem(COUNTED_KEY, "1");
-  } catch {
-    // Ignore: worst case the next mount in this session counts again.
-  }
-  return next;
 }
 
 const LINK_CLASS =
@@ -115,37 +98,33 @@ const DISMISS_CLASS =
   "-mr-2 -mt-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:h-9 sm:w-9";
 
 /**
- * Floating, non-modal support card (bottom sheet on phones). Renders nothing
- * on the server and on the first client render (`visible` starts false), so
- * crawlers never see it and hydration matches; it appears only once the mount
- * effect decides the visitor qualifies (second visit, or a first visit that
- * scrolled a viewport) and has not dismissed it this browser session.
+ * Support card: a fixed bottom-right card from `sm` up, and an in-flow block
+ * directly above the footer on phones so it never covers a primary action
+ * (D7, 2026-11-11). Renders nothing on the server and on the first client
+ * render (`visible` starts false), so crawlers never see it and hydration
+ * matches; it appears only once the page-view effect decides the session has
+ * reached its second page view (client-side navigations count) and the visitor
+ * has not dismissed it this browser session.
  */
 export function SupportBanner() {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const barRef = useRef<HTMLElement>(null);
 
+  // The last pathname counted, so a StrictMode double-run of the effect does
+  // not count one page view twice.
+  const countedPath = useRef<string | null>(null);
+
   useEffect(() => {
-    removeLegacyDismissal();
-    if (readDismissedThisSession()) return;
-
-    const show = () => setVisible(true);
-
-    if (shouldShowOnVisits(countVisit())) {
-      show();
-      return;
-    }
-
-    const onScroll = () => {
-      if (window.scrollY >= window.innerHeight) {
-        window.removeEventListener("scroll", onScroll);
-        show();
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    removeLegacyKeys();
+    if (countedPath.current === pathname) return;
+    countedPath.current = pathname;
+    // Every pathname change is a page view, excluded routes included. A full
+    // reload remounts this and counts again: a reload of the first page is the
+    // session's second view and shows the banner (D7 forbids only the first).
+    const views = countPageView();
+    setVisible(shouldShowOnPageViews(views) && !readDismissedThisSession());
+  }, [pathname]);
 
   const excluded = isBannerExcludedRoute(pathname);
   const shown = visible && !excluded;
@@ -156,9 +135,16 @@ export function SupportBanner() {
     const el = barRef.current;
     if (!shown || !el) return;
     const root = document.documentElement;
-    // Height plus the card's bottom offset (16px on sm+, 0 for the phone sheet).
+    // Reserve space only while the card is fixed (sm+); in flow on phones it
+    // already occupies its own space. Crossing `sm` resizes the card, which
+    // re-runs this through the observer.
     const apply = () => {
-      const offset = parseFloat(getComputedStyle(el).bottom) || 0;
+      const style = getComputedStyle(el);
+      if (style.position !== "fixed") {
+        root.style.removeProperty("--support-bar-h");
+        return;
+      }
+      const offset = parseFloat(style.bottom) || 0;
       root.style.setProperty("--support-bar-h", `${el.offsetHeight + offset}px`);
     };
     apply();
@@ -192,7 +178,7 @@ export function SupportBanner() {
     <section
       ref={barRef}
       aria-label="Support Compute Atlas"
-      className="print:hidden fixed inset-x-0 bottom-0 z-30 rounded-t-lg border border-border bg-background px-4 pb-4 pt-4 shadow-md motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-reduce:transition-none sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[22rem] sm:max-w-[calc(100vw-2rem)] sm:rounded-lg sm:motion-safe:slide-in-from-bottom-0 sm:motion-safe:slide-in-from-right-4"
+      className="print:hidden relative z-30 mx-4 my-4 rounded-lg border border-border bg-background p-4 shadow-md motion-safe:animate-in motion-safe:fade-in motion-reduce:transition-none sm:fixed sm:inset-x-auto sm:bottom-4 sm:right-4 sm:m-0 sm:w-[22rem] sm:max-w-[calc(100vw-2rem)] sm:motion-safe:slide-in-from-right-4"
     >
       <div className="flex items-start justify-between gap-2">
         <p className="font-display text-lg leading-snug text-foreground">

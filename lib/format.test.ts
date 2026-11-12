@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   getFacilityMaxMw,
+  getDisplayedCapacityMw,
   countDisclosedCapacity,
   sortByMaxMwDesc,
   formatCapacity,
@@ -72,6 +73,30 @@ describe("getFacilityMaxMw", () => {
     // capacityMw: {} is valid per schema (planned and operational are both optional)
     const f = makeFacility({ capacityMw: {} });
     expect(getFacilityMaxMw(f)).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getDisplayedCapacityMw
+// ---------------------------------------------------------------------------
+describe("getDisplayedCapacityMw", () => {
+  it("returns operational when both are present, even if planned is larger", () => {
+    const f = makeFacility({ capacityMw: { operational: 200, planned: 5000 } });
+    expect(getDisplayedCapacityMw(f)).toBe(200);
+  });
+
+  it("falls back to planned when operational is absent", () => {
+    const f = makeFacility({ capacityMw: { planned: 165 } });
+    expect(getDisplayedCapacityMw(f)).toBe(165);
+  });
+
+  it("keeps an operational value of 0 rather than falling back", () => {
+    const f = makeFacility({ capacityMw: { operational: 0, planned: 50 } });
+    expect(getDisplayedCapacityMw(f)).toBe(0);
+  });
+
+  it("returns undefined with no capacity data", () => {
+    expect(getDisplayedCapacityMw(makeFacility({ capacityMw: undefined }))).toBeUndefined();
   });
 });
 

@@ -122,6 +122,27 @@ describe("ContributeFacilityForm — submit outcomes", () => {
     expect(screen.getByRole("button", { name: /submit another/i })).toBeInTheDocument();
   });
 
+  // Pending state: the base Button's `disabled:opacity-50` blends the primary
+  // fill into a ~3:1 pair. The submit carries an opaque muted pair instead
+  // (--muted-foreground #5C5344 on --muted #E9E2CF = 5.85:1).
+  it("keeps the in-flight submit button at full opacity with the muted token pair", async () => {
+    const user = userEvent.setup();
+    global.fetch = vi.fn().mockReturnValue(new Promise(() => {})) as unknown as typeof fetch;
+
+    render(<ContributeFacilityForm />);
+    await fillRequiredFields(user);
+    await user.click(screen.getByRole("button", { name: /submit facility/i }));
+
+    const pending = await screen.findByRole("button", { name: /submitting/i });
+    expect(pending).toBeDisabled();
+    expect(pending).toHaveClass(
+      "disabled:bg-muted",
+      "disabled:text-muted-foreground",
+      "disabled:opacity-100",
+    );
+    expect(pending).not.toHaveClass("disabled:opacity-50");
+  });
+
   it("sets a review-window expectation and links to the public activity feed on success", async () => {
     const user = userEvent.setup();
     mockFetchOnce({ ok: true, status: 201, json: async () => ({ ok: true }) });

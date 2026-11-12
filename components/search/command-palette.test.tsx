@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll, beforeEach, afterEach, type Mock } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CommandPalette, SEARCH_DEBOUNCE_MS } from "./command-palette";
 import { buildNavSearchIndex } from "@/lib/search-index";
@@ -102,14 +102,10 @@ const nameMatcher = (name: string) =>
   new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
 
 /**
- * `role="option"` sits on the `<li>`, but the click handler that navigates is
- * on the `<button>` inside it — clicking the `li` bubbles upward and never
- * reaches that handler. The previous version of this file clicked the `li` and
- * still passed, because `pushMock` was module-scoped and never cleared, so it
- * was asserting the PRIOR test's Enter navigation. Clearing the mock per test
- * (see `beforeEach`) exposed that; this resolves the real click target.
+ * The option element itself carries the click handler (no inner button: an
+ * interactive child inside role="option" is axe `nested-interactive`).
  */
-const clickTarget = (option: HTMLElement) => within(option).getByRole("button");
+const clickTarget = (option: HTMLElement) => option;
 
 // ---------------------------------------------------------------------------
 // /api/search harness

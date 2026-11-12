@@ -1,5 +1,5 @@
 import { STATUS_ORDER } from "@/lib/status";
-import { getFacilityMaxMw } from "@/lib/format";
+import { getDisplayedCapacityMw } from "@/lib/format";
 import { getFacilityTypeMeta } from "@/lib/facility-type";
 import type { TableRow } from "@/lib/facility-slim";
 
@@ -24,10 +24,10 @@ export function compareStatus(a: TableRow, b: TableRow): number {
   return STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status);
 }
 
-/** Capacity ascending; facilities with no capacity data sort last. */
+/** Displayed capacity (operational, else planned) ascending; facilities with no capacity data sort last. */
 export function compareCapacity(a: TableRow, b: TableRow): number {
-  const x = getFacilityMaxMw(a);
-  const y = getFacilityMaxMw(b);
+  const x = getDisplayedCapacityMw(a);
+  const y = getDisplayedCapacityMw(b);
   if (x === undefined && y === undefined) return 0;
   if (x === undefined) return 1;
   if (y === undefined) return -1;
@@ -74,7 +74,7 @@ function primary(col: SortColumn, a: TableRow, b: TableRow): number {
 }
 
 function isMissing(col: SortColumn, r: TableRow): boolean {
-  if (col === "capacity") return getFacilityMaxMw(r) === undefined;
+  if (col === "capacity") return getDisplayedCapacityMw(r) === undefined;
   if (col === "aiClassification") return aiClass(r) === undefined;
   return false;
 }

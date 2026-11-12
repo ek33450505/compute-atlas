@@ -24,7 +24,7 @@ import { SORT_COLUMNS, type SortColumn, type SortDir } from "@/lib/table-sort";
 import {
   formatCapacity,
   formatLocation,
-  getFacilityMaxMw,
+  getDisplayedCapacityMw,
   AI_CLASSIFICATION_LABELS,
   CONFIDENCE_LABELS,
 } from "@/lib/format";
@@ -104,7 +104,7 @@ const columns: ColumnDef<TableRowData>[] = [
   {
     id: "capacity",
     header: "Capacity",
-    accessorFn: (f) => getFacilityMaxMw(f),
+    accessorFn: (f) => getDisplayedCapacityMw(f),
     cell: ({ row }) => (
       <span className="tabular-nums">{formatCapacity(row.original)}</span>
     ),

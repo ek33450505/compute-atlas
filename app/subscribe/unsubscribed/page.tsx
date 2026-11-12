@@ -25,7 +25,7 @@ export default async function SubscribeUnsubscribedPage({
   return (
     <StatePanel
       titleAs="h1"
-      eyebrow="Unsubscribed"
+      eyebrow="Email alerts"
       title="Unsubscribed"
       description="You won't receive further alerts for that subscription."
       actions={

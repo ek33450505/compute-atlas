@@ -106,7 +106,7 @@ export default async function CountiesIndexPage() {
       <Breadcrumb items={[{ label: "Explore", href: "/explore" }, { label: "By county" }]} />
 
       <PageMasthead
-        eyebrow="Counties"
+        eyebrow="By geography"
         title="By county"
         dek="Every county with a tracked site, grouped by state. County is where permits are filed, rates are set, and hearings are held — so it is often the level the record actually lives at."
       />

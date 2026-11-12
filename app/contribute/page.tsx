@@ -11,7 +11,7 @@ import { submissionNotifyEnabled } from "@/lib/submission-notify";
 export const metadata: Metadata = {
   title: "Share a lead",
   description:
-    "Know about a data center, mining site, or power plant that isn't on Compute Atlas yet? Send a link and we'll take it from there — anonymous, source-cited, and checked before anything is published.",
+    "Know about a data center, mining site, or power plant that isn't on Compute Atlas yet? Send a link and we'll take it from there — no account needed, source-cited, and checked before anything is published.",
   alternates: { canonical: "/contribute" },
 };
 
@@ -48,7 +48,8 @@ export default function ContributePage() {
             Know about a data center, mining site, or power plant that
             isn&rsquo;t on the map yet? Send the link &mdash; a news article,
             permit filing, or press release &mdash; and we&rsquo;ll take it
-            from there. No account needed, and every submission is anonymous.
+            from there. No account or email required. To limit abuse, a salted hash
+            of your IP address is stored with each submission.
             If you already know the details, the full form is below.
           </>
         }
