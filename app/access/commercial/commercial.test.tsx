@@ -53,6 +53,9 @@ function openPage() {
 }
 
 beforeEach(() => {
+  // The count's date is the moment it was taken; pin it so every assertion can name the exact date.
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-11-12T01:04:00Z"));
   mocks.getAllFacilities.mockResolvedValue([fac("data_center", "TX", 3), fac("crypto_mining", "OH", 2)]);
   mocks.latestPublishedEdition.mockResolvedValue({
     id: "e1",
@@ -68,6 +71,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
   mocks.getAllFacilities.mockReset();
@@ -87,6 +91,29 @@ describe("/access/commercial", () => {
     expect(screen.queryByText(/months free/)).toBeNull();
     expect(screen.getByText(/never sees your payment details/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "dataset access" })).toHaveAttribute("href", "/access");
+  });
+
+  it("dates the live count and separates it from the edition's record count", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-11-12T01:04:00Z"));
+    try {
+      vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+      vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+      await renderPage();
+      expect(document.body.textContent).toContain(
+        "Latest edition (10 November 2026): 2 records. The live site has 2 facilities, counted on 12 November 2026.",
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("uses US spelling for the license statement", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    expect(document.body.textContent).toContain("The fee is not a license fee.");
+    expect(document.body.textContent).not.toContain("licence");
   });
 
   it("states tax, cancellation, refund terms and links the terms and contact pages", async () => {
@@ -225,11 +252,13 @@ describe("/access/commercial", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     const text = document.body.textContent ?? "";
-    expect(text).toContain("2 US data centers, crypto-mining sites and power plants");
-    expect(text).toContain("Latest edition 10 November 2026 · 2 records · 33 added · 43 updated · 0 removed");
+    expect(text).toContain("US data centers, crypto-mining sites and power plants");
+    expect(text).toContain("Latest edition (10 November 2026): 2 records. The live site has 2 facilities, counted on 12 November 2026.");
+    expect(text).toContain("Since the previous edition: 33 added, 43 updated, 0 removed.");
+    expect(text.match(/Latest edition/g)).toHaveLength(1);
     expect(text).toContain("(9.1 MB)");
     expect(text).toContain(`the same records as a ${CSV_COLUMN_COUNT}-column table, ready for a spreadsheet (1.8 MB)`);
-    expect(text).toContain("reading 5 of them");
+    expect(text).toContain("reading 5 of them (counted 12 November 2026)");
     expect(text).toContain("A new edition every Friday, and an email when it is ready");
     const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
     expect(headings).toEqual([
@@ -259,7 +288,8 @@ describe("/access/commercial", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     const text = document.body.textContent ?? "";
-    expect(text).toContain("Latest edition 7 November 2026 · 3,121 records");
+    expect(text).toContain("Latest edition (7 November 2026): 3,121 records. The live site has 2 facilities, counted on 12 November 2026.");
+    expect(text).not.toContain("Latest edition 7 November 2026");
     expect(text).not.toMatch(/\d (added|updated|removed)/);
   });
 

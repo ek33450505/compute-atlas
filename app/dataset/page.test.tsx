@@ -54,7 +54,14 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllEnvs();
+  vi.useRealTimers();
 });
+
+// The count's as-of date is the READ time. Only Date is faked so promises still settle.
+function readAt(iso: string) {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date(iso));
+}
 
 describe("DatasetPage", () => {
   it("shows the free card only, with no paid-tier section, when commercial is off", async () => {
@@ -89,17 +96,25 @@ describe("DatasetPage", () => {
     expect(within(card).getByRole("link", { name: "Preview the files and plans" })).toHaveAttribute("href", "/access/commercial");
     expect(within(card).getByRole("link", { name: "contact us" })).toHaveAttribute("href", "/contact");
     expect(screen.getByRole("heading", { level: 2, name: "Why it costs money" })).toBeInTheDocument();
-    expect(document.body.textContent).toContain("the fee pays for the work, not a licence");
+    expect(document.body.textContent).toContain("the fee pays for the work, not a license");
     expect(document.body.textContent).not.toMatch(/donat|support us|months free/i);
   });
 
-  it("renders live counts, the edition line, and the quoted constants", async () => {
+  it("renders dated live counts, the edition-vs-live sentence, and the quoted constants", async () => {
+    readAt("2026-11-12T01:04:00Z");
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     render(await DatasetPage());
     const text = document.body.textContent ?? "";
-    expect(text).toContain("4 facilities · 2 data centers · 1 crypto-mining sites · 1 power plants");
-    expect(text).toContain("3 states and territories · 3 operators · 10 source links");
-    expect(text).toContain("Latest edition: 10 November 2026: 7 added, 8 updated, 0 removed.");
+    expect(text).toContain(
+      "Latest edition (10 November 2026): 4 records. The live site has 4 facilities, counted on 12 November 2026.",
+    );
+    expect(text).toContain("2 data centers · 1 crypto-mining sites · 1 power plants");
+    // One jurisdiction wording site-wide (statesPhrase), not "states and territories".
+    expect(text).toContain("3 states · 3 operators · 10 source links");
+    expect(text).not.toContain("states and territories");
+    expect(text).toContain("Since the previous edition: 7 added, 8 updated, 0 removed.");
+    // One "Latest edition" statement, not two.
+    expect(text.match(/Latest edition/g)).toHaveLength(1);
     expect(text).toContain(`the table stops at ${MAX_ROWS} rows`);
     expect(text).toContain(`${CSV_COLUMN_COUNT} CSV columns per facility`);
   });
@@ -116,7 +131,8 @@ describe("DatasetPage", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     render(await DatasetPage());
     const text = document.body.textContent ?? "";
-    expect(text).toContain("Latest edition: 7 November 2026: 3,121 records.");
+    expect(text).toContain("Latest edition (7 November 2026): 3,121 records.");
+    expect(text).not.toContain("Latest edition: 7 November 2026");
     expect(text).not.toMatch(/\d (added|updated|removed)/);
   });
 
@@ -132,7 +148,7 @@ describe("DatasetPage", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     render(await DatasetPage());
     const text = document.body.textContent ?? "";
-    expect(text).toContain("Latest edition: 14 November 2026: 0 added, 4 updated.");
+    expect(text).toContain("Since the previous edition: 0 added, 4 updated.");
     expect(text).not.toMatch(/\d removed/);
   });
 
@@ -150,13 +166,16 @@ describe("DatasetPage", () => {
     ["throws", () => mocks.latestPublishedEdition.mockRejectedValue(new Error("db down"))],
     ["returns null", () => mocks.latestPublishedEdition.mockResolvedValue(null)],
   ])("omits the edition line, keeping the page, when the edition read %s", async (_label, arrange) => {
+    readAt("2026-11-12T01:04:00Z");
     vi.spyOn(console, "error").mockImplementation(() => {});
     arrange();
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     render(await DatasetPage());
     expect(document.body.textContent).not.toContain("Latest edition");
     expect(screen.getByRole("heading", { level: 2, name: "The full dataset" })).toBeInTheDocument();
-    expect(document.body.textContent).toContain("4 facilities");
+    // No edition: the live count stands alone, still dated.
+    expect(document.body.textContent).toContain("4 facilities, counted on 12 November 2026.");
+    expect(document.body.textContent).not.toContain("The live site has");
   });
 
   it("omits the stat lines, keeping the page, when the facility read throws", async () => {
@@ -165,6 +184,10 @@ describe("DatasetPage", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     render(await DatasetPage());
     expect(document.body.textContent).not.toContain("source links");
+    expect(document.body.textContent).not.toContain("facilities, counted on");
+    // The edition's own count still stands; the live clause is omitted, not invented.
+    expect(document.body.textContent).toContain("Latest edition (10 November 2026): 4 records.");
+    expect(document.body.textContent).not.toContain("The live site has");
     expect(screen.getByRole("link", { name: "Request access" })).toBeInTheDocument();
   });
 

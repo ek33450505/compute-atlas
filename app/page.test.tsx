@@ -5,9 +5,9 @@ import { render, screen, within } from "@testing-library/react";
 // vi.hoisted() (same pattern as app/power/page.test.tsx).
 const {
   mockGetStats,
+  mockLoadOfferCounts,
   mockGetNotableFacilities,
   mockGetRecentActivity,
-  mockGetTopStates,
   mockGetAllFacilities,
   mockGetCommunityReceptionCounts,
   mockGetAiClassificationCounts,
@@ -23,7 +23,6 @@ const {
   mockGetStats: vi.fn(),
   mockGetNotableFacilities: vi.fn(),
   mockGetRecentActivity: vi.fn(),
-  mockGetTopStates: vi.fn(),
   mockGetAllFacilities: vi.fn(),
   mockGetCommunityReceptionCounts: vi.fn(),
   mockGetAiClassificationCounts: vi.fn(),
@@ -35,13 +34,13 @@ const {
   mockGetCounties: vi.fn(),
   mockGetQuarterlyPipelineSummary: vi.fn(),
   mockSelectRecordSpecimen: vi.fn(),
+  mockLoadOfferCounts: vi.fn(),
 }));
 
 vi.mock("@/lib/data", () => ({
   getStats: mockGetStats,
   getNotableFacilities: mockGetNotableFacilities,
   getRecentActivity: mockGetRecentActivity,
-  getTopStates: mockGetTopStates,
   getAllFacilities: mockGetAllFacilities,
   getCommunityReceptionCounts: mockGetCommunityReceptionCounts,
   getAiClassificationCounts: mockGetAiClassificationCounts,
@@ -92,10 +91,18 @@ vi.mock("next/link", () => ({
 // components/home/hero-plate.dataset.test.tsx.
 vi.mock("@/components/home/hero-plate-paths", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/components/home/hero-plate-paths")>();
-  return { ...original, HERO_PLATE: { ...original.HERO_PLATE, omitted: 12 } };
+  return { ...original, HERO_PLATE: { ...original.HERO_PLATE, omitted: 12, deduped: 5 } };
+});
+
+// The hero's dated count comes from the same cached loader /dataset uses. Pinned here so the
+// suite tests the wiring (value + as-of date reach the hero), not a DB read.
+vi.mock("@/lib/dataset-offer", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/lib/dataset-offer")>();
+  return { ...original, loadOfferCounts: mockLoadOfferCounts };
 });
 
 import HomePage from "./page";
+import { formatEditionDate } from "@/lib/edition-date";
 import { HERO_PLATE } from "@/components/home/hero-plate-paths";
 
 const STATE_CODES = ["CA", "TX", "VA", "DC"];
@@ -108,8 +115,6 @@ const STATE_CODES = ["CA", "TX", "VA", "DC"];
 // disclosure text. Extracted rather than inlined so that 4-digit behaviour can
 // be asserted directly (below) instead of waiting for such a wave to arrive.
 const nf = new Intl.NumberFormat("en-US");
-const omittedDisclosure = (omitted: number) =>
-  `static map omits ${nf.format(omitted)} in U.S. territories`;
 
 /** Three facilities carrying 7 sources between them. */
 const FACILITIES = [
@@ -139,13 +144,16 @@ const FACILITIES = [
 
 beforeEach(() => {
   mockGetStats.mockResolvedValue({
+    // This is the getStats() count, which the page no longer prints: every facility total comes from
+    // the dated loadOfferCounts() read (2,412 below). The two differ on purpose, so a total read from the
+    // wrong source fails the "one source" test below.
     // Deliberately NOT the live figure the homepage copy was written against
     // (1,929). Every caption and stat that claims to read the live count has to
     // be provably reading THIS mock: with a fixture equal to the snapshot
     // literal, a hardcoded `count={1929}` at a call site passes identically to
     // `count={count}` and the prop chain goes untested. A synthetic value that
     // appears nowhere in the source makes that substitution fail.
-    count: 2412,
+    count: 2500,
     states: 3,
     includesDc: true,
     stateCodes: STATE_CODES,
@@ -155,10 +163,6 @@ beforeEach(() => {
   });
   mockGetNotableFacilities.mockResolvedValue([]);
   mockGetRecentActivity.mockResolvedValue([]);
-  mockGetTopStates.mockResolvedValue([
-    { state: "TX", count: 9 },
-    { state: "OH", count: 4 },
-  ]);
   mockGetAllFacilities.mockResolvedValue(FACILITIES);
   mockGetCommunityReceptionCounts.mockResolvedValue({
     litigation: 2,
@@ -203,6 +207,18 @@ beforeEach(() => {
     cancelledThisQuarter: 0,
     statusChangesThisQuarter: 0,
   });
+  mockLoadOfferCounts.mockResolvedValue({
+    facilities: 2412,
+    dataCenters: 2000,
+    cryptoSites: 300,
+    powerPlants: 112,
+    jurisdictions: 3,
+    stateCodes: STATE_CODES,
+    stateCounts: { TX: 9, OH: 4, CA: 1 },
+    operators: 2,
+    sourceLinks: 7,
+    asOf: "2026-11-12T01:04:00.000Z",
+  });
   // Defaults to "no record clears the bar" — the degraded path every other
   // test in this file renders through, so none of them depend on the specimen.
   mockSelectRecordSpecimen.mockReturnValue(null);
@@ -215,7 +231,7 @@ beforeEach(() => {
  * testing the wrong element.
  */
 function provenanceLine(): HTMLElement {
-  return screen.getByText(/2,412 sites · 3 states and DC/);
+  return screen.getByText(/2,412 sites, counted on 12 November 2026 · 3 states and DC/);
 }
 
 /**
@@ -279,9 +295,58 @@ describe("HomePage hero", () => {
     render(await HomePage());
 
     const line = provenanceLine();
-    expect(line).toHaveTextContent("2,412 sites");
+    expect(line).toHaveTextContent("2,412 sites, counted on 12 November 2026");
     expect(line).toHaveTextContent("3 states and DC");
     expect(line).toHaveTextContent("7 sources");
+  });
+
+  // The bug class this unit removes: a second, undated total on the same screen. getStats() says 2,500;
+  // the dated loader says 2,412. Only the loader's figures may appear, ledger and hero alike.
+  it("reads every facility total from the one dated source, ledger included", async () => {
+    const { container } = render(await HomePage());
+
+    expect(screen.getByLabelText("2412 sites tracked")).toBeInTheDocument();
+    expect(screen.getByLabelText("7 sources cited")).toBeInTheDocument();
+    expect(screen.getByText("Counted on 12 November 2026")).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/2,?500\b/);
+  });
+
+  it("omits the ledger's as-of caption when the counts read failed", async () => {
+    mockLoadOfferCounts.mockResolvedValue(null);
+    render(await HomePage());
+
+    expect(screen.queryByText(/^Counted on/)).not.toBeInTheDocument();
+  });
+
+  // When the dated read failed, every total falls back to counting the facility set the page already loaded:
+  // still ONE source (undated), never a mix of the dated loader and another cache.
+  it("falls back to one undated source for every total when the counts read failed", async () => {
+    mockLoadOfferCounts.mockResolvedValue(null);
+    const { container } = render(await HomePage());
+
+    expect(screen.getByLabelText("3 sites tracked")).toBeInTheDocument();
+    expect(screen.getByLabelText("7 sources cited")).toBeInTheDocument();
+    // Visible text only: the JSON-LD script is not a screen total.
+    const visible = Array.from(container.querySelectorAll("script"))
+      .reduce((text, el) => text.replace(el.textContent ?? "", ""), container.textContent ?? "");
+    expect(visible).not.toContain("counted on");
+    expect(visible).not.toMatch(/(?<![\d,])2,?(412|500)(?![\d,])/);
+  });
+
+  // The phone state chips follow the same totals (not a second loadFacilities read): most facilities first.
+  it("orders the state chips from the dated counts", async () => {
+    render(await HomePage());
+
+    const nav = screen.getByRole("navigation", { name: "Browse by state" });
+    const names = within(nav).getAllByRole("link").map((a) => a.textContent);
+    expect(names).toEqual(["Texas", "Ohio", "California", "All states"]);
+  });
+
+  // Per-type totals come from the same dated object, not a second cache (getFacilityTypeCounts).
+  it("takes the crypto-mining count from the dated counts", async () => {
+    render(await HomePage());
+
+    expect(screen.getByText("300 sites")).toBeInTheDocument();
   });
 
   it("carries no edition date and never says `updated`", async () => {
@@ -315,32 +380,21 @@ describe("HomePage hero", () => {
     );
   });
 
-  // The plate's OWN accessible name cannot carry this: that <svg role="img">
-  // is replaced by the aria-hidden globe canvas as soon as MapLibre mounts, so
-  // on desktop the disclosure was announced or not depending on timing. The
-  // provenance rule is on the page in every state, at every viewport.
-  it("discloses on the provenance rule what the static map cannot place", async () => {
-    // HERO_PLATE.omitted is pinned by the mock above, so the plural branch is
-    // exercised on any snapshot (the 68-record fixture omits nothing).
-    expect(HERO_PLATE.omitted).toBeGreaterThan(1);
-
+  // The count is dated from the READ (asOf on the cached loader), not the render, and a failed
+  // read drops the segment rather than printing an undated number.
+  it("drops the site count from the provenance rule when the counts read failed", async () => {
+    mockLoadOfferCounts.mockResolvedValue(null);
     render(await HomePage());
 
-    expect(provenanceLine().textContent).toContain(
-      omittedDisclosure(HERO_PLATE.omitted)
-    );
+    expect(screen.queryByText(/sites, counted on/)).not.toBeInTheDocument();
   });
 
-  // Proves the formatting above rather than trusting it. Today's
-  // HERO_PLATE.omitted is a 2-digit number, where raw interpolation and en-US
-  // formatting produce the identical string — so the assertion above cannot
-  // distinguish the two and would pass either way. This pins the 4-digit case
-  // the suite would otherwise first meet on the day a data wave broke it.
-  it("formats the omitted count with thousands separators past 999", () => {
-    expect(omittedDisclosure(1000)).toBe(
-      "static map omits 1,000 in U.S. territories"
-    );
-    expect(omittedDisclosure(12)).toBe("static map omits 12 in U.S. territories");
+  // The territory caveat moved off the hero stat line into the plate key, beside the plot.
+  it("no longer discloses the static-map omission on the provenance rule", async () => {
+    render(await HomePage());
+
+    expect(provenanceLine().textContent).not.toContain("static map");
+    expect(provenanceLine().textContent).not.toContain("omits");
   });
 
   // The hero wrapper is a client component; the plate is a server-rendered
@@ -595,12 +649,12 @@ describe("HomePage plate key", () => {
   // Computed from the artifact rather than pasted as literals: every data wave
   // regenerates hero-plate-paths.ts, and hard-coded figures here would go
   // stale silently while still passing against nothing.
-  it("captions the plate with exactly one number — what it draws", async () => {
+  it("captions the plate with what it draws, dated with the snapshot it drew", async () => {
     render(await HomePage());
 
     const covered = HERO_PLATE.total - HERO_PLATE.omitted;
     const caption = within(plateKey()).getByText(
-      new RegExp(`^${nf.format(covered)} sites plotted$`)
+      `${nf.format(covered)} sites plotted as of ${formatEditionDate(HERO_PLATE.asOf)}`
     );
 
     // `covered` is total MINUS omitted, never HERO_PLATE.plotted — that counts
@@ -612,19 +666,17 @@ describe("HomePage plate key", () => {
     // that happens to yield `plotted === total - omitted`.
     expect(caption).toBeInTheDocument();
 
-    // Anchored at BOTH ends, and this is the half that matters on the
-    // ASSEMBLED page. The caption used to read "N of TOTAL sites plotted",
-    // where TOTAL came from the build-time plate artifact while
-    // <HeroProvenance>'s `sites` — rendered a few lines above, in this same
-    // fold — comes from live Neon. Equal today; two different site totals one
-    // line apart the first sync that lands without a plate rebuild. Restoring
-    // that clause, or appending the old territory segment, fails here.
-    //
-    // Counting digit groups rather than asserting `not.toContain(total)`, for
-    // the reason given just above about HERO_PLATE.plotted: a wave where
-    // `omitted` reached 0 would make total === covered and turn that check red
-    // against correct code. A count of one cannot false-fire that way.
-    expect(caption.textContent?.match(/[\d,]+/g)).toHaveLength(1);
+    // The anchored regex above also pins that the caption carries no "of <total>" clause: it states
+    // the plate's own figure with the plate's own date, so it cannot contradict the live count.
+  });
+
+  it("states the plate's omission and shared marks in the key, from the artifact", async () => {
+    expect(HERO_PLATE.omitted).toBeGreaterThan(1);
+    render(await HomePage());
+
+    const key = within(plateKey());
+    expect(key.getByText(/^5 sites are drawn on a mark another site already holds\./)).toBeInTheDocument();
+    expect(key.getByText(new RegExp(`${nf.format(HERO_PLATE.omitted)} in U\\.S\\. territories are off this map`))).toBeInTheDocument();
   });
 
   // The placement is the whole design decision. hero-globe-dynamic.tsx swaps

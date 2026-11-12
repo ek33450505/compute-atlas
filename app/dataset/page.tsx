@@ -2,20 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumb } from "@/components/breadcrumb";
+import { DatasetCounts, editionChangesLine } from "@/components/dataset-counts";
 import { PageMasthead } from "@/components/page-masthead";
 import { formatPlanPrice } from "@/lib/commercial-plans";
 import { isCommercialTierEnabled } from "@/lib/commercial-flag";
 import { CSV_COLUMN_COUNT } from "@/lib/dataset-csv";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import {
-  formatEditionDate,
   loadOfferCounts,
   loadOfferEdition,
   n,
-  type OfferEdition,
 } from "@/lib/dataset-offer";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 import { MAX_ROWS } from "@/lib/table-query";
+import { statesPhrase } from "@/lib/us-states";
 
 export const revalidate = 86400;
 
@@ -39,20 +39,6 @@ const BUTTON_CLASS =
 const LINK_CLASS =
   "underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm";
 
-/** "Latest edition: 10 November 2026: 7 added, 8 updated." A first edition has no changes to report. */
-function editionLine(edition: OfferEdition): string {
-  const head = `Latest edition: ${formatEditionDate(edition.date)}`;
-  const parts = edition.initial
-    ? [edition.recordCount !== null ? `${n(edition.recordCount)} records` : null]
-    : [
-        edition.added !== null ? `${n(edition.added)} added` : null,
-        edition.updated !== null ? `${n(edition.updated)} updated` : null,
-        edition.removed !== null ? `${n(edition.removed)} removed` : null,
-      ];
-  const clauses = parts.filter((part) => part !== null);
-  return clauses.length > 0 ? `${head}: ${clauses.join(", ")}.` : `${head}.`;
-}
-
 /**
  * /dataset — the file offer ("Dataset" in the nav): what the files hold, the
  * free and commercial access cards, and why the commercial tier costs money.
@@ -67,6 +53,7 @@ export default async function DatasetPage() {
   const [counts, edition] = sharing
     ? await Promise.all([loadOfferCounts(), loadOfferEdition()])
     : [null, null];
+  const editionDetail = editionChangesLine(edition);
 
   return (
     <div
@@ -113,21 +100,21 @@ export default async function DatasetPage() {
             <h2 id="access-heading" className="font-display text-2xl text-foreground">
               The full dataset
             </h2>
-            {counts && (
-              <div className="space-y-1 font-mono text-sm text-foreground">
+            <div className="space-y-1 font-mono text-sm text-foreground">
+              <DatasetCounts counts={counts} edition={edition} noun="facilities" />
+              {counts && (
                 <p>
-                  {n(counts.facilities)} facilities · {n(counts.dataCenters)} data centers
-                  · {n(counts.cryptoSites)} crypto-mining sites ·{" "}
-                  {n(counts.powerPlants)} power plants
+                  {`${n(counts.dataCenters)} data centers · ${n(counts.cryptoSites)} crypto-mining sites · ${n(counts.powerPlants)} power plants`}
                 </p>
+              )}
+              {counts && (
                 <p>
-                  {n(counts.states)} states and territories · {n(counts.operators)} operators
-                  · {n(counts.sourceLinks)} source links
+                  {`${statesPhrase(counts.stateCodes)} · ${n(counts.operators)} operators · ${n(counts.sourceLinks)} source links`}
                 </p>
-              </div>
-            )}
-            {edition && (
-              <p className="font-mono text-xs text-muted-foreground">{editionLine(edition)}</p>
+              )}
+            </div>
+            {editionDetail && (
+              <p className="font-mono text-xs text-muted-foreground">{editionDetail}</p>
             )}
             <div className={commercial ? "grid gap-4 sm:grid-cols-2" : "grid gap-4"}>
               <section
@@ -226,7 +213,7 @@ export default async function DatasetPage() {
               </h2>
               <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
                 The data is CC BY 4.0 for everyone, and a subscription does not change that: the
-                fee pays for the work, not a licence. Finding, reading and citing{" "}
+                fee pays for the work, not a license. Finding, reading and citing{" "}
                 {counts ? n(counts.sourceLinks) : "thousands of"} public sources, checking for
                 changes every week and delivering clean files is the work. Commercial
                 subscriptions pay for it and keep the files free for students, educators and

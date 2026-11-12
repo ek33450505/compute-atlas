@@ -4,12 +4,18 @@ import { cn } from "@/lib/utils";
 
 interface PlateKeyProps {
   /**
-   * Facilities the plate draws ground for: `HERO_PLATE.total - HERO_PLATE.omitted`.
+   * Sites the plate draws ground for: `HERO_PLATE.total - HERO_PLATE.omitted`.
    * NOT `HERO_PLATE.plotted` — that counts drawn MARKS, and co-located
    * same-status facilities collapse onto one mark, so it under-counts
    * facilities by design.
    */
-  plotted: number;
+  sites: number;
+  /** `HERO_PLATE.deduped`: sites drawn on a mark another same-status site already occupies. */
+  shared: number;
+  /** `HERO_PLATE.omitted`: facilities in U.S. territories the Albers USA plate cannot place. */
+  omitted: number;
+  /** The snapshot date the plate drew (`HERO_PLATE.asOf`, already formatted, e.g. "11 November 2026"). */
+  asOfLabel: string;
   /**
    * PLACEMENT LIVES HERE, not in the component. The card is IN FLOW at every
    * breakpoint: app/page.tsx renders it as a direct child of the hero box's
@@ -27,12 +33,12 @@ interface PlateKeyProps {
 /**
  * The hero dot plate's key: a status legend and a one-line caption.
  *
- * ⚠️ ONE number, deliberately. The caption states only what the PLATE drew,
- * which is a property of the build-time artifact. The live dataset total is
- * <HeroProvenance>'s job and is stated there exactly once, from Neon. A
- * caption reading "1,920 of 1,929" put a snapshot total a few lines under a
- * live one — each honest alone, contradictory as a pair the moment a data
- * sync lands without a plate rebuild. Do not reintroduce a second total here.
+ * ⚠️ The caption states only what the PLATE drew, dated with the snapshot it
+ * drew. It never states the live dataset total: the plate is a build-time
+ * artifact and the live count (<HeroProvenance>, from the DB) can be newer, so
+ * an undated number here beside a live one read as a contradiction (the audit's
+ * 3,145 vs 3,174). The date is what lets both be true. The territory omission
+ * lives HERE, beside the plot it qualifies, and nowhere else.
  *
  * ⚠️ This is rendered by app/page.tsx as a SIBLING of the hero's globe/plate
  * box, never inside <HeroPlate>'s <svg> and never inside the `plate` prop
@@ -57,7 +63,7 @@ interface PlateKeyProps {
  * facilities, and captioning them as facility counts is exactly what the
  * artifact's doc comment forbids.
  */
-export function PlateKey({ plotted, className }: PlateKeyProps) {
+export function PlateKey({ sites, shared, omitted, asOfLabel, className }: PlateKeyProps) {
   return (
     <section
       aria-label="Map key"
@@ -87,24 +93,29 @@ export function PlateKey({ plotted, className }: PlateKeyProps) {
         ))}
       </ul>
 
-      {/* One number, one text node, no separators.
-
-          ⚠️ The territory disclosure was NOT dropped when the names came out
-          of this caption. <HeroProvenance> renders "static map omits N in
-          U.S. territories" from its `mapOmitted` prop — durable visible text
-          at every viewport and every mount state, and the load-bearing
-          disclosure. What disappeared here is only the four jurisdiction
-          NAMES, which were prose, not the fact. Do not "restore" them.
-
-          Built as ONE template literal rather than `{n} sites plotted`, which
-          would render two adjacent text nodes with React's `<!-- -->` between
-          them in SSR HTML — the shape e2e/prose-spacing.spec.ts exists to
-          police. A single expression also keeps it matching <HeroProvenance>'s
-          treatment: split across nodes it would be harder to reach with a
-          plain getByText, which reads DIRECT text nodes only. */}
+      {/* Each sentence is ONE template literal (one text node): `{n} sites plotted`
+          would render adjacent nodes with React's `<!-- -->` between them in SSR HTML,
+          the shape e2e/prose-spacing.spec.ts polices, and getByText reads DIRECT text
+          nodes only. Identity (build-checked, hero-plate-paths.ts): total = marks + shared + omitted,
+          so the sites shown are total − omitted = marks + shared. `shared` counts sites drawn on a mark
+          another same-status site already holds (each mark's first occupant is not in it). */}
       <p className="mt-2.5 font-mono text-xs tabular-nums text-muted-foreground">
-        {`${plotted.toLocaleString("en-US")} sites plotted`}
+        {`${sites.toLocaleString("en-US")} sites plotted as of ${asOfLabel}`}
       </p>
+      {(shared > 0 || omitted > 0) && (
+        <p className="mt-1 font-mono text-xs tabular-nums text-muted-foreground">
+          {[
+            shared > 0
+              ? `${shared.toLocaleString("en-US")} ${shared === 1 ? "site is" : "sites are"} drawn on a mark another site already holds.`
+              : null,
+            omitted > 0
+              ? `${omitted.toLocaleString("en-US")} in ${omitted === 1 ? "a U.S. territory is" : "U.S. territories are"} off this map.`
+              : null,
+          ]
+            .filter((part) => part !== null)
+            .join(" ")}
+        </p>
+      )}
     </section>
   );
 }

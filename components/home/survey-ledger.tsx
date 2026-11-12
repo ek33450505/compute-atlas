@@ -18,11 +18,11 @@ const useIsoLayoutEffect =
 
 export interface SurveyLedgerProps {
   count: number;
-  states: number;
-  includesDc: boolean;
   stateCodes: string[];
   operators: number;
   sources: number;
+  /** Date the four count tiles were counted (e.g. "12 November 2026"); omitted when that count is unavailable. */
+  countedOnLabel?: string;
   operationalMw: number;
   underConstructionMw: number;
   plannedMw: number;
@@ -229,6 +229,7 @@ export function SurveyLedger({
   stateCodes,
   operators,
   sources,
+  countedOnLabel,
   operationalMw,
   underConstructionMw,
   plannedMw,
@@ -329,6 +330,11 @@ export function SurveyLedger({
           so this is a second, visual-reader-facing route to it, not the only
           one.
         */}
+        {countedOnLabel && (
+          <p className="-mt-4 w-full font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            {`Counted on ${countedOnLabel}`}
+          </p>
+        )}
         <StatFootnotes
           footnotes={statesTile.note ? [{ marker: "*", note: statesTile.note }] : []}
           className="-mt-4"

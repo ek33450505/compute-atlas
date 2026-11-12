@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { DatasetCounts, editionChangesLine } from "@/components/dataset-counts";
 import { PageMasthead } from "@/components/page-masthead";
 import { COMMERCIAL_PLANS, formatPlanPrice, type CommercialPlanKey } from "@/lib/commercial-plans";
 import { isCommercialCheckoutOpen } from "@/lib/commercial-flag";
 import { CSV_COLUMN_COUNT, CSV_COLUMNS, CSV_COLUMN_NOTES, facilitiesToCsv } from "@/lib/dataset-csv";
 import {
-  formatEditionDate,
   formatMegabytes,
   loadOfferCounts,
   loadOfferEdition,
   loadOfferSamples,
   n,
 } from "@/lib/dataset-offer";
+import { formatEditionDate } from "@/lib/edition-date";
 import { ACCESS_LINK_CLASS, AccessNotOpen, AccessShell } from "../not-open";
 
 // While the flag is off the page is a thin "not open yet" notice, so keep it out of the index.
@@ -72,6 +73,7 @@ export default async function CommercialAccessPage({
   const errorMessage = errorKey !== undefined && Object.hasOwn(ERROR_MESSAGES, errorKey) ? ERROR_MESSAGES[errorKey] : undefined;
   const canceled = first(params.cancelled) === "1" || first(params.canceled) === "1";
   const [counts, edition, samples] = await Promise.all([loadOfferCounts(), loadOfferEdition(), loadOfferSamples()]);
+  const editionChanges = editionChangesLine(edition);
   const jsonBytes = edition?.fileBytes["facilities.json"];
   const csvBytes = edition?.fileBytes["facilities.csv"];
 
@@ -80,21 +82,17 @@ export default async function CommercialAccessPage({
       <PageMasthead
         eyebrow="Data"
         title="The full dataset, every week"
-        dek={`${counts ? `${n(counts.facilities)} ` : ""}US data centers, crypto-mining sites and power plants, every field and every source, as JSON and CSV files refreshed weekly. ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}, plus applicable tax. Cancel anytime.`}
+        dek={`US data centers, crypto-mining sites and power plants, every field and every source, as JSON and CSV files refreshed weekly. ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}, plus applicable tax. Cancel anytime.`}
       />
 
-      {edition && (
-        <p className="font-mono text-xs text-muted-foreground">
-          {[
-            `Latest edition ${formatEditionDate(edition.date)}`,
-            edition.recordCount !== null ? `${n(edition.recordCount)} records` : null,
-            !edition.initial && edition.added !== null ? `${n(edition.added)} added` : null,
-            !edition.initial && edition.updated !== null ? `${n(edition.updated)} updated` : null,
-            !edition.initial && edition.removed !== null ? `${n(edition.removed)} removed` : null,
-          ]
-            .filter((part) => part !== null)
-            .join(" · ")}
-        </p>
+      <DatasetCounts
+        counts={counts}
+        edition={edition}
+        noun="facilities"
+        className="font-mono text-xs text-muted-foreground"
+      />
+      {editionChanges && (
+        <p className="font-mono text-xs text-muted-foreground">{editionChanges}</p>
       )}
 
       {errorMessage ? (
@@ -319,7 +317,7 @@ export default async function CommercialAccessPage({
         </h2>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Every record here started as a public document. Rebuilding the dataset means finding and
-          reading {counts ? n(counts.sourceLinks) : "thousands"} of them, then re-checking every
+          reading {counts ? `${n(counts.sourceLinks)} of them (counted ${formatEditionDate(counts.asOf)})` : "thousands of them"}, then re-checking every
           week. If you need a handful of facilities, the free{" "}
           <Link href="/table" className={ACCESS_LINK_CLASS}>
             table
@@ -335,7 +333,7 @@ export default async function CommercialAccessPage({
         <ul className="max-w-2xl list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
           <li>
             The data is CC BY 4.0 for everyone: reuse it, including commercially, with attribution.
-            The fee is not a licence fee.
+            The fee is not a license fee.
           </li>
           <li>
             Cancel anytime from your PayPal account; access runs to the end of the paid period. No

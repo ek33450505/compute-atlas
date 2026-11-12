@@ -19,8 +19,6 @@ import { SectionHeading } from "@/components/section-heading";
 export interface LensGatewayProps {
   counts: {
     sites: number;
-    states: number;
-    includesDc: boolean;
     stateCodes: string[];
     utilityLinked: number;
     frictionCount: number;

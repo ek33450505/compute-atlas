@@ -6,12 +6,12 @@ vi.mock("@/lib/dataset-editions", () => ({ latestPublishedEdition: mocks.latestP
 
 import {
   countDataset,
-  formatEditionDate,
   formatMegabytes,
   loadOfferCounts,
   loadOfferEdition,
   loadOfferSamples,
   pickSamples,
+  topStatesFromCounts,
   SAMPLE_FACILITY_IDS,
   toOfferEdition,
   withTimeout,
@@ -28,20 +28,26 @@ afterEach(() => {
 
 describe("countDataset", () => {
   it("counts types, distinct states and operators, and sums sources", () => {
-    const counts = countDataset([
-      f("data_center", "TX", "A", 2),
-      f("data_center", "TX", "B", 1),
-      f("crypto_mining", "OH", "A", 3),
-      f("power_generation", "VA", "C", 0),
-    ]);
+    const counts = countDataset(
+      [
+        f("data_center", "TX", "A", 2),
+        f("data_center", "TX", "B", 1),
+        f("crypto_mining", "OH", "A", 3),
+        f("power_generation", "VA", "C", 0),
+      ],
+      new Date("2026-11-12T01:04:00Z"),
+    );
     expect(counts).toEqual({
       facilities: 4,
       dataCenters: 2,
       cryptoSites: 1,
       powerPlants: 1,
-      states: 3,
+      jurisdictions: 3,
+      stateCodes: ["OH", "TX", "VA"],
+      stateCounts: { TX: 2, OH: 1, VA: 1 },
       operators: 3,
       sourceLinks: 6,
+      asOf: "2026-11-12T01:04:00.000Z",
     });
   });
 
@@ -51,11 +57,6 @@ describe("countDataset", () => {
 });
 
 describe("formatting", () => {
-  it("formats edition dates and passes junk through", () => {
-    expect(formatEditionDate("2026-11-10")).toBe("10 November 2026");
-    expect(formatEditionDate("2026-01-05")).toBe("5 January 2026");
-    expect(formatEditionDate("soon")).toBe("soon");
-  });
   it("formats megabytes to one decimal", () => {
     expect(formatMegabytes(9_084_324)).toBe("9.1 MB");
     expect(formatMegabytes(1_754_755)).toBe("1.8 MB");
@@ -152,6 +153,16 @@ describe("fail-soft loaders", () => {
     mocks.getAllFacilities.mockRejectedValue(new Error("boom"));
     await expect(loadOfferCounts()).resolves.toBeNull();
   });
+  it("stamps the counts with the moment of the read", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      vi.setSystemTime(new Date("2026-11-12T01:04:00Z"));
+      mocks.getAllFacilities.mockResolvedValue([f("data_center", "TX", "A", 1)]);
+      await expect(loadOfferCounts()).resolves.toMatchObject({ facilities: 1, asOf: "2026-11-12T01:04:00.000Z" });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
   it("returns null when there is no edition", async () => {
     mocks.latestPublishedEdition.mockResolvedValue(null);
     await expect(loadOfferEdition()).resolves.toBeNull();
@@ -210,5 +221,40 @@ describe("sample records", () => {
       changelogSummary: { headlines: ["Added: A", 3] },
     });
     expect(e.headlines).toEqual(["Added: A"]);
+  });
+});
+
+describe("counts cache tagging", () => {
+  // vitest bypasses unstable_cache, so load a fresh copy of the module with the bypass off and a spy in its place.
+  it("tags only the counts cache with the facilities tag", async () => {
+    vi.resetModules();
+    vi.stubEnv("VITEST", "");
+    const spy = vi.fn((fn: unknown, _keys?: string[], _opts?: { tags?: string[] }) => fn);
+    vi.doMock("next/cache", () => ({ unstable_cache: spy }));
+    try {
+      await import("./dataset-offer");
+      const optsFor = (key: string) => spy.mock.calls.find((c) => c[1]?.[0] === key)?.[2];
+      // The literal on purpose: a changed constant must fail here, because the busted tag is a wire contract.
+      expect(optsFor("dataset-offer-counts")?.tags).toEqual(["facilities"]);
+      expect(optsFor("dataset-offer-edition")?.tags).toBeUndefined();
+      expect(optsFor("dataset-offer-samples")?.tags).toBeUndefined();
+    } finally {
+      vi.doUnmock("next/cache");
+      vi.unstubAllEnvs();
+      vi.resetModules();
+    }
+  });
+});
+
+describe("topStatesFromCounts", () => {
+  it("orders by count desc then code A to Z, and limits", () => {
+    expect(topStatesFromCounts({ VA: 2, OH: 2, TX: 5, CA: 1 }, 3)).toEqual([
+      { state: "TX", count: 5 },
+      { state: "OH", count: 2 },
+      { state: "VA", count: 2 },
+    ]);
+  });
+  it("returns an empty list for no counts", () => {
+    expect(topStatesFromCounts({}, 6)).toEqual([]);
   });
 });

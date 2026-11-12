@@ -7,11 +7,9 @@ import {
   getStats,
   getNotableFacilities,
   getRecentActivity,
-  getTopStates,
   getAllFacilities,
   getCommunityReceptionCounts,
   getAiClassificationCounts,
-  getFacilityTypeCounts,
   getNotableOppositionCases,
   getGenerationBuildoutStats,
   getWaterStressExposure,
@@ -20,6 +18,8 @@ import {
   getQuarterlyPipelineSummary,
   selectRecordSpecimen,
 } from "@/lib/data";
+import { countDataset, loadOfferCounts, topStatesFromCounts } from "@/lib/dataset-offer";
+import { formatEditionDate } from "@/lib/edition-date";
 import { METROS } from "@/lib/metros";
 import { StatusBadge } from "@/components/status-badge";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
@@ -28,6 +28,7 @@ import { HERO_PLATE } from "@/components/home/hero-plate-paths";
 import { HeroSearch } from "@/components/home/hero-search";
 import { HeroProvenance } from "@/components/home/hero-provenance";
 import { PlateKey } from "@/components/home/plate-key";
+import { datasetCountPhrase } from "@/components/dataset-counts";
 import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
@@ -105,12 +106,14 @@ const HOME_SPECULATION_RULES = JSON.stringify({
 
 /**
  * `generateMetadata`, not a static `metadata`, so the facility count in the
- * description is read from the same `getStats()` the page body renders
- * rather than hardcoded — a literal here would silently go stale on the
- * next data wave.
+ * description is read from the same `loadOfferCounts()` the page body
+ * renders rather than hardcoded — a literal here would silently go stale on
+ * the next data wave.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const { count } = await getStats();
+  // Same cached loader the page body uses, so the description cannot disagree with the hero.
+  const offerCounts = await loadOfferCounts();
+  const count = offerCounts?.facilities ?? (await getAllFacilities()).length;
   return {
     title: "US data center map & database",
     description: `Interactive US data center map and database — ${count.toLocaleString("en-US")} AI, hyperscale, and crypto-mining sites plus the power built to supply them. Every record is source-cited.`,
@@ -124,10 +127,6 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function HomePage() {
   const {
-    count,
-    states,
-    includesDc,
-    stateCodes,
     operationalMw,
     plannedMw,
     underConstructionMw,
@@ -138,7 +137,6 @@ export default async function HomePage() {
   // NOTABLE_CARD_COUNT either way — see `specimenCards`.
   const notable = await getNotableFacilities(NOTABLE_CARD_COUNT + 1);
   const recentActivity = await getRecentActivity(THIS_WEEK_FETCH_LIMIT);
-  const topStates = await getTopStates(6);
   const now = new Date();
   const activityTruncated = isActivityWindowTruncated(
     recentActivity,
@@ -158,15 +156,28 @@ export default async function HomePage() {
   const dateModified =
     maxLastUpdatedMs > 0 ? new Date(maxLastUpdatedMs).toISOString() : undefined;
 
-  const operatorCount = new Set(allFacilities.map((f) => f.operator)).size;
-  const sourcesCited = allFacilities.reduce(
-    (n, f) => n + (f.sources?.length ?? 0),
-    0
-  );
+  // The dated count: the same cached, fail-soft loader /dataset and /access/commercial use, so the
+  // three pages quote one figure with one count date.
+  const offerCounts = await loadOfferCounts();
+
+  // EVERY facility/jurisdiction/operator/source/per-type total on this page comes from one object, so
+  // no two totals on a screen can disagree. When the loader failed, the fallback counts the facility
+  // set this page already loaded (`allFacilities`), so the totals still share ONE source; they are
+  // simply undated (the hero's dated phrase and the ledger caption are dropped, never faked). The
+  // plate key beside them is a separately dated snapshot of the plate build and states only itself.
+  // The power totals (MW) and quarter figures are not facility totals and stay on getStats / their own reads.
+  const totals = offerCounts ?? countDataset(allFacilities);
+  const count = totals.facilities;
+  // The phone chips follow the same totals (ordering and limit unchanged), so they cannot sum to a
+  // different figure than the headline after a publish.
+  const topStates = topStatesFromCounts(totals.stateCounts, 6);
+  const stateCodes = totals.stateCodes;
+  const operatorCount = totals.operators;
+  const sourcesCited = totals.sourceLinks;
 
   // Lens-gateway + cost-ledger counts — cheap derivations off the same
   // cached facility set (no new DB reads; getCommunityReceptionCounts/
-  // getAiClassificationCounts/getFacilityTypeCounts/
+  // getAiClassificationCounts/
   // getGenerationBuildoutStats/getWaterStressExposure all read the shared
   // loadFacilities() cache).
   const communityCounts = await getCommunityReceptionCounts();
@@ -174,8 +185,7 @@ export default async function HomePage() {
   const aiCounts = await getAiClassificationCounts();
   const aiClassified =
     (aiCounts.confirmed ?? 0) + (aiCounts.likely ?? 0) + (aiCounts.mixed_use ?? 0);
-  const typeCounts = await getFacilityTypeCounts();
-  const cryptoCount = typeCounts.crypto_mining ?? 0;
+  const cryptoCount = totals.cryptoSites;
   const utilityLinked = allFacilities.filter((f) => f.energy?.utility).length;
   // County/metro lens counts. `getCounties` reads the same memoized county
   // index the /counties hub uses, so this adds no DB work; METROS is static.
@@ -414,16 +424,11 @@ export default async function HomePage() {
                 the CTA: the scale and sourcing of the dataset is the claim this
                 page is making, so it has to be inside the fold. */}
             <HeroProvenance
-              sites={count}
+              sites={offerCounts ? datasetCountPhrase(offerCounts) : null}
               stateCodes={stateCodes}
               sources={sourcesCited}
               newThisQuarter={quarterly.newThisQuarter}
               cancelledThisQuarter={quarterly.cancelledThisQuarter}
-              /* The plate's territory omission, stated in durable visible text.
-                 The plate's own accessible name cannot carry it: that element
-                 is replaced by the (aria-hidden) globe on desktop, so the
-                 disclosure would come and go with the mount. */
-              mapOmitted={HERO_PLATE.omitted}
             />
           </div>
 
@@ -637,14 +642,15 @@ export default async function HomePage() {
             and under-counts facilities wherever co-located same-status sites
             collapse onto one.
 
-            It is also the card's ONLY number, deliberately. The snapshot's
-            own total used to sit here too ("1,920 of 1,929"), a few lines
-            under <HeroProvenance>'s `sites={count}` — which is live Neon.
-            Equal today, contradictory the first time a sync lands without a
-            plate rebuild. The build-time artifact describes what it drew; the
-            dataset total is stated once, above, from the database. */}
+            The card states only what the plate drew, dated with the snapshot
+            it drew (`HERO_PLATE.asOf`), plus the territory omission that
+            qualifies it. The dataset total is stated once, above, dated from
+            its own read; the two dates are what keep them from contradicting. */}
         <PlateKey
-          plotted={HERO_PLATE.total - HERO_PLATE.omitted}
+          sites={HERO_PLATE.total - HERO_PLATE.omitted}
+          shared={HERO_PLATE.deduped}
+          omitted={HERO_PLATE.omitted}
+          asOfLabel={formatEditionDate(HERO_PLATE.asOf)}
           className="relative z-20 order-3 sm:order-none sm:mt-auto sm:mb-4 sm:w-fit sm:max-w-xs sm:shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_30%,transparent)]"
         />
         {/* Phones only: last in the stack, after the key (`order-3`). */}
@@ -668,11 +674,10 @@ export default async function HomePage() {
         {/* Survey ledger + pipeline-scale signature */}
         <SurveyLedger
           count={count}
-          states={states}
-          includesDc={includesDc}
           stateCodes={stateCodes}
           operators={operatorCount}
           sources={sourcesCited}
+          countedOnLabel={offerCounts ? formatEditionDate(offerCounts.asOf) : undefined}
           operationalMw={operationalMw}
           underConstructionMw={underConstructionMw}
           plannedMw={plannedMw}
@@ -700,8 +705,6 @@ export default async function HomePage() {
           className="mt-2"
           counts={{
             sites: count,
-            states,
-            includesDc,
             stateCodes,
             utilityLinked,
             frictionCount,

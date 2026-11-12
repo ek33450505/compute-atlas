@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 
+import { FACILITIES_TAG } from "@/lib/cache-tags";
 import { getAllFacilities } from "@/lib/data";
 import { redactedErrorCode } from "@/lib/db-error";
 import { latestPublishedEdition } from "@/lib/dataset-editions";
@@ -11,9 +12,20 @@ export interface DatasetCounts {
   dataCenters: number;
   cryptoSites: number;
   powerPlants: number;
-  states: number;
+  /** Distinct jurisdictions present: states, DC and territories alike (so not a state count). */
+  jurisdictions: number;
+  /** Sorted two-letter codes of those jurisdictions. */
+  stateCodes: string[];
+  /** Facilities per jurisdiction code. */
+  stateCounts: Record<string, number>;
   operators: number;
   sourceLinks: number;
+  /**
+   * ISO instant the facilities were COUNTED, not the moment a page rendered, so a cached value keeps its
+   * age. It is not the database read time: `getAllFacilities` has its own cache, so the facility set
+   * itself can be older than this. Pages therefore say "counted on", never "read from the database".
+   */
+  asOf: string;
 }
 
 export interface OfferEdition {
@@ -44,8 +56,12 @@ type CountableFacility = Pick<Facility, "facilityType" | "operator" | "sources">
   location: Pick<Facility["location"], "state">;
 };
 
-export function countDataset(facilities: readonly CountableFacility[]): DatasetCounts {
+export function countDataset(
+  facilities: readonly CountableFacility[],
+  readAt: Date = new Date(),
+): DatasetCounts {
   const states = new Set<string>();
+  const stateCounts: Record<string, number> = {};
   const operators = new Set<string>();
   let dataCenters = 0;
   let cryptoSites = 0;
@@ -55,7 +71,10 @@ export function countDataset(facilities: readonly CountableFacility[]): DatasetC
     if (f.facilityType === "data_center") dataCenters++;
     else if (f.facilityType === "crypto_mining") cryptoSites++;
     else if (f.facilityType === "power_generation") powerPlants++;
-    if (f.location?.state) states.add(f.location.state);
+    if (f.location?.state) {
+      states.add(f.location.state);
+      stateCounts[f.location.state] = (stateCounts[f.location.state] ?? 0) + 1;
+    }
     if (f.operator) operators.add(f.operator);
     sourceLinks += f.sources?.length ?? 0;
   }
@@ -64,23 +83,24 @@ export function countDataset(facilities: readonly CountableFacility[]): DatasetC
     dataCenters,
     cryptoSites,
     powerPlants,
-    states: states.size,
+    jurisdictions: states.size,
+    stateCodes: [...states].sort(),
+    stateCounts,
     operators: operators.size,
     sourceLinks,
+    asOf: readAt.toISOString(),
   };
 }
 
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-
-/** "2026-11-10" -> "10 November 2026"; anything else comes back unchanged. */
-export function formatEditionDate(iso: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  const month = m ? MONTHS[Number(m[2]) - 1] : undefined;
-  if (!m || !month) return iso;
-  return `${Number(m[3])} ${month} ${m[1]}`;
+/** The `n` jurisdictions with the most facilities: count desc, then code A to Z (same order as `getTopStates`). */
+export function topStatesFromCounts(
+  stateCounts: Readonly<Record<string, number>>,
+  n: number,
+): { state: string; count: number }[] {
+  return Object.entries(stateCounts)
+    .map(([state, count]) => ({ state, count }))
+    .sort((a, b) => b.count - a.count || a.state.localeCompare(b.state))
+    .slice(0, n);
 }
 
 /** 9084324 -> "9.1 MB" (decimal megabytes, one decimal). */
@@ -164,7 +184,11 @@ async function readEdition(): Promise<OfferEdition | null> {
 }
 
 async function readCounts(): Promise<DatasetCounts> {
-  return countDataset(await withTimeout(getAllFacilities));
+  // Stamp the count, not the render: unstable_cache keeps this value (asOf included) for up to 24h.
+  // The facility set may come from getAllFacilities' own cache and so predate this stamp; the pages' wording
+  // ("counted on") claims no more than that.
+  const facilities = await withTimeout(getAllFacilities);
+  return countDataset(facilities, new Date());
 }
 
 async function readSamples(): Promise<Facility[]> {
@@ -181,7 +205,10 @@ const cachedEdition: () => Promise<OfferEdition | null> = process.env.VITEST
 
 const cachedCounts: () => Promise<DatasetCounts> = process.env.VITEST
   ? readCounts
-  : unstable_cache(readCounts, ["dataset-offer-counts"], { revalidate: 86400 });
+  : // Tagged like every other facility-set cache, so `db:sync --apply` (which busts "facilities")
+    // refreshes the home, /dataset and /access/commercial counts together instead of leaving them
+    // stale for up to 24h. The edition and sample caches stay untagged on purpose.
+    unstable_cache(readCounts, ["dataset-offer-counts"], { revalidate: 86400, tags: [FACILITIES_TAG] });
 
 const cachedSamples: () => Promise<Facility[]> = process.env.VITEST
   ? readSamples
