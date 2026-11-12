@@ -89,7 +89,7 @@ function describeBuild(result: Awaited<ReturnType<typeof buildEditionNowAction>>
   }
 }
 
-/** Notice state of one edition. "Incomplete" is text, not colour, and only the newest published row hints at the fix. */
+/** Notice state of one edition. "Incomplete" is text, not colour, and only today's (UTC) newest published row hints at the fix: a later day's build makes a new edition instead of resuming. */
 function NoticeStatus({
   edition,
   resumable,
@@ -119,7 +119,16 @@ function NoticeStatus({
   );
 }
 
-export function EditionsPanel({ editions, mailEnabled }: { editions: AdminDatasetEdition[]; mailEnabled: boolean }) {
+/** `todayUtc` (YYYY-MM-DD) comes from the server clock, like the builder's edition date, so the hint never follows the browser's. */
+export function EditionsPanel({
+  editions,
+  mailEnabled,
+  todayUtc,
+}: {
+  editions: AdminDatasetEdition[];
+  mailEnabled: boolean;
+  todayUtc: string;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const { state, report, headingRef } = useResultReporter();
@@ -203,7 +212,7 @@ export function EditionsPanel({ editions, mailEnabled }: { editions: AdminDatase
                 <TableCell className="text-right tabular-nums">{filesSummary(edition.files)}</TableCell>
                 <TableCell className="text-right tabular-nums">{changesSummary(edition.changes)}</TableCell>
                 <TableCell>
-                  <NoticeStatus edition={edition} resumable={edition.id === newestPublishedId} mailEnabled={mailEnabled} />
+                  <NoticeStatus edition={edition} resumable={edition.id === newestPublishedId && edition.editionDate === todayUtc} mailEnabled={mailEnabled} />
                 </TableCell>
               </TableRow>
             ))}

@@ -63,7 +63,12 @@ export default async function AdminAccessPage({
         </p>
       </div>
       <AccessQueue grants={queue.map(toQueueGrant)} commercialEnabled={isCommercialTierEnabled()} />
-      <EditionsPanel editions={editions} mailEnabled={isDatasetSharingEnabled()} />
+      <EditionsPanel
+        editions={editions}
+        mailEnabled={isDatasetSharingEnabled()}
+        // Same derivation as buildEdition (lib/dataset-edition-builder.ts): the UTC date of "now".
+        todayUtc={new Date().toISOString().slice(0, 10)}
+      />
       {/* Right above the list: the list's "Download log" links load it, so it must sit next to the list,
           not below every row. Keyed by grant so opening a different log remounts it and re-focuses it. */}
       {log !== undefined ? (
