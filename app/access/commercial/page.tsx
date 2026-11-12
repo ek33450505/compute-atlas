@@ -135,44 +135,48 @@ export default async function CommercialAccessPage({
           method="post"
           action="/api/access/checkout"
           aria-describedby={errorMessage ? "checkout-error" : undefined}
-          className="space-y-5"
+          className="space-y-6"
         >
-          <fieldset className="space-y-2">
+          <fieldset className="space-y-3">
             <legend className="text-sm font-medium">Plan</legend>
-            {PLAN_ORDER.map((plan, index) => (
-              <div key={plan} className="flex items-start gap-2">
-                <input
-                  type="radio"
-                  id={`plan-${plan}`}
-                  name="plan"
-                  value={plan}
-                  required
-                  defaultChecked={index === 0}
-                  className="mt-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                />
-                <label htmlFor={`plan-${plan}`} className="text-sm">
-                  <span className="font-medium">{COMMERCIAL_PLANS[plan].label}</span>
-                  <span className="text-muted-foreground">
-                    {" "}
-                    · {formatPlanPrice(plan)} · plus applicable tax.
+            <div className="grid max-w-xl gap-3 sm:grid-cols-2">
+              {PLAN_ORDER.map((plan, index) => (
+                <label
+                  key={plan}
+                  htmlFor={`plan-${plan}`}
+                  className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-card p-4 hover:bg-muted has-[:checked]:border-2 has-[:checked]:border-primary has-[:checked]:p-[15px] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
+                >
+                  <input
+                    type="radio"
+                    id={`plan-${plan}`}
+                    name="plan"
+                    value={plan}
+                    required
+                    defaultChecked={index === 0}
+                    className="mt-1 size-4 shrink-0 accent-primary"
+                  />
+                  <span className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium">{COMMERCIAL_PLANS[plan].label}</span>
+                    <span className="font-display text-xl text-foreground">{formatPlanPrice(plan)}</span>
+                    <span className="text-xs text-muted-foreground">plus applicable tax</span>
                   </span>
                 </label>
-              </div>
-            ))}
+              ))}
+            </div>
           </fieldset>
-          <div className="space-y-1">
+          <div className="flex flex-col gap-1.5">
             <label htmlFor="checkout-email" className="text-sm font-medium">
               Email
             </label>
             <input id="checkout-email" name="email" type="email" required maxLength={254} autoComplete="email" className={FIELD_CLASS} />
           </div>
-          <div className="space-y-1">
+          <div className="flex flex-col gap-1.5">
             <label htmlFor="checkout-name" className="text-sm font-medium">
               Name
             </label>
             <input id="checkout-name" name="name" type="text" required maxLength={200} autoComplete="name" className={FIELD_CLASS} />
           </div>
-          <div className="space-y-1">
+          <div className="flex flex-col gap-1.5">
             <label htmlFor="checkout-organization" className="text-sm font-medium">
               Organization
             </label>
@@ -186,15 +190,15 @@ export default async function CommercialAccessPage({
               className={FIELD_CLASS}
             />
           </div>
-          <div className="flex items-start gap-2">
+          <div className="flex max-w-md items-start gap-2">
             <input
               type="checkbox"
               id="checkout-terms"
               name="acceptTerms"
               required
-              className="mt-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="mt-1 size-4 shrink-0 accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             />
-            <label htmlFor="checkout-terms" className="text-sm">
+            <label htmlFor="checkout-terms" className="text-sm leading-snug">
               I agree to the{" "}
               <Link href="/access/terms" className={ACCESS_LINK_CLASS}>
                 terms
@@ -202,13 +206,15 @@ export default async function CommercialAccessPage({
               .
             </label>
           </div>
-          <p className="text-sm text-muted-foreground">You&apos;ll finish on PayPal.</p>
-          <button
-            type="submit"
-            className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            Continue to PayPal
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              type="submit"
+              className="min-h-11 w-full max-w-md rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              Continue to PayPal
+            </button>
+            <p className="text-sm text-muted-foreground">You&apos;ll finish on PayPal.</p>
+          </div>
         </form>
       </section>
 

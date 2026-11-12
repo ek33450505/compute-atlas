@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => (
@@ -174,6 +175,28 @@ describe("/access/commercial", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: /\$1,500\/year.*plus applicable tax/ })).toBeInTheDocument();
     expect(screen.queryByText(/months free/)).toBeNull();
+  });
+
+  it("gives every field an accessible label and the plan radios a named group", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    for (const label of ["Email", "Name", "Organization"]) {
+      expect(screen.getByLabelText(label)).toBeInTheDocument();
+    }
+    expect(screen.getByLabelText(/I agree to the terms/)).toBeInTheDocument();
+    const group = screen.getByRole("group", { name: "Plan" });
+    expect(within(group).getAllByRole("radio")).toHaveLength(2);
+  });
+
+  it("selects the annual plan when its card text is clicked", async () => {
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    await renderPage();
+    expect(screen.getByRole("radio", { name: /\$1,500\/year/ })).not.toBeChecked();
+    await userEvent.click(screen.getByText("$1,500/year"));
+    expect(screen.getByRole("radio", { name: /\$1,500\/year/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /\$150\/month/ })).not.toBeChecked();
   });
 
   it("shows the buyer value with live numbers, the edition strip and file sizes", async () => {
