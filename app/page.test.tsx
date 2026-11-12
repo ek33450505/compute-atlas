@@ -244,6 +244,14 @@ function cartouche(): HTMLElement {
 }
 
 describe("HomePage hero", () => {
+  it("carries no Dataset JSON-LD (it moved to /dataset)", async () => {
+    render(await HomePage());
+    const types = Array.from(document.querySelectorAll('script[type="application/ld+json"]')).map(
+      (el) => JSON.parse(el.textContent ?? "{}")["@type"]
+    );
+    expect(types).not.toContain("Dataset");
+  });
+
   it("renders the H1 verbatim", async () => {
     render(await HomePage());
 

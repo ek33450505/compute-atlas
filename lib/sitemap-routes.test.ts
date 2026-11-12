@@ -45,6 +45,53 @@ describe("sitemap /dataset", () => {
   });
 });
 
+describe("sitemap /access and /access/commercial", () => {
+  const paths = async () => (await buildStaticRoutes()).map((r) => r.url);
+
+  it("lists /access only when DATASET_SHARING_ENABLED is exactly 'true'", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    expect(await paths()).toContain(`${siteConfig.url}/access`);
+    vi.stubEnv("DATASET_SHARING_ENABLED", "1");
+    expect(await paths()).not.toContain(`${siteConfig.url}/access`);
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    expect(await paths()).not.toContain(`${siteConfig.url}/access`);
+  });
+
+  it("lists /access/commercial only when the tier AND dataset sharing are both on", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
+    expect(await paths()).not.toContain(`${siteConfig.url}/access/commercial`);
+
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    expect(await paths()).toContain(`${siteConfig.url}/access/commercial`);
+
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    expect(await paths()).not.toContain(`${siteConfig.url}/access/commercial`);
+  });
+});
+
+describe("sitemap editorial page dates", () => {
+  it("carries per-page lastModified dates measured from git log (GSC audit F3)", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
+    const routes = await buildStaticRoutes();
+    const expected: Record<string, number> = {
+      "/about": Date.UTC(2026, 10, 12),
+      "/methodology": Date.UTC(2026, 10, 11),
+      "/contribute": Date.UTC(2026, 10, 11),
+      "/support": Date.UTC(2026, 10, 12),
+      "/contact": Date.UTC(2026, 10, 9),
+      "/access": Date.UTC(2026, 10, 11),
+      "/access/commercial": Date.UTC(2026, 10, 12),
+    };
+    for (const [path, ms] of Object.entries(expected)) {
+      const entry = routes.find((r) => r.url === `${siteConfig.url}${path}`);
+      expect(entry, path).toBeDefined();
+      expect((entry!.lastModified as Date).getTime(), path).toBe(ms);
+    }
+  });
+});
+
 describe("sitemap", () => {
   it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, /explore, /activity, /contribute, /support, and /contact", async () => {
     const routes = await buildStaticRoutes();

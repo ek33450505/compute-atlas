@@ -178,7 +178,8 @@ export interface DatasetJsonLd {
   url: string;
   keywords: string[];
   license: string;
-  isAccessibleForFree: true;
+  isAccessibleForFree: false;
+  conditionsOfAccess: string;
   creator: {
     "@type": "Person";
     name: string;
@@ -201,6 +202,13 @@ export interface DatasetJsonLd {
 /**
  * Builds a schema.org Dataset JSON-LD object describing the whole facility
  * dataset (not a single facility) — enables Google Dataset Search eligibility.
+ * It lives on the dataset's landing page (/dataset), rendered only while
+ * dataset sharing is on, by Ed's decision of 2026-11-12 (GSC audit F4); home
+ * no longer carries it. Data files are not free for everyone
+ * (approved access: free for students, educators and academics, paid otherwise),
+ * so `isAccessibleForFree` is false; the license stays CC BY 4.0. `commercial`
+ * is passed in, not read from env, so the builder stays pure and the wording
+ * matches what /dataset shows.
  *
  * Deliberately omits `temporalCoverage`: it would need an honest start date
  * for the period the data covers, and nothing available to this builder
@@ -209,13 +217,16 @@ export interface DatasetJsonLd {
  * only when a real start date becomes available; don't invent one.
  * Pure function — unit-testable without any DOM or Next.js dependencies.
  */
-export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): DatasetJsonLd {
+export function buildDatasetJsonLd(opts: {
+  dateModified?: string;
+  commercial: boolean;
+}): DatasetJsonLd {
   return {
     "@context": "https://schema.org",
     "@type": "Dataset",
     name: "Compute Atlas — U.S. Data Center & Compute Infrastructure Dataset",
     description: siteConfig.description,
-    url: siteConfig.url,
+    url: `${siteConfig.url}/dataset`,
     keywords: [
       "data centers",
       "AI infrastructure",
@@ -228,7 +239,10 @@ export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): Datase
       "United States",
     ],
     license: DATASET_LICENSE_URL,
-    isAccessibleForFree: true,
+    isAccessibleForFree: false,
+    conditionsOfAccess: opts.commercial
+      ? "Facility pages are free to read. Data files require approved access: free for students, educators and academics, paid for commercial use."
+      : "Facility pages are free to read. Data files require approved access, free for students, educators and academics.",
     creator: { "@type": "Person", name: "Edward Kubiak", url: siteConfig.url },
     publisher: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
     spatialCoverage: { "@type": "Place", name: "United States" },
@@ -254,7 +268,7 @@ export function buildDatasetJsonLd(opts: { dateModified?: string } = {}): Datase
  * Serializes the dataset's JSON-LD to a string safe for dangerouslySetInnerHTML.
  * Same `<` escaping as facilityJsonLdString — see that function's comment.
  */
-export function datasetJsonLdString(opts: { dateModified?: string } = {}): string {
+export function datasetJsonLdString(opts: { dateModified?: string; commercial: boolean }): string {
   return JSON.stringify(buildDatasetJsonLd(opts)).replace(/</g, "\\u003c");
 }
 
@@ -361,7 +375,7 @@ export function buildWebSiteJsonLd(): WebSiteJsonLd {
 /**
  * Serializes the site-wide Organization + WebSite JSON-LD as a single
  * `@graph` document, so one script tag carries both nodes. Injected in the
- * root layout (every page) — separate from the homepage's Dataset node,
+ * root layout (every page) — separate from /dataset's Dataset node,
  * which describes the data, not the site.
  * Same `<` escaping as facilityJsonLdString — see that function's comment.
  */

@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight, Globe } from "lucide-react";
 
-import { datasetJsonLdString } from "@/lib/seo";
 import {
   getStats,
   getNotableFacilities,
@@ -144,16 +143,7 @@ export default async function HomePage() {
   );
   const oppositionCases = await getNotableOppositionCases(3);
 
-  // Max lastUpdated across the dataset, as an ISO string, for the Dataset
-  // JSON-LD's dateModified. Falls back to omitting the field if the dataset
-  // is empty or every lastUpdated value fails to parse.
   const allFacilities = await getAllFacilities();
-  const maxLastUpdatedMs = allFacilities.reduce((max, f) => {
-    const ms = new Date(f.lastUpdated).getTime();
-    return Number.isNaN(ms) ? max : Math.max(max, ms);
-  }, 0);
-  const dateModified =
-    maxLastUpdatedMs > 0 ? new Date(maxLastUpdatedMs).toISOString() : undefined;
 
   // The dated count: the same cached, fail-soft loader /dataset and /access/commercial use, so the
   // three pages quote one figure with one count date.
@@ -220,10 +210,6 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: datasetJsonLdString({ dateModified }) }}
-      />
       {/* See HOME_SPECULATION_RULES above for why this is prefetch rather
           than prerender, and why it lives on this page and not the layout. */}
       <script

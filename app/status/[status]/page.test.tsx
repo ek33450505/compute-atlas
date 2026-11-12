@@ -20,12 +20,14 @@ vi.mock("next/link", () => ({
     href,
     children,
     className,
+    "aria-current": ariaCurrent,
   }: {
     href: string;
     children: React.ReactNode;
     className?: string;
+    "aria-current"?: "page";
   }) => (
-    <a href={href} className={className}>
+    <a href={href} className={className} aria-current={ariaCurrent}>
       {children}
     </a>
   ),
@@ -33,6 +35,8 @@ vi.mock("next/link", () => ({
 
 import { render, screen, within } from "@testing-library/react";
 import StatusPage, { generateMetadata } from "./page";
+
+const NO_PARAMS = Promise.resolve({});
 
 beforeEach(() => {
   mockGetFacilitiesByStatus.mockReset();
@@ -62,6 +66,7 @@ describe("generateMetadata (status)", () => {
 
     const metadata = await generateMetadata({
       params: Promise.resolve({ status: "proposed" }),
+      searchParams: NO_PARAMS,
     });
 
     expect(metadata.title).toBe("Proposed data centers in the US");
@@ -74,6 +79,7 @@ describe("generateMetadata (status)", () => {
 
     const metadata = await generateMetadata({
       params: Promise.resolve({ status: "under_construction" }),
+      searchParams: NO_PARAMS,
     });
 
     expect(metadata.title).toBe("Data centers under construction in the US");
@@ -85,6 +91,7 @@ describe("generateMetadata (status)", () => {
 
     const metadata = await generateMetadata({
       params: Promise.resolve({ status: "operational" }),
+      searchParams: NO_PARAMS,
     });
 
     expect(metadata.title).toBe("Operational data centers in the US");
@@ -96,6 +103,7 @@ describe("generateMetadata (status)", () => {
 
     const metadata = await generateMetadata({
       params: Promise.resolve({ status: "permitted" }),
+      searchParams: NO_PARAMS,
     });
 
     expect(metadata.title).toBe("Permitted data centers in the US");
@@ -106,6 +114,7 @@ describe("generateMetadata (status)", () => {
 
     const metadata = await generateMetadata({
       params: Promise.resolve({ status: "cancelled" }),
+      searchParams: NO_PARAMS,
     });
 
     expect(metadata.title).toBe("Cancelled data center projects");
@@ -115,6 +124,7 @@ describe("generateMetadata (status)", () => {
   it("returns a not-found title for an invalid status param, without querying the data layer", async () => {
     const metadata = await generateMetadata({
       params: Promise.resolve({ status: "bogus" }),
+      searchParams: NO_PARAMS,
     });
 
     expect(metadata).toEqual({ title: "Status not found" });
@@ -129,7 +139,7 @@ describe("StatusPage — DC-aware fact line", () => {
       makeFacility({ id: "b", location: { lat: 38.9, lon: -77, state: "DC", precision: "exact" } }),
     ]);
 
-    const page = await StatusPage({ params: Promise.resolve({ status: "proposed" }) });
+    const page = await StatusPage({ params: Promise.resolve({ status: "proposed" }), searchParams: NO_PARAMS });
     render(page);
 
     // Mutation coverage: reverting to the bare `${stateCount} state(s)`
@@ -144,7 +154,7 @@ describe("StatusPage — DC-aware fact line", () => {
       makeFacility({ id: "b", location: { lat: 40, lon: -90, state: "IL", precision: "exact" } }),
     ]);
 
-    const page = await StatusPage({ params: Promise.resolve({ status: "proposed" }) });
+    const page = await StatusPage({ params: Promise.resolve({ status: "proposed" }), searchParams: NO_PARAMS });
     render(page);
 
     expect(screen.getByText(/spanning 2 states\./)).toBeInTheDocument();
@@ -178,7 +188,7 @@ describe("StatusPage — capacity stat", () => {
   it("operational: shows the summed operational capacity under 'Operational capacity'", async () => {
     mockGetFacilitiesByStatus.mockResolvedValue(FACILITIES);
 
-    render(await StatusPage({ params: Promise.resolve({ status: "operational" }) }));
+    render(await StatusPage({ params: Promise.resolve({ status: "operational" }), searchParams: NO_PARAMS }));
 
     expect(within(statTile("Sites")).getByText("3")).toBeInTheDocument();
     expect(within(statTile("Operational capacity")).getByText("1.5 GW")).toBeInTheDocument();
@@ -187,7 +197,7 @@ describe("StatusPage — capacity stat", () => {
   it("proposed: shows the summed planned capacity under 'Planned capacity'", async () => {
     mockGetFacilitiesByStatus.mockResolvedValue(FACILITIES);
 
-    render(await StatusPage({ params: Promise.resolve({ status: "proposed" }) }));
+    render(await StatusPage({ params: Promise.resolve({ status: "proposed" }), searchParams: NO_PARAMS }));
 
     expect(within(statTile("Planned capacity")).getByText("1.6 GW")).toBeInTheDocument();
   });
@@ -195,10 +205,118 @@ describe("StatusPage — capacity stat", () => {
   it("cancelled: shows the summed planned capacity under the cancelled label", async () => {
     mockGetFacilitiesByStatus.mockResolvedValue(FACILITIES);
 
-    render(await StatusPage({ params: Promise.resolve({ status: "cancelled" }) }));
+    render(await StatusPage({ params: Promise.resolve({ status: "cancelled" }), searchParams: NO_PARAMS }));
 
     expect(
       within(statTile("Planned capacity (cancelled)")).getByText("1.6 GW")
     ).toBeInTheDocument();
+  });
+});
+
+describe("StatusPage — by-state paging", () => {
+  const params = Promise.resolve({ status: "operational" });
+  const inState = (n: number, state: string, prefix: string) =>
+    Array.from({ length: n }, (_, i) =>
+      makeFacility({
+        id: `${prefix}-${i}`,
+        name: `${prefix} Site ${i}`,
+        status: "operational",
+        location: { lat: 38, lon: -77, state, precision: "exact" },
+      })
+    );
+  // 60 IL + 5 VA: more than TOP_SHOWN in total.
+  const MANY = [...inState(60, "IL", "Illinois"), ...inState(5, "VA", "Virginia")];
+
+  // ShowMoreList keeps collapsed cards in the DOM behind `hidden`, so count
+  // with hidden:true to measure what actually ships in the HTML.
+  const shipped = (name: RegExp) => screen.getAllByRole("link", { name, hidden: true });
+
+  it("default view renders at most 48 cards while the stat row shows the full count", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(MANY);
+
+    render(await StatusPage({ params, searchParams: NO_PARAMS }));
+
+    expect(shipped(/Site \d+/)).toHaveLength(48);
+    expect(within(statTile("Sites")).getByText("65")).toBeInTheDocument();
+    expect(screen.getByText(/Showing 48 of 65, largest disclosed capacity first/)).toBeInTheDocument();
+  });
+
+  it("?state=va renders every VA facility and no others", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(MANY);
+
+    render(await StatusPage({ params, searchParams: Promise.resolve({ state: "va" }) }));
+
+    expect(shipped(/Virginia Site \d+/)).toHaveLength(5);
+    expect(screen.queryByRole("link", { name: /Illinois Site/, hidden: true })).not.toBeInTheDocument();
+    expect(within(statTile("Sites")).getByText("5")).toBeInTheDocument();
+    expect(screen.getByText(/5 operational facilities in Virginia\./)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Operational data centers in Virginia" })
+    ).toBeInTheDocument();
+    const nav = screen.getByRole("navigation", { name: "Operational facilities by state" });
+    expect(within(nav).getByRole("link", { name: /Virginia/ })).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
+    expect(within(nav).getByRole("link", { name: /Illinois/ })).not.toHaveAttribute(
+      "aria-current"
+    );
+  });
+
+  it("?state=il is not capped at 48", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(MANY);
+
+    render(await StatusPage({ params, searchParams: Promise.resolve({ state: "il" }) }));
+
+    expect(shipped(/Illinois Site \d+/)).toHaveLength(60);
+  });
+
+  it("an unknown ?state=zz falls back to the default view", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(MANY);
+
+    render(await StatusPage({ params, searchParams: Promise.resolve({ state: "zz" }) }));
+
+    expect(shipped(/Site \d+/)).toHaveLength(48);
+    expect(within(statTile("Sites")).getByText("65")).toBeInTheDocument();
+  });
+
+  it("the state nav links to ?state=xx under the status path", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(MANY);
+
+    render(await StatusPage({ params, searchParams: NO_PARAMS }));
+
+    const nav = screen.getByRole("navigation", { name: "Operational facilities by state" });
+    expect(within(nav).getByRole("link", { name: /Virginia/ })).toHaveAttribute(
+      "href",
+      "/status/operational?state=va"
+    );
+  });
+
+  it("state view breadcrumb links back to the status page", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(MANY);
+
+    render(await StatusPage({ params, searchParams: Promise.resolve({ state: "va" }) }));
+
+    const crumbs = screen.getByRole("navigation", { name: /breadcrumb/i });
+    expect(within(crumbs).getByRole("link", { name: "Operational" })).toHaveAttribute(
+      "href",
+      "/status/operational"
+    );
+    expect(within(crumbs).getByText("Virginia")).toBeInTheDocument();
+  });
+
+  it("metadata canonical: default, state, and invalid-state views", async () => {
+    mockGetFacilitiesByStatus.mockResolvedValue(MANY);
+    const meta = (sp: Record<string, string>) =>
+      generateMetadata({ params, searchParams: Promise.resolve(sp) });
+
+    expect((await meta({})).alternates).toEqual({ canonical: "/status/operational" });
+    const va = await meta({ state: "va" });
+    expect(va.alternates).toEqual({ canonical: "/status/operational?state=va" });
+    expect(va.title).toBe("Operational data centers in Virginia");
+    expect(va.description).toContain("5 operational data centers");
+    expect((await meta({ state: "zz" })).alternates).toEqual({
+      canonical: "/status/operational",
+    });
   });
 });

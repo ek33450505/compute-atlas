@@ -25,8 +25,8 @@ const LINK_CLASS =
  * and the scope caveats. The files live on /dataset; this route keeps its path
  * because citations and inbound links point at it.
  *
- * Deliberately does NOT emit Dataset JSON-LD — that already lives site-wide
- * on the homepage; duplicating it here would be redundant.
+ * Deliberately does NOT emit Dataset JSON-LD — that lives on /dataset, which
+ * renders it only while dataset sharing is on.
  */
 export default function DataPage() {
   return (

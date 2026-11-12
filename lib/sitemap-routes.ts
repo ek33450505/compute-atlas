@@ -20,6 +20,7 @@ import {
   getFacilitiesByCounty,
 } from "@/lib/data";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
+import { isCommercialCheckoutOpen } from "@/lib/commercial-flag";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
 import { METROS } from "@/lib/metros";
@@ -41,16 +42,23 @@ function maxLastUpdated(facilities: Facility[]): Date {
 }
 
 /**
- * Stable `lastModified` for genuinely static editorial pages (/about,
- * /contribute, /support, /contact, /methodology) that have no
- * underlying dataset to derive freshness from — using `new Date()` here
- * would churn exactly like the dataset-backed routes did (see
- * buildStaticRoutes below). Bump by hand only when a page's content
+ * Stable per-page `lastModified` for genuinely static editorial pages that
+ * have no underlying dataset to derive freshness from — using `new Date()`
+ * here would churn exactly like the dataset-backed routes did (see
+ * buildStaticRoutes below). Hand-bumped from
+ * `git log -1 --format=%cs -- app/<page>/page.tsx` when a page's content
  * meaningfully changes, never on every sitemap regeneration. Last bumped
- * 2026-09-03 to cover the /data citation update (2026-09-03) and the
- * /about + /methodology edits (2026-09-01).
+ * 2026-11-12 (GSC audit F3). Must never be `new Date()`.
  */
-const STATIC_PAGE_LAST_MODIFIED = new Date("2026-09-03T00:00:00Z");
+const STATIC_PAGE_LAST_MODIFIED: Record<string, Date> = {
+  "/about": new Date("2026-11-12T00:00:00Z"),
+  "/methodology": new Date("2026-11-11T00:00:00Z"),
+  "/contribute": new Date("2026-11-11T00:00:00Z"),
+  "/support": new Date("2026-11-12T00:00:00Z"),
+  "/contact": new Date("2026-11-09T00:00:00Z"),
+  "/access": new Date("2026-11-11T00:00:00Z"),
+  "/access/commercial": new Date("2026-11-12T00:00:00Z"),
+};
 
 /**
  * Builds the list of static route entries for the sitemap.
@@ -145,13 +153,13 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${siteConfig.url}/about`,
-      lastModified: STATIC_PAGE_LAST_MODIFIED,
+      lastModified: STATIC_PAGE_LAST_MODIFIED["/about"],
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
       url: `${siteConfig.url}/methodology`,
-      lastModified: STATIC_PAGE_LAST_MODIFIED,
+      lastModified: STATIC_PAGE_LAST_MODIFIED["/methodology"],
       changeFrequency: "monthly",
       priority: 0.6,
     },
@@ -178,16 +186,37 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
           },
         ]
       : []),
+    // /access and /access/commercial carry a robots noindex under the same gates (app/access/page.tsx, app/access/commercial/page.tsx).
+    ...(isDatasetSharingEnabled()
+      ? [
+          {
+            url: `${siteConfig.url}/access`,
+            lastModified: STATIC_PAGE_LAST_MODIFIED["/access"],
+            changeFrequency: "monthly" as const,
+            priority: 0.5,
+          },
+        ]
+      : []),
+    ...(isCommercialCheckoutOpen()
+      ? [
+          {
+            url: `${siteConfig.url}/access/commercial`,
+            lastModified: STATIC_PAGE_LAST_MODIFIED["/access/commercial"],
+            changeFrequency: "monthly" as const,
+            priority: 0.6,
+          },
+        ]
+      : []),
     {
       url: `${siteConfig.url}/sources/odod-dcte-2026-11`,
-      // Own date: STATIC_PAGE_LAST_MODIFIED (pinned 2026-09-03) predates this page.
+      // Own date: this page postdates the editorial-page dates above.
       lastModified: new Date("2026-11-06T00:00:00Z"),
       changeFrequency: "yearly",
       priority: 0.4,
     },
     {
       url: `${siteConfig.url}/sources/otc-1357-21-2026-11`,
-      // Own date: STATIC_PAGE_LAST_MODIFIED (pinned 2026-09-03) predates this page.
+      // Own date: this page postdates the editorial-page dates above.
       lastModified: new Date("2026-11-06T00:00:00Z"),
       changeFrequency: "yearly",
       priority: 0.4,
@@ -200,19 +229,19 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${siteConfig.url}/contribute`,
-      lastModified: STATIC_PAGE_LAST_MODIFIED,
+      lastModified: STATIC_PAGE_LAST_MODIFIED["/contribute"],
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
       url: `${siteConfig.url}/support`,
-      lastModified: STATIC_PAGE_LAST_MODIFIED,
+      lastModified: STATIC_PAGE_LAST_MODIFIED["/support"],
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
       url: `${siteConfig.url}/contact`,
-      lastModified: STATIC_PAGE_LAST_MODIFIED,
+      lastModified: STATIC_PAGE_LAST_MODIFIED["/contact"],
       changeFrequency: "monthly",
       priority: 0.5,
     },
@@ -302,6 +331,28 @@ export async function buildOperatorRoutes(): Promise<MetadataRoute.Sitemap> {
 }
 
 /**
+ * Minimum number of distinct facilities a stakeholder hub must cover to be
+ * submitted in the sitemap: site-level stakes (rendered as facility cards)
+ * plus facilities reached through an owned operator (rendered as operator
+ * rows with counts), each facility counted once. Counting both is the Wave 8
+ * plan's rule (docs/NEXT-SESSION.md), so an owner with no site-level stake
+ * but two facilities through operators is submitted. Same rationale as
+ * MIN_FACILITIES_FOR_OPERATOR_SITEMAP / MIN_FACILITIES_FOR_COUNTY_SITEMAP:
+ * GSC audit 2026-11-12 (URL Inspection of the Sept-submitted panel) found
+ * stakeholders 7/37 indexed (24 discovered-not-crawled). The 917 stakeholder
+ * URLs were 18% of the 5,083-URL sitemap and, per that audit, only ~104 had 2+ sites; a
+ * single-site hub is a thin template (~1,200 visible chars) restating one
+ * facility page. This is sitemap SUBMISSION only: every stakeholder route
+ * stays live, linked from /stakeholders and facility pages, and indexable.
+ * It is deliberately NOT noindex (Ed, 2026-11-12): /opposition is a top
+ * earner and single-site officials are its audience, noindex is slow to
+ * reverse, and the county precedent shows out-of-sitemap pages still earn
+ * impressions (/counties/stone-ms: 227 impressions in 90 days while out of
+ * the sitemap). Revisit at the 2026-11-26 re-check.
+ */
+export const MIN_FACILITIES_FOR_STAKEHOLDER_SITEMAP = 2;
+
+/**
  * Builds the /stakeholders index + per-person route entries for the
  * sitemap. Structurally mirrors buildOperatorRoutes above: `lastModified`
  * for each per-person entry is that person's OWN facilities' max
@@ -309,6 +360,9 @@ export async function buildOperatorRoutes(): Promise<MetadataRoute.Sitemap> {
  * operator hub, only changes when one of THEIR facilities changes. The
  * index entry uses the whole dataset's max `lastUpdated` since `/stakeholders`
  * has no dedicated entry in buildStaticRoutes (unlike `/operators`).
+ * People whose hub covers fewer than MIN_FACILITIES_FOR_STAKEHOLDER_SITEMAP
+ * distinct facilities (site-level plus via-operator, counted once) are
+ * omitted from submission; the index entry is always kept.
  * Exported separately so it can be unit-tested without Next.js.
  */
 export async function buildStakeholderRoutes(): Promise<MetadataRoute.Sitemap> {
@@ -320,21 +374,28 @@ export async function buildStakeholderRoutes(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.6,
     },
-    ...people.map((p) => {
-      // Site-level stakes plus facilities reached through an owned operator:
-      // the hub lists both, so it changes when either changes.
-      const personFacilities = facilities.filter(
-        (f) =>
-          (f.stakeholders ?? []).some((s) => s.name === p.name) ||
-          p.viaOperators.some((v) => v.operator === f.operator)
-      );
-      return {
+    ...people
+      .map((p) => {
+        // Site-level stakes plus facilities reached through an owned operator:
+        // the hub covers both (cards for site-level, operator rows with counts
+        // for the rest), so it changes when either changes.
+        const personFacilities = facilities.filter(
+          (f) =>
+            (f.stakeholders ?? []).some((s) => s.name === p.name) ||
+            p.viaOperators.some((v) => v.operator === f.operator)
+        );
+        return { p, personFacilities };
+      })
+      .filter(
+        ({ personFacilities }) =>
+          personFacilities.length >= MIN_FACILITIES_FOR_STAKEHOLDER_SITEMAP
+      )
+      .map(({ p, personFacilities }) => ({
         url: `${siteConfig.url}/stakeholders/${p.slug}`,
         lastModified: maxLastUpdated(personFacilities),
         changeFrequency: "weekly" as const,
         priority: 0.5,
-      };
-    }),
+      })),
   ];
 }
 

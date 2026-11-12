@@ -232,4 +232,22 @@ export async function loadOfferSamples(): Promise<Facility[] | null> {
   }
 }
 
+/**
+ * Latest parseable `lastUpdated` across the dataset as an ISO string (the Dataset JSON-LD's dateModified),
+ * or undefined when the read fails, times out, or no value parses. Reads through getAllFacilities' own 24h cache.
+ */
+export async function loadOfferDateModified(): Promise<string | undefined> {
+  try {
+    const facilities = await withTimeout(getAllFacilities);
+    const maxMs = facilities.reduce((max, f) => {
+      const ms = new Date(f.lastUpdated).getTime();
+      return Number.isNaN(ms) ? max : Math.max(max, ms);
+    }, 0);
+    return maxMs > 0 ? new Date(maxMs).toISOString() : undefined;
+  } catch (err) {
+    console.error(`dataset offer: dateModified read failed (code: ${redactedErrorCode(err)})`);
+    return undefined;
+  }
+}
+
 export const n = (value: number): string => value.toLocaleString("en-US");
