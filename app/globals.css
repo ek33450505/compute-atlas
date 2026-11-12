@@ -1214,7 +1214,8 @@ body:has([data-content-width="6xl"]) [data-footer-inner] { max-width: 72rem; }
 
   /* Hairline <Separator> rules and the masthead's own border earn nothing on
      paper once the gaps around them are gone. */
-  [data-print-brief] > [data-slot="separator"] {
+  [data-print-brief] > [data-slot="separator"],
+  [data-facility-layout] > * > [data-slot="separator"] {
     display: none !important;
   }
 
@@ -1241,7 +1242,8 @@ body:has([data-content-width="6xl"]) [data-footer-inner] { max-width: 72rem; }
     font-size: inherit;
   }
 
-  [data-print-sources] li > :not(:last-child) {
+  [data-print-sources] li > :not(:last-child),
+  [data-print-sources] li > div > :not(:last-child) {
     margin-block-end: 0 !important;
   }
 
