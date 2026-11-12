@@ -1687,6 +1687,155 @@ note_overrun() {
   return 1
 }
 
+# --- resubmit queue ----------------------------------------------------------
+# submit-candidates.ts exits 3 (EXIT_GATE_UNAVAILABLE) when the API, the gate
+# or the facility index is down: retry later. Submissions are not deduplicated
+# server-side, so the retry resumes from the failed run's log
+# (--resume-from-log skips candidates recorded as submitted or in flight).
+# One line per pending retry in $LOG_DIR/resubmit-queue, space-separated:
+#   <first-failure epoch> <state or -> <candidates file> <latest run log> <prev log or ->
+# submit-candidates checkpoints its run log (candidate marked in_flight) BEFORE
+# its first POST, so "that attempt's log does not exist" proves it POSTed
+# nothing. <latest run log> is the newest attempt's log; <prev log> is the log
+# that attempt resumed from. Old 4-field lines read as prev "-".
+# No same-state dedupe, on purpose: a queued entry drains even when its state
+# is in today's batch, and several entries for one state each drain with their
+# own log chain. Dropping queued candidates would lose verified research
+# invisibly; staging them next to today's fresh research can only create
+# overlapping PENDING rows a human reviews (the trade accepted in the "Known
+# cost, accepted" block after the loop). It is overlap between different
+# research runs, not a replay of the same candidates: --resume-from-log
+# still prevents that.
+RESUBMIT_QUEUE="$LOG_DIR/resubmit-queue"
+RESUBMIT_MAX_AGE_SECS=604800
+
+# queue_resubmit STATE_OR_DASH CANDIDATES_FILE RUN_ID: live runs only.
+queue_resubmit() {
+  local _st="$1" _cand="$2" _rid="$3" _runlog
+  _runlog="$LOG_DIR/run-$_rid.json"
+  if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
+    return 0
+  fi
+  case "$_cand$_runlog" in
+    *[[:space:]]*)
+      log "WARN: not queuing resubmit for $_rid: a path contains whitespace and the queue format cannot carry it ($_cand, $_runlog)"
+      return 0
+      ;;
+  esac
+  # The log may not exist if submit exited 3 before writing it: the drain
+  # handles that (no log anywhere = nothing was POSTed).
+  printf '%s %s %s %s -\n' "$(date '+%s')" "$_st" "$_cand" "$_runlog" >>"$RESUBMIT_QUEUE"
+  log "queued for resubmit: state=$_st candidates=$_cand run-log=$_runlog"
+}
+
+# flush_resubmit_queue: atomically rewrite the queue from RQ_LINES (an emptied
+# element is a dropped entry); remove the file when nothing is left.
+flush_resubmit_queue() {
+  local _l _qtmp="$RESUBMIT_QUEUE.tmp"
+  : >"$_qtmp"
+  for _l in "${RQ_LINES[@]}"; do
+    [[ -z "$_l" ]] || printf '%s\n' "$_l" >>"$_qtmp"
+  done
+  if [[ -s "$_qtmp" ]]; then
+    mv "$_qtmp" "$RESUBMIT_QUEUE"
+  else
+    rm -f "$_qtmp" "$RESUBMIT_QUEUE"
+  fi
+}
+
+# drain_resubmit_queue: runs after the git guard and preflight (3a), so a
+# refused or environment-skipped run never reaches it, and before the per-state
+# loop. It never touches the cursor. Concurrency is excluded by the run lock.
+# WRITE-AHEAD: before each resubmit the queue is rewritten so the entry already
+# points at the NEW attempt's log, with the log it resumes from as <prev>. A
+# crash mid-drain then resumes from the new log instead of replaying POSTs the
+# crashed attempt already made. Outcomes: rc 0 drop; rc 3 keep (the epoch is
+# the original, so the 7-day give-up counts from the first failure); anything
+# else drop + failure.
+drain_resubmit_queue() {
+  local _line _i _epoch _st _cand _runlog _prev _extra _now _age_epoch _new_id _newlog _rc _resume _state_arg _resume_arg
+  [[ -s "$RESUBMIT_QUEUE" ]] || return 0
+  _now="$(date '+%s')"
+  RQ_LINES=()
+  while IFS= read -r _line || [[ -n "$_line" ]]; do
+    RQ_LINES+=("$_line")
+  done <"$RESUBMIT_QUEUE"
+  for ((_i = 0; _i < ${#RQ_LINES[@]}; _i++)); do
+    _line="${RQ_LINES[_i]}"
+    [[ -n "$_line" ]] || continue
+    _epoch="" _st="" _cand="" _runlog="" _prev="" _extra=""
+    read -r _epoch _st _cand _runlog _prev _extra <<<"$_line" || true
+    : "${_prev:=-}"
+    if [[ ! "$_epoch" =~ ^[0-9]+$ || -z "$_st" || -z "$_cand" || -z "$_runlog" || -n "$_extra" ]]; then
+      log "WARN: dropping malformed resubmit-queue line: $_line"
+      FAILURES+=("resubmit: malformed queue line dropped")
+      RQ_LINES[_i]=""
+      flush_resubmit_queue
+      continue
+    fi
+    # 10#: a leading zero (08) would otherwise be an invalid octal under set -e.
+    _age_epoch=$((10#$_epoch))
+    if (( _now - _age_epoch > RESUBMIT_MAX_AGE_SECS )); then
+      log "WARN: resubmit gave up after 7 days: $_st $_cand"
+      FAILURES+=("resubmit gave up after 7 days: $_st $_cand")
+      RQ_LINES[_i]=""
+      flush_resubmit_queue
+      continue
+    fi
+    if [[ ! -f "$_cand" ]]; then
+      log "WARN: resubmit dropped, candidates file missing: $_cand"
+      FAILURES+=("resubmit dropped, candidates file missing: $_st $_cand")
+      RQ_LINES[_i]=""
+      flush_resubmit_queue
+      continue
+    fi
+    # Resume log: the newest attempt's log if it exists, else the one it
+    # resumed from, else no attempt ever checkpointed, so nothing was POSTed.
+    _resume=""
+    if [[ -f "$_runlog" ]]; then
+      _resume="$_runlog"
+    elif [[ "$_prev" != "-" && -f "$_prev" ]]; then
+      _resume="$_prev"
+    fi
+    _new_id="$(date '+%Y%m%dT%H%M%S')-resubmit-$_st"
+    _newlog="$LOG_DIR/run-$_new_id.json"
+    _state_arg=""
+    [[ "$_st" == "-" ]] || _state_arg="--state=$_st"
+    _resume_arg=""
+    if [[ -n "$_resume" ]]; then
+      _resume_arg="--resume-from-log=$_resume"
+    else
+      log "no run log exists for any earlier attempt of $_cand: nothing was POSTed, resubmitting without --resume-from-log"
+    fi
+    RQ_LINES[_i]="$_epoch $_st $_cand $_newlog ${_resume:--}"
+    flush_resubmit_queue
+    log "resubmitting $_cand (state=$_st) as $_new_id${_resume:+ resuming from $_resume}"
+    _rc=0
+    # The child reads /dev/null: it must not share this shell's stdin.
+    run_bg_wait env DISCOVERY_LOG_DIR="$LOG_DIR" npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$_cand" \
+      --run-id="$_new_id" \
+      ${_resume_arg:+"$_resume_arg"} \
+      --max="${MAX_CANDIDATES:-$CAP}" \
+      ${_state_arg:+"$_state_arg"} \
+      ${API_BASE_URL:+--base-url="$API_BASE_URL"} </dev/null || _rc=$?
+    if (( _rc == 0 )); then
+      log "resubmitted: $_st $_cand"
+      RQ_LINES[_i]=""
+    elif (( _rc == 3 )); then
+      log "WARN: resubmit of $_cand still unavailable (exit 3) — kept in the queue"
+    else
+      log "WARN: resubmit failed (exit $_rc): $_st $_cand"
+      FAILURES+=("resubmit failed (exit $_rc): $_st $_cand")
+      RQ_LINES[_i]=""
+    fi
+    flush_resubmit_queue
+  done
+}
+
+if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
+  drain_resubmit_queue
+fi
+
 for STATE in "${BATCH_STATES[@]}"; do
   RUN_ID="$(date '+%Y%m%dT%H%M%S')-${STATE}"
   RUN_IDS+=("$RUN_ID")
@@ -1861,13 +2010,17 @@ d
     log "skipping submit for $RUN_ID (suspect_short empty array — nothing to stage)"
   elif [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then
     log "submitting candidates from $OUTFILE"
-    if ! run_bg_wait env DISCOVERY_LOG_DIR="$LOG_DIR" npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
+    _src=0
+    run_bg_wait env DISCOVERY_LOG_DIR="$LOG_DIR" npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
       --run-id="$RUN_ID" \
       --max="${MAX_CANDIDATES:-$CAP}" \
       --state="$STATE" \
-      ${API_BASE_URL:+--base-url="$API_BASE_URL"}; then
-      log "WARN: submit-candidates failed for $RUN_ID (state=$STATE) — continuing with remaining states"
+      ${API_BASE_URL:+--base-url="$API_BASE_URL"} || _src=$?
+    if (( _src != 0 )); then
+      log "WARN: submit-candidates failed for $RUN_ID (state=$STATE, exit $_src) — continuing with remaining states"
       FAILURES+=("$STATE: submit failed")
+      # exit 3: gate/API unavailable, retry from this run's log next live run.
+      if (( _src == 3 )); then queue_resubmit "$STATE" "$OUTFILE" "$RUN_ID"; fi
     elif [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       # false-OK guard: a state whose candidates mostly fail schema validation
       # means the session could not read the schema/contract (2026-10-28: 93 of
@@ -2093,12 +2246,15 @@ else
 
   if [[ "$EXTRACT_OK" == "true" ]] && [[ -s "$ENRICHMENT_OUTFILE" ]]; then
     log "submitting enrichment candidates from $ENRICHMENT_OUTFILE"
-    if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$ENRICHMENT_OUTFILE" \
+    _src=0
+    run_bg_wait env DISCOVERY_LOG_DIR="$LOG_DIR" npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$ENRICHMENT_OUTFILE" \
       --run-id="$ENRICHMENT_RUN_ID" \
       --max="${MAX_CANDIDATES:-$CAP}" \
-      ${API_BASE_URL:+--base-url="$API_BASE_URL"}; then
-      log "WARN: submit-candidates failed for $ENRICHMENT_RUN_ID — continuing"
+      ${API_BASE_URL:+--base-url="$API_BASE_URL"} || _src=$?
+    if (( _src != 0 )); then
+      log "WARN: submit-candidates failed for $ENRICHMENT_RUN_ID (exit $_src) — continuing"
       FAILURES+=("enrichment: submit failed")
+      if (( _src == 3 )); then queue_resubmit - "$ENRICHMENT_OUTFILE" "$ENRICHMENT_RUN_ID"; fi
     fi
   else
     log "WARN: no enrichment candidates written for $ENRICHMENT_RUN_ID — skipping submit (nothing to stage)"

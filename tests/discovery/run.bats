@@ -65,22 +65,40 @@ EOF
 	# SUBMIT_SUMMARY_MODE=missing|garbage breaks the summary on purpose.
 	cat >"$BIN_DIR/fake-submit" <<'FAKE_SUBMIT_EOF'
 #!/usr/bin/env bash
-rid=""; st=""
+rid=""; st=""; resumed=0
+echo "submit $*" >>"${SUBMIT_ARGV_LOG:-/dev/null}"
 for a in "$@"; do
 	case "$a" in
 	--run-id=*) rid="${a#--run-id=}" ;;
 	--state=*) st="${a#--state=}" ;;
+	--resume-from-log=*) resumed=1 ;;
 	esac
 done
 var="SUBMIT_COUNTS_$st"
 counts="${!var:-${SUBMIT_COUNTS:-0 0}}"
 set -- $counts
+# SUBMIT_WRITES_LOG=0: exit before writing any run log (the real script's
+# "exited 3 before its first checkpoint" case).
+[ "${SUBMIT_WRITES_LOG:-1}" = 1 ] && write_log=1 || write_log=0
+[ "$write_log" = 1 ] || SUBMIT_SUMMARY_MODE=missing
 case "${SUBMIT_SUMMARY_MODE:-ok}" in
 missing) ;;
 garbage) echo "not json" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
 *) printf '{"runId":"%s","discovered":%s,"submitted":0,"skippedInvalid":%s}\n' "$rid" "$1" "$2" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
 esac
-exit 0
+# Exit code seam: SUBMIT_RESUBMIT_RC for a --resume-from-log call, else
+# SUBMIT_RC_ENRICHMENT for the enrichment run, else SUBMIT_RC (default 0).
+# SUBMIT_CRASH_ON_RESUME=1: after checkpointing its log, TERM the parent run.sh
+# (a crash mid-drain) and wait to be reaped.
+if [ "$resumed" = 1 ] && [ "${SUBMIT_CRASH_ON_RESUME:-0}" = 1 ]; then
+	kill -TERM "$PPID"
+	sleep 5
+fi
+if [ "$resumed" = 1 ]; then exit "${SUBMIT_RESUBMIT_RC:-0}"; fi
+case "$rid" in
+*-enrichment) exit "${SUBMIT_RC_ENRICHMENT:-${SUBMIT_RC:-0}}" ;;
+esac
+exit "${SUBMIT_RC:-0}"
 FAKE_SUBMIT_EOF
 	chmod +x "$BIN_DIR/fake-submit"
 
@@ -116,6 +134,17 @@ case "\$*" in
 	# tests set PREFLIGHT_RC=1 (config) or 3 (environmental).
 	[ "\${PREFLIGHT_RC:-0}" = 0 ] || echo "preflight: FAIL stub - forced rc \${PREFLIGHT_RC}" >&2
 	exit \${PREFLIGHT_RC:-0}
+	;;
+*extract-fields.ts*)
+	# EXTRACT_WRITES_OUT=1: leave a non-empty --out file so the enrichment
+	# submit runs; default writes nothing (the lane skips its submit).
+	if [ "\${EXTRACT_WRITES_OUT:-0}" = 1 ]; then
+		while [ \$# -gt 0 ]; do
+			if [ "\$1" = --out ]; then echo '[]' >"\$2"; fi
+			shift
+		done
+	fi
+	exit 0
 	;;
 *check-sources.ts*)
 	# Healthy by default. A nonzero exit is a recorded FAILURES entry (see the
@@ -174,7 +203,8 @@ EOF
 		chmod +x "$BIN_DIR/$_surface"
 	done
 
-	export HOME LOG_DIR CLAUDE_CALL_LOG NPX_CALL_LOG NOTIFY_CALL_LOG
+	SUBMIT_ARGV_LOG="$TEST_TMP/submit-argv.log"
+	export HOME LOG_DIR CLAUDE_CALL_LOG NPX_CALL_LOG NOTIFY_CALL_LOG SUBMIT_ARGV_LOG
 	export PATH="$BIN_DIR:$PATH"
 	export DISCOVERY_LOG_DIR="$LOG_DIR"
 
@@ -4163,4 +4193,190 @@ assert_refused() { # status exit-code
 	[ "$status" -eq 1 ]
 	[[ "$output" == *"DISCOVERY_REQUIRE_VERIFY='2' must be 0 or 1 - refusing to run"* ]]
 	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+# --- resubmit queue (exit 3 from submit-candidates -> retry next live run) ----
+# A queue line is "<epoch> <state or -> <candidates> <latest run log> <prev log or ->".
+
+@test "resubmit: per-state submit exit 3 queues one 5-field line" {
+	export DISCOVERY_ENABLED=true SUBMIT_RC=3
+	run bash "$RUN_SH"
+	[ -s "$LOG_DIR/resubmit-queue" ]
+	[ "$(wc -l <"$LOG_DIR/resubmit-queue" | tr -d ' ')" = 1 ]
+	read -r q_epoch q_state q_cand q_log q_prev q_extra <"$LOG_DIR/resubmit-queue"
+	[[ "$q_epoch" =~ ^[0-9]+$ ]] || return 1
+	[ "$q_state" = "TX" ]
+	[[ "$q_cand" == "$LOG_DIR"/candidates-*-TX.json ]] || return 1
+	[[ "$q_log" == "$LOG_DIR"/run-*-TX.json ]] || return 1
+	[ "$q_prev" = "-" ]
+	[ -z "$q_extra" ]
+	[[ "$output" == *"queued for resubmit"* ]] || return 1
+}
+
+@test "resubmit: per-state submit exit 1 does not queue" {
+	export DISCOVERY_ENABLED=true SUBMIT_RC=1
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+}
+
+@test "resubmit: enrichment submit exit 3 queues with state -" {
+	export DISCOVERY_ENABLED=true EXTRACT_WRITES_OUT=1 SUBMIT_RC_ENRICHMENT=3
+	run bash "$RUN_SH"
+	[ -s "$LOG_DIR/resubmit-queue" ]
+	read -r q_epoch q_state q_cand q_log q_prev <"$LOG_DIR/resubmit-queue"
+	[ "$q_state" = "-" ]
+	[[ "$q_cand" == "$LOG_DIR"/enrichment-*-enrichment.json ]] || return 1
+	[[ "$q_log" == "$LOG_DIR"/run-*-enrichment.json ]] || return 1
+}
+
+# Seed a queue entry. Args: epoch state [with_log=1] [with_prev=0] [line_override]
+seed_resubmit_entry() {
+	local epoch="$1" state="$2"
+	echo '[]' >"$LOG_DIR/cand-seed.json"
+	echo '{}' >"$LOG_DIR/run-seed.json"
+	echo "$epoch $state $LOG_DIR/cand-seed.json $LOG_DIR/run-seed.json" >"$LOG_DIR/resubmit-queue"
+}
+
+@test "resubmit: drain rc 0 resumes from the log with a new run id, drops the entry, no failure" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=0
+	seed_resubmit_entry "$(date +%s)" VA
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed.json" "$SUBMIT_ARGV_LOG"
+	grep -- "--resume-from-log=" "$SUBMIT_ARGV_LOG" | grep -q -- "--run-id=[0-9T]*-resubmit-VA"
+	grep -- "--resume-from-log=" "$SUBMIT_ARGV_LOG" | grep -q -- "--state=VA"
+	[[ "$output" == *"resubmitted: VA"* ]] || return 1
+	[[ "$output" != *"resubmit failed"* ]] || return 1
+}
+
+@test "resubmit: drain rc 3 keeps the entry with the new run log, prev log and the original epoch" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3
+	seed_resubmit_entry "$(( $(date +%s) - 3600 ))" VA
+	orig_epoch="$(cut -d' ' -f1 "$LOG_DIR/resubmit-queue")"
+	run bash "$RUN_SH"
+	[ "$(wc -l <"$LOG_DIR/resubmit-queue" | tr -d ' ')" = 1 ]
+	read -r q_epoch q_state q_cand q_log q_prev <"$LOG_DIR/resubmit-queue"
+	[ "$q_epoch" = "$orig_epoch" ]
+	[ "$q_cand" = "$LOG_DIR/cand-seed.json" ]
+	[[ "$q_log" == "$LOG_DIR"/run-*-resubmit-VA.json ]] || return 1
+	[ "$q_prev" = "$LOG_DIR/run-seed.json" ]
+	[ ! -e "$LOG_DIR/resubmit-queue.tmp" ]
+}
+
+@test "resubmit: rc 3 where the child wrote no log keeps the entry; the next drain resumes from the previous log" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3 SUBMIT_WRITES_LOG=0
+	seed_resubmit_entry "$(date +%s)" VA
+	run bash "$RUN_SH"
+	read -r q_epoch q_state q_cand q_log q_prev <"$LOG_DIR/resubmit-queue"
+	[ ! -e "$q_log" ]
+	[ "$q_prev" = "$LOG_DIR/run-seed.json" ]
+	: >"$SUBMIT_ARGV_LOG"
+	export SUBMIT_RESUBMIT_RC=0
+	# The first run advanced the cursor onto VA; reset it so VA is not in today's batch.
+	rm -f "$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed.json" "$SUBMIT_ARGV_LOG"
+}
+
+@test "resubmit: an entry whose log and prev log are both missing is resubmitted WITHOUT --resume-from-log" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=0
+	seed_resubmit_entry "$(date +%s)" VA
+	rm "$LOG_DIR/run-seed.json"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -- "-resubmit-VA" "$SUBMIT_ARGV_LOG" | grep -q -- "--run-id="
+	if grep -q -- "--resume-from-log" "$SUBMIT_ARGV_LOG"; then return 1; fi
+	[[ "$output" == *"resubmitting without --resume-from-log"* ]] || return 1
+}
+
+@test "resubmit: a crash mid-drain leaves the entry pointing at the new log (write-ahead); the next drain resumes from it" {
+	export DISCOVERY_ENABLED=true SUBMIT_CRASH_ON_RESUME=1
+	seed_resubmit_entry "$(date +%s)" VA
+	run bash "$RUN_SH"
+	[ -s "$LOG_DIR/resubmit-queue" ]
+	read -r q_epoch q_state q_cand q_log q_prev <"$LOG_DIR/resubmit-queue"
+	[[ "$q_log" == "$LOG_DIR"/run-*-resubmit-VA.json ]] || return 1
+	[ -f "$q_log" ]
+	[ "$q_prev" = "$LOG_DIR/run-seed.json" ]
+	unset SUBMIT_CRASH_ON_RESUME
+	: >"$SUBMIT_ARGV_LOG"
+	run bash "$RUN_SH"
+	grep -q -- "--resume-from-log=$q_log" "$SUBMIT_ARGV_LOG"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+}
+
+@test "resubmit: drain rc 1 drops the entry and records a failure" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=1
+	seed_resubmit_entry "$(date +%s)" VA
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	[[ "$output" == *"resubmit failed (exit 1)"* ]] || return 1
+}
+
+@test "resubmit: an entry older than 7 days is dropped with the give-up failure and never submitted" {
+	export DISCOVERY_ENABLED=true
+	seed_resubmit_entry "$(( $(date +%s) - 700000 ))" TX
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	[[ "$output" == *"resubmit gave up after 7 days: TX"* ]] || return 1
+	if grep -q -- "--resume-from-log" "$SUBMIT_ARGV_LOG"; then return 1; fi
+}
+
+@test "resubmit: an epoch with leading zeros does not abort the run" {
+	export DISCOVERY_ENABLED=true
+	seed_resubmit_entry 0000000008 TX
+	run bash "$RUN_SH"
+	[[ "$output" == *"resubmit gave up after 7 days: TX"* ]] || return 1
+	[[ "$output" == *"starting discovery run"* ]] || return 1
+}
+
+@test "resubmit: a missing candidates file drops the entry without submitting" {
+	export DISCOVERY_ENABLED=true
+	seed_resubmit_entry "$(date +%s)" VA
+	rm "$LOG_DIR/cand-seed.json"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	[[ "$output" == *"candidates file missing"* ]] || return 1
+	if grep -q -- "--resume-from-log" "$SUBMIT_ARGV_LOG"; then return 1; fi
+}
+
+@test "resubmit: a queued state that is also in today's batch is still resubmitted and today's batch still runs it" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=0
+	seed_resubmit_entry "$(date +%s)" TX
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed.json" "$SUBMIT_ARGV_LOG"
+	# Today's own TX submit (no --resume-from-log) also ran.
+	grep -- "--state=TX" "$SUBMIT_ARGV_LOG" | grep -v -- "--resume-from-log" | grep -q -- "--run-id=[0-9T]*-TX "
+}
+
+@test "resubmit: two entries for one state both drain, each from its own log" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=0
+	seed_resubmit_entry "$(date +%s)" VA
+	echo '{}' >"$LOG_DIR/run-seed2.json"
+	echo "$(date +%s) VA $LOG_DIR/cand-seed.json $LOG_DIR/run-seed2.json -" >>"$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed.json" "$SUBMIT_ARGV_LOG"
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed2.json" "$SUBMIT_ARGV_LOG"
+}
+
+@test "resubmit: dry run neither queues nor drains" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true SUBMIT_RC=3
+	seed_resubmit_entry "$(date +%s)" TX
+	before="$(cat "$LOG_DIR/resubmit-queue")"
+	run bash "$RUN_SH"
+	[ "$(cat "$LOG_DIR/resubmit-queue")" = "$before" ]
+	if grep -q -- "--resume-from-log" "$SUBMIT_ARGV_LOG"; then return 1; fi
+}
+
+@test "resubmit: a preflight-refused run leaves the queue untouched" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=3
+	seed_resubmit_entry "$(( $(date +%s) - 700000 ))" TX
+	before="$(cat "$LOG_DIR/resubmit-queue")"
+	run bash "$RUN_SH"
+	[ "$(cat "$LOG_DIR/resubmit-queue")" = "$before" ]
+	[ ! -e "$SUBMIT_ARGV_LOG" ] || ! grep -q "submit" "$SUBMIT_ARGV_LOG"
 }
