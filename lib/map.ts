@@ -107,3 +107,38 @@ export function computeFacilitiesBounds(
   };
 }
 
+/** Highest zoom a cluster click will ever animate to. */
+export const CLUSTER_MAX_ZOOM = 12;
+
+/** A cluster click always gains at least this many zoom levels (coincident clusters gain 3). */
+export const CLUSTER_MIN_ZOOM_GAIN = 2;
+
+const CLUSTER_MAX_PADDING_PX = 80;
+const CLUSTER_PADDING_FRACTION = 0.12;
+
+/**
+ * Per-side padding for fitting a cluster's bbox: 12% of the smaller canvas
+ * dimension, capped at 80 px. A fixed 80 px leaves only 215 px of a 375 px
+ * phone canvas, which made the fit nearly a no-op zoom there.
+ */
+export function clusterFitPadding(width: number, height: number): number {
+  const smaller = Math.min(width, height);
+  if (!(smaller > 0)) return 0;
+  return Math.min(CLUSTER_MAX_PADDING_PX, Math.floor(smaller * CLUSTER_PADDING_FRACTION));
+}
+
+/**
+ * Zoom a cluster click should animate to: the bbox-fitted zoom, but never less
+ * than `minGain` above the current zoom, and never above `maxZoom`. `fittedZoom`
+ * is null/undefined when no fit is available (e.g. a coincident cluster).
+ */
+export function clusterTargetZoom(
+  currentZoom: number,
+  fittedZoom: number | null | undefined,
+  minGain: number = CLUSTER_MIN_ZOOM_GAIN,
+  maxZoom: number = CLUSTER_MAX_ZOOM
+): number {
+  const floor = currentZoom + minGain;
+  const target = fittedZoom != null && Number.isFinite(fittedZoom) ? Math.max(fittedZoom, floor) : floor;
+  return Math.min(target, maxZoom);
+}

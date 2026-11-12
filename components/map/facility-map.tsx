@@ -25,6 +25,9 @@ import {
   SATELLITE_ATTRIBUTION,
   SATELLITE_MAX_ZOOM,
   WIDE_AND_TALL_VIEWPORT_QUERY,
+  CLUSTER_MAX_ZOOM,
+  clusterFitPadding,
+  clusterTargetZoom,
   computeFacilitiesBounds,
 } from "@/lib/map";
 import {
@@ -545,22 +548,34 @@ export function FacilityMap({
       const b = computeFacilitiesBounds(cluster.members);
       if (!b) return;
 
+      const duration = reducedMotion ? 0 : 600;
+      // Read at click time: the `zoom` state only updates in onZoomEnd and can lag.
+      const currentZoom = map.getZoom();
+
       // Degenerate bbox: all members are essentially co-located — just zoom in.
       if (b.isCoincident) {
         map.easeTo({
           center: [cluster.lon, cluster.lat],
-          zoom: Math.min(zoom + 3, 12),
-          duration: reducedMotion ? 0 : 600,
+          zoom: clusterTargetZoom(currentZoom, null, 3),
+          duration,
         });
-      } else {
-        map.fitBounds(b.bounds, {
-          padding: 80,
-          maxZoom: 12,
-          duration: reducedMotion ? 0 : 600,
-        });
+        return;
       }
+
+      // Fit the bbox with viewport-scaled padding, then enforce a minimum zoom
+      // gain: on a phone the fitted zoom alone can be a near-no-op (mostly a pan).
+      const canvas = map.getCanvas();
+      const fitted = map.cameraForBounds(b.bounds, {
+        padding: clusterFitPadding(canvas.clientWidth, canvas.clientHeight),
+        maxZoom: CLUSTER_MAX_ZOOM,
+      });
+      map.easeTo({
+        center: fitted?.center ?? b.center,
+        zoom: clusterTargetZoom(currentZoom, fitted?.zoom),
+        duration,
+      });
     },
-    [zoom, reducedMotion]
+    [reducedMotion]
   );
 
   /**
@@ -1070,7 +1085,12 @@ export function FacilityMap({
        * meets the viewport edges below the sticky header. A bottom hairline (border-b)
        * separates map from content below the fold.
        */}
-      <div className="relative h-full w-full overflow-hidden border-b">
+      {/* data-map-zoom: read-only hook for e2e/map-cluster-zoom.spec.ts. It tracks the
+          `zoom` state set in onZoomEnd, so it changes only once a camera move settles. */}
+      <div
+        className="relative h-full w-full overflow-hidden border-b"
+        data-map-zoom={zoom.toFixed(2)}
+      >
         {/*
          * Rendered BEFORE <Map> below — not after, despite being visually "on
          * top" via position:absolute + a positive z-index — so these two
@@ -1108,7 +1128,10 @@ export function FacilityMap({
          * render.
          */}
         {chrome && (
-        <div className="absolute top-20 right-2 z-30 flex flex-col items-end gap-2">
+        <div className="pointer-events-none absolute top-20 right-2 z-30 flex flex-col items-end gap-2">
+          {/* pointer-events-none on this wrapper and the scroll panel below (re-enabled
+            on the real controls) keeps their empty areas from swallowing clicks
+            meant for map markers that sit beside or under the column (#572). */}
           {/* Single disclosure toggle for the compass/3D/basemap/layers/radius
               stack below — collapsed by default to maximize the visible map.
               NavigationControl (zoom +/-, top-2) is separate and always shown.
@@ -1127,7 +1150,7 @@ export function FacilityMap({
             aria-label={showTools ? "Hide map tools" : "Show map tools"}
             title="Map tools"
             className={[
-              "flex h-11 w-11 items-center justify-center",
+              "pointer-events-auto flex h-11 w-11 items-center justify-center",
               "rounded-sm bg-popover border border-border",
               "shadow-[0_1px_4px_rgba(0,0,0,0.12)]",
               "cursor-pointer transition-colors",
@@ -1157,7 +1180,7 @@ export function FacilityMap({
                   ? { maxHeight: `${toolsPanelMaxHeight}px` }
                   : undefined
               }
-              className="-m-1 flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain p-1 [&>*]:shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
+              className="pointer-events-none -m-1 flex max-h-[calc(100dvh-8rem)] flex-col items-end gap-2 overflow-y-auto overscroll-contain p-1 [&>*]:pointer-events-auto [&>*]:shrink-0 motion-safe:transition-opacity motion-safe:duration-150 motion-reduce:transition-none"
             >
               <CompassRose bearing={bearing} onResetNorth={handleResetNorth} />
               <ViewToggle3D is3D={is3D} onToggle={handleToggle3D} />
