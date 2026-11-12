@@ -935,8 +935,9 @@ with a TCP connect of 140–200 ms, while `www.cloudflare.com` from the same pro
 `colo=ORD`. Sixteen Globalping probes elsewhere in the US all landed on a nearby colo. This is
 Cloudflare's Free-plan routing; no setting we hold controls it, and the proxy cannot be turned
 off because the edge-secret gate depends on it. Each colo keeps its own cache, so measure
-cache behaviour with the colo in hand. The `/data` CSV and JSON downloads do cache: repeat
-GETs read `HIT` at NRT, and an earlier reading of `MISS` on every repeat was not reproducible.
+cache behaviour with the colo in hand. (The `/data` CSV and JSON downloads this paragraph
+once measured were removed in Phase 1, 2026-11-05: `/data` is now the "Cite & license" page
+with no downloads, and the files are blocked at the edge.)
 
 ⚠️ Locally, a restart does **not** clear `.next/cache`, so a "fresh" dev server can replay
 an ISR-cached page from before the last publish. That looks exactly like a stale data
