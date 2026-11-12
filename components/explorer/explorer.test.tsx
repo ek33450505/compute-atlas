@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter } from "nuqs/adapters/testing";
 import { Explorer } from "./explorer";
@@ -145,7 +145,10 @@ describe("Explorer — table mode", () => {
   it("renders the rows it is given", () => {
     renderTable();
     expect(screen.getAllByRole("row")).toHaveLength(5); // header + 4
-    expect(screen.getByRole("link", { name: "Alpha Datacenter" })).toBeInTheDocument();
+    // jsdom applies no CSS, so the phone card list renders too; assert on the table.
+    expect(
+      within(screen.getByRole("table")).getByRole("link", { name: "Alpha Datacenter" })
+    ).toBeInTheDocument();
   });
 
   it("does not filter rows client-side, even when the URL carries a filter", () => {
