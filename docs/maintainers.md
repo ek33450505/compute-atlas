@@ -899,6 +899,10 @@ Run these after a deploy with the flag on:
 - One real download of `facilities.json` (6.6–8.8 MB, above Vercel's 4.5 MB non-streamed limit, so the
   route streams it; see `lib/dataset-download.ts`) must complete.
 
+## Supporters list
+
+`lib/supporters.ts` (`SUPPORTERS`) names the people and organizations who support the atlas and asked to be named. It is opt-in only: add an entry by hand when a supporter says yes. An entry with `kind: "institution"` is listed for 12 months; remove it by hand when the year is up.
+
 ## Caching, briefly
 
 Four surfaces. Three are Next.js render tiers, all reading from Neon:

@@ -525,7 +525,7 @@ function extensionFields(now: Date) {
  * expiry works again); the existing `reviewNote` is kept unless
  * a new note is supplied. Anything else is `not_eligible`; two
  * concurrent approves of one grant mint exactly one token. Delivery of the mail
- * lives in the caller (planned: U4 admin actions); no per-IP limit applies here.
+ * lives in the caller, `approveDatasetGrantAction` (app/admin/access/actions.ts); no per-IP limit applies here.
  */
 export async function approveDatasetGrant(
   id: string,
@@ -577,7 +577,7 @@ const COMMERCIAL_REDIRECT_NOTE = "Pointed to the paid commercial subscription";
 /**
  * Admin rejection: `pending_review` -> `rejected` (terminal). `reviewNote` is
  * internal; `rejectionNote` is shown to the requester via the returned mail
- * intent. Delivery lives in the caller (planned: U4 admin actions).
+ * intent. Delivery lives in the caller, `rejectDatasetGrantAction` (app/admin/access/actions.ts).
  */
 export async function rejectDatasetGrant(
   id: string,
@@ -645,7 +645,7 @@ export async function revokeDatasetGrant(
  * Admin "send a new link": rotates the access token of a LIVE grant (`active`
  * AND not yet expired); the old link stops working at once. Only the new hash
  * is stored; the raw token exists only in the returned mail intent. Delivery
- * lives in the caller (planned: U4 admin actions).
+ * lives in the caller, `reissueDatasetLinkAction` (app/admin/access/actions.ts).
  */
 export async function reissueDatasetLink(
   id: string
@@ -860,7 +860,7 @@ export async function getGrantByAccessToken(
  * Sweep: every LAPSED grant (`active`, `expiresAt` at or before `now` or NULL, no
  * renewal requested) becomes `expired`; returns how many. A RENEWAL_PENDING grant
  * is skipped even past its expiry: it stays approvable. One atomic UPDATE, so
- * overlapping runs never double-count a row. Scheduling lives in the caller (planned: U8 cron).
+ * overlapping runs never double-count a row. Scheduling lives in the caller: the edition build (lib/dataset-edition-builder.ts), run by the weekly cron and the admin "Build now".
  */
 export async function expireDueGrants(now: Date = new Date()): Promise<number> {
   const expired = await getDb()
