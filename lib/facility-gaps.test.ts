@@ -5,6 +5,8 @@ import {
   hasEmissions,
   hasEnergyWater,
   hasSubsidies,
+  firstCorrectableField,
+  missingRecordItems,
   missingSectionLabels as missingSectionLabelsFor,
 } from "./facility-gaps";
 import sitingContextRaw from "@/data/siting-context.json";
@@ -252,5 +254,198 @@ describe("civic-impact section predicates", () => {
     expect(hasSubsidies(makeBare())).toBe(false);
     expect(hasSubsidies(makeBare({ subsidies: [] }))).toBe(false);
     expect(hasSubsidies(makeBare({ subsidies: [{ program: "Test credit" }] }))).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// missingRecordItems — the list behind the page's one "What this record is
+// missing" card. It must name exactly what the retired on-screen prompts
+// asked for, in page order, from the same predicates as the print summary.
+// ---------------------------------------------------------------------------
+describe("missingRecordItems", () => {
+  /** Full AND with every field-level slot filled, so nothing is missing. */
+  function makeComplete(): DataCenterFacility {
+    return {
+      ...makeFull(),
+      capacityMw: { operational: 150 },
+      poweredBy: "Grid",
+      announcedDate: "2024-01-01",
+      energy: { source: "grid", onSiteGenerationMw: 0 },
+      water: { coolingType: "closed_loop", reportedMgd: 1 },
+    };
+  }
+
+  const SITING = { nearestWater: { name: "X", kind: "river", distanceMi: 1 } } as SitingContext;
+  const labels = (items: { label: string }[]) => items.map((i) => i.label);
+  const itemsFor = (f: DataCenterFacility | PowerGenerationFacility, power = true) =>
+    missingRecordItems(f, sitingFor(f), power);
+
+  it("returns nothing for a complete record", () => {
+    expect(itemsFor(makeComplete())).toEqual([]);
+  });
+
+  it("lists every section of a sparse record, in page order, with short labels", () => {
+    // Capacity, announced date and siting are present, as on the sparse
+    // reference record; a civic datum (community) keeps the section rendering.
+    const f = makeBare({
+      capacityMw: { operational: 10 },
+      announcedDate: "2024-01-01",
+      community: { status: "mixed" },
+    });
+    const items = missingRecordItems(f, SITING, false);
+
+    expect(labels(items)).toEqual([
+      "who powers it",
+      "economic impact (jobs, investment)",
+      "energy or water data",
+      "air permit",
+      "public subsidy",
+      "a documented stakeholder",
+    ]);
+    expect(items.find((i) => i.label === "who powers it")?.field).toBe("poweredBy");
+    expect(items.find((i) => i.label === "public subsidy")?.field).toBe("subsidies");
+  });
+
+  it("lists field-level gaps inside populated groups (rich record shape)", () => {
+    const f = {
+      ...makeComplete(),
+      energy: { source: "grid" as const },
+      water: { coolingType: "closed_loop" as const },
+      emissions: undefined,
+      stakeholders: undefined,
+    };
+
+    expect(itemsFor(f)).toEqual([
+      { field: "energy.onSiteGenerationMw", label: "on-site generation capacity" },
+      { field: "water.reportedMgd", label: "reported water use" },
+      { label: "air permit" },
+      { label: "a documented stakeholder" },
+    ]);
+  });
+
+  it("does not list on-site generation when it is marked not recorded", () => {
+    const f = {
+      ...makeComplete(),
+      energy: { source: "grid" as const },
+      notRecorded: { "energy.onSiteGenerationMw": "No public figure." },
+    };
+    expect(labels(itemsFor(f))).not.toContain("on-site generation capacity");
+  });
+
+  it.each([
+    ["investment", { landAcres: 5, jobs: { permanent: 1 } }, { field: "investmentUsd", label: "investment amount" }],
+    ["land", { investmentUsd: 5, jobs: { permanent: 1 } }, { field: "landAcres", label: "land area" }],
+    ["jobs", { investmentUsd: 5, landAcres: 5 }, { field: "jobs", label: "jobs" }],
+  ])("lists a missing %s inside a populated economics group, and only it", (_n, econ, expected) => {
+    const f = { ...makeComplete(), investmentUsd: undefined, landAcres: undefined, jobs: undefined, ...econ };
+    expect(itemsFor(f)).toEqual([expected]);
+  });
+
+  it("lists capacity and announced date, and respects a marked capacity", () => {
+    const f = { ...makeComplete(), capacityMw: undefined, announcedDate: undefined };
+    expect(itemsFor(f)).toEqual([
+      { field: "capacityOperationalMw", label: "capacity" },
+      { field: "announcedDate", label: "announcement date" },
+    ]);
+    const marked = { ...f, notRecorded: { "capacityMw.operational": "x" } };
+    expect(labels(itemsFor(marked))).toEqual(["announcement date"]);
+  });
+
+  describe("power item", () => {
+    it("says who powers it when poweredBy is missing, whether or not links exist", () => {
+      const f = { ...makeComplete(), poweredBy: undefined };
+      expect(itemsFor(f, true)).toEqual([{ field: "poweredBy", label: "who powers it" }]);
+      expect(itemsFor(f, false)).toEqual([{ field: "poweredBy", label: "who powers it" }]);
+    });
+
+    it("says 'power supply' when poweredBy is set but no generator links exist", () => {
+      expect(itemsFor(makeComplete(), false)).toEqual([{ label: "power supply" }]);
+    });
+
+    it("names what a generator powers, and still asks who powers it", () => {
+      const gen = {
+        ...makeBare(),
+        id: "test-plant",
+        facilityType: "power_generation" as const,
+        capacityMw: { operational: 1 },
+        announcedDate: "2024-01-01",
+      } as unknown as PowerGenerationFacility;
+      expect(labels(missingRecordItems(gen, SITING, false))).toEqual(
+        expect.arrayContaining(["who powers it", "what it powers"])
+      );
+      expect(labels(missingRecordItems({ ...gen, poweredBy: "self" }, SITING, true))).not.toContain(
+        "what it powers"
+      );
+    });
+  });
+
+  // The card and the print line must never contradict: every section the
+  // print summary names has to appear on the card, in the card's wording for
+  // THAT record. `hasLinks` is the page's own input (what a generator-link
+  // lookup returns), chosen per fixture rather than read back from print.
+  describe("agrees with missingSectionLabels", () => {
+    const generator = {
+      ...makeBare(),
+      id: "test-plant",
+      facilityType: "power_generation" as const,
+      capacityMw: { operational: 1 },
+      announcedDate: "2024-01-01",
+      poweredBy: "self",
+    } as unknown as PowerGenerationFacility;
+
+    // [name, facility, hasLinks, card label expected for the print power section]
+    const fixtures: [
+      string,
+      DataCenterFacility | PowerGenerationFacility,
+      boolean,
+      string | null,
+    ][] = [
+      ["bare (no civic data at all)", makeBare(), false, "who powers it"],
+      ["community only", makeBare({ community: { status: "mixed" } }), false, "who powers it"],
+      ["energy only", makeBare({ energy: { source: "grid" } }), false, "who powers it"],
+      ["marked energy/water only", makeBare({ notRecorded: { "energy.source": "No figure." } }), false, "who powers it"],
+      ["empty emissions object", makeBare({ emissions: {} }), false, "who powers it"],
+      ["poweredBy set, no generator links", makeBare({ poweredBy: "Grid" }), false, "power supply"],
+      ["generator, no links", generator, false, "what it powers"],
+      ["operator with owners, no site stakeholder", makeBare({ operator: "QTS Data Centers" }), false, "who powers it"],
+      ["complete", makeComplete(), true, null],
+    ];
+
+    const POWER_SECTIONS = ["power supply", "powered campuses"];
+    const CARD_FOR_SECTION: Record<string, string> = {
+      "siting context": "siting context",
+      "economic impact": "economic impact (jobs, investment)",
+      "energy and water": "energy or water data",
+      "air permit": "air permit",
+      "public subsidies": "public subsidy",
+      stakeholders: "a documented stakeholder",
+    };
+
+    it.each(fixtures)("%s", async (_n, f, hasLinks, powerLabel) => {
+      const sections = await missingSectionLabelsFor(f, sitingFor(f), hasLinks);
+      const items = labels(missingRecordItems(f, sitingFor(f), hasLinks));
+
+      for (const section of sections.filter((x) => !POWER_SECTIONS.includes(x))) {
+        expect(items, `print names "${section}"`).toContain(CARD_FOR_SECTION[section]);
+      }
+      // Power: the card names it exactly when print does, with the right wording.
+      expect(sections.some((x) => POWER_SECTIONS.includes(x)) || f.poweredBy === undefined).toBe(
+        powerLabel !== null
+      );
+      if (powerLabel) expect(items).toContain(powerLabel);
+      else expect(items.some((l) => ["who powers it", "power supply", "what it powers"].includes(l))).toBe(false);
+    });
+  });
+});
+
+describe("firstCorrectableField", () => {
+  it("returns the first item whose field the dialog can pre-select", () => {
+    expect(
+      firstCorrectableField([{ label: "a" }, { field: "investmentUsd", label: "b" }, { field: "jobs", label: "c" }])
+    ).toBe("jobs");
+  });
+
+  it("returns undefined when none is correctable", () => {
+    expect(firstCorrectableField([{ label: "a" }, { field: "announcedDate", label: "b" }])).toBeUndefined();
   });
 });

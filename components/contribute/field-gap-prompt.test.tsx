@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { FieldGapPrompt, SectionGapPrompt } from "./field-gap-prompt";
+import { FieldGapPrompt } from "./field-gap-prompt";
 import { CORRECTABLE_KEYS } from "@/lib/contribute-fields";
 
 afterEach(() => {
@@ -168,7 +168,7 @@ describe("FieldGapPrompt — eligibility tracks CORRECTABLE_KEYS", () => {
 // Keyboard focus visibility — FieldGapPrompt renders ~7 times on a facility
 // page, so a keyboard user tabbing through needs a visible focus ring on
 // every one. Regression for a LINK_CLASS that dropped the focus-visible
-// treatment SECTION_LINK_CLASS already carries.
+// treatment the other gap links already carried.
 // ---------------------------------------------------------------------------
 describe("FieldGapPrompt — keyboard focus visibility", () => {
   it("renders the correction trigger button with focus-visible outline classes", () => {
@@ -214,64 +214,6 @@ describe("FieldGapPrompt — keyboard focus visibility", () => {
 });
 
 // ---------------------------------------------------------------------------
-// SectionGapPrompt — whole-group/whole-section gaps. Unlike FieldGapPrompt,
-// there is no eligibility check: it always renders the tip trigger, even when
-// `label` echoes a key that IS in CORRECTABLE_KEYS, because a whole missing
-// section has no single field to target a correction at.
-// ---------------------------------------------------------------------------
-describe("SectionGapPrompt", () => {
-  const props = { facilityId: "facility-1", facilityName: "Test DC", label: "economic impact data" };
-
-  it("renders a tip trigger button mentioning the facility name and label, not a link", () => {
-    render(<SectionGapPrompt {...props} />);
-
-    const trigger = screen.getByRole("button");
-    expect(trigger).toHaveTextContent("Know a source for economic impact data on Test DC? Send us a link.");
-    expect(screen.queryByRole("link")).not.toBeInTheDocument();
-  });
-
-  it("is screen-only and carries the quiet section styling", () => {
-    render(<SectionGapPrompt {...props} />);
-
-    expect(screen.getByRole("button")).toHaveClass("print:hidden", "text-xs", "italic");
-  });
-
-  it("left-aligns the tip trigger, since a long label wraps", () => {
-    render(<SectionGapPrompt {...props} />);
-
-    expect(screen.getByRole("button")).toHaveClass("text-left");
-  });
-
-  it("opens the dialog on 'Something else' with the label as the topic", async () => {
-    const user = userEvent.setup();
-    render(<SectionGapPrompt {...props} />);
-
-    await user.click(screen.getByRole("button"));
-
-    expect(screen.getByRole("dialog", { name: "Add missing information" })).toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
-      "Something else"
-    );
-    expect(screen.getByLabelText(/what should we know/i)).toHaveAttribute(
-      "placeholder",
-      "e.g. economic impact data, and where you saw it"
-    );
-  });
-
-  it("opens on 'Something else' even for a CORRECTABLE_KEYS-shaped label, never on that field", async () => {
-    const user = userEvent.setup();
-    render(<SectionGapPrompt {...props} label="jobs" />);
-
-    await user.click(screen.getByRole("button"));
-
-    expect(screen.getByRole("combobox", { name: /what are you adding/i })).toHaveTextContent(
-      "Something else"
-    );
-    expect(screen.queryByLabelText(/new value/i)).not.toBeInTheDocument();
-  });
-});
-
-// ---------------------------------------------------------------------------
 // Print-only "Not recorded" marker — FIELD level only.
 //
 // SCOPE WARNING, read before adding to this block: jsdom loads no stylesheet
@@ -282,11 +224,10 @@ describe("SectionGapPrompt", () => {
 // media-emulated in e2e/print-brief.spec.ts and lives there on purpose.
 // Test names say "in the DOM" rather than "in print" for that reason.
 //
-// SectionGapPrompt deliberately carries NO marker: a section-level gap has no
-// <dt> to be read against, and one self-naming line per empty section printed
-// as a run of orphan sentences. Those are consolidated into a single line at
-// the foot of the brief instead — lib/facility-gaps.ts +
-// components/facility/print-gap-summary.tsx, covered by their own tests.
+// Section-level gaps carry NO marker: they have no <dt> to be read against.
+// They are consolidated into a single line at the foot of the brief instead —
+// lib/facility-gaps.ts + components/facility/print-gap-summary.tsx, covered by
+// their own tests.
 // ---------------------------------------------------------------------------
 
 /** The marker as rendered, or null. Not a visibility check — see above. */
@@ -323,16 +264,6 @@ describe("print-only 'Not recorded' marker", () => {
       screen.getByRole("button", { name: /know a source for the stakeholders/i })
     ).toBeInTheDocument();
     expect(notRecordedNode()).toBeInTheDocument();
-  });
-
-  // A section-level gap has no <dt> beside it, so a self-naming marker here
-  // printed as an orphan sentence. The consolidated summary line replaced it;
-  // this pins that SectionGapPrompt is screen-only and prints nothing.
-  it("is absent from a section-level gap, which prints via the consolidated summary", () => {
-    render(<SectionGapPrompt facilityId="f" facilityName="Test DC" label="economic impact data" />);
-
-    expect(screen.getByRole("button")).toHaveClass("print:hidden");
-    expect(screen.queryByText(/^Not recorded/)).not.toBeInTheDocument();
   });
 
   it.each([
@@ -398,87 +329,28 @@ describe("print-only 'Not recorded' marker", () => {
 });
 
 // ---------------------------------------------------------------------------
-// `coveredByPrintSummary` — a FieldGapPrompt standing in for a WHOLE group.
-//
-// SubsidiesGroup (components/facility/civic-impact.tsx) replaces the group's
-// heading and list with this prompt, so there is no <dt> beside it and the
-// marker printed as a bare "Not recorded" naming nothing — under Civic impact,
-// on every record in the dataset, while the consolidated summary was ALREADY
-// reporting "public subsidies". Orphaned and duplicated at once.
-//
-// The screen half is the reason it is not simply switched to SectionGapPrompt:
-// `subsidies` IS in CORRECTABLE_KEYS, so this call site renders a real
-// correction dialog trigger, and SectionGapPrompt only ever renders the tip
-// trigger (which opens that dialog on "Something else"). The flag suppresses the PRINT marker and must leave the
-// screen affordance exactly as it was — that pair is what these tests pin.
-//
-// Per the scope warning above, this is DOM presence only. That the printed
-// page carries no unlabelled marker is asserted in e2e/print-brief.spec.ts,
-// where media can actually be emulated.
+// `printOnly` — the facility page's rows: no on-screen invite (the page's
+// "What this record is missing" card lists the gap), but the hidden print nil
+// is exactly the one the full prompt rendered.
 // ---------------------------------------------------------------------------
-describe("FieldGapPrompt — coveredByPrintSummary", () => {
-  it("omits the marker from the DOM for a correctable field", () => {
-    render(
-      <FieldGapPrompt
-        field="subsidies"
-        facilityId="facility-1"
-        facilityName="Test DC"
-        label="a public subsidy"
-        coveredByPrintSummary
-      />
+describe("FieldGapPrompt — printOnly", () => {
+  it.each([["jobs"], ["stakeholders"]])("renders no button or link, and the same print nil, for %s", (field) => {
+    const { container } = render(
+      <FieldGapPrompt printOnly field={field} facilityId="f" facilityName="Test DC" label="x" />
     );
 
-    expect(notRecordedNode()).not.toBeInTheDocument();
-  });
-
-  it("omits the marker from the DOM for a non-correctable field too", () => {
-    // Both return branches share one `printNil`, so a flag honoured on only
-    // the correctable path would still print an orphan from the other.
-    render(
-      <FieldGapPrompt
-        field="stakeholders"
-        facilityId="facility-1"
-        facilityName="Test DC"
-        label="the stakeholders"
-        coveredByPrintSummary
-      />
-    );
-
-    expect(notRecordedNode()).not.toBeInTheDocument();
-  });
-
-  it("leaves the screen correction trigger untouched", () => {
-    render(
-      <FieldGapPrompt
-        field="subsidies"
-        facilityId="facility-1"
-        facilityName="Test DC"
-        label="a public subsidy"
-        coveredByPrintSummary
-      />
-    );
-
-    // The whole point of keeping FieldGapPrompt here: a real dialog trigger,
-    // not the tip trigger (which opens the dialog on "Something else") that
-    // SectionGapPrompt would have downgraded it to.
-    expect(
-      screen.getByRole("button", { name: /know a public subsidy\?/i })
-    ).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    const nils = container.querySelectorAll("[data-print-nil]");
+    expect(nils).toHaveLength(1);
+    expect(nils[0]).toHaveClass("hidden");
+    expect(nils[0]).toHaveTextContent("Not recorded");
   });
 
-  it("defaults to off, so field-level slots keep their marker", () => {
-    // Without an explicit default assertion, deleting `= false` and letting
-    // the prop go undefined would read as harmless.
-    render(
-      <FieldGapPrompt
-        field="subsidies"
-        facilityId="facility-1"
-        facilityName="Test DC"
-        label="a public subsidy"
-      />
-    );
+  it("shows a quiet labelled dash on screen that does not print, and no second 'Not recorded' text", () => {
+    render(<FieldGapPrompt printOnly field="jobs" facilityId="f" facilityName="Test DC" label="x" />);
 
-    expect(notRecordedNode()).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Not recorded" })).toHaveClass("print:hidden");
+    expect(screen.getAllByText("Not recorded")).toHaveLength(1);
   });
 });

@@ -75,6 +75,17 @@ describe("ProvenancePanel", () => {
     expect(link2).toHaveAttribute("rel", "noreferrer noopener");
   });
 
+  it("numbers sources in an ordered list with #source-<n> anchors", () => {
+    const { container } = render(<ProvenancePanel facility={FACILITY} />);
+    const list = screen.getByRole("list", { name: "Sources" });
+    expect(list.tagName).toBe("OL");
+    const items = Array.from(list.children);
+    expect(items[0]).toHaveAttribute("id", "source-1");
+    expect(items[1]).toHaveAttribute("id", "source-2");
+    expect(items[0]).toHaveTextContent(/^1\./);
+    expect(container.querySelector("section#sources")).not.toBeNull();
+  });
+
   it("renders the publisher when present", () => {
     render(<ProvenancePanel facility={FACILITY} />);
     expect(screen.getByText("Example Publisher")).toBeInTheDocument();

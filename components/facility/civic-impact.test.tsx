@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
-import { CivicImpactSection, hasCivicImpact } from "./civic-impact";
+import { CivicImpactSection } from "./civic-impact";
+import { hasCivicImpact } from "@/lib/facility-gaps";
 import {
   hasEconomics,
   hasEmissions,
@@ -114,74 +115,46 @@ describe("CivicImpactSection — Economics", () => {
     render(<CivicImpactSection facility={facility} />);
 
     expect(screen.getByText(/0 construction · 0 permanent/)).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /know jobs\?/i })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
 
 // ---------------------------------------------------------------------------
-// Economics — gap prompts (whole-group SectionGapPrompt vs. per-field
-// FieldGapPrompt, correctable vs. non-correctable)
+// Economics — gaps. No on-screen prompt anywhere in the section: the page's
+// "What this record is missing" card lists them (lib/facility-gaps.ts).
 // ---------------------------------------------------------------------------
-describe("CivicImpactSection — Economics gap prompts", () => {
-  it("renders exactly one SectionGapPrompt tip trigger, and no Economics heading, when investmentUsd/landAcres/jobs are all absent", () => {
+describe("CivicImpactSection — Economics gaps", () => {
+  it("renders no Economics heading and no button when investmentUsd/landAcres/jobs are all absent", () => {
     // energy keeps hasCivicImpact true so CivicImpactSection actually renders
     // its sub-groups (otherwise the whole section — a different, untouched
     // guard — would return null before EconomicsGroup ever runs).
     const facility = makeFacility({ energy: { source: "grid" } });
     render(<CivicImpactSection facility={facility} />);
 
-    // By role, not text — the stronger form, and repo convention. `getByRole`
-    // throws on more than one match, which is the "exactly one" half of this
-    // test's name.
-    expect(screen.getByRole("button", { name: /economic impact data/i })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /economic impact data/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Economics" })).not.toBeInTheDocument();
     expect(screen.queryByText("Investment")).not.toBeInTheDocument();
   });
 
-  it("renders a correction-dialog trigger for a missing jobs field inside an otherwise-populated Economics group", () => {
+  it("keeps a labelled row, with no button, for a missing field inside an otherwise-populated Economics group", () => {
     const facility = makeFacility({ investmentUsd: 1_000_000 });
-    render(<CivicImpactSection facility={facility} />);
+    const { container } = render(<CivicImpactSection facility={facility} />);
 
     expect(screen.getByText("Investment")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /know jobs\?/i })).toBeInTheDocument();
+    expect(screen.getByText("Jobs")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    // jobs + land: the print brief's nil markers stay, one per empty row.
+    expect(container.querySelectorAll("[data-print-nil]")).toHaveLength(2);
   });
 
-  it("renders the tip trigger, not a field-correction trigger, for a missing investmentUsd field inside an otherwise-populated Economics group", () => {
+  it("renders the empty field inside a dt/dd pair, not as a bare <dl> child (WCAG 1.3.1 dl structure)", () => {
     const facility = makeFacility({ jobs: { permanent: 100 } });
     render(<CivicImpactSection facility={facility} />);
 
-    // investmentUsd is not in CORRECTABLE_KEYS, so the trigger is the "Know a
-    // source for …" tip invite (it opens the dialog), not "Know …?".
-    expect(
-      screen.getByRole("button", { name: /know a source for the investment amount/i })
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /the investment amount/i })).not.toBeInTheDocument();
-  });
-
-  it("renders a per-field gap prompt inside a dt/dd pair, not as a bare <dl> child (WCAG 1.3.1 dl structure)", () => {
-    // Regression for a `dl element has direct children that are not
-    // allowed: div > a` axe violation — a FieldGapPrompt used to render as
-    // a bare `<div><a>...</a></div>` sibling of FactRow's `<div><dt/><dd/></div>`
-    // pairs inside the same `<dl>`. It must render through FactRow instead,
-    // so the gap prompt IS the `<dd>` of a normal term/definition pair.
-    const facility = makeFacility({ jobs: { permanent: 100 } });
-    render(<CivicImpactSection facility={facility} />);
-
-    const trigger = screen.getByRole("button", { name: /the investment amount/i });
-    expect(trigger.closest("dd")).toBeInTheDocument();
-    expect(trigger.closest("dd")?.previousElementSibling?.tagName).toBe("DT");
-
-    // Every direct child of the enclosing <dl> must be a <div> wrapping a
-    // dt/dd pair — never a bare <div><button>...</button></div>.
-    const dl = trigger.closest("dl") as HTMLElement;
-    for (const child of Array.from(dl.children)) {
-      expect(child.tagName).toBe("DIV");
-      expect(child.querySelector(":scope > dt")).toBeInTheDocument();
-      expect(child.querySelector(":scope > dd")).toBeInTheDocument();
-    }
+    const dt = screen.getByText("Investment");
+    expect(dt.tagName).toBe("DT");
+    expect(dt.nextElementSibling?.tagName).toBe("DD");
+    expect(dt.parentElement?.parentElement?.tagName).toBe("DL");
   });
 
   it("renders Economics with no gap prompts when investmentUsd, landAcres, and jobs are all present", () => {
@@ -391,9 +364,10 @@ describe("CivicImpactSection — Air permit (emissions)", () => {
     render(<CivicImpactSection facility={facility} />);
 
     const link = screen.getByRole("link", {
-      name: /Subsidy Source \(opens in new tab\)/i,
+      name: "[1] Subsidy Source",
     });
-    expect(link).toHaveAttribute("href", "https://example.com/subsidy-source");
+    expect(link).toHaveAttribute("href", "#source-1");
+    expect(link).toHaveTextContent("[1]");
   });
 
   it("renders 'Per unit' for basis alongside the tonnages", () => {
@@ -625,11 +599,10 @@ describe("CivicImpactSection — Public subsidies", () => {
     expect(screen.getByText(/Illinois · 2023/)).toBeInTheDocument();
 
     const link = screen.getByRole("link", {
-      name: /Subsidy Source \(opens in new tab\)/i,
+      name: "[1] Subsidy Source",
     });
-    expect(link).toHaveAttribute("href", "https://example.com/subsidy-source");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noreferrer noopener");
+    expect(link).toHaveAttribute("href", "#source-1");
+    expect(link).toHaveTextContent("[1]");
   });
 
   it("uses 'Subsidy' as fallback label when program is absent", () => {
@@ -640,12 +613,11 @@ describe("CivicImpactSection — Public subsidies", () => {
     expect(screen.getByText("Subsidy")).toBeInTheDocument();
   });
 
-  it("renders a correction-dialog trigger (not the tip trigger that opens the dialog on 'Something else') when subsidies is absent", () => {
+  it("renders no subsidies group and no button when subsidies are absent", () => {
     const facility = makeFacility({ investmentUsd: 1_000_000 });
     render(<CivicImpactSection facility={facility} />);
-    expect(
-      screen.getByRole("button", { name: /know a public subsidy\?/i })
-    ).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Public subsidies" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
 
@@ -672,12 +644,9 @@ describe("CivicImpactSection — Community sentiment", () => {
     render(<CivicImpactSection facility={facility} />);
 
     const link = screen.getByRole("link", {
-      name: /Community Report \(opens in new tab\)/i,
+      name: "[2] Community Report",
     });
-    expect(link).toHaveAttribute(
-      "href",
-      "https://example.com/community-source"
-    );
+    expect(link).toHaveAttribute("href", "#source-2");
   });
 });
 
@@ -837,7 +806,7 @@ describe("CivicImpactSection — renders nothing when no civic fields present", 
 });
 
 // ---------------------------------------------------------------------------
-// Drift guard: the rendered empty-state prompts vs. lib/facility-gaps.ts
+// Drift guard: which groups render vs. lib/facility-gaps.ts
 //
 // The printed brief's consolidated nil line is built from the predicates in
 // lib/facility-gaps.ts; the groups below render their empty state from the
@@ -850,10 +819,10 @@ describe("CivicImpactSection — renders nothing when no civic fields present", 
 // outer hasCivicImpact guard doesn't return null before the groups run.
 // ---------------------------------------------------------------------------
 const CIVIC_SECTIONS = [
-  { name: "economics", predicate: hasEconomics, gapText: /economic impact data/i },
-  { name: "energy & water", predicate: hasEnergyWater, gapText: /energy or water data/i },
-  { name: "air permit", predicate: hasEmissions, gapText: /air permit data/i },
-  { name: "subsidies", predicate: hasSubsidies, gapText: /a public subsidy/i },
+  { name: "economics", predicate: hasEconomics, heading: "Economics" },
+  { name: "energy & water", predicate: hasEnergyWater, heading: "Energy & water" },
+  { name: "air permit", predicate: hasEmissions, heading: "Air permit" },
+  { name: "subsidies", predicate: hasSubsidies, heading: "Public subsidies" },
 ] as const;
 
 describe("CivicImpactSection — empty states agree with lib/facility-gaps predicates", () => {
@@ -888,14 +857,15 @@ describe("CivicImpactSection — empty states agree with lib/facility-gaps predi
     render(<CivicImpactSection facility={facility} />);
 
     for (const section of CIVIC_SECTIONS) {
-      const promptShown = screen.queryByText(section.gapText) !== null;
+      const groupShown = screen.queryByText(section.heading) !== null;
       expect(
-        promptShown,
-        `${section.name}: prompt ${promptShown ? "shown" : "absent"}, predicate says ${
+        groupShown,
+        `${section.name}: group ${groupShown ? "shown" : "absent"}, predicate says ${
           section.predicate(facility) ? "populated" : "empty"
         }`
-      ).toBe(!section.predicate(facility));
+      ).toBe(section.predicate(facility));
     }
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
 
@@ -913,13 +883,12 @@ describe("CivicImpactSection — Air permit, empty emissions object", () => {
   it.each([
     ["a bare object", {}],
     ["only a sourceIndex", { sourceIndex: 0 }],
-  ])("renders the gap prompt and no panel for %s", (_case, emissions) => {
+  ])("renders no panel, heading or button for %s", (_case, emissions) => {
     const facility = makeFacility({ emissions });
     render(<CivicImpactSection facility={facility} />);
 
-    // The gap prompt renders INSTEAD of the panel — not alongside it, and not
-    // the bare `null` that left the section silently blank.
-    expect(screen.getByRole("button", { name: /air permit data/i })).toBeInTheDocument();
+    // The gap is listed on the page's missing-record card, not here.
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { name: "Air permit" })
     ).not.toBeInTheDocument();

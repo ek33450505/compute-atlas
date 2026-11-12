@@ -63,11 +63,10 @@ describe("hasStakeholders", () => {
 });
 
 describe("StakeholdersSection", () => {
-  it("renders a SectionGapPrompt tip trigger when the facility has no stakeholders", () => {
-    render(<StakeholdersSection facility={makeFacility()} />);
+  it("renders nothing when the facility has no stakeholders (the page's missing-record card lists it)", () => {
+    const { container } = render(<StakeholdersSection facility={makeFacility()} />);
 
-    const trigger = screen.getByRole("button");
-    expect(trigger).toHaveTextContent(/a documented stakeholder/i);
+    expect(container).toBeEmptyDOMElement();
     expect(
       screen.queryByRole("heading", { name: "Notable stakeholders" })
     ).not.toBeInTheDocument();
@@ -102,9 +101,9 @@ describe("StakeholdersSection", () => {
     expect(screen.getByText(/As of 2024-01-01/)).toBeInTheDocument();
 
     const link = screen.getByRole("link", {
-      name: /Founder Filing \(opens in new tab\)/i,
+      name: "[1] Founder Filing",
     });
-    expect(link).toHaveAttribute("href", "https://example.com/founder-source");
+    expect(link).toHaveAttribute("href", "#source-1");
   });
 
   it("renders an organization lender under the financial-interest group with a Lender label", () => {
@@ -156,12 +155,9 @@ describe("StakeholdersSection", () => {
     expect(screen.getByText("Senator Smith")).toBeInTheDocument();
 
     const link = screen.getByRole("link", {
-      name: /County Meeting Minutes \(opens in new tab\)/i,
+      name: "[2] County Meeting Minutes",
     });
-    expect(link).toHaveAttribute(
-      "href",
-      "https://example.com/official-source"
-    );
+    expect(link).toHaveAttribute("href", "#source-2");
   });
 
   it("does not render a public_official entry under the financial-interest heading", () => {

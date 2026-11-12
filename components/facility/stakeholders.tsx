@@ -6,7 +6,6 @@ import {
   type OperatorOwnership,
 } from "@/lib/operator-ownership";
 import { OperatorOwnerDetails, ownerDisplayName } from "@/components/operator-owner-details";
-import { SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
 import { Separator } from "@/components/ui/separator";
 
 import { FactGroup, FactRow, SourceLink } from "./fact-row";
@@ -150,9 +149,7 @@ export function StakeholdersSection({
   ownership?: OperatorOwnership[];
 }) {
   if (!hasStakeholders(facility, ownership)) {
-    return (
-      <SectionGapPrompt facilityId={facility.id} facilityName={facility.name} label="a documented stakeholder" />
-    );
+    return null;
   }
 
   const stakeholders = facility.stakeholders ?? [];

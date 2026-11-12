@@ -7,11 +7,13 @@ import {
   COOLING_TYPE_LABELS,
   ENERGY_SOURCE_LABELS,
 } from "@/lib/enum-labels";
-import { FieldGapPrompt, SectionGapPrompt } from "@/components/contribute/field-gap-prompt";
+import { FieldGapPrompt } from "@/components/contribute/field-gap-prompt";
 import {
+  hasCivicImpact,
   hasEconomics,
   hasEmissions,
   hasEnergyWater,
+  hasEnergyWaterNotRecorded,
   hasSubsidies,
 } from "@/lib/facility-gaps";
 
@@ -156,23 +158,6 @@ function pollutantEntriesFor(tpy: PermittedTpy | undefined) {
     );
 }
 
-// --- Predicate ---
-export function hasCivicImpact(facility: Facility): boolean {
-  return !!(
-    facility.energy ||
-    facility.water ||
-    hasEnergyWaterNotRecorded(facility) ||
-    facility.emissions ||
-    (facility.subsidies && facility.subsidies.length > 0) ||
-    facility.investmentUsd ||
-    facility.landAcres ||
-    facility.jobs ||
-    facility.community ||
-    (facility.facilityType === "crypto_mining" && facility.mining) ||
-    (facility.facilityType !== "power_generation" && facility.environmental)
-  );
-}
-
 // --- Sub-section: Economics ---
 function EconomicsGroup({ facility }: { facility: Facility }) {
   const { investmentUsd, landAcres, jobs, id: facilityId, name: facilityName } = facility;
@@ -180,9 +165,7 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
   // inline here — the printed brief's consolidated nil line reads the same
   // functions, and a local copy is exactly how the two would drift apart.
   if (!hasEconomics(facility)) {
-    return (
-      <SectionGapPrompt facilityId={facilityId} facilityName={facilityName} label="economic impact data" />
-    );
+    return null;
   }
 
   const jobsText = (() => {
@@ -205,6 +188,7 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
       ) : (
         <FactRow label="Investment">
           <FieldGapPrompt
+            printOnly
             field="investmentUsd"
             facilityId={facilityId}
             facilityName={facilityName}
@@ -217,6 +201,7 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
       ) : (
         <FactRow label="Land">
           <FieldGapPrompt
+            printOnly
             field="landAcres"
             facilityId={facilityId}
             facilityName={facilityName}
@@ -229,6 +214,7 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
       ) : (
         <FactRow label="Jobs">
           <FieldGapPrompt
+            printOnly
             field="jobs"
             facilityId={facilityId}
             facilityName={facilityName}
@@ -240,25 +226,11 @@ function EconomicsGroup({ facility }: { facility: Facility }) {
   );
 }
 
-// A marked energy/water field must still render its "Not recorded" row even
-// when the facility has no energy or water object at all.
-function hasEnergyWaterNotRecorded(facility: Facility): boolean {
-  const marked = facility.notRecorded;
-  return !!marked && (
-    marked["energy.onSiteGenerationMw"] !== undefined ||
-    marked["energy.source"] !== undefined ||
-    marked["energy.utility"] !== undefined ||
-    marked["water.coolingType"] !== undefined
-  );
-}
-
 // --- Sub-section: Energy & water ---
 function EnergyWaterGroup({ facility }: { facility: Facility }) {
   const { energy, water, notRecorded, id: facilityId, name: facilityName } = facility;
   if (!hasEnergyWater(facility) && !hasEnergyWaterNotRecorded(facility)) {
-    return (
-      <SectionGapPrompt facilityId={facilityId} facilityName={facilityName} label="energy or water data" />
-    );
+    return null;
   }
 
   const energySourceLabel = energy?.source
@@ -297,6 +269,7 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
         ) : (
           <FactRow label="On-site generation">
             <FieldGapPrompt
+              printOnly
               field="energy.onSiteGenerationMw"
               facilityId={facilityId}
               facilityName={facilityName}
@@ -316,6 +289,7 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
         ) : (
           <FactRow label="Water use">
             <FieldGapPrompt
+              printOnly
               field="water.reportedMgd"
               facilityId={facilityId}
               facilityName={facilityName}
@@ -343,7 +317,7 @@ function EnergyWaterGroup({ facility }: { facility: Facility }) {
 // that real regulatory fact.
 function EmissionsGroup({ facility }: { facility: Facility }) {
   if (!hasEmissions(facility)) {
-    return <SectionGapPrompt facilityId={facility.id} facilityName={facility.name} label="air permit data" />;
+    return null;
   }
   const { emissions } = facility;
 
@@ -570,21 +544,9 @@ function EnvironmentalGroup({ facility }: { facility: Facility }) {
 // --- Sub-section: Public subsidies ---
 function SubsidiesGroup({ facility }: { facility: Facility }) {
   if (!hasSubsidies(facility)) {
-    // FieldGapPrompt, not SectionGapPrompt, even though this stands in for the
-    // whole group: `subsidies` IS in CORRECTABLE_KEYS (lib/contribute-fields.ts),
-    // so this renders a real SuggestCorrection trigger on screen. Swapping to
-    // SectionGapPrompt would silently downgrade that to the tip trigger, which
-    // cannot correct the field.
-    // `coveredByPrintSummary` is what reconciles the two — see its doc comment.
-    return (
-      <FieldGapPrompt
-        field="subsidies"
-        facilityId={facility.id}
-        facilityName={facility.name}
-        label="a public subsidy"
-        coveredByPrintSummary
-      />
-    );
+    // The gap is listed once on the page's "What this record is missing" card
+    // (lib/facility-gaps.ts) and, on paper, in the consolidated nil line.
+    return null;
   }
   const { subsidies } = facility;
 
@@ -650,15 +612,10 @@ function CommunityGroup({ facility }: { facility: Facility }) {
 
 // --- Main export ---
 export function CivicImpactSection({ facility }: { facility: Facility }) {
-  // NOT converted to SectionGapPrompt: this is the true whole-SECTION guard
-  // (every sub-group below has nothing), left as a plain null return. Every
-  // sub-group already carries its own SectionGapPrompt/FieldGapPrompt for
-  // its slice — replacing this one too would stack a prompt on top of
-  // prompts already rendered by the sub-groups whenever *any* one of them
-  // has data (a `notRecorded` energy/water field counts as data for its own
-  // group), and would put a prompt on every sparse facility page when
-  // *none* of them do. See civic-impact.test.tsx's "renders nothing when
-  // hasCivicImpact is false" for the behavior this preserves.
+  // The true whole-SECTION guard: nothing in any sub-group, so no heading.
+  // Sub-groups with no data render nothing; the page's missing-record card
+  // lists their gaps. See civic-impact.test.tsx's "renders nothing when
+  // hasCivicImpact is false".
   if (!hasCivicImpact(facility)) return null;
 
   const headingId = `civic-impact-${facility.id}`;

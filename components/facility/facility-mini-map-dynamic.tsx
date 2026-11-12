@@ -22,7 +22,7 @@ const FacilityMiniMapInner = dynamic(
     })),
   {
     ssr: false,
-    loading: () => <Skeleton className="h-64 w-full rounded-lg" />,
+    loading: () => <Skeleton className="h-64 lg:h-48 w-full rounded-lg" />,
   }
 );
 

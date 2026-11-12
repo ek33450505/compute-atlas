@@ -3,6 +3,8 @@ import type { SitingContext } from "@/lib/siting-context";
 import { hasSitingContext } from "@/components/facility/siting-context";
 import { hasPowerLinks } from "@/components/facility/power-links";
 import { hasSiteStakeholders } from "@/components/facility/stakeholders";
+import { capacityGapField, CORRECTABLE_KEYS, type CorrectableKey } from "@/lib/contribute-fields";
+import { formatCapacity } from "@/lib/format";
 
 /**
  * Single source of truth for "does this facility-page section have anything
@@ -30,6 +32,20 @@ export function hasEconomics(facility: Facility): boolean {
 /** EnergyWaterGroup — energy source/utility/on-site generation, water. */
 export function hasEnergyWater(facility: Facility): boolean {
   return !!(facility.energy || facility.water);
+}
+
+/**
+ * A marked energy/water field must still render its "Not recorded" row even
+ * when the facility has no energy or water object at all.
+ */
+export function hasEnergyWaterNotRecorded(facility: Facility): boolean {
+  const marked = facility.notRecorded;
+  return !!marked && (
+    marked["energy.onSiteGenerationMw"] !== undefined ||
+    marked["energy.source"] !== undefined ||
+    marked["energy.utility"] !== undefined ||
+    marked["water.coolingType"] !== undefined
+  );
 }
 
 /**
@@ -134,15 +150,18 @@ function powerLabel(facility: Facility): string {
  * the page's own top-to-bottom order (siting context → power → the civic
  * impact groups → stakeholders).
  *
- * Async because `hasPowerLinks` has to query for linked facilities.
+ * Async because `hasPowerLinks` has to query for linked facilities (unless the
+ * caller passes the answer in).
  */
 export async function missingSectionLabels(
   facility: Facility,
-  siting: SitingContext | undefined
+  siting: SitingContext | undefined,
+  /** The page's already-resolved `hasPowerLinks(facility)`; queried here when omitted. */
+  hasLinkedPower?: boolean
 ): Promise<string[]> {
   const sections: { label: string; present: boolean }[] = [
     { label: "siting context", present: hasSitingContext(siting) },
-    { label: powerLabel(facility), present: await hasPowerLinks(facility) },
+    { label: powerLabel(facility), present: hasLinkedPower ?? (await hasPowerLinks(facility)) },
     { label: "economic impact", present: hasEconomics(facility) },
     { label: "energy and water", present: hasEnergyWater(facility) },
     { label: "air permit", present: hasEmissions(facility) },
@@ -151,4 +170,128 @@ export async function missingSectionLabels(
   ];
 
   return sections.filter((s) => !s.present).map((s) => s.label);
+}
+
+/** notRecorded key for each correctable capacity field. */
+export const CAPACITY_NOT_RECORDED_KEY = {
+  capacityOperationalMw: "capacityMw.operational",
+  capacityPlannedMw: "capacityMw.planned",
+} as const;
+
+/** Whether the facility page's civic-impact section renders at all. */
+export function hasCivicImpact(facility: Facility): boolean {
+  return !!(
+    facility.energy ||
+    facility.water ||
+    hasEnergyWaterNotRecorded(facility) ||
+    facility.emissions ||
+    (facility.subsidies && facility.subsidies.length > 0) ||
+    facility.investmentUsd ||
+    facility.landAcres ||
+    facility.jobs ||
+    facility.community ||
+    (facility.facilityType === "crypto_mining" && facility.mining) ||
+    (facility.facilityType !== "power_generation" && facility.environmental)
+  );
+}
+
+/** One thing the record lacks: `field` is set when a single field could fill it. */
+export interface MissingRecordItem {
+  field?: string;
+  label: string;
+}
+
+/**
+ * Everything the facility page used to prompt for on screen, as one ordered
+ * list, so the "What this record is missing" card and the print summary read
+ * the same predicates. Every section `missingSectionLabels` names appears here
+ * (as the card's own wording), plus the field-level gaps inside populated
+ * groups. Group-level gaps carry no field, except subsidies, which has one.
+ *
+ * Order follows the page's render order: the masthead's key facts (capacity,
+ * powered by, announced), siting context, civic impact, stakeholders. The
+ * power item sits at the masthead's powered-by position; it also stands in for
+ * the power section further down, which is why a record missing both gets one
+ * item rather than two.
+ *
+ * Stakeholders follow the print summary: site-level only (`hasSiteStakeholders`),
+ * since operator owners are not a site-level record (#517).
+ *
+ * Power: a non-generator gets one item ("who powers it" when `poweredBy` is
+ * missing, else "power supply" when no generator links it); a generator gets up
+ * to two ("who powers it" and "what it powers").
+ *
+ * `hasLinkedPower` is the page's already-resolved `hasPowerLinks(facility)`.
+ */
+export function missingRecordItems(
+  facility: Facility,
+  siting: SitingContext | undefined,
+  hasLinkedPower: boolean
+): MissingRecordItem[] {
+  const items: MissingRecordItem[] = [];
+
+  const capacityField = capacityGapField(facility.status);
+  if (
+    formatCapacity(facility) === "—" &&
+    facility.notRecorded?.[CAPACITY_NOT_RECORDED_KEY[capacityField]] === undefined
+  ) {
+    items.push({ field: capacityField, label: "capacity" });
+  }
+
+  const poweredByMissing = facility.poweredBy === undefined;
+  if (facility.facilityType === "power_generation") {
+    if (poweredByMissing) items.push({ field: "poweredBy", label: "who powers it" });
+    if (!hasLinkedPower) items.push({ label: "what it powers" });
+  } else if (poweredByMissing) {
+    items.push({ field: "poweredBy", label: "who powers it" });
+  } else if (!hasLinkedPower) {
+    items.push({ label: "power supply" });
+  }
+
+  if (facility.announcedDate === undefined) items.push({ field: "announcedDate", label: "announcement date" });
+  if (!hasSitingContext(siting)) items.push({ label: "siting context" });
+
+  if (!hasEconomics(facility)) {
+    items.push({ label: "economic impact (jobs, investment)" });
+  } else {
+    if (facility.investmentUsd === undefined) items.push({ field: "investmentUsd", label: "investment amount" });
+    if (facility.landAcres === undefined) items.push({ field: "landAcres", label: "land area" });
+    const j = facility.jobs;
+    if (!(j && (j.construction !== undefined || j.permanent !== undefined))) {
+      items.push({ field: "jobs", label: "jobs" });
+    }
+  }
+
+  if (!hasEnergyWater(facility)) {
+    // Same test as the print summary, so a record whose only energy/water
+    // datum is a notRecorded marker is still listed there and here.
+    items.push({ label: "energy or water data" });
+  } else {
+    if (
+      facility.energy?.onSiteGenerationMw === undefined &&
+      !facility.notRecorded?.["energy.onSiteGenerationMw"]
+    ) {
+      items.push({ field: "energy.onSiteGenerationMw", label: "on-site generation capacity" });
+    }
+    if (facility.water?.reportedMgd === undefined) {
+      items.push({ field: "water.reportedMgd", label: "reported water use" });
+    }
+  }
+
+  if (!hasEmissions(facility)) items.push({ label: "air permit" });
+  if (!hasSubsidies(facility)) items.push({ field: "subsidies", label: "public subsidy" });
+
+  if (!hasSiteStakeholders(facility)) items.push({ label: "a documented stakeholder" });
+
+  return items;
+}
+
+function isCorrectableKey(field: string | undefined): field is CorrectableKey {
+  return field !== undefined && (CORRECTABLE_KEYS as readonly string[]).includes(field);
+}
+
+/** First item whose field the correction dialog can pre-select, if any. */
+export function firstCorrectableField(items: MissingRecordItem[]): CorrectableKey | undefined {
+  for (const { field } of items) if (isCorrectableKey(field)) return field;
+  return undefined;
 }

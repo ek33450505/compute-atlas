@@ -14,6 +14,13 @@ interface StatusTimelineProps {
    * click away. Defaults false, so the facility page's call site is unchanged.
    */
   compact?: boolean;
+  /**
+   * Renders each event's source as a "[n]" reference to the numbered Sources
+   * list (`#source-<n>`) instead of the full external link. Only valid where
+   * that list is on the page, so it defaults false (the homepage specimen has
+   * none).
+   */
+  linkSources?: boolean;
 }
 
 /**
@@ -25,7 +32,7 @@ interface StatusTimelineProps {
  * - Status conveyed by icon + label, never color alone
  * - Empty state is a visible, neutral text message (not an empty list)
  */
-export function StatusTimeline({ history, sources, compact = false }: StatusTimelineProps) {
+export function StatusTimeline({ history, sources, compact = false, linkSources = false }: StatusTimelineProps) {
   if (history.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -73,7 +80,12 @@ export function StatusTimeline({ history, sources, compact = false }: StatusTime
                 <p className="text-sm text-muted-foreground">{event.note}</p>
               )}
 
-              {source && <SourceAnchor source={source} />}
+              {source && (
+                <SourceAnchor
+                  source={source}
+                  number={linkSources ? event.sourceIndex! + 1 : undefined}
+                />
+              )}
             </div>
           </li>
         );

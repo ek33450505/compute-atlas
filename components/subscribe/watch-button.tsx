@@ -26,6 +26,10 @@ export interface WatchButtonProps {
    */
   description?: string;
   className?: string;
+  /** Extra classes for the non-quiet collapsed trigger only (not the revealed form). */
+  triggerClassName?: string;
+  /** Extra classes for the revealed form wrapper only (not the collapsed trigger). */
+  revealedClassName?: string;
   /**
    * Renders the collapsed trigger as a quiet text-scale control instead of
    * a bordered `<Button>` — used by the facility masthead's compact CTA
@@ -105,6 +109,8 @@ export function WatchButton({
   label,
   description,
   className,
+  triggerClassName,
+  revealedClassName,
   quiet = false,
 }: WatchButtonProps) {
   const [revealed, setRevealed] = useState(false);
@@ -197,7 +203,7 @@ export function WatchButton({
       <Button
         type="button"
         variant="outline"
-        className={cn("min-h-11", className)}
+        className={cn("min-h-11", className, triggerClassName)}
         onClick={() => setRevealed(true)}
       >
         {label}
@@ -206,7 +212,7 @@ export function WatchButton({
   }
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <div className={cn("flex flex-col gap-3", className, revealedClassName)}>
       {outcome !== "success" && (
         <form
           onSubmit={handleSubmit}
