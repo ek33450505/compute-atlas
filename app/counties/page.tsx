@@ -8,20 +8,40 @@ import {
   stateSlugFromCode,
   statesStat,
 } from "@/lib/us-states";
+import { LetterNav } from "@/components/collection/letter-nav";
+import { letterLabel, letterOf, parseLetter } from "@/lib/letter-index";
 import { itemListJsonLdString } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 
-export const revalidate = 86400;
+/** Rows on the default view: the counties with the most tracked sites. */
+const TOP_COUNT = 48;
 
-export const metadata: Metadata = {
-  title: "Data centers by county",
-  description:
-    "Browse tracked US data centers, crypto-mining sites, and dedicated generation by county — every county on record, grouped by state, each with a live, source-cited count.",
-  alternates: { canonical: "/counties" },
-};
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const letter = parseLetter((await searchParams).letter);
+  const description =
+    "Browse tracked US data centers, crypto-mining sites, and dedicated generation by county — the counties with the most sites, then every county by state letter, each with a live, source-cited count.";
+  if (!letter) {
+    return {
+      title: "Data centers by county",
+      description,
+      alternates: { canonical: "/counties" },
+    };
+  }
+  return {
+    title: `Data centers by county: states starting with ${letterLabel(letter)}`,
+    description,
+    alternates: { canonical: `/counties?letter=${letter}` },
+  };
+}
 
 interface StateGroup {
   code: string;
@@ -61,19 +81,32 @@ function groupByState(counties: CountySummary[]): StateGroup[] {
   );
 }
 
+const ROW_CLASS =
+  "flex min-h-11 items-baseline justify-between gap-2 rounded-sm border border-border px-4 py-3 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
 /**
  * /counties — index hub linking to every per-county landing page
- * (app/counties/[county]/page.tsx). Static server component; counts are live
- * via getCounties(), which reads the shared loadFacilities() cache, so this
- * is one data load rather than one per county.
+ * (app/counties/[county]/page.tsx), paged A–Z by STATE name.
  *
- * The list is sectioned by state rather than rendered as one flat run: there
- * are hundreds of tracked counties, and county names repeat across states
- * ("Washington" is a county in OR, UT and WA), so an undivided list would be
- * both unnavigable and ambiguous. Each state gets a real heading, so the
- * page is traversable by heading navigation.
+ * With no (or an invalid) `?letter=`, lists the counties with the most
+ * tracked sites. With `?letter=x`, lists every county in the states whose name
+ * starts with that letter, sectioned by state: county names repeat across
+ * states ("Washington" is a county in OR, UT and WA), so an undivided list
+ * would be ambiguous, and each state gets a real heading for heading
+ * navigation. Paging by state keeps those sections whole.
+ *
+ * Why paged: the full list of 800+ counties was a 1.6 MB document (audit
+ * U-11), and the RSC payload repeats rendered markup. Reading `searchParams`
+ * makes the route dynamic; counts still come from `getCounties()`, which reads
+ * the shared 24 h-cached `loadFacilities()` loader (memoized index), as /table
+ * does.
  */
-export default async function CountiesIndexPage() {
+export default async function CountiesIndexPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const letter = parseLetter((await searchParams).letter);
   const [counties, facilities] = await Promise.all([getCounties(), getAllFacilities()]);
   const groups = groupByState(counties);
   // Derived from the same group keys the tile counts, not getStats() — a
@@ -86,6 +119,15 @@ export default async function CountiesIndexPage() {
   // belongs to no county and so appears in no section below.
   const withoutCounty = facilities.length - facilitiesInCounties;
 
+  const available = new Set(groups.map((g) => letterOf(g.name)));
+  const shownGroups = letter
+    ? groups
+        .filter((g) => letterOf(g.name) === letter)
+        .sort((a, b) => a.name.localeCompare(b.name))
+    : [];
+  const topCounties = letter ? [] : counties.slice(0, TOP_COUNT);
+  const listed = letter ? shownGroups.flatMap((g) => g.counties) : topCounties;
+
   return (
     <div
       data-content-width="4xl"
@@ -95,7 +137,7 @@ export default async function CountiesIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: itemListJsonLdString(
-            counties.map((c) => ({
+            listed.map((c) => ({
               name: `${formatCountyLabel(c.name, c.state)}, ${stateNameFromCode(c.state) ?? c.state}`,
               url: `${siteConfig.url}/counties/${c.slug}`,
             }))
@@ -133,8 +175,10 @@ export default async function CountiesIndexPage() {
           A county here is taken straight from each record&rsquo;s own county
           field, not assembled by hand. That makes this lens different from
           the metro lens, which is a curated cluster of counties chosen for
-          known activity: every tracked county appears below, however few
-          sites it holds.
+          known activity: every tracked county is listed, however few sites it
+          holds. The first view shows the counties with the most sites; the
+          letters below list every county in the states starting with that
+          letter.
         </p>
         <p className="text-base leading-relaxed text-muted-foreground">
           The state code is part of every county URL because county names
@@ -146,12 +190,40 @@ export default async function CountiesIndexPage() {
         </p>
       </section>
 
-      <section aria-labelledby="counties-list-heading" className="space-y-10">
-        <h2 id="counties-list-heading" className="sr-only">
-          Browse by county
+      <section aria-labelledby="counties-list-heading" className="space-y-6">
+        <LetterNav
+          basePath="/counties"
+          label="Counties by state initial"
+          available={available}
+          current={letter}
+        />
+        <h2
+          id="counties-list-heading"
+          className="font-display text-2xl text-foreground"
+        >
+          {letter
+            ? `States starting with ${letterLabel(letter)}`
+            : `Counties with the most sites`}
         </h2>
 
-        {groups.map((group) => (
+        {!letter && (
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {topCounties.map((county) => (
+              <li key={county.slug}>
+                <Link href={`/counties/${county.slug}`} className={ROW_CLASS}>
+                  <span className="text-sm text-foreground truncate min-w-0">
+                    {`${formatCountyLabel(county.name, county.state)}, ${county.state}`}
+                  </span>
+                  <span className="font-mono tabular-nums text-xs text-muted-foreground shrink-0">
+                    {county.count} {county.count === 1 ? "site" : "sites"}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {shownGroups.map((group) => (
           <section
             key={group.code}
             aria-labelledby={`county-state-${group.code}`}
@@ -181,10 +253,7 @@ export default async function CountiesIndexPage() {
             <ul className="grid gap-2 sm:grid-cols-2">
               {group.counties.map((county) => (
                 <li key={county.slug}>
-                  <Link
-                    href={`/counties/${county.slug}`}
-                    className="flex min-h-11 items-baseline justify-between gap-2 rounded-sm border border-border px-4 py-3 transition-colors motion-reduce:transition-none hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                  >
+                  <Link href={`/counties/${county.slug}`} className={ROW_CLASS}>
                     <span className="text-sm text-foreground truncate min-w-0">
                       {formatCountyLabel(county.name, county.state)}
                     </span>

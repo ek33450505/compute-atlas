@@ -39,7 +39,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import OperatorsIndexPage from "./page";
+import OperatorsIndexPage, { generateMetadata } from "./page";
 
 function makeOperatorSummary(overrides: Partial<OperatorSummary> = {}): OperatorSummary {
   return {
@@ -109,16 +109,16 @@ beforeEach(() => {
 
 describe("OperatorsIndexPage", () => {
   it("renders the overview section heading", async () => {
-    const page = await OperatorsIndexPage();
+    const page = await OperatorsIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     expect(
-      screen.getByRole("heading", { level: 2, name: "Why the list is split" })
+      screen.getByRole("heading", { level: 2, name: "How the list is organized" })
     ).toBeInTheDocument();
   });
 
   it("renders a 4-tile stat row, each value paired with its own label", async () => {
-    const page = await OperatorsIndexPage();
+    const page = await OperatorsIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     const tiles = [
@@ -135,7 +135,7 @@ describe("OperatorsIndexPage", () => {
   });
 
   it("gives each disclosed-capacity link an accessible name with a pluralized unit, not a bare number", async () => {
-    const page = await OperatorsIndexPage();
+    const page = await OperatorsIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     // A bare count (no "site(s)" suffix) would make the link's accessible
@@ -145,17 +145,88 @@ describe("OperatorsIndexPage", () => {
     expect(screen.getByRole("link", { name: /Beta LLC.*4 sites/i })).toBeInTheDocument();
   });
 
-  it("uses the singular unit for a single-site operator in the undisclosed-capacity list", async () => {
-    const page = await OperatorsIndexPage();
+  it("uses the singular unit for a single-site operator on its letter page", async () => {
+    const page = await OperatorsIndexPage({ searchParams: Promise.resolve({ letter: "s" }) });
     render(page);
 
-    // Silent Co has count: 1 and zero disclosed capacity, so it renders inside
-    // the collapsed <details> list — exercises the other call site and the
-    // count === 1 branch of the ternary. (?!s) rather than a leading \b: JSX
-    // drops the whitespace-only text node between sibling spans on separate
-    // source lines, so the computed name runs on as "...capacity1 site" with
-    // no boundary before the digit.
+    // Silent Co has count: 1 and zero disclosed capacity, so it is absent from
+    // the default view and listed only under its letter. (?!s) rather than a
+    // leading \b: JSX drops the whitespace-only text node between sibling spans
+    // on separate source lines, so the computed name runs on as
+    // "...capacity1 site" with no boundary before the digit.
     expect(screen.getByRole("link", { name: /Silent Co.*1 site(?!s)/i })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Silent Co.*1 sites/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Acme Corp/i })).not.toBeInTheDocument();
+  });
+
+  it("omits operators with no disclosed capacity from the default view", async () => {
+    render(await OperatorsIndexPage({ searchParams: Promise.resolve({}) }));
+    expect(screen.queryByRole("link", { name: /Silent Co/i })).not.toBeInTheDocument();
+  });
+
+  it("links a crawlable letter page for every letter that holds an operator", async () => {
+    render(await OperatorsIndexPage({ searchParams: Promise.resolve({}) }));
+    const nav = screen.getByRole("navigation", { name: "Operators by first letter" });
+    for (const l of ["a", "b", "s"]) {
+      expect(
+        within(nav)
+          .getAllByRole("link")
+          .some((a) => a.getAttribute("href") === `/operators?letter=${l}`)
+      ).toBe(true);
+    }
+    // No operator starts with Z, so no link leads to an empty page.
+    expect(within(nav).queryByRole("link", { name: "Z" })).not.toBeInTheDocument();
+  });
+
+  it.each([["zz"], [""], [["a", "b"]], ["../x"], [undefined]])(
+    "falls back to the default view for an invalid letter %j",
+    async (letter) => {
+      render(await OperatorsIndexPage({ searchParams: Promise.resolve({ letter }) }));
+      expect(screen.getByRole("link", { name: /Acme Corp/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { level: 2, name: /Largest 2 operators/ })
+      ).toBeInTheDocument();
+    }
+  );
+
+  describe("metadata", () => {
+    it("uses the bare canonical with no letter and with an invalid letter", async () => {
+      for (const letter of [undefined, "zz", ["a", "b"]]) {
+        const meta = await generateMetadata({ searchParams: Promise.resolve({ letter }) });
+        expect(meta.alternates?.canonical).toBe("/operators");
+        expect(meta.title).not.toMatch(/: /);
+      }
+    });
+
+    it("is self-canonical with its own title for a letter page", async () => {
+      const meta = await generateMetadata({ searchParams: Promise.resolve({ letter: "c" }) });
+      expect(meta.alternates?.canonical).toBe("/operators?letter=c");
+      expect(meta.title).toMatch(/: .*C$/);
+    });
+  });
+
+  describe("ItemList JSON-LD", () => {
+    function itemCount(container: HTMLElement): number {
+      const script = container.querySelector('script[type="application/ld+json"]');
+      return JSON.parse(script!.textContent!).itemListElement.length;
+    }
+
+    it("lists exactly the rows rendered on the default view", async () => {
+      
+      const { container } = render(await OperatorsIndexPage({ searchParams: Promise.resolve({}) }));
+      const rows = container.querySelectorAll('li a[href^="/operators/"]').length;
+      expect(rows).toBeGreaterThan(0);
+      expect(itemCount(container)).toBe(rows);
+    });
+
+    it("lists exactly the rows rendered on a letter page", async () => {
+      
+      const { container } = render(
+        await OperatorsIndexPage({ searchParams: Promise.resolve({ letter: "s" }) })
+      );
+      const rows = container.querySelectorAll('li a[href^="/operators/"]').length;
+      expect(rows).toBe(1);
+      expect(itemCount(container)).toBe(rows);
+    });
   });
 });

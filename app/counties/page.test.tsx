@@ -33,7 +33,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import CountiesIndexPage from "./page";
+import CountiesIndexPage, { generateMetadata } from "./page";
 
 function makeCounty(overrides: Partial<CountySummary> = {}): CountySummary {
   return {
@@ -76,7 +76,7 @@ describe("CountiesIndexPage", () => {
   it("labels the states tile 'States' when no tracked county is in DC", async () => {
     mockGetCounties.mockResolvedValue(countiesFixture("AZ", "Maricopa"));
 
-    const page = await CountiesIndexPage();
+    const page = await CountiesIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     // 2 distinct states (VA, AZ) — mutation coverage: reverting the label
@@ -92,7 +92,7 @@ describe("CountiesIndexPage", () => {
     // location.county "District of Columbia" / location.state "DC".
     mockGetCounties.mockResolvedValue(countiesFixture("DC", "District of Columbia"));
 
-    const page = await CountiesIndexPage();
+    const page = await CountiesIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     // The bug this guards: the tile's rendered VALUE must be the state count
@@ -110,7 +110,7 @@ describe("CountiesIndexPage", () => {
   it("renders a 3-tile stat row with Counties / States(+DC) / In a county", async () => {
     mockGetCounties.mockResolvedValue(countiesFixture("AZ", "Maricopa"));
 
-    const page = await CountiesIndexPage();
+    const page = await CountiesIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     const tiles = [
@@ -122,5 +122,83 @@ describe("CountiesIndexPage", () => {
       expect(within(tileFor(value)).getByText(label)).toBeInTheDocument();
     }
     expect(tileFor("3").parentElement?.children).toHaveLength(tiles.length);
+  });
+
+  it("lists every county of a letter's states under a state heading, and none from other letters", async () => {
+    mockGetCounties.mockResolvedValue(countiesFixture("AZ", "Maricopa"));
+
+    render(await CountiesIndexPage({ searchParams: Promise.resolve({ letter: "v" }) }));
+
+    expect(screen.getByRole("heading", { level: 3, name: "Virginia" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Loudoun County.*3 sites/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Fairfax County.*2 sites/ })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Maricopa/ })).not.toBeInTheDocument();
+  });
+
+  it("links a crawlable letter for each state initial and none for an empty letter", async () => {
+    mockGetCounties.mockResolvedValue(countiesFixture("AZ", "Maricopa"));
+
+    render(await CountiesIndexPage({ searchParams: Promise.resolve({}) }));
+
+    const nav = screen.getByRole("navigation", { name: "Counties by state initial" });
+    const hrefs = within(nav)
+      .getAllByRole("link")
+      .map((a) => a.getAttribute("href"));
+    expect(hrefs).toEqual(["/counties?letter=a", "/counties?letter=v"]);
+  });
+
+  it.each([["zz"], [""], [["a", "v"]], [undefined]])(
+    "falls back to the top-counties view for an invalid letter %j",
+    async (letter) => {
+      mockGetCounties.mockResolvedValue(countiesFixture("AZ", "Maricopa"));
+
+      render(await CountiesIndexPage({ searchParams: Promise.resolve({ letter }) }));
+
+      expect(
+        screen.getByRole("heading", { level: 2, name: "Counties with the most sites" })
+      ).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /Maricopa County, AZ/ })).toBeInTheDocument();
+    }
+  );
+
+  describe("metadata", () => {
+    it("uses the bare canonical with no letter and with an invalid letter", async () => {
+      for (const letter of [undefined, "zz", ["a", "b"]]) {
+        const meta = await generateMetadata({ searchParams: Promise.resolve({ letter }) });
+        expect(meta.alternates?.canonical).toBe("/counties");
+        expect(meta.title).not.toMatch(/: /);
+      }
+    });
+
+    it("is self-canonical with its own title for a letter page", async () => {
+      const meta = await generateMetadata({ searchParams: Promise.resolve({ letter: "c" }) });
+      expect(meta.alternates?.canonical).toBe("/counties?letter=c");
+      expect(meta.title).toMatch(/: .*C$/);
+    });
+  });
+
+  describe("ItemList JSON-LD", () => {
+    function itemCount(container: HTMLElement): number {
+      const script = container.querySelector('script[type="application/ld+json"]');
+      return JSON.parse(script!.textContent!).itemListElement.length;
+    }
+
+    it("lists exactly the rows rendered on the default view", async () => {
+      mockGetCounties.mockResolvedValue(countiesFixture("AZ", "Maricopa"));
+      const { container } = render(await CountiesIndexPage({ searchParams: Promise.resolve({}) }));
+      const rows = container.querySelectorAll('li a[href^="/counties/"]').length;
+      expect(rows).toBeGreaterThan(0);
+      expect(itemCount(container)).toBe(rows);
+    });
+
+    it("lists exactly the rows rendered on a letter page", async () => {
+      mockGetCounties.mockResolvedValue(countiesFixture("AZ", "Maricopa"));
+      const { container } = render(
+        await CountiesIndexPage({ searchParams: Promise.resolve({ letter: "v" }) })
+      );
+      const rows = container.querySelectorAll('li a[href^="/counties/"]').length;
+      expect(rows).toBe(2);
+      expect(itemCount(container)).toBe(rows);
+    });
   });
 });
