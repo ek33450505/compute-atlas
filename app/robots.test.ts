@@ -303,23 +303,23 @@ describe("robots", () => {
     expect(wildcard.disallow).toEqual(["/admin/", "/api/", "/access/dataset"]);
   });
 
-  it("carries the citation and licence comments on the '*' rule, keyed with a leading '#'", () => {
+  it("carries the citation and license comments on the '*' rule, keyed with a leading '#'", () => {
     const { rules } = robots();
     const rule = Array.isArray(rules) ? rules[0] : rules;
     expect(rule.userAgent).toBe("*");
 
     const citation = rule.other?.["# Citation"];
-    const licence = rule.other?.["# Licence"];
+    const license = rule.other?.["# License"];
     expect(typeof citation).toBe("string");
-    expect(typeof licence).toBe("string");
+    expect(typeof license).toBe("string");
     // Points at the citation page, never at a bulk file URL.
     expect(citation).toContain("cite");
     expect(citation).toContain(`${siteConfig.url}/data`);
     expect(citation).not.toContain("raw.githubusercontent.com");
     expect(citation).not.toContain("facilities.json");
-    // States the licence condition plainly, without inventing a URL.
-    expect(licence).toContain(DATASET_LICENSE_URL);
-    expect(licence).toContain("CC-BY-4.0");
+    // States the license condition plainly, without inventing a URL.
+    expect(license).toContain(DATASET_LICENSE_URL);
+    expect(license).toContain("CC-BY-4.0");
   });
 
   it("gives every '#'-prefixed other-entry a defined value (a null/undefined value is silently dropped by the serializer)", () => {
@@ -336,7 +336,7 @@ describe("robots", () => {
     }
   });
 
-  it("emits the citation and licence comments as '#'-prefixed lines in the served robots.txt, inside the '*' block", () => {
+  it("emits the citation and license comments as '#'-prefixed lines in the served robots.txt, inside the '*' block", () => {
     const text = resolveRobots(robots());
     const blocks = text.split("\n\n");
     const wildcard = blocks.find((block) => block.startsWith("User-Agent: *\n"));
@@ -344,9 +344,9 @@ describe("robots", () => {
 
     const lines = (wildcard as string).split("\n").filter((line) => line.length > 0);
     const citationLine = lines.find((line) => line.startsWith("# Citation:"));
-    const licenceLine = lines.find((line) => line.startsWith("# Licence:"));
+    const licenseLine = lines.find((line) => line.startsWith("# License:"));
     expect(citationLine).toBeDefined();
-    expect(licenceLine).toBeDefined();
+    expect(licenseLine).toBeDefined();
 
     // Every non-blank line in this block is either a real directive or a
     // "#"-prefixed comment -- nothing that would confuse a real parser.
