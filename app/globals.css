@@ -1214,6 +1214,9 @@ body:has([data-content-width="6xl"]) [data-footer-inner] { max-width: 72rem; }
 
   /* Hairline <Separator> rules and the masthead's own border earn nothing on
      paper once the gaps around them are gone. */
+  /* The second selector reaches separators one level down, inside the Wave 3
+     two-column layout wrappers (#574); without it the thinnest brief printed on
+     two pages. */
   [data-print-brief] > [data-slot="separator"],
   [data-facility-layout] > * > [data-slot="separator"] {
     display: none !important;
@@ -1242,6 +1245,8 @@ body:has([data-content-width="6xl"]) [data-footer-inner] { max-width: 72rem; }
     font-size: inherit;
   }
 
+  /* `li > div >` covers source text nested one level deeper by the Wave 3
+     layout (#574); together the two selectors held print height at 917 px. */
   [data-print-sources] li > :not(:last-child),
   [data-print-sources] li > div > :not(:last-child) {
     margin-block-end: 0 !important;

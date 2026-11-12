@@ -11,7 +11,6 @@ import {
   loadOfferEdition,
   loadOfferSamples,
   pickSamples,
-  topStatesFromCounts,
   SAMPLE_FACILITY_IDS,
   toOfferEdition,
   withTimeout,
@@ -44,7 +43,6 @@ describe("countDataset", () => {
       powerPlants: 1,
       jurisdictions: 3,
       stateCodes: ["OH", "TX", "VA"],
-      stateCounts: { TX: 2, OH: 1, VA: 1 },
       operators: 3,
       sourceLinks: 6,
       asOf: "2026-11-12T01:04:00.000Z",
@@ -243,18 +241,5 @@ describe("counts cache tagging", () => {
       vi.unstubAllEnvs();
       vi.resetModules();
     }
-  });
-});
-
-describe("topStatesFromCounts", () => {
-  it("orders by count desc then code A to Z, and limits", () => {
-    expect(topStatesFromCounts({ VA: 2, OH: 2, TX: 5, CA: 1 }, 3)).toEqual([
-      { state: "TX", count: 5 },
-      { state: "OH", count: 2 },
-      { state: "VA", count: 2 },
-    ]);
-  });
-  it("returns an empty list for no counts", () => {
-    expect(topStatesFromCounts({}, 6)).toEqual([]);
   });
 });

@@ -28,7 +28,7 @@ const FILE_DESCRIPTIONS = {
   "facilities.csv": "The same records as a flat table.",
   "siting-context.json": "Regional siting context keyed by facility id.",
   "changelog.json": "Records added, updated or removed since the previous edition.",
-  "README.txt": "Field notes, licence and how to cite.",
+  "README.txt": "Field notes, license and how to cite.",
 } as const satisfies Record<DatasetEditionFileName, string>;
 
 const ATTRIBUTION_LINE = `Data from Compute Atlas by Edward Kubiak (${siteConfig.url}), licensed under CC BY 4.0 (${DATASET_LICENSE_URL}).`;
@@ -231,7 +231,7 @@ function Edition({ grant, edition, token }: { grant: DatasetActiveGrant; edition
 
       <section aria-labelledby="dl-terms" className="space-y-3">
         <h2 id="dl-terms" className="text-lg font-medium">
-          Licence and your link
+          License and your link
         </h2>
         <div className="max-w-2xl space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>{ATTRIBUTION_LINE}</p>

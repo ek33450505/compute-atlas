@@ -585,7 +585,7 @@ export default async function FacilityPage({
 
       {/* Print-only: what makes the printout citable — where it came from,
           when the record was curated, when it was printed, and the data
-          licence. Must stay the LAST child of the container. */}
+          license. Must stay the LAST child of the container. */}
       <PrintProvenanceFooter
         name={facility.name}
         url={canonicalUrl}

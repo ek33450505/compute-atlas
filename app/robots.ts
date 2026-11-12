@@ -171,7 +171,7 @@ export default function robots(): MetadataRoute.Robots {
       // 2026-10-15 decision (Ed) and matches the User-Agent blocks below, which
       // allow AI assistants and AI search while blocking training crawlers. It
       // speaks to crawlers that read the directive but not our User-Agent
-      // blocks, and it matches the CC BY 4.0 data licence's reuse-with-
+      // blocks, and it matches the CC BY 4.0 data license's reuse-with-
       // attribution terms.
       //
       // It does not sit perfectly with the Google-Extended exemption above.
@@ -183,7 +183,7 @@ export default function robots(): MetadataRoute.Robots {
       // the tension (varying the signal per agent, or dropping ai-train=no) is
       // a policy call and is deliberately NOT made here.
       //
-      // The "# Citation" / "# Licence" entries below are comments, not
+      // The "# Citation" / "# License" entries below are comments, not
       // directives -- confirmed against Next's own serializer
       // (node_modules/next/dist/build/webpack/loaders/metadata/resolve-route-data.js),
       // which emits every `other` entry as a literal "key: value" line with
@@ -194,7 +194,7 @@ export default function robots(): MetadataRoute.Robots {
       other: {
         "Content-Signal": "search=yes,ai-input=yes,ai-train=no",
         "# Citation": `How to cite Compute Atlas and its facility pages -- see ${siteConfig.url}/data`,
-        "# Licence": `Data is CC-BY-4.0, attribution required -- ${DATASET_LICENSE_URL}. Code is MIT.`,
+        "# License": `Data is CC-BY-4.0, attribution required -- ${DATASET_LICENSE_URL}. Code is MIT.`,
       },
     },
     ...BLOCKED_AI_CRAWLERS.map((userAgent) => ({

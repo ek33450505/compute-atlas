@@ -11,7 +11,6 @@ const COUNTS: Counts = {
   powerPlants: 74,
   jurisdictions: 2,
   stateCodes: ["TX", "VA"],
-  stateCounts: { TX: 3000, VA: 174 },
   operators: 5,
   sourceLinks: 9,
   asOf: "2026-11-12T01:04:00.000Z",

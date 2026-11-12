@@ -16,6 +16,8 @@ import {
   getAllFacilities,
   type EnergySource,
 } from "@/lib/data";
+import { loadOfferCounts } from "@/lib/dataset-offer";
+import { formatEditionDate } from "@/lib/edition-date";
 import { COOLING_TYPE_ENTRIES } from "@/lib/energy";
 import { STATUS_ORDER, STATUS_META, getStatusColor } from "@/lib/status";
 import { FACILITY_TYPE_ORDER, FACILITY_TYPE_META } from "@/lib/facility-type";
@@ -81,6 +83,7 @@ export default async function StatsPage() {
     communityCounts,
     energySourceCounts,
     allFacilities,
+    offerCounts,
   ] = await Promise.all([
     getStats(),
     getStatusCounts(),
@@ -95,9 +98,17 @@ export default async function StatsPage() {
     getCommunityReceptionCounts(),
     getEnergySourceCounts(),
     getAllFacilities(),
+    loadOfferCounts(),
   ]);
 
+  // `total` stays getStats' count, the same read as every breakdown below, so no percentage can exceed 100%.
+  // The offer read has its own cache entry and can hold a different snapshot for up to 24 h, so its date is
+  // shown only when it counted the same total.
   const total = stats.count;
+  const countedOn =
+    offerCounts && offerCounts.facilities === total
+      ? formatEditionDate(offerCounts.asOf)
+      : null;
   const communityReporting = COMMUNITY_SIGNAL_ORDER.reduce(
     (sum, key) => sum + communityCounts[key],
     0
@@ -173,8 +184,8 @@ export default async function StatsPage() {
       />
 
       <p className="text-sm leading-relaxed text-muted-foreground">
-        Capacity is disclosed for {disclosedCapacityCount.toLocaleString("en-US")}{" "}
-        of the {total.toLocaleString("en-US")} tracked sites. Every GW figure on
+        {`Capacity is disclosed for ${disclosedCapacityCount.toLocaleString("en-US")} of the ${total.toLocaleString("en-US")} tracked sites${countedOn ? `, counted on ${countedOn}` : ""}.`}{" "}
+        Every GW figure on
         this page sums those records only — read them as a floor, not a dataset
         total.
       </p>

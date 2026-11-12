@@ -1,4 +1,4 @@
-import { vi, describe, it, expect } from "vitest";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { facilitySchema, type Facility } from "@/lib/schema";
@@ -20,7 +20,12 @@ const FULL: Facility = facilitySchema.parse({
   notes: "heavy prose that must not reach the client",
 });
 
-const { explorerSpy } = vi.hoisted(() => ({ explorerSpy: vi.fn() }));
+const { explorerSpy, mockLoadOfferCounts } = vi.hoisted(() => ({
+  explorerSpy: vi.fn(),
+  mockLoadOfferCounts: vi.fn(),
+}));
+
+vi.mock("@/lib/dataset-offer", () => ({ loadOfferCounts: mockLoadOfferCounts }));
 
 vi.mock("@/lib/data", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/data")>()),
@@ -51,9 +56,17 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import MapPage from "./page";
+import MapPage, { generateMetadata } from "./page";
 
 describe("MapPage", () => {
+  beforeEach(() => {
+    mockLoadOfferCounts.mockReset().mockResolvedValue({
+      facilities: 1,
+      stateCodes: ["TX"],
+      asOf: "2026-11-12T08:00:00.000Z",
+    });
+  });
+
   it("hands Explorer only MapPoints: no name, operator, capacity, sources or city", async () => {
     render(await MapPage());
     const props = explorerSpy.mock.calls[0][0] as {
@@ -92,5 +105,36 @@ describe("MapPage", () => {
       })
     ).toBeInTheDocument();
     expect(screen.getAllByText(/Acme/).length).toBeGreaterThan(0);
+  });
+
+  it("dates the total in the body and the description when the offer read counted the same number", async () => {
+    render(await MapPage());
+    expect(
+      screen.getByText(/all 1 tracked sites, counted on 12 November 2026, across/)
+    ).toBeInTheDocument();
+    const meta = await generateMetadata();
+    expect(meta.description).toContain("1 US data centers");
+    expect(meta.description).toContain("counted on 12 November 2026");
+  });
+
+  it("shows getStats' number with no date when the offer read counted a different total", async () => {
+    mockLoadOfferCounts.mockResolvedValue({
+      facilities: 3174,
+      stateCodes: ["TX"],
+      asOf: "2026-11-12T08:00:00.000Z",
+    });
+    render(await MapPage());
+    expect(screen.getByText(/all 1 tracked sites across/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toContain("counted on");
+    const meta = await generateMetadata();
+    expect(meta.description).toContain("1 US data centers");
+    expect(meta.description).not.toContain("counted on");
+  });
+
+  it("shows no date when the offer read fails", async () => {
+    mockLoadOfferCounts.mockResolvedValue(null);
+    render(await MapPage());
+    expect(document.body.textContent).not.toContain("counted on");
+    expect((await generateMetadata()).description).not.toContain("counted on");
   });
 });

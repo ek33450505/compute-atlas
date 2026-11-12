@@ -13,6 +13,8 @@ export interface MapPageContentProps {
   topOperators: Awaited<ReturnType<typeof getTopOperators>>;
   statusCounts: Record<Status, number>;
   typeCounts: Record<FacilityType, number>;
+  /** Date `stats.count` was counted (from the same read); omitted when that read failed, so the count is undated. */
+  countedOnLabel?: string;
 }
 
 /**
@@ -80,6 +82,7 @@ export function MapPageContent({
   topOperators,
   statusCounts,
   typeCounts,
+  countedOnLabel,
 }: MapPageContentProps) {
   const stateRows = topStates.map((s) => ({
     ...s,
@@ -114,8 +117,8 @@ export function MapPageContent({
       </div>
 
       <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-        The map plots all {stats.count.toLocaleString("en-US")} tracked sites
-        across {statesPhrase(stats.stateCodes)} — traditional and AI-specific
+        {`The map plots all ${stats.count.toLocaleString("en-US")} tracked sites${countedOnLabel ? `, counted on ${countedOnLabel},` : ""} across ${statesPhrase(stats.stateCodes)}`}{" "}
+        — traditional and AI-specific
         data centers, crypto-mining operations, and the dedicated power
         generation built to supply them — each pin backed by a cited source.
         Use the panel on the map to filter by status, state, operator, or

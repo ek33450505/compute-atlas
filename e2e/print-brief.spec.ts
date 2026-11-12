@@ -115,7 +115,7 @@ for (const record of RECORDS) {
       // Canonical URL in full — a printout with no address is not a citation.
       await expect(footer).toContainText(`${BASE}/facilities/${record.slug}`);
 
-      // Licence as a URL, not link text: a printed link has no href.
+      // License as a URL, not link text: a printed link has no href.
       await expect(footer).toContainText("CC-BY-4.0");
       await expect(footer).toContainText("https://creativecommons.org/licenses/by/4.0/");
 
