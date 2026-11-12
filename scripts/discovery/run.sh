@@ -72,7 +72,11 @@ fi
 # facility reads and the submit-candidates token only.
 : "${DISCOVERY_REQUIRE_READER:=1}"
 : "${DISCOVERY_REQUIRE_INTAKE_TOKEN:=1}"
-export DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN
+# DISCOVERY_REQUIRE_VERIFY: submit-candidates and preflight.ts refuse to run when
+# VERIFY_SOURCES_ENABLED=false while this is 1 (an unverified source gate must
+# not stage candidates unattended). An operator sets 0 for a manual run.
+: "${DISCOVERY_REQUIRE_VERIFY:=1}"
+export DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN DISCOVERY_REQUIRE_VERIFY
 
 # --- alerting ----------------------------------------------------------------
 # 2026-08-14 open item #1: heartbeat.json recorded claudeStatus=no_array every
@@ -203,7 +207,7 @@ _env_file="$REPO_ROOT/.env.local"
 if [[ "${DISCOVERY_TEST_MODE:-0}" == "1" && -n "${DISCOVERY_ENV_FILE:-}" ]]; then
   _env_file="$DISCOVERY_ENV_FILE"
 fi
-for _flag in DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN; do
+for _flag in DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN DISCOVERY_REQUIRE_VERIFY; do
   if [[ "${!_flag}" != "0" && "${!_flag}" != "1" ]]; then
     log "ERROR: ${_flag}='${!_flag}' must be 0 or 1 - refusing to run"
     notify "Compute Atlas discovery FAILED" "Preflight: ${_flag} must be 0 or 1"
@@ -445,11 +449,13 @@ notify_bounded() {
   wait "$_np" 2>/dev/null || true
 }
 
-# write_and_publish_heartbeat [status]: writes heartbeat.json from the HB_*
-# arrays and publishes it to Neon. The status is ok/degraded from FAILURES
-# unless the caller passes one (the exit trap passes "crashed").
+# write_and_publish_heartbeat [status [unbounded]]: writes heartbeat.json from
+# the HB_* arrays and publishes it to Neon. The status is ok/degraded from
+# FAILURES unless the caller passes one (the exit trap passes "crashed"). An
+# override publishes under the ~5 s exit-trap budget unless the second argument
+# is "unbounded" (the pre-cursor refusal path runs outside any trap).
 write_and_publish_heartbeat() {
-  local _override="${1:-}" _h _entry _hb_status HEARTBEAT_ENTRIES=""
+  local _override="${1:-}" _unbounded="${2:-}" _h _entry _hb_status HEARTBEAT_ENTRIES=""
   for (( _h = 0; _h < ${#HB_STATES[@]}; _h++ )); do
     _entry="    {
       \"runId\": \"${HB_RUN_IDS[$_h]}\",
@@ -504,7 +510,7 @@ EOF
     >"$LOG_DIR/publish-heartbeat.log" 2>>"$LOG_DIR/publish-heartbeat.err" &
   _pp=$!
   CHILD_PID="$_pp"
-  if [[ -n "$_override" ]]; then
+  if [[ -n "$_override" && "$_unbounded" != "unbounded" ]]; then
     # Inside the exit trap launchd's kill timeout is running: bound the publish
     # to ~5 s, then ~2 s to kill it (heartbeat.json is already on disk). Exit-path
     # budget under launchd's 20 s default ExitTimeOut: TERM-trap kill 2 s + publish
@@ -662,6 +668,125 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   # released on every exit path from this point on.
   trap 'kill_child_tree 10; exit 143' TERM INT HUP
   trap on_exit EXIT
+fi
+
+# --- pre-cursor run gates (live runs only) ------------------------------------
+# Wave 5 (A-OPS-06 / A-OPS-08 / A-OPS-10). A run that cannot or must not work is
+# refused or skipped BEFORE the cursor write below, so it consumes no state. The
+# lock is held, so the EXIT trap (RUN_CRASH_GUARD still false) only releases it.
+# The refusal publishes a heartbeat with an explicit status so the off-machine
+# watchdog goes red the same day (check-heartbeat fails any status but "ok"); the
+# batch arrays are empty, which publish-heartbeat.ts accepts (states is just an
+# array), and the reason goes to the run log: the heartbeat has no reason field,
+# only failureCount.
+
+# refuse_run STATUS EXIT_CODE NOTIFY_TEXT REASON: log + notify + heartbeat, exit.
+refuse_run() {
+  local _status="$1" _code="$2" _short="$3" _reason="$4"
+  log "ERROR: $_reason - not advancing the cursor (heartbeat status=$_status)"
+  notify "Compute Atlas discovery FAILED" "$_short"
+  FAILURES+=("$_status: $_reason")
+  # Not in a trap: the normal (unbounded) publish path applies.
+  write_and_publish_heartbeat "$_status" unbounded
+  exit "$_code"
+}
+
+# git_guard_problems: sets GIT_GUARD_PROBLEMS (policy findings) and returns 1 on
+# a git failure (fail closed: the caller refuses). Paths come from `-z` porcelain
+# v1: "XY path\0", plus a second "orig\0" record for a rename/copy; both sides of
+# a rename are checked. Generated paths that routine work rewrites are ignored
+# (Ed, 2026-11-12): next dev rewrites AGENTS.md and CLAUDE.md, the map build
+# rewrites the geojson and map-layers.json.
+GIT_GUARD_PROBLEMS=()
+git_guard_problems() {
+  local _name _p _rec _xy _path _generated _skip_next=false _n=0 _porc
+  GIT_GUARD_PROBLEMS=()
+  command -v git >/dev/null 2>&1 || { log "git guard: git not found"; return 1; }
+  git -C "$REPO_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1 || { log "git guard: $REPO_ROOT is not a git work tree"; return 1; }
+  GIT_SHA="$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null)" || { log "git guard: cannot resolve HEAD"; return 1; }
+  GIT_BRANCH="$(git -C "$REPO_ROOT" symbolic-ref -q --short HEAD 2>/dev/null || true)"
+  if [[ -z "$GIT_BRANCH" ]]; then
+    GIT_GUARD_PROBLEMS+=("HEAD is detached (must be on main)")
+  elif [[ "$GIT_BRANCH" != "main" ]]; then
+    GIT_GUARD_PROBLEMS+=("on branch '$GIT_BRANCH' (must be main)")
+  fi
+  for _name in MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD rebase-merge rebase-apply; do
+    _p="$(git -C "$REPO_ROOT" rev-parse --git-path "$_name" 2>/dev/null)" || { log "git guard: cannot resolve git path $_name"; return 1; }
+    [[ "$_p" == /* ]] || _p="$REPO_ROOT/$_p"
+    if [[ -e "$_p" ]]; then
+      GIT_GUARD_PROBLEMS+=("$_name present (operation in progress)")
+    fi
+  done
+  _porc="$LOG_DIR/git-status.$$.tmp"
+  if ! git -C "$REPO_ROOT" status --porcelain -z --untracked-files=no >"$_porc" 2>/dev/null; then
+    rm -f "$_porc"
+    log "git guard: git status failed"
+    return 1
+  fi
+  while IFS= read -r -d '' _rec; do
+    if [[ "$_skip_next" == "true" ]]; then
+      # The orig side of a rename/copy: checked like any other path.
+      _skip_next=false
+      _path="$_rec"
+    else
+      _xy="${_rec:0:2}"
+      _path="${_rec:3}"
+      case "$_xy" in
+      *R* | *C*) _skip_next=true ;;
+      esac
+    fi
+    # `*` in a case pattern crosses `/`, so a nested public/data/sub/x.geojson is
+    # ruled out first: only the top-level generated files are excluded.
+    _generated=false
+    case "$_path" in
+    public/data/*/*) ;;
+    public/data/*.geojson | public/data/map-layers.json | AGENTS.md | CLAUDE.md) _generated=true ;;
+    esac
+    if [[ "$_generated" != "true" ]]; then
+      _n=$((_n + 1))
+      if (( _n <= 10 )); then
+        GIT_GUARD_PROBLEMS+=("tracked change: $_path")
+      elif (( _n == 11 )); then
+        GIT_GUARD_PROBLEMS+=("... more tracked changes not listed")
+      fi
+    fi
+  done <"$_porc"
+  rm -f "$_porc"
+  return 0
+}
+
+if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
+  # DISCOVERY_SKIP_GIT_GUARD is honored ONLY under DISCOVERY_TEST_MODE=1 (same
+  # seam as DISCOVERY_ENV_FILE): the suite runs run.sh from a non-git copy.
+  if [[ "${DISCOVERY_TEST_MODE:-0}" == "1" && "${DISCOVERY_SKIP_GIT_GUARD:-0}" == "1" ]]; then
+    log "git guard skipped (test seam)"
+  else
+    GIT_SHA="" GIT_BRANCH=""
+    if ! git_guard_problems; then
+      refuse_run refused 1 "Git guard: git unavailable or failing" "git guard failed closed (git missing, not a work tree or a git command failed)"
+    fi
+    log "git: HEAD ${GIT_SHA:-unknown} on ${GIT_BRANCH:-detached}"
+    if (( ${#GIT_GUARD_PROBLEMS[@]} > 0 )); then
+      if [[ "${DISCOVERY_ALLOW_DIRTY:-0}" == "1" ]]; then
+        log "WARN: DISCOVERY_ALLOW_DIRTY=1 - bypassing git guard: ${GIT_GUARD_PROBLEMS[*]}"
+      else
+        refuse_run refused 1 "Git guard: ${GIT_GUARD_PROBLEMS[0]}" "git guard refused: ${GIT_GUARD_PROBLEMS[*]} (DISCOVERY_ALLOW_DIRTY=1 overrides)"
+      fi
+    fi
+  fi
+
+  # preflight.ts: exit 0 pass, 1 config error (fix .env.local), 3 environmental
+  # (Ollama / facility read: retry later); anything else is treated as 1.
+  _pf_rc=0
+  run_bg_wait npx tsx --env-file=.env.local scripts/discovery/preflight.ts >"$LOG_DIR/preflight.log" 2>&1 || _pf_rc=$?
+  if (( _pf_rc != 0 )); then
+    grep 'preflight: FAIL' "$LOG_DIR/preflight.log" 2>/dev/null | while IFS= read -r _pf_line; do log "$_pf_line"; done || true
+    if (( _pf_rc == 3 )); then
+      refuse_run skipped_env 75 "Preflight: environment not ready, run skipped" "preflight exit 3 (environmental: Ollama or the facility read; see $LOG_DIR/preflight.log)"
+    fi
+    refuse_run refused 1 "Preflight: config error, run refused" "preflight exit $_pf_rc (config; see $LOG_DIR/preflight.log)"
+  fi
+  log "preflight ok"
 fi
 
 # --- stale-heartbeat check ---------------------------------------------------

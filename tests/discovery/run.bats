@@ -111,6 +111,12 @@ case "\$*" in
 *submit-candidates.ts*)
 	exec "$BIN_DIR/fake-submit" "\$@"
 	;;
+*preflight.ts*)
+	# preflight.ts must never really run (Ollama + DB reads). Passes by default;
+	# tests set PREFLIGHT_RC=1 (config) or 3 (environmental).
+	[ "\${PREFLIGHT_RC:-0}" = 0 ] || echo "preflight: FAIL stub - forced rc \${PREFLIGHT_RC}" >&2
+	exit \${PREFLIGHT_RC:-0}
+	;;
 *check-sources.ts*)
 	# Healthy by default. A nonzero exit is a recorded FAILURES entry (see the
 	# source-liveness tests), so tests that want one set CHECK_SOURCES_RC.
@@ -199,7 +205,12 @@ EOF
 	ENV_FIXTURE="$TEST_TMP/env-fixture"
 	printf 'DISCOVERY_READ_DATABASE_URL=dummy-reader-value\nAPI_INTAKE_TOKEN=dummy-intake-value\n' >"$ENV_FIXTURE"
 	export DISCOVERY_ENV_FILE="$ENV_FIXTURE" DISCOVERY_TEST_MODE=1
-	unset DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN
+	unset DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN DISCOVERY_REQUIRE_VERIFY DISCOVERY_ALLOW_DIRTY PREFLIGHT_RC
+
+	# run.sh's git guard (A-OPS-10) would inspect the real worktree this suite runs
+	# from. The seam is honored only under DISCOVERY_TEST_MODE=1; the guard tests
+	# below unset it and run a COPY of run.sh inside a throwaway git repo.
+	export DISCOVERY_SKIP_GIT_GUARD=1
 }
 
 teardown() {
@@ -3960,4 +3971,196 @@ EOS
 	[ ! -e "$LOG_DIR/run.lock" ]
 	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
 	[ ! -e "$LOG_DIR/heartbeat.json" ]
+}
+
+# --- pre-cursor run gates: git guard + preflight (A-OPS-06/08/10) --------------
+# Each refusal must leave cursor.txt byte-identical, publish a heartbeat with an
+# explicit status and notify. The guard tests run a COPY of run.sh from a real
+# throwaway repo (REPO_ROOT is derived from the script's own location).
+
+make_guard_repo() {
+	G="$TEST_TMP/repo"
+	mkdir -p "$G/scripts/discovery" "$G/public/data"
+	cp "$RUN_SH" "$G/scripts/discovery/run.sh"
+	# Files a full live run reads relative to its REPO_ROOT.
+	mkdir -p "$G/lib"
+	cp "$REPO_ROOT/scripts/discovery/discovery-prompt.txt" "$REPO_ROOT/scripts/discovery/fetch-url.sh" "$G/scripts/discovery/"
+	cp "$REPO_ROOT/lib/schema.ts" "$REPO_ROOT/lib/status.ts" "$G/lib/"
+	echo a >"$G/tracked.txt"
+	echo a >"$G/other.txt"
+	for _f in AGENTS.md CLAUDE.md public/data/map-layers.json public/data/x.geojson; do echo a >"$G/$_f"; done
+	git -C "$G" init -q
+	git -C "$G" symbolic-ref HEAD refs/heads/main
+	git -C "$G" add -A
+	git -C "$G" -c user.name=t -c user.email=t@t -c core.hooksPath=/dev/null commit -qm init
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_SKIP_GIT_GUARD
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+}
+
+assert_refused() { # status exit-code
+	[ "$status" -eq "$2" ]
+	cmp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	grep -q "\"status\": \"$1\"" "$LOG_DIR/heartbeat.json"
+	grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
+	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "git guard: a dirty tracked file is refused, cursor untouched" {
+	make_guard_repo
+	echo b >"$G/tracked.txt"
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: tracked.txt"* ]]
+}
+
+@test "git guard: only the excluded generated paths dirty runs normally and logs HEAD" {
+	make_guard_repo
+	for _f in AGENTS.md CLAUDE.md public/data/map-layers.json public/data/x.geojson; do echo b >"$G/$_f"; done
+	run bash "$G/scripts/discovery/run.sh"
+	# The copy has no scripts/discovery/*.ts or node_modules, so the batch itself
+	# may fail downstream; what matters is that it got past the gates and started.
+	[[ "$output" != *"git guard refused"* ]]
+	[[ "$output" == *"git: HEAD "*" on main"* ]]
+	[[ "$output" == *"preflight ok"* ]]
+	[[ "$output" == *"starting discovery batch"* ]]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+}
+
+@test "git guard: DISCOVERY_ALLOW_DIRTY=1 runs a dirty tree with a WARN" {
+	make_guard_repo
+	echo b >"$G/tracked.txt"
+	export DISCOVERY_ALLOW_DIRTY=1
+	run bash "$G/scripts/discovery/run.sh"
+	[[ "$output" == *"WARN: DISCOVERY_ALLOW_DIRTY=1 - bypassing git guard"*"tracked.txt"* ]]
+	[[ "$output" == *"starting discovery batch"* ]]
+}
+
+@test "git guard: a detached HEAD is refused" {
+	make_guard_repo
+	git -C "$G" checkout -q --detach
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"HEAD is detached"* ]]
+}
+
+@test "git guard: a branch other than main is refused" {
+	make_guard_repo
+	git -C "$G" checkout -q -b feature/x
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"on branch 'feature/x'"* ]]
+}
+
+@test "git guard: a merge in progress is refused" {
+	make_guard_repo
+	git -C "$G" rev-parse HEAD >"$G/$(git -C "$G" rev-parse --git-path MERGE_HEAD)"
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"MERGE_HEAD present"* ]]
+}
+
+@test "git guard: a rename onto a non-excluded path is refused" {
+	make_guard_repo
+	git -C "$G" mv AGENTS.md renamed.md
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: renamed.md"* ]]
+}
+
+@test "git guard: a rename of a non-excluded path into an excluded one is refused via the orig side" {
+	make_guard_repo
+	git -C "$G" mv other.txt public/data/y.geojson
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: other.txt"* ]]
+}
+
+@test "git guard: DISCOVERY_SKIP_GIT_GUARD=1 is ignored outside DISCOVERY_TEST_MODE" {
+	make_guard_repo
+	echo b >"$G/tracked.txt"
+	export DISCOVERY_SKIP_GIT_GUARD=1
+	unset DISCOVERY_TEST_MODE
+	# Without the test seam DISCOVERY_ENV_FILE is ignored too; opt out of the credential preflight.
+	export DISCOVERY_REQUIRE_READER=0 DISCOVERY_REQUIRE_INTAKE_TOKEN=0
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: tracked.txt"* ]]
+}
+
+@test "git guard: a dirty geojson in a public/data subdirectory is not excluded" {
+	make_guard_repo
+	mkdir -p "$G/public/data/sub"
+	echo a >"$G/public/data/sub/x.geojson"
+	git -C "$G" add -A
+	git -C "$G" -c user.name=t -c user.email=t@t -c core.hooksPath=/dev/null commit -qm sub
+	echo b >"$G/public/data/sub/x.geojson"
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: public/data/sub/x.geojson"* ]]
+}
+
+@test "git guard: a non-git directory fails closed" {
+	make_guard_repo
+	rm -rf "$G/.git"
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"git guard failed closed"* ]]
+}
+
+@test "git guard: a dry run skips the guard and preflight entirely" {
+	make_guard_repo
+	echo b >"$G/tracked.txt"
+	export DISCOVERY_DRY_RUN=true PREFLIGHT_RC=1
+	run bash "$G/scripts/discovery/run.sh"
+	[ "$status" -eq 0 ]
+	cmp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	run grep -c "preflight.ts" "$NPX_CALL_LOG"
+	[ "${output//[[:space:]]/}" = "0" ]
+}
+
+@test "preflight exit 1 refuses the run (exit 1, heartbeat refused, cursor untouched)" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	run bash "$RUN_SH"
+	assert_refused refused 1
+	[[ "$output" == *"preflight: FAIL stub"* ]]
+	grep -q "preflight: FAIL stub" "$LOG_DIR/preflight.log"
+}
+
+@test "preflight exit 2 (unknown code) is treated as a config refusal" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	run bash "$RUN_SH"
+	assert_refused refused 1
+}
+
+@test "preflight exit 3 skips the run as skipped_env with exit 75" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	run bash "$RUN_SH"
+	assert_refused skipped_env 75
+}
+
+@test "preflight exit 0 runs normally and advances the cursor" {
+	export DISCOVERY_ENABLED=true
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	grep -q "preflight.ts" "$NPX_CALL_LOG"
+}
+
+@test "DISCOVERY_REQUIRE_VERIFY rejects values other than 0 or 1" {
+	export DISCOVERY_ENABLED=true DISCOVERY_REQUIRE_VERIFY=2
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"DISCOVERY_REQUIRE_VERIFY='2' must be 0 or 1 - refusing to run"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
 }
