@@ -27,10 +27,15 @@ export function LetterNav({ basePath, label, available, current }: LetterNavProp
         {LETTERS.map((letter) => {
           const text = letterLabel(letter);
           if (!available.has(letter)) {
+            // Full-contrast text (muted-foreground is 6.7:1 on --background; the old
+            // /50 fade was 2.24:1 and failed axe), marked by strikethrough + sr-only text.
             return (
               <li key={letter}>
-                <span className={`${ITEM} border-transparent text-muted-foreground/50`}>
-                  {text}
+                <span
+                  className={`${ITEM} border-transparent text-muted-foreground line-through decoration-muted-foreground/60`}
+                >
+                  <span>{text}</span>
+                  <span className="sr-only"> (no entries)</span>
                 </span>
               </li>
             );
