@@ -239,7 +239,7 @@ export const MAX_PAGE_TEXT_CHARS = 60_000;
  * truncated page's "not_mentioned" verdict as ambiguous rather than a clean
  * rejection — see `checkPageAgainstClaim`.
  */
-function truncatePageText(pageText: string): { text: string; truncated: boolean } {
+export function truncatePageText(pageText: string): { text: string; truncated: boolean } {
   if (pageText.length <= MAX_PAGE_TEXT_CHARS) {
     return { text: pageText, truncated: false };
   }
@@ -441,15 +441,19 @@ function applyMechanicalChecks(modelVerdict: ModelVerdict, pageText: string, cla
   const unmatchedFragment = fragments.find((fragment) => !normalizedPageText.includes(fragment));
   if (unmatchedFragment) {
     // `unmatchedFragment` (and the model-supplied `quote` it's derived from)
-    // is page-sourced text interpolated into reasonDetail unsanitized. No
-    // reachable sink today: a "rejected" verdict's reasonDetail is read by
-    // `verifyCandidateSources` (submit-candidates.ts) only to decide
-    // `{ survives: false }`, then discarded — never logged, never written to
-    // discovery-logs/run-*.json, never placed in provenance.note. (The
-    // strings that DO escape — the "escalate" verdict's reasonDetail and
-    // VerificationGateUnavailableError's message — use fixed templates, not
-    // quote-derived text.) Recorded so a future diagnostic-logging change
-    // doesn't unknowingly turn this into one.
+    // is page-sourced text interpolated into reasonDetail unsanitized. Its only
+    // sink is the console: `verifyCandidateSources` (submit-candidates.ts)
+    // reads a "rejected" reasonDetail to decide `{ survives: false }` and to
+    // print the `skip unverified` log line. It is never persisted: not in
+    // provenance.note (which carries the URL plus a fixed reason code only,
+    // `urlOutcomeCode` in submit-candidates.ts, pinned by a test) and not in
+    // discovery-logs/run-*.json. The Wayback branch's "escalate" reason
+    // (verifySource, ~L705) embeds this reasonDetail too, and it is likewise
+    // console-only: urlOutcomeCode maps an escalation to a fixed
+    // `escalated: <transport reason>` code. VerificationGateUnavailableError's
+    // message uses fixed templates, not quote-derived text. Recorded so a future
+    // diagnostic-logging change doesn't unknowingly turn this into a
+    // persisted sink.
     return {
       outcome: "rejected",
       reasonDetail: `quote fragment not found verbatim on the page: "${unmatchedFragment.slice(0, 80)}"`,

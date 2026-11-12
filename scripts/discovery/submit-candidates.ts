@@ -39,8 +39,10 @@ import { facilitySchema, type Facility, type Source } from "../../lib/schema";
 import { statusUpdateIntentSchema, type StatusUpdateIntent } from "../../lib/status-update";
 import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../../lib/enrichment-update";
 import { isRestrictedSourceUrl } from "../../lib/restricted-sources";
+import { normalizeSourceUrl } from "./source-url";
 import { verifySource, type VerifyClaim, type VerificationResult } from "./verify-source";
-import { fetchPageText } from "./fetch-page-text";
+import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
+import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
 import { callOllama, probeOllama, type ProbeOllamaResult } from "./ollama-client";
 import { loadFacilities } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
@@ -332,8 +334,8 @@ function buildExistingIndex(existing: Facility[]): {
 
 /**
  * Shared provenance assembly for the facility, status_update, and
- * enrichment_update POST paths. `escalationNote` (from a verification-gate
- * "escalate" verdict — see `verifyCandidateSources`) is appended to any
+ * enrichment_update POST paths. `verdictNote` (the per-URL verdict list
+ * from the verification gate — see `verifyCandidateSources`) is appended to any
  * existing `provenance.note` rather than replacing it, so a note the
  * discovery pipeline already wrote is never silently dropped.
  */
@@ -341,9 +343,9 @@ function buildProvenance(
   provenance: CandidateProvenance,
   runId: string,
   discoveredAt: string,
-  escalationNote?: string
+  verdictNote?: string
 ) {
-  const noteParts = [provenance.note, escalationNote].filter(
+  const noteParts = [provenance.note, verdictNote].filter(
     (part): part is string => typeof part === "string" && part.length > 0
   );
   return {
@@ -413,16 +415,90 @@ interface TimeoutGuard {
 function describeRejectedSource(result: VerificationResult): string {
   if (result.transportFailure) {
     const status = result.transportFailure.httpStatus !== undefined ? `, http ${result.transportFailure.httpStatus}` : "";
-    return `${result.sourceUrl} (could not be read: ${result.transportFailure.reason}${status})`;
+    return `could not be read: ${result.transportFailure.reason}${status}`;
   }
-  return `${result.sourceUrl} (${result.reason})`;
+  return result.reason;
 }
 
 /**
- * Runs the verification gate over every URL in `sources` for `claim`. Never
- * called when `opts.dryRun` or `deps.verifyImpl` is absent — callers check
- * that before invoking this.
+ * Every URL the candidate will PUBLISH: the payload's own `sources[].url`
+ * (what the reviewer sees cited on the facility) plus `provenance.sources`
+ * (what the submission envelope records), de-duplicated in first-seen order.
+ * The gate must verify this whole set — verifying only `provenance.sources`
+ * left payload URLs nothing had ever fetched (A-OPS-02).
+ */
+function collectPublishedUrls(payloadSources: Source[], provenanceSources: string[]): string[] {
+  return [...new Set([...payloadSources.map((s) => s.url), ...provenanceSources])];
+}
+
+/** Per-URL outcome the gate records; `dropped` URLs are stripped from the staged payload. */
+interface UrlVerdictLine {
+  url: string;
+  outcome: "verified" | "dropped" | "kept-unverified";
+  /** Fixed outcome word + reason CODE only: this lands in provenance.note. */
+  code: string;
+}
+
+/**
+ * The reason CODE for a non-verified result, safe for provenance.note (which
+ * the admin submission list renders). `VerificationResult.reason` can embed
+ * page-sourced text (a quote fragment, see verify-source.ts), so it is NEVER
+ * used here: only the structural `transportFailure` enum (+ HTTP status) or a
+ * fixed word.
+ */
+function urlOutcomeCode(result: VerificationResult): string {
+  const word = result.verdict === "escalate" ? "escalated" : "rejected";
+  if (result.transportFailure) {
+    const status = result.transportFailure.httpStatus !== undefined ? `_${result.transportFailure.httpStatus}` : "";
+    return `${word}: ${result.transportFailure.reason}${status}`;
+  }
+  // verifySource rejects licence-restricted domains before any fetch, so no transportFailure is set.
+  if (isRestrictedSourceUrl(result.sourceUrl)) return `${word}: restricted_source`;
+  return `${word}: ${result.verdict === "escalate" ? "unconfirmed" : "content_mismatch"}`;
+}
+
+const MAX_NOTE_URL_CHARS = 200;
+const MAX_VERDICT_NOTE_CHARS = 2_000;
+
+/** One URL, made safe and bounded for the note: control/whitespace chars become "_", length capped. */
+function noteUrl(url: string): string {
+  const safe = url.replace(/[\s\u0000-\u001f\u007f]/g, "_");
+  return safe.length > MAX_NOTE_URL_CHARS ? `${safe.slice(0, MAX_NOTE_URL_CHARS)}...` : safe;
+}
+
+/**
+ * Renders the per-URL verdict list for provenance.note, bounded to
+ * `MAX_VERDICT_NOTE_CHARS`. Dropped entries come first, then kept-unverified,
+ * then verified, so truncation (`+N more`) hides the least interesting ones.
+ */
+function renderVerdictNote(lines: UrlVerdictLine[]): string | undefined {
+  if (lines.every((l) => l.outcome === "verified")) return undefined;
+  const rank = { dropped: 0, "kept-unverified": 1, verified: 2 } as const;
+  const entries = [...lines]
+    .sort((x, y) => rank[x.outcome] - rank[y.outcome])
+    .map((l) => `${noteUrl(l.url)} ${l.outcome === "dropped" ? "DROPPED" : "kept"} (${l.code})`);
+  const prefix = "Source verification: ";
+  let out = prefix;
+  for (let i = 0; i < entries.length; i++) {
+    const piece = (i === 0 ? "" : "; ") + entries[i];
+    const reserve = i < entries.length - 1 ? `; +${entries.length - i - 1} more`.length : 0;
+    if (out.length + piece.length + reserve > MAX_VERDICT_NOTE_CHARS && i > 0) {
+      return `${out}; +${entries.length - i} more`;
+    }
+    out += piece;
+  }
+  return out;
+}
+
+/**
+ * Runs the verification gate over every URL in `urls` for `claim` (the
+ * published set — see `collectPublishedUrls`). Never called when
+ * `opts.dryRun` or `deps.verifyImpl` is absent — callers check that before
+ * invoking this.
  *
+ * - URLs are de-duplicated by `normalizeSourceUrl` (case, fragment, trailing
+ *   slash): spellings of one URL share one verdict and one `verifyImpl` call,
+ *   and a drop applies to every raw spelling.
  * - Any source verdict of `"unavailable"` throws `VerificationGateUnavailableError`
  *   immediately, stopping BEFORE checking the candidate's remaining sources —
  *   if the model is unreachable for one URL it is unreachable for all of
@@ -430,39 +506,49 @@ function describeRejectedSource(result: VerificationResult): string {
  *   ONE exception: an `"unavailable"` flagged `modelTimedOut` (a single model
  *   call hit its per-call timeout) first consults `guard.probe`. If Ollama
  *   answers and the verify model is present, that source simply does not
- *   verify (the remaining sources are still checked). Outcome: if another
- *   source verified, the candidate stages normally; if none verified but
- *   another escalated, it stages with an `escalationNote` that also names the
- *   timed-out URL(s); if none verified and none escalated, it is held with a
- *   `rejectionDetail` saying the call timed out while Ollama was healthy. An
- *   unhealthy or throwing probe, no probe, or an exhausted `guard.remaining`
- *   budget (a degraded Ollama) throws as above.
- *   A non-timeout "unavailable" never reaches the probe.
- * - >=1 `"verified"` source -> survives, no escalation note.
- * - 0 `"verified"` but >=1 `"escalate"` -> survives, with an escalation note
- *   summarizing the escalated URL(s)/reason(s) for the human reviewer (an
- *   escalated source is never silently dropped nor silently accepted).
- * - 0 `"verified"` and 0 `"escalate"` (every source rejected) -> does not
- *   survive, with `rejectionDetail` summarizing each rejected source's URL
- *   and reason (`describeRejectedSource`) — including whether it was ever
- *   actually read — so a human/log reader can tell "this URL is
- *   unreadable/dead" from "we read the page and the claim was not there"
- *   instead of a single undifferentiated "unverified".
- * - `sources` is empty (the candidate cited nothing) -> does not survive,
- *   with a `rejectionDetail` that says plainly that no sources were cited —
- *   never the empty string `[].map(...).join("; ")` would otherwise produce,
- *   which reads as a dangling "— " in the "skip unverified" log line and
- *   wrongly implies a source was checked and rejected rather than never cited.
+ *   verify (the remaining sources are still checked). An unhealthy or
+ *   throwing probe, no probe, or an exhausted `guard.remaining` budget (a
+ *   degraded Ollama) throws as above. A non-timeout "unavailable" never
+ *   reaches the probe.
+ * - Each URL is judged individually. `dropUrls` holds every URL that is not
+ *   `"verified"` and not kept-escalated; callers strip those from what gets
+ *   staged, so one verified URL no longer carries dead or fabricated siblings.
+ * - >=1 `"verified"` URL -> survives. `"escalate"` URLs (page too large, or
+ *   not readable even through the PDF path) are KEPT only because some other
+ *   URL verified, and are labelled "unverified (escalated: <code>)" in the
+ *   note. Rejected and timed-out URLs are dropped.
+ * - 0 `"verified"` -> does not survive, even if some URL escalated: an
+ *   escalation alone is not mechanical verification. `rejectionDetail` (a
+ *   log line, never persisted) summarizes each URL (`describeRejectedSource`),
+ *   including whether it was ever actually read.
+ * - `urls` is empty -> does not survive, with a `rejectionDetail` that says
+ *   plainly nothing was cited.
+ * - `verdictNote` lists every URL's outcome whenever any URL was dropped or
+ *   kept unverified. It carries ONLY the URL plus a fixed reason code
+ *   (`urlOutcomeCode`) — never `VerificationResult.reason`, which can contain
+ *   page-sourced text — and is bounded (`renderVerdictNote`).
  */
 async function verifyCandidateSources(
-  sources: string[],
+  urls: string[],
   claim: VerifyClaim,
   verifyImpl: (url: string, claim: VerifyClaim) => Promise<VerificationResult>,
   guard: TimeoutGuard
-): Promise<{ survives: boolean; escalationNote?: string; rejectionDetail?: string }> {
-  const results: VerificationResult[] = [];
+): Promise<{ survives: boolean; verdictNote?: string; rejectionDetail?: string; dropUrls: Set<string> }> {
+  // canonical key -> every raw spelling seen (first one is the one verified).
+  const spellings = new Map<string, string[]>();
+  for (const url of urls) {
+    const key = normalizeSourceUrl(url);
+    const seen = spellings.get(key);
+    if (seen) {
+      if (!seen.includes(url)) seen.push(url);
+    } else {
+      spellings.set(key, [url]);
+    }
+  }
+
+  const results: Array<{ url: string; result: VerificationResult }> = [];
   const timedOutUrls: string[] = [];
-  for (const url of sources) {
+  for (const [, [url]] of spellings) {
     const result = await verifyImpl(url, claim);
     if (result.verdict === "unavailable") {
       if (!result.modelTimedOut || !guard.probe) {
@@ -492,41 +578,41 @@ async function verifyCandidateSources(
       timedOutUrls.push(url);
       continue;
     }
-    results.push(result);
+    results.push({ url, result });
   }
 
-  if (results.some((r) => r.verdict === "verified")) {
-    return { survives: true };
+  const allSpellings = (url: string): string[] => spellings.get(normalizeSourceUrl(url)) ?? [url];
+  const dropUrls = new Set<string>();
+  const lines: UrlVerdictLine[] = [];
+  const logParts: string[] = [];
+  const anyVerified = results.some(({ result }) => result.verdict === "verified");
+  for (const { url, result } of results) {
+    if (result.verdict === "verified") {
+      lines.push({ url, outcome: "verified", code: "verified" });
+    } else if (result.verdict === "escalate" && anyVerified) {
+      lines.push({ url, outcome: "kept-unverified", code: `unverified (${urlOutcomeCode(result)})` });
+    } else {
+      for (const spelling of allSpellings(url)) dropUrls.add(spelling);
+      lines.push({ url, outcome: "dropped", code: urlOutcomeCode(result) });
+    }
+    if (result.verdict !== "verified") {
+      logParts.push(`${url} (${result.verdict === "escalate" ? `escalated: ${result.reason}` : describeRejectedSource(result)})`);
+    }
+  }
+  for (const url of timedOutUrls) {
+    for (const spelling of allSpellings(url)) dropUrls.add(spelling);
+    lines.push({ url, outcome: "dropped", code: "timed_out" });
+    logParts.push(`${url} (verification call timed out while Ollama was healthy)`);
   }
 
-  const escalated = results.filter((r) => r.verdict === "escalate");
-  if (escalated.length > 0) {
-    const timeoutNote =
-      timedOutUrls.length > 0
-        ? `; verification timed out while Ollama was healthy for: ${timedOutUrls.join(", ")}`
-        : "";
-    return {
-      survives: true,
-      escalationNote: `Escalated for human review — source(s) could not be mechanically verified: ${escalated
-        .map((r) => `${r.sourceUrl} (${r.reason})`)
-        .join("; ")}${timeoutNote}`,
-    };
+  if (anyVerified) {
+    return { survives: true, verdictNote: renderVerdictNote(lines), dropUrls };
   }
 
-  const timeoutDetail =
-    timedOutUrls.length > 0
-      ? `verification call timed out while Ollama was healthy, so held for manual review: ${timedOutUrls.join(", ")}`
-      : undefined;
-  const rejectedDetail = results.map(describeRejectedSource).join("; ");
   return {
     survives: false,
-    rejectionDetail: timeoutDetail
-      ? rejectedDetail
-        ? `${timeoutDetail}; ${rejectedDetail}`
-        : timeoutDetail
-      : results.length === 0
-        ? "no sources were cited, so there was nothing to verify"
-        : rejectedDetail,
+    rejectionDetail: logParts.length === 0 ? "no sources were cited, so there was nothing to verify" : logParts.join("; "),
+    dropUrls,
   };
 }
 
@@ -563,6 +649,37 @@ async function verifyCandidateSources(
 // removed, there is no honest remap — the candidate is reported unstageable
 // rather than risk pointing a citation at the wrong source.
 
+/**
+ * URLs the verification gate dropped (see `verifyCandidateSources`'s
+ * `dropUrls`), stripped alongside restricted ones by the two functions below.
+ * Empty when the gate did not run (dry-run, VERIFY_SOURCES_ENABLED=false).
+ */
+const NO_DROPPED_URLS: ReadonlySet<string> = new Set();
+
+/**
+ * Reports a strip that could not be honored and counts it. When a citation
+ * pointed at the stripped source (`failingUrl`), the counter follows THAT
+ * URL: restricted -> `skippedRestrictedSource`, dropped as unverified ->
+ * `skippedUnverified`, whatever else was stripped alongside. With no failing
+ * reference (the strip would empty the list), it is an unverified skip iff the
+ * gate dropped any non-restricted URL.
+ */
+function skipOnStripFailure(
+  label: string,
+  failure: { removedUrls: string[]; reason: string; failingUrl?: string },
+  dropUrls: ReadonlySet<string>,
+  summary: RunSubmitSummary
+): void {
+  const unverifiedDrop = (u: string) => dropUrls.has(u) && !isRestrictedSourceUrl(u);
+  const unverified =
+    failure.failingUrl !== undefined ? unverifiedDrop(failure.failingUrl) : failure.removedUrls.some(unverifiedDrop);
+  console.log(
+    `skip ${unverified ? "unverified" : "restricted"}: ${label} — ${failure.reason} (${unverified ? "unverified/restricted" : "restricted"} source(s): ${failure.removedUrls.join(", ")})`
+  );
+  if (unverified) summary.skippedUnverified++;
+  else summary.skippedRestrictedSource++;
+}
+
 interface SourceIndexRef {
   /** Human-readable path for logging, e.g. "subsidies[2].sourceIndex". */
   path: string;
@@ -590,15 +707,16 @@ interface SourceIndexRef {
  */
 function stripRestrictedFromSources(
   sources: Source[],
-  refs: SourceIndexRef[]
+  refs: SourceIndexRef[],
+  dropUrls: ReadonlySet<string> = NO_DROPPED_URLS
 ):
   | { ok: true; sources: Source[]; removedUrls: string[]; remapped: Map<string, number> }
-  | { ok: false; removedUrls: string[]; reason: string } {
+  | { ok: false; removedUrls: string[]; reason: string; failingUrl?: string } {
   const removedUrls: string[] = [];
   const oldToNew = new Map<number, number>();
   const kept: Source[] = [];
   sources.forEach((s, i) => {
-    if (isRestrictedSourceUrl(s.url)) {
+    if (isRestrictedSourceUrl(s.url) || dropUrls.has(s.url)) {
       removedUrls.push(s.url);
       return;
     }
@@ -622,7 +740,8 @@ function stripRestrictedFromSources(
       return {
         ok: false,
         removedUrls,
-        reason: `${ref.path} (index ${ref.index}) referenced a restricted source that was stripped`,
+        reason: `${ref.path} (index ${ref.index}) referenced a stripped source`,
+        failingUrl: sources[ref.index]?.url,
       };
     }
     // Verifying invariant, not the lookup mechanism: the positional map
@@ -634,6 +753,7 @@ function stripRestrictedFromSources(
         ok: false,
         removedUrls,
         reason: `${ref.path} (index ${ref.index}) remapped to a source with a mismatched URL — refusing to stage`,
+        failingUrl: sources[ref.index]?.url,
       };
     }
     remapped.set(ref.path, newIndex);
@@ -650,11 +770,12 @@ function stripRestrictedFromSources(
  * safely staged either.
  */
 function stripRestrictedUrls(
-  urls: string[]
+  urls: string[],
+  dropUrls: ReadonlySet<string> = NO_DROPPED_URLS
 ): { ok: true; kept: string[]; removedUrls: string[] } | { ok: false; removedUrls: string[]; reason: string } {
   const removedUrls: string[] = [];
   const kept = urls.filter((u) => {
-    if (isRestrictedSourceUrl(u)) {
+    if (isRestrictedSourceUrl(u) || dropUrls.has(u)) {
       removedUrls.push(u);
       return false;
     }
@@ -948,11 +1069,19 @@ export async function runSubmit(
         continue;
       }
 
-      let escalationNote: string | undefined;
+      // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
+      if (summary.submitted >= opts.max) {
+        console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
+        summary.skippedOverCap++;
+        continue;
+      }
+
+      let verdictNote: string | undefined;
+      let dropUrls: ReadonlySet<string> = NO_DROPPED_URLS;
       if (!opts.dryRun && deps.verifyImpl) {
         const entityName = existingById.get(targetFacilityId)?.name ?? targetFacilityId;
         const gate = await verifyCandidateSources(
-          candidate.provenance.sources ?? [],
+          collectPublishedUrls(parsedIntent.data.sources, candidate.provenance.sources ?? []),
           { entityName },
           deps.verifyImpl,
           timeoutGuard
@@ -962,13 +1091,8 @@ export async function runSubmit(
           summary.skippedUnverified++;
           continue;
         }
-        escalationNote = gate.escalationNote;
-      }
-
-      if (summary.submitted >= opts.max) {
-        console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
-        summary.skippedOverCap++;
-        continue;
+        verdictNote = gate.verdictNote;
+        dropUrls = gate.dropUrls;
       }
 
       // Same asymmetry as the docSourceRefs block above, for the enrichment
@@ -995,20 +1119,14 @@ export async function runSubmit(
         enrichmentSourceRefs.push({ path: `reSourced[${i}].sourceRel`, index: r.sourceRel });
       });
 
-      const enrichmentSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, enrichmentSourceRefs);
+      const enrichmentSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, enrichmentSourceRefs, dropUrls);
       if (!enrichmentSourceStrip.ok) {
-        console.log(
-          `skip restricted: ${targetFacilityId} — ${enrichmentSourceStrip.reason} (restricted source(s): ${enrichmentSourceStrip.removedUrls.join(", ")})`
-        );
-        summary.skippedRestrictedSource++;
+        skipOnStripFailure(targetFacilityId, enrichmentSourceStrip, dropUrls, summary);
         continue;
       }
-      const enrichmentProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+      const enrichmentProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? [], dropUrls);
       if (!enrichmentProvenanceStrip.ok) {
-        console.log(
-          `skip restricted: ${targetFacilityId} — ${enrichmentProvenanceStrip.reason} (restricted source(s): ${enrichmentProvenanceStrip.removedUrls.join(", ")})`
-        );
-        summary.skippedRestrictedSource++;
+        skipOnStripFailure(targetFacilityId, enrichmentProvenanceStrip, dropUrls, summary);
         continue;
       }
       let enrichmentPayload = parsedIntent.data;
@@ -1019,7 +1137,7 @@ export async function runSubmit(
           enrichmentSourceStrip.remapped
         );
         console.log(
-          `stripped restricted source(s) from ${targetFacilityId}: ${enrichmentSourceStrip.removedUrls.join(", ")}`
+          `stripped restricted/unverified source(s) from ${targetFacilityId}: ${enrichmentSourceStrip.removedUrls.join(", ")}`
         );
       }
 
@@ -1031,7 +1149,7 @@ export async function runSubmit(
           { ...candidate.provenance, sources: enrichmentProvenanceStrip.kept },
           opts.runId,
           opts.discoveredAt,
-          escalationNote
+          verdictNote
         ),
       };
 
@@ -1070,11 +1188,19 @@ export async function runSubmit(
         continue;
       }
 
-      let escalationNote: string | undefined;
+      // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
+      if (summary.submitted >= opts.max) {
+        console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
+        summary.skippedOverCap++;
+        continue;
+      }
+
+      let verdictNote: string | undefined;
+      let dropUrls: ReadonlySet<string> = NO_DROPPED_URLS;
       if (!opts.dryRun && deps.verifyImpl) {
         const entityName = existingById.get(targetFacilityId)?.name ?? targetFacilityId;
         const gate = await verifyCandidateSources(
-          candidate.provenance.sources ?? [],
+          collectPublishedUrls(parsedIntent.data.sources, candidate.provenance.sources ?? []),
           { entityName },
           deps.verifyImpl,
           timeoutGuard
@@ -1084,39 +1210,28 @@ export async function runSubmit(
           summary.skippedUnverified++;
           continue;
         }
-        escalationNote = gate.escalationNote;
-      }
-
-      if (summary.submitted >= opts.max) {
-        console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
-        summary.skippedOverCap++;
-        continue;
+        verdictNote = gate.verdictNote;
+        dropUrls = gate.dropUrls;
       }
 
       // status_update's intent carries no sourceIndex/sourceRel refs of its
       // own (sourceIndex is computed at APPLY time as existing.sources.length
       // — see lib/status-update.ts), so there is nothing to remap here.
-      const statusSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, []);
+      const statusSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, [], dropUrls);
       if (!statusSourceStrip.ok) {
-        console.log(
-          `skip restricted: ${targetFacilityId} — ${statusSourceStrip.reason} (restricted source(s): ${statusSourceStrip.removedUrls.join(", ")})`
-        );
-        summary.skippedRestrictedSource++;
+        skipOnStripFailure(targetFacilityId, statusSourceStrip, dropUrls, summary);
         continue;
       }
-      const statusProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+      const statusProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? [], dropUrls);
       if (!statusProvenanceStrip.ok) {
-        console.log(
-          `skip restricted: ${targetFacilityId} — ${statusProvenanceStrip.reason} (restricted source(s): ${statusProvenanceStrip.removedUrls.join(", ")})`
-        );
-        summary.skippedRestrictedSource++;
+        skipOnStripFailure(targetFacilityId, statusProvenanceStrip, dropUrls, summary);
         continue;
       }
       let statusPayload: StatusUpdateIntent = parsedIntent.data;
       if (statusSourceStrip.removedUrls.length > 0) {
         statusPayload = { ...parsedIntent.data, sources: statusSourceStrip.sources };
         console.log(
-          `stripped restricted source(s) from ${targetFacilityId}: ${statusSourceStrip.removedUrls.join(", ")}`
+          `stripped restricted/unverified source(s) from ${targetFacilityId}: ${statusSourceStrip.removedUrls.join(", ")}`
         );
       }
 
@@ -1128,7 +1243,7 @@ export async function runSubmit(
           { ...candidate.provenance, sources: statusProvenanceStrip.kept },
           opts.runId,
           opts.discoveredAt,
-          escalationNote
+          verdictNote
         ),
       };
 
@@ -1164,15 +1279,29 @@ export async function runSubmit(
       continue;
     }
 
-    let escalationNote: string | undefined;
+    // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
+    if (summary.submitted >= opts.max) {
+      console.log(`skip over cap: ${doc.id} — --max=${opts.max} already reached`);
+      summary.skippedOverCap++;
+      continue;
+    }
+
+    let verdictNote: string | undefined;
+    let dropUrls: ReadonlySet<string> = NO_DROPPED_URLS;
     if (!opts.dryRun && deps.verifyImpl) {
-      const gate = await verifyCandidateSources(sources, { entityName: doc.name }, deps.verifyImpl, timeoutGuard);
+      const gate = await verifyCandidateSources(
+        collectPublishedUrls(doc.sources, sources),
+        { entityName: doc.name },
+        deps.verifyImpl,
+        timeoutGuard
+      );
       if (!gate.survives) {
         console.log(`skip unverified: ${doc.id} — ${gate.rejectionDetail}`);
         summary.skippedUnverified++;
         continue;
       }
-      escalationNote = gate.escalationNote;
+      verdictNote = gate.verdictNote;
+      dropUrls = gate.dropUrls;
     }
 
     const isIdDuplicate = existingIds.has(doc.id);
@@ -1187,12 +1316,6 @@ export async function runSubmit(
     if (!isIdDuplicate && isNameDuplicate) {
       console.log(`skip duplicate: ${doc.id} — matches an existing facility by name/state/city`);
       summary.skippedDuplicate++;
-      continue;
-    }
-
-    if (summary.submitted >= opts.max) {
-      console.log(`skip over cap: ${doc.id} — --max=${opts.max} already reached`);
-      summary.skippedOverCap++;
       continue;
     }
 
@@ -1229,26 +1352,20 @@ export async function runSubmit(
       docSourceRefs.push({ path: "emissions.sourceIndex", index: doc.emissions.sourceIndex });
     }
 
-    const docSourceStrip = stripRestrictedFromSources(doc.sources, docSourceRefs);
+    const docSourceStrip = stripRestrictedFromSources(doc.sources, docSourceRefs, dropUrls);
     if (!docSourceStrip.ok) {
-      console.log(
-        `skip restricted: ${doc.id} — ${docSourceStrip.reason} (restricted source(s): ${docSourceStrip.removedUrls.join(", ")})`
-      );
-      summary.skippedRestrictedSource++;
+      skipOnStripFailure(doc.id, docSourceStrip, dropUrls, summary);
       continue;
     }
-    const docProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+    const docProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? [], dropUrls);
     if (!docProvenanceStrip.ok) {
-      console.log(
-        `skip restricted: ${doc.id} — ${docProvenanceStrip.reason} (restricted source(s): ${docProvenanceStrip.removedUrls.join(", ")})`
-      );
-      summary.skippedRestrictedSource++;
+      skipOnStripFailure(doc.id, docProvenanceStrip, dropUrls, summary);
       continue;
     }
     let finalDoc = doc;
     if (docSourceStrip.removedUrls.length > 0) {
       finalDoc = applyDocSourceStrip(doc, docSourceStrip.sources, docSourceStrip.remapped);
-      console.log(`stripped restricted source(s) from ${doc.id}: ${docSourceStrip.removedUrls.join(", ")}`);
+      console.log(`stripped restricted/unverified source(s) from ${doc.id}: ${docSourceStrip.removedUrls.join(", ")}`);
     }
 
     const envelope = {
@@ -1259,7 +1376,7 @@ export async function runSubmit(
         { ...candidate.provenance, sources: docProvenanceStrip.kept },
         opts.runId,
         opts.discoveredAt,
-        escalationNote
+        verdictNote
       ),
     };
 
@@ -1403,6 +1520,39 @@ export async function runSubmitAndLog(
 }
 
 /**
+ * Page fetch with the same PDF fallback `extract-fields.ts` uses
+ * (`fetchSourceText`): a `bad_content_type` rejection (the page fetcher
+ * refuses `application/pdf` on principle) is retried once through
+ * `fetchPdfText` (pdftotext) and the extracted text is verified like any other
+ * page. A THROWING PDF path is caught and treated as a failure. When the PDF path cannot read it either, the ORIGINAL
+ * `bad_content_type` result is returned so verify-source escalates exactly as
+ * before; a missing poppler therefore degrades to an escalation, never to a
+ * silent accept.
+ */
+export async function fetchTextWithPdfRetry(
+  url: string,
+  deps: {
+    fetchPageTextImpl: (url: string) => Promise<FetchPageTextResult>;
+    fetchPdfTextImpl: (url: string) => Promise<FetchPdfTextResult>;
+  }
+): Promise<FetchPageTextResult> {
+  const pageResult = await deps.fetchPageTextImpl(url);
+  if (pageResult.ok || pageResult.reason !== "bad_content_type") return pageResult;
+  let pdfResult: FetchPdfTextResult;
+  try {
+    pdfResult = await deps.fetchPdfTextImpl(url);
+  } catch (err) {
+    // The PDF path touches the filesystem (temp dir, pdftotext); a throw must
+    // degrade to the original bad_content_type (an escalation), never crash the run.
+    console.log(`pdf-retry-failed: ${url} — ${formatErrorSummary(err)}`);
+    return pageResult;
+  }
+  return pdfResult.ok
+    ? { ok: true, text: pdfResult.text, finalUrl: pdfResult.finalUrl, httpStatus: pdfResult.httpStatus, contentType: pdfResult.contentType }
+    : pageResult;
+}
+
+/**
  * Constructs the real verification gate: verify-source.ts composed with
  * fetch-page-text.ts (default DNS-pinned fetch) and ollama-client.ts (bound
  * to the global `fetch`, as Ollama is localhost). Called ONLY from inside
@@ -1425,7 +1575,11 @@ export async function runSubmitAndLog(
 function buildRealVerifyImpl(): (url: string, claim: VerifyClaim) => Promise<VerificationResult> {
   return (url, claim) =>
     verifySource(url, claim, {
-      fetchPageTextImpl: (pageUrl) => fetchPageText(pageUrl, {}),
+      fetchPageTextImpl: (pageUrl) =>
+        fetchTextWithPdfRetry(pageUrl, {
+          fetchPageTextImpl: (u) => fetchPageText(u, {}),
+          fetchPdfTextImpl: (u) => fetchPdfText(u, {}),
+        }),
       callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
     });
 }
