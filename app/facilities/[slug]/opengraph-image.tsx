@@ -4,6 +4,7 @@ import { getFacilityByIdCached } from "@/lib/data";
 import { getStatusMeta, type Status } from "@/lib/status";
 import { FACILITY_TYPE_META } from "@/lib/facility-type";
 import { stateNameFromCode } from "@/lib/us-states";
+import { toOgText, truncateOgText } from "@/lib/og-text";
 import {
   AtlasMark,
   HAIRLINE,
@@ -74,10 +75,7 @@ export default async function OGImage({
   // the chip's own label is clipped mid-word. Satori's `text-overflow` support
   // is partial, so bound the string here rather than relying on CSS.
   const OPERATOR_MAX = 52;
-  const operatorLabel =
-    facility.operator.length > OPERATOR_MAX
-      ? `${facility.operator.slice(0, OPERATOR_MAX - 1).trimEnd()}…`
-      : facility.operator;
+  const operatorLabel = truncateOgText(toOgText(facility.operator), OPERATOR_MAX);
 
   return new ImageResponse(
     (
@@ -113,7 +111,7 @@ export default async function OGImage({
               maxWidth: 1040,
             }}
           >
-            {facility.name}
+            {toOgText(facility.name)}
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <div
