@@ -320,6 +320,19 @@ describe("FilterBar — Capacity popover", () => {
     expect(screen.getByLabelText("Minimum capacity options")).toBeInTheDocument();
   });
 
+  it("explains that planned capacity counts, and describes the radio group with it", async () => {
+    const user = userEvent.setup();
+    renderFilterBar();
+
+    await user.click(screen.getByRole("button", { name: "Capacity" }));
+
+    const hint = "Includes planned capacity where it is larger than operational.";
+    expect(screen.getByText(hint)).toBeVisible();
+    expect(
+      screen.getByRole("group", { name: "Minimum capacity" })
+    ).toHaveAccessibleDescription(hint);
+  });
+
   it("selecting ≥100 MW calls setMinMw with 100 and closes the popover", async () => {
     const user = userEvent.setup();
     const { mocks } = renderFilterBar();

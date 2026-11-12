@@ -298,7 +298,10 @@ function CapacityPopover({ value, onChange }: CapacityPopoverProps) {
         align="start"
         aria-label="Minimum capacity options"
       >
-        <fieldset className="border-0 p-0 m-0">
+        <fieldset
+          className="border-0 p-0 m-0"
+          aria-describedby="capacity-hint"
+        >
           <legend className="sr-only">Minimum capacity</legend>
           <ul role="list" className="space-y-1">
             {CAPACITY_OPTIONS.map((opt) => {
@@ -329,6 +332,9 @@ function CapacityPopover({ value, onChange }: CapacityPopoverProps) {
             })}
           </ul>
         </fieldset>
+        <p id="capacity-hint" className="mt-2 px-1 text-xs text-muted-foreground">
+          Includes planned capacity where it is larger than operational.
+        </p>
       </PopoverContent>
     </Popover>
   );
