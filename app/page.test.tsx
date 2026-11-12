@@ -469,11 +469,14 @@ describe("HomePage hero", () => {
     const link = screen.getByRole("link", { name: "How this is sourced" });
 
     expect(link).toHaveClass("inline-flex");
-    expect(link).toHaveClass("min-h-11");
+    expect(link).toHaveClass("h-11");
     expect(link).toHaveClass("items-center");
     expect(link).toHaveClass("bg-background/85");
     expect(link).toHaveClass("backdrop-blur-sm");
-    expect(link).toHaveClass("px-2");
+    expect(link).toHaveClass("px-5");
+    // A real button shape (matches the primary), not bare text.
+    expect(link).toHaveClass("border");
+    expect(link).toHaveClass("rounded-sm");
     // The 2026-09-15 darkening itself, which the comment above describes and
     // nothing else pinned. Reverting this one token to `text-muted-foreground`
     // drops the link to 6.70:1 over unknown tiles while every other assertion
@@ -587,6 +590,79 @@ describe("HomePage hero", () => {
     expect(block).not.toContainElement(
       screen.getByRole("link", { name: "How this is sourced" })
     );
+  });
+});
+
+/**
+ * Wave 4 unit 4.5: the home page answers "what is being built near me?" before the
+ * national story. Order, the one chart, the change feed and the button's glyph.
+ */
+describe("HomePage place-first order", () => {
+  const position = (el: HTMLElement) =>
+    // Document order as a number: later in the page = larger.
+    Array.from(document.body.querySelectorAll("*")).indexOf(el);
+
+  it("runs hero, place entry, lens directory, last 7 days, then the ledgers", async () => {
+    mockGetAllFacilities.mockResolvedValue([
+      { ...FACILITIES[0], status: "proposed", location: { state: "VA" } },
+      ...FACILITIES.slice(1),
+    ]);
+    mockGetRecentActivity.mockResolvedValue([
+      {
+        kind: "update",
+        facilityId: "a",
+        facilityName: "Alpha",
+        label: "facility updated",
+        timestamp: new Date(Date.now() - 60 * 60 * 1000),
+      },
+    ]);
+    render(await HomePage());
+
+    const order = [
+      screen.getByRole("link", { name: "How this is sourced" }),
+      screen.getByRole("heading", { name: "Start from a place" }),
+      screen.getByRole("heading", { name: "Find your way in" }),
+      screen.getByRole("heading", { name: "Last 7 days" }),
+      screen.getByRole("heading", { name: "The other side of the ledger" }),
+    ].map(position);
+    expect(order).toEqual([...order].sort((x, y) => x - y));
+    expect(new Set(order).size).toBe(order.length);
+
+    // The change feed row carries the current status and the place.
+    const feed = screen.getByRole("heading", { name: "Last 7 days" }).closest("section")!;
+    const row = within(feed).getByRole("link", { name: "Alpha" }).closest("li");
+    expect(row).toHaveTextContent("Virginia");
+    expect(row).toHaveTextContent("Proposed");
+  });
+
+  it("offers the state picker over the states in the dataset, as a no-JS form", async () => {
+    const { container } = render(await HomePage());
+    const form = container.querySelector('form[action="/states/go"]');
+    expect(form).not.toBeNull();
+    expect(form).toHaveAttribute("method", "get");
+    expect(screen.getByLabelText("State")).toHaveAttribute("name", "state");
+    // Options are exactly totals.stateCodes (the dated offer counts), nothing else.
+    const values = within(screen.getByLabelText("State"))
+      .getAllByRole("option")
+      .map((o) => o.getAttribute("value"))
+      .filter(Boolean);
+    expect(values.sort()).toEqual([...STATE_CODES].sort());
+  });
+
+  it("keeps the survey bars but no longer draws the stacked-area chart", async () => {
+    render(await HomePage());
+    expect(screen.queryByRole("heading", { name: "What the pipeline was made of" })).toBeNull();
+    expect(screen.getByRole("link", { name: "the stats page" })).toHaveAttribute(
+      "href",
+      "/stats#pipeline-composition-heading"
+    );
+  });
+
+  it("draws the sourcing arrow as one aria-hidden icon, with no stray text glyph", async () => {
+    render(await HomePage());
+    const link = screen.getByRole("link", { name: "How this is sourced" });
+    expect(link.textContent?.trim()).toBe("How this is sourced");
+    expect(link.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
   });
 });
 

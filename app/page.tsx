@@ -22,6 +22,7 @@ import { countDataset, loadOfferCounts, topStatesFromCounts } from "@/lib/datase
 import { formatEditionDate } from "@/lib/edition-date";
 import { METROS } from "@/lib/metros";
 import { StatusBadge } from "@/components/status-badge";
+import type { Status } from "@/lib/status";
 import { HeroGlobe } from "@/components/home/hero-globe-dynamic";
 import { HeroPlate } from "@/components/home/hero-plate";
 import { HERO_PLATE } from "@/components/home/hero-plate-paths";
@@ -33,10 +34,10 @@ import { SurveyLedger } from "@/components/home/survey-ledger";
 import { LensGateway } from "@/components/home/lens-gateway";
 import { ContestedStrip } from "@/components/home/contested-strip";
 import { CostLedger } from "@/components/home/cost-ledger";
-import { PipelineComposition } from "@/components/home/pipeline-composition";
 import { RecordSpecimen } from "@/components/home/record-specimen";
 import { OpenRecord } from "@/components/home/open-record";
 import { ThisWeek, isActivityWindowTruncated } from "@/components/home/this-week";
+import { PlaceEntry } from "@/components/home/place-entry";
 import { StateChips } from "@/components/home/state-chips";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 
@@ -205,6 +206,13 @@ export default async function HomePage() {
   // nothing meets the bar (empty dataset / no DATABASE_URL), in which case the
   // section degrades to the plain card grid it was before.
   const specimen = selectRecordSpecimen(allFacilities);
+  // Current status and state for the "Last 7 days" rows, read off the facility set already loaded.
+  const facilityById = new Map(allFacilities.map((f) => [f.id, f]));
+  const thisWeekPlaces: Record<string, { status: Status; state: string }> = {};
+  for (const e of recentActivity) {
+    const f = facilityById.get(e.facilityId);
+    if (f) thisWeekPlaces[e.facilityId] = { status: f.status, state: f.location.state };
+  }
   // Cards below the specimen, minus the specimen itself so the same record is
   // not printed twice. Always NOTABLE_CARD_COUNT of them: the fetch above asks
   // for one spare, so the filter leaves exactly that many when the specimen is
@@ -438,17 +446,16 @@ export default async function HomePage() {
           <HeroSearch facilityCount={count} className="max-w-2xl" />
 
           {/* Primary CTA — the accessible next step this hero's own comment
-              above already claimed existed. Deliberately the only BUTTON
-              here: the candidate that was rejected was a second "browse all
+              above already claimed existed. Deliberately the only SOLID
+              button here: the candidate that was rejected was a second "browse all
               sites" link, which was a straight duplicate of the header's
               Table nav, and two competing buttons blunt the primary one.
               That objection was about duplication, not about ever having a
               second action — "How this is sourced" is differentiated (it
               answers "why should I believe this?", which nothing else in the
-              fold does) and is styled as a quiet text link precisely so it
-              reads as a footnote to the primary button rather than a rival
-              to it. Keep any future addition to that test: differentiated,
-              and visually subordinate.
+              fold does) and is an outline button (no fill) so it stays
+              subordinate to the solid primary rather than a rival to it. Keep any future
+              addition to that test: differentiated, and visually subordinate.
 
               Solid --primary (not the bg-primary/10 tint it started as):
               a 10% sage wash on parchment reads as a disabled/ghost control,
@@ -476,48 +483,22 @@ export default async function HomePage() {
 
             <Link
               href="/methodology"
-              className="inline-flex min-h-11 items-center rounded-sm bg-background/85 px-2 backdrop-blur-sm font-mono text-sm text-foreground underline-offset-4 transition-colors motion-reduce:transition-none hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="group inline-flex h-11 items-center gap-2.5 rounded-sm border border-foreground/40 bg-background/85 px-5 backdrop-blur-sm font-mono text-sm font-semibold uppercase tracking-wider text-foreground transition-colors motion-reduce:transition-none hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              {/* min-h-11 (44px), not padding: the sibling map CTA is h-11, so
-                  this matches its touch target and its baseline in the flex row
-                  without gaining a button's visual weight. The arrow is
-                  aria-hidden for the same reason the map CTA's ArrowRight is —
-                  otherwise the accessible name is announced as "How this is
-                  sourced right arrow".
-
-                  bg-background/85 + backdrop-blur-sm + px-2 is a BACKING, not
-                  decoration — do not strip it. Its two siblings in the fold
-                  paint their own opaque fills (the map CTA is solid bg-primary,
-                  HeroSearch's root is bg-card), so the cartouche scrim above
-                  deliberately stops short of this row. This link paints
-                  nothing, so on sm+ it sits directly over live MapLibre tiles —
-                  land, water, roads and status-coloured dots. --foreground
-                  #2B2721 computes to 13.15:1 against parchment #F5F1E6, and
-                  that audit ASSUMES parchment behind it; over tiles the
-                  effective ratio is still unknown and lower — the backing is
-                  what the reader actually has, not the token. That caveat is
-                  exactly why this link was darkened from --muted-foreground
-                  (#5C5344, 6.70:1) on Ed's read of the live page: it does not
-                  measure the over-tiles case, it raises its FLOOR, roughly
-                  doubling the headroom the 85% backing has to give away.
-
-                  Hover shifts to --primary (#3F5B43, 6.672:1) rather than
-                  keeping `hover:text-foreground`, which is now the rest state
-                  and would be a dead class. It is the house pattern for a
-                  text-foreground link (app/counties/page.tsx,
-                  app/facilities/[slug]/page.tsx) and it keeps
-                  `transition-colors` meaning something. Note the direction:
-                  hover LOWERS contrast here, which is only acceptable because
-                  it is transient, still clears AA on parchment, and arrives
-                  with `hover:underline` — a non-colour affordance that carries
-                  the interactive signal on its own. This is the
-                  same treatment .maplibregl-ctrl-scale gets in globals.css
-                  (85% background + a blur) and that the map's own quiet
-                  overlays already use in Tailwind form
-                  (components/map/facility-map.tsx). px-2 so the plate reads as
-                  a soft backing rather than a tight box; it is still a text
-                  link, not a second button. */}
-              How this is sourced <span aria-hidden="true">→</span>
+              {/* An outline button in the primary's shape (h-11, same type and
+                  arrow), so it reads as a real control and not stray text.
+                  Quieter than the primary by fill only: it paints the same
+                  bg-background/85 + backdrop-blur-sm backing the old text link
+                  had, because the cartouche scrim stops short of this row and
+                  on sm+ the button sits over live map tiles. jsdom cannot
+                  prove contrast over tiles; the class assertions only prove
+                  the backing was not stripped. The arrow is aria-hidden, so
+                  the accessible name stays "How this is sourced". */}
+              How this is sourced
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+              />
             </Link>
           </div>
         </div>
@@ -660,10 +641,33 @@ export default async function HomePage() {
         />
       </div>
 
+      <PlaceEntry stateCodes={stateCodes} className="mb-10" />
+
+      {/* Lens gateway — the ways in, directly under the place entry */}
+      <LensGateway
+        className="mb-10"
+        counts={{
+          sites: count,
+          stateCodes,
+          utilityLinked,
+          frictionCount,
+          aiClassified,
+          operators: operatorCount,
+          plannedGw: Math.round(plannedMw / 1000),
+          cryptoCount,
+          metros: metroCount,
+          counties: countyCount,
+        }}
+      />
+
+      {/* "N sites added" / "N records updated" here are counts of the last 7 days of
+          getRecentActivity rows (a window, lower bounds when truncated), NOT facility totals;
+          totals come only from `totals` above. */}
       <ThisWeek
         entries={recentActivity}
         now={now}
         truncated={activityTruncated}
+        places={thisWeekPlaces}
         className="mb-10"
       />
 
@@ -696,26 +700,17 @@ export default async function HomePage() {
           className="mb-10 border-b border-border pb-10"
         />
 
-        {/* Pipeline composition over time — the standing counts behind the
-            ledgers above. Placement is provisional: U10 reorders this page. */}
-        <PipelineComposition className="mb-10 border-b border-border pb-10" />
-
-        {/* Lens gateway — the ways in */}
-        <LensGateway
-          className="mt-2"
-          counts={{
-            sites: count,
-            stateCodes,
-            utilityLinked,
-            frictionCount,
-            aiClassified,
-            operators: operatorCount,
-            plannedGw: Math.round(plannedMw / 1000),
-            cryptoCount,
-            metros: metroCount,
-            counties: countyCount,
-          }}
-        />
+        {/* The over-time chart lives on /stats; one line points to it. */}
+        <p className="mb-10 text-sm text-muted-foreground">
+          How the pipeline&rsquo;s makeup has changed quarter by quarter is charted on{" "}
+          <Link
+            href="/stats#pipeline-composition-heading"
+            className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
+          >
+            the stats page
+          </Link>
+          .
+        </p>
       </div>
 
       <div className="plate-reveal">
