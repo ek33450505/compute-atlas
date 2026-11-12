@@ -225,9 +225,8 @@ beforeEach(() => {
 
 /**
  * The provenance rule, located by its live site and state counts. Scoped rather than
- * asserted against the whole page: OpenRecord legitimately renders a
- * "Recently updated" heading, so a page-wide "updated" assertion would be
- * testing the wrong element.
+ * asserted against the whole page, so a page-wide "updated" assertion would
+ * not be tied to the provenance line.
  */
 function provenanceLine(): HTMLElement {
   return screen.getByText(/2,412 sites, counted on 12 November 2026 · 3 states and DC/);
@@ -623,6 +622,14 @@ describe("HomePage place-first order", () => {
     const row = within(feed).getByRole("link", { name: "Alpha" }).closest("li");
     expect(row).toHaveTextContent("Virginia");
     expect(row).toHaveTextContent("Proposed");
+  });
+
+  it("shows recent activity once: Last 7 days, no Recently updated block", async () => {
+    render(await HomePage());
+    expect(screen.getAllByRole("heading", { name: "Last 7 days" })).toHaveLength(1);
+    expect(
+      screen.queryByRole("heading", { name: "Recently updated" })
+    ).not.toBeInTheDocument();
   });
 
   it("offers the state picker over the states in the dataset, as a no-JS form", async () => {
@@ -1150,7 +1157,7 @@ describe("HomePage modern-platform hooks", () => {
     // derived from — see the wrapper test below for why they are split.
     const deferred: Array<[string, string]> = [
       ["Contested sites", "[--defer-h:520px]"],
-      ["A living record", "[--defer-h:700px]"],
+      ["A living record", "[--defer-h:370px]"],
     ];
     for (const [name, height] of deferred) {
       const section = screen.getByRole("heading", { name }).closest("section");

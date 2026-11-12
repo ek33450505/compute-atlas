@@ -2,11 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import { OpenRecord } from "./open-record";
-import type { ActivityEntry } from "@/lib/data";
 
 // next/link renders to <a> — mock to avoid Next.js router-context dependency
 // in jsdom (same pattern as app/activity/activity-list.test.tsx; OpenRecord
-// both uses next/link directly and renders ActivityList, which also does).
+// uses next/link directly).
 vi.mock("next/link", () => ({
   default: ({
     href,
@@ -23,31 +22,14 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-const recentActivity: ActivityEntry[] = [
-  {
-    kind: "update",
-    facilityId: "facility-a",
-    facilityName: "Facility A",
-    label: "facility updated",
-    timestamp: new Date("2026-07-12T00:00:00Z"),
-  },
-  {
-    kind: "create",
-    facilityId: "facility-c",
-    facilityName: "Facility C",
-    label: "new facility added",
-    timestamp: new Date("2026-07-11T00:00:00Z"),
-  },
-];
-
 describe("OpenRecord", () => {
   it("renders the formatted sources-cited count", () => {
-    render(<OpenRecord sources={2570} recentActivity={[]} />);
+    render(<OpenRecord sources={2570} />);
     expect(screen.getByText("2,570")).toBeInTheDocument();
   });
 
   it("renders all four provenance fact labels and values", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} />);
+    render(<OpenRecord sources={100} />);
     expect(screen.getByText("Sources cited")).toBeInTheDocument();
     expect(screen.getByText("Moderation")).toBeInTheDocument();
     expect(screen.getByText("Human-gated")).toBeInTheDocument();
@@ -58,14 +40,14 @@ describe("OpenRecord", () => {
   });
 
   it("links the contribute CTA to /contribute", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} />);
+    render(<OpenRecord sources={100} />);
     expect(
       screen.getByRole("link", { name: /Add a facility/i })
     ).toHaveAttribute("href", "/contribute");
   });
 
   it("names the contribute CTA exactly, with the arrow hidden from assistive tech", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} />);
+    render(<OpenRecord sources={100} />);
 
     // Exact name, not /Add a facility/i: the label this replaced was
     // "Add a facility · Correct a figure →" — 35 uppercase wide-tracked
@@ -82,7 +64,7 @@ describe("OpenRecord", () => {
   });
 
   it("lets the contribute CTA grow instead of overflowing, keeping the 44px target", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} />);
+    render(<OpenRecord sources={100} />);
 
     const cta = screen.getByRole("link", { name: "Add a facility" });
     // jsdom computes no layout, so the class is the only observable here — the
@@ -96,7 +78,7 @@ describe("OpenRecord", () => {
   });
 
   it("links the Cite and RSS feed access facts", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} />);
+    render(<OpenRecord sources={100} />);
     expect(screen.getByRole("link", { name: "Cite" })).toHaveAttribute(
       "href",
       "/data"
@@ -108,21 +90,8 @@ describe("OpenRecord", () => {
     );
   });
 
-  it("renders the recent-activity stream when entries are present", () => {
-    render(<OpenRecord sources={100} recentActivity={recentActivity} />);
-    expect(
-      screen.getByRole("heading", { name: "Recently updated" })
-    ).toBeInTheDocument();
-    expect(screen.getByText("Facility A")).toBeInTheDocument();
-    expect(screen.getByText("Facility C")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /View all/i })).toHaveAttribute(
-      "href",
-      "/activity"
-    );
-  });
-
-  it("omits the recent-activity stream but still renders facts and CTA when empty", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} />);
+  it("does not repeat the recent-activity stream; renders facts and CTA", () => {
+    render(<OpenRecord sources={100} />);
     expect(
       screen.queryByRole("heading", { name: "Recently updated" })
     ).not.toBeInTheDocument();
@@ -143,7 +112,7 @@ describe("OpenRecord", () => {
   // landmark goes unnamed.
   it("renders as a labeled region and passes through className", () => {
     render(
-      <OpenRecord sources={100} recentActivity={[]} className="mt-12 pt-10" />
+      <OpenRecord sources={100} className="mt-12 pt-10" />
     );
 
     const section = screen.getByRole("region", { name: "A living record" });
@@ -154,13 +123,13 @@ describe("OpenRecord", () => {
   });
 
   it("omits the dataset-access link by default", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} />);
+    render(<OpenRecord sources={100} />);
     expect(screen.getByText("Free to reuse with attribution. Code under MIT.")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Request dataset access" })).toBeNull();
   });
 
   it("adds the dataset-access link when sharing is on", () => {
-    render(<OpenRecord sources={100} recentActivity={[]} datasetAccess />);
+    render(<OpenRecord sources={100} datasetAccess />);
     expect(screen.getByRole("link", { name: "Request dataset access" })).toHaveAttribute(
       "href",
       "/dataset"

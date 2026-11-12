@@ -42,8 +42,7 @@ import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 
 export const revalidate = 3600;
 
-const ACTIVITY_TEASER_LIMIT = 5;
-// One activity fetch feeds both the teaser and the "This week" counts.
+// One activity fetch feeds the "This week" counts and its recent rows.
 const THIS_WEEK_FETCH_LIMIT = 100;
 
 /**
@@ -802,23 +801,22 @@ export default async function HomePage() {
         className="mt-12 border-t border-border pt-10 plate-reveal [--defer-h:520px]"
       />
 
-      {/* A living, open record — provenance, contribute, recent activity.
+      {/* A living, open record — provenance and contribute.
 
           --defer-h derived the same way at lg: heading ~60 + `mt-3` lead over
           three lines ~84 + `mt-6` four-up provenance grid ~147 (p-4 card:
           10px label 13, mt-1, text-lg value 28, mt-1, 2-line sub 40) + `mt-8`
-          contribute CTA 76 (min-h-11) + `mt-10` activity block 332 (`mb-5`
-          heading row 48, then ACTIVITY_TEASER_LIMIT = 5 `py-3` rows of ~48
-          plus 4 divider hairlines) = ~699px, taken to 700. ~1,400px at 390px
-          wide, where every grid collapses to one column and the activity rows
-          wrap. Same split as the section above: `defer-offscreen` sits on a
-          wrapper inside components/home/open-record.tsx, and only the
-          inherited `--defer-h` is set here. */}
+          contribute CTA 76 (min-h-11) = ~367px, taken to 370. (The `mt-10`
+          activity block, 332px, was removed: "Last 7 days" shows the same
+          rows.) Taller at 390px wide, where every grid collapses to one
+          column; that figure was not re-measured after the removal. Same
+          split as the section above: `defer-offscreen` sits on a wrapper
+          inside components/home/open-record.tsx, and only the inherited
+          `--defer-h` is set here. */}
       <OpenRecord
         sources={sourcesCited}
-        recentActivity={recentActivity.slice(0, ACTIVITY_TEASER_LIMIT)}
         datasetAccess={isDatasetSharingEnabled()}
-        className="mt-12 border-t border-border pt-10 plate-reveal [--defer-h:700px]"
+        className="mt-12 border-t border-border pt-10 plate-reveal [--defer-h:370px]"
       />
     </div>
   );
