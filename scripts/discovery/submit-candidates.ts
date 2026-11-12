@@ -286,10 +286,13 @@ export interface RunSubmitSummary {
    * this is a verification-gate failure, not a schema failure, and the two
    * must not be blurred together in `run-<runId>.json`. */
   skippedUnverified: number;
-  /** Candidates skipped because the log given to `--resume-from-log` shows they were already submitted. */
+  /** Candidates skipped because the log given to `--resume-from-log` shows they were already submitted.
+   * Counts only carried candidates the loop REACHED, so an early abort leaves it (and `resumedInFlight`)
+   * below the carried total; the reliable carried total is the number of `candidateOutcomes` with
+   * `carriedForward: true`. */
   skippedResumed: number;
   /** Candidates the resumed log shows as "in_flight" (the previous attempt died around their POST):
-   * not resubmitted, since we cannot know whether it landed. Check the pending queue. */
+   * not resubmitted, since we cannot know whether it landed. Check the pending queue. Reached-only, like `skippedResumed`. */
   resumedInFlight: number;
   /** Every cited source of the candidate failed with a transport failure
    * (`network_error`: resolver, connect, timeout), so nothing was READ. Counted
@@ -1252,6 +1255,15 @@ export async function runSubmit(
     // still lists the ones never reached.
     candidateOutcomes: candidates.map((entry, index) => ({ index, hash: candidateHash(entry), outcome: "not_attempted" })),
   };
+  // Carried records go in BEFORE any checkpoint, not when the loop reaches them: a resume that
+  // aborts or dies at candidate X must still log every earlier attempt's submitted / in_flight
+  // records after X, or the next retry restages them.
+  for (const [index, carried] of opts.resumeSubmitted ?? []) {
+    const record = summary.candidateOutcomes[index];
+    // loadResumeLog guarantees the range; a caller bypassing it must fail loudly, not drop a carried record.
+    if (!record) throw new Error(`resumeSubmitted index ${index} is outside the ${candidates.length} candidates`);
+    summary.candidateOutcomes[index] = { ...carried, index, hash: record.hash, carriedForward: true };
+  }
 
   // Before ANY work, so a caller holding this reference can still log how far
   // the run got if it aborts (see `RunSubmitDeps.onSummaryInit`).
@@ -1341,8 +1353,7 @@ export async function runSubmit(
         console.log(`skip resumed: candidate #${index} was already submitted by the previous attempt`);
         summary.skippedResumed++;
       }
-      summary.candidateOutcomes[index] = { ...carried, index, hash: summary.candidateOutcomes[index].hash, carriedForward: true };
-      continue;
+      continue; // the record was prefilled at init
     }
     lastSubmissionId.delete(summary);
     ambiguousPost.delete(summary);
@@ -1774,10 +1785,15 @@ export function loadResumeLog(logPath: string, candidates: unknown[]): Map<numbe
     );
   }
   const submitted = new Map<number, CandidateOutcomeRecord>();
-  for (const record of records as Array<Partial<CandidateOutcomeRecord> | null>) {
+  for (const [position, record] of (records as Array<Partial<CandidateOutcomeRecord> | null>).entries()) {
     const index = record?.index;
     if (typeof index !== "number" || !Number.isInteger(index) || index < 0 || index >= candidates.length) {
       throw new ResumeLogError(`--resume-from-log: ${logPath} has a record with an invalid index`);
+    }
+    // One record per candidate, in file order: a duplicate or shuffled index would silently drop a record
+    // (and a dropped "submitted" one is re-POSTed).
+    if (index !== position) {
+      throw new ResumeLogError(`--resume-from-log: ${logPath} record ${position} claims index ${index}`);
     }
     if (record?.hash !== candidateHash(candidates[index])) {
       throw new ResumeLogError(

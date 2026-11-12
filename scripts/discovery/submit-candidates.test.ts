@@ -2898,6 +2898,148 @@ describe("durable checkpoints and in_flight resume", () => {
     expect(written[0].candidateOutcomes[0].outcome).toBe("not_attempted");
   });
 
+  describe("carried records survive an interrupted resume", () => {
+    const prevLog = (candidates: unknown[]) =>
+      makeSummary({
+        discovered: candidates.length,
+        candidateOutcomes: [
+          { index: 0, hash: candidateHash(candidates[0]), outcome: "skippedUnverified" },
+          { index: 1, hash: candidateHash(candidates[1]), outcome: "submitted", submissionId: "sub-1" },
+          { index: 2, hash: candidateHash(candidates[2]), outcome: "in_flight" },
+        ],
+      });
+
+    it("a gate abort at candidate 0 still logs candidates 1 and 2 as carried", async () => {
+      const candidates = raw(3);
+      const resumeSubmitted = loadResumeLog(writeLogFile(prevLog(candidates)), candidates);
+      const written: RunSubmitSummary[] = [];
+      const verifyImpl = makeVerifyImpl(() => ({ verdict: "unavailable" }));
+      await expect(
+        runSubmitAndLog(candidates, baseOpts({ resumeSubmitted }), { fetchImpl: makeFetch([ok("x")]), existingFacilities: [], verifyImpl, sleepImpl }, (sm) =>
+          written.push(snap(sm))
+        )
+      ).rejects.toThrow(VerificationGateUnavailableError);
+      const last = written[written.length - 1];
+      expect(last.candidateOutcomes[0].outcome).toBe("not_attempted");
+      expect(last.candidateOutcomes[1]).toMatchObject({ outcome: "submitted", submissionId: "sub-1", carriedForward: true });
+      expect(last.candidateOutcomes[2]).toMatchObject({ outcome: "in_flight", carriedForward: true });
+      expect(last.skippedResumed).toBe(0); // not double-counted: the loop never reached them
+    });
+
+    it("the very first checkpoint already contains the carried records, and counters are not doubled", async () => {
+      const candidates = raw(3);
+      const resumeSubmitted = loadResumeLog(writeLogFile(prevLog(candidates)), candidates);
+      const snaps: RunSubmitSummary[] = [];
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      try {
+        const summary = await runSubmit(candidates, baseOpts({ resumeSubmitted }), {
+          fetchImpl: makeFetch([ok("sub-0")]),
+          existingFacilities: [],
+          sleepImpl,
+          checkpoint: (sm) => snaps.push(snap(sm)),
+        });
+        expect(snaps[0].candidateOutcomes.map((r) => r.outcome)).toEqual(["in_flight", "submitted", "in_flight"]);
+        expect(snaps[0].candidateOutcomes[1].carriedForward).toBe(true);
+        expect(summary.skippedResumed).toBe(1);
+        expect(summary.resumedInFlight).toBe(1);
+        expect(summary.candidateOutcomes[1]).toMatchObject({ outcome: "submitted", submissionId: "sub-1", carriedForward: true });
+      } finally {
+        warn.mockRestore();
+      }
+    });
+  });
+
+  describe("every POST site checkpoints in_flight first", () => {
+    const statusUpdate = {
+      statusUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        status: "under_construction",
+        date: "2026-07-16",
+        note: "groundbreaking confirmed",
+        sources: [{ url: "https://example.com/gb", label: "Report", retrievedAt: "2026-07-16", kind: "press" }],
+      },
+      provenance: { sources: ["https://example.com/gb"], discoveredBy: "test" },
+    };
+    const enrichment = {
+      enrichmentUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        date: "2026-07-20",
+        sources: [{ url: "https://example.com/en", label: "10-Q", retrievedAt: "2026-07-20", kind: "filing" }],
+        fields: { investmentUsd: 500000000 },
+      },
+      provenance: { sources: ["https://example.com/en"], discoveredBy: "test" },
+    };
+    it.each([
+      ["create", raw(1)[0]],
+      ["status_update", statusUpdate],
+      ["enrichment_update", enrichment],
+    ])("%s", async (_kind, candidate) => {
+      const snaps: RunSubmitSummary[] = [];
+      let atPost: string | undefined;
+      const fetchImpl = vi.fn(async () => {
+        atPost = snaps[snaps.length - 1]?.candidateOutcomes[0].outcome;
+        return { ok: true, status: 201, json: async () => ({ id: "s" }), text: async () => "" } as unknown as Response;
+      });
+      await runSubmit([candidate], baseOpts(), {
+        fetchImpl: fetchImpl as never,
+        existingFacilities: [EXISTING_FACILITY],
+        sleepImpl,
+        checkpoint: (sm) => snaps.push(snap(sm)),
+      });
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(atPost).toBe("in_flight");
+    });
+  });
+
+  it("loadResumeLog refuses a log whose record claims another record's index", () => {
+    const candidates = raw(2);
+    const log = makeSummary({
+      discovered: 2,
+      candidateOutcomes: [
+        { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted" },
+        { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted" },
+      ],
+    });
+    expect(() => loadResumeLog(writeLogFile(log), candidates)).toThrow(/record 1 claims index 0/);
+  });
+
+  it("main exits 1 and posts nothing when the resume log has a duplicate index", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-dup-"));
+    const candidates = raw(2);
+    const inputPath = path.join(dir, "candidates.json");
+    writeFileSync(inputPath, JSON.stringify(candidates));
+    const logPath = writeLogFile(
+      makeSummary({
+        discovered: 2,
+        candidateOutcomes: [
+          { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted" },
+          { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted" },
+        ],
+      })
+    );
+    const saved = { ...process.env };
+    const argv = process.argv;
+    process.env.API_ADMIN_TOKEN = "t";
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=r", `--resume-from-log=${logPath}`];
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    let exitCode: number | undefined;
+    vi.spyOn(process, "exit").mockImplementation(((c?: number) => {
+      exitCode = c;
+      throw new Error(`process.exit(${c})`);
+    }) as never);
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(1\)$/);
+      expect(exitCode).toBe(1);
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      vi.restoreAllMocks();
+      process.argv = argv;
+      Object.assign(process.env, saved);
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("main exits 1 when --resume-from-log is missing, and posts nothing", async () => {
     const dir = mkdtempSync(path.join(tmpdir(), "resume-missing-"));
     const inputPath = path.join(dir, "candidates.json");
