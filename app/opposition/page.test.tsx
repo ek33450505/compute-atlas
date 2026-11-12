@@ -39,12 +39,14 @@ vi.mock("next/link", () => ({
     href,
     children,
     className,
+    "aria-current": ariaCurrent,
   }: {
     href: string;
     children: React.ReactNode;
     className?: string;
+    "aria-current"?: "page";
   }) => (
-    <a href={href} className={className}>
+    <a href={href} className={className} aria-current={ariaCurrent}>
       {children}
     </a>
   ),
@@ -123,7 +125,7 @@ describe("OppositionPage — states tile DC wording", () => {
       unknown: 0,
     });
 
-    const page = await OppositionPage();
+    const page = await OppositionPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     // 2 distinct friction states (NY, TX), no DC.
@@ -150,7 +152,7 @@ describe("OppositionPage — states tile DC wording", () => {
       unknown: 0,
     });
 
-    const page = await OppositionPage();
+    const page = await OppositionPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     // The bug this guards: the tile's VALUE must be the state count (2: NY,
@@ -183,7 +185,7 @@ describe("OppositionPage — survey stat row", () => {
       unknown: 0,
     });
 
-    const page = await OppositionPage();
+    const page = await OppositionPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     const tiles = [
@@ -211,10 +213,81 @@ describe("OppositionPage — headline", () => {
     });
     mockGetFacilitiesByCommunityStatus.mockResolvedValue([]);
 
-    render(await OppositionPage());
+    render(await OppositionPage({ searchParams: Promise.resolve({}) }));
 
     expect(
       screen.getByRole("heading", { level: 1, name: "SENTINEL HEADLINE" })
     ).toBeInTheDocument();
+  });
+});
+
+describe("OppositionPage — by-state sub-views", () => {
+  const byStatus: Record<string, FixtureFacility[]> = {
+    litigation: [
+      makeFacility({ id: "ny-1", name: "Albany Site", location: { state: "NY" }, community: { notes: "A long sourced note." } }),
+    ],
+    opposed: [makeFacility({ id: "tx-1", name: "Waco Site", location: { state: "TX" } })],
+    contested: [],
+  };
+
+  beforeEach(() => {
+    mockGetFacilitiesByCommunityStatus.mockImplementation((status: string) =>
+      Promise.resolve(byStatus[status] ?? [])
+    );
+    mockGetCommunityReceptionCounts.mockResolvedValue({
+      supported: 0,
+      mixed: 0,
+      contested: 0,
+      opposed: 1,
+      litigation: 1,
+      unknown: 0,
+    });
+  });
+
+  it("links each state with friction sites and lists no site rows on the default view", async () => {
+    render(await OppositionPage({ searchParams: Promise.resolve({}) }));
+
+    const nav = screen.getByRole("navigation", { name: "Friction sites by state" });
+    expect(within(nav).getByRole("link", { name: /New York/ })).toHaveAttribute(
+      "href",
+      "/opposition?state=ny",
+    );
+    expect(screen.queryByRole("link", { name: /Albany Site/ })).not.toBeInTheDocument();
+  });
+
+  it("lists the selected state's sites without notes, grouped by reception", async () => {
+    render(await OppositionPage({ searchParams: Promise.resolve({ state: "ny" }) }));
+
+    expect(screen.getByRole("link", { name: /Albany Site/ })).toHaveAttribute(
+      "href",
+      "/facilities/ny-1",
+    );
+    expect(screen.queryByRole("link", { name: /Waco Site/ })).not.toBeInTheDocument();
+    expect(screen.queryByText("A long sourced note.")).not.toBeInTheDocument();
+    expect(
+      within(screen.getByRole("navigation", { name: "Friction sites by state" })).getByRole("link", {
+        name: /New York/,
+      })
+    ).toHaveAttribute("aria-current", "page");
+  });
+
+  it.each(["zz", "fl", "%00", ["ny", "tx"], ""])(
+    "falls back to the default view for an invalid state (%j)",
+    async (value) => {
+      render(await OppositionPage({ searchParams: Promise.resolve({ state: value }) }));
+
+      expect(screen.getByRole("heading", { name: "By reception" })).toBeInTheDocument();
+    }
+  );
+
+  it("lists only the largest withdrawn projects on the default view", async () => {
+    mockGetDefeatedProjects.mockResolvedValue(
+      Array.from({ length: 15 }, (_, i) =>
+        makeFacility({ id: `d-${i}`, name: `Defeated ${i}`, status: "cancelled" })
+      )
+    );
+    render(await OppositionPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getAllByRole("link", { name: /^Defeated \d+/ })).toHaveLength(12);
   });
 });

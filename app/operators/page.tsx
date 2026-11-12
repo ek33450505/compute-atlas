@@ -119,7 +119,7 @@ export default async function OperatorsIndexPage({
       <PageMasthead
         eyebrow="By company"
         title="Operators"
-        dek="Who is building it. The largest operators by disclosed megawatts come first; every tracked operator is also listed A–Z by the first letter or digit of its name. Operators with no disclosed figure are listed under their letter — undisclosed is not the same as small."
+        dek="Who is building it. The largest operators by disclosed megawatts come first; every tracked operator is also listed A–Z by the first letter of its name, with digit-first and other names under “0–9 & other”. Operators with no disclosed figure are listed under their letter — undisclosed is not the same as small."
       />
 
       <SurveyStatRow
@@ -146,7 +146,7 @@ export default async function OperatorsIndexPage({
           because much of the largest buildout is still unbuilt — ranking on
           operational alone would bury the companies with the biggest
           pipelines. Every operator, including those that have never
-          published a megawatt figure, is listed A–Z under the first letter or digit of its name.
+          published a megawatt figure, is listed A–Z under the first letter of its name; names that start with a digit or any other character are under &ldquo;0&ndash;9 &amp; other&rdquo;.
         </p>
       </section>
 

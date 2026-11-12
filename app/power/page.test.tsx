@@ -44,12 +44,14 @@ vi.mock("next/link", () => ({
     href,
     children,
     className,
+    "aria-current": ariaCurrent,
   }: {
     href: string;
     children: React.ReactNode;
     className?: string;
+    "aria-current"?: "page";
   }) => (
-    <a href={href} className={className}>
+    <a href={href} className={className} aria-current={ariaCurrent}>
       {children}
     </a>
   ),
@@ -132,7 +134,7 @@ beforeEach(() => {
 
 describe("PowerPage", () => {
   it("renders the masthead and the four survey stat tiles", async () => {
-    render(await PowerPage());
+    render(await PowerPage({ searchParams: Promise.resolve({}) }));
 
     expect(
       screen.getByRole("heading", {
@@ -156,7 +158,7 @@ describe("PowerPage", () => {
     // The bug class this guards is the one that shipped as "51 / States + DC":
     // a tile whose number and caption drift apart. Scope each assertion to the
     // tile rather than the page.
-    render(await PowerPage());
+    render(await PowerPage({ searchParams: Promise.resolve({}) }));
 
     const projectsTile = screen.getByText("Projects").closest("div")!;
     expect(within(projectsTile).getByText("3")).toBeInTheDocument();
@@ -166,20 +168,20 @@ describe("PowerPage", () => {
   });
 
   it("renders the buildout, offtaker, technology and projects sections", async () => {
-    render(await PowerPage());
+    render(await PowerPage({ searchParams: Promise.resolve({}) }));
 
     for (const name of [
       /What's being built/,
       /Who's buying the power/,
       /Technology mix/,
-      /All projects/,
+      /^Largest (project|\d+ projects)$/,
     ]) {
       expect(screen.getByRole("heading", { name })).toBeInTheDocument();
     }
   });
 
   it("names the offtaker a project sells its power to", async () => {
-    render(await PowerPage());
+    render(await PowerPage({ searchParams: Promise.resolve({}) }));
 
     expect(screen.getAllByText(/Acme Corp/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Gen One Plant/).length).toBeGreaterThan(0);
@@ -192,7 +194,7 @@ describe("PowerPage", () => {
     mockGetPowerGenerationFacilities.mockResolvedValue([]);
     mockGetGenerationByOfftaker.mockResolvedValue([]);
 
-    render(await PowerPage());
+    render(await PowerPage({ searchParams: Promise.resolve({}) }));
 
     expect(
       screen.getByText(/No dedicated-generation projects are tracked yet\./),
@@ -200,7 +202,7 @@ describe("PowerPage", () => {
     // The stat row must be absent, not merely zeroed — this is what fails if
     // the early return is deleted and the page falls through to the full body.
     expect(screen.queryByText("Offtakers")).not.toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: /All projects/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /^Largest (project|\d+ projects)$/ })).not.toBeInTheDocument();
   });
 
   it("renders a ratio placeholder rather than Infinity when nothing non-fossil is planned", async () => {
@@ -210,8 +212,64 @@ describe("PowerPage", () => {
       makeBuildout({ nonFossilPlannedMw: 0 }),
     );
 
-    const { container } = render(await PowerPage());
+    const { container } = render(await PowerPage({ searchParams: Promise.resolve({}) }));
 
     expect(container.textContent).not.toMatch(/Infinity|NaN/);
   });
+});
+
+describe("PowerPage — by-state sub-views", () => {
+  const il = makeGenerationFacility({ id: "il-1", name: "Illinois Plant" });
+  const tx = makeGenerationFacility({
+    id: "tx-1",
+    name: "Texas Plant",
+    location: { lat: 31, lon: -97, city: "Waco", state: "TX", precision: "exact" },
+    generation: { technology: "nuclear" },
+  });
+
+  beforeEach(() => {
+    mockGetPowerGenerationFacilities.mockResolvedValue([il, tx]);
+  });
+
+  it("links every state that holds a project and lists the largest projects on the default view", async () => {
+    render(await PowerPage({ searchParams: Promise.resolve({}) }));
+
+    const nav = screen.getByRole("navigation", { name: "Power projects by state" });
+    expect(within(nav).getByRole("link", { name: /Illinois/ })).toHaveAttribute(
+      "href",
+      "/power?state=il",
+    );
+    expect(within(nav).getByRole("link", { name: /Texas/ })).toHaveAttribute(
+      "href",
+      "/power?state=tx",
+    );
+    // The offtaker section is a summary line per offtaker, not a row per project.
+    expect(screen.getAllByRole("link", { name: /Illinois Plant/ })).toHaveLength(1);
+  });
+
+  it("lists only the selected state's projects, with their offtaker, and marks it current", async () => {
+    render(await PowerPage({ searchParams: Promise.resolve({ state: "il" }) }));
+
+    expect(screen.getByRole("link", { name: /Illinois Plant/ })).toHaveAttribute(
+      "href",
+      "/facilities/il-1",
+    );
+    expect(screen.queryByRole("link", { name: /Texas Plant/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/Acme Corp/)).toBeInTheDocument();
+    const nav = screen.getByRole("navigation", { name: "Power projects by state" });
+    expect(within(nav).getByRole("link", { name: /Illinois/ })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.queryByRole("heading", { name: "What's being built" })).not.toBeInTheDocument();
+  });
+
+  it.each(["zz", "ca", "%00", ["il", "tx"], ""])(
+    "falls back to the default view for an invalid state (%j)",
+    async (value) => {
+      render(await PowerPage({ searchParams: Promise.resolve({ state: value }) }));
+
+      expect(screen.getByRole("heading", { name: "What's being built" })).toBeInTheDocument();
+    },
+  );
 });

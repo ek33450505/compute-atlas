@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { letterOf, parseLetter, lettersInUse, letterLabel, LETTERS } from "./letter-index";
+import { letterOf, parseLetter, lettersInUse, letterLabel, LETTERS, OTHER_LETTER } from "./letter-index";
 
 describe("parseLetter", () => {
   it("accepts a-z and other, case-insensitively", () => {
@@ -9,7 +9,7 @@ describe("parseLetter", () => {
     expect(parseLetter("other")).toBe("other");
   });
 
-  it.each([undefined, "", "ab", "1", "../x", "%00", ["a", "b"]])(
+  it.each([undefined, "", "ab", "1", "../x", "%00", ["a", "b"], "\u212A", "ı", "ſ"])(
     "rejects %j",
     (raw) => expect(parseLetter(raw)).toBeNull()
   );
@@ -46,5 +46,23 @@ describe("lettersInUse / letterLabel", () => {
   it("labels buckets", () => {
     expect(letterLabel("c")).toBe("C");
     expect(letterLabel("other")).toBe("0–9 & other");
+  });
+});
+
+describe("letter sub-views cover every name", () => {
+  // Non-ASCII first letters, a digit, punctuation and a diacritic that folds.
+  const names = ["Alpha", "Émile Co", "Øresund Ltd", "Łukasz", "3M", "(Acme)", "Zed", "  "];
+
+  it("each name lands in exactly one linked letter and the groups partition the list", () => {
+    const used = lettersInUse(names);
+    let covered = 0;
+    for (const letter of used) {
+      expect(LETTERS).toContain(letter);
+      covered += names.filter((n) => letterOf(n) === letter).length;
+    }
+    expect(covered).toBe(names.length);
+    expect(letterOf("Øresund Ltd")).toBe(OTHER_LETTER);
+    expect(letterOf("3M")).toBe(OTHER_LETTER);
+    expect(letterOf("Émile Co")).toBe("e");
   });
 });

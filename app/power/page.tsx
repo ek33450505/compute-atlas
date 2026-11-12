@@ -18,6 +18,9 @@ import { PageMasthead } from "@/components/page-masthead";
 import { SurveyStatRow } from "@/components/survey-stat-row";
 import { PercentageBar } from "@/components/percentage-bar";
 import { SectionHeading } from "@/components/section-heading";
+import { StateNav } from "@/components/collection/state-nav";
+import { parseStateParam, stateCounts } from "@/lib/state-index";
+import { stateNameFromCode } from "@/lib/us-states";
 import type { PowerGenerationFacility } from "@/lib/schema";
 import {
   GENERATION_TECHNOLOGY_ORDER,
@@ -26,29 +29,64 @@ import {
   type GenerationTechnology,
 } from "@/lib/generation";
 
-export const revalidate = 86400;
+/** Offtaker lines on the default view: the largest buyers by capacity. */
+const TOP_OFFTAKERS = 25;
+
+/** Rows in the default view's project list: the largest projects by capacity. */
+const TOP_PROJECTS = 48;
+
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 /** Returns a label + facility-count row for the technology in the same tech + location line used elsewhere. */
 function technologyLabel(f: PowerGenerationFacility): string {
   return getGenerationTechnologyLabel(f.generation?.technology);
 }
 
-export const metadata: Metadata = {
-  title: "Data center power generation",
-  description:
-    "Dedicated power generation feeding the U.S. compute buildout — the gas, nuclear, and renewable projects hyperscalers are financing or contracting, grouped by offtaker and technology. Source-cited.",
-  alternates: { canonical: "/power" },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const available = new Set(
+    (await getPowerGenerationFacilities()).map((f) => f.location.state)
+  );
+  const state = parseStateParam((await searchParams).state, available);
+  const description =
+    "Dedicated power generation feeding the U.S. compute buildout — the gas, nuclear, and renewable projects hyperscalers are financing or contracting, summarized by offtaker and technology and listed by state. Source-cited.";
+  if (!state) {
+    return {
+      title: "Data center power generation",
+      description,
+      alternates: { canonical: "/power" },
+    };
+  }
+  return {
+    title: `Data center power generation in ${stateNameFromCode(state)}`,
+    description,
+    alternates: { canonical: `/power?state=${state.toLowerCase()}` },
+  };
+}
 
 /**
- * /power — index of the power_generation facility layer. Static server component.
+ * /power — index of the power_generation facility layer.
  *
  * Surfaces dedicated generation (most often natural gas, plus nuclear and SMRs) that
  * hyperscalers are financing or contracting to power AI/compute, grouped by
  * offtaker (the buyer) and by technology. Mirrors the /states and /stats
  * visual language (masthead, survey-stat row, § progress-bar sections).
+ *
+ * The default view summarizes offtakers (one line each) and lists the largest
+ * projects; `?state=xx` lists every project in that state. Why: listing every
+ * project twice (by offtaker, then "All projects") was a 2.2 MB document
+ * (audit U-11) because the RSC payload repeats each row. Reading
+ * `searchParams` makes the route dynamic; data still comes through the
+ * 24 h-cached loader.
  */
-export default async function PowerPage() {
+export default async function PowerPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const [
     stats,
     buildout,
@@ -67,6 +105,12 @@ export default async function PowerPage() {
     getCoolingTypeCounts(),
   ]);
   const allProjects = [...projects].sort(sortByMaxMwDesc);
+  const projectStates = allProjects.map((f) => f.location.state);
+  const state = parseStateParam((await searchParams).state, new Set(projectStates));
+  const stateProjects = state
+    ? allProjects.filter((f) => f.location.state === state)
+    : [];
+  const activeInState = stateProjects.filter((f) => f.status !== "cancelled");
   const capacityDisclosedCount = countDisclosedCapacity(allProjects);
 
   const technologyCounts = new Map<GenerationTechnology, number>();
@@ -130,6 +174,79 @@ export default async function PowerPage() {
     );
   }
 
+  if (state) {
+    return (
+      <div
+        data-content-width="4xl"
+        className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-10"
+      >
+        <Breadcrumb
+          items={[
+            { label: "Explore", href: "/explore" },
+            { label: "Power", href: "/power" },
+            { label: stateNameFromCode(state) ?? state },
+          ]}
+        />
+        <PageMasthead
+          eyebrow="Dedicated generation"
+          title="Behind-the-meter power generation for AI data centers"
+          dek="Purpose-built generation that hyperscalers are financing or contracting to feed AI and compute demand directly, listed by state."
+        />
+        <SurveyStatRow
+          spacing="wide"
+          stats={[
+            { value: stateProjects.length, label: "Projects" },
+            {
+              value: formatPower(
+                activeInState.reduce((n, f) => n + (f.capacityMw?.operational ?? 0), 0)
+              ),
+              label: "Operational",
+            },
+            {
+              value: formatPower(
+                activeInState.reduce((n, f) => n + (f.capacityMw?.planned ?? 0), 0)
+              ),
+              label: "Pipeline",
+            },
+          ]}
+        />
+        <section
+          aria-labelledby="projects-heading"
+          className="space-y-4 border-t border-border pt-10"
+        >
+          <SectionHeading
+            kicker="Projects"
+            id="projects-heading"
+            title={`Projects in ${stateNameFromCode(state)}`}
+          />
+          <StateNav
+            basePath="/power"
+            label="Power projects by state"
+            states={stateCounts(projectStates)}
+            current={state}
+            noun={["project", "projects"]}
+          />
+          <ul className="divide-y divide-border">
+            {stateProjects.map((f) => (
+              <li key={f.id}>
+                <FacilityListRow
+                  compact
+                  facility={f}
+                  secondary={
+                    <>
+                      {technologyLabel(f)}
+                      {f.generation?.offtaker ? <>{" "}&middot;{" "}{f.generation.offtaker}</> : null}
+                    </>
+                  }
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div
       data-content-width="4xl"
@@ -171,9 +288,10 @@ export default async function PowerPage() {
           below, each tied to specific projects and capacity.
         </p>
         <p className="text-base leading-relaxed text-muted-foreground">
-          The list groups projects by offtaker first, then by generation
-          technology; every entry links through to its full facility record
-          and cited sources.
+          The page summarizes projects by offtaker and by generation
+          technology, then lists the largest projects; every project is
+          listed by state, and every entry links through to its full facility
+          record and cited sources.
         </p>
       </div>
 
@@ -249,32 +367,29 @@ export default async function PowerPage() {
         </div>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
           {offtakerReporting} of the {offtakerTotal} tracked power-generation
-          projects name a specific offtaker; the groups below cover those
+          projects name a specific offtaker; the offtakers below cover those
           projects only — the rest have a technology and location on record
           but no disclosed buyer.
+          {offtakerGroups.length > TOP_OFFTAKERS
+            ? ` The ${TOP_OFFTAKERS} largest of ${offtakerGroups.length} offtakers by capacity are listed; every project is listed under its state, with its offtaker where one is disclosed.`
+            : ""}
         </p>
-        <div className="space-y-8">
-          {offtakerGroups.map((group) => (
-            <div key={group.offtaker} className="space-y-3">
-              <h3 className="flex items-baseline justify-between gap-2 text-sm font-medium text-foreground">
-                <span>{group.offtaker}</span>
-                <span className="font-mono tabular-nums text-xs text-muted-foreground">
-                  {formatPower(group.totalMw)}
-                </span>
-              </h3>
-              <ul className="divide-y divide-border">
-                {group.facilities.map((f) => (
-                  <li key={f.id}>
-                    <FacilityListRow
-                      facility={f}
-                      secondary={<>{technologyLabel(f)} &middot; {formatLocation(f)}</>}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <ul className="divide-y divide-border">
+          {offtakerGroups.slice(0, TOP_OFFTAKERS).map((group) => (
+            <li
+              key={group.offtaker}
+              className="flex items-baseline justify-between gap-4 py-2 text-sm"
+            >
+              <span className="text-foreground">{group.offtaker}</span>
+              <span className="font-mono tabular-nums text-xs text-muted-foreground shrink-0">
+                {group.facilities.length}{" "}
+                {group.facilities.length === 1 ? "project" : "projects"}{" "}
+                &middot;{" "}
+                {formatPower(group.totalMw)}
+              </span>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       <section
@@ -434,13 +549,33 @@ export default async function PowerPage() {
         )}
       </section>
 
+      {allProjects.length > 0 && (
       <section
         aria-labelledby="projects-heading"
         className="space-y-4 border-t border-border pt-10"
       >
-        <SectionHeading kicker="Projects" id="projects-heading" title="All projects" />
+        <SectionHeading
+          kicker="Projects"
+          id="projects-heading"
+          title={
+            allProjects.length === 1
+              ? "Largest project"
+              : `Largest ${Math.min(TOP_PROJECTS, allProjects.length)} projects`
+          }
+        />
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          Sorted by disclosed capacity. Every tracked project, including those
+          with no disclosed capacity, is listed under its state.
+        </p>
+        <StateNav
+          basePath="/power"
+          label="Power projects by state"
+          states={stateCounts(projectStates)}
+          current={null}
+          noun={["project", "projects"]}
+        />
         <ul className="divide-y divide-border">
-          {allProjects.map((f) => (
+          {allProjects.slice(0, TOP_PROJECTS).map((f) => (
             <li key={f.id}>
               <FacilityListRow
                 facility={f}
@@ -450,6 +585,7 @@ export default async function PowerPage() {
           ))}
         </ul>
       </section>
+      )}
     </div>
   );
 }

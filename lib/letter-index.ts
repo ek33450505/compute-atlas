@@ -21,7 +21,11 @@ export const LETTERS: readonly string[] = [
  */
 export function parseLetter(raw: string | string[] | undefined): string | null {
   if (typeof raw !== "string") return null;
-  const value = raw.trim().toLowerCase();
+  const trimmed = raw.trim();
+  // ASCII only, tested before lowercasing: `toLowerCase` folds the Kelvin sign
+  // (U+212A) onto "k", which would render a letter page at a non-canonical URL.
+  if (!/^(?:[A-Za-z]|[Oo][Tt][Hh][Ee][Rr])$/.test(trimmed)) return null;
+  const value = trimmed.toLowerCase();
   return LETTERS.includes(value) ? value : null;
 }
 

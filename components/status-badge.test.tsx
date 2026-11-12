@@ -18,4 +18,10 @@ describe("StatusBadge", () => {
     const icon = container.querySelector("[aria-hidden='true']");
     expect(icon).toBeInTheDocument();
   });
+
+  it("drops the icon but keeps the text label when hideIcon is set", () => {
+    const { container } = render(<StatusBadge status="operational" hideIcon />);
+    expect(container.querySelector("svg")).not.toBeInTheDocument();
+    expect(screen.getByText("Operational")).toBeInTheDocument();
+  });
 });

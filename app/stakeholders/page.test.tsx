@@ -80,7 +80,7 @@ describe("StakeholdersIndexPage — states tile DC wording", () => {
       makePerson({ name: "Person B", slug: "person-b", states: ["TX"] }),
     ]);
 
-    const page = await StakeholdersIndexPage();
+    const page = await StakeholdersIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     // 2 distinct states (NY, TX), no DC.
@@ -95,7 +95,7 @@ describe("StakeholdersIndexPage — states tile DC wording", () => {
       makePerson({ name: "Person B", slug: "person-b", states: ["TX"] }),
     ]);
 
-    const page = await StakeholdersIndexPage();
+    const page = await StakeholdersIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     // The bug this guards: the tile's VALUE must be the state count (2: NY,
@@ -117,7 +117,7 @@ describe("StakeholdersIndexPage — survey stat row", () => {
       makePerson({ name: "Fund C", slug: "fund-c", kind: "organization", facilityCount: 1, states: ["TX"] }),
     ]);
 
-    const page = await StakeholdersIndexPage();
+    const page = await StakeholdersIndexPage({ searchParams: Promise.resolve({}) });
     render(page);
 
     const tiles = [
@@ -162,7 +162,7 @@ describe("StakeholdersIndexPage — operator-level owners", () => {
       makePerson({ name: "Jane Doe", slug: "jane-doe" }),
     ]);
 
-    render(await StakeholdersIndexPage());
+    render(await StakeholdersIndexPage({ searchParams: Promise.resolve({}) }));
 
     const ownerCard = screen.getByRole("link", { name: /Example Capital/ });
     expect(within(ownerCard).getByText("via 1 operator")).toBeInTheDocument();
@@ -189,10 +189,52 @@ describe("StakeholdersIndexPage — operator-level owners", () => {
       makePerson({ name: "Jane Doe", slug: "jane-doe", facilityCount: 2, viaOperators: [via, { ...via, operator: "Beta Co", slug: "beta-co" }] }),
     ]);
 
-    render(await StakeholdersIndexPage());
+    render(await StakeholdersIndexPage({ searchParams: Promise.resolve({}) }));
 
     const card = screen.getByRole("link", { name: /Jane Doe/ });
     expect(within(card).getByText("2 sites")).toBeInTheDocument();
     expect(within(card).getByText("via 2 operators")).toBeInTheDocument();
+  });
+});
+
+describe("StakeholdersIndexPage — A–Z paging", () => {
+  const people = [
+    makePerson({ name: "Alice Adams", slug: "alice-adams", facilityCount: 1 }),
+    makePerson({ name: "Zed Zane", slug: "zed-zane", facilityCount: 5 }),
+    makePerson({ name: "Zoe Zimmer", slug: "zoe-zimmer", facilityCount: 2 }),
+  ];
+
+  beforeEach(() => {
+    mockGetStakeholders.mockResolvedValue(people);
+  });
+
+  it("links only letters that hold a name and lists everyone on the default view while small", async () => {
+    render(await StakeholdersIndexPage({ searchParams: Promise.resolve({}) }));
+
+    const nav = screen.getByRole("navigation", { name: "Stakeholders by first letter" });
+    expect(within(nav).getByRole("link", { name: "Z" })).toHaveAttribute(
+      "href",
+      "/stakeholders?letter=z",
+    );
+    expect(within(nav).queryByRole("link", { name: "B" })).not.toBeInTheDocument();
+  });
+
+  it("lists only the chosen letter's names, A to Z, and marks it current", async () => {
+    render(await StakeholdersIndexPage({ searchParams: Promise.resolve({ letter: "z" }) }));
+
+    expect(screen.getByRole("link", { name: /Zed Zane/ })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Zoe Zimmer/ })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Alice Adams/ })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Stakeholders starting with Z" }),
+    ).toBeInTheDocument();
+  });
+
+  it("falls back to the default view for an invalid letter", async () => {
+    render(await StakeholdersIndexPage({ searchParams: Promise.resolve({ letter: "zz" }) }));
+
+    expect(
+      screen.getByRole("heading", { name: /stakeholders tied to the most sites/ }),
+    ).toBeInTheDocument();
   });
 });

@@ -13,6 +13,8 @@ export interface FacilityListRowProps {
    * derivable from `facility` alone, so callers supply it directly.
    */
   secondary: ReactNode;
+  /** Text-only status (no icon): for long lists, where each row's SVG adds up. */
+  compact?: boolean;
 }
 
 /**
@@ -24,7 +26,7 @@ export interface FacilityListRowProps {
  * `<li>`/list wrapper, since that varies by caller (`<ol>` on /rankings,
  * `<ul>` elsewhere).
  */
-export function FacilityListRow({ facility, secondary }: FacilityListRowProps) {
+export function FacilityListRow({ facility, secondary, compact = false }: FacilityListRowProps) {
   return (
     <Link
       href={`/facilities/${facility.id}`}
@@ -35,7 +37,7 @@ export function FacilityListRow({ facility, secondary }: FacilityListRowProps) {
         <span className="text-xs text-muted-foreground truncate">{secondary}</span>
       </span>
       <span className="flex shrink-0 items-center gap-3">
-        <StatusBadge status={facility.status} />
+        <StatusBadge status={facility.status} hideIcon={compact} />
         <span className="font-mono tabular-nums text-xs text-muted-foreground">
           {formatCapacity(facility)}
         </span>
