@@ -74,7 +74,7 @@ plate, hero points or as-of date; the next build does. By decision (Ed, 2026-11-
 
 The pull deletes them. Back them up first (the NHD ledger has no other copy: the Neon row from `npm run nhd:debt -- --ledger-db` is a durable record of the count, but no command restores the local file from it; keep the backup, or re-record the current count with `npm run nhd:debt -- --note "<why>"`, which resets the ceiling to today's count), then run
 `npm run db:export` (discovery's loader reads Neon first and aborts loudly on a bad snapshot).
-Merge or pull only outside Mon/Wed/Fri 13:00.
+Merge or pull only outside weekdays 13:00 (Mon-Fri).
 
 ## What each write path actually does
 
@@ -644,7 +644,7 @@ and the constants together. Summary:
 | Email send log (`email_sends`) | 180 days |
 
 - The prune runs in the discovery lane (`scripts/discovery/run.sh`, `retention-prune.ts --apply`), which
-  runs Mon/Wed/Fri at 13:00 local, and only when `DISCOVERY_ENABLED=true` (`run.sh` exits before any lane
+  runs Mon-Fri at 13:00 local (Mon/Wed/Fri until 2026-11-12), and only when `DISCOVERY_ENABLED=true` (`run.sh` exits before any lane
   otherwise). A deletion lands on the first run that reaches the prune step after its period: up to 3 days
   late when runs complete, later if a run exits early (e.g. a config check in `run.sh`).
 - ⚠️ **Deleted rows are copied, then the copies expire.** Before each deletion or hashed-IP clearing the prune writes the

@@ -228,9 +228,11 @@ fi
 # run happened and produced nothing", and invisible from claudeStatus alone.
 # 84h: the longest normal gap is Fri -> Mon (~70h from a Friday run's end to
 # Monday's 13:00 start), plus the same 12h slack the old daily 36h (24+12)
-# carried, which absorbs a Monday start launchd deferred past a sleep. The
-# shortest gap a single missed run can leave is ~88h (a missed Wednesday after
-# a late-ending Monday run), so any single miss still warns.
+# carried, which absorbs a Monday start launchd deferred past a sleep. Since
+# the move to Mon-Fri (2026-11-12) this catches a missed Mon or Fri run (~96h
+# gap) but NOT a single missed Tue/Wed/Thu run (~48h gap); on Mon/Wed/Fri every
+# single miss left ~88h or more and warned. A day-aware budget is planned
+# (Wave 5); see .github/workflows/discovery-watchdog.yml.
 DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-84}"
 if [[ -f "$LOG_DIR/heartbeat.json" ]]; then
   _prev_iso="$(sed -n 's/.*"lastRunAt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$LOG_DIR/heartbeat.json" | head -1)"
@@ -297,8 +299,8 @@ fi
 CURSOR_FILE="$LOG_DIR/cursor.txt"
 
 # STATES_PER_RUN: how many states this invocation processes, each with its own
-# claude call/submit. Default 3 (2026-10-09; was 2 from 2026-08-14, a ~3x
-# daily-output push). Env-overridable for tests/tuning. Clamped to
+# claude call/submit. Default 4 (2026-11-12; was 3 from 2026-10-09, and 2 from
+# 2026-08-14, a ~3x daily-output push). Env-overridable for tests/tuning. Clamped to
 # [1, ${#STATES[@]}] so a bad value (0, negative, or bigger than the rotation)
 # can't loop forever or index out of STATES' bounds.
 #
@@ -320,12 +322,18 @@ CURSOR_FILE="$LOG_DIR/cursor.txt"
 # OVERRUN warnings or session-limit hits return, this is the first lever to
 # revert.
 #
-# Rotation arithmetic: 51 states / 3 per run = exactly 17 runs per full cycle:
-# ~6 weeks at 3 runs a week (17 days when it ran daily; was ~26 days at 2 per
-# day, and 11 days at 22 states / 2 before the 2026-09-13 expansion). Unlike 2,
-# 51 DOES divide evenly by 3, so the same triples of states recur together
-# every cycle rather than shifting — a consequence worth knowing, not a bug.
-STATES_PER_RUN="${STATES_PER_RUN:-3}"
+# Raised 3 -> 4 on 2026-11-12 (Ed's decision), together with the move to
+# Mon-Fri. 3-state runs took roughly 100-175 min (estimated); 4 states should
+# take roughly 135-235 min, extrapolated and unmeasured. This remains the first
+# lever to revert if OVERRUN warnings or session-limit hits return.
+#
+# Rotation arithmetic: 51 states / 4 per run does NOT divide evenly: a full
+# cycle is 13 runs (51/4 rounded up), about 2.6 weeks at 5 runs a week, and the
+# last run of a cycle wraps past the end of the rotation. So the groups of
+# states SHIFT each cycle rather than recurring together. (Before: 17 runs,
+# ~6 weeks at 3 runs a week with 3 per run, which divided evenly; 17 days when
+# it ran daily; ~26 days at 2 per day.)
+STATES_PER_RUN="${STATES_PER_RUN:-4}"
 (( STATES_PER_RUN < 1 )) && STATES_PER_RUN=1
 (( STATES_PER_RUN > ${#STATES[@]} )) && STATES_PER_RUN=${#STATES[@]}
 
@@ -962,9 +970,9 @@ candidates_file_bytes() {
 # this change (2026-09-13 is 45 days past BURST_START_DATE, past BURST_DAYS=20).
 #
 # STEADY_CAP raised 25 -> 30 (2026-09-13, +20%: 2 x 25 = 50/day -> 2 x 30 =
-# 60/day; STATES_PER_RUN went 2 -> 3 on 2026-10-09, so the per-state discovery
-# ceiling is now 3 x 30 = 90/day, and the real nightly ceiling including the
-# enrichment submit is 3 x 30 + 30 = 120 — see the PER SUBMIT CALL note below),
+# 60/day; STATES_PER_RUN went 2 -> 3 on 2026-10-09 and 3 -> 4 on 2026-11-12, so the
+# per-state discovery ceiling is now 4 x 30 = 120/day, and the real nightly
+# ceiling including the enrichment submit is 4 x 30 + 30 = 150 — see the PER SUBMIT CALL note below),
 # deliberately WITHOUT raising STATES_PER_RUN or BURST_CAP — see
 # STATES_PER_RUN's comment above for why STATES_PER_RUN specifically was left
 # alone. Three reasons for choosing this lever, and for the size:
@@ -998,8 +1006,8 @@ candidates_file_bytes() {
 # Applied PER SUBMIT CALL below (a ceiling per call, not a per-batch total).
 # There are STATES_PER_RUN of those calls inside the per-state loop, plus ONE
 # more for the enrichment lane, which runs once per batch outside the loop — so
-# the real nightly ceiling is (STATES_PER_RUN x cap) + cap = 120 at the current
-# defaults (3 x 30 + 30, since 2026-10-09); it was 90 at 2 states (2 x 30 + 30)
+# the real nightly ceiling is (STATES_PER_RUN x cap) + cap = 150 at the current
+# defaults (4 x 30 + 30, since 2026-11-12); it was 120 at 3 states, 90 at 2 states (2 x 30 + 30)
 # and 75 before the 2026-09-13 cap raise (2 x 25 + 25). The leads lane does not
 # use this cap; it is bounded separately by LEADS_LIMIT.
 # It is a ceiling, not a target: whole-run yield measured ~14-34 approved/day

@@ -9,7 +9,7 @@ approved/rejected by a human via the `submissions` CLI.
 ## Architecture
 
 ```
-run.sh (launchd, Mon/Wed/Fri)
+run.sh (launchd, Mon-Fri)
   1. kill switch check (fail-closed)
   2. pick next state from a rotation cursor
   3. fetch existing-facilities projection for state
@@ -263,8 +263,8 @@ request list, an RTO's generation queue) rather than the aggregator.
   `DISCOVERY_ENABLED=true` is set in the environment, or if
   `discovery-logs/DISABLED` exists. The launchd plist deliberately does NOT
   set `DISCOVERY_ENABLED` — enabling it is a separate, deliberate step.
-- **Bounded per run:** `STATES_PER_RUN` states per run (default **3** since
-  2026-10-09; was 2 from 2026-08-14 — see below) from the rotation cursor, each
+- **Bounded per run:** `STATES_PER_RUN` states per run (default **4** since
+  2026-11-12; 3 from 2026-10-09; 2 from 2026-08-14 — see below) from the rotation cursor, each
   capped at `--max` candidates (new + updated combined). The cap **self-reverts**: burst for the
   first 20 days from the burst-start date baked into `run.sh`, then the steady
   value — no manual step to revert. `STEADY_CAP` was raised **25 → 30**
@@ -282,8 +282,9 @@ request list, an RTO's generation queue) rather than the aggregator.
   this round's throughput lever.
   The cap applies **per submit call**: one per state inside the rotation loop,
   **plus** a separate enrichment submit that runs once per batch outside it. So
-  the real per-run ceiling is `(STATES_PER_RUN × cap) + cap` — **120** at the
-  current defaults (3 × 30 + 30, since 2026-10-09). It was **90** at 2 states
+  the real per-run ceiling is `(STATES_PER_RUN × cap) + cap` — **150** at the
+  current defaults (4 × 30 + 30, since 2026-11-12). It was **120** at 3 states
+  (3 × 30 + 30, 2026-10-09 to 2026-11-12), **90** at 2 states
   (2 × 30 + 30) and **75** before the 2026-09-13 cap raise (2 × 25 + 25). This
   counts only the per-state and enrichment `submit-candidates` calls; the
   leads lane (`LEADS_LIMIT`, see the runbook) is bounded separately. It is a ceiling,
@@ -354,7 +355,7 @@ request list, an RTO's generation queue) rather than the aggregator.
   **The durable signal is the heartbeat row, read off-machine.** Every
   non-dry-run invocation publishes the heartbeat to a `discovery_heartbeat` row
   in Neon (`scripts/discovery/publish-heartbeat.ts`), and
-  `.github/workflows/discovery-watchdog.yml` reads that row Mon/Wed/Fri at 23:00 UTC
+  `.github/workflows/discovery-watchdog.yml` reads that row Mon-Fri at 23:00 UTC (Mon/Wed/Fri until 2026-11-12)
   via `scripts/discovery/check-heartbeat.ts`. It fails when the row is missing,
   when `last_run_at` is stale — no run happened — and, **since 2026-09-28**,
   when the row is fresh but its status is not `ok` — a run happened and failed.
@@ -401,9 +402,12 @@ state, capped to `--max` submissions (new + updated combined, default 5).
 There is no fan-out, no multi-agent workflow, and no `/data-wave` invocation
 from this pipeline.
 
-**Cadence:** The combined-pass model runs Mon/Wed/Fri via launchd, processing
-`STATES_PER_RUN` states per invocation (default **3** since 2026-10-09; 2 from
-2026-08-14 until then) from a rotation cursor. Raising it to 3 was Ed's
+**Cadence:** The combined-pass model runs Mon-Fri via launchd (Mon/Wed/Fri until 2026-11-12), processing
+`STATES_PER_RUN` states per invocation (default **4** since 2026-11-12; 3 from
+2026-10-09; 2 from 2026-08-14) from a rotation cursor. Moving to Mon-Fri and
+raising it 3 → 4 was the owner's decision on 2026-11-12; 4-state run times are
+not yet measured, and the 84h staleness budgets are unchanged (the longest gap
+is still Fri -> Mon, 72h). Raising it to 3 was Ed's
 decision on 2026-10-09, based on zero OVERRUN warnings since 2026-09-16 and
 2-state batches taking 68–118 min (`run.sh` comment at `STATES_PER_RUN`). The
 2026-10-05..07 failures were an expired Claude login, not load. The reasoning
@@ -437,14 +441,16 @@ change); the 29 states newly added were not in the rotation at all before this
 change — not even pre-2026-08-14 — so a flat `lastUpdated` in one of them means
 nobody has ever looked, a stronger signal than a flat `lastUpdated` in one of
 the original 22 (which only means the pipeline looked and found nothing).
-With `STATES_PER_RUN` at **3** (raised from 2 on 2026-10-09), 51 states cycle
-in exactly **17 days**. At the prior default of 2, 51 states cycled in about
+With `STATES_PER_RUN` at **4** (raised from 3 on 2026-11-12) and runs Mon-Fri,
+51 states cycle in **13 runs** (12.75, rounded up), about 2.6 weeks. At 3 per
+run on Mon/Wed/Fri the cycle was 17 runs (2026-10-09 to 2026-11-12; the
+earlier text called this "17 days", which was the run count, not calendar
+days); at the earlier default of 2, 51 states cycled in about
 **26 days** (until 2026-10-09) — the real cost of covering every state without
 losing re-check coverage on the rest, stated plainly so nobody discovers it by
 surprise. 22 states cycled in about 11 days at 2 per run (up from 7.5 before
-the first rebalance). 51 divides evenly by 3, so the same triples of states
-recur together every cycle rather than shifting; the old 22/2 and 15/2
-rotations and 51/2 vary cycle to cycle. Both are fine and intended, not a bug.
+the first rebalance). 51 does not divide evenly by 4, so batches shift from cycle to cycle, as the old 22/2, 15/2 and 51/2
+rotations did. Both are fine and intended, not a bug.
 
 `DISCOVERY_STATES` overrides the rotation entirely (space-separated). That is
 the supported way to drive a targeted run without editing the script, and it is
