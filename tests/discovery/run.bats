@@ -1975,6 +1975,110 @@ EOF
 	[ ! -s "$NOTIFY_CALL_LOG" ]
 }
 
+# Day-aware staleness budget (Wave 5.0): Mon 84, Tue-Sat 36, Sun 60. The weekday
+# is pinned by a `date` shim that answers only the `+%u` query.
+_pin_weekday() {
+	# Resolve the real date once: on a second call `command -v date` would find
+	# the shim itself and the shim would exec itself forever.
+	[[ -n "${REAL_DATE:-}" ]] || REAL_DATE="$(command -v date)"
+	printf '#!/bin/bash\nif [[ "${1:-}" == "+%%u" ]]; then echo "%s"; exit 0; fi\nexec "%s" "$@"\n' \
+		"$1" "$REAL_DATE" >"$BIN_DIR/date"
+	chmod +x "$BIN_DIR/date"
+}
+
+_write_heartbeat_aged() {
+	local old
+	# BSD (macOS) then GNU (Linux/CI) — this file must pass on both.
+	old="$(date -j -v-"$1"H '+%Y-%m-%dT%H:%M:%S%z' 2>/dev/null \
+		|| date -d "$1 hours ago" '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$old" >"$LOG_DIR/heartbeat.json"
+}
+
+@test "Thursday: a 45h-old heartbeat (one missed mid-week run) warns" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_pin_weekday 4
+	_write_heartbeat_aged 45
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+	grep -q "Missed runs" "$NOTIFY_CALL_LOG"
+}
+
+@test "Monday: a 70h-old heartbeat (normal weekend gap) does not warn" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_pin_weekday 1
+	_write_heartbeat_aged 70
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+	[ ! -s "$NOTIFY_CALL_LOG" ]
+}
+
+@test "Monday: a 90h-old heartbeat warns" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_pin_weekday 1
+	_write_heartbeat_aged 90
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "Sunday: a 50h-old heartbeat does not warn" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_pin_weekday 7
+	_write_heartbeat_aged 50
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "DISCOVERY_STALE_HOURS stays a fixed override of the day-aware budget" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true DISCOVERY_STALE_HOURS=100
+	_pin_weekday 4
+	_write_heartbeat_aged 45
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "an unparseable DISCOVERY_STALE_HOURS is reported and the day-aware budget applies" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true DISCOVERY_STALE_HOURS=abc
+	_pin_weekday 4
+	_write_heartbeat_aged 45
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"DISCOVERY_STALE_HOURS='abc' is not a positive integer"* ]] || return 1
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "DISCOVERY_STALE_HOURS=0 is rejected and does not flag a fresh heartbeat" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true DISCOVERY_STALE_HOURS=0
+	_pin_weekday 4
+	_write_heartbeat_aged 1
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"DISCOVERY_STALE_HOURS='0' is not a positive integer"* ]] || return 1
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+}
+
+# The whole table, Mon..Sun = 84 36 36 36 36 36 60. scripts/schedule-budget.test.ts
+# holds the same table for the TypeScript side: change one, change both.
+@test "the day-aware budget table is 84/36/36/36/36/36/60 for Mon..Sun" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	local got="" d
+	for d in 1 2 3 4 5 6 7; do
+		_pin_weekday "$d"
+		_write_heartbeat_aged 200
+		run bash "$RUN_SH"
+		[ "$status" -eq 0 ]
+		got="$got $(printf '%s\n' "$output" | grep -o '(> [0-9]*h)' | head -1)"
+	done
+	[ "$got" = " (> 84h) (> 36h) (> 36h) (> 36h) (> 36h) (> 36h) (> 60h)" ] || {
+		echo "got:$got"
+		return 1
+	}
+}
+
 # --- wall-clock cap enforcement (open item #2, 2026-08-14) -------------------
 # MEASURED: against a process that ignores SIGTERM, `timeout 2` let it run the
 # full 31s and STILL exited 124. So (a) -k is what actually enforces, and

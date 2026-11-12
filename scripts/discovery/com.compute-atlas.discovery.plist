@@ -42,9 +42,9 @@
     the Mac is normally awake and lid-open: an overnight (03:00) slot was
     skipped whenever the machine was asleep, since launchd defers a missed
     calendar interval to the next wake. The watchdog cron in
-    .github/workflows/discovery-watchdog.yml and the 84h stale thresholds
-    follow this schedule and must change with it; 84h still holds because the
-    longest gap is Fri -> Mon.
+    .github/workflows/discovery-watchdog.yml and the day-aware stale
+    budgets follow this schedule and must change with it (Mon 84h, Tue-Sat
+    36h, Sun 60h; the watchdog workflow's own freshness stays a flat 84h).
     launchd Weekday: 0/7 = Sunday, 1 = Monday.
   -->
   <key>StartCalendarInterval</key>

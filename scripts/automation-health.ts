@@ -55,7 +55,12 @@ export interface WorkflowConfig {
  * budget would flap on scheduler jitter alone. Do not "tighten" this into a
  * flaky alarm — the slack is load-bearing. `discovery-watchdog` runs
  * Mon-Fri (since 2026-11-12), so its 84h is its longest gap (Fri -> Mon, 72h) + the same 12h
- * slack.
+ * slack. It stays a FLAT 84h, unlike the day-aware
+ * discovery heartbeat (`check-heartbeat.ts`: Mon 84, Tue-Sat 36, Sun 60): this
+ * entry monitors GitHub's scheduler, whose runs are created a day late
+ * (~00:50-04:30Z the next UTC day), so a day-aware UTC budget would false-alarm
+ * shortly after midnight UTC. A flat 84h still catches a dead watchdog within
+ * 3.5 days.
  *
  * release-please is weekly (Mondays), so its budget is days, not hours:
  * 8 days catches a truly-dead schedule while giving a full week of jitter

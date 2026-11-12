@@ -372,7 +372,8 @@ request list, an RTO's generation queue) rather than the aggregator.
   runs. It cannot detect "launchd never fired at all" — that is the stale-row
   case the off-machine watchdog owns. `run.sh`'s stale-heartbeat check is the
   on-machine partial mitigation: on startup, a previous `lastRunAt` older than
-  `DISCOVERY_STALE_HOURS` (default 84) is logged as a WARN and passed to the
+  the day-aware budget (Mon 84h, Tue-Sat 36h, Sun 60h; a set
+  `DISCOVERY_STALE_HOURS` overrides it) is logged as a WARN and passed to the
   same best-effort `notify()`, so missed days surface in the run log of the next
   run that happens.
 - **The wall-clock cap is enforced, and its failure is detected.**
@@ -406,8 +407,8 @@ from this pipeline.
 `STATES_PER_RUN` states per invocation (default **4** since 2026-11-12; 3 from
 2026-10-09; 2 from 2026-08-14) from a rotation cursor. Moving to Mon-Fri and
 raising it 3 → 4 was the owner's decision on 2026-11-12; 4-state run times are
-not yet measured, and the 84h staleness budgets are unchanged (the longest gap
-is still Fri -> Mon, 72h). Raising it to 3 was Ed's
+not yet measured, and the staleness budget is day-aware (Mon 84h, Tue-Sat 36h, Sun 60h;
+the watchdog workflow's own freshness stays a flat 84h). Raising it to 3 was Ed's
 decision on 2026-10-09, based on zero OVERRUN warnings since 2026-09-16 and
 2-state batches taking 68–118 min (`run.sh` comment at `STATES_PER_RUN`). The
 2026-10-05..07 failures were an expired Claude login, not load. The reasoning

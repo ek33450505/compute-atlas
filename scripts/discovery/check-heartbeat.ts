@@ -73,41 +73,47 @@ import { formatErrorSummary } from "../../lib/db-error";
 import { getDb, hasDatabaseUrl } from "../../lib/db/client";
 import { discoveryHeartbeatTable, type DiscoveryHeartbeatRow } from "../../lib/db/schema";
 import { isEntrypoint } from "../is-entrypoint";
+import { dayAwareStaleHours, MON_FRI } from "../schedule-budget";
 
 // --- threshold -----------------------------------------------------------
 
 /**
- * Deliberately matches the same-named `DISCOVERY_STALE_HOURS` default in
- * `scripts/discovery/run.sh` (`DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-84}"`)
- * so the local (on-machine, same-run) check and this remote (off-machine,
- * scheduled) check agree on what "stale" means. Keep these two literals in
- * sync if either changes. 84h = the Mon-Fri schedule's longest gap
- * (Fri -> Mon, up to ~72h) + 12h slack.
+ * The discovery schedule: Mon-Fri 13:00 America/New_York (since 2026-11-12).
+ * The default staleness budget is DAY-AWARE (`dayAwareStaleHours`): 24h per day
+ * back to the most recent scheduled weekday strictly before today, plus 12h
+ * slack. Today's own run is never required.
+ *
+ *   Mon 84 · Tue-Sat 36 · Sun 60
+ *
+ * `scripts/discovery/run.sh` carries the same table in bash for its local
+ * check; keep both in sync. A flat 84h hid a single missed Tue/Wed/Thu run
+ * (~48h gap).
  */
-export const DISCOVERY_STALE_HOURS_DEFAULT = 84;
+export const DISCOVERY_SCHEDULE = { timeZone: "America/New_York", weekdays: MON_FRI } as const;
 
 /**
- * Parses `DISCOVERY_STALE_HOURS` from the environment. An unset/empty value
- * falls back to `DISCOVERY_STALE_HOURS_DEFAULT`. A value that IS present but
- * fails to parse as a positive number THROWS rather than silently falling
- * back — an unparseable limit that disables its own bound is a known trap in
- * this repo (see `scripts/discovery/run.sh`'s and `extract-fields.ts`'s
- * `ENRICHMENT_LIMIT`/`VERIFY_LIMIT` validation for the same precaution).
+ * Resolves the staleness threshold. An unset/empty `DISCOVERY_STALE_HOURS`
+ * yields the day-aware budget for `now`. A value that IS present is a fixed
+ * override and, unless it is a positive INTEGER (the same `^[1-9][0-9]*$` rule
+ * as run.sh), THROWS rather than
+ * silently falling back — an unparseable limit that disables its own bound is
+ * a known trap in this repo (see `scripts/discovery/run.sh`'s and
+ * `extract-fields.ts`'s `ENRICHMENT_LIMIT`/`VERIFY_LIMIT` validation for the
+ * same precaution).
  */
-export function parseStaleHoursEnv(raw: string | undefined): number {
+export function parseStaleHoursEnv(raw: string | undefined, now: Date = new Date()): number {
   if (raw === undefined || raw === "") {
-    return DISCOVERY_STALE_HOURS_DEFAULT;
+    return dayAwareStaleHours(now, DISCOVERY_SCHEDULE);
   }
-  const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
+  if (!/^[1-9][0-9]*$/.test(raw)) {
     throw new Error(
-      `check-heartbeat: DISCOVERY_STALE_HOURS="${raw}" is not a valid positive number of hours. ` +
-        `Refusing to silently fall back to the default (${DISCOVERY_STALE_HOURS_DEFAULT}h) — an ` +
+      `check-heartbeat: DISCOVERY_STALE_HOURS="${raw}" is not a positive whole number of hours. ` +
+        "Refusing to silently fall back to the day-aware default — an " +
         "unparseable threshold that disables the bound is exactly the failure mode this repo has " +
         "hit before (see run.sh's ENRICHMENT_LIMIT/VERIFY_LIMIT validation)."
     );
   }
-  return parsed;
+  return Number(raw);
 }
 
 // --- read ------------------------------------------------------------------
@@ -226,9 +232,10 @@ export class HeartbeatDegradedError extends Error {
  * echoes the recorded status and its report keeps `isDegraded`.
  */
 export async function runHeartbeatCheck(
-  thresholdHours: number = parseStaleHoursEnv(process.env.DISCOVERY_STALE_HOURS),
+  thresholdHours?: number,
   now: Date = new Date()
 ): Promise<HeartbeatFreshnessReport> {
+  const threshold = thresholdHours ?? parseStaleHoursEnv(process.env.DISCOVERY_STALE_HOURS, now);
   const row = await fetchHeartbeatRow();
   if (!row) {
     throw new HeartbeatMissingError();
@@ -238,11 +245,11 @@ export async function runHeartbeatCheck(
   const report: HeartbeatFreshnessReport = {
     row,
     ageHours,
-    thresholdHours,
+    thresholdHours: threshold,
     isDegraded: row.status !== "ok",
   };
 
-  if (ageHours > thresholdHours) {
+  if (ageHours > threshold) {
     throw new HeartbeatStaleError(report);
   }
 

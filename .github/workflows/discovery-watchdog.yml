@@ -63,27 +63,28 @@
 # discovery run (17:00 UTC on EDT, 18:00 UTC on EST, so the calendar day holds
 # across the Nov 1 DST change). The local pipeline was Mon/Wed/Fri from
 # 2026-11-02 and is Mon-Fri from 2026-11-12, and this follows it. In practice
-# GitHub's scheduled-run delay pushes actual execution to ~00:40-02:30 UTC the
-# NEXT day, measured over the last 14 runs (taken on the Mon/Wed/Fri schedule;
-# re-measure on Mon-Fri). The local run ended 13:25-15:30 local at 3 states per
-# run; 4-state runs (since 2026-11-12) are unmeasured and end later, so check that
-# the watchdog still reads a finished heartbeat. Re-measure with
-# `gh run list --limit 30 --workflow=discovery-watchdog.yml --json createdAt`.
+# GitHub's scheduled-run delay pushes actual execution to ~00:50-04:30 UTC the
+# NEXT day (scheduled runs created 2026-10-24..11-12 under the earlier daily
+# and Mon/Wed/Fri crons; observed 00:53-04:23 UTC; re-measure on Mon-Fri). The local run ended 13:25-15:30 local at 3 states per
+# run; 4-state runs (since 2026-11-12) end ~16:00-17:00 local (estimate;
+# re-measure), so the watchdog should still read a finished heartbeat. Re-measure
+# with `gh run list --limit 30 --workflow=discovery-watchdog.yml --json createdAt`.
 #
-# STALENESS BUDGET: 84h, not 36h. It is check-heartbeat.ts's
-# DISCOVERY_STALE_HOURS_DEFAULT, matched by run.sh and by automation-health's
-# staleAfterHours. The longest normal gap is Fri -> Mon (nominally 72h start to
-# start, ~70h from the Friday run's end), plus the same 12h slack the old daily
-# 36h budget carried; the slack is what absorbs a Monday start that launchd
-# deferred past a sleep. What this guarantees ON MON-FRI (since 2026-11-12) is
-# weaker than it was on Mon/Wed/Fri, and the budget was deliberately left at 84h:
-# a missed Mon or Fri run leaves a ~96h gap and is caught by run.sh's own gap
-# check on the next run, but a single missed Tue/Wed/Thu run leaves only ~48h,
-# which 84h does not flag anywhere. Remotely, the heartbeat must be ~84h old at
-# a watchdog run, which takes about three consecutive mid-week misses (or a
-# missed Fri plus Mon). A day-aware budget (e.g. ~36h Tue-Fri, 84h on Mon) would
-# restore single-miss detection; not done. Under Mon/Wed/Fri every single miss
-# left ~94h and two consecutive misses were caught here.
+# STALENESS BUDGET: day-aware, not flat (Wave 5, 2026-11-12). check-heartbeat.ts
+# uses dayAwareStaleHours (scripts/schedule-budget.ts) with "today" taken in
+# America/New_York; run.sh mirrors it via `date +%u`. (automation-health's
+# check of THIS workflow's own freshness stays a flat 84h: its runs are created
+# a UTC day late, Tue-Sat, so a weekday rule would false-alarm.) Budget = 24h x
+# days back from today to the most recent scheduled weekday strictly before
+# today, plus 12h slack (absorbs a start launchd deferred past a sleep):
+# Mon 84h (back to Fri), Tue-Sat 36h, Sun 60h. Today's own run is never
+# required, so this job cannot race a late-ending 4-state run. On EST (UTC-5)
+# a 04:30 UTC start is still the same local evening (23:30); on EDT (UTC-4) it
+# crosses local midnight (00:30), which only moves "today" forward a day and so
+# requires a run that finished hours earlier: stricter, never a false alarm. Guarantee: run.sh's gap check flags a single missed mid-week run on its
+# next run; this watchdog catches two consecutive misses (the old Mon/Wed/Fri
+# guarantee). A set DISCOVERY_STALE_HOURS is a fixed override; nothing in
+# .github/ sets it.
 #
 # Requires: DATABASE_URL as a repo secret (already configured).
 #

@@ -226,14 +226,34 @@ fi
 # than DISCOVERY_STALE_HOURS means scheduled runs were missed entirely (machine
 # asleep at 13:00, job unloaded, plist broken) — a different failure than "the
 # run happened and produced nothing", and invisible from claudeStatus alone.
-# 84h: the longest normal gap is Fri -> Mon (~70h from a Friday run's end to
-# Monday's 13:00 start), plus the same 12h slack the old daily 36h (24+12)
-# carried, which absorbs a Monday start launchd deferred past a sleep. Since
-# the move to Mon-Fri (2026-11-12) this catches a missed Mon or Fri run (~96h
-# gap) but NOT a single missed Tue/Wed/Thu run (~48h gap); on Mon/Wed/Fri every
-# single miss left ~88h or more and warned. A day-aware budget is planned
-# (Wave 5); see .github/workflows/discovery-watchdog.yml.
-DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-84}"
+# Day-aware budget = 24 * (days back from today to the most recent scheduled
+# weekday strictly before today) + 12, by `date +%u` (1=Mon..7=Sun):
+# Mon 84, Tue-Sat 36, Sun 60. Today's own run is never required. Monday is the
+# old flat 84h case: the longest normal gap is Fri -> Mon (~70h from a Friday
+# run's end to Monday's 13:00 start) plus 12h slack. The 12h slack absorbs a
+# start launchd deferred past a sleep. A single missed mid-week run (say Wed)
+# is now flagged by the next run (Thursday's gap is ~45-48h > 36h), which a
+# flat 84h never caught. scripts/discovery/check-heartbeat.ts (the remote
+# watchdog check) uses the exact same table: keep both in sync. See
+# .github/workflows/discovery-watchdog.yml.
+# A set DISCOVERY_STALE_HOURS stays a fixed override. An invalid value (not a
+# positive integer) logs one ERROR line and the day-aware budget is used
+# instead; no notification is sent. check-heartbeat.ts applies the same
+# positive-integer rule to its override.
+_dow="$(date '+%u')"
+case "$_dow" in
+  1) _stale_budget=84 ;;
+  7) _stale_budget=60 ;;
+  *) _stale_budget=36 ;;
+esac
+if [[ -n "${DISCOVERY_STALE_HOURS:-}" ]]; then
+  if [[ "$DISCOVERY_STALE_HOURS" =~ ^[1-9][0-9]*$ ]]; then
+    _stale_budget="$DISCOVERY_STALE_HOURS"
+  else
+    log "ERROR: DISCOVERY_STALE_HOURS='${DISCOVERY_STALE_HOURS}' is not a positive integer - ignoring it, using the day-aware ${_stale_budget}h budget"
+  fi
+fi
+DISCOVERY_STALE_HOURS="$_stale_budget"
 if [[ -f "$LOG_DIR/heartbeat.json" ]]; then
   _prev_iso="$(sed -n 's/.*"lastRunAt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$LOG_DIR/heartbeat.json" | head -1)"
   if [[ -n "$_prev_iso" ]]; then
