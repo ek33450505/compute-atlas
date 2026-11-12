@@ -738,6 +738,13 @@ export default async function AboutPage() {
           </a>
           .
         </p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Questions, corrections to the record or press enquiries:{" "}
+          <Link href="/contact" className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm">
+            contact page
+          </Link>
+          .
+        </p>
       </section>
     </div>
   );

@@ -1,52 +1,12 @@
 import Link from "next/link";
 import { Code2 } from "lucide-react";
 
+import { getPaletteLinks, getSiteNavGroups, NAV_LINKS } from "@/lib/site-nav";
 import { siteConfig } from "@/lib/site";
 import { Wordmark } from "@/components/wordmark";
 import { PrimaryNav } from "@/components/primary-nav";
 import { MobileNav } from "@/components/mobile-nav";
 import { CommandPalette } from "@/components/search/command-palette";
-
-export const NAV_LINKS = [
-  { label: "Map", href: "/map" },
-  { label: "Table", href: "/table" },
-  { label: "Data", href: "/data" },
-  { label: "Stats", href: "/stats" },
-  { label: "Explore", href: "/explore" },
-  { label: "Activity", href: "/activity" },
-  { label: "Contribute", href: "/contribute" },
-  { label: "About", href: "/about" },
-  { label: "Support", href: "/support" },
-] as const;
-
-export const MOBILE_NAV_GROUPS = [
-  {
-    label: "Tools",
-    links: [
-      { label: "Map", href: "/map" },
-      { label: "Table", href: "/table" },
-      { label: "Data", href: "/data" },
-      { label: "Stats", href: "/stats" },
-    ],
-  },
-  {
-    label: "Explore",
-    links: [
-      { label: "Explore all lenses", href: "/explore" },
-      { label: "Opposition", href: "/opposition" },
-    ],
-  },
-  {
-    label: "Project",
-    links: [
-      { label: "Activity", href: "/activity" },
-      { label: "About", href: "/about" },
-      { label: "Contribute", href: "/contribute" },
-      { label: "Support", href: "/support" },
-      { label: "Source on GitHub", href: siteConfig.repoUrl, external: true },
-    ],
-  },
-] as const;
 
 export function SiteHeader() {
   // The palette loads its operator/state index lazily from /api/nav-index and
@@ -69,19 +29,19 @@ export function SiteHeader() {
 
         {/* Right-side controls */}
         <div className="ml-auto flex items-center gap-1">
-          <CommandPalette navLinks={NAV_LINKS} />
+          <CommandPalette navLinks={getPaletteLinks()} />
           {/* GitHub icon — desktop only */}
           <a
             href={siteConfig.repoUrl}
             target="_blank"
             rel="noreferrer noopener"
             aria-label="View source on GitHub"
-            className="hidden xl:flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="hidden lg:flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <Code2 aria-hidden className="size-4" />
           </a>
-          {/* Mobile menu — hidden on xl+ */}
-          <MobileNav groups={MOBILE_NAV_GROUPS} />
+          {/* Mobile menu — hidden on lg+ */}
+          <MobileNav groups={getSiteNavGroups()} />
         </div>
       </div>
     </header>

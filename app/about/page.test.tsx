@@ -179,6 +179,17 @@ describe("AboutPage — § The stance", () => {
     }
   });
 
+  it("links the hub pages the header no longer carries: Methodology, Contribute, Support and Contact", async () => {
+    mockNonZero();
+    render(await AboutPage());
+
+    expect(screen.getByRole("link", { name: "contact page" })).toHaveAttribute("href", "/contact");
+    const hrefs = screen.getAllByRole("link").map((a) => a.getAttribute("href"));
+    for (const href of ["/methodology", "/contribute", "/support"]) {
+      expect(hrefs).toContain(href);
+    }
+  });
+
   it("points reusers at the on-site how-to-cite section", async () => {
     mockNonZero();
     const page = await AboutPage();

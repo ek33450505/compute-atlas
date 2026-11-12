@@ -19,6 +19,7 @@ import {
   getCounties,
   getFacilitiesByCounty,
 } from "@/lib/data";
+import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import { stateSlugFromCode } from "@/lib/us-states";
 import { STATUS_ORDER } from "@/lib/status";
 import { METROS } from "@/lib/metros";
@@ -166,6 +167,17 @@ export async function buildStaticRoutes(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.7,
     },
+    // /dataset is noindexed while sharing is off, so it stays out of the sitemap then.
+    ...(isDatasetSharingEnabled()
+      ? [
+          {
+            url: `${siteConfig.url}/dataset`,
+            lastModified: datasetLastModified,
+            changeFrequency: "weekly" as const,
+            priority: 0.7,
+          },
+        ]
+      : []),
     {
       url: `${siteConfig.url}/sources/odod-dcte-2026-11`,
       // Own date: STATIC_PAGE_LAST_MODIFIED (pinned 2026-09-03) predates this page.

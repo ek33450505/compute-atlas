@@ -6,17 +6,10 @@ import { usePathname } from "next/navigation";
 import { Dialog } from "@base-ui/react/dialog";
 import { Menu, X } from "lucide-react";
 
-interface NavGroup {
-  readonly label: string;
-  readonly links: readonly {
-    readonly label: string;
-    readonly href: string;
-    readonly external?: boolean;
-  }[];
-}
+import type { SiteNavGroup } from "@/lib/site-nav";
 
 interface MobileNavProps {
-  readonly groups: readonly NavGroup[];
+  readonly groups: readonly SiteNavGroup[];
 }
 
 const LINK_CLASSNAME =
@@ -44,7 +37,7 @@ export function MobileNav({ groups }: MobileNavProps) {
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring xl:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors motion-reduce:transition-none hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden"
       >
         {open ? (
           <X aria-hidden className="size-5" />

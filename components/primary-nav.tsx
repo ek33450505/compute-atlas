@@ -13,9 +13,12 @@ export function PrimaryNav({ links }: PrimaryNavProps) {
   const pathname = usePathname();
 
   return (
-    // xl: with nine items the header needs ~1,137px (page scrollWidth at a
-    // 1024px viewport, measured 2026-11-11). A shorter nav can return this to lg.
-    <nav aria-label="Primary" className="hidden xl:flex items-center gap-1 ml-4">
+    // lg: five items are ~346px wide. At 768px (md) they fit the viewport but
+    // push the right-hand controls 9px past the container padding (measured
+    // 2026-11-12); from 800px they fit. md would cover 768-1023, so the nav
+    // reveals at lg (1024px), where 177px is spare. The mobile toggle and the
+    // GitHub icon switch at the same breakpoint.
+    <nav aria-label="Primary" className="hidden lg:flex items-center gap-1 ml-4">
       {links.map(({ label, href }) => {
         const isActive = pathname === href;
         return (

@@ -17,6 +17,7 @@ const ROUTES = [
   "/access/confirmed",
   "/methodology",
   "/data",
+  "/dataset",
   // Chrome-free layout shape (no header/footer, full-height map + a single
   // attribution link) — never audited before. "texas" is prerendered
   // (generateStaticParams iterates getStates(), i.e. states with

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import {
   buildStaticRoutes,
   buildStateRoutes,
@@ -26,6 +26,24 @@ import { STATUS_ORDER } from "@/lib/status";
 import { METROS } from "@/lib/metros";
 import { GLOSSARY_TOPICS } from "@/lib/glossary";
 import { siteConfig } from "@/lib/site";
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
+describe("sitemap /dataset", () => {
+  it("lists /dataset only while dataset sharing is on (the page is noindexed otherwise)", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    const on = (await buildStaticRoutes()).map((r) => r.url);
+    expect(on).toContain(`${siteConfig.url}/dataset`);
+    expect(on).toContain(`${siteConfig.url}/data`);
+
+    vi.stubEnv("DATASET_SHARING_ENABLED", "");
+    const off = (await buildStaticRoutes()).map((r) => r.url);
+    expect(off).not.toContain(`${siteConfig.url}/dataset`);
+    expect(off).toContain(`${siteConfig.url}/data`);
+  });
+});
 
 describe("sitemap", () => {
   it("static routes include /, /map, /table, /states, /power, /opposition, /stats, /about, /explore, /activity, /contribute, /support, and /contact", async () => {

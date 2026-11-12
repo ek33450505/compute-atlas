@@ -13,6 +13,7 @@ import { test, expect } from "@playwright/test";
 // left out; only the token-free states are covered.
 const ROUTES = [
   "/data",
+  "/dataset",
   "/methodology",
   "/support",
   "/crypto",
