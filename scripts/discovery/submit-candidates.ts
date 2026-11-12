@@ -31,7 +31,8 @@
  *
  * Uses relative imports throughout, matching scripts/seed.ts and scripts/submissions.ts.
  */
-import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { readFileSync, mkdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { formatErrorSummary, formatFatalError, redactedErrorCode, scrubUriCredentials } from "../../lib/db-error";
@@ -106,6 +107,48 @@ export function verificationEnabled(env: EnvLike = process.env): boolean {
   return env.VERIFY_SOURCES_ENABLED !== "false";
 }
 
+/**
+ * EXIT CODE CLASSIFICATION (the one place it is defined; run.sh branches on it).
+ *
+ *   0  clean.
+ *   1  ordinary or CONFIG error. Retrying will not help until something is fixed:
+ *        - `errors` > 0 with no outage (a candidate we meant to stage broke, or one
+ *          POST was rejected with a 4xx);
+ *        - 401 from the intake API (token missing/revoked: repeats every run);
+ *        - DISCOVERY_REQUIRE_VERIFY=1 with VERIFY_SOURCES_ENABLED=false (repeats
+ *          every run: the refusal message is fixed text, `VERIFY_DISABLED_REFUSAL`);
+ *        - `--resume-from-log` pointing at a log that does not match the candidates.
+ *   3  `EXIT_GATE_UNAVAILABLE`: transient, retry this state later. 5xx, 408, 429, 403
+ *      (a Cloudflare WAF can return it), a thrown fetch (transport), an unreadable
+ *      facility index, `VerificationGateUnavailableError` (Ollama), or a majority of
+ *      candidates `skippedUnreachable`.
+ *
+ * run.sh does not rewind the cursor on 3: it queues the saved candidates file and
+ * its `run-<runId>.json` and the next run resubmits with `--resume-from-log`, which
+ * skips candidates the first attempt already POSTed (createSubmission does not dedupe).
+ */
+export const EXIT_GATE_UNAVAILABLE = 3;
+
+/** Minimum candidates for the `skippedUnreachable` majority rule to mean anything. */
+export const UNREACHABLE_MAJORITY_MIN = 3;
+
+/**
+ * Fixed refusal message for a scheduled run (DISCOVERY_REQUIRE_VERIFY=1) that
+ * finds the gate disabled. A literal, never interpolated, so a test can pin it.
+ */
+export const VERIFY_DISABLED_REFUSAL =
+  "VERIFY_SOURCES_ENABLED=false is set while the scheduler requires the source-verification gate " +
+  "(DISCOVERY_REQUIRE_VERIFY=1); refusing to run. Remove VERIFY_SOURCES_ENABLED=false from .env.local, " +
+  "or run by hand without DISCOVERY_REQUIRE_VERIFY.";
+
+/**
+ * True when the scheduler demands the verification gate but it is disabled.
+ * Without DISCOVERY_REQUIRE_VERIFY=1 (manual runs) the opt-out stays allowed.
+ */
+export function requireVerifyViolation(env: EnvLike = process.env): boolean {
+  return env.DISCOVERY_REQUIRE_VERIFY === "1" && !verificationEnabled(env);
+}
+
 // --- types -----------------------------------------------------------------
 
 export interface CandidateProvenance {
@@ -141,8 +184,30 @@ export type NormalizedCandidate =
       provenance: CandidateProvenance;
     };
 
+/**
+ * Per-candidate record in `run-<runId>.json`, the basis for `--resume-from-log`.
+ * `index` is the candidate's position in the candidates file and `hash` the sha256
+ * of its JSON; together they prove a log belongs to a file. `outcome` is one of
+ * "submitted" | "dry_run" | "error" | "not_attempted" | a skipped counter name
+ * (skippedDuplicate, skippedInvalid, skippedOverCap, skippedUnverified,
+ * skippedUnreachable, skippedRestrictedSource). A candidate carried over from a
+ * resumed log stays "submitted" (with `carriedForward`), so a second resume skips it too.
+ * "in_flight" is checkpointed BEFORE each real POST and settled after it: a log that still
+ * says "in_flight" means the process died with the POST outcome unknown, and a resume
+ * skips it too (at-most-once; the pending queue is the arbiter).
+ */
+export interface CandidateOutcomeRecord {
+  index: number;
+  hash: string;
+  outcome: string;
+  submissionId?: string;
+  carriedForward?: true;
+}
+
 export interface RunSubmitOptions {
   runId: string;
+  /** Candidate indexes a previous attempt already POSTed (from `loadResumeLog`); skipped, not re-staged. */
+  resumeSubmitted?: ReadonlyMap<number, CandidateOutcomeRecord>;
   max: number;
   dryRun: boolean;
   baseUrl: string;
@@ -151,6 +216,14 @@ export interface RunSubmitOptions {
 }
 
 export interface RunSubmitDeps {
+  /**
+   * Durable checkpoint of the live summary, called before every real POST (with the
+   * candidate marked "in_flight") and after it settles. Submissions do not dedupe
+   * server-side, so the log is the only protection against double-staging on a retry.
+   * A throw aborts the run before any further POST (`CheckpointWriteError`). `runSubmitAndLog`
+   * wires it to its log writer; absent (bare `runSubmit` callers), nothing is checkpointed.
+   */
+  checkpoint?: (summary: RunSubmitSummary) => void;
   /** Test seam for the POST retry backoff; defaults to setTimeout. */
   sleepImpl?: (ms: number) => Promise<void>;
   fetchImpl: typeof fetch;
@@ -213,6 +286,26 @@ export interface RunSubmitSummary {
    * this is a verification-gate failure, not a schema failure, and the two
    * must not be blurred together in `run-<runId>.json`. */
   skippedUnverified: number;
+  /** Candidates skipped because the log given to `--resume-from-log` shows they were already submitted. */
+  skippedResumed: number;
+  /** Candidates the resumed log shows as "in_flight" (the previous attempt died around their POST):
+   * not resubmitted, since we cannot know whether it landed. Check the pending queue. */
+  resumedInFlight: number;
+  /** Every cited source of the candidate failed with a transport failure
+   * (`network_error`: resolver, connect, timeout), so nothing was READ. Counted
+   * here INSTEAD of `skippedUnverified`: a network outage is not evidence the
+   * sources are bad. ⚠️ A permanently dead domain also yields `network_error`, so a
+   * false positive is possible; it only costs a queued resubmit that fails the
+   * same way and is later aged out by run.sh (the cursor cannot be pinned). A majority of a state's candidates (and >= 3) makes the
+   * run exit `EXIT_GATE_UNAVAILABLE`. */
+  skippedUnreachable: number;
+  /** POSTs the intake API answered 401 (token missing/revoked): a CONFIG error, exit 1,
+   * counted in `errors` but not `apiUnavailable`. The remaining POSTs of the run are skipped. */
+  apiAuthRejected: number;
+  /** POSTs that failed because the intake API was unavailable (transport
+   * error, 5xx, 403, 408, 429) as opposed to rejecting one candidate with a 4xx.
+   * Also counted in `errors`. Nonzero makes the run exit `EXIT_GATE_UNAVAILABLE`. */
+  apiUnavailable: number;
   /** A candidate's cited source(s) included a licence-restricted domain (see
    * lib/restricted-sources.ts) that could not be safely stripped before
    * staging — either every source the candidate carried was restricted, or
@@ -228,6 +321,8 @@ export interface RunSubmitSummary {
   skippedRestrictedSource: number;
   errors: number;
   submittedIds: string[];
+  /** One record per input candidate, in file order; see `CandidateOutcomeRecord`. */
+  candidateOutcomes: CandidateOutcomeRecord[];
 }
 
 // --- normalization -----------------------------------------------------------
@@ -435,6 +530,17 @@ function collectPublishedUrls(payloadSources: Source[], provenanceSources: strin
   return [...new Set([...payloadSources.map((s) => s.url), ...provenanceSources])];
 }
 
+/**
+ * A source that could not be READ because the network failed, not because the
+ * source is bad. `transportFailure` carries only the fetcher's reason enum (the
+ * resolver/connect error code is not propagated by verify-source.ts), so
+ * `network_error` is the signal; an `errorCode` on the failure, when a future
+ * verify-source adds one, is not required.
+ */
+function isUnreachableResult(result: VerificationResult): boolean {
+  return result.verdict !== "verified" && result.transportFailure?.reason === "network_error";
+}
+
 /** Per-URL outcome the gate records; `dropped` URLs are stripped from the staged payload. */
 interface UrlVerdictLine {
   url: string;
@@ -537,7 +643,14 @@ async function verifyCandidateSources(
   claim: VerifyClaim,
   verifyImpl: (url: string, claim: VerifyClaim) => Promise<VerificationResult>,
   guard: TimeoutGuard
-): Promise<{ survives: boolean; verdictNote?: string; rejectionDetail?: string; dropUrls: Set<string> }> {
+): Promise<{
+  survives: boolean;
+  verdictNote?: string;
+  rejectionDetail?: string;
+  dropUrls: Set<string>;
+  /** Not surviving, and every cited source failed to be READ (transport failure). */
+  unreachable?: boolean;
+}> {
   // canonical key -> every raw spelling seen (first one is the one verified).
   const spellings = new Map<string, string[]>();
   for (const url of urls) {
@@ -613,8 +726,13 @@ async function verifyCandidateSources(
     return { survives: true, verdictNote: renderVerdictNote(lines), dropUrls };
   }
 
+  const unreachable =
+    results.length > 0 &&
+    timedOutUrls.length === 0 &&
+    results.every(({ result }) => isUnreachableResult(result));
   return {
     survives: false,
+    unreachable,
     rejectionDetail: logParts.length === 0 ? "no sources were cited, so there was nothing to verify" : logParts.join("; "),
     dropUrls,
   };
@@ -926,8 +1044,105 @@ function isPreConnectFailure(err: unknown): boolean {
   return defined.length > 0 && defined.every((c) => typeof c === "string" && PRE_CONNECT_CODES.has(c));
 }
 
+/**
+ * An HTTP status meaning the intake API is TRANSIENTLY unavailable, as opposed
+ * to rejecting this one candidate: any 5xx, 403 (a Cloudflare WAF can return it),
+ * 408 and 429 (rate limited). 401 is NOT here: it is a config error (see
+ * `isApiAuthRejected`). Other 4xx are per-candidate rejections.
+ */
+function isApiUnavailableStatus(status: number): boolean {
+  return status >= 500 || status === 403 || status === 408 || status === 429;
+}
+
+/** 401: the token is missing or revoked. Repeats every run, so exit 1, not a retry. */
+function isApiAuthRejected(status: number): boolean {
+  return status === 401;
+}
+
+/** Fixed, loud message for a 401 (never echoes the server body). */
+export const API_AUTH_REJECTED_MESSAGE =
+  "CONFIG ERROR: the intake API rejected the bearer token (401). Check API_INTAKE_TOKEN " +
+  "(or API_ADMIN_TOKEN) in .env.local against the deployed value; retrying will not help. " +
+  "Skipping the remaining POSTs for this run.";
+
+/** Summaries whose state hit a 401: skip the rest of their POSTs. */
+const authRejected = new WeakSet<RunSubmitSummary>();
+
+/** Counters whose movement during one candidate decides its recorded outcome. */
+const OUTCOME_COUNTERS = [
+  "submitted",
+  "skippedDuplicate",
+  "skippedInvalid",
+  "skippedOverCap",
+  "skippedUnverified",
+  "skippedUnreachable",
+  "skippedRestrictedSource",
+  "errors",
+] as const;
+type OutcomeCounter = (typeof OUTCOME_COUNTERS)[number];
+
+/** Submission id the intake API returned for the candidate being processed (best effort). */
+const lastSubmissionId = new WeakMap<RunSubmitSummary, string>();
+
+/** Stable identity of a candidate as read from the candidates file. */
+export function candidateHash(entry: unknown): string {
+  return createHash("sha256").update(JSON.stringify(entry) ?? "undefined").digest("hex");
+}
+
 /** Summaries whose state hit an exhausted pre-connect retry budget: skip the rest of their POSTs. */
 const connectOutage = new WeakSet<RunSubmitSummary>();
+
+/** Summaries whose current candidate's POST may have reached the API without us seeing the answer. */
+const ambiguousPost = new WeakSet<RunSubmitSummary>();
+
+const AMBIGUOUS_NOTE = "; outcome unknown (the request may have reached the API), recorded in_flight so a retry will not resubmit it";
+
+/** The log suffix for the current candidate once its POST was marked ambiguous, else empty. */
+function ambiguousNote(summary: RunSubmitSummary): string {
+  return ambiguousPost.has(summary) ? AMBIGUOUS_NOTE : "";
+}
+
+/**
+ * Whether a failed POST may nonetheless have staged the row. Submissions do not dedupe,
+ * so a retry of one that landed double-stages. Ambiguous: a thrown error that is not a
+ * pre-connect failure (reset after send, headers/body timeout, hang up) and 504/524, where
+ * a gateway gave up while the origin function may have finished its insert. NOT ambiguous:
+ * pre-connect failures (nothing was sent), 4xx, 500 (the function ran and failed) and
+ * 502/503 (the platform answered before the function ran). Ambiguous ones are recorded
+ * "in_flight" so a resume skips them like a crash mid-POST.
+ */
+function isAmbiguousStatus(status: number): boolean {
+  return status === 504 || status === 524;
+}
+
+/** Hooks `runSubmit` registers per summary; `postSubmission` calls it once before the first real POST of a candidate. */
+const beforePost = new WeakMap<RunSubmitSummary, () => void>();
+
+/** The durable run log could not be checkpointed, so the run stops before it POSTs anything it could not record. */
+export class CheckpointWriteError extends Error {
+  constructor(code: string) {
+    super(`could not checkpoint the run log (code: ${code}); aborting before any further POST`);
+    this.name = "CheckpointWriteError";
+  }
+}
+
+const READ_SUBMISSION_ID_TIMEOUT_MS = 10_000;
+
+/** Best-effort `id` from the intake response body; never throws and never blocks the success path. */
+async function readSubmissionId(res: Response): Promise<string | undefined> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const timeout = new Promise<undefined>((resolve) => {
+      timer = setTimeout(() => resolve(undefined), READ_SUBMISSION_ID_TIMEOUT_MS);
+    });
+    const body = (await Promise.race([res.json(), timeout])) as { id?: unknown } | null | undefined;
+    return typeof body?.id === "string" ? body.id : undefined;
+  } catch {
+    return undefined;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 /**
  * POST one envelope to /api/submissions and count the outcome. Failures log
@@ -943,8 +1158,16 @@ async function postSubmission(
 ): Promise<void> {
   if (connectOutage.has(summary)) {
     summary.errors++;
+    summary.apiUnavailable++;
     return;
   }
+  if (authRejected.has(summary)) {
+    summary.errors++;
+    summary.apiAuthRejected++;
+    return;
+  }
+  beforePost.get(summary)?.();
+  const requestBody = JSON.stringify(envelope); // outside the try: a serialization throw sent nothing
   const sleep = deps.sleepImpl ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   const attempts = 1 + POST_CONNECT_RETRIES;
   for (let attempt = 1; attempt <= attempts; attempt++) {
@@ -955,14 +1178,24 @@ async function postSubmission(
           Authorization: `Bearer ${submissionToken()}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(envelope),
+        body: requestBody,
       });
       if (!res.ok) {
         const body = scrubUriCredentials((await res.text().catch(() => "")).replace(/[\r\n]+/g, " ")).slice(0, MAX_ERROR_BODY_CHARS);
-        console.log(`error: submit failed for ${id} (stage=POST) — ${res.status} ${body}`);
+        if (isAmbiguousStatus(res.status)) ambiguousPost.add(summary);
+        console.log(`error: submit failed for ${id} (stage=POST) — ${res.status} ${body}${ambiguousNote(summary)}`);
         summary.errors++;
+        if (isApiAuthRejected(res.status)) {
+          summary.apiAuthRejected++;
+          authRejected.add(summary);
+          console.error(API_AUTH_REJECTED_MESSAGE);
+        } else if (isApiUnavailableStatus(res.status)) {
+          summary.apiUnavailable++;
+        }
         return;
       }
+      const submissionId = await readSubmissionId(res);
+      if (submissionId !== undefined) lastSubmissionId.set(summary, submissionId);
       summary.submitted++;
       summary.submittedIds.push(id);
       return;
@@ -972,8 +1205,12 @@ async function postSubmission(
         await sleep(POST_RETRY_BASE_MS * attempt);
         continue;
       }
-      console.log(`error: submit threw for ${id} (stage=POST, attempt ${attempt}/${attempts}) — ${formatErrorSummary(err)}`);
+      if (!isPreConnectFailure(err)) ambiguousPost.add(summary);
+      console.log(
+        `error: submit threw for ${id} (stage=POST, attempt ${attempt}/${attempts}) — ${formatErrorSummary(err)}${ambiguousNote(summary)}`
+      );
       summary.errors++;
+      summary.apiUnavailable++; // a thrown fetch is a transport failure: the API never answered
       if (isPreConnectFailure(err)) {
         connectOutage.add(summary);
         console.log(`error: connect retry budget exhausted for ${id}; skipping the remaining POSTs for this run (each counted as an error, state fails)`);
@@ -1003,9 +1240,17 @@ export async function runSubmit(
     skippedInvalid: 0,
     skippedOverCap: 0,
     skippedUnverified: 0,
+    skippedResumed: 0,
+    resumedInFlight: 0,
+    skippedUnreachable: 0,
+    apiAuthRejected: 0,
+    apiUnavailable: 0,
     skippedRestrictedSource: 0,
     errors: 0,
     submittedIds: [],
+    // Every candidate starts "not_attempted" so an aborted run's partial log
+    // still lists the ones never reached.
+    candidateOutcomes: candidates.map((entry, index) => ({ index, hash: candidateHash(entry), outcome: "not_attempted" })),
   };
 
   // Before ANY work, so a caller holding this reference can still log how far
@@ -1025,7 +1270,7 @@ export async function runSubmit(
     );
   }
 
-  const normalized = normalizeCandidates(candidates);
+  const normalized = normalizeCandidates(candidates).map((candidate, index) => ({ candidate, index }));
   const { ids: existingIds, nameStateCity: existingNameStateCity, byId: existingById } = buildExistingIndex(
     deps.existingFacilities
   );
@@ -1035,11 +1280,73 @@ export async function runSubmit(
   // discovery review. Enrichment fills leftover cap budget. (Ed's review-load
   // calibration is a single daily number spanning both streams.)
   const ordered = [
-    ...normalized.filter((c) => c.type !== "enrichment_update"),
-    ...normalized.filter((c) => c.type === "enrichment_update"),
+    ...normalized.filter((c) => c.candidate.type !== "enrichment_update"),
+    ...normalized.filter((c) => c.candidate.type === "enrichment_update"),
   ];
 
-  for (const candidate of ordered) {
+  // Settles the previous candidate's record from the counters it moved. Candidates
+  // have many `continue` exits, so the outcome is read off the summary rather than
+  // written at each one. An iteration that throws (gate unavailable) is never
+  // settled and stays "not_attempted", which is true: nothing was POSTed for it.
+  const checkpoint = (): void => {
+    if (opts.dryRun || !deps.checkpoint) return;
+    try {
+      deps.checkpoint(summary);
+    } catch (err) {
+      throw new CheckpointWriteError(redactedErrorCode(err));
+    }
+  };
+  let pending: { index: number; before: Record<OutcomeCounter, number> } | null = null;
+  beforePost.set(summary, () => {
+    if (!pending) return;
+    const record = summary.candidateOutcomes[pending.index];
+    const previous = record.outcome;
+    record.outcome = "in_flight";
+    try {
+      checkpoint();
+    } catch (err) {
+      // Nothing was POSTed: the finally-write of this same summary must not claim it was.
+      record.outcome = previous;
+      throw err;
+    }
+  });
+  const settle = (): void => {
+    if (!pending) return;
+    const record = summary.candidateOutcomes[pending.index];
+    const moved = OUTCOME_COUNTERS.find((k) => summary[k] > pending!.before[k]);
+    if (moved === "submitted") {
+      if (opts.dryRun) record.outcome = "dry_run";
+      else {
+        record.outcome = "submitted";
+        const submissionId = lastSubmissionId.get(summary);
+        if (submissionId !== undefined) record.submissionId = submissionId;
+      }
+    } else if (moved) {
+      record.outcome = moved === "errors" ? (ambiguousPost.has(summary) ? "in_flight" : "error") : moved;
+    }
+    pending = null;
+    checkpoint();
+  };
+
+  for (const { candidate, index } of ordered) {
+    settle();
+    const carried = opts.resumeSubmitted?.get(index);
+    if (carried) {
+      if (carried.outcome === "in_flight") {
+        console.warn(
+          `WARN: candidate #${index} (${carried.hash}) was in flight when the previous attempt died; not resubmitted. Check the pending queue for it.`
+        );
+        summary.resumedInFlight++;
+      } else {
+        console.log(`skip resumed: candidate #${index} was already submitted by the previous attempt`);
+        summary.skippedResumed++;
+      }
+      summary.candidateOutcomes[index] = { ...carried, index, hash: summary.candidateOutcomes[index].hash, carriedForward: true };
+      continue;
+    }
+    lastSubmissionId.delete(summary);
+    ambiguousPost.delete(summary);
+    pending = { index, before: Object.fromEntries(OUTCOME_COUNTERS.map((k) => [k, summary[k]])) as Record<OutcomeCounter, number> };
     if (candidate.type === "enrichment_update") {
       const targetFacilityId = candidate.targetFacilityId;
       const idLabel = typeof targetFacilityId === "string" && targetFacilityId ? targetFacilityId : "(no id)";
@@ -1091,8 +1398,9 @@ export async function runSubmit(
           timeoutGuard
         );
         if (!gate.survives) {
-          console.log(`skip unverified: ${targetFacilityId} — ${gate.rejectionDetail}`);
-          summary.skippedUnverified++;
+          console.log(`skip ${gate.unreachable ? "unreachable" : "unverified"}: ${targetFacilityId} — ${gate.rejectionDetail}`);
+          if (gate.unreachable) summary.skippedUnreachable++;
+          else summary.skippedUnverified++;
           continue;
         }
         verdictNote = gate.verdictNote;
@@ -1210,8 +1518,9 @@ export async function runSubmit(
           timeoutGuard
         );
         if (!gate.survives) {
-          console.log(`skip unverified: ${targetFacilityId} — ${gate.rejectionDetail}`);
-          summary.skippedUnverified++;
+          console.log(`skip ${gate.unreachable ? "unreachable" : "unverified"}: ${targetFacilityId} — ${gate.rejectionDetail}`);
+          if (gate.unreachable) summary.skippedUnreachable++;
+          else summary.skippedUnverified++;
           continue;
         }
         verdictNote = gate.verdictNote;
@@ -1300,8 +1609,9 @@ export async function runSubmit(
         timeoutGuard
       );
       if (!gate.survives) {
-        console.log(`skip unverified: ${doc.id} — ${gate.rejectionDetail}`);
-        summary.skippedUnverified++;
+        console.log(`skip ${gate.unreachable ? "unreachable" : "unverified"}: ${doc.id} — ${gate.rejectionDetail}`);
+        if (gate.unreachable) summary.skippedUnreachable++;
+        else summary.skippedUnverified++;
         continue;
       }
       verdictNote = gate.verdictNote;
@@ -1393,6 +1703,7 @@ export async function runSubmit(
 
     await postSubmission(deps, opts, envelope, doc.id, summary);
   }
+  settle();
 
   return summary;
 }
@@ -1428,13 +1739,61 @@ interface CliArgs {
   dryRun: boolean;
   baseUrl: string;
   state?: string;
+  resumeFromLog?: string;
+}
+
+/** Thrown when `--resume-from-log` cannot be used safely; `main()` exits 1 (config error). */
+export class ResumeLogError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ResumeLogError";
+  }
+}
+
+/**
+ * Loads a previous run log and returns the candidates it recorded as `submitted` or
+ * `in_flight` (POST outcome unknown: skipped, never retried), keyed by candidate index. Refuses (throws `ResumeLogError`) unless the log
+ * demonstrably belongs to THIS candidates file: it must list every candidate, and
+ * each record's index and content hash must match the candidate at that index. A
+ * mismatch would skip the wrong candidates, so it is never tolerated.
+ */
+export function loadResumeLog(logPath: string, candidates: unknown[]): Map<number, CandidateOutcomeRecord> {
+  let parsed: { candidateOutcomes?: unknown };
+  try {
+    parsed = JSON.parse(readFileSync(logPath, "utf-8")) as { candidateOutcomes?: unknown };
+  } catch {
+    throw new ResumeLogError(`--resume-from-log: could not read or parse ${logPath}`);
+  }
+  const records = parsed?.candidateOutcomes;
+  if (!Array.isArray(records)) {
+    throw new ResumeLogError(`--resume-from-log: ${logPath} has no candidateOutcomes (log from an older version?)`);
+  }
+  if (records.length !== candidates.length) {
+    throw new ResumeLogError(
+      `--resume-from-log: ${logPath} lists ${records.length} candidates but the candidates file has ${candidates.length}`
+    );
+  }
+  const submitted = new Map<number, CandidateOutcomeRecord>();
+  for (const record of records as Array<Partial<CandidateOutcomeRecord> | null>) {
+    const index = record?.index;
+    if (typeof index !== "number" || !Number.isInteger(index) || index < 0 || index >= candidates.length) {
+      throw new ResumeLogError(`--resume-from-log: ${logPath} has a record with an invalid index`);
+    }
+    if (record?.hash !== candidateHash(candidates[index])) {
+      throw new ResumeLogError(
+        `--resume-from-log: ${logPath} does not belong to this candidates file (candidate #${index} differs)`
+      );
+    }
+    if (record.outcome === "submitted" || record.outcome === "in_flight") submitted.set(index, record as CandidateOutcomeRecord);
+  }
+  return submitted;
 }
 
 function parseArgs(argv: string[]): CliArgs {
   const [inputPath, ...flags] = argv;
   if (!inputPath) {
     console.error(
-      "Usage: submit-candidates.ts <candidates.json> [--run-id=ID] [--max=N] [--dry-run] [--base-url=URL] [--state=XX]"
+      "Usage: submit-candidates.ts <candidates.json> [--run-id=ID] [--max=N] [--dry-run] [--base-url=URL] [--state=XX] [--resume-from-log=PATH]"
     );
     process.exit(1);
   }
@@ -1444,9 +1803,15 @@ function parseArgs(argv: string[]): CliArgs {
   let dryRun = false;
   let baseUrl = process.env.API_BASE_URL ?? "http://localhost:3000";
   let state: string | undefined;
+  let resumeFromLog: string | undefined;
 
-  for (const flag of flags) {
-    if (flag === "--dry-run") {
+  for (let i = 0; i < flags.length; i++) {
+    const flag = flags[i];
+    if (flag === "--resume-from-log") {
+      resumeFromLog = flags[++i];
+    } else if (flag.startsWith("--resume-from-log=")) {
+      resumeFromLog = flag.slice("--resume-from-log=".length);
+    } else if (flag === "--dry-run") {
       dryRun = true;
     } else if (flag.startsWith("--run-id=")) {
       runId = flag.slice("--run-id=".length);
@@ -1463,14 +1828,31 @@ function parseArgs(argv: string[]): CliArgs {
     }
   }
 
-  return { inputPath, runId, max, dryRun, baseUrl, state };
+  if (resumeFromLog !== undefined && resumeFromLog === "") {
+    console.error("--resume-from-log requires a path");
+    process.exit(1);
+  }
+
+  return { inputPath, runId, max, dryRun, baseUrl, state, resumeFromLog };
 }
 
-function writeLog(summary: RunSubmitSummary): void {
+export function writeLog(summary: RunSubmitSummary): void {
   const dir = process.env.DISCOVERY_LOG_DIR ?? path.join(process.cwd(), "discovery-logs");
   mkdirSync(dir, { recursive: true });
   const logPath = path.join(dir, `run-${summary.runId}.json`);
-  writeFileSync(logPath, JSON.stringify(summary, null, 2));
+  // Temp file + rename: a kill mid-write must leave the previous complete log, never a torn one.
+  const tmpPath = `${logPath}.${process.pid}.tmp`;
+  try {
+    writeFileSync(tmpPath, JSON.stringify(summary, null, 2));
+  } catch (err) {
+    try {
+      unlinkSync(tmpPath);
+    } catch {
+      // best effort: the write error is the one worth reporting
+    }
+    throw err;
+  }
+  renameSync(tmpPath, logPath);
 }
 
 /**
@@ -1501,6 +1883,7 @@ export async function runSubmitAndLog(
   try {
     return await runSubmit(candidates, opts, {
       ...deps,
+      checkpoint: deps.checkpoint ?? writeLogImpl,
       onSummaryInit: (summary) => {
         partial = summary;
       },
@@ -1605,21 +1988,33 @@ function buildRealProbe(): () => Promise<ProbeOllamaResult> {
  * alerting off. `errors` means something else entirely: we tried to stage a
  * candidate we had already decided was good, and it broke.
  *
- * Deliberately ONE nonzero code, not a graded scale ("some failed" vs "all
- * failed"). The sole consumer is a shell `if !`, which can only see
- * zero/nonzero; a graded code would be a distinction no caller can act on, and
- * a second thing to keep in sync. The graded information is not lost — it is in
- * the summary JSON, which `main()` prints before exiting on the completed-run
- * path (⚠️ not on every path: a `VerificationGateUnavailableError` reaches
- * `main().catch` and prints no summary to stdout — `writeLog` still persists
- * the partial, so diagnosis survives) and
- * `writeLog` persists to `run-<runId>.json`. Exit codes answer "did this run
- * lose work"; the JSON answers "how much, and which". Note too that every other
- * failure path in `main()` already exits 1, so a distinct code here would imply
- * a difference in kind that does not exist.
+ * Exit codes are classified in one place: see `EXIT_GATE_UNAVAILABLE`. In short, 1 =
+ * `errors` or a 401 config error, 3 = transient outage (retry later), 3 wins over 1
+ * except for a 401. The counts live in the summary JSON, which `main()` prints
+ * before exiting on the completed-run path and `writeLog` persists to
+ * `run-<runId>.json` (the file run.sh reads, abort paths included).
  */
-export function exitCodeForSummary(summary: Pick<RunSubmitSummary, "errors">): number {
+export function exitCodeForSummary(
+  summary: Pick<RunSubmitSummary, "errors"> &
+    Partial<Pick<RunSubmitSummary, "apiUnavailable" | "apiAuthRejected" | "skippedUnreachable" | "discovered">>
+): number {
+  // Outage first: the intake API went away (a partial batch still reports its
+  // counts in the summary) or the network, not the sources, failed for most
+  // candidates. Both mean "retry this state later", not "this batch is bad".
+  if ((summary.apiAuthRejected ?? 0) > 0) return 1; // config error: wins over a retry
+  if ((summary.apiUnavailable ?? 0) > 0) return EXIT_GATE_UNAVAILABLE;
+  const unreachable = summary.skippedUnreachable ?? 0;
+  if (unreachable >= UNREACHABLE_MAJORITY_MIN && 2 * unreachable > (summary.discovered ?? 0)) {
+    return EXIT_GATE_UNAVAILABLE;
+  }
   return summary.errors > 0 ? 1 : 0;
+}
+
+/** Exit code for an error that aborted `runSubmitAndLog`; undefined means unexpected (rethrow). */
+export function exitCodeForAbort(err: unknown): number | undefined {
+  if (err instanceof VerificationGateUnavailableError) return EXIT_GATE_UNAVAILABLE;
+  if (err instanceof CheckpointWriteError) return 1;
+  return undefined;
 }
 
 /**
@@ -1641,6 +2036,14 @@ export async function main(): Promise<void> {
     process.exit(1);
   }
 
+  // A-OPS-08: VERIFY_SOURCES_ENABLED=false in .env.local must not silently
+  // disable the gate on scheduled runs. The scheduler sets DISCOVERY_REQUIRE_VERIFY=1.
+  if (requireVerifyViolation()) {
+    console.error(VERIFY_DISABLED_REFUSAL); // config error: repeats every run, so exit 1, not a retry
+    process.exit(1);
+    return;
+  }
+
   const args = parseArgs(process.argv.slice(2));
 
   let raw: unknown[];
@@ -1651,6 +2054,20 @@ export async function main(): Promise<void> {
     console.error(`Could not read/parse ${args.inputPath}: ${formatErrorSummary(err)}`);
     process.exit(1);
     return;
+  }
+
+  let resumeSubmitted: Map<number, CandidateOutcomeRecord> | undefined;
+  if (args.resumeFromLog) {
+    try {
+      resumeSubmitted = loadResumeLog(args.resumeFromLog, raw);
+    } catch (err) {
+      if (!(err instanceof ResumeLogError)) throw err;
+      // lint-no-raw-error-logs: allow -- own error class; messages are fixed text plus a file path and counts, never a driver error
+      console.error(err.message);
+      process.exit(1);
+      return;
+    }
+    console.log(`resume: ${resumeSubmitted.size} candidate(s) already submitted per ${args.resumeFromLog}`);
   }
 
   // Fail fast on a stale index, before any candidate is processed. Unlike the
@@ -1678,7 +2095,7 @@ export async function main(): Promise<void> {
         "refusing to stage candidates against the committed data/facilities.json snapshot, which may " +
         "be stale. Staging nothing this run rather than risking a false duplicate or a lost update."
     );
-    process.exit(1);
+    process.exit(EXIT_GATE_UNAVAILABLE);
     return;
   }
   const existingFacilities = existingFacilitiesResult.facilities;
@@ -1691,18 +2108,32 @@ export async function main(): Promise<void> {
 
   // `runSubmitAndLog`, not `runSubmit`: the run log must survive a
   // verification-gate abort, which used to skip `writeLog` entirely.
-  const summary = await runSubmitAndLog(
-    raw,
-    {
-      runId: args.runId,
-      max: args.max,
-      dryRun: args.dryRun,
-      baseUrl: args.baseUrl,
-      state: args.state,
-      discoveredAt: new Date().toISOString(),
-    },
-    { fetchImpl: fetch, existingFacilities, verifyImpl, probeOllama: verifyImpl ? buildRealProbe() : undefined }
-  );
+  let summary: RunSubmitSummary;
+  try {
+    summary = await runSubmitAndLog(
+      raw,
+      {
+        runId: args.runId,
+        max: args.max,
+        dryRun: args.dryRun,
+        baseUrl: args.baseUrl,
+        state: args.state,
+        discoveredAt: new Date().toISOString(),
+        resumeSubmitted,
+      },
+      { fetchImpl: fetch, existingFacilities, verifyImpl, probeOllama: verifyImpl ? buildRealProbe() : undefined }
+    );
+  } catch (err) {
+    const code = exitCodeForAbort(err);
+    if (code === undefined) throw err;
+    // Ollama down / model not pulled: the partial run log was already written
+    // by runSubmitAndLog's finally. Distinct exit so run.sh retries the state later.
+    // A failed checkpoint is exit 1: retrying cannot help until the log dir is fixed.
+    // lint-no-raw-error-logs: allow -- CheckpointWriteError carries a fixed message plus an errno code; the gate error is formatted
+    console.error(err instanceof CheckpointWriteError ? err.message : formatFatalError(err));
+    process.exit(code);
+    return;
+  }
 
   // Print the summary FIRST, then exit on it: the JSON is the diagnosis, and it
   // has to survive the failure case it describes.

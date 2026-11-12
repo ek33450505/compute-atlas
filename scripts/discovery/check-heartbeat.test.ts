@@ -17,6 +17,7 @@ import {
   HeartbeatStaleError,
   parseStaleHoursEnv,
   runHeartbeatCheck,
+  ZERO_YIELD_RUNS_ALARM,
   type HeartbeatFreshnessReport,
 } from "./check-heartbeat";
 import type { DiscoveryHeartbeatRow } from "../../lib/db/schema";
@@ -175,6 +176,17 @@ describe("runHeartbeatCheck", () => {
     ]);
 
     await expect(runHeartbeatCheck(36, NOW)).rejects.toThrow(HeartbeatDegradedError);
+  });
+
+  it("fails a fresh zero_yield heartbeat with HeartbeatDegradedError naming zero_yield", async () => {
+    expect(ZERO_YIELD_RUNS_ALARM).toBe(5);
+    mockSelectResult([makeRow({ lastRunAt: new Date("2026-09-05T00:00:00Z"), status: "zero_yield" })]);
+
+    const err = await runHeartbeatCheck(36, NOW).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(HeartbeatDegradedError);
+    expect((err as HeartbeatDegradedError).message).toMatch(/status="zero_yield"/);
+    expect((err as HeartbeatDegradedError).message).toMatch(/staged nothing/);
+    expect((err as HeartbeatDegradedError).message).not.toMatch(/OAuth/);
   });
 
   it("throws HeartbeatStaleError when last_run_at is older than the threshold", async () => {

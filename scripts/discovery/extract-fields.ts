@@ -148,7 +148,13 @@ import {
 
 import { NOT_RECORDABLE_FIELDS, waterCoolingTypeEnum, type Facility, type Source } from "../../lib/schema";
 import { enrichmentUpdateIntentSchema } from "../../lib/enrichment-update";
-import { callOllama, type CallOllamaOptions, type CallOllamaResult } from "./ollama-client";
+import {
+  callOllama,
+  probeOllama,
+  type CallOllamaOptions,
+  type CallOllamaResult,
+  type ProbeOllamaResult,
+} from "./ollama-client";
 import { fetchPageText, type FetchPageTextResult } from "./fetch-page-text";
 import { fetchPdfText, type FetchPdfTextResult } from "./fetch-pdf-text";
 import { pinnedFetch } from "./net-guard";
@@ -1164,6 +1170,15 @@ export interface RunExtractDeps extends SourceFetchDeps {
    */
   sleep?: (ms: number) => Promise<void>;
   /**
+   * Ollama health probe, consulted ONCE per run: only when the FIRST model call
+   * of the run fails (A-OPS-07). Down -> the run aborts (`summary.aborted`, exit 1)
+   * instead of grinding through every field as `modelUnavailable` and exiting 0.
+   * Healthy -> that one call was a fluke and the run continues. When absent
+   * (tests, callers that never want the abort) the behaviour is unchanged.
+   * `buildRealDeps()` wires the real one.
+   */
+  probeOllama?: () => Promise<ProbeOllamaResult>;
+  /**
    * Raw fetch, used ONLY to query the Wayback Machine's `/wayback/available`
    * endpoint (via `findWaybackSnapshotUrl`, wayback.ts) — mirrors
    * `VerifyFieldsDeps.fetchImpl` for the same reason: `fetchPageTextImpl`/
@@ -1371,6 +1386,25 @@ export function sortSourcesPrimaryFirst(sources: Source[]): Source[] {
     .map(({ source }) => source);
 }
 
+/** Consecutive failed model calls that trigger a re-probe once the run has already had an answer. */
+const REPROBE_AFTER_CONSECUTIVE_FAILURES = 3;
+
+/** Run-level model health: has any call answered yet, has the first-failure probe run, and the current failure streak. */
+interface RunModelState {
+  answered: boolean;
+  probed: boolean;
+  /** Failed model calls in a row; reset by any answer and by a probe that passes. */
+  consecutiveFailures: number;
+}
+
+/** Thrown out of the per-field loop when a model call failed and the probe says Ollama is down. */
+class ModelUnavailableAbort extends Error {
+  constructor(readonly probeReason: string, readonly callReason: string) {
+    super(`model call failed (${callReason}) and the Ollama health probe failed (${probeReason})`);
+    this.name = "ModelUnavailableAbort";
+  }
+}
+
 /** Per-run mutable state threaded through `processFacilitySources` /
  * `fetchSourceText` so the `pdf_extractor_unavailable` warning below fires at
  * most once per `runExtract` call — never once per PDF source, which on a
@@ -1531,6 +1565,7 @@ async function extractFieldsFromReadableText(
   fieldFailureReason: Map<ExtractableField, FieldFailureReason>,
   deps: RunExtractDeps,
   modelCalls: ModelCallTally,
+  runModel: RunModelState,
   archive?: { archiveUrl: string }
 ): Promise<void> {
   const archiveSuffix = archive ? `, via archive ${archive.archiveUrl}` : "";
@@ -1543,8 +1578,29 @@ async function extractFieldsFromReadableText(
 
     const outcome = await extractField(field, facility, windowedText, deps);
     modelCalls.attempted++;
-    if (outcome.ok) modelCalls.answered++;
+    if (outcome.ok) {
+      modelCalls.answered++;
+      runModel.answered = true;
+      runModel.consecutiveFailures = 0;
+    }
     if (!outcome.ok) {
+      runModel.consecutiveFailures++;
+      // Probe on the first failure of a run that has never answered, and again after a streak:
+      // Ollama dying AFTER a first success would otherwise turn every remaining field into
+      // `modelUnavailable` and exit 0, the silent no-op this probe exists to prevent.
+      const firstFailure = !runModel.answered && !runModel.probed;
+      if ((firstFailure || runModel.consecutiveFailures >= REPROBE_AFTER_CONSECUTIVE_FAILURES) && deps.probeOllama) {
+        runModel.probed = true;
+        let probe: ProbeOllamaResult;
+        try {
+          probe = await deps.probeOllama();
+        } catch (err) {
+          // A probe that throws proves nothing about health; treat it as down.
+          probe = { ok: false, reason: `probe threw: ${err instanceof Error ? err.message : String(err)}` };
+        }
+        if (!probe.ok) throw new ModelUnavailableAbort(probe.reason, outcome.modelFailureReason ?? "unknown");
+        runModel.consecutiveFailures = 0;
+      }
       console.log(`skip: ${facility.id} ${field} — model call unavailable on ${source.url}${archiveSuffix} (${outcome.modelFailureReason})`);
       fieldFailureReason.set(field, "modelUnavailable");
       continue;
@@ -1630,7 +1686,8 @@ async function processFacilitySources(
   facility: Facility,
   fields: ExtractableField[],
   deps: RunExtractDeps,
-  fetchState: FetchState
+  fetchState: FetchState,
+  runModel: RunModelState
 ): Promise<FacilitySourcesResult> {
   const unfilled = new Set(fields);
   const accepted: AcceptedExtraction[] = [];
@@ -1705,7 +1762,7 @@ async function processFacilitySources(
           console.log(
             `recovered-via-archive: ${facility.id} — ${source.url} — direct fetch failed (${detail}); reading Wayback snapshot ${archiveUrl} instead (${windowed.mode}, ${windowed.text.length} chars)`
           );
-          await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps, modelCalls, {
+          await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps, modelCalls, runModel, {
             archiveUrl,
           });
           continue;
@@ -1744,7 +1801,7 @@ async function processFacilitySources(
 
     // Only the fields still unfilled are tried against this source — a field
     // already filled from an earlier source is never re-attempted.
-    await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps, modelCalls);
+    await extractFieldsFromReadableText(facility, source, windowed.text, unfilled, accepted, fieldFailureReason, deps, modelCalls, runModel);
   }
 
   return { accepted, fieldFailureReason, sourcesRead, sawAnyReadable, sawAnyUnreadable, modelCalls };
@@ -1959,16 +2016,37 @@ export async function runExtract(
   // than throwing) is what preserves everything accumulated in `summary`
   // and `outcomes` so far.
   let abortReason: string | null = null;
+  let modelAbortReason: string | null = null;
   const processed: ProcessedFacility[] = [];
 
   // One instance per `runExtract` call — see `FetchState`'s doc-comment —
   // so the pdf_extractor_unavailable warning's "once per run" guarantee
   // can never leak across independent runs or tests.
   const fetchState: FetchState = { pdfExtractorUnavailableWarned: false };
+  const runModel: RunModelState = { answered: false, probed: false, consecutiveFailures: 0 };
 
   for (const { facility, fields } of byFacility.values()) {
     try {
-      const result = await processFacilitySources(facility, fields, deps, fetchState);
+      let result: FacilitySourcesResult;
+      try {
+        result = await processFacilitySources(facility, fields, deps, fetchState, runModel);
+      } catch (err) {
+        if (!(err instanceof ModelUnavailableAbort)) throw err;
+        // Returns a flagged summary rather than throwing (see this function's
+        // ABORT design): candidates found earlier survive. This facility was
+        // never classified, so its gaps become `abortedUnprocessed` below, and
+        // `proposeNextCursor` returns null for an aborted run.
+        // Kept apart from `abortReason` and not logged here: main() prints
+        // `summary.abortReason`, and lint-no-raw-error-logs treats anything
+        // assigned in a catch as a caught error (it would flag the fetch-collapse
+        // `console.error(abortReason)` too).
+        modelAbortReason =
+          `ABORTING: the first model call of the run failed (${err.callReason}) and the Ollama health probe ` +
+          `also failed (${err.probeReason}) at facility ${facility.id}. Ollama is unavailable, so every ` +
+          `remaining field would be counted modelUnavailable and the run would read as a clean no-op. ` +
+          `Check OLLAMA_BASE_URL/OLLAMA_VERIFY_MODEL and that Ollama is running, then re-run.`;
+        break;
+      }
       summary.sourcesRead += result.sourcesRead;
       processed.push({ id: facility.id, ...result.modelCalls });
 
@@ -2138,9 +2216,10 @@ export async function runExtract(
     }
   }
 
-  if (abortReason !== null) {
+  const finalAbortReason = abortReason ?? modelAbortReason;
+  if (finalAbortReason !== null) {
     summary.aborted = true;
-    summary.abortReason = abortReason;
+    summary.abortReason = finalAbortReason;
     // Every gap belonging to a facility the loop above never reached is
     // still sitting at the map's initial "unclassified" sentinel. That is
     // correct and expected on an abort — but `unclassified` in the summary
@@ -2365,6 +2444,7 @@ export function buildRealDeps(): RunExtractDeps {
     fetchPageTextImpl: (url) => fetchPageText(url, {}),
     fetchPdfTextImpl: (url) => fetchPdfText(url, {}),
     callOllamaImpl: (opts) => callOllama<ModelExtraction>({ ...opts, fetchImpl: fetch }),
+    probeOllama: () => probeOllama({ timeoutMs: 5_000, fetchImpl: fetch }),
     now: () => new Date(),
     sleep: realSleep,
   };

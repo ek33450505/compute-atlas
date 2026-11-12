@@ -116,6 +116,24 @@ export function parseStaleHoursEnv(raw: string | undefined, now: Date = new Date
   return Number(raw);
 }
 
+// --- zero-yield alarm ------------------------------------------------------
+
+/**
+ * Consecutive scheduled runs that staged nothing before run.sh sets the
+ * heartbeat `status` to `ZERO_YIELD_STATUS`. One empty run is normal (nothing
+ * new that day); five in a row, about a week of weekday runs at 4 states per
+ * run (~20 states), is not: a source/resolver/gate failure that exits 0 looks
+ * exactly like that. The streak is computed by run.sh from the previous LOCAL
+ * discovery-logs/heartbeat.json (`consecutiveZeroYieldRuns`, never published:
+ * publish-heartbeat.ts validates and ignores it). This remote check needs no
+ * new error class: any status !== "ok" already throws `HeartbeatDegradedError`,
+ * whose message names the recorded status.
+ */
+export const ZERO_YIELD_RUNS_ALARM = 5;
+
+/** Heartbeat `status` run.sh records once the streak reaches `ZERO_YIELD_RUNS_ALARM`. */
+export const ZERO_YIELD_STATUS = "zero_yield";
+
 // --- read ------------------------------------------------------------------
 
 /** Reads the single `discovery_heartbeat` row (id="singleton"), or null if it does not exist yet. */
@@ -196,6 +214,18 @@ export class HeartbeatDegradedError extends Error {
   readonly report: HeartbeatFreshnessReport;
 
   constructor(report: HeartbeatFreshnessReport) {
+    if (report.row.status === ZERO_YIELD_STATUS) {
+      super(
+        `discovery_heartbeat is FRESH but recorded status="${ZERO_YIELD_STATUS}": the last ${ZERO_YIELD_RUNS_ALARM}+ ` +
+          `scheduled runs (latest ${report.ageHours.toFixed(1)}h ago, threshold ${report.thresholdHours}h) staged ` +
+          "nothing. The runs executed and exited cleanly, so this is a silent pipeline failure, not a missed run: " +
+          "check discovery-logs/ on the maintainer's Mac for skippedUnreachable / skippedUnverified counts " +
+          "(resolver or network outage, Ollama gate, sources all dead)."
+      );
+      this.name = "HeartbeatDegradedError";
+      this.report = report;
+      return;
+    }
     super(
       `discovery_heartbeat is FRESH but DEGRADED: a run finished ${report.ageHours.toFixed(1)}h ` +
         `ago (threshold ${report.thresholdHours}h) and recorded status="${report.row.status}" ` +

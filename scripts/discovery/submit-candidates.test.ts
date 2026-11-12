@@ -13,9 +13,17 @@ import {
   submissionToken,
   verificationEnabled,
   exitCodeForSummary,
+  EXIT_GATE_UNAVAILABLE,
+  API_AUTH_REJECTED_MESSAGE,
+  candidateHash,
+  loadResumeLog,
+  VERIFY_DISABLED_REFUSAL,
+  requireVerifyViolation,
   fetchTextWithPdfRetry,
   main,
   VerificationGateUnavailableError,
+  CheckpointWriteError,
+  exitCodeForAbort,
   type RunSubmitOptions,
   type RunSubmitSummary,
 } from "./submit-candidates";
@@ -1771,9 +1779,10 @@ describe("runSubmitAndLog", () => {
       (s) => logged.push(s)
     );
 
-    expect(logged).toHaveLength(1);
-    expect(logged[0]).toBe(summary);
-    expect(logged[0].submitted).toBe(1);
+    // checkpoints (in_flight, settled) precede the final write, which is the live summary itself
+    expect(logged.length).toBeGreaterThanOrEqual(1);
+    expect(logged[logged.length - 1]).toBe(summary);
+    expect(logged[logged.length - 1].submitted).toBe(1);
   });
 
   // The defect: `writeLog` sat AFTER `runSubmit` returned, so an abort wrote
@@ -1799,11 +1808,11 @@ describe("runSubmitAndLog", () => {
       )
     ).rejects.toThrow(VerificationGateUnavailableError);
 
-    expect(logged).toHaveLength(1);
-    expect(logged[0].runId).toBe("aborted-run");
-    expect(logged[0].discovered).toBe(2);
-    expect(logged[0].submitted).toBe(1);
-    expect(logged[0].submittedIds).toEqual(["staged-first-tx"]);
+    const last = logged[logged.length - 1];
+    expect(last.runId).toBe("aborted-run");
+    expect(last.discovered).toBe(2);
+    expect(last.submitted).toBe(1);
+    expect(last.submittedIds).toEqual(["staged-first-tx"]);
   });
 
   it("rethrows the original abort error unchanged (exit semantics unaffected)", async () => {
@@ -1940,9 +1949,15 @@ function makeSummary(overrides: Partial<RunSubmitSummary> = {}): RunSubmitSummar
     skippedInvalid: 0,
     skippedOverCap: 0,
     skippedUnverified: 0,
+    skippedResumed: 0,
+    resumedInFlight: 0,
+    skippedUnreachable: 0,
+    apiAuthRejected: 0,
+    apiUnavailable: 0,
     skippedRestrictedSource: 0,
     errors: 0,
     submittedIds: [],
+    candidateOutcomes: [],
     ...overrides,
   };
 }
@@ -2117,6 +2132,14 @@ describe("main — exit code wiring", () => {
     expect(exitCode).not.toBe(0);
   });
 
+  // A 4xx is one candidate rejected (exit 1); a 5xx is the API being down (exit 3).
+  it("exits 1 for a per-candidate 4xx rejection but EXIT_GATE_UNAVAILABLE for a 5xx", async () => {
+    expect((await runMain(422)).exitCode).toBe(1);
+    const down = await runMain(503);
+    expect(down.exitCode).toBe(EXIT_GATE_UNAVAILABLE);
+    expect(printedSummary(down.logs).apiUnavailable).toBe(1);
+  });
+
   // The summary JSON is the diagnosis, so it has to survive the failure it
   // describes: printed BEFORE the exit, not swallowed by it.
   it("still prints the summary JSON on the failing path", async () => {
@@ -2195,7 +2218,7 @@ describe("main — aborts on a stale facility index", () => {
 
     try {
       await expect(main()).rejects.toThrow(/^process\.exit\(/);
-      expect(exitCode).toBe(1);
+      expect(exitCode).toBe(EXIT_GATE_UNAVAILABLE);
       expect(submissionsCalls).toHaveLength(0);
       expect(errors.some((line) => line.includes("57P01") && line.includes("stale"))).toBe(true);
     } finally {
@@ -2389,5 +2412,531 @@ describe("fetchTextWithPdfRetry — throwing PDF path", () => {
     });
     logSpy.mockRestore();
     expect(result).toEqual(badType);
+  });
+});
+
+// --- Wave 5 A-OPS-06/07/08: outage exit code, unreachable yield, gate refusal ---
+
+describe("exitCodeForSummary — outage classification", () => {
+  it("exits EXIT_GATE_UNAVAILABLE (3) when the intake API was unavailable, even alongside other errors", () => {
+    expect(EXIT_GATE_UNAVAILABLE).toBe(3);
+    expect(exitCodeForSummary(makeSummary({ errors: 4, apiUnavailable: 1, submitted: 6 }))).toBe(3);
+  });
+
+  it("exits 1 for plain errors with no outage", () => {
+    expect(exitCodeForSummary(makeSummary({ errors: 2, submitted: 8 }))).toBe(1);
+  });
+
+  it("exits 3 when skippedUnreachable is a majority and >= 3, even with zero errors", () => {
+    expect(exitCodeForSummary(makeSummary({ discovered: 5, submitted: 0, skippedUnreachable: 3 }))).toBe(3);
+  });
+
+  it.each([
+    ["exactly half", { discovered: 6, skippedUnreachable: 3 }],
+    ["a majority below the minimum of 3", { discovered: 3, skippedUnreachable: 2 }],
+  ])("exits 0 when skippedUnreachable is %s", (_label, over) => {
+    expect(exitCodeForSummary(makeSummary({ submitted: 0, ...over }))).toBe(0);
+  });
+});
+
+describe("runSubmit — API availability and unreachable sources", () => {
+  const cands = (n: number) =>
+    Array.from({ length: n }, (_, i) => makeCandidateWithUrls(`fac-${i}-tx`, [`https://example.com/s${i}`]));
+  const sleepImpl = async () => {};
+
+  it.each([[500], [502], [403], [408], [429]])("counts a %i POST as apiUnavailable", async (status) => {
+    const fetchImpl = makeFetch([{ ok: false, status }]);
+    const summary = await runSubmit(cands(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.errors).toBe(1);
+    expect(summary.apiUnavailable).toBe(1);
+  });
+
+  it("treats a 401 as a CONFIG error: apiAuthRejected, not apiUnavailable, remaining POSTs skipped, exit 1", async () => {
+    const fetchImpl = makeFetch([{ ok: false, status: 401 }]);
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const summary = await runSubmit(cands(3), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(errSpy).toHaveBeenCalledWith(API_AUTH_REJECTED_MESSAGE);
+    errSpy.mockRestore();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(summary.errors).toBe(3);
+    expect(summary.apiAuthRejected).toBe(3);
+    expect(summary.apiUnavailable).toBe(0);
+    expect(exitCodeForSummary(summary)).toBe(1);
+  });
+
+  it("does not count a 400/422 per-candidate rejection as apiUnavailable", async () => {
+    const fetchImpl = makeFetch([{ ok: false, status: 422 }]);
+    const summary = await runSubmit(cands(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.errors).toBe(1);
+    expect(summary.apiUnavailable).toBe(0);
+  });
+
+  it("reports a partial batch: earlier POSTs stay counted, the outage is flagged, exit is 3", async () => {
+    const fetchImpl = makeFetch([{ ok: true }, { ok: false, status: 503 }, { ok: false, status: 503 }]);
+    const summary = await runSubmit(cands(3), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.submitted).toBe(1);
+    expect(summary.apiUnavailable).toBe(2);
+    expect(exitCodeForSummary(summary)).toBe(EXIT_GATE_UNAVAILABLE);
+  });
+
+  it("counts a thrown fetch (transport failure) as apiUnavailable", async () => {
+    const fetchImpl = vi.fn(async () => {
+      throw new Error("socket hang up");
+    }) as unknown as typeof fetch;
+    const summary = await runSubmit(cands(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.apiUnavailable).toBe(1);
+  });
+
+  it("counts a candidate whose every source failed with network_error as skippedUnreachable, not skippedUnverified", async () => {
+    const verifyImpl = makeVerifyImpl(() => ({
+      verdict: "rejected",
+      transportFailure: { reason: "network_error" },
+    }));
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const summary = await runSubmit(cands(3), baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl, sleepImpl });
+    expect(summary.skippedUnreachable).toBe(3);
+    expect(summary.skippedUnverified).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(exitCodeForSummary(summary)).toBe(EXIT_GATE_UNAVAILABLE);
+  });
+
+  it("keeps a dead link (http_error) and a content mismatch in skippedUnverified", async () => {
+    const verifyImpl = makeVerifyImpl((url) =>
+      url.endsWith("s0")
+        ? { verdict: "rejected", transportFailure: { reason: "http_error", httpStatus: 404 } }
+        : { verdict: "rejected" }
+    );
+    const summary = await runSubmit(cands(2), baseOpts(), {
+      fetchImpl: makeFetch([{ ok: true }]),
+      existingFacilities: [],
+      verifyImpl,
+      sleepImpl,
+    });
+    expect(summary.skippedUnverified).toBe(2);
+    expect(summary.skippedUnreachable).toBe(0);
+  });
+
+  it("does not call a candidate unreachable when only some of its sources failed the network", async () => {
+    const verifyImpl = makeVerifyImpl((url) =>
+      url.endsWith("a") ? { verdict: "rejected", transportFailure: { reason: "network_error" } } : { verdict: "rejected" }
+    );
+    const summary = await runSubmit(
+      [makeCandidateWithUrls("mixed-tx", ["https://example.com/a", "https://example.com/b"])],
+      baseOpts(),
+      { fetchImpl: makeFetch([{ ok: true }]), existingFacilities: [], verifyImpl, sleepImpl }
+    );
+    expect(summary.skippedUnverified).toBe(1);
+    expect(summary.skippedUnreachable).toBe(0);
+  });
+});
+
+describe("main — gate unavailable and refused-gate exits", () => {
+  async function runMainWith(env: Record<string, string | undefined>, loaded: unknown) {
+    const logDir = mkdtempSync(path.join(tmpdir(), "submit-candidates-gate-"));
+    const inputPath = path.join(logDir, "candidates.json");
+    writeFileSync(inputPath, JSON.stringify([]));
+    const saved = { ...process.env };
+    const originalArgv = process.argv;
+    Object.assign(process.env, { DISCOVERY_LOG_DIR: logDir, API_ADMIN_TOKEN: "t" });
+    for (const [k, v] of Object.entries(env)) {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    }
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=gate", "--base-url=http://api.test"];
+    loadFacilitiesMock.mockResolvedValue(loaded);
+    const errors: string[] = [];
+    const errSpy = vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
+      errors.push(a.map(String).join(" "));
+    });
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    let exitCode: number | undefined;
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      exitCode = code;
+      throw new Error(`process.exit(${code})`);
+    }) as never);
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(/);
+      return { exitCode, errors };
+    } finally {
+      exitSpy.mockRestore();
+      errSpy.mockRestore();
+      vi.restoreAllMocks();
+      process.argv = originalArgv;
+      for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k];
+      Object.assign(process.env, saved);
+      rmSync(logDir, { recursive: true, force: true });
+    }
+  }
+
+  const liveIndex = { facilities: [], source: "db", cached: false };
+
+  it("refuses to run (exit 1, a config error, fixed message) when VERIFY_SOURCES_ENABLED=false under DISCOVERY_REQUIRE_VERIFY=1", async () => {
+    const { exitCode, errors } = await runMainWith(
+      { VERIFY_SOURCES_ENABLED: "false", DISCOVERY_REQUIRE_VERIFY: "1" },
+      liveIndex
+    );
+    expect(exitCode).toBe(1);
+    expect(errors).toContain(VERIFY_DISABLED_REFUSAL);
+    expect(VERIFY_DISABLED_REFUSAL).toContain("VERIFY_SOURCES_ENABLED=false");
+  });
+
+  it("still lets a manual run (no DISCOVERY_REQUIRE_VERIFY) opt out of the gate", async () => {
+    const { exitCode } = await runMainWith(
+      { VERIFY_SOURCES_ENABLED: "false", DISCOVERY_REQUIRE_VERIFY: undefined },
+      liveIndex
+    );
+    expect(exitCode).toBe(0);
+  });
+
+  it("requireVerifyViolation needs BOTH the scheduler flag and a disabled gate", () => {
+    expect(requireVerifyViolation({ DISCOVERY_REQUIRE_VERIFY: "1", VERIFY_SOURCES_ENABLED: "false" })).toBe(true);
+    expect(requireVerifyViolation({ DISCOVERY_REQUIRE_VERIFY: "1" })).toBe(false);
+    expect(requireVerifyViolation({ DISCOVERY_REQUIRE_VERIFY: "1", VERIFY_SOURCES_ENABLED: "true" })).toBe(false);
+    expect(requireVerifyViolation({ VERIFY_SOURCES_ENABLED: "false" })).toBe(false);
+    expect(requireVerifyViolation({ DISCOVERY_REQUIRE_VERIFY: "0", VERIFY_SOURCES_ENABLED: "false" })).toBe(false);
+  });
+});
+
+// --- resubmit: --resume-from-log ---------------------------------------------
+
+describe("per-candidate outcomes and --resume-from-log", () => {
+  const sleepImpl = async () => {};
+  const raw = (n: number) =>
+    Array.from({ length: n }, (_, i) => makeCandidateWithUrls(`fac-${i}-tx`, [`https://example.com/s${i}`]));
+  const ok = (id: string) => ({ ok: true, body: { id } });
+
+  function writeLogFile(summary: RunSubmitSummary): string {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-log-"));
+    const file = path.join(dir, "run.json");
+    writeFileSync(file, JSON.stringify(summary));
+    return file;
+  }
+
+  it("records a hash, an index and an outcome per candidate, with the submission id", async () => {
+    const candidates = raw(3);
+    const fetchImpl = makeFetch([ok("sub-0"), { ok: false, status: 503 }, { ok: false, status: 503 }]);
+    const summary = await runSubmit(candidates, baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.candidateOutcomes.map((r) => [r.index, r.outcome])).toEqual([
+      [0, "submitted"],
+      [1, "error"],
+      [2, "error"],
+    ]);
+    expect(summary.candidateOutcomes[0]).toMatchObject({ hash: candidateHash(candidates[0]), submissionId: "sub-0" });
+  });
+
+  it("marks candidates never reached as not_attempted in the partial summary of an aborted run", async () => {
+    const candidates = raw(2);
+    let partial: RunSubmitSummary | undefined;
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "unavailable" }));
+    await expect(
+      runSubmit(candidates, baseOpts(), {
+        fetchImpl: makeFetch([ok("x")]),
+        existingFacilities: [],
+        verifyImpl,
+        sleepImpl,
+        onSummaryInit: (s) => {
+          partial = s;
+        },
+      })
+    ).rejects.toThrow(VerificationGateUnavailableError);
+    expect(partial!.candidateOutcomes.map((r) => r.outcome)).toEqual(["not_attempted", "not_attempted"]);
+  });
+
+  it("resume skips previously submitted candidates and retries the rest", async () => {
+    const candidates = raw(3);
+    const first = await runSubmit(candidates, baseOpts(), {
+      fetchImpl: makeFetch([ok("sub-0"), { ok: false, status: 503 }, { ok: false, status: 503 }]),
+      existingFacilities: [],
+      sleepImpl,
+    });
+    const resumeSubmitted = loadResumeLog(writeLogFile(first), candidates);
+    expect([...resumeSubmitted.keys()]).toEqual([0]);
+
+    const fetchImpl = makeFetch([ok("sub-1"), ok("sub-2")]);
+    const second = await runSubmit(candidates, baseOpts({ resumeSubmitted }), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    const posted = fetchImpl.mock.calls.map(([, init]) => JSON.parse(init!.body as string).payload.id);
+    expect(posted).toEqual(["fac-1-tx", "fac-2-tx"]);
+    expect(second.skippedResumed).toBe(1);
+    expect(second.submitted).toBe(2);
+  });
+
+  it("a resume of a resume still skips the first attempt's submissions", async () => {
+    const candidates = raw(3);
+    const first = await runSubmit(candidates, baseOpts(), {
+      fetchImpl: makeFetch([ok("sub-0"), { ok: false, status: 503 }, { ok: false, status: 503 }]),
+      existingFacilities: [],
+      sleepImpl,
+    });
+    const second = await runSubmit(candidates, baseOpts({ resumeSubmitted: loadResumeLog(writeLogFile(first), candidates) }), {
+      fetchImpl: makeFetch([ok("sub-1"), { ok: false, status: 503 }]),
+      existingFacilities: [],
+      sleepImpl,
+    });
+    expect(second.candidateOutcomes[0]).toMatchObject({ outcome: "submitted", submissionId: "sub-0", carriedForward: true });
+
+    const fetchImpl = makeFetch([ok("sub-2")]);
+    const third = await runSubmit(candidates, baseOpts({ resumeSubmitted: loadResumeLog(writeLogFile(second), candidates) }), {
+      fetchImpl,
+      existingFacilities: [],
+      sleepImpl,
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(third.skippedResumed).toBe(2);
+    expect(third.candidateOutcomes.map((r) => r.outcome)).toEqual(["submitted", "submitted", "submitted"]);
+  });
+
+  it("refuses a log that belongs to a different candidates file", async () => {
+    const candidates = raw(2);
+    const log = await runSubmit(candidates, baseOpts(), {
+      fetchImpl: makeFetch([ok("a"), ok("b")]),
+      existingFacilities: [],
+      sleepImpl,
+    });
+    const file = writeLogFile(log);
+    const changed = [candidates[0], makeCandidateWithUrls("other-tx", ["https://example.com/other"])];
+    expect(() => loadResumeLog(file, changed)).toThrow(/does not belong/);
+    expect(() => loadResumeLog(file, raw(3))).toThrow(/lists 2 candidates/);
+    expect(() => loadResumeLog(writeLogFile(makeSummary()), candidates)).toThrow(/lists 0 candidates/);
+    expect(() => loadResumeLog("/nonexistent/log.json", candidates)).toThrow(/could not read/);
+  });
+
+  it("main exits 1 with the mismatch message when the resume log does not match", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-main-"));
+    const inputPath = path.join(dir, "candidates.json");
+    writeFileSync(inputPath, JSON.stringify(raw(2)));
+    const logPath = writeLogFile(makeSummary({ candidateOutcomes: [{ index: 0, hash: "bad", outcome: "submitted" }] }));
+    const saved = { ...process.env };
+    const argv = process.argv;
+    process.env.API_ADMIN_TOKEN = "t";
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=r", `--resume-from-log=${logPath}`];
+    const errors: string[] = [];
+    vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
+      errors.push(a.map(String).join(" "));
+    });
+    let exitCode: number | undefined;
+    vi.spyOn(process, "exit").mockImplementation(((c?: number) => {
+      exitCode = c;
+      throw new Error(`process.exit(${c})`);
+    }) as never);
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(1\)$/);
+      expect(exitCode).toBe(1);
+      expect(errors.join("\n")).toMatch(/--resume-from-log/);
+    } finally {
+      vi.restoreAllMocks();
+      process.argv = argv;
+      for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k];
+      Object.assign(process.env, saved);
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("durable checkpoints and in_flight resume", () => {
+  const sleepImpl = async () => {};
+  const raw = (n: number) =>
+    Array.from({ length: n }, (_, i) => makeCandidateWithUrls(`fac-${i}-tx`, [`https://example.com/s${i}`]));
+  const ok = (id: string) => ({ ok: true, body: { id } });
+  const snap = (s: RunSubmitSummary): RunSubmitSummary => JSON.parse(JSON.stringify(s));
+
+  function writeLogFile(summary: RunSubmitSummary): string {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-log-"));
+    const file = path.join(dir, "run.json");
+    writeFileSync(file, JSON.stringify(summary));
+    return file;
+  }
+
+  it("checkpoints in_flight before each POST and submitted right after it", async () => {
+    const candidates = raw(2);
+    const snaps: RunSubmitSummary[] = [];
+    const seenAtPost: string[][] = [];
+    const fetchImpl = makeFetch([ok("sub-0"), ok("sub-1")]);
+    fetchImpl.mockImplementation(async () => {
+      // the last checkpoint at the moment the POST leaves: a SIGKILL here is what the log must survive
+      seenAtPost.push(snaps[snaps.length - 1].candidateOutcomes.map((r) => r.outcome));
+      return { ok: true, status: 201, json: async () => ({ id: `sub-${seenAtPost.length - 1}` }), text: async () => "" } as unknown as Response;
+    });
+    await runSubmit(candidates, baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl, checkpoint: (s) => snaps.push(snap(s)) });
+    expect(seenAtPost[0]).toEqual(["in_flight", "not_attempted"]);
+    expect(seenAtPost[1]).toEqual(["submitted", "in_flight"]);
+    expect(snaps[snaps.length - 1].candidateOutcomes.map((r) => r.outcome)).toEqual(["submitted", "submitted"]);
+  });
+
+  it("does not checkpoint a dry run", async () => {
+    const checkpoint = vi.fn();
+    await runSubmit(raw(2), baseOpts({ dryRun: true }), { fetchImpl: makeFetch([ok("x")]), existingFacilities: [], checkpoint });
+    expect(checkpoint).not.toHaveBeenCalled();
+  });
+
+  it("resume does not resubmit an in_flight candidate: WARN, counter, carried forward", async () => {
+    const candidates = raw(3);
+    const log = makeSummary({
+      discovered: 3,
+      candidateOutcomes: [
+        { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted", submissionId: "sub-0" },
+        { index: 1, hash: candidateHash(candidates[1]), outcome: "in_flight" },
+        { index: 2, hash: candidateHash(candidates[2]), outcome: "not_attempted" },
+      ],
+    });
+    const resumeSubmitted = loadResumeLog(writeLogFile(log), candidates);
+    expect([...resumeSubmitted.keys()]).toEqual([0, 1]);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const fetchImpl = makeFetch([ok("sub-2")]);
+      const second = await runSubmit(candidates, baseOpts({ resumeSubmitted }), { fetchImpl, existingFacilities: [], sleepImpl });
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(fetchImpl.mock.calls[0][1]!.body as string).payload.id).toBe("fac-2-tx");
+      expect(second.resumedInFlight).toBe(1);
+      expect(second.skippedResumed).toBe(1);
+      expect(second.candidateOutcomes[1]).toMatchObject({ outcome: "in_flight", carriedForward: true });
+      expect(warn).toHaveBeenCalledWith(
+        `WARN: candidate #1 (${candidateHash(candidates[1])}) was in flight when the previous attempt died; not resubmitted. Check the pending queue for it.`
+      );
+      // a second retry still skips it
+      expect([...loadResumeLog(writeLogFile(second), candidates).keys()]).toEqual([0, 1, 2]);
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("a checkpoint failure aborts before the next POST and maps to exit 1", async () => {
+    const candidates = raw(3);
+    const fetchImpl = makeFetch([ok("sub-0")]);
+    let calls = 0;
+    const err = await runSubmit(candidates, baseOpts(), {
+      fetchImpl,
+      existingFacilities: [],
+      sleepImpl,
+      checkpoint: () => {
+        // 1: in_flight #0, 2: settle #0 (after POST 1), 3: in_flight #1 fails
+        if (++calls === 3) throw Object.assign(new Error("disk full"), { code: "ENOSPC" });
+      },
+    }).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(CheckpointWriteError);
+    expect((err as Error).message).toContain("ENOSPC");
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(exitCodeForAbort(err)).toBe(1);
+    expect(exitCodeForAbort(new VerificationGateUnavailableError("u", "x"))).toBe(EXIT_GATE_UNAVAILABLE);
+    expect(exitCodeForAbort(new Error("other"))).toBeUndefined();
+  });
+
+  describe("ambiguous POST failures", () => {
+    const run = (fetchImpl: ReturnType<typeof makeFetch>, n = 1) =>
+      runSubmit(raw(n), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+
+    it("a thrown non-pre-connect error is recorded in_flight, counters unchanged", async () => {
+      const fetchImpl = vi.fn(async () => {
+        throw Object.assign(new Error("socket hang up"), { code: "ECONNRESET" });
+      });
+      const log = vi.spyOn(console, "log").mockImplementation(() => {});
+      try {
+        const summary = await run(fetchImpl as never);
+        expect(summary.candidateOutcomes[0].outcome).toBe("in_flight");
+        expect(summary.errors).toBe(1);
+        expect(summary.apiUnavailable).toBe(1);
+        expect(log.mock.calls.some(([m]) => String(m).includes("recorded in_flight so a retry will not resubmit it"))).toBe(true);
+      } finally {
+        log.mockRestore();
+      }
+    });
+
+    it.each([504, 524])("HTTP %i is recorded in_flight", async (status) => {
+      const summary = await run(makeFetch([{ ok: false, status }]));
+      expect(summary.candidateOutcomes[0].outcome).toBe("in_flight");
+      expect(summary.errors).toBe(1);
+      expect(summary.apiUnavailable).toBe(1);
+    });
+
+    it.each([500, 502, 503, 400])("HTTP %i stays error", async (status) => {
+      const summary = await run(makeFetch([{ ok: false, status }]));
+      expect(summary.candidateOutcomes[0].outcome).toBe("error");
+    });
+
+    it("a pre-connect failure stays error", async () => {
+      const fetchImpl = vi.fn(async () => {
+        throw Object.assign(new Error("connect refused"), { code: "ECONNREFUSED" });
+      });
+      const summary = await run(fetchImpl as never);
+      expect(summary.candidateOutcomes[0].outcome).toBe("error");
+    });
+
+    it("a resume skips the in_flight candidate and resubmits the error one", async () => {
+      const candidates = raw(2);
+      const first = await run(makeFetch([{ ok: false, status: 504 }, { ok: false, status: 503 }]), 2);
+      expect(first.candidateOutcomes.map((r) => r.outcome)).toEqual(["in_flight", "error"]);
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      try {
+        const fetchImpl = makeFetch([ok("sub-1")]);
+        const second = await runSubmit(candidates, baseOpts({ resumeSubmitted: loadResumeLog(writeLogFile(first), candidates) }), {
+          fetchImpl,
+          existingFacilities: [],
+          sleepImpl,
+        });
+        expect(fetchImpl).toHaveBeenCalledTimes(1);
+        expect(JSON.parse(fetchImpl.mock.calls[0][1]!.body as string).payload.id).toBe("fac-1-tx");
+        expect(second.resumedInFlight).toBe(1);
+      } finally {
+        warn.mockRestore();
+      }
+    });
+  });
+
+  it("a failed in_flight checkpoint restores not_attempted, so the finally-written log never claims an unsent POST", async () => {
+    const fetchImpl = makeFetch([ok("x")]);
+    const written: RunSubmitSummary[] = [];
+    let calls = 0;
+    await expect(
+      runSubmitAndLog(raw(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl }, (s) => {
+        calls++;
+        if (calls === 1) throw Object.assign(new Error("disk full"), { code: "ENOSPC" }); // the in_flight checkpoint
+        written.push(snap(s)); // the finally write succeeds
+      })
+    ).rejects.toThrow(CheckpointWriteError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(written).toHaveLength(1);
+    expect(written[0].candidateOutcomes[0].outcome).toBe("not_attempted");
+  });
+
+  it("main exits 1 when --resume-from-log is missing, and posts nothing", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-missing-"));
+    const inputPath = path.join(dir, "candidates.json");
+    writeFileSync(inputPath, JSON.stringify(raw(2)));
+    const saved = { ...process.env };
+    const argv = process.argv;
+    process.env.API_ADMIN_TOKEN = "t";
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=r", `--resume-from-log=${path.join(dir, "nope.json")}`];
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    let exitCode: number | undefined;
+    vi.spyOn(process, "exit").mockImplementation(((c?: number) => {
+      exitCode = c;
+      throw new Error(`process.exit(${c})`);
+    }) as never);
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(1\)$/);
+      expect(exitCode).toBe(1);
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      vi.restoreAllMocks();
+      process.argv = argv;
+      Object.assign(process.env, saved);
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("readSubmissionId gives up on a body that never resolves and still counts the submission", async () => {
+    vi.useFakeTimers();
+    try {
+      const fetchImpl = vi.fn(async () => ({ ok: true, status: 201, json: () => new Promise(() => {}), text: async () => "" }) as unknown as Response);
+      const run = runSubmit(raw(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+      await vi.advanceTimersByTimeAsync(10_001);
+      const summary = await run;
+      expect(summary.submitted).toBe(1);
+      expect(summary.candidateOutcomes[0]).toMatchObject({ outcome: "submitted" });
+      expect(summary.candidateOutcomes[0].submissionId).toBeUndefined();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
