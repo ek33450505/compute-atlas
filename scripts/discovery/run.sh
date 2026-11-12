@@ -133,6 +133,19 @@ notify() {
     log "notify: SUPPRESSED (DISCOVERY_NOTIFY=${DISCOVERY_NOTIFY:-true}) — $safe_title: $safe_message"
     return 0
   fi
+  # Durable marker: appended on every non-suppressed alert, trimmed to the last
+  # 200 lines. Ed (or the next interactive session) reads and deletes it. It is
+  # written BEFORE the notifier chain: notify_bounded kills this function after
+  # ~3 s, so a hung notifier must not be able to lose it. Best-effort: a write
+  # failure must never fail the run.
+  (
+    umask 077
+    printf '%s %s: %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$safe_title" "$safe_message" >>"$LOG_DIR/ALERTS-PENDING.txt" \
+      && tail -n 200 "$LOG_DIR/ALERTS-PENDING.txt" >"$LOG_DIR/ALERTS-PENDING.txt.tmp" \
+      && mv "$LOG_DIR/ALERTS-PENDING.txt.tmp" "$LOG_DIR/ALERTS-PENDING.txt"
+  ) 2>/dev/null || true
+  # umask only covers NEW files; tighten one that already existed with looser bits.
+  chmod 600 "$LOG_DIR/ALERTS-PENDING.txt" 2>/dev/null || true
   # set -e is in force, so capture the status with `|| rc=$?` — immediately,
   # and never through a pipe (a pipeline has silently replaced an exit status
   # in this repo before).
@@ -141,7 +154,7 @@ notify() {
   # DENIED (confirmed 2026-11-07: `terminal-notifier -diagnose` says
   # "authorization denied"); that is a permission problem, not a launchd one, and
   # it silenced every failure alert from at least 2026-10-03 on. So a failed arm
-  # falls through to the next, and the marker file below is written regardless:
+  # falls through to the next, and the marker file above is written regardless:
   # a zero exit proves only dispatch, so the file is the one channel that cannot
   # be swallowed by Focus/DND/permissions.
   rc=0
@@ -170,17 +183,6 @@ notify() {
   if [[ "$delivered" != "true" ]]; then
     log "notify: NO NOTIFIER DISPATCHED (terminal-notifier and osascript absent or failed) — $safe_title: $safe_message"
   fi
-  # Durable marker: appended on every non-suppressed alert, trimmed to the last
-  # 200 lines. Ed (or the next interactive session) reads and deletes it.
-  # Best-effort: a write failure must never fail the run.
-  (
-    umask 077
-    printf '%s %s: %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$safe_title" "$safe_message" >>"$LOG_DIR/ALERTS-PENDING.txt" \
-      && tail -n 200 "$LOG_DIR/ALERTS-PENDING.txt" >"$LOG_DIR/ALERTS-PENDING.txt.tmp" \
-      && mv "$LOG_DIR/ALERTS-PENDING.txt.tmp" "$LOG_DIR/ALERTS-PENDING.txt"
-  ) 2>/dev/null || true
-  # umask only covers NEW files; tighten one that already existed with looser bits.
-  chmod 600 "$LOG_DIR/ALERTS-PENDING.txt" 2>/dev/null || true
   return 0
 }
 
@@ -219,6 +221,447 @@ if (( ${#_preflight_missing[@]} > 0 )); then
   log "ERROR: strict credential preflight failed: ${_preflight_missing[*]} missing or empty in .env.local - refusing to run (set DISCOVERY_REQUIRE_READER=0 / DISCOVERY_REQUIRE_INTAKE_TOKEN=0 to opt out for a manual run)"
   notify "Compute Atlas discovery FAILED" "Preflight: ${_preflight_missing[*]} missing in .env.local"
   exit 1
+fi
+
+# --- run ledger, heartbeat writer, lock + exit trap --------------------------
+# Wave 5 (A-OPS-09 / A-OPS-16). 2026-11-12 incident: `launchctl bootout`
+# (SIGTERM) killed a run ~4 min into a 4-state batch. cursor.txt had already
+# advanced past all 4 states (it is written ONCE, before any research), no
+# heartbeat was written and nothing recorded the death, so 4 states were
+# silently consumed from the rotation.
+#
+# Declared here, before the lock, so the stale-gap / dead-previous-run checks
+# below can feed the SAME FAILURES ledger the end-of-run exit status reads, and
+# so the EXIT trap can read every array under `set -u` whenever it fires.
+RUN_IDS=()
+HB_RUN_IDS=()
+HB_STATES=()
+HB_STATUSES=()
+HB_ELAPSED=()
+# Failure ledger for the alert + exit-status decision at the bottom. Populated
+# per state; a non-empty ledger means this run gets a notification AND a
+# nonzero exit (open item #1) rather than completing silently as before.
+FAILURES=()
+RUN_FINISHED=false     # set just before the normal final exits; unset = unclean exit
+RUN_CRASH_GUARD=false  # set after the live cursor write (live + default rotation only)
+RUN_LOCK_HELD=false
+RUN_BATCH_ID=pending
+RUN_LOCK_DIR="$LOG_DIR/run.lock"
+# write_lock_info runs within ms of the mkdir, and an owner that cannot write it
+# aborts, so a lock with no owner info that is older than this can only be an
+# orphan from a crash between the mkdir and the write. Younger = a live owner
+# that has not written yet (it forks ps first): refuse, never steal. Residual,
+# accepted: a machine sleep between the mkdir and the first info write could make
+# a live owner's info-less lock look older than this; that window is milliseconds
+# of work.
+LOCK_INFO_GRACE_SECS=600
+CHILD_PID=""           # the long-running foreground-equivalent child, if any
+
+# Long children run backgrounded and are `wait`ed on: bash defers a trap until a
+# FOREGROUND child exits, but `wait` returns at once when a trapped signal
+# arrives. The 2026-11-12 incident: `launchctl bootout` sent TERM while
+# `timeout -k 120 3000 claude` ran in the foreground; launchd SIGKILLs ~20 s
+# later, so the trap would never have run (and GNU timeout puts claude in its own
+# process group, so it survived as an orphan).
+wait_child_tracked() {
+  local _rc=0
+  wait "$CHILD_PID" || _rc=$?
+  CHILD_PID=""
+  return "$_rc"
+}
+# run_bg_wait cmd args...: run an external command as a tracked child. The
+# caller's redirections on the call apply to the child.
+run_bg_wait() {
+  "$@" &
+  CHILD_PID=$!
+  wait_child_tracked
+}
+# Pre-order list of every descendant of $1, gathered BEFORE anything is signalled
+# (killing a parent first would reparent its children to 1 and lose the link).
+list_descendants() {
+  local _c
+  for _c in $(pgrep -P "$1" 2>/dev/null || true); do
+    echo "$_c"
+    list_descendants "$_c"
+  done
+}
+# kill_child_tree: TERM the tracked child and all its descendants (timeout
+# forwards TERM, but its child sits in its own process group), wait up to
+# ${1:-25} x 0.2 s (5 s by default), then KILL survivors. The exit paths pass a
+# smaller count: their whole budget is sized under launchd's 20 s default
+# ExitTimeOut (the plist sets none), see handle_unclean_exit.
+kill_child_tree() {
+  [[ -n "$CHILD_PID" ]] || return 0
+  local _max="${1:-25}" _pids _p _i _alive
+  _pids="$CHILD_PID $(list_descendants "$CHILD_PID")"
+  for _p in $_pids; do kill -TERM "$_p" 2>/dev/null || true; done
+  for (( _i = 0; _i < _max; _i++ )); do
+    _alive=false
+    for _p in $_pids; do
+      if kill -0 "$_p" 2>/dev/null; then _alive=true; fi
+    done
+    [[ "$_alive" == "true" ]] || break
+    sleep 0.2
+  done
+  for _p in $_pids; do kill -KILL "$_p" 2>/dev/null || true; done
+  CHILD_PID=""
+}
+
+# One object is both the mutual-exclusion lock (A-OPS-16) and the
+# run-in-progress marker (A-OPS-09): the directory $LOG_DIR/run.lock, created
+# atomically with mkdir (no flock on macOS), holding `info` = pid / start time /
+# batch id. A leftover directory whose PID is dead is exactly "the previous run
+# died without cleanup" (SIGKILL, reboot): the trap never ran.
+write_lock_info() {
+  printf 'pid=%s\nstarted=%s\nrun=%s\nlstart=%s\n' "$$" "$RUN_STARTED_AT" "$RUN_BATCH_ID" "$(proc_lstart "$$")" >"$RUN_LOCK_DIR/info.tmp" \
+    && mv "$RUN_LOCK_DIR/info.tmp" "$RUN_LOCK_DIR/info"
+}
+# lock_dir_age_secs: age of the lock directory by mtime (macOS `stat -f`, GNU
+# `stat -c` fallback); empty if it cannot be read.
+lock_dir_age_secs() {
+  local _m
+  # GNU form first: GNU `stat -f %m` treats %m as a file operand, prints
+  # filesystem info and exits 1, so a -f-first fallback would append to that
+  # output. BSD `stat -c` prints nothing and exits 1, so macOS falls through.
+  _m="$(stat -c %Y "$RUN_LOCK_DIR" 2>/dev/null || stat -f %m "$RUN_LOCK_DIR" 2>/dev/null || true)"
+  [[ "$_m" =~ ^[0-9]+$ ]] || return 0
+  echo $(( $(date '+%s') - _m ))
+}
+read_lock_field() {
+  sed -n "s/^$1=//p" "$RUN_LOCK_DIR/info" 2>/dev/null | head -1 || true
+}
+# Never removes a lock another process owns: if info names a different PID the
+# lock is not ours (a missing info is ours: we created the directory).
+remove_run_lock() {
+  local _owner
+  _owner="$(read_lock_field pid)"
+  if [[ -n "$_owner" && "$_owner" != "$$" ]]; then
+    return 0
+  fi
+  rm -f "$RUN_LOCK_DIR/info" "$RUN_LOCK_DIR/info.tmp"
+  rmdir "$RUN_LOCK_DIR" 2>/dev/null || true
+}
+# proc_lstart PID: the process start time as `ps -o lstart=` prints it, trimmed
+# and with ps's padding squeezed to single spaces (empty if ps fails). Used by
+# both the lock writer and the checker so the two strings compare equal. ps runs
+# under LC_ALL=C TZ=UTC0 so a manual run and launchd (different TZ/LANG) render
+# the same process identically; a mismatch would read as "dead" and steal the lock.
+proc_lstart() {
+  LC_ALL=C TZ=UTC0 ps -o lstart= -p "$1" 2>/dev/null | tr -s ' ' | sed 's/^ //; s/ $//' || true
+}
+# lock_owner_alive PID STARTED [LSTART]: is the process that wrote the lock still
+# running? Err toward "alive": a wrong "alive" only makes the new run refuse and
+# alert, while a wrong "dead" lets a second run steal the lock and both write
+# cursor.txt/heartbeat.json. The lock survives reboots, so a bare `kill -0` would
+# let a REUSED PID hold it forever. Identity is PID + process start time (LSTART,
+# recorded by write_lock_info): it names the process instance however run.sh was
+# invoked, and a reused PID gets a new start time. If ps cannot answer, alive.
+# A lock without LSTART (older version) falls back to a deliberately loose check:
+# the command line mentions run.sh and the recorded start is after the last boot.
+lock_owner_alive() {
+  local _pid="$1" _started="$2" _lstart="${3:-}" _now _cmd _boot _se
+  [[ "$_pid" =~ ^[0-9]+$ ]] || return 1
+  # ps, not `kill -0`: kill -0 fails with EPERM for a live process owned by
+  # another uid (e.g. a sudo run sharing LOG_DIR), which would read as dead.
+  ps -o pid= -p "$_pid" >/dev/null 2>&1 || return 1
+  if [[ -n "$_lstart" ]]; then
+    _now="$(proc_lstart "$_pid")"
+    [[ -z "$_now" || "$_now" == "$_lstart" ]]
+    return
+  fi
+  _cmd="$(ps -o command= -p "$_pid" 2>/dev/null || true)"
+  [[ "$_cmd" == *run.sh* ]] || return 1
+  _boot="$(sysctl -n kern.boottime 2>/dev/null | sed -n 's/.*sec = \([0-9][0-9]*\).*/\1/p' || true)"
+  if [[ -n "$_boot" && -n "$_started" ]]; then
+    _se="$(date -j -f '%Y-%m-%dT%H:%M:%S%z' "$_started" '+%s' 2>/dev/null || true)"
+    if [[ -n "$_se" ]] && (( _se < _boot )); then
+      return 1
+    fi
+  fi
+  return 0
+}
+
+# find_requeue_index COUNT: shared by the post-loop re-queue block and the crash
+# handler. Sets REQUEUE_INDEX to the first of HB_STATUSES[0..COUNT-1] that
+# deserves a re-queue (auth/skipped/blocked, or suspect_short unless that state
+# was already re-queued for suspect_short last time), else -1. Also sets
+# SUSPECT_REQUEUE_FILE / SUSPECT_PREV. suspect_short is bounded to ONE
+# consecutive re-queue per state so a state that deterministically returns a fast
+# `[]` (or repeated kills) cannot pin the cursor forever.
+find_requeue_index() {
+  local _n="$1" _r
+  REQUEUE_INDEX=-1
+  SUSPECT_REQUEUE_FILE="$LOG_DIR/suspect-short-requeued.txt"
+  SUSPECT_PREV=""
+  if [[ -f "$SUSPECT_REQUEUE_FILE" ]]; then
+    SUSPECT_PREV="$(tr -d ' \n' <"$SUSPECT_REQUEUE_FILE" 2>/dev/null || true)"
+  fi
+  for (( _r = 0; _r < _n; _r++ )); do
+    case "${HB_STATUSES[$_r]}" in
+      auth | skipped | blocked)
+        REQUEUE_INDEX="$_r"
+        return 0
+        ;;
+      suspect_short)
+        if [[ "${HB_STATES[$_r]}" == "$SUSPECT_PREV" ]]; then
+          log "WARN: ${HB_STATES[$_r]} is suspect_short twice in a row — NOT re-queuing again; the rotation is moving on (failure still recorded, watchdog stays red)"
+        else
+          REQUEUE_INDEX="$_r"
+          return 0
+        fi
+        ;;
+    esac
+  done
+  return 0
+}
+
+# record_suspect_requeue INDEX: the one place the suspect_short marker is kept.
+# Call after find_requeue_index with its REQUEUE_INDEX (-1 included): the marker
+# names INDEX's state when that state is being re-queued for suspect_short, and
+# is removed in every other case so a stale one cannot suppress a later re-queue.
+record_suspect_requeue() {
+  local _idx="$1"
+  if (( _idx >= 0 )) && [[ "${HB_STATUSES[$_idx]}" == "suspect_short" ]]; then
+    echo "${HB_STATES[$_idx]}" >"$SUSPECT_REQUEUE_FILE" || true
+  else
+    rm -f "$SUSPECT_REQUEUE_FILE"
+  fi
+}
+
+# notify_bounded TITLE MESSAGE: notify() in the background, killed after ~3 s, so
+# the osascript fallback cannot push the exit trap past launchd's kill timeout.
+notify_bounded() {
+  local _np _ni _pids _p
+  notify "$1" "$2" &
+  _np=$!
+  for (( _ni = 0; _ni < 15; _ni++ )); do
+    kill -0 "$_np" 2>/dev/null || break
+    sleep 0.2
+  done
+  if kill -0 "$_np" 2>/dev/null; then
+    _pids="$_np $(list_descendants "$_np")"
+    for _p in $_pids; do kill -KILL "$_p" 2>/dev/null || true; done
+  fi
+  wait "$_np" 2>/dev/null || true
+}
+
+# write_and_publish_heartbeat [status]: writes heartbeat.json from the HB_*
+# arrays and publishes it to Neon. The status is ok/degraded from FAILURES
+# unless the caller passes one (the exit trap passes "crashed").
+write_and_publish_heartbeat() {
+  local _override="${1:-}" _h _entry _hb_status HEARTBEAT_ENTRIES=""
+  for (( _h = 0; _h < ${#HB_STATES[@]}; _h++ )); do
+    _entry="    {
+      \"runId\": \"${HB_RUN_IDS[$_h]}\",
+      \"state\": \"${HB_STATES[$_h]}\",
+      \"claudeStatus\": \"${HB_STATUSES[$_h]}\",
+      \"elapsedSecs\": ${HB_ELAPSED[$_h]}
+    }"
+    if [[ -z "$HEARTBEAT_ENTRIES" ]]; then
+      HEARTBEAT_ENTRIES="$_entry"
+    else
+      HEARTBEAT_ENTRIES="$HEARTBEAT_ENTRIES,
+$_entry"
+    fi
+  done
+  _hb_status="ok"
+  if (( ${#FAILURES[@]} > 0 )); then
+    _hb_status="degraded"
+  fi
+  if [[ -n "$_override" ]]; then
+    _hb_status="$_override"
+  fi
+  cat >"$LOG_DIR/heartbeat.json" <<EOF
+{
+  "lastRunAt": "$(date '+%Y-%m-%dT%H:%M:%S%z')",
+  "status": "$_hb_status",
+  "failureCount": ${#FAILURES[@]},
+  "states": [
+$HEARTBEAT_ENTRIES
+  ]
+}
+EOF
+  # The normal heartbeat is on disk: from here a TERM must not overwrite it with
+  # "crashed" (a failed publish is already its own failure).
+  [[ -n "$_override" ]] || RUN_FINISHED=true
+  log "wrote heartbeat -> $LOG_DIR/heartbeat.json (status=$_hb_status states=${HB_STATES[*]-} statuses=${HB_STATUSES[*]-})"
+
+  # Publish the just-written heartbeat to Neon: discovery-logs/ is gitignored
+  # and never leaves this Mac, so the off-machine GitHub Actions watchdog
+  # (.github/workflows/discovery-watchdog.yml) has no way to read
+  # heartbeat.json directly — Neon is the one store both this machine and CI
+  # can reach. The discovery work above is already done by this point, so a
+  # publish failure must not abort the run and lose it — but per this file's
+  # own "a silent instrument is not monitoring" rule (see the block below),
+  # it must not fail silently either: log it and record a FAILURES entry so
+  # the run still exits nonzero and a local notification is still attempted
+  # (attempted and logged — not guaranteed to reach a person; see notify()).
+  # Note the irony this guards: a failed publish is precisely the case where
+  # the off-machine watchdog CANNOT see the degradation, so the local log line
+  # and the nonzero exit are all that is left.
+  local _pp _pi _pub_rc=0
+  npx tsx --env-file=.env.local scripts/discovery/publish-heartbeat.ts \
+    >"$LOG_DIR/publish-heartbeat.log" 2>>"$LOG_DIR/publish-heartbeat.err" &
+  _pp=$!
+  CHILD_PID="$_pp"
+  if [[ -n "$_override" ]]; then
+    # Inside the exit trap launchd's kill timeout is running: bound the publish
+    # to ~5 s, then ~2 s to kill it (heartbeat.json is already on disk). Exit-path
+    # budget under launchd's 20 s default ExitTimeOut: TERM-trap kill 2 s + publish
+    # 5 s + kill 2 s + notify 3 s = ~12 s.
+    for (( _pi = 0; _pi < 25; _pi++ )); do
+      kill -0 "$_pp" 2>/dev/null || break
+      sleep 0.2
+    done
+    if kill -0 "$_pp" 2>/dev/null; then
+      kill_child_tree 10
+      _pub_rc=1
+    fi
+  fi
+  if [[ "$_pub_rc" -eq 0 ]]; then
+    wait "$_pp" || _pub_rc=$?
+    CHILD_PID=""
+  fi
+  if [[ "$_pub_rc" -ne 0 ]]; then
+    log "WARN: publish-heartbeat failed — continuing (see publish-heartbeat.err)"
+    FAILURES+=("heartbeat: publish failed")
+  fi
+}
+
+# Unclean exit after the cursor advanced (TERM/INT/HUP, or an `exit` / set -e
+# abort before RUN_FINISHED). Rewind the cursor to the first batch state with no
+# recorded status (the in-flight one, or the first one if none started), then
+# write + publish a "crashed" heartbeat with the unreached states "skipped" so
+# the watchdog sees it. Re-running a state that was already submitted can stage
+# duplicate PENDING submissions (no dedupe against pending rows); accepted, as in
+# the post-loop block below. If every state already has a status the post-loop
+# re-queue block owns the cursor, so it is left alone.
+handle_unclean_exit() {
+  local _rc="$1" _started="${#HB_STATUSES[@]}" _i _target
+  if (( _started < ${#BATCH_STATES[@]} )); then
+    # Rewind to the earlier of the in-flight/unstarted state and the first
+    # recorded environmental failure (the post-loop re-queue block never ran, so
+    # a `blocked`/`auth`/`skipped`/`suspect_short` state before it must not be lost).
+    _target="$_started"
+    find_requeue_index "$_started"
+    if (( REQUEUE_INDEX >= 0 )); then
+      _target="$REQUEUE_INDEX"
+    fi
+    # Same bookkeeping as the post-loop block (including clearing a stale marker
+    # when nothing is re-queued), so repeated kills stay bounded.
+    record_suspect_requeue "$REQUEUE_INDEX"
+    echo "${BATCH_STATES[$_target]}" >"$CURSOR_FILE" || true
+    log "ERROR: run exited uncleanly (status $_rc) after $_started of ${#BATCH_STATES[@]} states; cursor rewound to ${BATCH_STATES[$_target]} so the unfinished states run again next batch"
+    for (( _i = _started; _i < ${#BATCH_STATES[@]}; _i++ )); do
+      HB_RUN_IDS+=("${RUN_IDS[$_i]-crashed-${BATCH_STATES[$_i]}}")
+      HB_STATES+=("${BATCH_STATES[$_i]}")
+      HB_STATUSES+=("skipped")
+      HB_ELAPSED+=(0)
+    done
+  else
+    log "ERROR: run exited uncleanly (status $_rc) after every state had a status; cursor left to the post-loop re-queue block"
+  fi
+  FAILURES+=("run exited uncleanly (status $_rc) before completing")
+  write_and_publish_heartbeat crashed || true
+  notify_bounded "Compute Atlas discovery CRASHED" "Run exited uncleanly (status $_rc); cursor rewound, heartbeat marked crashed" || true
+}
+
+on_exit() {
+  local _rc=$?
+  set +e
+  # Ignore further signals so a second TERM cannot kill the (time-bounded)
+  # crash handler half way.
+  trap - EXIT
+  trap '' TERM INT HUP
+  if [[ "$RUN_CRASH_GUARD" == "true" && "$RUN_FINISHED" != "true" ]]; then
+    handle_unclean_exit "$_rc"
+  fi
+  rm -f "${_ef_tmp:-}" "${EXISTING_FACILITIES_FILE:-}"
+  if [[ "$RUN_LOCK_HELD" == "true" ]]; then
+    remove_run_lock
+  fi
+  exit "$_rc"
+}
+
+# --- run lock (live runs only) ------------------------------------------------
+# Dry runs touch no lock, marker or trap, so a dry run can overlap a live one.
+if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
+  RUN_STARTED_AT="$(date '+%Y-%m-%dT%H:%M:%S%z')"
+  _prev_died=""
+  if ! mkdir "$RUN_LOCK_DIR" 2>/dev/null; then
+    _lock_pid="$(read_lock_field pid)"
+    if [[ -z "$_lock_pid" ]]; then
+      # mkdir done, info not yet written by its owner: give it a moment.
+      sleep 1
+      _lock_pid="$(read_lock_field pid)"
+    fi
+    _lock_alive=false
+    if [[ -z "$_lock_pid" ]]; then
+      # No owner info: alive unless the directory is a >grace-old orphan (an
+      # unreadable mtime errs toward alive).
+      _lock_age="$(lock_dir_age_secs)"
+      if [[ -z "$_lock_age" ]] || (( _lock_age <= LOCK_INFO_GRACE_SECS )); then
+        _lock_alive=true
+      fi
+    elif lock_owner_alive "$_lock_pid" "$(read_lock_field started)" "$(read_lock_field lstart)"; then
+      _lock_alive=true
+    fi
+    if [[ "$_lock_alive" == "true" ]]; then
+      # The other run owns cursor.txt and heartbeat.json: touch neither.
+      log "ERROR: another discovery run holds $RUN_LOCK_DIR (pid ${_lock_pid:-unknown}${_lock_pid:+, started $(read_lock_field started), run $(read_lock_field run)}${_lock_pid:- - no owner info yet}) - refusing to run; if no discovery run is active, remove $RUN_LOCK_DIR"
+      notify "Compute Atlas discovery FAILED" "Another discovery run is in progress (pid ${_lock_pid:-unknown}); this run exited without doing anything. If none is active, remove $RUN_LOCK_DIR"
+      exit 1
+    fi
+    _prev_died="pid=${_lock_pid:-unknown} started=$(read_lock_field started) run=$(read_lock_field run)"
+    log "WARN: previous discovery run died without cleanup ($_prev_died; SIGKILL or reboot - its exit trap never ran) - taking over the stale lock"
+    notify "Compute Atlas discovery" "Previous run died without cleanup ($_prev_died)"
+    # mv is atomic: only one starter can move the stale directory away. If the
+    # directory we moved is not the one we judged dead (a racing starter had
+    # already replaced it), put it back and refuse. Never rm a lock we did not
+    # create in this process.
+    _stale_dir="$RUN_LOCK_DIR.stale.$$"
+    if ! mv "$RUN_LOCK_DIR" "$_stale_dir" 2>/dev/null; then
+      log "ERROR: could not take over the stale lock $RUN_LOCK_DIR (another run won the race) - refusing to run"
+      exit 1
+    fi
+    _moved_pid="$(sed -n 's/^pid=//p' "$_stale_dir/info" 2>/dev/null | head -1 || true)"
+    if [[ "$_moved_pid" != "$_lock_pid" ]]; then
+      # Put it back only if the path is still free: mv onto an existing directory
+      # would nest it inside a racing starter's new lock.
+      if [[ ! -e "$RUN_LOCK_DIR" ]] && mv "$_stale_dir" "$RUN_LOCK_DIR" 2>/dev/null; then
+        log "ERROR: the lock $RUN_LOCK_DIR changed owner during takeover (another run won the race) - refusing to run"
+      else
+        log "ERROR: the lock $RUN_LOCK_DIR changed owner during takeover (another run won the race) - refusing to run; moved lock left at $_stale_dir"
+      fi
+      exit 1
+    fi
+    if ! mkdir "$RUN_LOCK_DIR" 2>/dev/null; then
+      rm -f "$_stale_dir/info" "$_stale_dir/info.tmp"
+      rmdir "$_stale_dir" 2>/dev/null || true
+      log "ERROR: could not take over the stale lock $RUN_LOCK_DIR (another run won the race) - refusing to run"
+      exit 1
+    fi
+    rm -f "$_stale_dir/info" "$_stale_dir/info.tmp"
+    rmdir "$_stale_dir" 2>/dev/null || true
+  fi
+  # Mandatory: an owner whose info never lands holds an info-less lock that the
+  # next starter would treat as an orphan. Fail before any cursor-touching work.
+  if ! write_lock_info; then
+    log "ERROR: could not write $RUN_LOCK_DIR/info - releasing the lock and refusing to run"
+    notify "Compute Atlas discovery FAILED" "Could not write the run lock info; this run exited without doing anything"
+    rm -f "$RUN_LOCK_DIR/info" "$RUN_LOCK_DIR/info.tmp"
+    rmdir "$RUN_LOCK_DIR" 2>/dev/null || true
+    exit 1
+  fi
+  RUN_LOCK_HELD=true
+  if [[ -n "$_prev_died" ]]; then
+    FAILURES+=("previous run died without cleanup ($_prev_died)")
+  fi
+  # TERM/INT/HUP -> kill the tracked child tree, then exit 143 so the EXIT trap
+  # below runs (children are `wait`ed on, so this fires at once). Installed here, not after the cursor write, so the lock is
+  # released on every exit path from this point on.
+  trap 'kill_child_tree 10; exit 143' TERM INT HUP
+  trap on_exit EXIT
 fi
 
 # --- stale-heartbeat check ---------------------------------------------------
@@ -266,6 +709,13 @@ if [[ -f "$LOG_DIR/heartbeat.json" ]]; then
       if (( _gap_hours > DISCOVERY_STALE_HOURS )); then
         log "WARN: previous discovery run was ${_gap_hours}h ago (> ${DISCOVERY_STALE_HOURS}h) — scheduled runs were MISSED, not merely unproductive"
         notify "Compute Atlas discovery" "Missed runs: last completed run was ${_gap_hours}h ago"
+        # Also a FAILURE (live runs only): this run's heartbeat is then
+        # degraded, so the remote watchdog sees a missed run too. A single
+        # missed mid-week run now shows up remotely the evening of the NEXT
+        # run, and that run exits 1. Dry runs write no heartbeat: log-only.
+        if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
+          FAILURES+=("missed runs: previous run was ${_gap_hours}h ago (> ${DISCOVERY_STALE_HOURS}h)")
+        fi
       fi
     fi
   fi
@@ -393,6 +843,17 @@ NEXT_INDEX=$(( (CURRENT_INDEX + STATES_PER_RUN) % ${#STATES[@]} ))
 # not in STATES simply falls back to index 0.
 if [[ "$ROTATION_IS_DEFAULT" == "true" && "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   echo "${STATES[$NEXT_INDEX]}" > "$CURSOR_FILE"
+  # From here an unclean exit must undo the advance (see handle_unclean_exit).
+  RUN_CRASH_GUARD=true
+fi
+# Known gap: an unclean exit BEFORE RUN_CRASH_GUARD (preflight, lock, stale-gap,
+# cursor read/write) writes no heartbeat; only the log and launchd's exit status
+# record it. There is no batch yet, so there is nothing to rewind.
+if [[ "$RUN_LOCK_HELD" == "true" ]]; then
+  RUN_BATCH_ID="$(date '+%Y%m%dT%H%M%S')-${BATCH_STATES[*]// /,}"
+  # Only refreshes the batch id: the write is tmp + atomic mv, so on failure the
+  # existing info stays intact and `|| true` is safe.
+  write_lock_info || true
 fi
 
 log "starting discovery batch for states=${BATCH_STATES[*]} (STATES_PER_RUN=$STATES_PER_RUN)"
@@ -836,7 +1297,11 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
         _status=1
         LAST_INVOKE_CONFIG_FAILED=1
       else
-        { trap '' PIPE; printf '%s' "$CLAUDE_TOKEN_VALUE" || :; } | ( export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3 CLAUDE_CONFIG_DIR="$DISCOVERY_CLAUDE_CONFIG_DIR"; _run_claude 3<&0 ) || _status=$?
+        # Backgrounded + waited (see wait_child_tracked): a foreground child would
+        # defer the TERM trap until claude exits, past launchd's kill timeout.
+        { { trap '' PIPE; printf '%s' "$CLAUDE_TOKEN_VALUE" || :; } | ( export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3 CLAUDE_CONFIG_DIR="$DISCOVERY_CLAUDE_CONFIG_DIR"; _run_claude 3<&0 ); } &
+        CHILD_PID=$!
+        wait_child_tracked || _status=$?
       fi
       if [[ "$_xt" -eq 1 ]]; then
         set -x
@@ -845,7 +1310,9 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       _status=1
       LAST_INVOKE_CONFIG_FAILED=1
     else
-      _run_claude || _status=$?
+      _run_claude &
+      CHILD_PID=$!
+      wait_child_tracked || _status=$?
     fi
     _t1="$(date '+%s')"
     LAST_INVOKE_ELAPSED=$(( _t1 - _t0 ))
@@ -1074,10 +1541,8 @@ HB_STATES=()
 HB_STATUSES=()
 HB_ELAPSED=()
 
-# Failure ledger for the alert + exit-status decision at the bottom. Populated
-# per state; a non-empty ledger means this run gets a notification AND a
-# nonzero exit (open item #1) rather than completing silently as before.
-FAILURES=()
+# FAILURES (the failure ledger) is declared with the run ledger near the top,
+# because the lock and stale-gap checks feed it before this point.
 
 # Latched the first time a state's claude call fails with the `auth` class.
 # An expired login is per-machine, not per-state: every later state in the
@@ -1124,10 +1589,16 @@ for STATE in "${BATCH_STATES[@]}"; do
   if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
     EXISTING_FACILITIES=""
   else
-    if ! EXISTING_FACILITIES="$(npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state="$STATE" 2>>"$LOG_DIR/existing-facilities.err")"; then
+    # Backgrounded + waited (run_bg_wait) so a TERM is handled at once; stdout
+    # goes to a temp file and is read back, giving the same string as $(...).
+    _ef_tmp="$(mktemp)"
+    if run_bg_wait npx tsx --env-file=.env.local scripts/discovery/existing-facilities.ts --state="$STATE" 2>>"$LOG_DIR/existing-facilities.err" >"$_ef_tmp"; then
+      EXISTING_FACILITIES="$(cat "$_ef_tmp")"
+    else
       log "WARN: existing-facilities fetch failed for $STATE — proceeding with empty projection (see existing-facilities.err)"
       EXISTING_FACILITIES=""
     fi
+    rm -f "$_ef_tmp"
   fi
 
   # --- discovery step (agentic, subscription — NEVER run during dev) ---------
@@ -1265,7 +1736,7 @@ d
     log "skipping submit for $RUN_ID (suspect_short empty array — nothing to stage)"
   elif [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then
     log "submitting candidates from $OUTFILE"
-    if ! DISCOVERY_LOG_DIR="$LOG_DIR" npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
+    if ! run_bg_wait env DISCOVERY_LOG_DIR="$LOG_DIR" npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$OUTFILE" \
       --run-id="$RUN_ID" \
       --max="${MAX_CANDIDATES:-$CAP}" \
       --state="$STATE" \
@@ -1341,8 +1812,13 @@ done
 # rotation on a non-environmental fault.
 #
 # Known cost, accepted: if state A failed environmentally and a LATER state B in
-# the batch succeeded, rewinding to A re-runs B next batch too. Harmless —
-# submissions dedupe — and cheaper than tracking a per-state retry list. A state
+# the batch succeeded, rewinding to A re-runs B next batch too. That is NOT
+# deduplicated: createSubmission is a plain insert and submit-candidates' duplicate
+# check compares only against LIVE facilities, never pending submissions, so B can
+# stage duplicate PENDING rows for candidates it already posted. Accepted: every
+# pending row goes through human review, duplicates are visible in the queue, and
+# it is the price of not losing a state's research for a full rotation (and
+# cheaper than tracking a per-state retry list). A state
 # that succeeded and PRECEDES the first failure is never the target.
 #
 # Consequence worth stating plainly: a permanently broken login now stalls the
@@ -1363,38 +1839,14 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" && "$ROTATION_IS_DEFAULT" == "true
   # suspect_short status for that SAME state no longer counts. The failure is
   # still in FAILURES/heartbeat, so the watchdog stays red; only the rotation
   # moves on. Any batch that does not rewind for suspect_short clears the file.
-  SUSPECT_REQUEUE_FILE="$LOG_DIR/suspect-short-requeued.txt"
-  SUSPECT_PREV=""
-  [[ -f "$SUSPECT_REQUEUE_FILE" ]] && SUSPECT_PREV="$(tr -d ' \n' <"$SUSPECT_REQUEUE_FILE" 2>/dev/null || true)"
-  REWIND_INDEX=-1
-  for (( _r = 0; _r < ${#HB_STATES[@]}; _r++ )); do
-    case "${HB_STATUSES[$_r]}" in
-      auth | skipped | blocked)
-        REWIND_INDEX="$_r"
-        break
-        ;;
-      suspect_short)
-        if [[ "${HB_STATES[$_r]}" == "$SUSPECT_PREV" ]]; then
-          log "WARN: ${HB_STATES[$_r]} is suspect_short twice in a row — NOT re-queuing again; the rotation is moving on (failure still recorded, watchdog stays red)"
-        else
-          REWIND_INDEX="$_r"
-          break
-        fi
-        ;;
-    esac
-  done
+  find_requeue_index "${#HB_STATES[@]}"
+  REWIND_INDEX="$REQUEUE_INDEX"
   if (( REWIND_INDEX >= 0 )); then
     REWIND_STATE="${HB_STATES[$REWIND_INDEX]}"
     log "re-queued: cursor rewound ${STATES[$NEXT_INDEX]} -> ${REWIND_STATE} (environmental failure: ${HB_STATUSES[$REWIND_INDEX]}); ${HB_STATES[*]:$REWIND_INDEX} run again next batch"
     echo "$REWIND_STATE" > "$CURSOR_FILE"
-    if [[ "${HB_STATUSES[$REWIND_INDEX]}" == "suspect_short" ]]; then
-      echo "$REWIND_STATE" > "$SUSPECT_REQUEUE_FILE"
-    else
-      rm -f "$SUSPECT_REQUEUE_FILE"
-    fi
-  else
-    rm -f "$SUSPECT_REQUEUE_FILE"
   fi
+  record_suspect_requeue "$REWIND_INDEX"
 fi
 
 # --- source-liveness check (read-only — runs ONCE per batch, after all
@@ -1404,7 +1856,7 @@ fi
 # resolver-outage abort, which writes no report) is recorded in FAILURES so the
 # heartbeat and watchdog see it; later lanes still run. -------------------------
 log "checking source liveness"
-if ! npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_DIR/check-sources.err"; then
+if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/check-sources.ts 2>>"$LOG_DIR/check-sources.err"; then
   log "WARN: source-liveness check failed — continuing (see check-sources.err)"
   FAILURES+=("liveness: check-sources failed")
 fi
@@ -1503,7 +1955,7 @@ else
   ENRICHMENT_OUTFILE="$LOG_DIR/enrichment-${ENRICHMENT_RUN_ID}.json"
   log "extracting fields (limit=${ENRICHMENT_LIMIT} fields=${EXTRACT_FIELDS})"
   EXTRACT_OK=true
-  if ! npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
+  if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
     --out "$ENRICHMENT_OUTFILE" \
     --limit="$ENRICHMENT_LIMIT" \
     --fields="$EXTRACT_FIELDS" \
@@ -1516,7 +1968,7 @@ else
 
   if [[ "$EXTRACT_OK" == "true" ]] && [[ -s "$ENRICHMENT_OUTFILE" ]]; then
     log "submitting enrichment candidates from $ENRICHMENT_OUTFILE"
-    if ! npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$ENRICHMENT_OUTFILE" \
+    if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/submit-candidates.ts "$ENRICHMENT_OUTFILE" \
       --run-id="$ENRICHMENT_RUN_ID" \
       --max="${MAX_CANDIDATES:-$CAP}" \
       ${API_BASE_URL:+--base-url="$API_BASE_URL"}; then
@@ -1533,7 +1985,7 @@ else
   # progress output doesn't scroll off the terminal/launchd log buffer.
   VERIFY_OUTFILE="$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.json"
   log "verifying fields (limit=${VERIFY_LIMIT} fields=${VERIFY_FIELDS})"
-  if ! npx tsx --env-file=.env.local scripts/discovery/verify-fields.ts \
+  if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/verify-fields.ts \
     --limit="$VERIFY_LIMIT" \
     --fields="$VERIFY_FIELDS" \
     --out "$VERIFY_OUTFILE" \
@@ -1555,7 +2007,7 @@ else
   LEADS_LIMIT="$(validate_positive_int_env LEADS_LIMIT 10)"
   LEADS_RUN_ID="$(date '+%Y%m%dT%H%M%S')-leads"
   log "working community leads (limit=${LEADS_LIMIT})"
-  if ! npx tsx --env-file=.env.local scripts/discovery/leads-lane.ts \
+  if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/leads-lane.ts \
     --limit="$LEADS_LIMIT" \
     --run-id="$LEADS_RUN_ID" \
     >"$LOG_DIR/leads-lane-${LEADS_RUN_ID}.json" 2>>"$LOG_DIR/leads-lane.err"; then
@@ -1576,7 +2028,7 @@ if [[ "${DISCOVERY_DRY_RUN:-false}" == "true" ]]; then
   log "DISCOVERY_DRY_RUN=true — skipping retention-prune lane"
 else
   log "pruning expired PII per retention policy"
-  if ! npx tsx --env-file=.env.local scripts/retention-prune.ts --apply \
+  if ! run_bg_wait npx tsx --env-file=.env.local scripts/retention-prune.ts --apply \
     >"$LOG_DIR/retention-prune-$(date '+%Y%m%dT%H%M%S').log" 2>>"$LOG_DIR/retention-prune.err"; then
     log "WARN: retention prune failed — continuing (see retention-prune.err)"
     FAILURES+=("retention: prune failed")
@@ -1594,55 +2046,7 @@ log "discovery batch complete: states=${BATCH_STATES[*]} run_ids=${RUN_IDS[*]}"
 # batch — some states ok, some no_array — is visibly distinguishable from a
 # clean one, while staying valid JSON.
 if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
-  HEARTBEAT_ENTRIES=""
-  for (( _h = 0; _h < ${#HB_STATES[@]}; _h++ )); do
-    _entry="    {
-      \"runId\": \"${HB_RUN_IDS[$_h]}\",
-      \"state\": \"${HB_STATES[$_h]}\",
-      \"claudeStatus\": \"${HB_STATUSES[$_h]}\",
-      \"elapsedSecs\": ${HB_ELAPSED[$_h]}
-    }"
-    if [[ -z "$HEARTBEAT_ENTRIES" ]]; then
-      HEARTBEAT_ENTRIES="$_entry"
-    else
-      HEARTBEAT_ENTRIES="$HEARTBEAT_ENTRIES,
-$_entry"
-    fi
-  done
-  _hb_status="ok"
-  if (( ${#FAILURES[@]} > 0 )); then
-    _hb_status="degraded"
-  fi
-  cat >"$LOG_DIR/heartbeat.json" <<EOF
-{
-  "lastRunAt": "$(date '+%Y-%m-%dT%H:%M:%S%z')",
-  "status": "$_hb_status",
-  "failureCount": ${#FAILURES[@]},
-  "states": [
-$HEARTBEAT_ENTRIES
-  ]
-}
-EOF
-  log "wrote heartbeat -> $LOG_DIR/heartbeat.json (status=$_hb_status states=${HB_STATES[*]} statuses=${HB_STATUSES[*]})"
-
-  # Publish the just-written heartbeat to Neon: discovery-logs/ is gitignored
-  # and never leaves this Mac, so the off-machine GitHub Actions watchdog
-  # (.github/workflows/discovery-watchdog.yml) has no way to read
-  # heartbeat.json directly — Neon is the one store both this machine and CI
-  # can reach. The discovery work above is already done by this point, so a
-  # publish failure must not abort the run and lose it — but per this file's
-  # own "a silent instrument is not monitoring" rule (see the block below),
-  # it must not fail silently either: log it and record a FAILURES entry so
-  # the run still exits nonzero and a local notification is still attempted
-  # (attempted and logged — not guaranteed to reach a person; see notify()).
-  # Note the irony this guards: a failed publish is precisely the case where
-  # the off-machine watchdog CANNOT see the degradation, so the local log line
-  # and the nonzero exit are all that is left.
-  if ! npx tsx --env-file=.env.local scripts/discovery/publish-heartbeat.ts \
-    >"$LOG_DIR/publish-heartbeat.log" 2>>"$LOG_DIR/publish-heartbeat.err"; then
-    log "WARN: publish-heartbeat failed — continuing (see publish-heartbeat.err)"
-    FAILURES+=("heartbeat: publish failed")
-  fi
+  write_and_publish_heartbeat
 fi
 
 # --- alert + exit status -----------------------------------------------------
@@ -1653,6 +2057,10 @@ fi
 # Before this existed, a totally failed run and a perfect one were
 # indistinguishable from outside: both logged, both wrote a heartbeat, both
 # exited 0. Six days of complete failure passed unnoticed as a result.
+#
+# RUN_FINISHED tells the EXIT trap this is a normal end (even a normal nonzero
+# one): the heartbeat is already written, so no rewind and no crashed heartbeat.
+RUN_FINISHED=true
 if (( ${#FAILURES[@]} > 0 )); then
   log "FAIL: discovery run finished with ${#FAILURES[@]} failure(s):"
   for _f in "${FAILURES[@]}"; do

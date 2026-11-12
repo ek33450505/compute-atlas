@@ -203,6 +203,8 @@ EOF
 }
 
 teardown() {
+	# Wave 5 lock tests park a live `sleep` as the "other run"; never leak it.
+	[ -z "${BG_PID:-}" ] || kill "$BG_PID" 2>/dev/null || true
 	rm -rf "$TEST_TMP"
 }
 
@@ -3478,4 +3480,484 @@ PROBE
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
 	[[ "$output" == *"strict credential preflight failed: DISCOVERY_READ_DATABASE_URL API_INTAKE_TOKEN missing"* ]]
+}
+
+# --- Wave 5 (A-OPS-09 / A-OPS-16): EXIT trap, run lock + run-in-progress marker.
+# run.sh's lock is ONE object: $LOG_DIR/run.lock (dir, atomic mkdir) holding
+# `info` (pid/started/run). It doubles as the run-in-progress marker, so "lock
+# removed" and "marker removed" are the same assertion.
+
+# Start a live run in the background whose 2nd claude call blocks (as a
+# `launchctl bootout` mid-batch would find it), then send TERM to run.sh ONLY.
+# run.sh must kill the claude child itself and finish its trap within seconds
+# (launchd SIGKILLs ~20 s after TERM). Sets RUN_RC and SHIM_PID.
+_term_run_mid_batch() {
+	export CLAUDE_COUNT_FILE="$TEST_TMP/claude-count" CLAUDE_BLOCKED_PID_FILE="$TEST_TMP/claude-blocked.pid" CLAUDE_FD3_SEEN_FILE="$TEST_TMP/claude-fd3-seen"
+	cat >"$BIN_DIR/claude" <<'CLAUDE_EOF'
+#!/usr/bin/env bash
+n=$(( $(cat "$CLAUDE_COUNT_FILE" 2>/dev/null || echo 0) + 1 ))
+echo "$n" >"$CLAUDE_COUNT_FILE"
+if [ "$n" -ge 2 ] && { true <&3; } 2>/dev/null; then
+	cat <&3 >"$CLAUDE_FD3_SEEN_FILE"
+fi
+if [ "$n" -ge 2 ]; then
+	echo $$ >"$CLAUDE_BLOCKED_PID_FILE"
+	exec sleep 120
+fi
+echo '[]'
+CLAUDE_EOF
+	chmod +x "$BIN_DIR/claude"
+	# fd 3 is bats' own result channel: close it for the child (see _run_no_fd3).
+	bash "$RUN_SH" >"$TEST_TMP/run.out" 2>&1 3>&- &
+	local run_pid=$!
+	local i
+	for i in $(seq 1 120); do
+		[ -s "$CLAUDE_BLOCKED_PID_FILE" ] && break
+		sleep 0.5
+	done
+	SHIM_PID="$(cat "$CLAUDE_BLOCKED_PID_FILE" 2>/dev/null || true)"
+	[ -n "$SHIM_PID" ] || { kill "$run_pid" 2>/dev/null; return 1; }
+	# The lock must exist while the run is alive.
+	[ -d "$LOG_DIR/run.lock" ] || { kill -9 "$run_pid" "$SHIM_PID" 2>/dev/null; return 1; }
+	grep -q "^pid=$run_pid\$" "$LOG_DIR/run.lock/info" || { kill -9 "$run_pid" "$SHIM_PID" 2>/dev/null; return 1; }
+	kill -TERM "$run_pid"
+	# The trap must fire while claude is still running: wait at most 10 s
+	# (TERM_WAIT_TICKS x 0.25 s; the exit-budget test raises it). TERM_ELAPSED is
+	# whole seconds from TERM to exit.
+	local term_at=$SECONDS
+	for i in $(seq 1 "${TERM_WAIT_TICKS:-40}"); do
+		kill -0 "$run_pid" 2>/dev/null || break
+		sleep 0.25
+	done
+	TERM_ELAPSED=$((SECONDS - term_at))
+	if kill -0 "$run_pid" 2>/dev/null; then
+		kill -9 "$run_pid" "$SHIM_PID" 2>/dev/null
+		return 1
+	fi
+	RUN_RC=0
+	wait "$run_pid" || RUN_RC=$?
+	# run.sh killed the claude child itself: nothing is left behind.
+	! kill -0 "$SHIM_PID" 2>/dev/null || { kill -9 "$SHIM_PID" 2>/dev/null; return 1; }
+	return 0
+}
+
+@test "TERM mid-batch rewinds the cursor to the first unfinished state, writes a crashed heartbeat, releases the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# TX finished; VA was in flight; OH never started. The cursor had already
+	# advanced past the batch (to GA) and must come back to VA.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	[ -f "$LOG_DIR/heartbeat.json" ]
+	grep -q '"status": "crashed"' "$LOG_DIR/heartbeat.json"
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+	run node -e "
+const h = JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8'));
+const got = h.states.map((s) => s.state + ':' + s.claudeStatus).join(',');
+process.exit(got === 'TX:ok,VA:skipped,OH:skipped' ? 0 : (console.error(got), 1));
+"
+	[ "$status" -eq 0 ]
+	grep -q "ERROR: run exited uncleanly" "$TEST_TMP/run.out"
+	grep -q "scripts/discovery/publish-heartbeat.ts" "$NPX_CALL_LOG"
+	grep -q "CRASHED" "$NOTIFY_CALL_LOG"
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "TERM mid-batch on an override rotation leaves cursor.txt and heartbeat.json alone but still releases the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3 DISCOVERY_STATES="TX VA OH GA"
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "a normal run advances the cursor once, writes an ok heartbeat and leaves no lock or marker" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "OH" ]
+	grep -q '"status": "ok"' "$LOG_DIR/heartbeat.json"
+	[[ "$output" != *"exited uncleanly"* ]] || return 1
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "a normal nonzero exit does not fire the crash handler: no rewind, degraded not crashed" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=2 CHECK_SOURCES_RC=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "OH" ]
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	! grep -q '"status": "crashed"' "$LOG_DIR/heartbeat.json"
+	[[ "$output" != *"exited uncleanly"* ]] || return 1
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "a stale lock whose PID is dead warns, is taken over, and degrades this run's heartbeat" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	sleep 0 &
+	local dead=$!
+	wait "$dead"
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=2026-11-11T13:00:00+0000\nrun=OLDBATCH\n' "$dead" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+	[[ "$output" == *"run=OLDBATCH"* ]] || return 1
+	grep -q "died without cleanup" "$NOTIFY_CALL_LOG"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+	[[ "$output" == *"  - previous run died without cleanup"* ]] || return 1
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "a lock held by a live PID refuses the run with exit 1 and touches neither cursor nor heartbeat" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# The owner must look like a run.sh (a bare live PID is not enough).
+	mkdir -p "$TEST_TMP/scripts/discovery"
+	printf '#!/usr/bin/env bash\nsleep 120\n' >"$TEST_TMP/scripts/discovery/run.sh"
+	bash "$TEST_TMP/scripts/discovery/run.sh" &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OTHER\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"ERROR: another discovery run holds"* ]] || return 1
+	grep -q "FAILED" "$NOTIFY_CALL_LOG"
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	# The other run's lock is intact.
+	grep -q "^pid=$BG_PID\$" "$LOG_DIR/run.lock/info"
+}
+
+@test "a dry run takes no lock, ignores a held lock, and leaves cursor and lock untouched" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -e "$LOG_DIR/run.lock" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+	sleep 120 &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=x\nrun=OTHER\n' "$BG_PID" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q "^pid=$BG_PID\$" "$LOG_DIR/run.lock/info"
+}
+
+@test "a missed-run gap on a live run lands in the heartbeat failures and degrades it" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	old="$(date -j -v-5d '+%Y-%m-%dT%H:%M:%S%z' 2>/dev/null \
+		|| date -d '5 days ago' '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$old" >"$LOG_DIR/heartbeat.json"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+	[[ "$output" == *"missed runs: previous run was"* ]] || return 1
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+}
+
+@test "a lock whose recorded PID is a live but unrelated process (reused PID) is taken over with a WARN" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	sleep 120 &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OLDBATCH\nlstart=Mon Jan  1 00:00:00 2001\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+	[ ! -e "$LOG_DIR/run.lock" ]
+	[ -z "$(ls -d "$LOG_DIR"/run.lock.stale.* 2>/dev/null)" ]
+	# The unrelated process is left alone.
+	kill -0 "$BG_PID"
+}
+
+@test "TERM after an environmental failure rewinds to that state, not to the in-flight one" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3 DISCOVERY_MIN_CLAUDE_SECS=120
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# TX returned an instant empty array (suspect_short, environmental); VA was in
+	# flight. The rewind must go back to TX, or TX is lost for a whole rotation.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	run node -e "
+const h = JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8'));
+const got = h.states.map((s) => s.state + ':' + s.claudeStatus).join(',');
+process.exit(got === 'TX:suspect_short,VA:skipped,OH:skipped' ? 0 : (console.error(got), 1));
+"
+	[ "$status" -eq 0 ]
+	# Recorded, so a repeat kill is bounded (next test).
+	[ "$(tr -d ' \n' <"$LOG_DIR/suspect-short-requeued.txt")" = "TX" ]
+}
+
+@test "repeated TERM cannot pin a suspect_short state: it is not re-queued twice in a row" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3 DISCOVERY_MIN_CLAUDE_SECS=120
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# TX was already re-queued for suspect_short last time: the rewind goes to the
+	# in-flight state VA instead.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	grep -q "suspect_short twice in a row" "$TEST_TMP/run.out"
+}
+
+@test "a non-bash process whose command line contains scripts/discovery/run.sh does not count as the lock owner" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir -p "$TEST_TMP/scripts/discovery"
+	: >"$TEST_TMP/scripts/discovery/run.sh.log"
+	tail -f "$TEST_TMP/scripts/discovery/run.sh.log" >/dev/null 2>&1 &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OLDBATCH\nlstart=Mon Jan  1 00:00:00 2001\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+}
+
+@test "TERM on the keychain-token branch: trap fires within seconds, claude is gone, the token reached it on fd 3 and leaked nowhere" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	_install_security_with_token
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# The shim read the token from fd 3 before it blocked.
+	[ "$(cat "$CLAUDE_FD3_SEEN_FILE")" = "$TOKEN_SENTINEL" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	grep -q '"status": "crashed"' "$LOG_DIR/heartbeat.json"
+	[ ! -e "$LOG_DIR/run.lock" ]
+	output="$(cat "$TEST_TMP/run.out")"
+	_assert_token_not_in_sinks
+}
+
+# --- unit B review fixes ------------------------------------------------------
+
+@test "a hung notifier cannot lose the ALERTS-PENDING marker: the crash alert is on disk and the run still exits fast" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# Denied notifier (exit 3), so the chain falls through to the hanging osascript
+	# stub; never remove the shim, or PATH reaches the real terminal-notifier.
+	printf '#!/usr/bin/env bash\nexit 3\n' >"$BIN_DIR/terminal-notifier"
+	chmod +x "$BIN_DIR/terminal-notifier"
+	printf '#!/usr/bin/env bash\nexec sleep 30\n' >"$BIN_DIR/osascript"
+	chmod +x "$BIN_DIR/osascript"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	[ "$TERM_ELAPSED" -lt 10 ]
+	grep -q "CRASHED" "$LOG_DIR/ALERTS-PENDING.txt"
+	[ "$(ls -l "$LOG_DIR/ALERTS-PENDING.txt" | cut -c1-10)" = "-rw-------" ]
+}
+
+@test "TERM with a hanging publish and a hanging notifier still exits within the launchd budget with a crashed heartbeat" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3 TERM_WAIT_TICKS=60
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# Denied notifier (exit 3), so the chain falls through to the hanging osascript
+	# stub; never remove the shim, or PATH reaches the real terminal-notifier.
+	printf '#!/usr/bin/env bash\nexit 3\n' >"$BIN_DIR/terminal-notifier"
+	chmod +x "$BIN_DIR/terminal-notifier"
+	printf '#!/usr/bin/env bash\nexec sleep 30\n' >"$BIN_DIR/osascript"
+	mv "$BIN_DIR/npx" "$BIN_DIR/npx.orig"
+	cat >"$BIN_DIR/npx" <<EOS
+#!/usr/bin/env bash
+case "\$*" in
+*publish-heartbeat.ts*) exec sleep 120 ;;
+esac
+exec "$BIN_DIR/npx.orig" "\$@"
+EOS
+	chmod +x "$BIN_DIR/osascript" "$BIN_DIR/npx"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# 2 s kill + 5 s publish + 2 s kill + 3 s notify = ~12 s; launchd gives 20 s.
+	[ "$TERM_ELAPSED" -le 15 ]
+	grep -q '"status": "crashed"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "a stale suspect_short marker is cleared when TERM hits a batch with no suspect_short state" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# TX ok, VA in flight: cursor goes to VA, and the marker for TX must go.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
+}
+
+@test "a live non-bash process whose argv merely mentions bash and scripts/discovery/run.sh is not the lock owner" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir -p "$TEST_TMP/bash/scripts/discovery"
+	: >"$TEST_TMP/bash/scripts/discovery/run.sh"
+	tail -f "$TEST_TMP/bash/scripts/discovery/run.sh" >/dev/null 2>&1 &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OLDBATCH\nlstart=Mon Jan  1 00:00:00 2001\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	kill "$BG_PID" 2>/dev/null || true
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+}
+
+# lock_owner_alive identifies the owner by PID + process start time (lstart), not
+# by command line: a live run.sh must hold the lock however it was invoked.
+_lstart_of() { LC_ALL=C TZ=UTC0 ps -o lstart= -p "$1" | tr -s ' ' | sed 's/^ //; s/ $//'; }
+
+# _assert_live_owner_refuses SCRIPT [bash flags...] [--cd]: start a long-lived
+# fake run.sh, record its REAL lstart in the lock, and require the new run to refuse.
+_assert_live_owner_refuses() {
+	local script="$1" mode="${2:-}"
+	mkdir -p "$(dirname "$script")"
+	printf '#!/usr/bin/env bash\nsleep 120\n' >"$script"
+	case "$mode" in
+		--cd) (cd "$(dirname "$script")" && exec bash ./run.sh) 3>&- & ;;
+		"") bash "$script" 3>&- & ;;
+		*) bash "$mode" "$script" 3>&- & ;;
+	esac
+	BG_PID=$!
+	sleep 0.5
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OTHER\nlstart=%s\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$(_lstart_of "$BG_PID")" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	pkill -P "$BG_PID" 2>/dev/null || true
+	kill "$BG_PID" 2>/dev/null || true
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"another discovery run holds"* ]] || return 1
+}
+
+@test "a live owner started as bash -x <script> still holds the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_assert_live_owner_refuses "$TEST_TMP/scripts/discovery/run.sh" -x
+}
+
+@test "a live owner whose script path contains a space still holds the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_assert_live_owner_refuses "$TEST_TMP/a b/scripts/discovery/run.sh"
+}
+
+@test "a live owner started as cd <dir> && bash ./run.sh still holds the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_assert_live_owner_refuses "$TEST_TMP/scripts/discovery/run.sh" --cd
+}
+
+@test "a lock without lstart (older version): a live process whose command lacks run.sh is not the owner" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	sleep 120 3>&- &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OLDBATCH\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	kill "$BG_PID" 2>/dev/null || true
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+}
+
+@test "a lock without lstart (older version): a live process whose command contains run.sh still holds it" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir -p "$TEST_TMP/scripts/discovery"
+	printf '#!/usr/bin/env bash\nsleep 120\n' >"$TEST_TMP/scripts/discovery/run.sh"
+	bash "$TEST_TMP/scripts/discovery/run.sh" 3>&- &
+	BG_PID=$!
+	sleep 0.5
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OTHER\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	pkill -P "$BG_PID" 2>/dev/null || true
+	kill "$BG_PID" 2>/dev/null || true
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"another discovery run holds"* ]] || return 1
+}
+
+@test "a live run records its own normalized lstart in run.lock/info" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	export CLAUDE_COUNT_FILE="$TEST_TMP/claude-count" CLAUDE_BLOCKED_PID_FILE="$TEST_TMP/claude-blocked.pid"
+	cat >"$BIN_DIR/claude" <<'CLAUDE_EOF'
+#!/usr/bin/env bash
+echo $$ >"$CLAUDE_BLOCKED_PID_FILE"
+exec sleep 120
+CLAUDE_EOF
+	chmod +x "$BIN_DIR/claude"
+	bash "$RUN_SH" >"$TEST_TMP/run.out" 2>&1 3>&- &
+	local run_pid=$! i
+	for i in $(seq 1 120); do
+		[ -s "$CLAUDE_BLOCKED_PID_FILE" ] && break
+		sleep 0.5
+	done
+	local want got
+	want="$(_lstart_of "$run_pid")"
+	got="$(sed -n 's/^lstart=//p' "$LOG_DIR/run.lock/info")"
+	kill -TERM "$run_pid"
+	wait "$run_pid" || true
+	[ -n "$got" ]
+	[ "$got" = "$want" ]
+}
+
+# A lock directory with no owner info is a live owner that has not written yet
+# (never steal it) unless it is a >10 min orphan from a crash before the write.
+@test "a fresh lock directory with no owner info is not stolen: refuses and touches nothing" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir "$LOG_DIR/run.lock"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"no owner info yet"* ]] || return 1
+	[[ "$output" == *"remove $LOG_DIR/run.lock"* ]] || return 1
+	[ -d "$LOG_DIR/run.lock" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+}
+
+@test "an orphan lock directory with no owner info older than 10 minutes is taken over with a WARN" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir "$LOG_DIR/run.lock"
+	touch -t 200001010000 "$LOG_DIR/run.lock"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "an owner that cannot write its lock info releases the lock and exits 1 without touching the cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# mv shim: fail only for the info.tmp -> info rename, pass everything else.
+	REAL_MV="$(command -v mv)"
+	cat >"$BIN_DIR/mv" <<EOS
+#!/usr/bin/env bash
+case "\$*" in *info.tmp*) exit 1 ;; esac
+exec "$REAL_MV" "\$@"
+EOS
+	chmod +x "$BIN_DIR/mv"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"could not write"* ]] || return 1
+	[ ! -e "$LOG_DIR/run.lock" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
 }
