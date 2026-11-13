@@ -175,6 +175,45 @@ basin and aquifer values are **regional context**, not the facility's measured
 water use. All data is source-cited; no per-request geospatial API is used
 (cost: $0).
 
+### Join keys
+
+Each entry in `data/siting-context.json` also carries `joinKeys`, identifiers for
+joining a facility to other public datasets. Each is looked up by point query at
+the facility's pin (eGRID takes two queries: the subregion layer and the
+multiple-subregions layer); no polygon dataset is downloaded.
+
+- **County FIPS** — the five-digit county code, from Census TIGERweb.
+- **Census tract** (`tractGeoid`) — from Census TIGERweb, computed for
+  exactly-pinned sites only. A town or county centroid sits in an arbitrary
+  tract, so a tract for an approximate pin would look precise and mean nothing.
+- **eGRID subregion** — the EPA eGRID2023 subregion. EPA describes these
+  polygons as "representational": they are dissolved from ZIP Code areas, so
+  the value is a geographic approximation of which grid region a site falls in,
+  not a statement about where it is interconnected. A site inside the
+  separate multiple-subregions layer carries `egridMultiple`.
+
+A facility is re-queried when it is new, its pin moved or its precision changed,
+or when an earlier run left something to retry: a key missing after a failed
+query, an `egrid_multi_unknown` flag or a `carried_forward:<key>` flag. A query
+that fails never clears a value; the previous one is kept. A confirmed empty
+answer and an ambiguous (multiple-hit) answer both leave no value, with a flag.
+A run stops querying when it exceeds a failure budget or a time limit, and the
+facilities not reached keep their existing keys (a facility with none yet gets
+none until a later run). The build prints a warning with
+the number deferred; re-run `npm run build:mapdata` (for example with
+`--skip-nhd`) until none are deferred.
+Each entry records its `pin`, its `sources` and a `computedAt` date, and may
+carry flags: `county_no_polygon`, `tract_no_polygon` and `egrid_no_polygon` (the
+point fell in no polygon), `multiple_hits:<key>` (several polygons matched, so
+no value is kept), `county_name_mismatch` (the record's county name differs from
+the one the pin falls in), `tract_county_mismatch`, `egrid_multi_unknown` and
+`carried_forward:<key>` (a value kept from an earlier pin after a failed query).
+
+Balancing authority and ISO/RTO are not computed. The public polygon layers
+reviewed for them either overlapped substantially or carried no clear licence,
+so a point lookup would publish guesses. They may later be derived from the EIA
+utility id (`energy.utilityEiaId`) instead.
+
 ## Zero fabrication
 
 The dataset has a deliberate bias against inventing detail.

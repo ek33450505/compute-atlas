@@ -34,7 +34,7 @@ const ATTRIBUTION_LINE = `Data from Compute Atlas by Edward Kubiak (${siteConfig
 const FILES: ReadonlyArray<readonly [string, string]> = [
   ["facilities.json", "The facility records, one object per facility."],
   ["facilities.csv", "The same records as a flat table (see CSV notes below)."],
-  ["siting-context.json", "Regional siting context (nearest water and transmission, basin water stress, aquifer) keyed by facility id."],
+  ["siting-context.json", "Regional siting context (nearest water and transmission, basin water stress, aquifer) keyed by facility id, plus join keys: county FIPS, census tract (exactly-pinned sites only) and EPA eGRID2023 subregion (a geographic approximation)."],
   ["changelog.json", "Records added, updated or removed since the previous edition."],
   ["README.txt", "This file."],
 ];

@@ -351,3 +351,39 @@ describe("runCheck", () => {
     expect(r.text).not.toContain("secret@example.com");
   });
 });
+
+describe("diffSitingContext — joinKeys (nested object, diffed as a whole value)", () => {
+  const jk = { countyFips: "51107", tractGeoid: "51107611000", egridSubregion: "SRVC", pin: { lat: 39, lon: -77.5, precision: "exact" } };
+
+  it("a new joinKeys on an existing id is additive", () => {
+    const diff = diffSitingContext({ a: { waterStress: "high" } }, { a: { waterStress: "high", joinKeys: jk } });
+    expect(isAdditive(diff)).toBe(true);
+  });
+
+  it("a changed countyFips on a moved pin is a legitimate change, not a loss", () => {
+    const moved = { ...jk, countyFips: "51059", pin: { lat: 38.9, lon: -77.5, precision: "exact" } };
+    const diff = diffSitingContext({ a: { joinKeys: jk } }, { a: { joinKeys: moved } });
+    expect(diff.changed).toHaveLength(1);
+    expect(isAdditive(diff)).toBe(true);
+  });
+
+  it("removing joinKeys entirely is refused", () => {
+    const diff = diffSitingContext({ a: { joinKeys: jk } }, { a: {} });
+    expect(diff.lost).toEqual([{ id: "a", field: "joinKeys", oldValue: jk }]);
+    expect(isAdditive(diff)).toBe(false);
+  });
+
+  it("setting joinKeys to null is refused", () => {
+    const diff = diffSitingContext({ a: { joinKeys: jk } }, { a: { joinKeys: null } });
+    expect(diff.nulled).toHaveLength(1);
+    expect(isAdditive(diff)).toBe(false);
+  });
+
+  it("dropping a SUBKEY inside joinKeys (confirmed no_polygon, precision downgrade) is NOT caught: the guard compares the whole value", () => {
+    const without: Partial<typeof jk> = { ...jk };
+    delete without.tractGeoid;
+    const diff = diffSitingContext({ a: { joinKeys: jk } }, { a: { joinKeys: without } });
+    expect(diff.lost).toEqual([]);
+    expect(isAdditive(diff)).toBe(true);
+  });
+});
