@@ -119,3 +119,98 @@ describe("isPlainObject", () => {
     }
   });
 });
+
+describe("mergeFacilityPatch — curated nested keys survive a parent-object patch", () => {
+  const curated = {
+    id: "site",
+    facilityType: "data_center",
+    capacityMw: { operational: 50, basis: "it", itPlanned: 80 },
+    energy: { source: "grid", utility: "U", utilityEiaId: 123 },
+  };
+
+  it("carries itPlanned, drops the stale basis, and replaces the non-curated operational", () => {
+    const merged = mergeFacilityPatch(curated, { capacityMw: { planned: 100 } });
+    expect(merged.capacityMw).toStrictEqual({ planned: 100, itPlanned: 80 });
+    expect(merged.capacityMw).not.toHaveProperty("operational");
+  });
+
+  it("lets a patch that states basis itself win", () => {
+    const merged = mergeFacilityPatch(curated, { capacityMw: { planned: 100, basis: "facility" } });
+    expect(merged.capacityMw).toStrictEqual({ planned: 100, basis: "facility", itPlanned: 80 });
+  });
+
+  it("carries itOperational too", () => {
+    const merged = mergeFacilityPatch(
+      { ...curated, capacityMw: { operational: 5, itOperational: 4 } },
+      { capacityMw: { operational: 6 } }
+    );
+    expect(merged.capacityMw).toStrictEqual({ operational: 6, itOperational: 4 });
+  });
+
+  it("keeps utilityEiaId only while the utility is unchanged", () => {
+    expect(mergeFacilityPatch(curated, { energy: { source: "grid", utility: "U" } }).energy).toStrictEqual({
+      source: "grid",
+      utility: "U",
+      utilityEiaId: 123,
+    });
+    expect(mergeFacilityPatch(curated, { energy: { source: "grid", utility: "X" } }).energy).toStrictEqual({
+      source: "grid",
+      utility: "X",
+    });
+    expect(mergeFacilityPatch(curated, { energy: { source: "grid" } }).energy).toStrictEqual({ source: "grid" });
+  });
+
+  it("keeps basis when planned and operational are unchanged, drops it when planned changes", () => {
+    expect(mergeFacilityPatch(curated, { capacityMw: { operational: 50 } }).capacityMw).toStrictEqual({
+      operational: 50,
+      basis: "it",
+      itPlanned: 80,
+    });
+    expect(mergeFacilityPatch(curated, { capacityMw: { operational: 50, planned: 70 } }).capacityMw).toStrictEqual({
+      operational: 50,
+      planned: 70,
+      itPlanned: 80,
+    });
+  });
+
+  it("drops basis when operational is removed", () => {
+    const withBoth = { ...curated, capacityMw: { planned: 100, operational: 50, basis: "it" } };
+    expect(mergeFacilityPatch(withBoth, { capacityMw: { planned: 100 } }).capacityMw).toStrictEqual({ planned: 100 });
+  });
+
+  it("keeps an explicit null in the merged doc so schema validation rejects it", () => {
+    const merged = mergeFacilityPatch(curated, { capacityMw: { operational: 50, basis: null } });
+    expect(merged.capacityMw).toStrictEqual({ operational: 50, basis: null, itPlanned: 80 });
+    expect(mergeFacilityPatch(curated, { energy: { utility: "U", utilityEiaId: null } }).energy).toStrictEqual({
+      utility: "U",
+      utilityEiaId: null,
+    });
+  });
+
+  it("does not carry capacityMw keys when the merged facilityType is power_generation", () => {
+    const merged = mergeFacilityPatch(curated, {
+      facilityType: "power_generation",
+      capacityMw: { operational: 9 },
+    });
+    expect(merged.capacityMw).toStrictEqual({ operational: 9 });
+  });
+
+  it("does not carry basis when the patch empties the MW figures", () => {
+    expect(mergeFacilityPatch(curated, { capacityMw: {} }).capacityMw).toStrictEqual({ itPlanned: 80 });
+  });
+
+  it("returns the existing objects unchanged when the patch omits capacityMw and energy", () => {
+    const merged = mergeFacilityPatch(curated, { name: "N" });
+    expect(merged.capacityMw).toBe(curated.capacityMw);
+    expect(merged.energy).toBe(curated.energy);
+  });
+
+  it("does not mutate its inputs", () => {
+    const before = structuredClone(curated);
+    const patch = { capacityMw: { planned: 100 }, energy: { utility: "X" } };
+    const patchBefore = structuredClone(patch);
+    mergeFacilityPatch(curated, patch);
+    expect(curated).toStrictEqual(before);
+    expect(patch).toStrictEqual(patchBefore);
+  });
+});
