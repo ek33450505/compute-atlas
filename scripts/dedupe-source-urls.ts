@@ -54,7 +54,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { facilitySchema } from "../lib/schema";
+import { facilitySchema, remapV2SourceIndices, v2SourceIndexRefs } from "../lib/schema";
 import type { Facility, Source } from "../lib/schema";
 import { isEntrypoint } from "./is-entrypoint";
 
@@ -73,6 +73,7 @@ function sourceIndexRefs(f: Facility): { where: string; idx: number }[] {
   push("jobs", f.jobs?.sourceIndex);
   push("community", f.community?.sourceIndex);
   push("emissions", f.emissions?.sourceIndex);
+  for (const r of v2SourceIndexRefs(f)) push(r.path, r.index);
   return refs;
 }
 
@@ -102,6 +103,14 @@ function remapRefs(f: Facility, map: Map<number, number>): void {
   if (f.jobs) f.jobs.sourceIndex = remapOptional(f.jobs.sourceIndex);
   if (f.community) f.community.sourceIndex = remapOptional(f.community.sourceIndex);
   if (f.emissions) f.emissions.sourceIndex = remapOptional(f.emissions.sourceIndex);
+
+  // v2 fields: the helper returns a new object, so copy back only the subtrees
+  // it can touch. `energy` is spread by the helper, so it keeps its other keys.
+  const v2 = remapV2SourceIndices(f, (_path, idx) => remap(idx));
+  if (v2.ids) f.ids = v2.ids;
+  if (v2.parties) f.parties = v2.parties;
+  if (v2.construction) f.construction = v2.construction;
+  if (v2.energy) f.energy = v2.energy;
 }
 
 export interface RecordOutcome {

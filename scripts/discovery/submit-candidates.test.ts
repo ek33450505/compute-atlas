@@ -10,6 +10,7 @@ import {
   normalizeCandidates,
   parseCandidatesJson,
   stripCuratedFields,
+  applyDocSourceStrip,
   submissionToken,
   verificationEnabled,
   exitCodeForSummary,
@@ -3222,5 +3223,71 @@ describe("durable checkpoints and in_flight resume", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe("stripCuratedFields strips the v2 curated fields", () => {
+  const ref = { name: "Acme", sourceIndex: 0 };
+  const v2 = {
+    ids: { epaFrsId: { value: "110000", sourceIndex: 0 } },
+    parties: { tenant: [ref] },
+    construction: { phases: [{ label: "p1", sourceIndex: 0 }] },
+  };
+
+  it("removes ids, parties and construction at the top level", () => {
+    const stripped = stripCuratedFields({ id: "x", ...v2 }) as Record<string, unknown>;
+    expect(stripped).toEqual({ id: "x" });
+  });
+
+  it("removes nested capacityMw.basis/itPlanned/itOperational but keeps planned/operational", () => {
+    const doc = {
+      id: "x",
+      capacityMw: { planned: 100, operational: 50, basis: { value: "x", sourceIndex: 0 }, itPlanned: 1, itOperational: 2 },
+    };
+    const stripped = stripCuratedFields(doc) as { capacityMw: Record<string, unknown> };
+    expect(stripped.capacityMw).toEqual({ planned: 100, operational: 50 });
+    expect(Object.keys(doc.capacityMw)).toContain("itPlanned"); // input not mutated
+  });
+
+  it("removes energy.utilityEiaId but keeps utility", () => {
+    const stripped = stripCuratedFields({
+      id: "x",
+      energy: { utility: "Oncor", utilityEiaId: { value: "1", sourceIndex: 0 } },
+    }) as { energy: Record<string, unknown> };
+    expect(stripped.energy).toEqual({ utility: "Oncor" });
+  });
+
+  it("drops a nested object the strip empties", () => {
+    const stripped = stripCuratedFields({ id: "x", capacityMw: { itPlanned: 1 } }) as Record<string, unknown>;
+    expect("capacityMw" in stripped).toBe(false);
+  });
+
+  it("returns the identical object when no curated key is present", () => {
+    const doc = { id: "x", capacityMw: { planned: 1 }, energy: { utility: "U" } };
+    expect(stripCuratedFields(doc)).toBe(doc);
+  });
+});
+
+describe("applyDocSourceStrip remaps v2 sourceIndex values", () => {
+  it("rewrites ids, energy, parties and construction indices by path", () => {
+    const doc = {
+      ...makeCandidate(),
+      energy: { utility: "U", utilityEiaId: { value: "7", sourceIndex: 2 } },
+      ids: { epaFrsId: { value: "110000", sourceIndex: 2 } },
+      parties: { tenant: [{ name: "Acme", sourceIndex: 2 }] },
+      construction: { phases: [{ label: "p1", sourceIndex: 2 }] },
+    } as unknown as Facility;
+    const remapped = new Map([
+      ["energy.utilityEiaId.sourceIndex", 0],
+      ["ids.epaFrsId.sourceIndex", 0],
+      ["parties.tenant[0].sourceIndex", 0],
+      ["construction.phases[0].sourceIndex", 1],
+    ]);
+    const out = applyDocSourceStrip(doc, doc.sources, remapped);
+    expect(out.energy?.utilityEiaId?.sourceIndex).toBe(0);
+    expect(out.energy?.utility).toBe("U");
+    expect(out.ids?.epaFrsId?.sourceIndex).toBe(0);
+    expect(out.parties?.tenant?.[0].sourceIndex).toBe(0);
+    expect(out.construction?.phases?.[0].sourceIndex).toBe(1);
   });
 });

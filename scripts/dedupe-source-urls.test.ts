@@ -158,3 +158,21 @@ describe("dedupeRecord", () => {
     expect(JSON.stringify(f)).toBe(snapshot);
   });
 });
+
+describe("dedupeRecord v2 sourceIndex fields", () => {
+  it("remaps parties and construction.phases refs onto the collapsed source", () => {
+    const rec = facility({
+      sources: [src("a"), src("b"), src("a")],
+      parties: { tenant: [{ name: "Acme", sourceIndex: 2 }] },
+      construction: { phases: [{ name: "p1", sourceIndex: 1 }, { name: "p2", sourceIndex: 2 }] },
+    } as Partial<DataCenterFacility>);
+    const res = dedupeRecord(rec);
+    expect(res).not.toBeNull();
+    expect(res!.outcome.skipped).toBeUndefined();
+    const { next } = res!;
+    expect(next.sources.map((s) => s.url)).toEqual(["https://example.com/a", "https://example.com/b"]);
+    expect(next.parties?.tenant?.[0].sourceIndex).toBe(0);
+    expect(next.construction?.phases?.map((p) => p.sourceIndex)).toEqual([1, 0]);
+    expect(res!.outcome.skipped).toBeUndefined();
+  });
+});
