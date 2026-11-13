@@ -82,7 +82,14 @@ import { lineString as turfLineString, point as turfPoint } from '@turf/helpers'
 import { buildHeroPoints } from './build-hero-points.mjs';
 import { buildHeroPlate } from './build-hero-plate.mjs';
 import { buildPipelineHistory } from './build-pipeline-history.mjs';
-import { computeAllJoinKeys, preflightJoinKeys } from './join-keys.mjs';
+import {
+  computeAllJoinKeys,
+  preflightJoinKeys,
+  buildEgridLocator,
+  needsRecompute,
+  EGRID_URL,
+  EGRID_MULTI_URL,
+} from './join-keys.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
@@ -336,11 +343,13 @@ function arcGISQueryBase(baseUrl, where, geometryEnvelope) {
  *
  * Back-compat form: fetchArcGISAll(baseUrl, whereClause, outFields, label)
  * Options-object form: fetchArcGISAll(baseUrl, { where, outFields, label,
- *   pageSize, geometryEnvelope }) — pageSize overrides HIFLD_PAGE_SIZE
+ *   pageSize, geometryEnvelope, geometryPrecision }) — pageSize overrides HIFLD_PAGE_SIZE
  *   (needed for Aqueduct's 750 maxRecordCount); geometryEnvelope is a plain
  *   { xmin, ymin, xmax, ymax, spatialReference } object applied as a
  *   server-side esriGeometryEnvelope spatial filter (needed to cut Aqueduct's
- *   global 68,506 basins down to the US before paging).
+ *   global 68,506 basins down to the US before paging); geometryPrecision (an
+ *   integer, decimal places) is appended to the PAGED url only, to shrink
+ *   large polygon payloads.
  *
  * Fails closed on a truncated result set. A page that comes back HTTP 200
  * with a valid-but-short body (`features: []` before the server said
@@ -362,8 +371,13 @@ function arcGISQueryBase(baseUrl, where, geometryEnvelope) {
  */
 async function fetchArcGISAll(baseUrl, whereClauseOrOpts, outFieldsArg, labelArg) {
   let where, outFields, label, pageSize, geometryEnvelope;
+  let geometryPrecision = null;
   if (typeof whereClauseOrOpts === 'object' && whereClauseOrOpts !== null) {
-    ({ where, outFields, label, pageSize = HIFLD_PAGE_SIZE, geometryEnvelope = null } = whereClauseOrOpts);
+    ({ where, outFields, label, pageSize = HIFLD_PAGE_SIZE, geometryEnvelope = null, geometryPrecision = null } =
+      whereClauseOrOpts);
+    if (geometryPrecision !== null && !Number.isInteger(geometryPrecision)) {
+      throw new Error(`${label}: geometryPrecision must be an integer, got ${geometryPrecision}`);
+    }
   } else {
     where = whereClauseOrOpts;
     outFields = outFieldsArg;
@@ -381,7 +395,8 @@ async function fetchArcGISAll(baseUrl, whereClauseOrOpts, outFieldsArg, labelArg
   let offset = 0;
   const allFeatures = [];
   for (;;) {
-    const url = `${queryBase}&outFields=${outFields}&resultRecordCount=${pageSize}&resultOffset=${offset}&f=geojson`;
+    const precision = geometryPrecision === null ? '' : `&geometryPrecision=${geometryPrecision}`;
+    const url = `${queryBase}&outFields=${outFields}&resultRecordCount=${pageSize}&resultOffset=${offset}${precision}&f=geojson`;
     const data = await fetchJSON(url, { label: `${label} offset=${offset}`, retries: 1 });
     const features = data.features || [];
     allFeatures.push(...features);
@@ -1728,9 +1743,32 @@ export function withJoinKeys(envEntry, joinKeys) {
 }
 
 /**
+ * Download EPA's eGRID2023 subregion and multiple-subregions polygons (one MultiPolygon per
+ * subregion; 6 dp measured identical to full precision on all 3,233 pins, 2026-11-13). Sequential
+ * for simplicity.
+ */
+export async function fetchEgridPolygons({ fetchAll = fetchArcGISAll } = {}) {
+  const subregions = await fetchAll(EGRID_URL, {
+    where: '1=1',
+    outFields: 'Subregion',
+    label: 'eGRID2023 subregions',
+    geometryPrecision: 6,
+  });
+  const multiple = await fetchAll(EGRID_MULTI_URL, {
+    where: '1=1',
+    outFields: 'MultipleSu',
+    label: 'eGRID2023 multiple subregions',
+    geometryPrecision: 6,
+  });
+  return { subregions, multiple };
+}
+
+/**
  * Run the join-key pass. `--skip-join-keys` (skip) makes no queries and carries every existing
  * value forward. A group that fails preflight is passed as `skipKeys`: it is not queried this run,
- * its value and flags are carried forward, and it costs no failure budget.
+ * its value and flags are carried forward, and it costs no failure budget. eGRID is a local
+ * point-in-polygon lookup: the polygons are downloaded once per run, and only when some facility
+ * needs a recompute; a failed download makes eGRID fail its pre-flight, so it is carried forward.
  * Returns `{ byId, stats, failedServices }`.
  */
 export async function runJoinKeys(
@@ -1743,6 +1781,7 @@ export async function runJoinKeys(
     limits = {},
     log = console.log,
     warn = console.error,
+    loadEgrid = () => fetchEgridPolygons(),
   } = {},
 ) {
   const existingById = {};
@@ -1754,11 +1793,40 @@ export async function runJoinKeys(
     log('--skip-join-keys: carrying existing join keys forward, no queries');
     return { byId: existingById, stats: null, failedServices: [] };
   }
-  const { failed } = await preflightJoinKeys({ query });
-  for (const name of failed) {
-    warn(`  [warn] join-keys pre-flight FAILED for ${name}: not querying it this run, carrying its existing values forward`);
+  let egridLocator = null;
+  const nothingToDo = !facilities.some((f) => needsRecompute(f, existingById[f.id]));
+  if (nothingToDo) {
+    log('Join keys: nothing needs recompute; skipping the eGRID polygon download and pre-flight');
+  } else {
+    const startedAt = Date.now();
+    try {
+      const { subregions, multiple } = await loadEgrid();
+      egridLocator = buildEgridLocator(subregions, multiple);
+      log(
+        `eGRID polygons: ${subregions.length} subregion + ${multiple.length} multiple-subregion features ` +
+          `loaded in ${((Date.now() - startedAt) / 1000).toFixed(1)}s`,
+      );
+    } catch (err) {
+      // lint-no-raw-error-logs: allow -- public-API fetch and local file reads; imports no DB code, so the error cannot carry bound params
+      const reason = err instanceof Error ? err.message : String(err);
+      warn(
+        `  [warn] join-keys: eGRID polygon download FAILED (${reason}): ` +
+          'not computing eGRID this run, carrying existing values forward',
+      );
+      egridLocator = null;
+    }
   }
-  const { byId, stats } = await computeAllJoinKeys(facilities, existingById, { ...limits, ...delay, query, skipKeys: failed });
+  // With nothing to recompute the pre-flight is skipped too: computeAllJoinKeys reuses every entry.
+  const { failed } = nothingToDo ? { failed: [] } : await preflightJoinKeys({ query, egridLocator });
+  for (const name of failed) {
+    // The download-FAILED warning above already said eGRID is carried forward; no probe ran for it.
+    if (name === 'egrid' && egridLocator === null) continue;
+    warn(
+      `  [warn] join-keys pre-flight FAILED for ${name}: ` +
+        'not querying it this run, carrying its existing values forward',
+    );
+  }
+  const { byId, stats } = await computeAllJoinKeys(facilities, existingById, { ...limits, ...delay, query, egridLocator, skipKeys: failed });
   log(
     `Join keys: ${stats.recomputed} recomputed, ${stats.reused} reused, ${stats.failures} failures, ` +
       `${stats.flagged} flagged, ${stats.skipped} skipped`,

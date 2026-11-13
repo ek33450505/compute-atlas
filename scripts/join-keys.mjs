@@ -1,5 +1,7 @@
 // Per-facility "join keys" for the siting context: county FIPS, census tract GEOID and EPA eGRID
-// subregion, each from one ArcGIS REST point query (no polygon downloads).
+// subregion. County and tract each come from one ArcGIS REST point query; eGRID comes from a local
+// point-in-polygon lookup (`buildEgridLocator`) against EPA's polygons, which the caller downloads
+// once per build (EPA's hosted eGRID point query measured ~10 s + ~4 s per facility on 2026-11-13).
 //
 // Every network call goes through an injectable `query(url)` so tests never touch the network.
 // `query` is REQUIRED (no default, which would make this module and build-map-data.mjs import each
@@ -7,7 +9,7 @@
 //
 // Failure rule (mirrors nearestWater): a query that THROWS carries the previous value forward and
 // is recorded in `failures`; only a confirmed absence (HTTP 200, zero features) clears a value.
-// Nothing here ever writes `null`.
+// Nothing here ever writes `null`. The eGRID lookup is local and cannot fail per facility.
 export const COUNTY_URL =
   'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/1/query';
 export const TRACT_URL =
@@ -103,8 +105,8 @@ export function needsRecompute(facility, existingJoinKeys, { skipKeys } = {}) {
   const wanted = ['countyFips', 'egridSubregion'];
   if (pin.precision === 'exact') wanted.push('tractGeoid');
   const active = wanted.filter((k) => !skip.has(KEY_GROUP[k]));
-  // A failed multiple-subregions query (egrid_multi_unknown) or a key carried forward onto an old pin
-  // (carried_forward:*) is retried.
+  // An old egrid_multi_unknown flag (earlier builds wrote it when the multiple-subregions point query
+  // failed) or a key carried forward onto an old pin (carried_forward:*) is retried.
   const retryFlag = (f) =>
     f === 'egrid_multi_unknown'
       ? !skip.has('egrid')
@@ -137,13 +139,101 @@ async function fetchParsed(query, url, fields) {
   }
 }
 
+function ringBbox(ring) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const [x, y] of ring) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  return { minX, minY, maxX, maxY };
+}
+
+function prepareFeature(feature, what) {
+  const g = feature?.geometry;
+  if (!g || (g.type !== 'Polygon' && g.type !== 'MultiPolygon')) {
+    throw new Error(`join-keys: ${what} feature geometry must be Polygon or MultiPolygon`);
+  }
+  const parts = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
+  const rings = [];
+  for (const part of parts) {
+    for (const ring of part) rings.push({ ring, bbox: ringBbox(ring) });
+  }
+  return rings;
+}
+
+// Even-odd parity over every ring of one feature. A ring whose bbox excludes the point is skipped:
+// it cannot contain the point, so the ray crosses it an even number of times.
+function featureContains(rings, lon, lat) {
+  let inside = false;
+  for (const { ring, bbox } of rings) {
+    if (lon < bbox.minX || lon > bbox.maxX || lat < bbox.minY || lat > bbox.maxY) continue;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i];
+      const [xj, yj] = ring[j];
+      if (yi > lat !== yj > lat && lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
+    }
+  }
+  return inside;
+}
+
+/**
+ * Local eGRID lookup from EPA's polygons (GeoJSON Feature arrays). Returns
+ * `locate(lon, lat) => { subregions: string[], inMultiple: boolean }` (subregions deduped, feature order).
+ *
+ * WHY even-odd over ALL rings of a feature, not "any part contains the point":
+ *  - parts == rings for all 27 subregion features and for the one multiple-subregions feature
+ *    (443 parts), measured 2026-11-13, so a hole cannot be told apart from an outer part. Per-part
+ *    OR treated holes as land: over 3,233 pins it gave 15 pins two subregion codes (e.g. a Colstrip
+ *    MT pin read MROW+NWPP) and put 13 pins inside the multiple-subregions footprint. Even-odd
+ *    parity over all rings handles either encoding: EPA's own point query sided with parity in all
+ *    28 of those comparisons (21 distinct pins; 7 pins disagreed on both layers), and agreed with
+ *    it on all 75 facilities computed by point query earlier.
+ *  - The bbox prefilter is per ring because it prunes far better: AKMS's parts are pre-split at
+ *    +-180, so its feature bbox spans -179.15..179.78 and would exclude almost nothing. Skipping a
+ *    ring whose bbox excludes the point keeps parity, since such a ring is crossed an even number
+ *    of times.
+ *  - Assumption: parity also reads a point inside two overlapping outer parts of one feature as
+ *    outside. Such a point would show up as an OR-versus-parity disagreement where OR is the
+ *    correct answer; in the 2026-11-13 measurement EPA sided with parity on every disagreement, so
+ *    no pin sat in one.
+ */
+export function buildEgridLocator(subregionFeatures, multipleFeatures) {
+  if (!Array.isArray(subregionFeatures) || subregionFeatures.length === 0) {
+    throw new Error('join-keys: eGRID subregion features are empty');
+  }
+  if (!Array.isArray(multipleFeatures) || multipleFeatures.length === 0) {
+    throw new Error('join-keys: eGRID multiple-subregion features are empty');
+  }
+  const subregions = subregionFeatures.map((f) => {
+    const code = f?.properties?.Subregion;
+    if (typeof code !== 'string' || code === '') {
+      throw new Error('join-keys: eGRID subregion feature without a Subregion code');
+    }
+    return { code, rings: prepareFeature(f, 'subregion') };
+  });
+  const multiple = multipleFeatures.map((f) => prepareFeature(f, 'multiple-subregions'));
+  return function locate(lon, lat) {
+    const hits = [];
+    for (const s of subregions) if (featureContains(s.rings, lon, lat)) hits.push(s.code);
+    return {
+      subregions: [...new Set(hits)],
+      inMultiple: multiple.some((rings) => featureContains(rings, lon, lat)),
+    };
+  };
+}
+
 export async function computeJoinKeysFor(
   facility,
   existingJoinKeys,
-  { query, delayMs = 0, today, skipKeys } = {},
+  { query, delayMs = 0, today, skipKeys, egridLocator } = {},
 ) {
   requireQuery(query);
   const skip = toSkipSet(skipKeys);
+  if (!skip.has('egrid') && typeof egridLocator !== 'function') {
+    throw new Error('join-keys: an egridLocator is required unless egrid is skipped');
+  }
   const pin = pinOf(facility);
   const { lat, lon } = pin;
   const exact = pin.precision === 'exact';
@@ -210,18 +300,11 @@ export async function computeJoinKeysFor(
 
   if (skip.has('egrid')) carrySkipped('egrid', ['egridSubregion', 'egridMultiple']);
   else {
-    const egrid = await fetchParsed(q, pointQueryUrl(EGRID_URL, lon, lat, 'Subregion'), ['Subregion']);
-    settle('egridSubregion', egrid, 'Subregion', 'egrid_no_polygon');
-
-    // A hit in the multiple-subregions layer is the only thing that sets egridMultiple.
-    const multi = await fetchParsed(q, pointQueryUrl(EGRID_MULTI_URL, lon, lat, 'MultipleSu'), ['MultipleSu']);
-    if (multi.failed !== undefined) {
-      failures.push({ key: 'egridMultiple', error: multi.failed });
-      flags.push('egrid_multi_unknown');
-      if (prev.egridMultiple === true) keys.egridMultiple = true;
-    } else if (!multi.parsed.MultipleSu.none) {
-      keys.egridMultiple = true;
-    }
+    const hit = egridLocator(lon, lat);
+    if (hit.subregions.length === 0) flags.push('egrid_no_polygon');
+    else if (hit.subregions.length > 1) flags.push('multiple_hits:egridSubregion');
+    else keys.egridSubregion = hit.subregions[0];
+    if (hit.inMultiple) keys.egridMultiple = true;
   }
 
   if (keys.tractGeoid && keys.countyFips && keys.tractGeoid.slice(0, 5) !== keys.countyFips) {
@@ -283,6 +366,7 @@ export async function computeAllJoinKeys(
     delayMs = 250,
     skipKeys,
     today,
+    egridLocator,
     maxFailures = 25,
     maxRunMs = 20 * 60 * 1000,
     now = () => Date.now(),
@@ -307,7 +391,7 @@ export async function computeAllJoinKeys(
       stats.skipped++;
       continue;
     }
-    const { joinKeys, failures } = await computeJoinKeysFor(facility, existing, { query, delayMs, today, skipKeys: skip });
+    const { joinKeys, failures } = await computeJoinKeysFor(facility, existing, { query, delayMs, today, skipKeys: skip, egridLocator });
     byId[facility.id] = joinKeys;
     stats.recomputed++;
     stats.failures += failures.length;
@@ -320,21 +404,32 @@ export async function computeAllJoinKeys(
 /**
  * One known-good probe per service. Returns `{ ok, failed: [...] }` where `failed` names the
  * services ('county' | 'tract' | 'egrid') that errored or answered unexpectedly, so the caller can
- * carry that key forward with a loud warning instead of aborting the whole run.
+ * carry that key forward with a loud warning instead of aborting the whole run. eGRID is probed
+ * against the local locator (no network call).
  */
-export async function preflightJoinKeys({ query } = {}) {
+export async function preflightJoinKeys({ query, egridLocator } = {}) {
   requireQuery(query);
   const { lon, lat } = PREFLIGHT_PIN;
   const checks = [
     ['county', COUNTY_URL, 'GEOID', (v) => v === '51107'],
     ['tract', TRACT_URL, 'GEOID', (v) => v.startsWith('51107')],
-    ['egrid', EGRID_URL, 'Subregion', (v) => v === 'SRVC'],
   ];
   const failed = [];
   for (const [name, base, field, expect] of checks) {
     const r = await fetchParsed(query, pointQueryUrl(base, lon, lat, field), [field]);
     const p = r.parsed?.[field];
     if (r.failed !== undefined || p?.value === undefined || !expect(p.value)) failed.push(name);
+  }
+  if (typeof egridLocator !== 'function') failed.push('egrid');
+  else {
+    let egridOk = false;
+    try {
+      const { subregions } = egridLocator(lon, lat);
+      egridOk = subregions.length === 1 && subregions[0] === 'SRVC';
+    } catch {
+      egridOk = false;
+    }
+    if (!egridOk) failed.push('egrid');
   }
   return { ok: failed.length === 0, failed };
 }

@@ -22,6 +22,7 @@ import {
   parseNHDFlags,
   withJoinKeys,
   runJoinKeys,
+  fetchEgridPolygons,
   computeDistribution,
   clearStaleSitingOutput,
   readSitingSnapshot,
@@ -195,6 +196,53 @@ describe("fetchArcGISAll", () => {
     const countUrl = countCall![0] as string;
     expect(countUrl).toContain("geometryType=esriGeometryEnvelope");
     expect(countUrl).toContain(encodeURIComponent(JSON.stringify(envelope)));
+  });
+
+  it("appends geometryPrecision to the paged url only, not the count url", async () => {
+    const fn = stubArcGISRaw({
+      countBody: { count: 2 },
+      pageBodies: [{ features: [{ id: 1 }, { id: 2 }] }],
+    });
+    await fetchArcGISAll("https://example.com/query", { where: "1=1", outFields: "Subregion", label: "eGRID", geometryPrecision: 6 });
+    const urls = fn.mock.calls.map(([u]) => u as string);
+    const count = urls.find((u) => u.includes("returnCountOnly=true"))!;
+    const page = urls.find((u) => !u.includes("returnCountOnly=true"))!;
+    expect(count).not.toContain("geometryPrecision");
+    expect(page).toContain("&geometryPrecision=6&");
+  });
+
+  it("omits geometryPrecision when it is not given", async () => {
+    const fn = stubArcGISRaw({ countBody: { count: 1 }, pageBodies: [{ features: [{ id: 1 }] }] });
+    await fetchArcGISAll("https://example.com/query", { where: "1=1", outFields: "A", label: "x" });
+    expect(fn.mock.calls.every(([u]) => !(u as string).includes("geometryPrecision"))).toBe(true);
+  });
+
+  it("throws on a non-integer geometryPrecision before any request", async () => {
+    const fn = stubArcGISRaw({ countBody: { count: 0 }, pageBodies: [] });
+    for (const bad of [6.5, "6", NaN]) {
+      await expect(
+        fetchArcGISAll("https://example.com/query", { where: "1=1", outFields: "A", label: "x", geometryPrecision: bad as never }),
+      ).rejects.toThrow(/geometryPrecision/);
+    }
+    expect(fn).not.toHaveBeenCalled();
+  });
+});
+
+describe("fetchEgridPolygons", () => {
+  it("fetches the subregion layer then the multiple layer, both at 6 dp", async () => {
+    const calls: Array<[string, Record<string, unknown>]> = [];
+    const fetchAll = vi.fn(async (url: string, opts: Record<string, unknown>) => {
+      calls.push([url, opts]);
+      return [{ url }];
+    });
+    const out = await fetchEgridPolygons({ fetchAll: fetchAll as never });
+    expect(calls).toHaveLength(2);
+    expect(calls[0][0]).toContain("eGRID2023_Subregions");
+    expect(calls[0][1]).toMatchObject({ where: "1=1", outFields: "Subregion", geometryPrecision: 6 });
+    expect(calls[1][0]).toContain("eGRID2023_Multiple_Subregions");
+    expect(calls[1][1]).toMatchObject({ where: "1=1", outFields: "MultipleSu", geometryPrecision: 6 });
+    expect(out.subregions).toHaveLength(1);
+    expect(out.multiple).toHaveLength(1);
   });
 });
 
@@ -1374,30 +1422,40 @@ describe("join keys wiring", () => {
   });
 
   it("warns loudly when a breaker defers facilities", async () => {
-    // The multiple-subregions layer is not preflighted, so failing it trips the failure budget mid-run.
-    const { query } = fakeQuery([MULTI]);
+    // The pre-flight pin (-77.4875) passes; every facility pin (-77.5) fails county and tract, which trips the budget.
+    const { query } = fakeQuery([], (url) => !url.includes("-77.4875") && (url.includes(COUNTY) || url.includes(TRACT)));
     const warn = vi.fn();
     const facs = Array.from({ length: 5 }, (_, i) => fac(`f${i}`, 39 + i / 1000));
-    const { stats } = await runJoinKeys(facs, {}, { log: () => {}, warn, delayMs: 0, query, limits: { maxFailures: 1 } } as never);
+    const { stats } = await runJoinKeys(facs, {}, {
+      log: () => {},
+      warn,
+      delayMs: 0,
+      query,
+      loadEgrid: fakeLoadEgrid(),
+      limits: { maxFailures: 1 },
+    } as never);
     expect(stats?.skipped).toBeGreaterThan(0);
     expect(warn).toHaveBeenCalledWith(expect.stringMatching(/\[warn\] join keys: \d+ facilities deferred/));
   });
 
   const COUNTY = "TIGERweb/State_County";
   const TRACT = "TIGERweb/Tracts_Blocks";
-  const MULTI = "eGRID2023_Multiple_Subregions";
-  const EGRID = "eGRID2023_Subregions";
+  const square = (x0: number, y0: number, x1: number, y1: number) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]];
+  // A square around the pre-flight pin and every test facility, labelled SRVC, plus a multiple-subregions feature elsewhere.
+  const egridFeatures = () => ({
+    subregions: [{ type: "Feature", properties: { Subregion: "SRVC" }, geometry: { type: "Polygon", coordinates: [square(-78, 38, -77, 40)] } }],
+    multiple: [{ type: "Feature", properties: { MultipleSu: "A/B" }, geometry: { type: "Polygon", coordinates: [square(10, 10, 20, 20)] } }],
+  });
+  const fakeLoadEgrid = () => vi.fn(async () => egridFeatures());
   const feat = (attributes: Record<string, string>) => ({ features: [{ attributes }] });
 
-  function fakeQuery(failing: string[] = []) {
+  function fakeQuery(failing: string[] = [], failWhen: (url: string) => boolean = () => false) {
     const urls: string[] = [];
     const query = async (url: string) => {
       urls.push(url);
-      if (failing.some((f) => url.includes(f))) throw new Error("boom");
+      if (failing.some((f) => url.includes(f)) || failWhen(url)) throw new Error("boom");
       if (url.includes(COUNTY)) return feat({ GEOID: "51107", NAME: "Loudoun County" });
       if (url.includes(TRACT)) return feat({ GEOID: "51107611000" });
-      if (url.includes(MULTI)) return { features: [] };
-      if (url.includes(EGRID)) return feat({ Subregion: "SRVC" });
       throw new Error(`unexpected url ${url}`);
     };
     return { query, urls };
@@ -1405,7 +1463,7 @@ describe("join keys wiring", () => {
 
   const fac = (id: string, lat: number, precision = "exact") =>
     ({ id, location: { lat, lon: -77.5, precision, county: "Loudoun" } }) as never;
-  const silent = { log: () => {}, warn: () => {}, delayMs: 0 };
+  const silent = { log: () => {}, warn: () => {}, delayMs: 0, loadEgrid: fakeLoadEgrid() };
   const oldKeys = {
     countyFips: "51107",
     tractGeoid: "51107000000",
@@ -1456,27 +1514,89 @@ describe("join keys wiring", () => {
     expect(Object.keys(byId)).toHaveLength(30);
   });
 
-  it("a preflight failure for one service carries that key forward and the others still query every facility", async () => {
-    const { query, urls } = fakeQuery([EGRID + "/FeatureServer"]);
+  it("computes eGRID locally from the downloaded polygons, with no eGRID network query", async () => {
+    const { query, urls } = fakeQuery();
+    const loadEgrid = fakeLoadEgrid();
+    const { byId: rawById, failedServices } = await runJoinKeys([fac("a", 39)], {}, { ...silent, loadEgrid, query });
+    const byId = rawById as Record<string, Record<string, unknown>>;
+    expect(failedServices).toEqual([]);
+    expect(loadEgrid).toHaveBeenCalledTimes(1);
+    expect(byId.a.egridSubregion).toBe("SRVC");
+    expect(byId.a.egridMultiple).toBeUndefined();
+    expect(urls.some((u) => u.includes("eGRID"))).toBe(false);
+  });
+
+  it("a failed eGRID download warns, carries eGRID forward and still computes county and tract", async () => {
+    const { query } = fakeQuery();
     const existing = { a: { joinKeys: { ...oldKeys, pin: { lat: 40, lon: -77.5, precision: "exact" } } } };
     const warn = vi.fn();
-    const { byId: rawById, failedServices } = await runJoinKeys([fac("a", 39)], existing as never, { ...silent, warn, query });
+    const loadEgrid = vi.fn(async () => {
+      throw new Error("EPA down");
+    });
+    const { byId: rawById, failedServices } = await runJoinKeys([fac("a", 39)], existing as never, { ...silent, warn, query, loadEgrid });
     const byId = rawById as Record<string, Record<string, unknown>>;
     expect(failedServices).toEqual(["egrid"]);
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining("egrid"));
+    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/eGRID polygon download FAILED \(EPA down\)/));
+    expect(warn).not.toHaveBeenCalledWith(expect.stringContaining("pre-flight FAILED for egrid"));
     expect(byId.a.egridSubregion).toBe("OLD");
     expect(byId.a.countyFips).toBe("51107");
     expect(byId.a.tractGeoid).toBe("51107611000");
-    expect(urls.filter((u) => u.includes(EGRID + "/FeatureServer") || u.includes(MULTI)).length).toBe(1); // preflight probe only
-    expect(urls.filter((u) => u.includes(COUNTY)).length).toBe(2); // probe + facility
+  });
+
+  it.each([
+    ["an empty payload", () => ({ subregions: [], multiple: [] })],
+    [
+      "a subregion feature with no Subregion code",
+      () => {
+        const p = egridFeatures();
+        p.subregions[0].properties = {} as never;
+        return p;
+      },
+    ],
+  ])("%s is treated like a failed download, with no pre-flight probe claim for eGRID", async (_n, payload) => {
+    const { query } = fakeQuery();
+    const warn = vi.fn();
+    const loadEgrid = vi.fn(async () => payload());
+    const { failedServices } = await runJoinKeys([fac("a", 39)], {}, { ...silent, warn, query, loadEgrid });
+    expect(failedServices).toEqual(["egrid"]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("download FAILED"));
+    expect(warn).not.toHaveBeenCalledWith(expect.stringContaining("pre-flight FAILED for egrid"));
+  });
+
+  it("a loaded locator that answers wrongly at the pre-flight pin keeps the pre-flight warning", async () => {
+    const { query } = fakeQuery();
+    const warn = vi.fn();
+    const loadEgrid = vi.fn(async () => {
+      const p = egridFeatures();
+      p.subregions[0].properties = { Subregion: "XXXX" };
+      return p;
+    });
+    const { failedServices } = await runJoinKeys([fac("a", 39)], {}, { ...silent, warn, query, loadEgrid });
+    expect(failedServices).toEqual(["egrid"]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("pre-flight FAILED for egrid"));
+    expect(warn).not.toHaveBeenCalledWith(expect.stringContaining("download FAILED"));
+  });
+
+  it("downloads nothing and queries nothing when no facility needs a recompute", async () => {
+    const { query, urls } = fakeQuery();
+    const loadEgrid = fakeLoadEgrid();
+    const existing = { a: { joinKeys: oldKeys } };
+    const { byId, stats, failedServices } = await runJoinKeys([fac("a", 39)], existing as never, { ...silent, loadEgrid, query });
+    expect(loadEgrid).not.toHaveBeenCalled();
+    expect(urls).toEqual([]);
+    expect(failedServices).toEqual([]);
+    expect(stats).toMatchObject({ recomputed: 0, reused: 1 });
+    expect((byId as Record<string, unknown>).a).toEqual(oldKeys);
   });
 
   it("--skip-join-keys makes no queries and carries existing values forward", async () => {
     const { query, urls } = fakeQuery();
+    const loadEgrid = fakeLoadEgrid();
     const existing = { a: { joinKeys: oldKeys }, b: {} };
-    const { byId: rawById } = await runJoinKeys([fac("a", 39), fac("b", 39)], existing as never, { ...silent, skip: true, query });
+    const { byId: rawById } = await runJoinKeys([fac("a", 39), fac("b", 39)], existing as never, { ...silent, skip: true, query, loadEgrid });
     const byId = rawById as Record<string, Record<string, unknown>>;
     expect(urls).toEqual([]);
+    expect(loadEgrid).not.toHaveBeenCalled();
     expect(byId).toEqual({ a: oldKeys });
   });
 });

@@ -59,9 +59,10 @@ export interface Aquifer {
 }
 
 /**
- * Keys for joining a facility to external datasets, computed at build time from the pin by
- * ArcGIS point queries. `tractGeoid` exists only for exact pins. `egridSubregion` is EPA's
- * ZIP-dissolved representational polygon, not the grid the site actually draws from.
+ * Keys for joining a facility to external datasets, computed at build time from the pin: county
+ * and tract by ArcGIS point query, eGRID by point-in-polygon against EPA's polygons. `tractGeoid`
+ * exists only for exact pins. `egridSubregion` is EPA's ZIP-dissolved representational polygon,
+ * not the grid the site actually draws from.
  */
 export interface JoinKeys {
   countyFips?: string;
