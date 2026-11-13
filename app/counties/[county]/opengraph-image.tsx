@@ -4,6 +4,7 @@ import { sumCapacityMw } from "@/lib/capacity-sums";
 import { formatPower } from "@/lib/format";
 import { formatCountyLabel } from "@/lib/metros";
 import { stateNameFromCode } from "@/lib/us-states";
+import { toOgText } from "@/lib/og-text";
 import { loadFrauncesFont, renderOgFallbackCard } from "@/lib/og-theme";
 import { renderOgCollectionCard } from "@/lib/og-collection-card";
 
@@ -40,7 +41,7 @@ export default async function OGImage({
     overline: "COUNTY PROFILE",
     // Qualified by state like the page's own H1: county names repeat across
     // states, so "Washington County" alone would be ambiguous.
-    headline: `${formatCountyLabel(county.name, county.state)}, ${stateName}`,
+    headline: toOgText(`${formatCountyLabel(county.name, county.state)}, ${stateName}`),
     stats: [
       { value: String(facilities.length), label: "FACILITIES" },
       { value: formatPower(sumCapacityMw(facilities, "operational")), label: "OPERATIONAL" },
