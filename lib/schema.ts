@@ -84,6 +84,12 @@ export const statusEventSchema = z.object({
 export const capacityMwSchema = z.object({
   planned: z.number().positive().optional(),
   operational: z.number().positive().optional(),
+  // What planned/operational measure. Absent = the source did not say; never
+  // inferred. Not allowed on power_generation (nameplate), see
+  // checkV2Consistency.
+  basis: z.enum(["facility", "it", "utility_service"]).optional(),
+  itPlanned: z.number().positive().optional(),
+  itOperational: z.number().positive().optional(),
 });
 
 // Named separately (rather than left inline) so lib/contribute-fields.ts can
@@ -103,6 +109,11 @@ export const energySourceEnum = z.enum([
 export const energySchema = z.object({
   source: energySourceEnum.optional(),
   utility: z.string().optional(),
+  // EIA utility id; requires `utility` (checkV2Consistency) so the id cannot
+  // drift apart from its name. Maintainer-curated.
+  utilityEiaId: z
+    .object({ id: z.number().int().positive(), sourceIndex: z.number().int().nonnegative() })
+    .optional(),
   onSiteGenerationMw: z.number().positive().optional(),
   notes: z.string().optional(),
 });
@@ -476,6 +487,81 @@ const notRecordedSchema = z.partialRecord(
   z.string().trim().min(10).max(400)
 );
 
+// Partial ISO 8601 date: YYYY, YYYY-MM or YYYY-MM-DD. Strict on shape so a
+// forecast like "Q3 2027" or "2027/05" is rejected instead of stored as prose;
+// calendar validity (month 13) is deliberately not checked here.
+export const partialIsoDateSchema = z
+  .string()
+  .regex(/^\d{4}(-\d{2}(-\d{2})?)?$/, "date must be YYYY, YYYY-MM or YYYY-MM-DD");
+
+const sourceIndexSchema = z.number().int().nonnegative();
+
+// External registry ids. Each is matched on coordinates/address plus permit
+// number, NEVER by name alone: plant and facility names collide across
+// registries. `sourceIndex` cites where the match is documented.
+const idsSchema = z.object({
+  // EPA Facility Registry Service id (digits only).
+  epaFrsId: z.object({ id: z.string().regex(/^\d+$/), sourceIndex: sourceIndexSchema }).optional(),
+  // EIA-860 plant id: power plants, and behind-the-meter plants on compute
+  // campuses.
+  eiaPlantId: z
+    .object({ id: z.number().int().positive(), sourceIndex: sourceIndexSchema })
+    .optional(),
+});
+
+/**
+ * An organization with a named role at this site.
+ *
+ * CURATION RULE: organizations only, never a natural person. Named people
+ * belong in `stakeholders`, which carries the evidence standard for them.
+ */
+const partyRefSchema = z.object({
+  name: z.string().trim().min(1),
+  sourceIndex: sourceIndexSchema,
+});
+type PartyRole = "ownerEntity" | "tenant" | "endUser" | "generalContractor";
+
+// - ownerEntity: the entity named as owner/applicant on a permit or deed
+//   (often a project LLC).
+// - tenant: who leases/occupies capacity from the operator.
+// - endUser: the ultimate compute user.
+// Arrays because joint ventures are common. tenant/endUser are rejected on
+// power_generation (checkV2Consistency): `generation.offtaker` covers that.
+const partiesSchema = z.object({
+  ownerEntity: z.array(partyRefSchema).min(1).optional(),
+  tenant: z.array(partyRefSchema).min(1).optional(),
+  endUser: z.array(partyRefSchema).min(1).optional(),
+  generalContractor: z.array(partyRefSchema).min(1).optional(),
+});
+
+// Dates here are FORECASTS. The actual start lives only in `statusHistory`
+// (one source of truth). `permitValuationUsd` is the declared valuation on a
+// building/construction permit, deliberately separate from `investmentUsd`.
+const datedRefSchema = z.object({ date: partialIsoDateSchema, sourceIndex: sourceIndexSchema });
+const constructionSchema = z.object({
+  expectedStart: datedRefSchema.optional(),
+  expectedCompletion: datedRefSchema.optional(),
+  permitValuationUsd: z
+    .object({
+      amountUsd: z.number().positive(),
+      permitNumber: z.string().min(1).optional(),
+      sourceIndex: sourceIndexSchema,
+    })
+    .optional(),
+  phases: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        mw: z.number().positive().optional(),
+        expectedStart: partialIsoDateSchema.optional(),
+        expectedCompletion: partialIsoDateSchema.optional(),
+        sourceIndex: sourceIndexSchema,
+      })
+    )
+    .min(1)
+    .optional(),
+});
+
 // Shared fields common to every facility, regardless of type.
 // Both discriminated-union branches spread this shape and add their own
 // `facilityType` literal plus type-specific fields.
@@ -552,6 +638,10 @@ const baseFacilityShape = {
     .optional(),
   // named people with a documented stake in this specific site
   stakeholders: z.array(stakeholderSchema).optional(),
+  // v2 maintainer-curated fields (never public intake or discovery enrichment)
+  ids: idsSchema.optional(),
+  parties: partiesSchema.optional(),
+  construction: constructionSchema.optional(),
 };
 
 // Data-center-specific environmental metrics.
@@ -649,11 +739,93 @@ export const powerGenerationFacilitySchema = z.object({
   generation: powerGenerationSchema,
 });
 
+// Structural view of every NEW (v2) field that carries a sourceIndex. The
+// helpers below are the ONE enumeration of those paths: bounds validation,
+// URL-dedupe remapping and discovery staging all go through them, so a new
+// sourceIndex-bearing field is added here once and cannot be missed by one
+// consumer (a missed remap silently points a citation at the wrong source).
+type IndexedRef = { sourceIndex: number };
+export interface V2SourceIndexCarrier {
+  ids?: { epaFrsId?: IndexedRef; eiaPlantId?: IndexedRef };
+  energy?: { utilityEiaId?: IndexedRef };
+  parties?: Partial<Record<PartyRole, IndexedRef[]>>;
+  construction?: {
+    expectedStart?: IndexedRef;
+    expectedCompletion?: IndexedRef;
+    permitValuationUsd?: IndexedRef;
+    phases?: IndexedRef[];
+  };
+}
+
+const PARTY_ROLES = ["ownerEntity", "tenant", "endUser", "generalContractor"] as const;
+
+export function v2SourceIndexRefs(f: V2SourceIndexCarrier): { path: string; index: number }[] {
+  const out: { path: string; index: number }[] = [];
+  const add = (path: string, ref: IndexedRef | undefined) => {
+    if (ref !== undefined) out.push({ path: `${path}.sourceIndex`, index: ref.sourceIndex });
+  };
+  add("ids.epaFrsId", f.ids?.epaFrsId);
+  add("ids.eiaPlantId", f.ids?.eiaPlantId);
+  add("energy.utilityEiaId", f.energy?.utilityEiaId);
+  for (const role of PARTY_ROLES) {
+    f.parties?.[role]?.forEach((p, i) => add(`parties.${role}[${i}]`, p));
+  }
+  add("construction.expectedStart", f.construction?.expectedStart);
+  add("construction.expectedCompletion", f.construction?.expectedCompletion);
+  add("construction.permitValuationUsd", f.construction?.permitValuationUsd);
+  f.construction?.phases?.forEach((p, i) => add(`construction.phases[${i}]`, p));
+  return out;
+}
+
+// Returns a NEW facility with every v2 sourceIndex replaced by
+// remap(path, index). Absent fields stay absent; nothing is mutated.
+export function remapV2SourceIndices<T extends V2SourceIndexCarrier>(
+  f: T,
+  remap: (path: string, index: number) => number
+): T {
+  const one = <R extends IndexedRef>(path: string, ref: R): R => ({
+    ...ref,
+    sourceIndex: remap(`${path}.sourceIndex`, ref.sourceIndex),
+  });
+  const out: T = { ...f };
+  if (f.ids) {
+    const ids = { ...f.ids };
+    if (ids.epaFrsId) ids.epaFrsId = one("ids.epaFrsId", ids.epaFrsId);
+    if (ids.eiaPlantId) ids.eiaPlantId = one("ids.eiaPlantId", ids.eiaPlantId);
+    out.ids = ids;
+  }
+  if (f.energy?.utilityEiaId) {
+    out.energy = {
+      ...f.energy,
+      utilityEiaId: one("energy.utilityEiaId", f.energy.utilityEiaId),
+    };
+  }
+  if (f.parties) {
+    const parties = { ...f.parties };
+    for (const role of PARTY_ROLES) {
+      const list = parties[role];
+      if (list) parties[role] = list.map((p, i) => one(`parties.${role}[${i}]`, p));
+    }
+    out.parties = parties;
+  }
+  if (f.construction) {
+    const c = { ...f.construction };
+    if (c.expectedStart) c.expectedStart = one("construction.expectedStart", c.expectedStart);
+    if (c.expectedCompletion)
+      c.expectedCompletion = one("construction.expectedCompletion", c.expectedCompletion);
+    if (c.permitValuationUsd)
+      c.permitValuationUsd = one("construction.permitValuationUsd", c.permitValuationUsd);
+    if (c.phases) c.phases = c.phases.map((p, i) => one(`construction.phases[${i}]`, p));
+    out.construction = c;
+  }
+  return out;
+}
+
 // Shared cross-branch validation: sourceIndex fields must reference an
 // in-range entry in `sources[]`. Hoisted so both union branches enforce it
 // identically instead of duplicating the superRefine per-branch.
 function checkSourceIndexBounds(
-  data: {
+  data: V2SourceIndexCarrier & {
     sources: { url: string }[];
     statusHistory: { sourceIndex?: number }[];
     subsidies?: { sourceIndex?: number }[];
@@ -686,6 +858,68 @@ function checkSourceIndexBounds(
   checkIndex(data.jobs?.sourceIndex, ["jobs", "sourceIndex"]);
   checkIndex(data.community?.sourceIndex, ["community", "sourceIndex"]);
   checkIndex(data.emissions?.sourceIndex, ["emissions", "sourceIndex"]);
+  for (const ref of v2SourceIndexRefs(data)) {
+    const segments = ref.path
+      .split(/[.[\]]+/)
+      .filter(Boolean)
+      .map((seg) => (/^\d+$/.test(seg) ? Number(seg) : seg));
+    checkIndex(ref.index, segments);
+  }
+}
+
+// Cross-field rules for the v2 fields. Each pins a value to the context that
+// makes it meaningful, so a record cannot carry a figure whose basis is lost.
+function checkV2Consistency(
+  data: {
+    facilityType: string;
+    capacityMw?: { basis?: string; planned?: number; operational?: number; itPlanned?: number; itOperational?: number };
+    energy?: { utility?: string; utilityEiaId?: unknown };
+    parties?: { tenant?: unknown; endUser?: unknown };
+  },
+  ctx: z.RefinementCtx
+) {
+  if (data.energy?.utilityEiaId !== undefined && data.energy.utility === undefined) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "energy.utilityEiaId requires energy.utility (an id stored apart from its name can drift to another utility)",
+      path: ["energy", "utilityEiaId"],
+    });
+  }
+  // `basis` qualifies planned/operational; it says nothing on its own.
+  // itPlanned/itOperational are their own figures and may stand alone.
+  // Skipped on power_generation, where the type rule below already rejects basis.
+  if (
+    data.facilityType !== "power_generation" &&
+    data.capacityMw?.basis !== undefined &&
+    data.capacityMw.planned === undefined &&
+    data.capacityMw.operational === undefined
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message: "basis describes a capacity figure; set planned or operational, or remove basis",
+      path: ["capacityMw", "basis"],
+    });
+  }
+  if (data.facilityType !== "power_generation") return;
+  for (const role of ["tenant", "endUser"] as const) {
+    if (data.parties?.[role] !== undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message: `parties.${role} is not allowed on power_generation (generation.offtaker covers the buyer)`,
+        path: ["parties", role],
+      });
+    }
+  }
+  for (const key of ["basis", "itPlanned", "itOperational"] as const) {
+    if (data.capacityMw?.[key] !== undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message: `capacityMw.${key} is not allowed on power_generation (capacity is generation nameplate)`,
+        path: ["capacityMw", key],
+      });
+    }
+  }
 }
 
 // A field may not be both set and marked "not recorded". Shared by every
@@ -725,7 +959,8 @@ export const facilitySchema = z
     powerGenerationFacilitySchema,
   ])
   .superRefine(checkSourceIndexBounds)
-  .superRefine(checkNotRecordedConsistency);
+  .superRefine(checkNotRecordedConsistency)
+  .superRefine(checkV2Consistency);
 
 export const facilitiesSchema = z.array(facilitySchema);
 
