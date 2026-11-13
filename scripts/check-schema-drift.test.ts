@@ -14,6 +14,7 @@ import {
   getExpectedTableNames,
   runSchemaDriftCheck,
   SchemaDriftError,
+  toPgIdentifier,
   type SchemaDriftReport,
 } from "./check-schema-drift";
 
@@ -246,6 +247,32 @@ describe("runSchemaDriftCheck", () => {
     expect((err as SchemaDriftError).report.missingIndexes).toEqual([
       "commercial_checkouts: commercial_checkouts_paypal_subscription_id_unique",
     ]);
+  });
+
+  it("covers column-level .references() foreign keys under Drizzle's default name", async () => {
+    const fkName = "dataset_downloads_grant_id_dataset_access_grants_id_fk";
+    expect(getExpectedShape().foreignKeys).toContainEqual({ table: "dataset_downloads", name: fkName });
+    const ok = await runSchemaDriftCheck();
+    expect(ok.missingIndexes).toEqual([]);
+
+    const err = await driftAfter(`ALTER TABLE "dataset_downloads" DROP CONSTRAINT "${fkName}"`);
+    expect(err).toBeInstanceOf(SchemaDriftError);
+    expect((err as SchemaDriftError).report.missingIndexes).toEqual([`dataset_downloads: ${fkName}`]);
+  });
+
+  it("expects a foreign key over 63 bytes under its truncated, stored name", async () => {
+    const stored = "commercial_checkouts_conflict_grant_id_dataset_access_grants_id";
+    expect(stored).toHaveLength(63);
+    const err = await driftAfter(`ALTER TABLE "commercial_checkouts" DROP CONSTRAINT "${stored}"`);
+    expect(err).toBeInstanceOf(SchemaDriftError);
+    expect((err as SchemaDriftError).report.missingIndexes).toEqual([`commercial_checkouts: ${stored}`]);
+  });
+
+  it("clips identifiers on a character boundary, never mid-character", () => {
+    const ascii62 = "a".repeat(62);
+    expect(toPgIdentifier(`${ascii62}é`)).toBe(ascii62);
+    expect(toPgIdentifier(`${ascii62}é`)).not.toContain("�");
+    expect(toPgIdentifier("b".repeat(66))).toBe("b".repeat(63));
   });
 
   it("fails on a NOT NULL expected but nullable, and on the reverse", async () => {
