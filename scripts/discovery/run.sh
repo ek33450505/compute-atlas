@@ -660,7 +660,7 @@ on_exit() {
   if [[ "$RUN_CRASH_GUARD" == "true" && "$RUN_FINISHED" != "true" ]]; then
     handle_unclean_exit "$_rc"
   fi
-  rm -f "${_ef_tmp:-}" "${EXISTING_FACILITIES_FILE:-}"
+  rm -f "${_ef_tmp:-}" "${EXISTING_FACILITIES_FILE:-}" "${_prune_tmp:-}" "${_prune_list:-}"
   if [[ "$RUN_LOCK_HELD" == "true" ]]; then
     remove_run_lock
   fi
@@ -1920,8 +1920,255 @@ drain_resubmit_queue() {
   done
 }
 
+# --- log pruning (A-OPS-17) ----------------------------------------------------
+# DESTRUCTIVE AUTOMATION run unattended by launchd, so it carries its own
+# fail-closed gate instead of trusting a hook or an operator. BLAST RADIUS:
+#   1. Generated logs: ONLY regular files (find -type f; symlinks are never
+#      followed or deleted) directly inside "$LOG_DIR" (-maxdepth 1) whose
+#      basename matches one of the _PRUNE_PATTERNS below. Every pattern is
+#      anchored on the generated timestamp shape, so the hand-made files that
+#      share the directory (run-local-*, run-manual-*, enrichment-depth-*,
+#      depth-*, wave3-*, cursor.txt.bak-*, heartbeat.json, resubmit-queue ...)
+#      can never match. Loosening a pattern to run-* is the mistake the
+#      survival tests guard.
+#   2. Age: mtime older than PRUNE_AGE_DAYS. The newest file of EACH PATTERN
+#      (not of each state) is always kept; so a state that has not run for more
+#      than PRUNE_AGE_DAYS can lose its last run log while another state's
+#      newer log keeps the pattern's newest slot. -links 1: a hardlinked file
+#      is never a candidate (deletion or trim).
+#   3. Never a file the resubmit queue still references (any field, any line).
+#   4. Cap: more than PRUNE_MAX_DELETIONS qualifying files (log files plus
+#      transcripts, COMBINED) means something is wrong (clock jump, wrong
+#      LOG_DIR): delete NOTHING in either set and trim NOTHING, WARN, FAILURES
+#      entry. A resubmit-queue that exists but cannot be read does the same
+#      (the protected set is unknown): touch nothing, FAILURES entry.
+#   5. Never runs on a dry run, and refuses an empty/missing LOG_DIR, "/" or
+#      $HOME. Called once per live run, before the state loop, when no child
+#      is writing logs.
+#   6. Append-only logs (*.err in LOG_DIR, launchd.out) over PRUNE_LOG_MAX_BYTES
+#      are cut to their last PRUNE_LOG_KEEP_LINES lines IN PLACE: launchd holds
+#      launchd.out/.err open O_APPEND as this process's own stdout/stderr, so
+#      replacing the inode (mv) would orphan that fd and lose the rest of the
+#      run's output.
+#   7. Isolated claude config: *.jsonl older than PRUNE_AGE_DAYS under
+#      <config>/projects (-maxdepth 2), ONLY when the config dir resolves under
+#      "$HOME/.compute-atlas-discovery/"; same cap.
+# DISCOVERY_PRUNE_DRY=1 lists what would be deleted/trimmed and changes nothing.
+PRUNE_AGE_DAYS=60
+PRUNE_MAX_DELETIONS=1000
+PRUNE_LOG_MAX_BYTES=5242880
+PRUNE_LOG_KEEP_LINES=20000
+_PRUNE_PATTERNS=(
+  '^run-[0-9]{8}T[0-9]{6}-[A-Z]{2}\.json$'
+  '^run-[0-9]{8}T[0-9]{6}-enrichment\.json$'
+  '^candidates-[0-9]{8}T[0-9]{6}-[A-Z]{2}\.json$'
+  '^enrichment-[0-9]{8}T[0-9]{6}-enrichment\.json$'
+  '^verify-fields-[0-9]{8}T[0-9]{6}-enrichment\.json$'
+  '^verify-fields-[0-9]{8}T[0-9]{6}-enrichment\.log$'
+  '^leads-lane-[0-9]{8}T[0-9]{6}-leads\.json$'
+  '^retention-prune-[0-9]{8}T[0-9]{6}\.log$'
+  '^source-health-[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{3}Z\.json$'
+)
+_prune_tmp=""
+_prune_list=""
+
+# _prune_find_list DIR FIND_ARGS...: run find with -print0 into a temp file in
+# DIR and leave its path in _prune_list (empty if mktemp failed: callers read
+# ${_prune_list:-/dev/null}). A temp file, not `< <(find ...)`: process
+# substitution does not parse when bash runs as /bin/sh (POSIX mode). find
+# failing never aborts; _prune_list_done removes the file.
+_prune_find_list() {
+  local _dir="$1"
+  shift
+  _prune_list="$(mktemp "$_dir/.prune-list.XXXXXX")" || { _prune_list=""; log "WARN: prune: cannot create a list file in $_dir"; return 0; }
+  find "$@" -print0 >"$_prune_list" 2>/dev/null || true
+}
+_prune_list_done() {
+  if [[ -n "$_prune_list" ]]; then rm -f "$_prune_list"; fi
+  _prune_list=""
+}
+
+# _prune_mtime FILE: epoch mtime (GNU `stat -c` first, as lock_dir_age_secs).
+_prune_mtime() {
+  stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || true
+}
+
+# _prune_trim FILE DIR: keep the last PRUNE_LOG_KEEP_LINES lines, in place.
+_prune_trim() {
+  local _file="$1" _dir="$2"
+  _prune_tmp="$(mktemp "$_dir/.prune-trim.XXXXXX")" || { _prune_tmp=""; return 1; }
+  if tail -n "$PRUNE_LOG_KEEP_LINES" "$_file" >"$_prune_tmp" && cat "$_prune_tmp" >"$_file"; then
+    rm -f "$_prune_tmp"; _prune_tmp=""
+    return 0
+  fi
+  rm -f "$_prune_tmp"; _prune_tmp=""
+  return 1
+}
+
+prune_old_logs() {
+  local _dry="${DISCOVERY_PRUNE_DRY:-0}" _now _cutoff _ld _pd _hd _cls="" _l _f _b _i _m
+  local _newest _newest_m _qual="" _nq=0 _ndel=0 _ntrans=0 _ntrim=0 _nskip=0 _size _tq=()
+  _now="$(date +%s)"
+  _cutoff=$(( _now - PRUNE_AGE_DAYS * 86400 ))
+
+  if [[ -z "${LOG_DIR:-}" || ! -d "$LOG_DIR" ]]; then
+    log "WARN: prune refused: LOG_DIR is empty or not a directory"
+    FAILURES+=("prune: refused, LOG_DIR is empty or not a directory")
+    return 0
+  fi
+  _ld="${LOG_DIR%/}"
+  _pd="$(cd "$LOG_DIR" 2>/dev/null && pwd -P)" || _pd=""
+  _hd=""
+  if [[ -n "${HOME:-}" && -d "$HOME" ]]; then _hd="$(cd "$HOME" && pwd -P)" || _hd=""; fi
+  if [[ -z "$_pd" || "$_pd" == "/" || "$_ld" == "" || ( -n "$_hd" && "$_pd" == "$_hd" ) || "$_ld" == "${HOME:-/}" ]]; then
+    log "WARN: prune refused: LOG_DIR is / or \$HOME ($LOG_DIR)"
+    FAILURES+=("prune: refused, LOG_DIR is / or \$HOME")
+    return 0
+  fi
+
+  # Queue references are never deleted. Protected by BASENAME (fields 3-5), so a
+  # trailing-slash LOG_DIR ("logs//run-...") still matches, and checked with a
+  # plain loop: `printf | grep -q` under pipefail reads a SIGPIPE'd printf as
+  # "no match" and would delete a queued checkpoint.
+  # FAIL CLOSED: a queue that exists but cannot be read leaves the protected
+  # set unknown, so nothing is deleted or trimmed (errexit is off in here).
+  local _prot=() _qe _qs _qc _qr _qp _qx _is_prot _k _halt=false
+  if [[ -e "$RESUBMIT_QUEUE" || -L "$RESUBMIT_QUEUE" ]]; then
+    if [[ ! -f "$RESUBMIT_QUEUE" || ! -r "$RESUBMIT_QUEUE" ]] || ! : <"$RESUBMIT_QUEUE"; then
+      log "WARN: prune: resubmit-queue unreadable; nothing deleted"
+      FAILURES+=("prune: resubmit-queue unreadable; nothing deleted")
+      return 0
+    fi
+    while IFS=' ' read -r _qe _qs _qc _qr _qp _qx || [[ -n "${_qe:-}" ]]; do
+      if [[ -n "${_qc:-}" ]]; then _prot+=("${_qc##*/}"); fi
+      if [[ -n "${_qr:-}" ]]; then _prot+=("${_qr##*/}"); fi
+      if [[ -n "${_qp:-}" ]]; then _prot+=("${_qp##*/}"); fi
+    done <"$RESUBMIT_QUEUE" || {
+      log "WARN: prune: resubmit-queue unreadable; nothing deleted"
+      FAILURES+=("prune: resubmit-queue unreadable; nothing deleted")
+      return 0
+    }
+  fi
+
+  # Classify: "<pattern index>|<mtime>|<path>". -links 1: a hardlinked file may
+  # be shared with something outside LOG_DIR, so it is never a candidate.
+  _prune_find_list "$_ld" "$_ld" -maxdepth 1 -type f -links 1
+  while IFS= read -r -d '' _f; do
+    _b="${_f##*/}"
+    for (( _i = 0; _i < ${#_PRUNE_PATTERNS[@]}; _i++ )); do
+      if [[ "$_b" =~ ${_PRUNE_PATTERNS[$_i]} ]]; then
+        _m="$(_prune_mtime "$_f")"
+        [[ "$_m" =~ ^[0-9]+$ ]] || continue 2
+        _cls+="$_i|$_m|$_f"$'\n'
+        continue 2
+      fi
+    done
+  done <"${_prune_list:-/dev/null}"
+  _prune_list_done
+
+  for (( _i = 0; _i < ${#_PRUNE_PATTERNS[@]}; _i++ )); do
+    _newest=""; _newest_m=-1
+    while IFS= read -r _l; do
+      [[ -n "$_l" ]] || continue
+      _m="${_l%%|*}"; _f="${_l#*|}"
+      if (( _m > _newest_m )); then _newest_m="$_m"; _newest="$_f"; fi
+    done <<<"$(printf '%s' "$_cls" | sed -n "s/^$_i|//p")"
+    while IFS= read -r _l; do
+      [[ -n "$_l" ]] || continue
+      _m="${_l%%|*}"; _f="${_l#*|}"
+      (( _m < _cutoff )) || continue
+      [[ "$_f" != "$_newest" ]] || continue
+      _is_prot=false
+      for (( _k = 0; _k < ${#_prot[@]}; _k++ )); do
+        if [[ "${_prot[_k]}" == "${_f##*/}" ]]; then _is_prot=true; break; fi
+      done
+      if [[ "$_is_prot" == "true" ]]; then _nskip=$(( _nskip + 1 )); continue; fi
+      _qual+="$_f"$'\n'; _nq=$(( _nq + 1 ))
+    done <<<"$(printf '%s' "$_cls" | sed -n "s/^$_i|//p")"
+  done
+
+  # Isolated claude config transcripts (collected now; deleted below, under the
+  # same combined cap as the log files).
+  local _cfg _cfgp _root _tcount=0 _t_old="" _t_old_m=-1 _t_new="" _t_new_m=-1
+  _cfg="${DISCOVERY_CLAUDE_CONFIG_DIR:-${HOME:-}/.compute-atlas-discovery/claude-config}"
+  if [[ -d "$_cfg" ]]; then
+    _cfgp="$(cd "$_cfg" 2>/dev/null && pwd -P)" || _cfgp=""
+    _root=""
+    if [[ -n "${HOME:-}" && -d "$HOME/.compute-atlas-discovery" ]]; then
+      _root="$(cd "$HOME/.compute-atlas-discovery" 2>/dev/null && pwd -P)" || _root=""
+    fi
+    if [[ -z "$_cfgp" || -z "$_root" || "$_cfgp" != "$_root"/* ]]; then
+      log "WARN: prune: not pruning transcripts, $_cfg is not under \$HOME/.compute-atlas-discovery/"
+    elif [[ -d "$_cfgp/projects" && ! -L "$_cfgp/projects" ]]; then
+      _prune_find_list "$_ld" "$_cfgp/projects" -maxdepth 2 -type f -links 1 -name '*.jsonl'
+      while IFS= read -r -d '' _f; do
+        _m="$(_prune_mtime "$_f")"
+        [[ "$_m" =~ ^[0-9]+$ ]] || continue
+        (( _m < _cutoff )) || continue
+        _tq+=("$_f"); _tcount=$(( _tcount + 1 ))
+        if (( _t_old_m < 0 || _m < _t_old_m )); then _t_old_m="$_m"; _t_old="${_f##*/}"; fi
+        if (( _m > _t_new_m )); then _t_new_m="$_m"; _t_new="${_f##*/}"; fi
+      done <"${_prune_list:-/dev/null}"
+      _prune_list_done
+    fi
+  fi
+
+  # One COMBINED cap across log files and transcripts: over it, delete nothing
+  # in either set.
+  if (( _nq + _tcount > PRUNE_MAX_DELETIONS )); then
+    log "WARN: prune: $_nq files and $_tcount transcripts qualify, above the cap of $PRUNE_MAX_DELETIONS; nothing deleted"
+    FAILURES+=("prune: $(( _nq + _tcount )) files qualify, above the cap; nothing deleted")
+    _qual=""; _nq=0; _tq=(); _tcount=0; _halt=true
+  fi
+  while IFS= read -r _f; do
+    [[ -n "$_f" ]] || continue
+    if [[ "$_dry" == "1" ]]; then
+      log "prune (dry): would delete ${_f##*/}"; _ndel=$(( _ndel + 1 ))
+    elif [[ -f "$_f" && ! -L "$_f" ]] && rm -f -- "$_f"; then
+      log "prune: deleted ${_f##*/}"
+      _ndel=$(( _ndel + 1 ))
+    fi
+  done <<<"$_qual"
+  for (( _k = 0; _k < ${#_tq[@]}; _k++ )); do
+    _f="${_tq[_k]}"
+    if [[ "$_dry" == "1" ]]; then
+      log "prune (dry): would delete transcript ${_f##*/}"; _ntrans=$(( _ntrans + 1 ))
+    elif [[ -f "$_f" && ! -L "$_f" ]] && rm -f -- "$_f"; then
+      log "prune: deleted transcript ${_f##*/}"
+      _ntrans=$(( _ntrans + 1 ))
+    fi
+  done
+  if (( _ntrans > 0 )); then
+    log "prune: $([[ "$_dry" == "1" ]] && echo 'would delete' || echo deleted) ${_ntrans} transcripts (oldest $_t_old, newest $_t_new)"
+  fi
+
+  # Append-only logs: trim in place. Skipped when the cap tripped ("delete
+  # nothing" means touch nothing).
+  if [[ "$_halt" != "true" ]]; then
+    _prune_find_list "$_ld" "$_ld" -maxdepth 1 -type f -links 1 \( -name '*.err' -o -name 'launchd.out' \)
+    while IFS= read -r -d '' _f; do
+      _size="$(wc -c <"$_f" 2>/dev/null | tr -d ' ')"
+      [[ "$_size" =~ ^[0-9]+$ ]] || continue
+      (( _size > PRUNE_LOG_MAX_BYTES )) || continue
+      if [[ "$_dry" == "1" ]]; then
+        log "prune (dry): would trim $_f ($_size bytes)"; _ntrim=$(( _ntrim + 1 ))
+      elif _prune_trim "$_f" "$_ld"; then
+        _ntrim=$(( _ntrim + 1 ))
+      else
+        log "WARN: prune: could not trim $_f"
+      fi
+    done <"${_prune_list:-/dev/null}"
+    _prune_list_done
+  fi
+
+  local _verb="deleted"; [[ "$_dry" == "1" ]] && _verb="would delete"
+  log "prune: $_verb $_ndel log files, $_ntrans transcripts, trimmed $_ntrim logs (age>${PRUNE_AGE_DAYS}d; kept newest per pattern; skipped $_nskip queued)"
+  return 0
+}
+
 if [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
   drain_resubmit_queue
+  prune_old_logs || log "WARN: prune_old_logs failed"
 fi
 
 for STATE in "${BATCH_STATES[@]}"; do

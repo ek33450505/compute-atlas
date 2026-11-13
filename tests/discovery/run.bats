@@ -4689,3 +4689,296 @@ _hb_field() {
 	[ ! -e "$LOG_DIR/extract-cursor.txt" ]
 	[ ! -e "$TEST_TMP/lane-argv.log" ]
 }
+
+# --- log pruning (A-OPS-17): prune_old_logs --------------------------------------
+# Old = 2026-09-01 (>60 days before the pinned era of these tests); ancient = 2024.
+# All of it happens inside $TEST_TMP; nothing here touches a real log dir.
+
+_inode() { stat -c %i "$1" 2>/dev/null || stat -f %i "$1"; }
+_mk_old() { # file [touch -t stamp]
+	: >"$1"
+	touch -t "${2:-202609010000}" "$1"
+}
+
+@test "prune: old generated files are deleted, young ones kept" {
+	export DISCOVERY_ENABLED=true
+	_mk_old "$LOG_DIR/retention-prune-20260801T000000.log"
+	_mk_old "$LOG_DIR/retention-prune-20260802T000000.log" 202609020000
+	: >"$LOG_DIR/retention-prune-20261101T000000.log"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/retention-prune-20260801T000000.log" ]
+	[ -e "$LOG_DIR/retention-prune-20261101T000000.log" ]
+	[[ "$output" == *"prune: deleted "* ]] || return 1
+}
+
+@test "prune: the newest file of a pattern is kept even when it is old" {
+	export DISCOVERY_ENABLED=true
+	_mk_old "$LOG_DIR/source-health-2025-01-01T00-00-00-000Z.json" 202501010000
+	_mk_old "$LOG_DIR/source-health-2025-02-01T00-00-00-000Z.json" 202502010000
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/source-health-2025-01-01T00-00-00-000Z.json" ]
+	[ -e "$LOG_DIR/source-health-2025-02-01T00-00-00-000Z.json" ]
+}
+
+@test "prune: hand-made names survive at 2 years old" {
+	export DISCOVERY_ENABLED=true
+	local n
+	for n in run-local-1794090448066.json run-manual-b25-leads.json run-20261015-OH-b3.json \
+		run-20260921T082555-CA-recover.json run-depth-20260921T190931.json enrichment-depth-20260921T165555.json \
+		depth-20260921T165555.log wave3-notes.json wave3b-stage.log cursor.txt.bak-20260922T095637 \
+		cursor.txt heartbeat.json resubmit-queue-old.json manual-rerun-20261028.out; do
+		_mk_old "$LOG_DIR/$n" 202401010000
+	done
+	# A decoy generated pair so the newest-kept rule cannot be what saves them.
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	for n in run-local-1794090448066.json run-manual-b25-leads.json run-20261015-OH-b3.json \
+		run-20260921T082555-CA-recover.json run-depth-20260921T190931.json enrichment-depth-20260921T165555.json \
+		depth-20260921T165555.log wave3-notes.json wave3b-stage.log cursor.txt.bak-20260922T095637 \
+		cursor.txt heartbeat.json resubmit-queue-old.json manual-rerun-20261028.out; do
+		[ -e "$LOG_DIR/$n" ] || { echo "deleted $n"; return 1; }
+	done
+}
+
+@test "prune: files referenced by the resubmit queue survive regardless of age" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/run-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/run-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/candidates-20240103T000000-VA.json" 202401030000
+	_mk_old "$LOG_DIR/run-20240103T000000-VA.json" 202401030000
+	echo "$(date +%s) VA $LOG_DIR/candidates-20240101T000000-VA.json $LOG_DIR/run-20240101T000000-VA.json" >"$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/candidates-20240101T000000-VA.json" ]
+	[ -e "$LOG_DIR/run-20240101T000000-VA.json" ]
+	[ ! -e "$LOG_DIR/candidates-20240102T000000-VA.json" ]
+	[ ! -e "$LOG_DIR/run-20240102T000000-VA.json" ]
+	[[ "$output" == *"prune: "* ]] || return 1
+}
+
+@test "prune: above the cap deletes nothing and records a FAILURES entry" {
+	export DISCOVERY_ENABLED=true
+	seq 1 1002 | awk '{printf "source-health-2025-01-01T00-00-%02d-%03dZ.json\n", int($1/1000), $1%1000}' |
+		(cd "$LOG_DIR" && xargs touch -t 202501010000)
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ "$(find "$LOG_DIR" -name 'source-health-*' | wc -l | tr -d ' ')" = 1002 ]
+	[ -e "$LOG_DIR/retention-prune-20240101T000000.log" ] || { echo "$output" | grep -i prune; return 1; }
+	[[ "$output" == *"above the cap; nothing deleted"* ]] || return 1
+	[[ "$output" == *"FAIL: discovery run finished"* ]] || return 1
+}
+
+@test "prune: a dry run (DISCOVERY_DRY_RUN=true) touches nothing" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	[[ "$output" != *"prune: "* ]] || return 1
+}
+
+@test "prune: DISCOVERY_PRUNE_DRY=1 lists what it would delete and deletes nothing" {
+	export DISCOVERY_ENABLED=true DISCOVERY_PRUNE_DRY=1
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	[[ "$output" == *"would delete retention-prune-20240101T000000.log"* ]] || return 1
+}
+
+@test "prune: a matching symlink to a file outside LOG_DIR is not followed or deleted" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$TEST_TMP/outside"
+	_mk_old "$TEST_TMP/outside/victim" 202401010000
+	ln -s "$TEST_TMP/outside/victim" "$LOG_DIR/retention-prune-20240101T000000.log"
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	_mk_old "$LOG_DIR/retention-prune-20240103T000000.log" 202401030000
+	run bash "$RUN_SH"
+	[ -e "$TEST_TMP/outside/victim" ]
+	[ -L "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	[ ! -e "$LOG_DIR/retention-prune-20240102T000000.log" ]
+}
+
+@test "prune: files in a subdirectory are not touched" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$LOG_DIR/retention-backups"
+	_mk_old "$LOG_DIR/retention-backups/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-backups/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/retention-backups/retention-prune-20240101T000000.log" ]
+}
+
+@test "prune: an oversized launchd.out is trimmed to the last N lines IN PLACE" {
+	export DISCOVERY_ENABLED=true
+	seq -f %.0f 1 1000000 >"$LOG_DIR/launchd.out"
+	[ "$(wc -c <"$LOG_DIR/launchd.out")" -gt 5242880 ]
+	ino="$(_inode "$LOG_DIR/launchd.out")"
+	run bash "$RUN_SH"
+	[ "$(_inode "$LOG_DIR/launchd.out")" = "$ino" ]
+	[ "$(wc -l <"$LOG_DIR/launchd.out" | tr -d ' ')" = 20000 ]
+	[ "$(tail -n1 "$LOG_DIR/launchd.out")" = 1000000 ] || { tail -n2 "$LOG_DIR/launchd.out"; echo "$output" | grep -i prune; return 1; }
+	[ -z "$(find "$LOG_DIR" -name '.prune-trim.*')" ]
+}
+
+@test "prune: a small launchd.out is left alone" {
+	export DISCOVERY_ENABLED=true
+	seq 1 100 >"$LOG_DIR/launchd.out"
+	run bash "$RUN_SH"
+	[ "$(wc -l <"$LOG_DIR/launchd.out" | tr -d ' ')" = 100 ]
+}
+
+@test "prune: isolated-config transcripts are pruned only under \$HOME/.compute-atlas-discovery" {
+	export DISCOVERY_ENABLED=true
+	cfg="$HOME/.compute-atlas-discovery/claude-config"
+	mkdir -p "$cfg/projects/p"
+	_mk_old "$cfg/projects/p/old.jsonl" 202401010000
+	: >"$cfg/projects/p/new.jsonl"
+	run bash "$RUN_SH"
+	[ ! -e "$cfg/projects/p/old.jsonl" ]
+	[ -e "$cfg/projects/p/new.jsonl" ]
+}
+
+@test "prune: transcripts outside the allowed root are refused with a WARN" {
+	export DISCOVERY_ENABLED=true DISCOVERY_CLAUDE_CONFIG_DIR="$TEST_TMP/elsewhere"
+	mkdir -p "$TEST_TMP/elsewhere/projects/p"
+	_mk_old "$TEST_TMP/elsewhere/projects/p/old.jsonl" 202401010000
+	run bash "$RUN_SH"
+	[ -e "$TEST_TMP/elsewhere/projects/p/old.jsonl" ]
+	[[ "$output" == *"not pruning transcripts"* ]] || return 1
+}
+
+@test "prune: a queued file survives a 1500-line queue with its entry on line 1 (no SIGPIPE false-negative)" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/run-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/run-20240102T000000-VA.json" 202401020000
+	{
+		echo "$(date +%s) VA $LOG_DIR/candidates-20240101T000000-VA.json $LOG_DIR/run-20240101T000000-VA.json"
+		seq 1 1500 | awk -v d="$LOG_DIR" -v e="$(date +%s)" '{pad = sprintf("%0200d", $1); printf "%s VA %s/cand-%s.json %s/run-%s.json\n", e, d, pad, d, pad}'
+	} >"$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/candidates-20240101T000000-VA.json" ]
+	[ -e "$LOG_DIR/run-20240101T000000-VA.json" ]
+}
+
+@test "prune: a trailing-slash DISCOVERY_LOG_DIR still protects queued files" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3 DISCOVERY_LOG_DIR="$LOG_DIR/"
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/run-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/run-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/candidates-20240103T000000-VA.json" 202401030000
+	_mk_old "$LOG_DIR/run-20240103T000000-VA.json" 202401030000
+	echo "$(date +%s) VA $LOG_DIR//candidates-20240101T000000-VA.json $LOG_DIR//run-20240101T000000-VA.json" >"$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/candidates-20240101T000000-VA.json" ]
+	[ -e "$LOG_DIR/run-20240101T000000-VA.json" ]
+	[ ! -e "$LOG_DIR/candidates-20240102T000000-VA.json" ]
+}
+
+@test "prune: the cap is COMBINED across log files and transcripts" {
+	export DISCOVERY_ENABLED=true
+	seq 1 600 | awk '{printf "source-health-2025-01-01T00-00-00-%03dZ.json\n", $1}' |
+		(cd "$LOG_DIR" && xargs touch -t 202501010000)
+	cfg="$HOME/.compute-atlas-discovery/claude-config"
+	mkdir -p "$cfg/projects/p"
+	seq 1 600 | awk '{printf "t%d.jsonl\n", $1}' | (cd "$cfg/projects/p" && xargs touch -t 202401010000)
+	run bash "$RUN_SH"
+	[ "$(find "$LOG_DIR" -name 'source-health-*' | wc -l | tr -d ' ')" = 600 ]
+	[ "$(find "$cfg/projects" -name '*.jsonl' | wc -l | tr -d ' ')" = 600 ]
+	[[ "$output" == *"above the cap; nothing deleted"* ]] || return 1
+}
+
+@test "prune: a hardlinked file is neither deleted nor trimmed" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$TEST_TMP/outside"
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	ln "$LOG_DIR/retention-prune-20240101T000000.log" "$TEST_TMP/outside/twin"
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	_mk_old "$LOG_DIR/retention-prune-20240103T000000.log" 202401030000
+	seq -f %.0f 1 1000000 >"$TEST_TMP/outside/big"
+	ln "$TEST_TMP/outside/big" "$LOG_DIR/launchd.out"
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	[ ! -e "$LOG_DIR/retention-prune-20240102T000000.log" ]
+	[ "$(wc -l <"$LOG_DIR/launchd.out" | tr -d ' ')" = 1000000 ]
+}
+
+@test "prune: each deleted file is logged by name" {
+	export DISCOVERY_ENABLED=true
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[[ "$output" == *"prune: deleted retention-prune-20240101T000000.log"* ]] || return 1
+}
+
+@test "prune: unit: an unreadable resubmit-queue deletes nothing and records a FAILURES entry" {
+	[ "$(id -u)" != 0 ] || skip "root reads everything"
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/candidates-20240103T000000-VA.json" 202401030000
+	echo "1 VA $LOG_DIR/candidates-20240101T000000-VA.json $LOG_DIR/run-20240101T000000-VA.json" >"$TEST_TMP/q"
+	chmod 000 "$TEST_TMP/q"
+	_prune_unit "$LOG_DIR"
+	chmod 600 "$TEST_TMP/q"
+	[ ! -e "$TEST_TMP/rm.log" ] || { cat "$TEST_TMP/rm.log"; return 1; }
+	[[ "$output" == *"resubmit-queue unreadable; nothing deleted"* ]] || return 1
+	[[ "$output" == *"failures=1"* ]] || return 1
+}
+
+@test "prune: a config root under a path with a space prunes exactly the old file, one log line each" {
+	export DISCOVERY_ENABLED=true HOME="$TEST_TMP/home dir"
+	cfg="$HOME/.compute-atlas-discovery/claude-config"
+	mkdir -p "$cfg/projects/p q"
+	_mk_old "$cfg/projects/p q/old one.jsonl" 202401010000
+	: >"$cfg/projects/p q/young one.jsonl"
+	_mk_old "$cfg/projects/p q/old.keep" 202401010000
+	run bash "$RUN_SH"
+	[ ! -e "$cfg/projects/p q/old one.jsonl" ]
+	[ -e "$cfg/projects/p q/young one.jsonl" ]
+	[ -e "$cfg/projects/p q/old.keep" ]
+	[[ "$output" == *"prune: deleted transcript old one.jsonl"* ]] || return 1
+}
+
+# Unit-level: extract the function and run it with rm shimmed to a recorder.
+_prune_unit() { # LOG_DIR-value
+	awk '/^PRUNE_AGE_DAYS=/{p=1} p{print} p&&/^prune_old_logs\(\)/{f=1} f&&/^}$/{exit}' "$RUN_SH" >"$TEST_TMP/prune-fn.sh"
+	TEST_TMP="$TEST_TMP" run bash -c '
+		set -euo pipefail
+		log() { echo "$*"; }
+		rm() { echo "RM $*" >>"$TEST_TMP/rm.log"; }
+		FAILURES=(); RESUBMIT_QUEUE="$TEST_TMP/q"; LOG_DIR="$1"
+		source "$TEST_TMP/prune-fn.sh"
+		prune_old_logs
+		echo "failures=${#FAILURES[@]}"
+	' _ "$1"
+}
+
+@test "prune: refuses an empty LOG_DIR, / and \$HOME with a FAILURES entry" {
+	local d
+	for d in "" "/" "$HOME" "$HOME/" "$TEST_TMP/missing"; do
+		_prune_unit "$d"
+		[[ "$output" == *"prune refused"* ]] || { echo "not refused: [$d] $output"; return 1; }
+		[[ "$output" == *"failures=1"* ]] || return 1
+	done
+	[ ! -e "$TEST_TMP/rm.log" ]
+}
+
+@test "prune: unit: a huge queue with the protected entry on line 1 does not lose it to SIGPIPE" {
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/candidates-20240103T000000-VA.json" 202401030000
+	{
+		echo "1 VA $LOG_DIR/candidates-20240101T000000-VA.json $LOG_DIR/run-20240101T000000-VA.json"
+		seq 1 1500 | awk -v d="$LOG_DIR" '{pad = sprintf("%0200d", $1); printf "1 VA %s/cand-%s.json %s/run-%s.json\n", d, pad, d, pad}'
+	} >"$TEST_TMP/q"
+	_prune_unit "$LOG_DIR"
+	[ -s "$TEST_TMP/rm.log" ]
+	if grep -q 'candidates-20240101T000000-VA.json' "$TEST_TMP/rm.log"; then return 1; fi
+	grep -q 'candidates-20240102T000000-VA.json' "$TEST_TMP/rm.log"
+}
