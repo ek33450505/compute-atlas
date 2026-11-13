@@ -64,7 +64,9 @@ export type FetchPdfTextResult =
         | "network_error"
         | "redirect_limit"
         | "pdf_extractor_unavailable"
-        | "pdf_extract_failed";
+        | "pdf_extract_failed"
+        /** pdftotext was killed by PDFTOTEXT_TIMEOUT_MS: a slow document, not an unparseable one. TRANSIENT. */
+        | "pdf_extract_timeout";
       httpStatus?: number;
       errorCode?: string;
       errorMessage?: string;
@@ -157,9 +159,14 @@ export async function fetchPdfText(url: string, deps: FetchPdfTextDeps): Promise
       );
       stdout = result.stdout;
     } catch (err) {
-      const code = (err as { code?: unknown } | undefined)?.code;
+      const { code, killed, signal } = (err ?? {}) as { code?: unknown; killed?: unknown; signal?: unknown };
       if (code === "ENOENT") {
         return { ok: false, reason: "pdf_extractor_unavailable", errorMessage: "pdftotext binary not found (poppler not installed)" };
+      }
+      // Node's `timeout` option kills the child with SIGTERM and sets killed:true. A maxBuffer
+      // overflow carries its own code (ERR_CHILD_PROCESS_STDIO_MAXBUFFER, killed unset) and stays permanent.
+      if (killed === true && signal === "SIGTERM") {
+        return { ok: false, reason: "pdf_extract_timeout", errorMessage: truncate(String(err)) };
       }
       return { ok: false, reason: "pdf_extract_failed", errorMessage: truncate(String(err)) };
     }

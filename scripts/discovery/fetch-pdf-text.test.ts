@@ -157,7 +157,20 @@ describe("fetchPdfText", () => {
       expect(result.reason).toBe("pdf_extract_failed");
     });
 
-    it("maps a timeout (execFile's own killed/SIGTERM shape) to pdf_extract_failed", async () => {
+    it("keeps a maxBuffer overflow permanent (pdf_extract_failed)", async () => {
+      const execFileImpl = vi.fn(async () => {
+        throw Object.assign(new Error("stdout maxBuffer length exceeded"), { code: "ERR_CHILD_PROCESS_STDIO_MAXBUFFER" });
+      });
+      const deps = baseDeps({ execFileImpl: execFileImpl as unknown as FetchPdfTextDeps["execFileImpl"] });
+
+      const result = await fetchPdfText("https://example.com/doc.pdf", deps);
+
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("expected ok:false");
+      expect(result.reason).toBe("pdf_extract_failed");
+    });
+
+    it("maps a timeout (execFile's own killed/SIGTERM shape) to pdf_extract_timeout", async () => {
       const execFileImpl = vi.fn(async () => {
         throw Object.assign(new Error("pdftotext timed out"), { killed: true, signal: "SIGTERM" });
       });
@@ -167,7 +180,7 @@ describe("fetchPdfText", () => {
 
       expect(result.ok).toBe(false);
       if (result.ok) throw new Error("expected ok:false");
-      expect(result.reason).toBe("pdf_extract_failed");
+      expect(result.reason).toBe("pdf_extract_timeout");
     });
   });
 

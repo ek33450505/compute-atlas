@@ -829,6 +829,14 @@ describe("runLeadsLane — PDF-path failure reasons", () => {
     }
   });
 
+  it("a pdftotext timeout is transient: a slow PDF leaves the lead retryable", async () => {
+    const { deps } = await pdfRun({ ok: false, reason: "pdf_extract_timeout" });
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+    expect(
+      classifyFetchFailure({ reason: "pdf_extract_timeout" }, new Date("2026-08-19T00:00:00.000Z"), new Date("2026-08-20T00:00:00.000Z"))
+    ).toEqual({ action: "retry" });
+  });
+
   it("a PDF path that throws is transient", async () => {
     const deps = makeDeps({
       fetchPageTextImpl: vi.fn(async (): Promise<FetchPageTextResult> => pageFail("bad_content_type")),

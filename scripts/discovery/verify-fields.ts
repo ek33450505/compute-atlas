@@ -712,7 +712,7 @@ async function verifyFacility(
       }
 
       // Every other failure reason (bad_content_type / too_large /
-      // pdf_extract_failed / pdf_extractor_unavailable / blocked /
+      // pdf_extract_failed / pdf_extract_timeout / pdf_extractor_unavailable / blocked /
       // redirect_limit) is deliberately NEVER routed to a Wayback recovery
       // attempt — see the file header's WAYBACK FALLBACK section.
       console.log(`unreachable: ${facility.id} — ${source.url} — fetch failed (${fetchResult.reason})`);
