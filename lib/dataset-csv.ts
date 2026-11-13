@@ -12,7 +12,8 @@ import type { Facility } from "@/lib/schema";
  *
  * Deliberately NOT flattened, because they are records rather than scalars and the
  * JSON edition carries them: `statusHistory`, `emissions`, `subsidies`, `stakeholders`,
- * `notRecorded`, the free-text `notes` fields and each source's label/publisher/date.
+ * `notRecorded`, `construction.phases`, the free-text `notes` fields, each source's
+ * label/publisher/date and every v2 field's `sourceIndex` (the JSON edition carries them).
  *
  * Format: RFC 4180 (CRLF line endings, a cell is quoted when it holds a comma,
  * double quote, CR or LF, embedded quotes are doubled), UTF-8, no BOM.
@@ -27,6 +28,10 @@ import type { Facility } from "@/lib/schema";
 
 type Cell = string | number | readonly string[] | null | undefined;
 type Column = readonly [name: string, get: (f: Facility) => Cell];
+
+/** Party names, with a literal `;` written `%3B` so the `;` join stays unambiguous. */
+const partyNames = (list: readonly { name: string }[] | undefined): string[] | undefined =>
+  list?.map((p) => p.name.replaceAll(";", "%3B"));
 
 const COLUMNS: readonly Column[] = [
   ["id", (f) => f.id],
@@ -92,6 +97,20 @@ const COLUMNS: readonly Column[] = [
     (f) => (f.facilityType === "power_generation" ? f.generation?.poweredFacilityIds : undefined),
   ],
   ["sources.url", (f) => f.sources.map((s) => s.url.replaceAll(";", "%3B"))],
+  // schema v2, appended so existing column positions never move
+  ["ids.epaFrsId", (f) => f.ids?.epaFrsId?.id],
+  ["ids.eiaPlantId", (f) => f.ids?.eiaPlantId?.id],
+  ["energy.utilityEiaId", (f) => f.energy?.utilityEiaId?.id],
+  ["capacityMw.basis", (f) => f.capacityMw?.basis],
+  ["capacityMw.itOperational", (f) => f.capacityMw?.itOperational],
+  ["capacityMw.itPlanned", (f) => f.capacityMw?.itPlanned],
+  ["parties.ownerEntity", (f) => partyNames(f.parties?.ownerEntity)],
+  ["parties.tenant", (f) => partyNames(f.parties?.tenant)],
+  ["parties.endUser", (f) => partyNames(f.parties?.endUser)],
+  ["parties.generalContractor", (f) => partyNames(f.parties?.generalContractor)],
+  ["construction.expectedStart", (f) => f.construction?.expectedStart?.date],
+  ["construction.expectedCompletion", (f) => f.construction?.expectedCompletion?.date],
+  ["construction.permitValuationUsd", (f) => f.construction?.permitValuationUsd?.amountUsd],
 ];
 
 /** The fixed, ordered header row of the CSV edition. */
@@ -161,6 +180,27 @@ export const CSV_COLUMN_NOTES: Readonly<Record<string, string>> = {
   "generation.poweredFacilityIds":
     "Ids of the compute campuses this plant is sourced as powering, joined with ;. Power plants only.",
   "sources.url": "Every source URL for the record, joined with ; (a literal ; inside a URL is written %3B).",
+  "ids.epaFrsId": "EPA Facility Registry Service id, digits only.",
+  "ids.eiaPlantId": "EIA-860 plant id.",
+  "energy.utilityEiaId": "EIA utility id for the utility named in energy.utility.",
+  "capacityMw.basis":
+    "Which MW the capacity figures measure: facility, it or utility_service. Blank when the source did not say; never inferred. Blank for power plants.",
+  "capacityMw.itOperational": "Operational IT load in MW, as a source states it. Blank for power plants.",
+  "capacityMw.itPlanned": "Planned IT load in MW, as a source states it. Blank for power plants.",
+  "parties.ownerEntity":
+    "Entity named as owner or applicant on a permit or deed, joined with ; (a literal ; inside a name is written %3B).",
+  "parties.tenant":
+    "Organization leasing or occupying capacity from the operator, joined with ; (a literal ; inside a name is written %3B). Blank for power plants; see generation.offtaker.",
+  "parties.endUser":
+    "Ultimate compute user, joined with ; (a literal ; inside a name is written %3B). Blank for power plants; see generation.offtaker.",
+  "parties.generalContractor":
+    "General contractor, joined with ; (a literal ; inside a name is written %3B).",
+  "construction.expectedStart":
+    "Expected construction start, a forecast as stated by a source: YYYY, YYYY-MM or YYYY-MM-DD. The actual start is in the JSON statusHistory.",
+  "construction.expectedCompletion":
+    "Expected construction completion, a forecast as stated by a source: YYYY, YYYY-MM or YYYY-MM-DD.",
+  "construction.permitValuationUsd":
+    "Valuation declared on a construction permit, in US dollars (USD). Separate from investmentUsd.",
 };
 
 /** How many columns the CSV edition has, for public copy that quotes it. */

@@ -20,6 +20,37 @@ function withoutUndefined(value: Record<string, unknown>): Record<string, unknow
 }
 
 /**
+ * Nested keys only a maintainer may write (via `db:sync`, which writes full docs
+ * and does not use this merge). A patch that replaces the parent object does not
+ * wipe them: `mergeFacilityPatch` carries them over from the existing doc, but
+ * only while what each describes is unchanged.
+ */
+const CURATED_NESTED_KEYS = {
+  capacityMw: ["basis", "itPlanned", "itOperational"],
+  energy: ["utilityEiaId"],
+} as const;
+
+function carryCuratedKeys(
+  base: Record<string, unknown>,
+  merged: Record<string, unknown>,
+  field: keyof typeof CURATED_NESTED_KEYS
+): void {
+  const patched = merged[field];
+  const old = base[field];
+  if (patched === old || !isPlainObject(patched) || !isPlainObject(old)) return;
+  if (field === "capacityMw" && merged.facilityType === "power_generation") return;
+  const next = withoutUndefined(patched);
+  for (const key of CURATED_NESTED_KEYS[field]) {
+    // An explicit null counts as stated: it stays and fails schema validation.
+    if (next[key] !== undefined || old[key] === undefined) continue;
+    if (key === "basis" && (next.planned !== old.planned || next.operational !== old.operational)) continue;
+    if (key === "utilityEiaId" && next.utility !== old.utility) continue;
+    next[key] = old[key];
+  }
+  merged[field] = next;
+}
+
+/**
  * Shallow top-level merge of `patch` onto `existing`, with one exception: a
  * `location` patch that restates none of lat, lon or state (a `city`, `county`,
  * `street`, `postalCode` or `precision` edit) is shallow-merged over the
@@ -33,7 +64,25 @@ function withoutUndefined(value: Record<string, unknown>): Record<string, unknow
  * a blanked `city` or `county` is cleared. Keys with an `undefined` value
  * count as absent. A non-object `location` replaces and fails schema
  * validation. Every other top-level field replaces wholesale. YAGNI — no
- * deeper merge is needed yet.
+ * deeper merge is needed yet, with one exception: a plain-object `capacityMw`
+ * or `energy` patch keeps the maintainer-curated nested keys of `CURATED_NESTED_KEYS`
+ * from the existing doc when the patch does not state them (see below).
+ *
+ * Curated carry: discovery stages FULL docs as `update` payloads, so a
+ * `capacityMw: {planned: 100}` would otherwise wipe `basis`, `itPlanned` and
+ * `itOperational`, and an `energy` patch `utilityEiaId`. No lane or public path may
+ * write those keys, so they are carried over, but only while the thing each
+ * describes is UNCHANGED: a curated value about something the patch changed is
+ * stale, and dropping it is correct (a maintainer re-adds it via `db:sync`).
+ * So `utilityEiaId` is carried only when the merged `energy.utility` === the
+ * existing one, and `basis` only when the merged `planned` and `operational`
+ * both === the existing ones (`itPlanned`/`itOperational` are independent
+ * figures and always carry). No capacityMw keys are carried when the merged
+ * `facilityType` is "power_generation" (the schema rejects them there). An
+ * explicit `null` in the patch counts as stated: it stays and fails validation.
+ * Consequence: a patch cannot clear them while what they describe is unchanged;
+ * only a full-doc write (`db:sync`) can, which is intended. Non-curated nested
+ * keys keep the replace semantics.
  *
  * A patch that is not a plain object changes nothing; `updateFacility` rejects
  * it with a 400 before calling this. Does not force `id` and does not validate;
@@ -49,6 +98,8 @@ export function mergeFacilityPatch(
     return base;
   }
   const merged: Record<string, unknown> = { ...base, ...patch };
+  carryCuratedKeys(base, merged, "capacityMw");
+  carryCuratedKeys(base, merged, "energy");
   const patchLocation = Object.hasOwn(patch, "location") ? patch.location : undefined;
   if (isPlainObject(patchLocation)) {
     const stated = withoutUndefined(patchLocation);

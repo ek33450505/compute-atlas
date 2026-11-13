@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { CODEBOOK_CONVENTIONS, STABLE_ID_STATEMENT, CODEBOOK_ENTRIES } from "@/lib/dataset-codebook";
 import { buildReadme } from "@/lib/dataset-readme";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
@@ -48,6 +49,16 @@ describe("buildReadme", () => {
     expect(text).toContain("CRLF");
     expect(text).toContain("formula");
     expect(text).toContain("a tab or a carriage return");
+  });
+
+  it("has a Field definitions section with the stable-id statement and every field", () => {
+    const text = buildReadme(BASE);
+    expect(text).toContain("\nField definitions\n-----------------\n");
+    expect(text.replace(/\s+/g, " ")).toContain(STABLE_ID_STATEMENT);
+    const flat = text.replace(/\s+/g, " ");
+    for (const line of CODEBOOK_CONVENTIONS) expect(flat).toContain(line);
+    for (const e of CODEBOOK_ENTRIES) expect(flat).toContain(`- ${e.path} (`);
+    expect(text.indexOf("CSV notes")).toBeLessThan(text.indexOf("Field definitions"));
   });
 
   it("carries no checksum or hash", () => {

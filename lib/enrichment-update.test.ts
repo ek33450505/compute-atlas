@@ -392,6 +392,26 @@ describe("applyEnrichmentUpdate", () => {
 });
 
 describe("enrichmentUpdateIntentSchema", () => {
+  it("rejects maintainer-curated capacityMw keys (basis, itPlanned, itOperational)", () => {
+    for (const extra of [{ basis: "it" }, { itPlanned: 10 }, { itOperational: 5 }]) {
+      const result = enrichmentUpdateIntentSchema.safeParse({
+        date: "2026-07-30",
+        sources: [makeSource("s0")],
+        fields: { capacityMw: { planned: 100, ...extra } },
+      });
+      expect(result.success).toBe(false);
+    }
+  });
+
+  it("rejects the maintainer-curated energy.utilityEiaId", () => {
+    const result = enrichmentUpdateIntentSchema.safeParse({
+      date: "2026-07-30",
+      sources: [makeSource("s0")],
+      fields: { energy: { utility: "Duke", utilityEiaId: { id: 5416, sourceIndex: 0 } } },
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("rejects a sourceRel that is out of range for community", () => {
     const result = enrichmentUpdateIntentSchema.safeParse({
       date: "2026-07-30",
@@ -520,5 +540,40 @@ describe("missingEnrichableFamilies and notRecorded", () => {
     // water.reportedMgd is not markable, so marking coolingType alone is not enough.
     const coolingMarked = makeDataCenter({ notRecorded: { "water.coolingType": REASON } });
     expect(missingEnrichableFamilies(coolingMarked)).toContain("water");
+  });
+});
+
+describe("applyEnrichmentUpdate preserves maintainer-curated sibling keys", () => {
+  it("keeps capacityMw.basis and itOperational when filling planned", () => {
+    const existing = makeDataCenter({
+      capacityMw: { operational: 50, basis: "it", itOperational: 40 },
+    });
+    const result = applyEnrichmentUpdate(existing, {
+      date: "2026-02-01",
+      sources: [makeSource("s0")],
+      fields: { capacityMw: { planned: 200 } },
+    });
+    expect(result.capacityMw).toEqual({
+      operational: 50,
+      basis: "it",
+      itOperational: 40,
+      planned: 200,
+    });
+  });
+
+  it("keeps energy.utilityEiaId when filling source", () => {
+    const existing = makeDataCenter({
+      energy: { utility: "Duke", utilityEiaId: { id: 5416, sourceIndex: 0 } },
+    });
+    const result = applyEnrichmentUpdate(existing, {
+      date: "2026-02-01",
+      sources: [makeSource("s0")],
+      fields: { energy: { source: "grid" } },
+    });
+    expect(result.energy).toEqual({
+      utility: "Duke",
+      utilityEiaId: { id: 5416, sourceIndex: 0 },
+      source: "grid",
+    });
   });
 });

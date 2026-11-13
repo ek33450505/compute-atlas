@@ -37,7 +37,13 @@ import { lookup } from "node:dns/promises";
 import path from "node:path";
 
 import { formatErrorSummary, formatFatalError, redactedErrorCode, scrubUriCredentials } from "../../lib/db-error";
-import { facilitySchema, type Facility, type Source } from "../../lib/schema";
+import {
+  facilitySchema,
+  remapV2SourceIndices,
+  v2SourceIndexRefs,
+  type Facility,
+  type Source,
+} from "../../lib/schema";
 import { statusUpdateIntentSchema, type StatusUpdateIntent } from "../../lib/status-update";
 import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../../lib/enrichment-update";
 import { isRestrictedSourceUrl } from "../../lib/restricted-sources";
@@ -336,13 +342,8 @@ export interface RunSubmitSummary {
 
 // --- normalization -----------------------------------------------------------
 
-/**
- * Accepts a bare Facility doc, a `{ facility, provenance }` wrapper (both
- * classified as `type: "facility"`), a `{ statusUpdate, provenance }`
- * compact intent (classified as `type: "status_update"`), or an
- * `{ enrichmentUpdate, provenance }` compact intent (classified as
- * `type: "enrichment_update"`).
- */
+const TOP_LEVEL_CURATED = ["stakeholders", "notRecorded", "ids", "parties", "construction"];
+
 /**
  * Removes `stakeholders` from a raw candidate doc before it is validated.
  *
@@ -361,6 +362,18 @@ export interface RunSubmitSummary {
  * that a value was deliberately left out, and a model must not be able to
  * suppress a field on its own say-so.
  *
+ * The v2 curated fields are stripped the same way: `ids`, `parties` and
+ * `construction` (top level) and `capacityMw.basis` / `itPlanned` /
+ * `itOperational` and `energy.utilityEiaId` (nested). They are maintainer-curated
+ * in v1: no discovery prompt asks for them, and a lane may open per field only
+ * after a bench. Nested strips clone the nested object; a nested object the
+ * strip empties is dropped rather than left as `{}`, so the doc reads as if the
+ * field had never been sent (an empty `capacityMw`/`energy` would otherwise
+ * stage as a present-but-empty block). Approved `update` submissions keep the
+ * live curated nested keys only while what they describe is unchanged (same
+ * utility name, same planned and operational MW, not a power record); see
+ * `mergeFacilityPatch` in lib/facility-patch.ts.
+ *
  * Applied to the RAW doc (before `facilitySchema.safeParse`) rather than the
  * validated `Facility`, because `Facility` is a discriminated union on
  * `facilityType` and rebuilding one field-wise needs the per-branch dance in
@@ -371,15 +384,39 @@ export function stripCuratedFields(doc: unknown): unknown {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) {
     return doc;
   }
-  if (!("stakeholders" in doc) && !("notRecorded" in doc)) {
+  const d = doc as Record<string, unknown>;
+  const nestedStrips: [string, string[]][] = [
+    ["capacityMw", ["basis", "itPlanned", "itOperational"]],
+    ["energy", ["utilityEiaId"]],
+  ];
+  const isObj = (v: unknown): v is Record<string, unknown> =>
+    !!v && typeof v === "object" && !Array.isArray(v);
+  const hasNested = nestedStrips.some(
+    ([parent, keys]) => isObj(d[parent]) && keys.some((k) => k in (d[parent] as object))
+  );
+  if (!TOP_LEVEL_CURATED.some((k) => k in d) && !hasNested) {
     return doc;
   }
-  const rest = { ...(doc as Record<string, unknown>) };
-  delete rest.stakeholders;
-  delete rest.notRecorded;
+  const rest = { ...d };
+  for (const k of TOP_LEVEL_CURATED) delete rest[k];
+  for (const [parent, keys] of nestedStrips) {
+    const nested = rest[parent];
+    if (!isObj(nested) || !keys.some((k) => k in nested)) continue;
+    const copy = { ...nested };
+    for (const k of keys) delete copy[k];
+    if (Object.keys(copy).length === 0) delete rest[parent];
+    else rest[parent] = copy;
+  }
   return rest;
 }
 
+/**
+ * Accepts a bare Facility doc, a `{ facility, provenance }` wrapper (both
+ * classified as `type: "facility"`), a `{ statusUpdate, provenance }`
+ * compact intent (classified as `type: "status_update"`), or an
+ * `{ enrichmentUpdate, provenance }` compact intent (classified as
+ * `type: "enrichment_update"`).
+ */
 export function normalizeCandidates(raw: unknown[]): NormalizedCandidate[] {
   return raw.map((entry) => {
     if (entry && typeof entry === "object" && "statusUpdate" in (entry as Record<string, unknown>)) {
@@ -974,7 +1011,7 @@ function stripRestrictedUrls(
  * lib/status-update.ts's `applyStatusUpdate` for the same pattern), so this
  * switches on it instead of spreading generically.
  */
-function applyDocSourceStrip(doc: Facility, sources: Source[], remapped: Map<string, number>): Facility {
+export function applyDocSourceStrip(doc: Facility, sources: Source[], remapped: Map<string, number>): Facility {
   const statusHistory = doc.statusHistory.map((event, i) => {
     const idx = remapped.get(`statusHistory[${i}].sourceIndex`);
     return idx === undefined ? event : { ...event, sourceIndex: idx };
@@ -1001,6 +1038,11 @@ function applyDocSourceStrip(doc: Facility, sources: Source[], remapped: Map<str
     ? { ...doc.emissions, sourceIndex: remapped.get("emissions.sourceIndex") ?? doc.emissions.sourceIndex }
     : doc.emissions;
 
+  // v2 fields: same belt-and-braces as stakeholders (stripped upstream by
+  // `stripCuratedFields`, but a stale index on a curated citation would
+  // mis-cite). Path strings are the ones `v2SourceIndexRefs` emits.
+  const base = remapV2SourceIndices(doc, (path, index) => remapped.get(path) ?? index);
+
   const overrides = {
     sources,
     statusHistory,
@@ -1011,13 +1053,13 @@ function applyDocSourceStrip(doc: Facility, sources: Source[], remapped: Map<str
     ...(emissions !== undefined ? { emissions } : {}),
   };
 
-  switch (doc.facilityType) {
+  switch (base.facilityType) {
     case "data_center":
-      return { ...doc, ...overrides };
+      return { ...base, ...overrides };
     case "crypto_mining":
-      return { ...doc, ...overrides };
+      return { ...base, ...overrides };
     case "power_generation":
-      return { ...doc, ...overrides };
+      return { ...base, ...overrides };
   }
 }
 
@@ -1738,6 +1780,7 @@ export async function runSubmit(
     if (doc.emissions?.sourceIndex !== undefined) {
       docSourceRefs.push({ path: "emissions.sourceIndex", index: doc.emissions.sourceIndex });
     }
+    docSourceRefs.push(...v2SourceIndexRefs(doc));
 
     const docSourceStrip = stripRestrictedFromSources(doc.sources, docSourceRefs, dropUrls);
     if (!docSourceStrip.ok) {

@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageMasthead } from "@/components/page-masthead";
+import { CODEBOOK_CONVENTIONS, CODEBOOK_ENTRIES, STABLE_ID_STATEMENT } from "@/lib/dataset-codebook";
 import { isDatasetSharingEnabled } from "@/lib/dataset-flag";
 import { breadcrumbJsonLdString } from "@/lib/seo";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
@@ -153,6 +154,70 @@ export default function DataPage() {
           Each record lists its own public sources. Cite those directly when a claim
           depends on them.
         </p>
+      </section>
+
+      <section aria-labelledby="fields-heading" className="space-y-4 border-t border-border pt-10">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          § Field definitions
+        </p>
+        <h2 id="fields-heading" className="font-display text-2xl text-foreground">
+          Field definitions
+        </h2>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          What each field in a dataset edition means. These are definitions only; the
+          records themselves are not shown here.
+        </p>
+        <ul className="max-w-2xl list-disc space-y-2 pl-5 text-base leading-relaxed text-muted-foreground">
+          {CODEBOOK_CONVENTIONS.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">{STABLE_ID_STATEMENT}</p>
+        <details className="max-w-full rounded-sm border border-border">
+          <summary className="cursor-pointer px-4 py-3 font-display text-lg text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+            Field list ({CODEBOOK_ENTRIES.length} entries)
+          </summary>
+          <div className="overflow-x-auto px-4 pb-4">
+            <table className="w-full min-w-[40rem] border-collapse text-left text-sm text-muted-foreground">
+              <caption className="sr-only">Dataset field definitions</caption>
+              <thead>
+                <tr className="border-b border-border text-foreground">
+                  <th scope="col" className="py-2 pr-4 font-medium">
+                    Field
+                  </th>
+                  <th scope="col" className="py-2 pr-4 font-medium">
+                    Type
+                  </th>
+                  <th scope="col" className="py-2 pr-4 font-medium">
+                    Applies to
+                  </th>
+                  <th scope="col" className="py-2 font-medium">
+                    Meaning
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {CODEBOOK_ENTRIES.map((e) => (
+                  <tr key={e.path} className="border-b border-border align-top">
+                    <th scope="row" className="py-2 pr-4 text-left font-mono text-xs font-normal text-foreground">
+                      {e.path}
+                    </th>
+                    <td className="py-2 pr-4">
+                      {e.type}
+                      {e.unit ? `, ${e.unit}` : ""}
+                    </td>
+                    <td className="py-2 pr-4">{e.appliesTo === "all" ? "all" : e.appliesTo.join(", ")}</td>
+                    <td className="py-2">
+                      {e.meaning}
+                      {e.values ? ` Values: ${e.values.join(", ")}.` : ""}
+                      {e.inCsv ? "" : " JSON only."}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
       </section>
 
       <section aria-labelledby="scope-heading" className="space-y-4 border-t border-border pt-10">
