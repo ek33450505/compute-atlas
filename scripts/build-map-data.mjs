@@ -82,6 +82,7 @@ import { lineString as turfLineString, point as turfPoint } from '@turf/helpers'
 import { buildHeroPoints } from './build-hero-points.mjs';
 import { buildHeroPlate } from './build-hero-plate.mjs';
 import { buildPipelineHistory } from './build-pipeline-history.mjs';
+import { computeAllJoinKeys, preflightJoinKeys } from './join-keys.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
@@ -1715,11 +1716,68 @@ export function computeDistribution(sitingContext, fieldName, liveIds) {
   return { total, distribution };
 }
 
+/**
+ * Add a facility's join keys to its environmental entry so mergeSitingContextEntry carries them in
+ * BOTH of its paths. With `nhdRan: true` the existing entry is not spread, so an un-recomputed
+ * `joinKeys` would be dropped unless it rides along here. `joinKeys` is only set when defined, so
+ * an id with none leaves the entry untouched (never writes null).
+ */
+export function withJoinKeys(envEntry, joinKeys) {
+  if (!joinKeys) return envEntry;
+  return { ...(envEntry ?? {}), joinKeys };
+}
+
+/**
+ * Run the join-key pass. `--skip-join-keys` (skip) makes no queries and carries every existing
+ * value forward. A group that fails preflight is passed as `skipKeys`: it is not queried this run,
+ * its value and flags are carried forward, and it costs no failure budget.
+ * Returns `{ byId, stats, failedServices }`.
+ */
+export async function runJoinKeys(
+  facilities,
+  existingSiting,
+  {
+    skip = false,
+    query = (url) => fetchJSON(url, { label: 'join-keys', retries: 1, timeoutMs: 30000 }),
+    delayMs,
+    limits = {},
+    log = console.log,
+    warn = console.error,
+  } = {},
+) {
+  const existingById = {};
+  for (const [id, entry] of Object.entries(existingSiting ?? {})) {
+    if (entry?.joinKeys) existingById[id] = entry.joinKeys;
+  }
+  const delay = delayMs === undefined ? {} : { delayMs };
+  if (skip) {
+    log('--skip-join-keys: carrying existing join keys forward, no queries');
+    return { byId: existingById, stats: null, failedServices: [] };
+  }
+  const { failed } = await preflightJoinKeys({ query });
+  for (const name of failed) {
+    warn(`  [warn] join-keys pre-flight FAILED for ${name}: not querying it this run, carrying its existing values forward`);
+  }
+  const { byId, stats } = await computeAllJoinKeys(facilities, existingById, { ...limits, ...delay, query, skipKeys: failed });
+  log(
+    `Join keys: ${stats.recomputed} recomputed, ${stats.reused} reused, ${stats.failures} failures, ` +
+      `${stats.flagged} flagged, ${stats.skipped} skipped`,
+  );
+  if (stats.skipped > 0) {
+    warn(
+      `  [warn] join keys: ${stats.skipped} facilities deferred to the next run (time or failure budget); ` +
+        're-run build:mapdata (e.g. with --skip-nhd) until 0 are deferred',
+    );
+  }
+  return { byId, stats, failedServices: failed };
+}
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 async function main() {
   const { skipNHD, backfillNHD, error: flagError } = parseNHDFlags(process.argv.slice(2));
+  const skipJoinKeys = process.argv.includes('--skip-join-keys');
   if (flagError) {
     console.error(flagError);
     process.exitCode = 1;
@@ -1797,6 +1855,7 @@ async function main() {
         'to the file, before retrying.'
       );
     }
+    const joinKeys = await runJoinKeys(facilities, existing, { skip: skipJoinKeys });
     sitingContext = {};
     // Seed the id set with EVERY facility, not just the ones a dataset matched:
     // a facility that matched nothing is recorded as `{}` on purpose. NHD,
@@ -1813,7 +1872,7 @@ async function main() {
     for (const id of ids) {
       // --skip-nhd makes NO NHD calls at all, so no facility was processed
       // this run: nhdRan is false for every id, unconditionally.
-      sitingContext[id] = mergeSitingContextEntry(existing[id], undefined, envContext[id], { nhdRan: false });
+      sitingContext[id] = mergeSitingContextEntry(existing[id], undefined, withJoinKeys(envContext[id], joinKeys.byId[id]), { nhdRan: false });
     }
     manifestBase = JSON.parse(readFileSync(MANIFEST_OUT, 'utf8'));
   } else {
@@ -1845,6 +1904,7 @@ async function main() {
       existingSitingContext,
       { backfillOnly: backfillNHD },
     );
+    const joinKeys = await runJoinKeys(facilities, existingSitingContext, { skip: skipJoinKeys });
     sitingContext = {};
     // Seed the id set with EVERY facility, not just the ones a dataset matched:
     // a facility that matched nothing is recorded as `{}` on purpose. NHD,
@@ -1866,7 +1926,7 @@ async function main() {
       // NHD skipped entirely (lacking coordinates, or narrowed out by
       // --backfill-nhd). Conflating those two is the bug mergeSitingContextEntry's
       // doc comment describes; processedIds is the one thing that tells them apart.
-      sitingContext[id] = mergeSitingContextEntry(existingSitingContext[id], nhdContext[id], envContext[id], {
+      sitingContext[id] = mergeSitingContextEntry(existingSitingContext[id], nhdContext[id], withJoinKeys(envContext[id], joinKeys.byId[id]), {
         nhdRan: processedIds.has(id),
       });
     }

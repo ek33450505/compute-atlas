@@ -20,6 +20,8 @@ import {
   mergeSitingContextEntry,
   computeSitingContext,
   parseNHDFlags,
+  withJoinKeys,
+  runJoinKeys,
   computeDistribution,
   clearStaleSitingOutput,
   readSitingSnapshot,
@@ -1359,5 +1361,122 @@ describe("siting-context output path", () => {
     expect(clear).toBeGreaterThan(-1);
     expect(clear).toBeLessThan(body.indexOf("preflightNHDQuorum()"));
     expect(clear).toBeLessThan(body.indexOf("await buildAqueduct()"));
+  });
+});
+
+describe("join keys wiring", () => {
+  it("every mergeSitingContextEntry call in main() passes its env entry through withJoinKeys", () => {
+    const src = readFileSync(resolve(__dirname, "build-map-data.mjs"), "utf8");
+    const body = src.slice(src.indexOf("async function main()"));
+    const calls = body.split("mergeSitingContextEntry(").slice(1);
+    expect(calls).toHaveLength(2);
+    for (const call of calls) expect(call.slice(0, call.indexOf("nhdRan")).includes("withJoinKeys(")).toBe(true);
+  });
+
+  it("warns loudly when a breaker defers facilities", async () => {
+    // The multiple-subregions layer is not preflighted, so failing it trips the failure budget mid-run.
+    const { query } = fakeQuery([MULTI]);
+    const warn = vi.fn();
+    const facs = Array.from({ length: 5 }, (_, i) => fac(`f${i}`, 39 + i / 1000));
+    const { stats } = await runJoinKeys(facs, {}, { log: () => {}, warn, delayMs: 0, query, limits: { maxFailures: 1 } } as never);
+    expect(stats?.skipped).toBeGreaterThan(0);
+    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/\[warn\] join keys: \d+ facilities deferred/));
+  });
+
+  const COUNTY = "TIGERweb/State_County";
+  const TRACT = "TIGERweb/Tracts_Blocks";
+  const MULTI = "eGRID2023_Multiple_Subregions";
+  const EGRID = "eGRID2023_Subregions";
+  const feat = (attributes: Record<string, string>) => ({ features: [{ attributes }] });
+
+  function fakeQuery(failing: string[] = []) {
+    const urls: string[] = [];
+    const query = async (url: string) => {
+      urls.push(url);
+      if (failing.some((f) => url.includes(f))) throw new Error("boom");
+      if (url.includes(COUNTY)) return feat({ GEOID: "51107", NAME: "Loudoun County" });
+      if (url.includes(TRACT)) return feat({ GEOID: "51107611000" });
+      if (url.includes(MULTI)) return { features: [] };
+      if (url.includes(EGRID)) return feat({ Subregion: "SRVC" });
+      throw new Error(`unexpected url ${url}`);
+    };
+    return { query, urls };
+  }
+
+  const fac = (id: string, lat: number, precision = "exact") =>
+    ({ id, location: { lat, lon: -77.5, precision, county: "Loudoun" } }) as never;
+  const silent = { log: () => {}, warn: () => {}, delayMs: 0 };
+  const oldKeys = {
+    countyFips: "51107",
+    tractGeoid: "51107000000",
+    egridSubregion: "OLD",
+    pin: { lat: 39, lon: -77.5, precision: "exact" },
+    sources: {},
+    computedAt: "2026-01-01",
+  };
+
+  it("withJoinKeys adds the key, and leaves the entry alone when there is none", () => {
+    expect(withJoinKeys({ waterStress: "high" } as never, oldKeys as never)).toEqual({
+      waterStress: "high",
+      joinKeys: oldKeys,
+    });
+    const env = { waterStress: "high" } as never;
+    expect(withJoinKeys(env, undefined)).toBe(env);
+  });
+
+  it("joinKeys survive both merge paths, including an un-recomputed one with nhdRan true", () => {
+    const entry = withJoinKeys({ waterStress: "high" } as never, oldKeys as never);
+    const existing = { nearestWater: { name: "x" }, joinKeys: oldKeys } as never;
+    const nhd = { nearestWater: { name: "y" } } as never;
+    expect(mergeSitingContextEntry(existing, nhd, entry, { nhdRan: true })).toMatchObject({ joinKeys: oldKeys });
+    expect(mergeSitingContextEntry(existing, undefined, entry, { nhdRan: false })).toMatchObject({ joinKeys: oldKeys });
+    // Control: without the explicit pass-through the nhdRan:true path drops it.
+    expect(mergeSitingContextEntry(existing, nhd, { waterStress: "high" } as never, { nhdRan: true })).not.toHaveProperty("joinKeys");
+  });
+
+  it("a reused existing entry round-trips through runJoinKeys into the merged entry", async () => {
+    const { query, urls } = fakeQuery();
+    const existing = { a: { joinKeys: oldKeys } };
+    const { byId: rawById } = await runJoinKeys([fac("a", 39)], existing as never, { ...silent, query });
+    const byId = rawById as Record<string, Record<string, unknown>>;
+    expect(byId.a).toEqual(oldKeys);
+    const merged = mergeSitingContextEntry(existing.a as never, {} as never, withJoinKeys({}, byId.a), { nhdRan: true });
+    expect(merged.joinKeys).toEqual(oldKeys);
+    expect(urls.filter((u) => !u.includes("-77.4875"))).toEqual([]);
+  });
+
+  it("a failed service does not burn the failure budget: 30 facilities, all still queried for the others", async () => {
+    const { query, urls } = fakeQuery([TRACT]);
+    const facs = Array.from({ length: 30 }, (_, i) => fac(`f${i}`, 39 + i / 1000));
+    const { byId, stats, failedServices } = await runJoinKeys(facs, {}, { ...silent, query });
+    expect(failedServices).toEqual(["tract"]);
+    expect(stats).toMatchObject({ recomputed: 30, failures: 0, skipped: 0 });
+    expect(urls.filter((u) => u.includes(COUNTY)).length).toBe(31); // 1 probe + 30
+    expect(urls.filter((u) => u.includes(TRACT)).length).toBe(1); // probe only
+    expect(Object.keys(byId)).toHaveLength(30);
+  });
+
+  it("a preflight failure for one service carries that key forward and the others still query every facility", async () => {
+    const { query, urls } = fakeQuery([EGRID + "/FeatureServer"]);
+    const existing = { a: { joinKeys: { ...oldKeys, pin: { lat: 40, lon: -77.5, precision: "exact" } } } };
+    const warn = vi.fn();
+    const { byId: rawById, failedServices } = await runJoinKeys([fac("a", 39)], existing as never, { ...silent, warn, query });
+    const byId = rawById as Record<string, Record<string, unknown>>;
+    expect(failedServices).toEqual(["egrid"]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("egrid"));
+    expect(byId.a.egridSubregion).toBe("OLD");
+    expect(byId.a.countyFips).toBe("51107");
+    expect(byId.a.tractGeoid).toBe("51107611000");
+    expect(urls.filter((u) => u.includes(EGRID + "/FeatureServer") || u.includes(MULTI)).length).toBe(1); // preflight probe only
+    expect(urls.filter((u) => u.includes(COUNTY)).length).toBe(2); // probe + facility
+  });
+
+  it("--skip-join-keys makes no queries and carries existing values forward", async () => {
+    const { query, urls } = fakeQuery();
+    const existing = { a: { joinKeys: oldKeys }, b: {} };
+    const { byId: rawById } = await runJoinKeys([fac("a", 39), fac("b", 39)], existing as never, { ...silent, skip: true, query });
+    const byId = rawById as Record<string, Record<string, unknown>>;
+    expect(urls).toEqual([]);
+    expect(byId).toEqual({ a: oldKeys });
   });
 });

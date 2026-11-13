@@ -228,6 +228,8 @@ VI: NHD is CONUS-only) is required or the count never reaches 0. `resolveNearest
 prior `nearestWater` forward on every unconfirmed NHD failure; only a confirmed absence clears it,
 which is why a full run is the right tool for re-querying a facility whose coordinates were corrected.
 
+`build:mapdata` (and so `siting:refresh`) also computes `joinKeys` (county FIPS, tract, eGRID subregion; incremental: new or moved pins and keys left to retry by an earlier failure are queried; a run that hits its failure or time budget defers the rest and warns with the count). Re-run `npm run build:mapdata -- --skip-nhd` by hand until 0 are deferred; `npm run build:mapdata -- --skip-join-keys` carries them forward with no queries. `siting:refresh` cannot pass either flag. The additive guard diffs `joinKeys` as one whole value: removing or nulling it is refused, but dropping a subkey inside it (a confirmed `*_no_polygon` absence, a precision downgrade) is not caught, so diff-read that.
+
 **Ownership:** edit the local `data/operator-ownership.json` (from `db:export`), then
 `npm run ownership:apply` (dry run) and `npm run ownership:apply -- --apply`. It inserts and
 updates, reads back and checks the count, and ALWAYS REFUSES removals (a removal is a reviewed manual

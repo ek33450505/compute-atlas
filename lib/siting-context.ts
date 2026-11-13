@@ -59,6 +59,22 @@ export interface Aquifer {
 }
 
 /**
+ * Keys for joining a facility to external datasets, computed at build time from the pin by
+ * ArcGIS point queries. `tractGeoid` exists only for exact pins. `egridSubregion` is EPA's
+ * ZIP-dissolved representational polygon, not the grid the site actually draws from.
+ */
+export interface JoinKeys {
+  countyFips?: string;
+  tractGeoid?: string;
+  egridSubregion?: string;
+  egridMultiple?: true;
+  pin: { lat: number; lon: number; precision: "exact" | "approximate" | "representative_multi_site" };
+  flags?: string[];
+  sources: { county: string; tract?: string; egrid: string };
+  computedAt: string;
+}
+
+/**
  * Pre-computed siting-context entry for one facility. Any field may be
  * absent even when the facility has an entry at all.
  */
@@ -68,6 +84,7 @@ export interface SitingContext {
   waterStress?: WaterStress;
   groundwaterDecline?: GroundwaterDecline;
   aquifer?: Aquifer;
+  joinKeys?: JoinKeys;
 }
 
 // The zod schemas live in a JSON-free module (scripts/export.ts loads them before
