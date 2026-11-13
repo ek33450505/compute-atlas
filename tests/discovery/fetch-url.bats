@@ -100,7 +100,13 @@ teardown() {
 }
 
 @test "fullwidth, percent-encoded and userinfo authorities are refused" {
-	for u in $'http://\uff11\uff12\uff17.0.0.1/' "http://127%2E0.0.1/" "http://%6c%6f%63alhost/" \
+	# UTF-8 bytes via octal printf escapes: a $'...' literal is not expanded under bats + bash 3.2
+	local fw
+	fw="$(printf 'http://\357\274\221\357\274\222\357\274\227.0.0.1/')"
+	run "$FETCH" "$fw"
+	[ "$status" -eq 2 ]
+	[[ "$output" == *"non-ASCII authority"* ]]
+	for u in "$fw" "http://127%2E0.0.1/" "http://%6c%6f%63alhost/" \
 		"http://example.com@127.0.0.1/" "http://127.0.0.1%40example.com/"; do
 		run "$FETCH" "$u"
 		[ "$status" -eq 2 ]
