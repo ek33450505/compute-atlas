@@ -178,9 +178,11 @@ water use. All data is source-cited; no per-request geospatial API is used
 ### Join keys
 
 Each entry in `data/siting-context.json` also carries `joinKeys`, identifiers for
-joining a facility to other public datasets. Each is looked up by point query at
-the facility's pin (eGRID takes two queries: the subregion layer and the
-multiple-subregions layer); no polygon dataset is downloaded.
+joining a facility to other public datasets. County and tract are looked up by
+point query at the facility's pin. The eGRID subregion is a point-in-polygon
+lookup against EPA's eGRID2023 subregion and multiple-subregions polygons, which
+the build downloads from EPA's ArcGIS layers once per run (and only when some
+facility needs a recompute).
 
 - **County FIPS** — the five-digit county code, from Census TIGERweb.
 - **Census tract** (`tractGeoid`) — from Census TIGERweb, computed for
@@ -195,7 +197,9 @@ multiple-subregions layer); no polygon dataset is downloaded.
 A facility is re-queried when it is new, its pin moved or its precision changed,
 or when an earlier run left something to retry: a key missing after a failed
 query, an `egrid_multi_unknown` flag or a `carried_forward:<key>` flag. A query
-that fails never clears a value; the previous one is kept. A confirmed empty
+that fails never clears a value; the previous one is kept. If the eGRID polygon
+download fails, the existing eGRID keys are carried forward and the build prints
+a warning. A confirmed empty
 answer and an ambiguous (multiple-hit) answer both leave no value, with a flag.
 A run stops querying when it exceeds a failure budget or a time limit, and the
 facilities not reached keep their existing keys (a facility with none yet gets
@@ -208,6 +212,9 @@ point fell in no polygon), `multiple_hits:<key>` (several polygons matched, so
 no value is kept), `county_name_mismatch` (the record's county name differs from
 the one the pin falls in), `tract_county_mismatch`, `egrid_multi_unknown` and
 `carried_forward:<key>` (a value kept from an earlier pin after a failed query).
+`egrid_multi_unknown` is only an old flag: earlier builds wrote it when the
+multiple-subregions point query failed. A recompute that computes eGRID clears
+it; while eGRID is carried forward the flag is kept.
 
 Balancing authority and ISO/RTO are not computed. The public polygon layers
 reviewed for them either overlapped substantially or carried no clear licence,
